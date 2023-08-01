@@ -1,10 +1,17 @@
-<template>
-  <div class="about">
-    <h1>This is an about page</h1>
-    <IdeaComp />
-  </div>
-</template>
-
 <script lang="ts" setup>
-import IdeaComp from '@Components/Idea/IdeaComp.vue'
+import { storeToRefs } from 'pinia'
+
+import useIdeasStore from '@Store/ideas/ideasStore'
+import useUserStore from '@Store/user/userStore'
+
+const userStore = useUserStore()
+const ideasStore = useIdeasStore()
+
+const { user } = storeToRefs(userStore)
+const { ideas } = storeToRefs(ideasStore)
 </script>
+
+<template>
+  <pre v-if="user">Пользователь - {{ user }}</pre>
+  <pre v-if="ideas.length">{{ ideas }}</pre>
+</template>
