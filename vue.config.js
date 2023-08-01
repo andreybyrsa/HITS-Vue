@@ -19,6 +19,7 @@ module.exports = defineConfig({
         '@Components': resolvePath('src/components/'),
         '@Layouts': resolvePath('src/layouts/'),
         '@Views': resolvePath('src/views/'),
+        '@Domain': resolvePath('src/domain'),
         '@Hooks': resolvePath('src/hooks/'),
         '@Services': resolvePath('src/services'),
         '@Middlewares': resolvePath('src/middlewares'),
