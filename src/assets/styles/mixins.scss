@@ -1,0 +1,94 @@
+@mixin position(
+  $position: static,
+  $top: auto,
+  $right: auto,
+  $bottom: auto,
+  $left: auto,
+  $z-index: 0
+) {
+  position: $position;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+  z-index: $z-index;
+}
+
+@mixin fixedWidth($size) {
+  width: $size;
+  min-width: $size;
+  max-width: $size;
+}
+
+@mixin fixedHeight($size) {
+  height: $size;
+  min-height: $size;
+  max-height: $size;
+}
+
+@mixin border(
+  $border-style: none,
+  $border-color: transparent,
+  $border-radius: 0,
+  $border-widths: none
+) {
+  border-style: $border-style;
+  border-color: $border-color;
+  border-radius: $border-radius;
+
+  @if $border-widths != none {
+    border-width: $border-widths;
+  }
+}
+
+@mixin typography($font-size, $font-weight, $line-height) {
+  font-size: $font-size;
+  font-weight: $font-weight;
+  line-height: $line-height;
+}
+
+@mixin flexible(
+  $align-items: flex-start,
+  $justify-content: flex-start,
+  $flex-direction: row,
+  $flex-wrap: nowrap,
+  $gap: 0
+) {
+  display: flex;
+  flex-direction: $flex-direction;
+  flex-wrap: $flex-wrap;
+  align-items: $align-items;
+  justify-content: $justify-content;
+
+  @if $gap != 0 {
+    gap: $gap;
+  }
+}
+
+@mixin gridable(
+  $grid-columns: none,
+  $grid-rows: none,
+  $gap: 0,
+  $align-items: flex-start,
+  $align-content: stretch,
+  $justify-items: stretch,
+  $justify-content: flex-start
+) {
+  display: grid;
+  justify-content: $justify-content;
+  align-content: $align-content;
+  justify-items: $justify-items;
+  align-items: $align-items;
+
+  @if $grid-columns != none {
+    grid-template-columns: $grid-columns;
+  }
+
+  @if $grid-rows != none {
+    grid-template-rows: $grid-rows;
+  }
+
+  @if $gap != none {
+    gap: $gap;
+  }
+}
