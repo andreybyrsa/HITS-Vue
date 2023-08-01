@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import TypographyProps from '@Components/Typography/TypographyComp.types'
+import TypographyProps from './Typography.types'
 
 const props = defineProps<TypographyProps>()
 
