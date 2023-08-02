@@ -1,9 +1,12 @@
 <script lang="ts" setup>
-import ButtonProps from './Button.types'
+interface ButtonProps {
+  className: string
+  iconName?: string
+}
 const props = defineProps<ButtonProps>()
 </script>
 <template>
-  <button>
+  <button :class="props.className">
     <i
       v-if="props.iconName"
       :class="props.iconName"
