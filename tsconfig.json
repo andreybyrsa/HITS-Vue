@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "strict": false,
+    "strict": true,
     "jsx": "preserve",
     "moduleResolution": "node",
     "experimentalDecorators": true,
@@ -20,6 +20,7 @@
       "@Layouts/*": ["src/layouts/*"],
       "@Views/*": ["src/views/*"],
       "@Hooks/*": ["src/hooks/*"],
+      "@Domain/*": ["src/domain/*"],
       "@Store/*": ["src/store/*"],
       "@Services/*": ["src/services/*"],
       "@Middlewares/*": ["src/middlewares/*"],

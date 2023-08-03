@@ -1,7 +1,3 @@
-const path = require('path')
-
-const resolvePath = (currentPath) => path.resolve(__dirname, currentPath)
-
 module.exports = {
   root: true,
   env: {
@@ -32,11 +28,13 @@ module.exports = {
     },
   },
   rules: {
+    'vue/multi-word-component-names': 'off',
+
     'import/no-unresolved': ['off', { commonjs: true }],
     'import/no-extraneous-dependencies': 'error',
     'node/no-missing-require': 'off',
     'node/no-extraneous-import': 'off',
-
+    'vue/multi-word-component-names': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
   },
