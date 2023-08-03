@@ -16,7 +16,7 @@ const { user } = storeToRefs(userStore)
 const text = ref('')
 
 function handleLogin() {
-  userStore.loginUser('AndreyByrsa')
+  userStore.loginUser('AndreyByrsa', '12345')
 }
 </script>
 

@@ -8,8 +8,8 @@ const useUserStore = defineStore('user', {
     user: null,
   }),
   actions: {
-    async loginUser(username: string) {
-      this.user = await AuthService.loginUser(username)
+    async loginUser(username: string, password: string) {
+      this.user = await AuthService.loginUser(username, password)
     },
   },
 })
