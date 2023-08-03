@@ -41,6 +41,7 @@ function handleLogin() {
 
       <Input
         v-model="text"
+        prepend="текст"
         placeholder="Введите текст"
       />
 

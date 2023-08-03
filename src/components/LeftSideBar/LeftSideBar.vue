@@ -11,7 +11,7 @@ import getRoles from '@Utils/getRoles'
 
 import useUserStore from '@Store/user/userStore'
 
-import NavTabsType from './LeftSideBar.types'
+import NavTabsType from '@Components/LeftSideBar/LeftSideBar.types'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

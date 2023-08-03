@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import NavTabProps from './NavTab.types'
+import NavTabProps from '@Components/NavTab/NavTab.types'
 
 const props = withDefaults(defineProps<NavTabProps>(), {
   to: '/ideas',

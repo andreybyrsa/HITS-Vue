@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { ButtonProps, ButtonEmits } from './Button.types'
+import { ButtonProps, ButtonEmits } from '@Components/Button/Button.types'
 
 const props = defineProps<ButtonProps>()
 
