@@ -11,6 +11,14 @@ const useUserStore = defineStore('user', {
     async loginUser(username: string) {
       this.user = await AuthService.loginUser(username)
     },
+    async registerUser(user: {
+      username: string
+      firstName: string
+      lastName: string
+      password: string
+    }) {
+      this.user = await AuthService.registerUser(user)
+    },
   },
 })
 
