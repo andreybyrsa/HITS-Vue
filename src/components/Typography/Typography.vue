@@ -1,14 +1,16 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import TypographyProps from './Typography.types'
+import TypographyProps from '@Components/Typography/Typography.types'
 
 const props = defineProps<TypographyProps>()
 
+const isTextProperty = props.className?.includes('fs')
+
 const typographyClassName = computed(() => {
-  return [props.class]
+  return [{ 'fs-5': !isTextProperty }, props.className]
 })
 </script>
 
 <template>
-  <p :class="typographyClassName"><slot></slot></p>
+  <span :class="typographyClassName"><slot></slot></span>
 </template>

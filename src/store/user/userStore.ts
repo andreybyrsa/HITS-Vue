@@ -11,6 +11,9 @@ const useUserStore = defineStore('user', {
     async loginUser(username: string) {
       this.user = await AuthService.loginUser(username)
     },
+    removeUser() {
+      this.user = null
+    },
   },
 })
 

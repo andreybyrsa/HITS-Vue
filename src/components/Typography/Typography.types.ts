@@ -1,5 +1,5 @@
 interface TypographyProps {
-  class: string
+  className?: string
 }
 
 export default TypographyProps
