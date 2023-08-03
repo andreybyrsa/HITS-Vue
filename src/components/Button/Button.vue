@@ -1,16 +1,27 @@
 <script lang="ts" setup>
-interface ButtonProps {
-  className: string
-  iconName?: string
-}
+import { computed } from 'vue'
+import ButtonProps from './Button.types'
+
 const props = defineProps<ButtonProps>()
+
+const ButtonClassName = computed(() => ['btn btn-lg d-flex', props.className])
 </script>
+
 <template>
-  <button :class="props.className">
+  <button
+    type="button"
+    :class="ButtonClassName"
+  >
     <i
       v-if="props.iconName"
       :class="props.iconName"
     ></i>
-    <slot />
+    <slot></slot>
   </button>
 </template>
+
+<style lang="scss">
+.btn {
+  @include flexible(center, center, $gap: 4px);
+}
+</style>
