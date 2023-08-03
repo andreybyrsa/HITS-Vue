@@ -1,24 +1,32 @@
 <script lang="ts" setup>
-defineProps({
-  leftSideBar: Boolean,
-})
+import { computed } from 'vue'
+import PageLayoutProps from './PageLayout.types'
+
+const props = defineProps<PageLayoutProps>()
+
+const PageLayoutClassName = computed(() => ['page-layout', props.className])
+const PageLayoutContentClassName = computed(() => [
+  'page-layout__content',
+  props.contentClassName,
+])
 </script>
 
 <template>
-  <div class="page-layout vw-100">
+  <div :class="PageLayoutClassName">
     <div
-      v-if="leftSideBar"
+      v-if="$slots.leftSideBar"
       class="page-layout__leftsidebar"
     >
-      <slot name="leftSideBar" />
+      <slot name="leftSideBar"></slot>
     </div>
-    <div class="page-layout__content">
-      <slot name="content" />
+
+    <div :class="PageLayoutContentClassName">
+      <slot name="content"></slot>
     </div>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .page-layout {
   @include flexible(flex-start, flex-start);
 
@@ -31,7 +39,6 @@ defineProps({
   }
 
   &__content {
-    @include flexible(center, center);
     width: 100%;
     height: 100vh;
   }

@@ -5,10 +5,10 @@ import TypographyProps from './Typography.types'
 const props = defineProps<TypographyProps>()
 
 const typographyClassName = computed(() => {
-  return [props.class]
+  return [props.className]
 })
 </script>
 
 <template>
-  <p :class="typographyClassName"><slot></slot></p>
+  <span :class="typographyClassName"><slot></slot></span>
 </template>

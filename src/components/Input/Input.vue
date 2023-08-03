@@ -21,5 +21,3 @@ const InputClassName = computed(() => ['form-control', props.className])
     "
   />
 </template>
-
-<style></style>
