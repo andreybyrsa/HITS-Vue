@@ -1,46 +1,14 @@
-<template>
-  <div
-    :class="[
-      IdeaClassName,
-      'idea w-100 px-3 py-4 text-center border rounded-4',
-      className,
-    ]"
-  >
-    <Typography class="ideaname text-primary text-center">{{
-      props.idea.name
-    }}</Typography>
-    <div class="ideadates">
-      <Typography class="">{{ props.idea.dateCreated }}</Typography>
-      <Typography class="">{{ props.idea.dateUpdated }}</Typography>
-    </div>
-    <Typography class="">{{ props.idea.status }}</Typography>
-    <Typography :class="getRatingColor(props.idea.rating)">{{
-      props.idea.rating
-    }}</Typography>
-    <Typography :class="getRiskColor(props.idea.risk)">{{
-      props.idea.risk
-    }}</Typography>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { computed } from 'vue'
-import Typography from '@Components/Typography/TypographyComp.vue'
+import Typography from '@Components/Typography/Typography.vue'
 import IdeaProps from './Idea.types'
+
 const props = defineProps<IdeaProps>()
+
 const IdeaClassName = computed(() => {
-  return [
-    'idea',
-    'w-100',
-    'px-3',
-    'py-4',
-    'text-center',
-    'border',
-    'rounded-4',
-    props.className,
-  ].join(' ')
+  return ['idea w-100 px-3 py-4 text-center border rounded-4', props.className]
 })
-const getRatingColor = (rating) => {
+const getRatingColor = (rating: number) => {
   if (rating >= 4.0) {
     return 'text-success'
   }
@@ -50,7 +18,7 @@ const getRatingColor = (rating) => {
   return 'text-danger'
 }
 
-const getRiskColor = (risk) => {
+const getRiskColor = (risk: number) => {
   if (risk <= 0.2) {
     return 'text-success'
   }
@@ -62,11 +30,26 @@ const getRiskColor = (risk) => {
   }
   return 'text-danger'
 }
-
-const getCurrentDate = (date) => {
-  // Implement getCurrentDate function
-}
 </script>
+
+<template>
+  <div :class="IdeaClassName">
+    <Typography class-name="ideaname text-primary text-center">{{
+      props.idea.name
+    }}</Typography>
+    <div class="idea__dates">
+      <Typography>{{ props.idea.dateCreated }}</Typography>
+      <Typography>{{ props.idea.dateUpdated }}</Typography>
+    </div>
+    <Typography>{{ props.idea.status }}</Typography>
+    <Typography :class-name="getRatingColor(props.idea.rating)">{{
+      props.idea.rating
+    }}</Typography>
+    <Typography :class-name="getRiskColor(props.idea.risk)">{{
+      props.idea.risk
+    }}</Typography>
+  </div>
+</template>
 
 <style lang="scss">
 .idea {

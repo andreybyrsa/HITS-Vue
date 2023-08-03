@@ -16,13 +16,13 @@ const LabelClassName = computed(() => ['form-label', props.className])
 </script>
 
 <template>
-  <labeL
+  <label
     for="name"
     :class="LabelClassName"
     v-if="label"
   >
     {{ label }}
-  </labeL>
+  </label>
   <div class="input-group">
     <span
       v-if="prepend"
@@ -36,9 +36,8 @@ const LabelClassName = computed(() => ['form-label', props.className])
       :class="InputClassName"
       :type="props.type"
       :placeholder="props.placeholder"
-      @input="
-        emit('update:modelValue', ($event.target as HTMLInputElement).value)
-      "
+      :value="props.value"
+      @input="emit('update:value', ($event.target as HTMLInputElement).value)"
     />
 
     <span
