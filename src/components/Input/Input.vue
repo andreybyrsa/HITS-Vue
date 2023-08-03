@@ -8,7 +8,10 @@ const props = withDefaults(defineProps<InputProps>(), {
 
 const emit = defineEmits<InputEmits>()
 
-const InputClassName = computed(() => ['form-control', props.className])
+const InputClassName = computed(() => [
+  'form-control form-control-lg',
+  props.className,
+])
 </script>
 
 <template>
