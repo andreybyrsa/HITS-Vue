@@ -12,11 +12,11 @@ const routes: Array<RouteRecordRaw> = [
     component: DevView,
     children: [
       {
-        path: '/admin/add-users',
+        path: '/add-users',
         component: DevView,
       },
       {
-        path: '/admin/edit-users',
+        path: '/edit-users',
         component: DevView,
       },
     ],

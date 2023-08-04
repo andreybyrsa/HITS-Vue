@@ -6,7 +6,7 @@ const leftSideBarTabs: LeftSideBarTabsType[] = [
   {
     id: 0,
     text: 'Список идей',
-    to: '/dev',
+    to: '/ideas',
     iconName: 'bi bi-list',
     roles: getRoles(),
   },
