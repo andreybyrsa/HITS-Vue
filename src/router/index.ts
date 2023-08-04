@@ -7,6 +7,20 @@ const routes: Array<RouteRecordRaw> = [
     path: '/dev',
     component: DevView,
   },
+  {
+    path: '/admin',
+    component: DevView,
+    children: [
+      {
+        path: '/admin/add-users',
+        component: DevView,
+      },
+      {
+        path: '/admin/edit-users',
+        component: DevView,
+      },
+    ],
+  },
 ]
 
 const router = createRouter({
