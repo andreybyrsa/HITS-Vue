@@ -4,8 +4,10 @@ import TypographyProps from '@Components/Typography/Typography.types'
 
 const props = defineProps<TypographyProps>()
 
+const isTextProperty = props.className?.includes('fs')
+
 const typographyClassName = computed(() => {
-  return [props.className]
+  return [{ 'fs-5': !isTextProperty }, props.className]
 })
 </script>
 

@@ -1,6 +1,6 @@
 import Idea from '@Domain/Idea'
 
-const getMockIdeas = (): Idea[] => {
+function getMockIdeas(): Idea[] {
   return [
     {
       name: 'Идея 1',

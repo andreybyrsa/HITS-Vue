@@ -34,7 +34,7 @@ const PageLayoutContentClassName = computed(() => [
     @include position(sticky, $left: 0, $top: 0, $bottom: 0);
     @include border(solid, #d8d8d8, 0, 1px);
 
-    min-width: 320px;
+    @include fixedWidth(320px);
     height: 100vh;
   }
 

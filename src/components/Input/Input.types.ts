@@ -2,8 +2,8 @@ interface InputProps {
   className?: string
   type?: string
   placeholder?: string
-  label?: string
   prepend?: string
+  prependIcon?: string
   append?: string
 }
 

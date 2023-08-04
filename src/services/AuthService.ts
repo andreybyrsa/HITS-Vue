@@ -1,15 +1,19 @@
-import User from '@Domain/User'
+import { User, LoginUser } from '@Domain/User'
 
-const loginUser = async (username: string, password: string) => {
-  const user: User = {
-    username,
+const loginUser = async (user: LoginUser): Promise<User> => {
+  const responseUser: User = {
+    token: '123213',
+    username: user.username,
+    email: 'new@mail.com',
     firstName: 'Andrey',
     lastName: 'Byrsa',
-    password,
+    password: user.password,
+    roles: ['ADMIN', 'INITIATOR'],
+    role: 'ADMIN',
   }
 
   return await new Promise((resolve) => setTimeout(resolve, 1000)).then(
-    () => user,
+    () => responseUser,
   )
 }
 
