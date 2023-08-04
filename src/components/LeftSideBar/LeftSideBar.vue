@@ -6,11 +6,10 @@ import logo from '@Assets/images/index'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import LeftSideBarTabsType from '@Components/LeftSideBar/LeftSideBarTabs.types'
+import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 
 import useUserStore from '@Store/user/userStore'
-
-import LeftSideBarTabsType from './LeftSideBarTabs.types'
-import LeftSideBarTabs from './LeftsSideBarTabs'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import DropDownProps from './DropDown.types'
+import DropDownProps from '@Components/DropDown/DropDown.types'
 
 const props = defineProps<DropDownProps>()
 
