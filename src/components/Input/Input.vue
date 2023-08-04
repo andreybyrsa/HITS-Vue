@@ -8,7 +8,10 @@ const props = withDefaults(defineProps<InputProps>(), {
 
 const emit = defineEmits<InputEmits>()
 
-const InputClassName = computed(() => ['form-control', props.className])
+const InputClassName = computed(() => [
+  'form-control form-control-lg',
+  props.className,
+])
 const LabelClassName = computed(() => ['form-label', props.className])
 </script>
 
@@ -16,17 +19,21 @@ const LabelClassName = computed(() => ['form-label', props.className])
   <labeL
     for="name"
     :class="LabelClassName"
-    v-if="label != null"
+    v-if="label"
   >
     {{ label }}
   </labeL>
   <div class="input-group">
-    <div
-      class="input-group-prepend"
-      v-if="prepend != null"
+    <span
+      v-if="prepend"
+      class="input-group-text"
     >
-      <span class="input-group-text">{{ prepend }}</span>
-    </div>
+      <i
+        class="fs-5"
+        :class="prepend"
+      ></i>
+    </span>
+
     <input
       name="name"
       :class="InputClassName"
@@ -36,11 +43,18 @@ const LabelClassName = computed(() => ['form-label', props.className])
         emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
     />
-    <div
-      class="input-group-append"
-      v-if="append != null"
+
+    <span
+      v-if="append"
+      class="input-group-text"
     >
-      <span class="input-group-text">{{ append }}</span>
-    </div>
+      {{ append }}
+    </span>
   </div>
 </template>
+
+<style>
+.icon {
+  font-size: 23px;
+}
+</style>

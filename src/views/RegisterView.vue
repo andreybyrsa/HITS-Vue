@@ -9,16 +9,21 @@ import Button from '@Components/Button/Button.vue'
 import useUserStore from '@Store/user/userStore'
 
 const userData = reactive({
-  username: '',
+  username: 'kirill.vlasov.05@inbox.ru',
   firstName: '',
   lastName: '',
   password: '',
+  token: '',
+  roles: ['INITIATOR'],
+  role: 'INITIATOR',
 })
 
 interface InputTypes {
   key: 'username' | 'firstName' | 'lastName' | 'password'
-  value: typeof userData
+  model: typeof userData
   placeholder: string
+  icon: string
+  type: string
 }
 
 interface UserTypes {
@@ -26,13 +31,40 @@ interface UserTypes {
   firstName: string
   lastName: string
   password: string
+  token: string
+  roles: string[]
+  role: string
 }
 
 const inputs: Ref<InputTypes[]> = ref([
-  { key: 'username', value: userData, placeholder: 'Введите логин' },
-  { key: 'firstName', value: userData, placeholder: 'Введите имя' },
-  { key: 'lastName', value: userData, placeholder: 'Введите фамилию' },
-  { key: 'password', value: userData, placeholder: 'Введите пароль' },
+  {
+    key: 'username',
+    model: userData,
+    placeholder: 'Введите почту',
+    icon: 'bi bi-at',
+    type: 'text',
+  },
+  {
+    key: 'firstName',
+    model: userData,
+    placeholder: 'Введите имя',
+    icon: 'bi bi-person',
+    type: 'text',
+  },
+  {
+    key: 'lastName',
+    model: userData,
+    placeholder: 'Введите фамилию',
+    icon: 'bi bi-person',
+    type: 'text',
+  },
+  {
+    key: 'password',
+    model: userData,
+    placeholder: 'Введите пароль',
+    icon: 'bi bi-lock',
+    type: 'password',
+  },
 ])
 
 const userStore = useUserStore()
@@ -51,9 +83,11 @@ function handleRegister(user: UserTypes) {
         <Typography class-name="fs-3 text-primary">Регистрация</Typography>
         <Input
           v-for="input in inputs"
-          v-model="input.value[input.key]"
+          v-model="input.model[input.key]"
           :placeholder="input.placeholder"
           :key="input.key"
+          :prepend="input.icon"
+          :type="input.type"
         />
         <Button
           @click="handleRegister(userData)"

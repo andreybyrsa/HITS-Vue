@@ -16,6 +16,9 @@ const useUserStore = defineStore('user', {
       firstName: string
       lastName: string
       password: string
+      token: string
+      roles: string[]
+      role: string
     }) {
       this.user = await AuthService.registerUser(user)
     },
