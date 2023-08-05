@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import InputProps from './Input.types'
+import InputProps from '@Components/Input/Input.types'
 
 const props = defineProps<InputProps>()
 

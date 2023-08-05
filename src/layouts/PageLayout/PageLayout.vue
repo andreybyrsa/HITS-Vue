@@ -36,11 +36,13 @@ const PageLayoutContentClassName = computed(() => [
     @include border(solid, #d8d8d8, 0, 0 1px 0 0);
     @include fixedWidth(320px);
     height: 100vh;
+    overflow-y: hidden;
   }
 
   &__content {
     width: 100%;
     height: 100vh;
+    overflow-y: scroll;
   }
 }
 </style>
