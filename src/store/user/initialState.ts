@@ -1,7 +1,7 @@
-import { User, LoginUser } from '@Domain/User'
+import { User } from '@Domain/User'
 
 interface InitialState {
-  user: User | LoginUser | null
+  user: User | null
 }
 
 export default InitialState

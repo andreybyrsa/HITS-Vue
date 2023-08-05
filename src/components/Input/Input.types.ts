@@ -4,7 +4,6 @@ interface InputProps {
   value?: string
   placeholder?: string
   prepend?: string
-  prependIcon?: string
   append?: string
 }
 

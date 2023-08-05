@@ -28,9 +28,9 @@ const InputClassName = computed(() => [
     <input
       name="name"
       :class="InputClassName"
-      :type="props.type"
-      :placeholder="props.placeholder"
-      :value="props.value"
+      :type="type"
+      :placeholder="placeholder"
+      :value="value"
       @input="emit('update:value', ($event.target as HTMLInputElement).value)"
     />
 

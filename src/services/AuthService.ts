@@ -7,7 +7,6 @@ const loginUser = async (user: LoginUser): Promise<User> => {
     email: 'new@mail.com',
     firstName: 'Andrey',
     lastName: 'Byrsa',
-    password: user.password,
     roles: ['ADMIN', 'INITIATOR'],
     role: 'ADMIN',
   }
