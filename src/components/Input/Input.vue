@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+
 import { InputProps, InputEmits } from '@Components/Input/Input.types'
 
 const props = withDefaults(defineProps<InputProps>(), {
@@ -12,49 +13,33 @@ const InputClassName = computed(() => [
   'form-control form-control-lg',
   props.className,
 ])
-const LabelClassName = computed(() => ['form-label', props.className])
 </script>
 
 <template>
-  <labeL
-    for="name"
-    :class="LabelClassName"
-    v-if="label"
-  >
-    {{ label }}
-  </labeL>
   <div class="input-group">
     <span
-      v-if="prepend"
+      v-if="prepend || $slots.prepend"
       class="input-group-text"
     >
-      <i
-        class="fs-5"
-        :class="prepend"
-      ></i>
+      {{ prepend }}
+      <slot name="prepend"></slot>
     </span>
 
     <input
       name="name"
       :class="InputClassName"
-      :type="props.type"
-      :placeholder="props.placeholder"
-      @input="
-        emit('update:modelValue', ($event.target as HTMLInputElement).value)
-      "
+      :type="type"
+      :placeholder="placeholder"
+      :value="value"
+      @input="emit('update:value', ($event.target as HTMLInputElement).value)"
     />
 
     <span
-      v-if="append"
+      v-if="append || $slots.append"
       class="input-group-text"
     >
       {{ append }}
+      <slot name="append"></slot>
     </span>
   </div>
 </template>
-
-<style>
-.icon {
-  font-size: 23px;
-}
-</style>
