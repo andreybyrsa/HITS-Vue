@@ -1,12 +1,12 @@
 import RolesTypes from '@Domain/Roles'
 
-interface NavTabsType {
+interface LeftSideBarTabsType {
   id: number
   text: string
-  to?: string
+  to: string
   routes?: { id: number; to: string; text: string }[]
   iconName: string
   roles: RolesTypes[]
 }
 
-export default NavTabsType
+export default LeftSideBarTabsType

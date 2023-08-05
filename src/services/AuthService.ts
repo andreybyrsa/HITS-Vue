@@ -4,6 +4,7 @@ const loginUser = async (username: string) => {
   const user: User = {
     token: '123213',
     username,
+    email: 'new@mail.com',
     firstName: 'Andrey',
     lastName: 'Byrsa',
     password: '12345',

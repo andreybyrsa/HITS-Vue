@@ -1,60 +1,57 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
+import DropDown from '@Components/DropDown/DropDown.vue'
 import NavTabProps from '@Components/NavTab/NavTab.types'
 
 const props = withDefaults(defineProps<NavTabProps>(), {
   to: '/ideas',
 })
 
+const dropDownProps = {
+  role: 'button',
+  'data-bs-toggle': 'collapse',
+  'data-bs-target': `#${props.to}`,
+  'aria-expanded': false,
+}
+
 const NavTabClassName = computed(() => [
   'nav-link d-flex fs-5',
   { active: props.isActive },
-  { 'dropdown-toggle': props.routes },
   props.className,
 ])
-
-const dropDownProps = {
-  role: 'button',
-  'data-bs-toggle': 'dropdown',
-  'aria-expanded': false,
-}
 </script>
 
 <template>
   <div class="nav-item w-100">
     <router-link
       :class="NavTabClassName"
-      :to="props.to"
+      :to="to"
       active-class="active"
-      v-bind="props.routes && dropDownProps"
+      v-bind="routes && dropDownProps"
     >
-      <div class="nav-link__content">
-        <i
-          v-if="props.iconName"
-          :class="props.iconName"
-        ></i>
+      <i
+        v-if="iconName"
+        :class="iconName"
+      ></i>
 
-        <slot></slot>
-      </div>
+      <slot></slot>
     </router-link>
 
-    <ul
+    <DropDown
       v-if="routes"
-      class="dropdown-menu"
+      :id="to"
     >
-      <li
-        v-for="route in props.routes"
+      <router-link
+        v-for="route in routes"
         :key="route.id"
+        class="list-group-item list-group-item-light"
+        active-class="active"
+        :to="route.to"
       >
-        <router-link
-          class="dropdown-item"
-          :to="route.to"
-        >
-          {{ route.text }}
-        </router-link>
-      </li>
-    </ul>
+        {{ route.text }}
+      </router-link>
+    </DropDown>
   </div>
 </template>
 
@@ -62,10 +59,6 @@ const dropDownProps = {
 .nav-link {
   color: $black-color;
 
-  @include flexible(center, space-between);
-
-  &__content {
-    @include flexible(center, flex-start, $gap: 4px);
-  }
+  @include flexible(center, flex-start, $gap: 4px);
 }
 </style>

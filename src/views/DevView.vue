@@ -36,7 +36,7 @@ function handleLogin() {
         icon-name="bi bi-plus-lg"
         @click="handleLogin"
       >
-        Кнопка
+        Логин
       </Button>
 
       <Input
