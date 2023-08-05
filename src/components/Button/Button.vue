@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { ButtonProps, ButtonEmits } from '@Components/Button/Button.types'
+
+import ButtonProps from '@Components/Button/Button.types'
 
 const props = defineProps<ButtonProps>()
-
-const emit = defineEmits<ButtonEmits>()
 
 const ButtonClassName = computed(() => ['btn btn-lg d-flex', props.className])
 </script>
@@ -13,11 +12,10 @@ const ButtonClassName = computed(() => ['btn btn-lg d-flex', props.className])
   <button
     type="button"
     :class="ButtonClassName"
-    @click="emit('click')"
   >
     <i
-      v-if="props.iconName"
-      :class="props.iconName"
+      v-if="iconName"
+      :class="iconName"
     ></i>
     <slot></slot>
   </button>

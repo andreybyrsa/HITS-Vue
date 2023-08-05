@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 
-import logo from '@Assets/images/index'
+import { logo } from '@Assets/images/index'
 
 import NavTab from '@Components/NavTab/NavTab.vue'
 import Button from '@Components/Button/Button.vue'
@@ -63,6 +63,8 @@ function handleLogout() {
 
 <style lang="scss" scoped>
 .left-side-bar {
+  background-color: $white-color;
+
   @include flexible(flex-start, stretch, column, $gap: 16px);
 
   &__header {

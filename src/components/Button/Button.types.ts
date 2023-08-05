@@ -3,8 +3,4 @@ interface ButtonProps {
   iconName?: string
 }
 
-interface ButtonEmits {
-  (event: 'click'): void
-}
-
-export { ButtonProps, ButtonEmits }
+export default ButtonProps

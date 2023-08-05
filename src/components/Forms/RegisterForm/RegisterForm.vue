@@ -6,13 +6,15 @@ import Input from '@Components/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import registerInputs from '@Components/Forms/RegisterForm/RegisterFormInputs'
 
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
 import { RegisterUser } from '@Domain/User'
 
 import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 
-const userData: RegisterUser = reactive({
+const userData = reactive<RegisterUser>({
   email: '',
   firstName: '',
   lastName: '',
@@ -25,14 +27,14 @@ function handleRegister(user: RegisterUser) {
 </script>
 
 <template>
-  <div class="register-form p-3 rounded-3 shadow">
+  <FormLayout>
     <Typography class-name="fs-3 text-primary"> Регистрация </Typography>
 
     <Input
       v-for="input in registerInputs"
       :key="input.key"
       :type="input.type"
-      v-model:value="userData[input.key]"
+      v-model="userData[input.key]"
       :placeholder="input.placeholder"
       :prepend="input.prepend"
     >
@@ -47,13 +49,5 @@ function handleRegister(user: RegisterUser) {
     >
       Зарегистрироваться
     </Button>
-  </div>
+  </FormLayout>
 </template>
-
-<style lang="scss">
-.register-form {
-  width: 400px;
-
-  @include flexible(center, flex-start, column, $gap: 16px);
-}
-</style>

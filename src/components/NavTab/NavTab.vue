@@ -4,9 +4,7 @@ import { computed } from 'vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import NavTabProps from '@Components/NavTab/NavTab.types'
 
-const props = withDefaults(defineProps<NavTabProps>(), {
-  to: '/ideas',
-})
+const props = defineProps<NavTabProps>()
 
 const dropDownProps = {
   role: 'button',
