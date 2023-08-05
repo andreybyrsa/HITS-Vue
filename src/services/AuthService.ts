@@ -32,9 +32,23 @@ const registerUser = async (user: RegisterUser): Promise<User> => {
   )
 }
 
+const sendRecoveryEmail = async (email: string) => {
+  return await new Promise((resolve) => setTimeout(resolve, 1000)).then(() =>
+    console.log(`${email} sended`),
+  )
+}
+
+const sendNewPassword = async (newPassword: string) => {
+  return await new Promise((resolve) => setTimeout(resolve, 1000)).then(() =>
+    console.log(`${newPassword} sended`),
+  )
+}
+
 const AuthService = {
   loginUser,
   registerUser,
+  sendRecoveryEmail,
+  sendNewPassword,
 }
 
 export default AuthService
