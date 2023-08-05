@@ -15,7 +15,6 @@
     "baseUrl": ".",
     "types": ["webpack-env"],
     "paths": {
-      "@/": ["src/"],
       "@Assets/*": ["src/assets/*"],
       "@Components/*": ["src/components/*"],
       "@Layouts/*": ["src/layouts/*"],
@@ -35,8 +34,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "src/assets/images/index.js",
-    "src/components/*.types.ts"
+    "src/assets/images/index.js"
   ],
   "exclude": ["node_modules"]
 }

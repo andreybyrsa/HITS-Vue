@@ -40,10 +40,11 @@ function handleLogin() {
       </Button>
 
       <Input
-        v-model:value="text"
+        v-model="text"
         prepend="текст"
         placeholder="Введите текст"
       />
+      {{ text }}
 
       <div class="nav nav-pills">
         <NavTab
