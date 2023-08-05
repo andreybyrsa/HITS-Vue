@@ -18,7 +18,7 @@ const { user } = storeToRefs(userStore)
 const text = ref('')
 
 function handleLogin() {
-  userStore.loginUser('AndreyByrsa')
+  userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
 }
 </script>
 
@@ -36,11 +36,11 @@ function handleLogin() {
         icon-name="bi bi-plus-lg"
         @click="handleLogin"
       >
-        Кнопка
+        Логин
       </Button>
 
       <Input
-        v-model="text"
+        v-model:value="text"
         prepend="текст"
         placeholder="Введите текст"
       />

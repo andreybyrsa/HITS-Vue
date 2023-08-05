@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
 import PageLayoutProps from '@Layouts/PageLayout/PageLayout.types'
 
 const props = defineProps<PageLayoutProps>()

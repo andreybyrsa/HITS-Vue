@@ -2,12 +2,24 @@ import RolesTypes from './Roles'
 
 interface User {
   token: string
-  username: string
+  username?: string
+  email: string
   firstName: string
   lastName: string
-  password: string
   roles: RolesTypes[]
   role?: RolesTypes
 }
 
-export default User
+interface LoginUser {
+  email: string
+  password: string
+}
+
+interface RegisterUser {
+  email: string
+  firstName: string
+  lastName: string
+  password: string
+}
+
+export { User, LoginUser, RegisterUser }
