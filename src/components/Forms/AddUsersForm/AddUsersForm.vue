@@ -55,6 +55,7 @@ const loadFile = () => {
     placeholder="Выберите файл"
     @change="loadFile"
   />
+  {{ emailsArray }}
   <Button
     type="button"
     class="w-100"

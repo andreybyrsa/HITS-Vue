@@ -11,7 +11,12 @@ const useUserStore = defineStore('user', {
   }),
   actions: {
     async loginUser(user: LoginUser) {
-      this.user = await AuthService.loginUser(user)
+      try {
+        this.user = await AuthService.loginUser(user)
+        this.router.push({ name: 'dev' })
+      } catch (error) {
+        console.warn(error)
+      }
     },
     async registerUser(user: RegisterUser) {
       this.user = await AuthService.registerUser(user)

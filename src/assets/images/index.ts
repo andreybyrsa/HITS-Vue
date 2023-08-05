@@ -1,3 +1,4 @@
 import logo from './logo.png'
+import bgImage from './backgroundImage.webp'
 
-export default logo
+export { logo, bgImage }

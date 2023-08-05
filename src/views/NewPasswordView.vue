@@ -6,6 +6,8 @@ import Input from '@Components/Input/Input.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
 import AuthService from '@Services/AuthService'
 
 const newPassword = ref('')
@@ -18,12 +20,12 @@ const sendPassword = () => {
 <template>
   <PageLayout content-class-name="new-password-page__content">
     <template #content>
-      <div class="new-password-form p-3 rounded-3 shadow">
+      <FormLayout>
         <Typography class-name="fs-3 text-primary"> Новый пароль </Typography>
 
         <Input
           type="password"
-          v-model:value="newPassword"
+          v-model="newPassword"
           placeholder="Введите пароль"
         >
           <template #prepend>
@@ -37,7 +39,7 @@ const sendPassword = () => {
         >
           Изменить пароль
         </Button>
-      </div>
+      </FormLayout>
     </template>
   </PageLayout>
 </template>
@@ -47,11 +49,5 @@ const sendPassword = () => {
   &__content {
     @include flexible(center, center);
   }
-}
-
-.new-password-form {
-  width: 400px;
-
-  @include flexible(center, flex-start, column, $gap: 16px);
 }
 </style>

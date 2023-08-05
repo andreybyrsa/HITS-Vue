@@ -6,6 +6,8 @@ import Input from '@Components/Input/Input.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
 import AuthService from '@Services/AuthService'
 
 const email = ref('')
@@ -18,13 +20,13 @@ const sendEmail = () => {
 <template>
   <PageLayout content-class-name="forgot-password-page__content">
     <template #content>
-      <div class="forgot-password-form p-3 rounded-3 shadow">
+      <FormLayout>
         <Typography class-name="fs-3 text-primary">
           Востановление пароля
         </Typography>
 
         <Input
-          v-model:value="email"
+          v-model="email"
           placeholder="Введите email"
           prepend="@"
         />
@@ -35,7 +37,7 @@ const sendEmail = () => {
         >
           Отправить
         </Button>
-      </div>
+      </FormLayout>
     </template>
   </PageLayout>
 </template>
@@ -45,11 +47,5 @@ const sendEmail = () => {
   &__content {
     @include flexible(center, center);
   }
-}
-
-.forgot-password-form {
-  width: 400px;
-
-  @include flexible(center, flex-start, column, $gap: 16px);
 }
 </style>

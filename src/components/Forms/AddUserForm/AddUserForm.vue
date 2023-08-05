@@ -1,23 +1,21 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { reactive, Ref, ref } from 'vue'
 
 import Input from '@Components/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Checkbox from '@Components/Checkbox/Checkbox.vue'
+import RolesTypes from '@Domain/Roles'
 
-let userModel = ''
-type ActiveRoles = string
+const email = ref('')
 
-interface User {
-  email: string
-  roles: ActiveRoles[]
-}
+const newUser = reactive({
+  email: '',
+  file: null,
+  roles: [],
+})
 
-const rolesArray: ActiveRoles[] = ref([])
-const userArray: User[] = ref([])
-
-const addRole = (customValue: string) => {
+const addRole = (role: RolesTypes) => {
   const index = rolesArray.value.indexOf(customValue)
   if (index === -1) {
     rolesArray.value.push(customValue)
@@ -27,19 +25,16 @@ const addRole = (customValue: string) => {
 }
 
 const addUser = () => {
-  userArray.value.push({
-    email: userModel,
-    roles: rolesArray,
-  })
+  console.log('user added')
 }
 </script>
 
 <template>
   <Input
     type="email"
-    class="w-100 my-2"
+    class="my-2"
     placeholder="Введите email"
-    v-model:value="userModel"
+    v-model="email"
   />
   <Button
     type="button"
@@ -82,7 +77,7 @@ const addUser = () => {
     <Button
       type="button"
       class-name="fs-6 text-primary mbutton"
-      @click="$router.push('/admin/add/users')"
+      @click="$router.push('/admin/add-users')"
     >
       Добавить пользователей
     </Button>

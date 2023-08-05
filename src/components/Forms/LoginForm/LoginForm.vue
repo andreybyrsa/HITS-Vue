@@ -6,13 +6,15 @@ import Input from '@Components/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import loginInputs from '@Components/Forms/LoginForm/LoginFormInputs'
 
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
 import { LoginUser } from '@Domain/User'
 
 import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 
-const userData: LoginUser = reactive({
+const userData = reactive<LoginUser>({
   email: '',
   password: '',
 })
@@ -23,14 +25,14 @@ function handleLogin(user: LoginUser) {
 </script>
 
 <template>
-  <div class="login-form p-3 rounded-3 shadow">
+  <FormLayout>
     <Typography class-name="fs-3 text-primary"> Авторизация </Typography>
 
     <Input
       v-for="input in loginInputs"
       :key="input.key"
       :type="input.type"
-      v-model:value="userData[input.key]"
+      v-model="userData[input.key]"
       :placeholder="input.placeholder"
       :prepend="input.prepend"
     >
@@ -45,13 +47,5 @@ function handleLogin(user: LoginUser) {
     >
       Войти
     </Button>
-  </div>
+  </FormLayout>
 </template>
-
-<style lang="scss">
-.login-form {
-  width: 400px;
-
-  @include flexible(center, flex-start, column, $gap: 16px);
-}
-</style>

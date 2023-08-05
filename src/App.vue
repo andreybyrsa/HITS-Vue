@@ -19,7 +19,8 @@
 }
 
 body {
-  background-color: $white-color;
+  background: url('/src/assets/images/backgroundImage.webp') center $white-color;
+  background-size: cover;
 
   &.overflow {
     overflow: hidden;
