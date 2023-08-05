@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+
 import { InputProps, InputEmits } from '@Components/Input/Input.types'
 
 const props = withDefaults(defineProps<InputProps>(), {
@@ -29,16 +30,16 @@ const InputClassName = computed(() => [
       :class="InputClassName"
       :type="props.type"
       :placeholder="props.placeholder"
-      @input="
-        emit('update:modelValue', ($event.target as HTMLInputElement).value)
-      "
+      :value="props.value"
+      @input="emit('update:value', ($event.target as HTMLInputElement).value)"
     />
 
     <span
-      v-if="append"
+      v-if="append || $slots.append"
       class="input-group-text"
     >
       {{ append }}
+      <slot name="append"></slot>
     </span>
   </div>
 </template>
