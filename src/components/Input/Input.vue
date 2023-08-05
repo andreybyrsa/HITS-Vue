@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
 import { InputProps, InputEmits } from '@Components/Input/Input.types'
 
 const props = withDefaults(defineProps<InputProps>(), {
@@ -16,7 +15,10 @@ const InputClassName = computed(() => [
 </script>
 
 <template>
-  <div class="input-group">
+  <div
+    class="input-group"
+    v-if="props.type != 'checkbox' && props.type != 'radio'"
+  >
     <span
       v-if="prepend || $slots.prepend"
       class="input-group-text fs-5"
@@ -26,12 +28,21 @@ const InputClassName = computed(() => [
     </span>
 
     <input
+      v-if="props.type != 'file'"
       name="name"
       :class="InputClassName"
       :type="type"
       :placeholder="placeholder"
       :value="value"
       @input="emit('update:value', ($event.target as HTMLInputElement).value)"
+    />
+    <input
+      v-if="props.type == 'file'"
+      name="name"
+      :class="InputClassName"
+      :type="props.type"
+      :placeholder="props.placeholder"
+      @change="emit('change')"
     />
 
     <span

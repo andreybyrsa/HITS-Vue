@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
+import AdminAddUser from '@Views/AdminAddUser.vue'
 import DevView from '@Views/DevView.vue'
 import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
@@ -26,6 +27,21 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/new-password/:token',
     component: NewPasswordView,
+  },
+  {
+    path: '/admin/',
+    children: [
+      {
+        path: 'add/user',
+        name: 'addUser',
+        component: AdminAddUser,
+      },
+      {
+        path: 'add/users',
+        name: 'addUsers',
+        component: AdminAddUser,
+      },
+    ],
   },
 ]
 
