@@ -9,22 +9,27 @@ import NewPasswordView from '@Views/NewPasswordView.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/dev',
+    name: 'dev',
     component: DevView,
   },
   {
     path: '/login',
+    name: 'login',
     component: LoginView,
   },
   {
     path: '/register/:token',
+    name: 'register',
     component: RegisterView,
   },
   {
     path: '/forgot-password',
+    name: 'forgot-password',
     component: ForgotPasswordView,
   },
   {
     path: '/new-password/:token',
+    name: 'new-password',
     component: NewPasswordView,
   },
 ]
