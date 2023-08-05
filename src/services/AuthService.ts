@@ -1,10 +1,10 @@
-import { User, LoginUser } from '@Domain/User'
+import { User, LoginUser, RegisterUser } from '@Domain/User'
 
 const loginUser = async (user: LoginUser): Promise<User> => {
   const responseUser: User = {
     token: '123213',
-    username: user.username,
-    email: 'new@mail.com',
+    username: 'andreybyrsa',
+    email: user.email,
     firstName: 'Andrey',
     lastName: 'Byrsa',
     roles: ['ADMIN', 'INITIATOR'],
@@ -16,26 +16,19 @@ const loginUser = async (user: LoginUser): Promise<User> => {
   )
 }
 
-const registerUser = async (user: {
-  username: string
-  firstName: string
-  lastName: string
-  password: string
-  token: string
-  roles: string[]
-  role: string
-}) => {
-  const userData: User = {
-    username: user.username,
+const registerUser = async (user: RegisterUser): Promise<User> => {
+  const responseUser: User = {
+    token: '123213',
+    username: 'andreybyrsa',
+    email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
-    password: user.password,
-    token: '$route.params.id',
-    roles: ['INITIATOR'],
-    role: 'INITIATOR',
+    roles: ['ADMIN', 'INITIATOR'],
+    role: 'ADMIN',
   }
+
   return await new Promise((resolve) => setTimeout(resolve, 1000)).then(
-    () => userData,
+    () => responseUser,
   )
 }
 

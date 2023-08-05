@@ -1,8 +1,8 @@
-import LeftSideBarTabsType from './LeftSideBarTabs.types'
+import LeftSideBarTabType from './LeftSideBar.types'
 
 import getRoles from '@Utils/getRoles'
 
-const leftSideBarTabs: LeftSideBarTabsType[] = [
+const leftSideBarTabs: LeftSideBarTabType[] = [
   {
     id: 0,
     text: 'Список идей',

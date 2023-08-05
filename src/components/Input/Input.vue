@@ -19,7 +19,7 @@ const InputClassName = computed(() => [
   <div class="input-group">
     <span
       v-if="prepend || $slots.prepend"
-      class="input-group-text"
+      class="input-group-text fs-5"
     >
       {{ prepend }}
       <slot name="prepend"></slot>

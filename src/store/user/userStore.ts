@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
+import { LoginUser, RegisterUser } from '@Domain/User'
+
 import AuthService from '@Services/AuthService'
-import { LoginUser } from '@Domain/User'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
@@ -12,16 +13,11 @@ const useUserStore = defineStore('user', {
     async loginUser(user: LoginUser) {
       this.user = await AuthService.loginUser(user)
     },
-    async registerUser(user: {
-      username: string
-      firstName: string
-      lastName: string
-      password: string
-      token: string
-      roles: string[]
-      role: string
-    }) {
+    async registerUser(user: RegisterUser) {
       this.user = await AuthService.registerUser(user)
+    },
+    removeUser() {
+      this.user = null
     },
   },
 })

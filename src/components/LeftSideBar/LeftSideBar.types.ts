@@ -1,6 +1,6 @@
 import RolesTypes from '@Domain/Roles'
 
-interface LeftSideBarTabsType {
+interface LeftSideBarTabType {
   id: number
   text: string
   to: string
@@ -9,4 +9,4 @@ interface LeftSideBarTabsType {
   roles: RolesTypes[]
 }
 
-export default LeftSideBarTabsType
+export default LeftSideBarTabType

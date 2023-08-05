@@ -2,7 +2,7 @@ import LoginInputType from './LoginForm.types'
 
 const loginInputs: LoginInputType[] = [
   {
-    key: 'username',
+    key: 'email',
     type: 'email',
     placeholder: 'Введите логин',
     prepend: '@',
@@ -11,7 +11,7 @@ const loginInputs: LoginInputType[] = [
     key: 'password',
     type: 'password',
     placeholder: 'Введите пароль',
-    prependIcon: 'bi bi-key-fill',
+    prependIcon: 'bi bi-key',
   },
 ]
 

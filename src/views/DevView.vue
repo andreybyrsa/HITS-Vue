@@ -18,7 +18,7 @@ const { user } = storeToRefs(userStore)
 const text = ref('')
 
 function handleLogin() {
-  userStore.loginUser({ username: 'AndreyByrsa', password: '12345' })
+  userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
 }
 </script>
 

@@ -6,7 +6,7 @@ import logo from '@Assets/images/index'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import LeftSideBarTabsType from '@Components/LeftSideBar/LeftSideBarTabs.types'
+import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 
 import useUserStore from '@Store/user/userStore'
@@ -14,7 +14,7 @@ import useUserStore from '@Store/user/userStore'
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-function checkUserRole(tab: LeftSideBarTabsType) {
+function checkUserRole(tab: LeftSideBarTabType) {
   const currentRole = user.value?.role
   return currentRole && tab.roles.includes(currentRole)
 }

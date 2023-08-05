@@ -11,8 +11,15 @@ interface User {
 }
 
 interface LoginUser {
-  username: string
+  email: string
   password: string
 }
 
-export { User, LoginUser }
+interface RegisterUser {
+  email: string
+  firstName: string
+  lastName: string
+  password: string
+}
+
+export { User, LoginUser, RegisterUser }
