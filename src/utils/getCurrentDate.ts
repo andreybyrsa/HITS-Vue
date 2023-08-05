@@ -1,21 +1,21 @@
-function getCurrentDate(testDate: Date) {
-  const date = testDate ? new Date(testDate) : new Date()
+function getCurrentDate(ideaDate: Date) {
+  const date = ideaDate ? new Date(ideaDate) : new Date()
 
   const year = date.getFullYear()
 
-  let month: string | number = date.getMonth() + 1
-  month = month >= 10 ? month : `0${month}`
+  const month = date.getMonth() + 1
+  const currentMonth = month >= 10 ? month : `0${month}`
 
-  let day: string | number = date.getDate()
-  day = day >= 10 ? day : `0${day}`
+  const day = date.getDate()
+  const currentDay = day >= 10 ? day : `0${day}`
 
-  let hours: string | number = date.getHours()
-  hours = hours >= 10 ? hours : `0${hours}`
+  const hours = date.getHours()
+  const currentHours = hours >= 10 ? hours : `0${hours}`
 
-  let minutes: string | number = date.getMinutes()
-  minutes = minutes >= 10 ? minutes : `0${minutes}`
+  const minutes = date.getMinutes()
+  const currentMinutes = minutes >= 10 ? minutes : `0${minutes}`
 
-  return `${day}.${month}.${year} ${hours}:${minutes}`
+  return `${currentDay}.${currentMonth}.${year} ${currentHours}:${currentMinutes}`
 }
 
 export default getCurrentDate

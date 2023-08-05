@@ -1,13 +1,17 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+
 import Typography from '@Components/Typography/Typography.vue'
-import IdeaProps from './Idea.types'
+import IdeaProps from '@Components/Idea/Idea.types'
+
+import getCurrentDate from '@Utils/getCurrentDate'
 
 const props = defineProps<IdeaProps>()
 
 const IdeaClassName = computed(() => {
   return ['idea w-100 px-3 py-4 text-center border rounded-4', props.className]
 })
+
 const getRatingColor = (rating: number) => {
   if (rating >= 4.0) {
     return 'text-success'
@@ -34,20 +38,20 @@ const getRiskColor = (risk: number) => {
 
 <template>
   <div :class="IdeaClassName">
-    <Typography class-name="ideaname text-primary text-center">{{
-      props.idea.name
-    }}</Typography>
-    <div class="idea__dates">
-      <Typography>{{ props.idea.dateCreated }}</Typography>
-      <Typography>{{ props.idea.dateUpdated }}</Typography>
+    <Typography class-name="text-primary text-center">
+      {{ idea.name }}
+    </Typography>
+    <div>
+      <Typography>{{ getCurrentDate(idea.dateCreated) }}</Typography>
+      <Typography>{{ getCurrentDate(idea.dateUpdated) }}</Typography>
     </div>
-    <Typography>{{ props.idea.status }}</Typography>
-    <Typography :class-name="getRatingColor(props.idea.rating)">{{
-      props.idea.rating
-    }}</Typography>
-    <Typography :class-name="getRiskColor(props.idea.risk)">{{
-      props.idea.risk
-    }}</Typography>
+    <Typography>{{ idea.status }}</Typography>
+    <Typography :class-name="getRatingColor(idea.rating)">
+      {{ idea.rating }}
+    </Typography>
+    <Typography :class-name="getRiskColor(idea.risk)">
+      {{ idea.risk }}
+    </Typography>
   </div>
 </template>
 
