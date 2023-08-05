@@ -3,8 +3,10 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
+import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Input from '@Components/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import NavTab from '@Components/NavTab/NavTab.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -16,16 +18,14 @@ const { user } = storeToRefs(userStore)
 const text = ref('')
 
 function handleLogin() {
-  userStore.loginUser('AndreyByrsa')
+  userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
 }
 </script>
 
 <template>
   <PageLayout content-class-name="dev-page__content p-3">
     <template #leftSideBar>
-      <Button class-name="btn-warning">Кнопка в SideBar</Button>
-
-      <pre>Пользователь из userStore - {{ user }}</pre>
+      <LeftSideBar />
     </template>
 
     <template #content>
@@ -36,13 +36,26 @@ function handleLogin() {
         icon-name="bi bi-plus-lg"
         @click="handleLogin"
       >
-        Кнопка
+        Логин
       </Button>
 
       <Input
-        v-model="text"
+        v-model:value="text"
+        prepend="текст"
         placeholder="Введите текст"
       />
+
+      <div class="nav nav-pills">
+        <NavTab
+          icon-name="bi bi-list"
+          to="/ideas"
+          is-active
+        >
+          Перейти на Ideas
+        </NavTab>
+      </div>
+
+      <pre>Пользователь из userStore - {{ user }}</pre>
     </template>
   </PageLayout>
 </template>

@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import DevView from '@Views/DevView.vue'
-import ForgotPass from '@Views/ForgotPassword.vue'
-import NewPass from '@Views/NewPassword.vue'
+import LoginView from '@Views/LoginView.vue'
+import RegisterView from '@Views/RegisterView.vue'
+import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
+import NewPasswordView from '@Views/NewPasswordView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,12 +12,20 @@ const routes: Array<RouteRecordRaw> = [
     component: DevView,
   },
   {
-    path: '/forgot_pass',
-    component: ForgotPass,
+    path: '/login',
+    component: LoginView,
   },
   {
-    path: '/new_pass/:id',
-    component: NewPass,
+    path: '/register/:token',
+    component: RegisterView,
+  },
+  {
+    path: '/forgot-password',
+    component: ForgotPasswordView,
+  },
+  {
+    path: '/new-password/:token',
+    component: NewPasswordView,
   },
 ]
 

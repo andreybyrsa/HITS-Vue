@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@vue/compiler-sfc": "^3.3.4",
     "bootstrap": "^5.3.1",
     "bootstrap-icons": "^1.10.5",
     "core-js": "^3.8.3",
