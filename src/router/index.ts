@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import DevView from '@Views/DevView.vue'
-import FgPass from '@Views/ForgotPassword.vue'
+import ForgotPass from '@Views/ForgotPassword.vue'
 import NewPass from '@Views/NewPassword.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -10,8 +10,8 @@ const routes: Array<RouteRecordRaw> = [
     component: DevView,
   },
   {
-    path: '/fg_pass',
-    component: FgPass,
+    path: '/forgot_pass',
+    component: ForgotPass,
   },
   {
     path: '/new_pass/:id',
