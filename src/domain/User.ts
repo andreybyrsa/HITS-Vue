@@ -21,6 +21,7 @@ interface RegisterUser {
   firstName: string
   lastName: string
   password: string
+  roles: RolesTypes[]
 }
 
 export { User, LoginUser, RegisterUser }

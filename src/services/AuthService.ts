@@ -1,8 +1,11 @@
 import axios from 'axios'
 
 import { User, LoginUser, RegisterUser } from '@Domain/User'
+import { InvitationInfo, InvitationForm } from '@Domain/Invitation'
+import ResponseMessage from '@Domain/ResponseMessage'
 
 const AUTH_URL = process.env.VUE_APP_AUTH_API_URL || 'http://localhost:3000'
+const INVITE_URL = process.env.VUE_APP_INVITATION_URL || 'http://localhost:3000'
 
 const loginUser = async (user: LoginUser): Promise<User> => {
   return await axios
@@ -12,38 +15,33 @@ const loginUser = async (user: LoginUser): Promise<User> => {
 }
 
 const registerUser = async (user: RegisterUser): Promise<User> => {
-  const responseUser: User = {
-    token: '123213',
-    username: 'andreybyrsa',
-    email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    roles: ['ADMIN', 'INITIATOR'],
-    role: 'ADMIN',
-  }
-
-  return await new Promise((resolve) => setTimeout(resolve, 1000)).then(
-    () => responseUser,
-  )
+  return await axios
+    .post(`${AUTH_URL}/register`, user)
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
 }
 
-const sendRecoveryEmail = async (email: string) => {
-  return await new Promise((resolve) => setTimeout(resolve, 1000)).then(() =>
-    console.log(`${email} sended`),
-  )
+const inviteUserByEmail = async (
+  userData: InvitationForm,
+): Promise<ResponseMessage> => {
+  return await axios
+    .post(`${INVITE_URL}/email`, userData)
+    .then((response) => response.data)
+    .catch((error) => console.warn(`invite ${error}`))
 }
 
-const sendNewPassword = async (newPassword: string) => {
-  return await new Promise((resolve) => setTimeout(resolve, 1000)).then(() =>
-    console.log(`${newPassword} sended`),
-  )
+const getInvitationInfo = async (slug: string): Promise<InvitationInfo> => {
+  return await axios
+    .get(`${INVITE_URL}/get-invitation/${slug}`)
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
 }
 
 const AuthService = {
   loginUser,
   registerUser,
-  sendRecoveryEmail,
-  sendNewPassword,
+  inviteUserByEmail,
+  getInvitationInfo,
 }
 
 export default AuthService

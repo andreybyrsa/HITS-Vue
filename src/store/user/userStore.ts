@@ -4,7 +4,7 @@ import InitialState from './initialState'
 import { User, LoginUser, RegisterUser } from '@Domain/User'
 
 import AuthService from '@Services/AuthService'
-import getLocalStorageUser from '@Utils/getLocalStorageUser'
+import LocalStorageUser from '@Utils/LocalStorage'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
@@ -16,13 +16,10 @@ const useUserStore = defineStore('user', {
         const response = await AuthService.loginUser(user)
 
         if (response.token) {
-          const localStorageUser: User = {
-            ...response,
-            lastActivity: new Date(),
-          }
+          const localStorageUser =
+            LocalStorageUser.setLocalStorageUser(response)
 
           this.user = localStorageUser
-          localStorage.setItem('user', JSON.stringify(localStorageUser))
 
           this.router.push({ name: 'dev' })
         }
@@ -31,18 +28,32 @@ const useUserStore = defineStore('user', {
       }
     },
     async registerUser(user: RegisterUser) {
-      this.user = await AuthService.registerUser(user)
+      try {
+        const response = await AuthService.registerUser(user)
+
+        if (response.token) {
+          const localStorageUser =
+            LocalStorageUser.setLocalStorageUser(response)
+
+          this.user = localStorageUser
+
+          this.router.push({ name: 'dev' })
+        }
+      } catch (error) {
+        console.warn(error)
+      }
     },
     setUserFromLocalStorage(localStorageUser: User) {
       this.user = localStorageUser
     },
     removeUser() {
       this.user = null
+      localStorage.removeItem('user')
     },
 
     checkLastActivity() {
       const currentActivity = new Date()
-      const currentUser: User = getLocalStorageUser()
+      const currentUser = LocalStorageUser.getLocalStorageUser()
       if (
         currentUser?.lastActivity &&
         currentActivity.getMinutes() - currentUser.lastActivity?.getMinutes() >
@@ -51,11 +62,7 @@ const useUserStore = defineStore('user', {
         this.removeUser()
         localStorage.removeItem('user')
       } else if (currentUser?.token) {
-        const localStorageUser: User = {
-          ...currentUser,
-          lastActivity: new Date(),
-        }
-        localStorage.setItem('user', JSON.stringify(localStorageUser))
+        LocalStorageUser.setLocalStorageUser(currentUser)
       }
     },
   },

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -12,13 +13,25 @@ import { RegisterUser } from '@Domain/User'
 
 import useUserStore from '@Store/user/userStore'
 
+import AuthService from '@Services/AuthService'
+
 const userStore = useUserStore()
+const route = useRoute()
 
 const userData = reactive<RegisterUser>({
   email: '',
   firstName: '',
   lastName: '',
   password: '',
+  roles: [],
+})
+
+onMounted(async () => {
+  const { email, roles } = await AuthService.getInvitationInfo(
+    `${route.params.token}`,
+  )
+  userData.email = email
+  userData.roles = roles
 })
 
 function handleRegister(user: RegisterUser) {

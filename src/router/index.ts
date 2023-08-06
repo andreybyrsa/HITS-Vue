@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import AddUserForm from '@Components/Forms/AddUserForm/AddUserForm.vue'
-import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
 
 import AdminView from '@Views/AdminView.vue'
 import DevView from '@Views/DevView.vue'
@@ -42,7 +41,6 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'add-users',
-        name: 'adduser',
         component: AddUserForm,
       },
     ],

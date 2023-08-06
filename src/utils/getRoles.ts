@@ -1,7 +1,25 @@
 import RolesTypes from '@Domain/Roles'
 
-function getRoles(): RolesTypes[] {
-  return ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN']
+interface GetRolesType {
+  roles: RolesTypes[]
+  translatedRoles: {
+    INITIATOR: string
+    PROJECT_OFFICE: string
+    EXPERT: string
+    ADMIN: string
+  }
+}
+
+function getRoles(): GetRolesType {
+  return {
+    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    translatedRoles: {
+      INITIATOR: 'Инициатор',
+      PROJECT_OFFICE: 'Проектный офис',
+      EXPERT: 'Эксперт',
+      ADMIN: 'Админ',
+    },
+  }
 }
 
 export default getRoles

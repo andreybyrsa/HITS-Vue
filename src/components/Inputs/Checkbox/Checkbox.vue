@@ -1,14 +1,13 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import {
-  CheckboxProps,
-  CheckboxEmits,
-} from '@Components/Inputs/Checkbox/Checkbox.types'
+import { CheckboxProps } from '@Components/Inputs/Checkbox/Checkbox.types'
 
 const props = defineProps<CheckboxProps>()
 
-const emit = defineEmits<CheckboxEmits>()
+const modelValue = defineModel<any[]>({
+  required: true,
+})
 
 const BoxInputClassName = computed(() => ['form-check-input', props.className])
 const BoxLabelClassName = computed(() => ['form-check-label', props.className])
@@ -24,8 +23,9 @@ const BoxLabelClassName = computed(() => ['form-check-label', props.className])
     </label>
     <input
       name="name"
-      :class="BoxInputClassName"
       type="checkbox"
+      :class="BoxInputClassName"
+      v-model="modelValue"
       :value="value"
     />
   </div>

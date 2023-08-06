@@ -7,7 +7,7 @@ import { User } from '@Domain/User'
 
 import useUserStore from '@Store/user/userStore'
 
-import getLocalStorageUser from '@Utils/getLocalStorageUser'
+import LocalStorageUser from '@Utils/LocalStorage'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -25,7 +25,7 @@ const userStore = useUserStore()
 
 router.beforeEach((to) => {
   userStore.checkLastActivity()
-  const localStorageUser: User = getLocalStorageUser()
+  const localStorageUser: User = LocalStorageUser.getLocalStorageUser()
 
   if (localStorageUser?.token && !userStore.user) {
     userStore.setUserFromLocalStorage(localStorageUser)

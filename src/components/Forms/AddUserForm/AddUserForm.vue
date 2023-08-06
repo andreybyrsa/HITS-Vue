@@ -5,100 +5,85 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
-const email = ref('')
-const toggle = ref(true)
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-const newUser = reactive({
+import { InvitationForm } from '@Domain/Invitation'
+import ResponseMessage from '@Domain/ResponseMessage'
+
+import AuthService from '@Services/AuthService'
+
+import getRoles from '@Utils/getRoles'
+
+const currentRoles = getRoles()
+
+const userData = reactive<InvitationForm>({
   email: '',
   file: null,
   roles: [],
 })
-const addRole = (role: string) => {
-  const index = newUser.roles.indexOf(role)
-  if (index === -1) {
-    newUser.roles.push(role)
-  } else {
-    newUser.roles.splice(index, 1)
-  }
-}
-const addUser = () => {
-  console.log('user added')
+const response = ref<ResponseMessage>()
+
+const inviteUserByEmail = async () => {
+  response.value = await AuthService.inviteUserByEmail(userData)
 }
 </script>
 
 <template>
-  <Input
-    :type="toggle ? 'email' : 'file'"
-    class="my-2"
-    placeholder="Введите email"
-    v-model="email"
-    @input="toggle ? (newUser.email = email) : (newUser.file = email)"
-  />
-  <div class="button-center">
-    <Button
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#collapseExample"
-      aria-expanded="false"
-      aria-controls="collapseExample"
+  <FormLayout class-name="add-user-form">
+    <Typography class-name="fs-3 text-primary">
+      Добавление пользователей
+    </Typography>
+
+    <div class="add-user-form__data w-100">
+      <Input
+        type="text"
+        v-model="userData.email"
+        placeholder="Введите email"
+      />
+
+      <Button
+        class-name="btn-primary"
+        icon-name="bi bi-plus-lg"
+        data-bs-toggle="collapse"
+        data-bs-target="#checkboxRoles"
+        aria-expanded="false"
+        aria-controls="collapseExample"
+      >
+        роли
+      </Button>
+    </div>
+    <DropDown
+      id="checkboxRoles"
+      class-name="w-100"
     >
-      Выбрать роли
-    </Button>
-  </div>
-  <DropDown id="collapseExample"
-    ><li class="px-2 list-group-item">
       <Checkbox
-        label="Инициатор"
-        v-model="newUser.roles"
-        value="INITIATOR"
+        v-for="role in currentRoles.roles"
+        :key="role"
+        :label="currentRoles.translatedRoles[role]"
+        v-model="userData.roles"
+        :value="role"
       />
-    </li>
-    <li class="px-2 list-group-item">
-      <Checkbox
-        label="Эксперт"
-        v-model="newUser.roles"
-        value="EXPERT"
-      />
-    </li>
-    <li class="px-2 list-group-item">
-      <Checkbox
-        label="Проектный офис"
-        v-model="newUser.roles"
-      />
-    </li>
-    <li class="px-2 list-group-item">
-      <Checkbox
-        v-if="$route.path.includes('/admin', 0)"
-        label="Админ"
-        v-model="newUser.roles"
-      />
-    </li>
-  </DropDown>
-  <div class="button-center">
+    </DropDown>
+
     <Button
-      type="button"
-      class-name="fs-6 text-primary mbutton"
-      @click="toggle = !toggle"
+      class-name="btn-primary w-100"
+      @click="inviteUserByEmail"
     >
-      <div v-if="toggle">Добавить пользователей</div>
-      <div v-if="!toggle">Добавить пользователя</div>
+      Добавить
     </Button>
-  </div>
-  <Button
-    class-name="btn-primary"
-    class="w-100"
-    @click="addUser"
-  >
-    Добавить
-  </Button>
-  <div>
-    {{ newUser }}
-  </div>
+
+    <Typography>{{ response?.success }}</Typography>
+  </FormLayout>
 </template>
 
 <style lang="scss">
-.button-center {
-  @include flexible(center, center, row);
+.add-user-form {
+  width: 550px;
+
+  &__data {
+    @include flexible(center, space-between, $gap: 16px);
+  }
 }
 </style>
