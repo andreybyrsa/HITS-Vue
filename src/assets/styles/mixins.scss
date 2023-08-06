@@ -52,7 +52,9 @@
   $justify-content: flex-start,
   $flex-direction: row,
   $flex-wrap: nowrap,
-  $gap: 0
+  $gap: 0,
+  $align-self: none,
+  $justify-self: none
 ) {
   display: flex;
   flex-direction: $flex-direction;
@@ -62,6 +64,14 @@
 
   @if $gap != 0 {
     gap: $gap;
+  }
+
+  @if $align-self != none {
+    align-self: $align-self;
+  }
+
+  @if $justify-self != none {
+    justify-self: $justify-self;
   }
 }
 

@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
+import { LoginUser, RegisterUser } from '@Domain/User'
+
 import AuthService from '@Services/AuthService'
 
 const useUserStore = defineStore('user', {
@@ -8,8 +10,16 @@ const useUserStore = defineStore('user', {
     user: null,
   }),
   actions: {
-    async loginUser(username: string) {
-      this.user = await AuthService.loginUser(username)
+    async loginUser(user: LoginUser) {
+      try {
+        this.user = await AuthService.loginUser(user)
+        this.router.push({ name: 'dev' })
+      } catch (error) {
+        console.warn(error)
+      }
+    },
+    async registerUser(user: RegisterUser) {
+      this.user = await AuthService.registerUser(user)
     },
     removeUser() {
       this.user = null

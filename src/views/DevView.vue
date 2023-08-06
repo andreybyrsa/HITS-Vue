@@ -7,6 +7,7 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Input from '@Components/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
+import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -16,9 +17,10 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const text = ref('')
+const isOpenedModal = ref(false)
 
 function handleLogin() {
-  userStore.loginUser('AndreyByrsa')
+  userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
 }
 </script>
 
@@ -36,7 +38,7 @@ function handleLogin() {
         icon-name="bi bi-plus-lg"
         @click="handleLogin"
       >
-        Кнопка
+        Логин
       </Button>
 
       <Input
@@ -44,6 +46,7 @@ function handleLogin() {
         prepend="текст"
         placeholder="Введите текст"
       />
+      {{ text }}
 
       <div class="nav nav-pills">
         <NavTab
@@ -54,6 +57,17 @@ function handleLogin() {
           Перейти на Ideas
         </NavTab>
       </div>
+
+      <Button
+        class-name="btn-warning"
+        @click="isOpenedModal = true"
+        >Открыть окно</Button
+      >
+
+      <RoleModal
+        :is-opened="isOpenedModal"
+        @close-modal="isOpenedModal = false"
+      />
 
       <pre>Пользователь из userStore - {{ user }}</pre>
     </template>
