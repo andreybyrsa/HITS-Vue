@@ -1,3 +1,13 @@
+<script lang="ts" setup>
+import useUserStore from '@Store/user/userStore'
+
+const userStore = useUserStore()
+
+window.addEventListener('click', () => {
+  userStore.checkLastActivity()
+})
+</script>
+
 <template>
   <router-view />
 </template>
