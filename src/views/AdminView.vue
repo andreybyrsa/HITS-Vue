@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import Typography from '@Components/Typography/Typography.vue'
+import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 </script>
 
 <template>
   <PageLayout content-class-name="dev-page__content p-3">
-    <template #leftSideBar> </template>
+    <template #leftSideBar><LeftSideBar /> </template>
 
     <template #content>
       <Typography class-name="fs-2 text-primary">
@@ -15,9 +16,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
       <div class="center w-100 h-75">
         <div class="add-user-block p-3 rounded shadow">
-          <router-view name="AddUserForm"></router-view>
-          <!-- <AddUser v-if="$route.name == 'addUser'" />
-          <AddUsers v-if="$route.name == 'addUsers'" /> -->
+          <router-view></router-view>
         </div>
       </div>
     </template>

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import Input from '@Components/Input/Input.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
-import Checkbox from '@Components/Checkbox/Checkbox.vue'
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
 type Emails = string
 type ActiveRoles = string
@@ -97,7 +97,7 @@ const loadFile = () => {
     <Button
       type="button"
       class-name="fs-6 text-primary mbutton"
-      @click="$router.push('/admin/add/user')"
+      @click="$router.push('/admin/add-user')"
     >
       Добавить пользователя
     </Button>

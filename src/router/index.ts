@@ -42,7 +42,8 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'add-users',
-        component: { AddUserForm, AddUsersForm },
+        name: 'adduser',
+        component: AddUserForm,
       },
     ],
   },

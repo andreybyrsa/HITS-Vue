@@ -2,7 +2,7 @@
 import { reactive } from 'vue'
 
 import Typography from '@Components/Typography/Typography.vue'
-import Input from '@Components/Input/Input.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import registerInputs from '@Components/Forms/RegisterForm/RegisterFormInputs'
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { InputProps, InputEmits } from '@Components/Input/Input.types'
+import { InputProps, InputEmits } from '@Components/Inputs/Input/Input.types'
 
 const props = defineProps<InputProps>()
 

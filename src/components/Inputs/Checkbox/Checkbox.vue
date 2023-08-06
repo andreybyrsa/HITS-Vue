@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import {
   CheckboxProps,
   CheckboxEmits,
-} from '@Components/Checkbox/Checkbox.types'
+} from '@Components/Inputs/Checkbox/Checkbox.types'
 
 const props = defineProps<CheckboxProps>()
 
@@ -26,7 +26,7 @@ const BoxLabelClassName = computed(() => ['form-check-label', props.className])
       name="name"
       :class="BoxInputClassName"
       type="checkbox"
-      @click="emit('click')"
+      :value="value"
     />
   </div>
 </template>

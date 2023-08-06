@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Input/Input.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 

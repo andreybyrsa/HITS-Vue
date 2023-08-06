@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import { RadioProps, RadioEmits } from '@Components/Radio/Radio.types'
+import { RadioProps, RadioEmits } from '@Components/Inputs/Radio/Radio.types'
 
 const props = defineProps<RadioProps>()
 

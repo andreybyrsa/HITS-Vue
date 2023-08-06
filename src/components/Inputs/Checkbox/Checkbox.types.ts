@@ -1,10 +1,11 @@
 interface CheckboxProps {
   className?: string
   label?: string
+  value?: string
 }
 
 interface CheckboxEmits {
-  (event: 'click'): void
+  (event: 'change'): void
 }
 
 export { CheckboxProps, CheckboxEmits }
