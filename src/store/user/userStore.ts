@@ -13,15 +13,19 @@ const useUserStore = defineStore('user', {
   actions: {
     async loginUser(user: LoginUser) {
       try {
-        const responseUser = await AuthService.loginUser(user)
-        const localStorageUser: User = {
-          ...responseUser,
-          lastActivity: new Date(),
-        }
-        this.user = localStorageUser
-        localStorage.setItem('user', JSON.stringify(localStorageUser))
+        const response = await AuthService.loginUser(user)
 
-        this.router.push({ name: 'dev' })
+        if (response.token) {
+          const localStorageUser: User = {
+            ...response,
+            lastActivity: new Date(),
+          }
+
+          this.user = localStorageUser
+          localStorage.setItem('user', JSON.stringify(localStorageUser))
+
+          this.router.push({ name: 'dev' })
+        }
       } catch (error) {
         console.warn(error)
       }
