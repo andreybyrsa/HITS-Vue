@@ -8,6 +8,7 @@ interface User {
   lastName: string
   roles: RolesTypes[]
   role?: RolesTypes
+  lastActivity?: Date
 }
 
 interface LoginUser {

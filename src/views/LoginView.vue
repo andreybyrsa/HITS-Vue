@@ -2,6 +2,12 @@
 import LoginForm from '@Components/Forms/LoginForm/LoginForm.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+
+import useUserStore from '@Store/user/userStore'
+
+const userStore = useUserStore()
+
+setTimeout(() => userStore.checkLastActivity(), 1000)
 </script>
 
 <template>

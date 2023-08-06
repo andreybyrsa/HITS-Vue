@@ -17,6 +17,8 @@ const { user } = storeToRefs(userStore)
 
 const text = ref('')
 
+userStore.checkLastActivity()
+
 function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
 }

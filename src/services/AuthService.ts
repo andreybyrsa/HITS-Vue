@@ -1,19 +1,14 @@
+import axios from 'axios'
+
 import { User, LoginUser, RegisterUser } from '@Domain/User'
 
-const loginUser = async (user: LoginUser): Promise<User> => {
-  const responseUser: User = {
-    token: '123213',
-    username: 'andreybyrsa',
-    email: user.email,
-    firstName: 'Andrey',
-    lastName: 'Byrsa',
-    roles: ['ADMIN', 'INITIATOR'],
-    role: 'ADMIN',
-  }
+const AUTH_URL = process.env.VUE_APP_AUTH_API_URL || 'http://localhost:3000'
 
-  return await new Promise((resolve) => setTimeout(resolve, 1000)).then(
-    () => responseUser,
-  )
+const loginUser = async (user: LoginUser): Promise<User> => {
+  return await axios
+    .post(`${AUTH_URL}/login`, user)
+    .then((response) => response.data)
+    .catch((error) => console.warn(`login ${error}`))
 }
 
 const registerUser = async (user: RegisterUser): Promise<User> => {

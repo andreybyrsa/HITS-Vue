@@ -3,7 +3,11 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+import { User } from '@Domain/User'
+
 import useUserStore from '@Store/user/userStore'
+
+import getLocalStorageUser from '@Utils/getLocalStorageUser'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -20,6 +24,13 @@ app.use(pinia)
 const userStore = useUserStore()
 
 router.beforeEach((to) => {
+  userStore.checkLastActivity()
+  const localStorageUser: User = getLocalStorageUser()
+
+  if (localStorageUser?.token && !userStore.user) {
+    userStore.setUserFromLocalStorage(localStorageUser)
+  }
+
   const currentRoute = to.name?.toString() ?? ''
 
   if (
