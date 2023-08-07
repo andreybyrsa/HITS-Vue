@@ -65,6 +65,9 @@ function handleLogin() {
         @click="isOpenedModal = true"
         >Открыть окно</Button
       >
+      <Transition name="bounce">
+        <p style="text-align: center">Hello here is some bouncy text!</p>
+      </Transition>
 
       <RoleModal
         :is-opened="isOpenedModal"
@@ -80,6 +83,23 @@ function handleLogin() {
 .dev-page {
   &__content {
     @include flexible(flex-start, flex-start, column, $gap: 16px);
+  }
+}
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 </style>
