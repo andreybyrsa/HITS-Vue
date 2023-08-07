@@ -56,12 +56,10 @@ const inviteUserByEmail = async () => {
       />
 
       <Button
+        id="checkboxRoles"
         class-name="btn-primary"
         icon-name="bi bi-plus-lg"
-        data-bs-toggle="collapse"
-        data-bs-target="#checkboxRoles"
-        aria-expanded="false"
-        aria-controls="collapseExample"
+        is-drop-down-controller
       >
         роли
       </Button>
