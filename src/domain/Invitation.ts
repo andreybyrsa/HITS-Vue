@@ -2,7 +2,7 @@ import RolesTypes from './Roles'
 
 interface InvitationForm {
   email: string
-  file?: File | null
+  emails: string[]
   roles: RolesTypes[]
 }
 

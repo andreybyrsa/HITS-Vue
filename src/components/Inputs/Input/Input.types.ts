@@ -6,8 +6,8 @@ interface InputProps {
   append?: string
 }
 
-interface InputEmits {
-  (event: 'change'): void
+interface HTMLInputEvent extends Event {
+  target: HTMLInputElement & EventTarget
 }
 
-export { InputProps, InputEmits }
+export { InputProps, HTMLInputEvent }

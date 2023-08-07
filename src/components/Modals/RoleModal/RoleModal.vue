@@ -34,7 +34,7 @@ const emit = defineEmits<RoleModalEmits>()
         :key="role"
       >
         <Button class-name="btn-primary w-100">
-          <Typography class-name="fs-4 text-center">{{ role }}</Typography>
+          {{ role }}
         </Button>
       </template>
     </div>

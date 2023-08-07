@@ -1,14 +1,12 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { InputProps, InputEmits } from '@Components/Inputs/Input/Input.types'
+import { InputProps } from '@Components/Inputs/Input/Input.types'
 
 const props = defineProps<InputProps>()
 
 const modelValue = defineModel<string>({
   required: false,
 })
-
-const emit = defineEmits<InputEmits>()
 
 const InputClassName = computed(() => [
   'form-control form-control-lg',
@@ -31,7 +29,6 @@ const InputClassName = computed(() => [
       :type="type ?? 'text'"
       :placeholder="placeholder"
       v-model="modelValue"
-      @change="emit('change')"
     />
 
     <span

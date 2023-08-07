@@ -36,6 +36,15 @@ const inviteUserByEmail = async (
     .catch((error) => console.warn(`invite ${error}`))
 }
 
+const inviteUsersByFile = async (
+  userData: InvitationForm,
+): Promise<ResponseMessage> => {
+  return await axios
+    .post(`${INVITE_URL}/emails`, userData)
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
+}
+
 const getInvitationInfo = async (
   slug: string | string[],
 ): Promise<InvitationInfo> => {
@@ -49,6 +58,7 @@ const AuthService = {
   loginUser,
   registerUser,
   inviteUserByEmail,
+  inviteUsersByFile,
   getInvitationInfo,
 }
 

@@ -19,7 +19,7 @@ defineProps<ModalLayoutProps>()
 
 <style lang="scss">
 .modal-layout {
-  @include position(absolute, 0, 0, 0, 0, 1);
+  @include position(absolute, 0, 0, 0, 0, 10);
 
   background-color: $background-color--blured;
 
