@@ -41,6 +41,8 @@ function handleLogin(user: LoginUser) {
       </template>
     </Input>
 
+    <router-link to="/forgot-password">Забыли пароль?</router-link>
+
     <Button
       class-name="btn-primary w-100"
       @click="handleLogin(userData)"

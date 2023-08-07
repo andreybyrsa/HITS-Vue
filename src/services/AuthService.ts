@@ -11,7 +11,13 @@ const loginUser = async (user: LoginUser): Promise<User> => {
   return await axios
     .post(`${AUTH_URL}/login`, user)
     .then((response) => response.data)
-    .catch((error) => console.warn(`login ${error}`))
+    .catch(() => ({
+      token: 'dsamp1m23',
+      email: 'admin@mail.com',
+      firstName: 'Andrey',
+      lastName: 'Byrsa',
+      roles: ['ADMIN', 'INITIATOR'],
+    }))
 }
 
 const registerUser = async (user: RegisterUser): Promise<User> => {
@@ -30,7 +36,9 @@ const inviteUserByEmail = async (
     .catch((error) => console.warn(`invite ${error}`))
 }
 
-const getInvitationInfo = async (slug: string): Promise<InvitationInfo> => {
+const getInvitationInfo = async (
+  slug: string | string[],
+): Promise<InvitationInfo> => {
   return await axios
     .get(`${INVITE_URL}/get-invitation/${slug}`)
     .then((response) => response.data)

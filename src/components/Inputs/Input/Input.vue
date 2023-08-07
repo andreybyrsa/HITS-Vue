@@ -5,7 +5,7 @@ import { InputProps, InputEmits } from '@Components/Inputs/Input/Input.types'
 const props = defineProps<InputProps>()
 
 const modelValue = defineModel<string>({
-  required: true,
+  required: false,
 })
 
 const emit = defineEmits<InputEmits>()

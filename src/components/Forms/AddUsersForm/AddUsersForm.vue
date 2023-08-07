@@ -18,6 +18,7 @@ import getRoles from '@Utils/getRoles'
 
 const currentRoles = getRoles()
 
+const isFileInput = ref(false)
 const userData = reactive<InvitationForm>({
   email: '',
   file: null,
@@ -25,22 +26,33 @@ const userData = reactive<InvitationForm>({
 })
 const response = ref<ResponseMessage>()
 
+function handleFileChange() {
+  console.log('loaded')
+}
+
 const inviteUserByEmail = async () => {
   response.value = await AuthService.inviteUserByEmail(userData)
 }
 </script>
 
 <template>
-  <FormLayout class-name="add-user-form">
+  <FormLayout class-name="add-users-form">
     <Typography class-name="fs-3 text-primary">
       Добавление пользователей
     </Typography>
 
-    <div class="add-user-form__data w-100">
+    <div class="add-users-form__data w-100">
       <Input
+        v-if="!isFileInput"
         type="text"
         v-model="userData.email"
         placeholder="Введите email"
+        prepend="@"
+      />
+      <Input
+        v-else
+        type="file"
+        @change="(event) => handleFileChange()"
       />
 
       <Button
@@ -74,12 +86,25 @@ const inviteUserByEmail = async () => {
       Добавить
     </Button>
 
-    <Typography>{{ response?.success }}</Typography>
+    <button
+      class="fs-5"
+      @click="isFileInput = !isFileInput"
+    >
+      <span v-if="isFileInput">Добавить по почте</span>
+      <span v-else>Загрузить файл</span>
+    </button>
+
+    <Typography
+      v-if="response?.success"
+      class-name="text-success"
+    >
+      {{ response?.success }}
+    </Typography>
   </FormLayout>
 </template>
 
 <style lang="scss">
-.add-user-form {
+.add-users-form {
   width: 550px;
 
   &__data {

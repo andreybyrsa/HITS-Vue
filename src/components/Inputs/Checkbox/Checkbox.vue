@@ -5,7 +5,7 @@ import { CheckboxProps } from '@Components/Inputs/Checkbox/Checkbox.types'
 
 const props = defineProps<CheckboxProps>()
 
-const modelValue = defineModel<any[]>({
+const modelValue = defineModel({
   required: true,
 })
 
@@ -17,12 +17,12 @@ const BoxLabelClassName = computed(() => ['form-check-label', props.className])
   <div class="form-check">
     <label
       :class="BoxLabelClassName"
-      for="name"
+      for="checkbox"
     >
       {{ label }}
     </label>
     <input
-      name="name"
+      name="checkbox"
       type="checkbox"
       :class="BoxInputClassName"
       v-model="modelValue"

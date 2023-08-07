@@ -7,7 +7,7 @@ import { User } from '@Domain/User'
 
 import useUserStore from '@Store/user/userStore'
 
-import LocalStorageUser from '@Utils/LocalStorage'
+import LocalStorageUser from '@Utils/LocalStorageUser'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'

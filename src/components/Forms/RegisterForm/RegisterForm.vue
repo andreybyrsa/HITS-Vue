@@ -26,17 +26,17 @@ const userData = reactive<RegisterUser>({
   roles: [],
 })
 
+function handleRegister(user: RegisterUser) {
+  userStore.registerUser(user)
+}
+
 onMounted(async () => {
   const { email, roles } = await AuthService.getInvitationInfo(
-    `${route.params.token}`,
+    route.params.slug,
   )
   userData.email = email
   userData.roles = roles
 })
-
-function handleRegister(user: RegisterUser) {
-  userStore.registerUser(user)
-}
 </script>
 
 <template>

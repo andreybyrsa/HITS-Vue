@@ -3,10 +3,7 @@ import RolesTypes from '@Domain/Roles'
 interface GetRolesType {
   roles: RolesTypes[]
   translatedRoles: {
-    INITIATOR: string
-    PROJECT_OFFICE: string
-    EXPERT: string
-    ADMIN: string
+    [key in RolesTypes]: string
   }
 }
 
@@ -17,7 +14,7 @@ function getRoles(): GetRolesType {
       INITIATOR: 'Инициатор',
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперт',
-      ADMIN: 'Админ',
+      ADMIN: 'админ',
     },
   }
 }

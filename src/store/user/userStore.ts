@@ -4,7 +4,7 @@ import InitialState from './initialState'
 import { User, LoginUser, RegisterUser } from '@Domain/User'
 
 import AuthService from '@Services/AuthService'
-import LocalStorageUser from '@Utils/LocalStorage'
+import LocalStorageUser from '@Utils/LocalStorageUser'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
@@ -48,7 +48,7 @@ const useUserStore = defineStore('user', {
     },
     removeUser() {
       this.user = null
-      localStorage.removeItem('user')
+      LocalStorageUser.removeLocalStorageUser()
     },
 
     checkLastActivity() {
@@ -56,11 +56,10 @@ const useUserStore = defineStore('user', {
       const currentUser = LocalStorageUser.getLocalStorageUser()
       if (
         currentUser?.lastActivity &&
-        currentActivity.getMinutes() - currentUser.lastActivity?.getMinutes() >
-          10
+        currentActivity.getHours() - currentUser.lastActivity?.getHours() > 2
       ) {
         this.removeUser()
-        localStorage.removeItem('user')
+        LocalStorageUser.removeLocalStorageUser()
       } else if (currentUser?.token) {
         LocalStorageUser.setLocalStorageUser(currentUser)
       }

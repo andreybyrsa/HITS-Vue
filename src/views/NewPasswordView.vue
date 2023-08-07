@@ -8,13 +8,7 @@ import Typography from '@Components/Typography/Typography.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import AuthService from '@Services/AuthService'
-
 const newPassword = ref('')
-
-const sendPassword = () => {
-  AuthService.sendNewPassword(newPassword.value)
-}
 </script>
 
 <template>
@@ -33,12 +27,7 @@ const sendPassword = () => {
           </template>
         </Input>
 
-        <Button
-          class-name="btn btn-primary w-100"
-          @click="sendPassword"
-        >
-          Изменить пароль
-        </Button>
+        <Button class-name="btn btn-primary w-100"> Изменить пароль </Button>
       </FormLayout>
     </template>
   </PageLayout>
