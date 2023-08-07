@@ -20,19 +20,22 @@ const emit = defineEmits<RoleModalEmits>()
 
 <template>
   <ModalLayout :is-opened="isOpened">
-    <div class="role-modal p-3 rounded-3">
+    <div class="role-modal p-3 rounded-3 flex justify-content-center">
+      <ul style="list-style-type: none; display: grid; width: 400px">
+        <li
+          v-for="role in user?.roles"
+          :key="role"
+          class="d-grid d-md-flex justify-content-md-end"
+        >
+          <Button class-name="btn-primary m-2">
+            <Typography class-name="fs-4 text-center">{{ role }}</Typography>
+          </Button>
+        </li>
+      </ul>
       <Button
         class-name="btn-close"
         @click="emit('close-modal')"
       ></Button>
-
-      <Button
-        v-for="role in user?.roles"
-        :key="role"
-        class-name="btn-primary"
-      >
-        {{ role }}
-      </Button>
     </div>
   </ModalLayout>
 </template>
