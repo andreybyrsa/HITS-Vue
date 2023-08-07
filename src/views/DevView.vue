@@ -8,6 +8,7 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
+import FilterModal from '@Components/FilterModal/FilterModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -18,6 +19,7 @@ const { user } = storeToRefs(userStore)
 
 const text = ref('')
 const isOpenedModal = ref(false)
+const isOpenedFilter = ref(false)
 
 userStore.checkLastActivity()
 
@@ -69,6 +71,17 @@ function handleLogin() {
       <RoleModal
         :is-opened="isOpenedModal"
         @close-modal="isOpenedModal = false"
+      />
+
+      <Button
+        class-name="btn-primary"
+        @click="isOpenedFilter = true"
+        >фильтр</Button
+      >
+
+      <FilterModal
+        :is-opened="isOpenedFilter"
+        @close-modal="isOpenedFilter = false"
       />
 
       <pre>Пользователь из userStore - {{ user }}</pre>
