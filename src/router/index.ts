@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
+import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
+
+import AdminView from '@Views/AdminView.vue'
 import DevView from '@Views/DevView.vue'
 import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
@@ -28,9 +31,19 @@ const routes: Array<RouteRecordRaw> = [
     component: ForgotPasswordView,
   },
   {
-    path: '/new-password/:token',
+    path: '/new-password/:slug',
     name: 'new-password',
     component: NewPasswordView,
+  },
+  {
+    path: '/admin',
+    component: AdminView,
+    children: [
+      {
+        path: 'add-users',
+        component: AddUsersForm,
+      },
+    ],
   },
 ]
 

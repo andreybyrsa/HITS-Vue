@@ -6,4 +6,8 @@ interface InputProps {
   append?: string
 }
 
-export default InputProps
+interface InputEmits {
+  (event: 'change'): void
+}
+
+export { InputProps, InputEmits }

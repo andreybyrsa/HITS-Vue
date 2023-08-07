@@ -2,7 +2,7 @@
 import { reactive } from 'vue'
 
 import Typography from '@Components/Typography/Typography.vue'
-import Input from '@Components/Input/Input.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import loginInputs from '@Components/Forms/LoginForm/LoginFormInputs'
 
@@ -40,6 +40,8 @@ function handleLogin(user: LoginUser) {
         <i :class="input.prependIcon"></i>
       </template>
     </Input>
+
+    <router-link to="/forgot-password">Забыли пароль?</router-link>
 
     <Button
       class-name="btn-primary w-100"

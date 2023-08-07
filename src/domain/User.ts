@@ -8,6 +8,7 @@ interface User {
   lastName: string
   roles: RolesTypes[]
   role?: RolesTypes
+  lastActivity?: Date
 }
 
 interface LoginUser {
@@ -20,6 +21,7 @@ interface RegisterUser {
   firstName: string
   lastName: string
   password: string
+  roles: RolesTypes[]
 }
 
 export { User, LoginUser, RegisterUser }

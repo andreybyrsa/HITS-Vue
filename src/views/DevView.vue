@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import Input from '@Components/Input/Input.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
@@ -18,6 +18,8 @@ const { user } = storeToRefs(userStore)
 
 const text = ref('')
 const isOpenedModal = ref(false)
+
+userStore.checkLastActivity()
 
 function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })

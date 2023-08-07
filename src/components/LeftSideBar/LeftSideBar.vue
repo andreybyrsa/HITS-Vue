@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 import { logo } from '@Assets/images/index'
 
@@ -14,6 +15,8 @@ import useUserStore from '@Store/user/userStore'
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const router = useRouter()
+
 function checkUserRole(tab: LeftSideBarTabType) {
   const currentRole = user.value?.role
   return currentRole && tab.roles.includes(currentRole)
@@ -21,6 +24,7 @@ function checkUserRole(tab: LeftSideBarTabType) {
 
 function handleLogout() {
   userStore.removeUser()
+  router.push('/login')
 }
 </script>
 

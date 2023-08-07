@@ -2,19 +2,13 @@
 import { ref } from 'vue'
 
 import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Input/Input.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import AuthService from '@Services/AuthService'
-
 const email = ref('')
-
-const sendEmail = () => {
-  AuthService.sendRecoveryEmail(email.value)
-}
 </script>
 
 <template>
@@ -31,12 +25,7 @@ const sendEmail = () => {
           prepend="@"
         />
 
-        <Button
-          class-name="btn-primary w-100"
-          @click="sendEmail"
-        >
-          Отправить
-        </Button>
+        <Button class-name="btn-primary w-100"> Отправить </Button>
       </FormLayout>
     </template>
   </PageLayout>

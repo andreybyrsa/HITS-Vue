@@ -8,7 +8,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     text: 'Список идей',
     to: '/ideas',
     iconName: 'bi bi-list',
-    roles: getRoles(),
+    roles: getRoles().roles,
   },
   {
     id: 1,
@@ -22,7 +22,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     text: 'Журнал изменений',
     to: '/history',
     iconName: 'bi bi-book',
-    roles: getRoles(),
+    roles: getRoles().roles,
   },
   {
     id: 3,
