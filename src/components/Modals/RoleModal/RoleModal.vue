@@ -52,5 +52,12 @@ const emit = defineEmits<RoleModalEmits>()
     $align-self: center,
     $justify-self: center
   );
+
+  transition: all $default-transition-settings;
+}
+
+.modal-layout-enter-from .role-modal,
+.modal-layout-leave-to .role-modal {
+  transform: scale(0.9);
 }
 </style>
