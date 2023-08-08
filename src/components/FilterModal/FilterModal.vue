@@ -8,6 +8,15 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
+const FilterNames = [
+  'Мои идеи',
+  'Все идеи',
+  'Утвержденные идеи',
+  'Согласованные идеи',
+]
+
+const UserFilters = ''
+
 defineProps<FilterModalProps>()
 
 const emit = defineEmits<FilterModalEmits>()
@@ -27,40 +36,19 @@ const emit = defineEmits<FilterModalEmits>()
             @click="emit('close-modal')"
           ></Button>
         </div>
-        <div class="my-3">
+        <div
+          class="my-3"
+          v-for="Filter in FilterNames"
+          :key="Filter"
+        >
           <div class="filter-modal__checkbox">
             <Checkbox
-              label="Мои идеи"
-              class-name="fs-4"
+              :label="Filter"
+              v-model="UserFilters"
+              :value="Filter"
+              class-name="fs-4 "
               class="m-3 px-5"
-            ></Checkbox>
-          </div>
-        </div>
-        <div class="my-3">
-          <div class="filter-modal__checkbox">
-            <Checkbox
-              label="Все идеи"
-              class-name="fs-4"
-              class="m-3 px-5"
-            ></Checkbox>
-          </div>
-        </div>
-        <div class="my-3">
-          <div class="filter-modal__checkbox">
-            <Checkbox
-              label="Утвержденные идеи"
-              class-name="fs-4"
-              class="m-3 px-5"
-            ></Checkbox>
-          </div>
-        </div>
-        <div class="my-3">
-          <div class="filter-modal__checkbox">
-            <Checkbox
-              label="Согласованные идеи"
-              class-name="fs-4"
-              class="m-3 px-5"
-            ></Checkbox>
+            />
           </div>
         </div>
       </div>
