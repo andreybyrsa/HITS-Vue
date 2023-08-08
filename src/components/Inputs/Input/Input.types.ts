@@ -4,6 +4,7 @@ interface InputProps {
   placeholder?: string
   prepend?: string
   append?: string
+  label?: string
 }
 
 interface HTMLInputEvent extends Event {
