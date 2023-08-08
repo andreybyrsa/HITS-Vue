@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 
 import Button from '@Components/Button/Button.vue'
-import UserModal from '@Components/Modals/UserModal/UserModal.vue'
+import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
@@ -73,7 +73,7 @@ function handleCloseModal(newUser?: User) {
       </Typography>
     </div>
 
-    <UserModal
+    <EditUserModal
       :is-opened="isOpenUserModal"
       @close-modal="handleCloseModal"
       :user="editingUser"
