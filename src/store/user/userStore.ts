@@ -5,6 +5,7 @@ import { User, LoginUser, RegisterUser } from '@Domain/User'
 
 import AuthService from '@Services/AuthService'
 import LocalStorageUser from '@Utils/LocalStorageUser'
+import RolesTypes from '@Domain/Roles'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
@@ -50,7 +51,6 @@ const useUserStore = defineStore('user', {
       this.user = null
       LocalStorageUser.removeLocalStorageUser()
     },
-
     checkLastActivity() {
       const currentActivity = new Date()
       const currentUser = LocalStorageUser.getLocalStorageUser()
@@ -61,6 +61,16 @@ const useUserStore = defineStore('user', {
         this.removeUser()
         LocalStorageUser.removeLocalStorageUser()
       } else if (currentUser?.token) {
+        LocalStorageUser.setLocalStorageUser(currentUser)
+      }
+    },
+    setRole(newRole: RolesTypes) {
+      const currentUser = LocalStorageUser.getLocalStorageUser()
+      currentUser.role = newRole
+      if (this.user) {
+        this.user.role = newRole
+      }
+      if (currentUser.role) {
         LocalStorageUser.setLocalStorageUser(currentUser)
       }
     },
