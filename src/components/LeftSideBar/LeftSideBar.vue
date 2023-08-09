@@ -9,13 +9,26 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
+import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 
 import useUserStore from '@Store/user/userStore'
+import getRoles from '@Utils/getRoles'
+import RolesTypes from '@Domain/Roles'
+import { ref } from 'vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const router = useRouter()
+const isOpenedModal = ref(false)
+
+let isActiveModal = ref(true)
+
+if (user.value?.roles.length == 1) {
+  isActiveModal = ref(false)
+} else {
+  isActiveModal = ref(true)
+}
 
 function checkUserRole(tab: LeftSideBarTabType) {
   const currentRole = user.value?.role
@@ -25,6 +38,12 @@ function checkUserRole(tab: LeftSideBarTabType) {
 function handleLogout() {
   userStore.removeUser()
   router.push('/login')
+}
+
+const userRoles = getRoles()
+
+const getTranslatedRole = (currentRole: RolesTypes) => {
+  return userRoles.translatedRoles[currentRole]
 }
 </script>
 
@@ -61,7 +80,22 @@ function handleLogout() {
           Выйти
         </Button>
       </ul>
+      <Button
+        class-name="btn-light w-100 fs-6 text-success"
+        icon-name="bi bi-circle-fill"
+        @click="isOpenedModal = true"
+      >
+        <Typography class-name="fs-5 text-succes">{{
+          getTranslatedRole(user?.role) || 'Выберите роль'
+        }}</Typography>
+      </Button>
     </div>
+
+    <RoleModal
+      v-if="isActiveModal"
+      :is-opened="isOpenedModal"
+      @close-modal="isOpenedModal = false"
+    />
   </div>
 </template>
 

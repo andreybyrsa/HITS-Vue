@@ -8,12 +8,29 @@ import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import NewPasswordView from '@Views/NewPasswordView.vue'
+import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/dev',
-    name: 'dev',
-    component: DevView,
+    path: '/',
+    component: RoleMiddleware,
+    children: [
+      {
+        path: 'dev',
+        name: 'dev',
+        component: DevView,
+      },
+      {
+        path: 'admin',
+        component: AdminView,
+        children: [
+          {
+            path: 'add-users',
+            component: AddUsersForm,
+          },
+        ],
+      },
+    ],
   },
   {
     path: '/login',
@@ -34,16 +51,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/new-password/:slug',
     name: 'new-password',
     component: NewPasswordView,
-  },
-  {
-    path: '/admin',
-    component: AdminView,
-    children: [
-      {
-        path: 'add-users',
-        component: AddUsersForm,
-      },
-    ],
   },
 ]
 

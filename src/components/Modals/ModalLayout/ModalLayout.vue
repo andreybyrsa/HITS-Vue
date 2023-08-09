@@ -22,5 +22,15 @@ defineProps<ModalLayoutProps>()
   background-color: $background-color--blured;
 
   display: grid;
+  animation: openModal $default-animation-settings;
+}
+
+@keyframes openModal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

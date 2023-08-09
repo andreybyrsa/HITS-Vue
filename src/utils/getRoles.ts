@@ -14,7 +14,7 @@ function getRoles(): GetRolesType {
       INITIATOR: 'Инициатор',
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперт',
-      ADMIN: 'админ',
+      ADMIN: 'Админ',
     },
   }
 }
