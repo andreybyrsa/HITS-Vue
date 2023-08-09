@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { logo } from '@Assets/images/index'
@@ -9,13 +10,21 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
+import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
+
+import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
+
+import getRoles from '@Utils/getRoles'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const router = useRouter()
+const isOpenedModal = ref(false)
+
+const userRoles = getRoles()
 
 function checkUserRole(tab: LeftSideBarTabType) {
   const currentRole = user.value?.role
@@ -25,6 +34,18 @@ function checkUserRole(tab: LeftSideBarTabType) {
 function handleLogout() {
   userStore.removeUser()
   router.push('/login')
+}
+
+function getTranslatedRole(currentRole: RolesTypes) {
+  return userRoles.translatedRoles[currentRole]
+}
+
+function handleOpenModal() {
+  isOpenedModal.value = true
+}
+
+function handleCloseModal() {
+  isOpenedModal.value = false
 }
 </script>
 
@@ -45,6 +66,7 @@ function handleLogout() {
           :key="tab.id"
         >
           <NavTab
+            v-if="checkUserRole(tab)"
             :icon-name="tab.iconName"
             :to="tab.to"
             :routes="tab.routes"
@@ -60,6 +82,20 @@ function handleLogout() {
           Выйти
         </Button>
       </ul>
+
+      <Button
+        class-name="btn-light w-100 text-success"
+        icon-name="bi bi-circle-fill fs-6"
+        @click="handleOpenModal"
+        :disabled="user?.roles.length === 1"
+      >
+        {{ user?.role ? getTranslatedRole(user.role) : 'Выберите роль' }}
+      </Button>
+
+      <RoleModal
+        :is-opened="isOpenedModal"
+        @close-modal="handleCloseModal"
+      />
     </div>
   </div>
 </template>

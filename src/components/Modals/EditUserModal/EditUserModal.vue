@@ -29,7 +29,7 @@ const availableRoles = getRoles()
 const handleSubmit = async (user: User) => {
   const { error, success } = await ManageUsersService.saveEditedUser(user)
 
-  if (success) {
+  if (!success) {
     response.value = ''
     return emit('close-modal', props.user)
   }

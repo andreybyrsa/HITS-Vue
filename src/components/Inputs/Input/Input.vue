@@ -14,10 +14,18 @@ const InputClassName = computed(() => [
   { 'is-invalid': props.error },
   props.className,
 ])
+const LabelClassName = computed(() => ['form-label', props.className])
 </script>
 
 <template>
-  <div class="input-group d-flex">
+  <label
+    :class="LabelClassName"
+    v-if="label"
+  >
+    {{ label }}
+  </label>
+
+  <div class="input-group">
     <span
       v-if="prepend || $slots.prepend"
       class="input-group-text fs-5"
