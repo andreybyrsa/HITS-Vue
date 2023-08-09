@@ -4,14 +4,7 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
-
-const listRating = [
-  'Высокий',
-  'Выше среднего',
-  'Средний',
-  'Ниже стреднего',
-  'Низкий',
-]
+import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue'
 </script>
 
 <template>
@@ -86,78 +79,11 @@ const listRating = [
     <div style="width: 50%">
       <Input
         label="Описание необходимых ресурсов для реализации*"
-        placeholder="Укажите список и количественную оценку требуемых для выполнения проекта ресурсов, включая: кол-во человек, компетенций, материальных ценностей, технических средств и т.п."
+        placeholder="Укажите список требуемых для выполнения проекта ресурсов"
         class-name="fs-6 text-primary"
       ></Input>
     </div>
-
-    <Typography class-name="fs-6 text-primary"
-      >Предварительная оценка идеи</Typography
-    >
-    <div class="row w-100">
-      <div class="col">
-        <Typography class="fs-6 text-primary">Реализуемость*</Typography>
-        <select
-          class="form-select"
-          aria-label="Floating label select example"
-        >
-          <option
-            selected
-            disabled
-          >
-            Выберите значение
-          </option>
-          <option
-            v-for="list in listRating"
-            :key="list"
-          >
-            {{ list }}
-          </option>
-        </select>
-      </div>
-      <div class="col">
-        <Typography class="fs-6 text-primary">Пригодность*</Typography>
-        <select
-          class="form-select"
-          aria-label="Floating label select example"
-        >
-          <option
-            selected
-            disabled
-          >
-            Выберите значение
-          </option>
-          <option
-            v-for="list in listRating"
-            :key="list"
-          >
-            {{ list }}
-          </option>
-        </select>
-      </div>
-      <div class="col">
-        <Typography class="fs-6 text-primary">Бюджет*</Typography>
-        <select
-          class="form-select"
-          aria-label="Floating label select example"
-        >
-          <option
-            selected
-            disabled
-          >
-            Выберите значение
-          </option>
-          <option
-            v-for="list in listRating"
-            :key="list"
-          >
-            {{ list }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-    <Typography class-name="fs-6 text-primary">Риск: 4</Typography>
+    <RatingCalculator />
     <Button class-name="btn-primary d-block mx-auto"
       >Отправить на рассмотрение</Button
     >
