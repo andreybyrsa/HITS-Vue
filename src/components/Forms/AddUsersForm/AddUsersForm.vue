@@ -14,7 +14,7 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import { InvitationForm } from '@Domain/Invitation'
 import ResponseMessage from '@Domain/ResponseMessage'
 
-import AuthService from '@Services/AuthService'
+import ManageUsersService from '@Services/ManageUsersService'
 
 import getRoles from '@Utils/getRoles'
 
@@ -68,9 +68,9 @@ function handleRemoveEmail(index: number) {
 
 const inviteUsers = async () => {
   if (isFileInput.value) {
-    response.value = await AuthService.inviteUsersByFile(invitationData)
+    response.value = await ManageUsersService.inviteUsersByFile(invitationData)
   } else {
-    response.value = await AuthService.inviteUserByEmail(invitationData)
+    response.value = await ManageUsersService.inviteUserByEmail(invitationData)
   }
 }
 </script>
