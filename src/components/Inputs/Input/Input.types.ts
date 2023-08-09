@@ -1,10 +1,10 @@
 interface InputProps {
   className?: string
   type?: string
+  label?: string
   placeholder?: string
   prepend?: string
   append?: string
-  label?: string
 }
 
 interface HTMLInputEvent extends Event {

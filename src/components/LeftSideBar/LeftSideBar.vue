@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { logo } from '@Assets/images/index'
@@ -11,10 +12,11 @@ import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 
-import useUserStore from '@Store/user/userStore'
-import getRoles from '@Utils/getRoles'
 import RolesTypes from '@Domain/Roles'
-import { ref } from 'vue'
+
+import useUserStore from '@Store/user/userStore'
+
+import getRoles from '@Utils/getRoles'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -22,13 +24,7 @@ const { user } = storeToRefs(userStore)
 const router = useRouter()
 const isOpenedModal = ref(false)
 
-let isActiveModal = ref(true)
-
-if (user.value?.roles.length == 1) {
-  isActiveModal = ref(false)
-} else {
-  isActiveModal = ref(true)
-}
+const userRoles = getRoles()
 
 function checkUserRole(tab: LeftSideBarTabType) {
   const currentRole = user.value?.role
@@ -40,10 +36,16 @@ function handleLogout() {
   router.push('/login')
 }
 
-const userRoles = getRoles()
-
-const getTranslatedRole = (currentRole: RolesTypes) => {
+function getTranslatedRole(currentRole: RolesTypes) {
   return userRoles.translatedRoles[currentRole]
+}
+
+function handleOpenModal() {
+  isOpenedModal.value = true
+}
+
+function handleCloseModal() {
+  isOpenedModal.value = false
 }
 </script>
 
@@ -80,22 +82,21 @@ const getTranslatedRole = (currentRole: RolesTypes) => {
           Выйти
         </Button>
       </ul>
-      <Button
-        class-name="btn-light w-100 fs-6 text-success"
-        icon-name="bi bi-circle-fill"
-        @click="isOpenedModal = true"
-      >
-        <Typography class-name="fs-5 text-succes">{{
-          getTranslatedRole(user?.role) || 'Выберите роль'
-        }}</Typography>
-      </Button>
-    </div>
 
-    <RoleModal
-      v-if="isActiveModal"
-      :is-opened="isOpenedModal"
-      @close-modal="isOpenedModal = false"
-    />
+      <Button
+        class-name="btn-light w-100 text-success"
+        icon-name="bi bi-circle-fill fs-6"
+        @click="handleOpenModal"
+        :disabled="user?.roles.length === 1"
+      >
+        {{ user?.role ? getTranslatedRole(user.role) : 'Выберите роль' }}
+      </Button>
+
+      <RoleModal
+        :is-opened="isOpenedModal"
+        @close-modal="handleCloseModal"
+      />
+    </div>
   </div>
 </template>
 

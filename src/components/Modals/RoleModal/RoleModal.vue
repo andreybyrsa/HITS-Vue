@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 
+import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
 import {
@@ -8,9 +9,11 @@ import {
   RoleModalEmits,
 } from '@Components/Modals/RoleModal/RoleModal.types'
 
-import getRoles from '@Utils/getRoles'
-import useUserStore from '@Store/user/userStore'
 import RolesTypes from '@Domain/Roles'
+
+import useUserStore from '@Store/user/userStore'
+
+import getRoles from '@Utils/getRoles'
 
 defineProps<RoleModalProps>()
 
@@ -21,7 +24,7 @@ const { user } = storeToRefs(userStore)
 
 const userRoles = getRoles()
 
-const getTranslatedRole = (currentRole: RolesTypes) => {
+function getTranslatedRole(currentRole: RolesTypes) {
   return userRoles.translatedRoles[currentRole]
 }
 
@@ -34,9 +37,7 @@ function handleRole(currentRole: RolesTypes) {
 <template>
   <ModalLayout :is-opened="isOpened">
     <div class="role-modal p-3 rounded bg-white">
-      <div class="role-modal__header w-100">
-        <Typography class="fs-3 text-primary">Доступные роли</Typography>
-      </div>
+      <Typography class-name="fs-3 text-primary">Доступные роли</Typography>
       <div
         v-for="role in user?.roles"
         :key="role"
@@ -46,9 +47,7 @@ function handleRole(currentRole: RolesTypes) {
           @click="handleRole(role)"
           class-name="btn-primary w-100"
         >
-          <Typography class-name="fs-3">{{
-            getTranslatedRole(role)
-          }}</Typography>
+          {{ getTranslatedRole(role) }}
         </Button>
       </div>
     </div>
@@ -64,7 +63,7 @@ function handleRole(currentRole: RolesTypes) {
   width: 400px;
 
   @include flexible(
-    flex-start,
+    center,
     flex-start,
     column,
     $gap: 16px,

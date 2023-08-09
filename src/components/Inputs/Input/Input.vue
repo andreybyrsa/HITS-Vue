@@ -16,13 +16,12 @@ const LabelClassName = computed(() => ['form-label', props.className])
 </script>
 
 <template>
-  <labeL
-    for="name"
+  <label
     :class="LabelClassName"
-    v-if="label != null"
+    v-if="label"
   >
     {{ label }}
-  </labeL>
+  </label>
   <div class="input-group">
     <span
       v-if="prepend || $slots.prepend"
@@ -37,7 +36,6 @@ const LabelClassName = computed(() => ['form-label', props.className])
       :type="type ?? 'text'"
       :placeholder="placeholder"
       v-model="modelValue"
-      name="name"
     />
 
     <span
