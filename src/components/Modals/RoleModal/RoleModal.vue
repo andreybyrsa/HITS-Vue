@@ -72,20 +72,6 @@ function handleRole(currentRole: RolesTypes) {
     $justify-self: center
   );
 
-  animation: openRoleModal $default-animation-settings;
-}
-
-@keyframes openRoleModal {
-  from {
-    opacity: 0;
-
-  @include flexible(
-    $flex-direction: column,
-    $gap: 16px,
-    $align-self: center,
-    $justify-self: center
-  );
-
   transition: all $default-transition-settings;
 }
 

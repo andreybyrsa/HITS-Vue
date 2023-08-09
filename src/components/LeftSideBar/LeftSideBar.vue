@@ -64,6 +64,7 @@ const getTranslatedRole = (currentRole: RolesTypes) => {
           :key="tab.id"
         >
           <NavTab
+            v-if="checkUserRole(tab)"
             :icon-name="tab.iconName"
             :to="tab.to"
             :routes="tab.routes"
