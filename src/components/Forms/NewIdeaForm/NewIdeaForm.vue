@@ -30,8 +30,8 @@ import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue
       >
         Выберите тип проекта
       </option>
-      <option>One</option>
-      <option>Two</option>
+      <option>Внутренний</option>
+      <option>Внешний</option>
       <option>Three</option>
     </select>
 
@@ -59,22 +59,13 @@ import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue
       ></Input>
     </div>
 
-    <Typography class-name="fs-6 text-primary">Заказчик*</Typography>
-    <select
-      class="form-select w-50"
-      aria-label="Floating label select example"
-    >
-      <option
-        selected
-        disabled
-      >
-        Выберите заказчика
-      </option>
-
-      <option>One</option>
-      <option>Two</option>
-      <option>Three</option>
-    </select>
+    <div style="width: 50%">
+      <Input
+        label="Заказчик*"
+        placeholder="Укажите заказчика"
+        class-name="fs-6 text-primary"
+      ></Input>
+    </div>
 
     <div style="width: 50%">
       <Input
