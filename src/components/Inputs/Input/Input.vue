@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+
 import { InputProps } from '@Components/Inputs/Input/Input.types'
 
 const props = defineProps<InputProps>()
@@ -10,12 +11,13 @@ const modelValue = defineModel<string>({
 
 const InputClassName = computed(() => [
   'form-control form-control-lg',
+  { 'is-invalid': props.error },
   props.className,
 ])
 </script>
 
 <template>
-  <div class="input-group">
+  <div class="input-group d-flex">
     <span
       v-if="prepend || $slots.prepend"
       class="input-group-text fs-5"
@@ -30,6 +32,9 @@ const InputClassName = computed(() => [
       :placeholder="placeholder"
       v-model="modelValue"
     />
+    <span class="invalid-feedback">
+      {{ error }}
+    </span>
 
     <span
       v-if="append || $slots.append"

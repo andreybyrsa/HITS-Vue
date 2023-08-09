@@ -44,6 +44,7 @@ function handleLogin() {
       </Button>
 
       <Input
+        name="email"
         v-model="text"
         prepend="текст"
         placeholder="Введите текст"
