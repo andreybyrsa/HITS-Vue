@@ -8,6 +8,7 @@ import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import NewPasswordView from '@Views/NewPasswordView.vue'
+import IndexView from '@Views/IndexView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -29,6 +30,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
+  },
+  {
+    path: '/index',
+    name: 'index',
+    component: IndexView,
   },
   {
     path: '/new-password/:slug',
