@@ -6,32 +6,72 @@ import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import { HTMLInputEvent } from '@Components/Inputs/Input/Input.types'
+import EmailsModal from '@Components/Modals/EmailsModal/EmailsModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { InvitationForm } from '@Domain/Invitation'
 import ResponseMessage from '@Domain/ResponseMessage'
 
-import AuthService from '@Services/AuthService'
+import ManageUsersService from '@Services/ManageUsersService'
 
 import getRoles from '@Utils/getRoles'
 
 const currentRoles = getRoles()
 
 const isFileInput = ref(false)
-const userData = reactive<InvitationForm>({
+const isEmailsModalOpened = ref(false)
+
+const invitationData = reactive<InvitationForm>({
   email: '',
-  file: null,
+  emails: [],
   roles: [],
 })
+
 const response = ref<ResponseMessage>()
 
-function handleFileChange() {
-  console.log('loaded')
+function handleOpenModal() {
+  if (invitationData.emails.length) {
+    isEmailsModalOpened.value = true
+  }
 }
 
-const inviteUserByEmail = async () => {
-  response.value = await AuthService.inviteUserByEmail(userData)
+function handleCloseModal() {
+  isEmailsModalOpened.value = false
+}
+
+function handleFileChange(event: HTMLInputEvent) {
+  const rawFile = event.target.files?.length && event.target.files[0]
+
+  if (rawFile) {
+    const fileURL = URL.createObjectURL(rawFile)
+
+    fetch(fileURL)
+      .then((response) => response.text())
+      .then((text) => {
+        const regExpPattern = /^\w+@[a-zA-Z_]+.[a-zA-Z]{2,10}/gm
+
+        const formattedEmails = text.match(regExpPattern)
+        if (formattedEmails) {
+          invitationData.emails = formattedEmails
+        }
+      })
+
+    isEmailsModalOpened.value = true
+  }
+}
+
+function handleRemoveEmail(index: number) {
+  invitationData.emails?.splice(index, 1)
+}
+
+const inviteUsers = async () => {
+  if (isFileInput.value) {
+    response.value = await ManageUsersService.inviteUsersByFile(invitationData)
+  } else {
+    response.value = await ManageUsersService.inviteUserByEmail(invitationData)
+  }
 }
 </script>
 
@@ -43,29 +83,40 @@ const inviteUserByEmail = async () => {
 
     <div class="add-users-form__data w-100">
       <Input
-        v-if="!isFileInput"
-        type="text"
-        v-model="userData.email"
-        placeholder="Введите email"
-        prepend="@"
+        v-if="isFileInput"
+        type="file"
+        @change="handleFileChange"
       />
       <Input
         v-else
-        type="file"
-        @change="(event) => handleFileChange()"
+        v-model="invitationData.email"
+        placeholder="Введите email"
+        prepend="@"
       />
 
       <Button
-        class-name="btn-primary"
+        id="checkboxRoles"
         icon-name="bi bi-plus-lg"
-        data-bs-toggle="collapse"
-        data-bs-target="#checkboxRoles"
-        aria-expanded="false"
-        aria-controls="collapseExample"
+        class-name="btn-primary"
+        is-drop-down-controller
       >
-        роли
+        Роли
       </Button>
+      <Button
+        v-if="isFileInput && invitationData.emails.length"
+        icon-name="bi bi-file-earmark-check"
+        class-name="btn-primary"
+        @click="handleOpenModal"
+      ></Button>
+
+      <EmailsModal
+        :is-opened="isEmailsModalOpened"
+        @close-modal="handleCloseModal"
+        :emails="invitationData.emails"
+        @remove-email="handleRemoveEmail"
+      />
     </div>
+
     <DropDown
       id="checkboxRoles"
       class-name="w-100"
@@ -74,14 +125,14 @@ const inviteUserByEmail = async () => {
         v-for="role in currentRoles.roles"
         :key="role"
         :label="currentRoles.translatedRoles[role]"
-        v-model="userData.roles"
+        v-model="invitationData.roles"
         :value="role"
       />
     </DropDown>
 
     <Button
       class-name="btn-primary w-100"
-      @click="inviteUserByEmail"
+      @click="inviteUsers"
     >
       Добавить
     </Button>
@@ -105,10 +156,10 @@ const inviteUserByEmail = async () => {
 
 <style lang="scss">
 .add-users-form {
-  width: 550px;
+  width: 600px;
 
   &__data {
-    @include flexible(center, space-between, $gap: 16px);
+    @include flexible(stretch, space-between, $gap: 16px);
   }
 }
 </style>

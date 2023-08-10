@@ -3,8 +3,6 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-import { User } from '@Domain/User'
-
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
@@ -25,7 +23,7 @@ const userStore = useUserStore()
 
 router.beforeEach((to) => {
   userStore.checkLastActivity()
-  const localStorageUser: User = LocalStorageUser.getLocalStorageUser()
+  const localStorageUser = LocalStorageUser.getLocalStorageUser()
 
   if (localStorageUser?.token && !userStore.user) {
     userStore.setUserFromLocalStorage(localStorageUser)
