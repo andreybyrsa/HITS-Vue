@@ -11,7 +11,7 @@ defineModel<string>({
 })
 
 const { value, errorMessage } = useField(props.name, props.validation, {
-  validateOnValueUpdate: !!props.validation ?? false,
+  validateOnValueUpdate: !!props.validation,
   syncVModel: true,
 })
 
@@ -43,8 +43,9 @@ const LabelClassName = computed(() => ['form-label', props.className])
     <input
       :class="InputClassName"
       :type="type ?? 'text'"
-      :placeholder="placeholder"
       v-model="value"
+      :placeholder="placeholder"
+      :disabled="disabled"
     />
     <span class="invalid-feedback">
       {{ error || errorMessage }}

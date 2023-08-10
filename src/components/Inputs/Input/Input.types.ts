@@ -13,6 +13,8 @@ interface InputProps {
   prepend?: string
   append?: string
   error?: string
+
+  disabled?: boolean
 }
 
 interface HTMLInputEvent extends Event {
