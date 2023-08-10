@@ -1,15 +1,27 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { useField } from 'vee-validate'
 
 import { CheckboxProps } from '@Components/Inputs/Checkbox/Checkbox.types'
 
 const props = defineProps<CheckboxProps>()
 
-const modelValue = defineModel({
-  required: true,
+defineModel({
+  required: false,
 })
 
-const BoxInputClassName = computed(() => ['form-check-input', props.className])
+const { value, errorMessage } = useField(() => props.name, undefined, {
+  type: 'checkbox',
+  checkedValue: props.value,
+  validateOnValueUpdate: false,
+  syncVModel: true,
+})
+
+const BoxInputClassName = computed(() => [
+  'form-check-input',
+  { 'is-invalid': errorMessage.value || props.error },
+  props.className,
+])
 const BoxLabelClassName = computed(() => ['form-check-label', props.className])
 </script>
 
@@ -17,16 +29,16 @@ const BoxLabelClassName = computed(() => ['form-check-label', props.className])
   <div class="form-check">
     <label
       :class="BoxLabelClassName"
-      for="checkbox"
+      :for="name"
     >
       {{ label }}
     </label>
     <input
-      name="checkbox"
       type="checkbox"
+      :name="name"
       :class="BoxInputClassName"
-      v-model="modelValue"
-      :value="value"
+      v-model="value"
+      :value="props.value"
     />
   </div>
 </template>
