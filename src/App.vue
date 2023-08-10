@@ -93,6 +93,10 @@ p {
   margin: 0;
 }
 
+.bi {
+  @include flexible(center, center);
+}
+
 input[type='checkbox'] {
   accent-color: $primary-color;
 

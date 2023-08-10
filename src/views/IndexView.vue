@@ -6,7 +6,6 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import Button from '@Components/Button/Button.vue'
 
 const searchQuery = ref('')
 const gridColumns = [
@@ -36,7 +35,7 @@ const gridData = [
   },
   {
     name: 'Свежая булочная на 5ом этаже ВШЦТ',
-    status: 'На согласовании',
+    status: 'Утверждено',
     creationDate: new Date('2019-10-20'),
     updatedDate: new Date('2020-01-15'),
     rating: 4.9,
@@ -63,7 +62,7 @@ const gridData = [
       <Typography class-name="fs-2 text-primary">Идеи</Typography>
       <FormLayout
         id="search"
-        style="width: 100%"
+        style="width: 100%; background-color: #2151ff"
       >
         <Input
           v-model="searchQuery"
@@ -75,7 +74,6 @@ const gridData = [
         :data="gridData"
         :columns="gridColumns"
         :filter-key="searchQuery"
-        class="demogrid"
         style="min-width: 100%"
       >
       </DemoGrid>
