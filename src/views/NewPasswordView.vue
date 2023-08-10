@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { useForm } from 'vee-validate'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -8,18 +8,28 @@ import Typography from '@Components/Typography/Typography.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-const newPassword = ref('')
+import Validation from '@Utils/Validation'
+
+const { handleSubmit } = useForm({
+  validationSchema: {
+    password: (value: string) => Validation.checkPassword(value),
+  },
+})
+
+const handleSendNewPassword = handleSubmit((values) => {
+  console.log(values)
+})
 </script>
 
 <template>
   <PageLayout content-class-name="new-password-page__content">
     <template #content>
       <FormLayout>
-        <Typography class-name="fs-3 text-primary"> Новый пароль </Typography>
+        <Typography class-name="fs-3 text-primary">Новый пароль</Typography>
 
         <Input
           type="password"
-          v-model="newPassword"
+          name="password"
           placeholder="Введите пароль"
         >
           <template #prepend>
@@ -27,7 +37,13 @@ const newPassword = ref('')
           </template>
         </Input>
 
-        <Button class-name="btn btn-primary w-100"> Изменить пароль </Button>
+        <Button
+          type="submit"
+          class-name="btn btn-primary w-100"
+          @click="handleSendNewPassword"
+        >
+          Изменить пароль
+        </Button>
       </FormLayout>
     </template>
   </PageLayout>

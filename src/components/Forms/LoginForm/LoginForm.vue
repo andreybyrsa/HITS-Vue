@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { reactive } from 'vue'
 import { useForm } from 'vee-validate'
 
 import Typography from '@Components/Typography/Typography.vue'
@@ -17,44 +16,27 @@ import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
 
-const userData = reactive<LoginUser>({
-  email: '',
-  password: '',
-})
-const dataError = reactive({
-  email: '',
-  password: '',
-})
-
-const { validate } = useForm({
+const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {
-    email: () => Validation.checkEmail(userData.email),
-    password: () => Validation.checkPassword(userData.password),
+    email: (value: string) => Validation.checkEmail(value),
+    password: (value: string) => Validation.checkPassword(value),
   },
 })
 
-const handleLogin = async () => {
-  const { errors, valid } = await validate()
-
-  dataError.email = errors.email ? errors.email : ''
-  dataError.password = errors.password ? errors.password : ''
-
-  if (valid) {
-    userStore.loginUser(userData)
-  }
-}
+const handleLogin = handleSubmit((values) => {
+  userStore.loginUser(values)
+})
 </script>
 
 <template>
   <FormLayout>
-    <Typography class-name="fs-3 text-primary"> Авторизация </Typography>
+    <Typography class-name="fs-3 text-primary">Авторизация</Typography>
 
     <Input
       v-for="input in loginInputs"
       :key="input.key"
       :type="input.type"
-      v-model="userData[input.key]"
-      :error="dataError[input.key]"
+      :name="input.name"
       :placeholder="input.placeholder"
       :prepend="input.prepend"
     >

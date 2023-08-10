@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { useForm } from 'vee-validate'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -8,7 +8,17 @@ import Typography from '@Components/Typography/Typography.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-const email = ref('')
+import Validation from '@Utils/Validation'
+
+const { handleSubmit } = useForm({
+  validationSchema: {
+    email: (value: string) => Validation.checkEmail(value),
+  },
+})
+
+const sendRevoveryEmail = handleSubmit((values) => {
+  console.log(values)
+})
 </script>
 
 <template>
@@ -20,12 +30,19 @@ const email = ref('')
         </Typography>
 
         <Input
-          v-model="email"
+          type="email"
+          name="email"
           placeholder="Введите email"
           prepend="@"
         />
 
-        <Button class-name="btn-primary w-100"> Отправить </Button>
+        <Button
+          type="submit"
+          class-name="btn-primary w-100"
+          @click="sendRevoveryEmail"
+        >
+          Отправить
+        </Button>
       </FormLayout>
     </template>
   </PageLayout>

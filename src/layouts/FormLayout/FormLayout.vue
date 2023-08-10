@@ -11,9 +11,9 @@ const FormLayoutClassName = computed(() => [
 </script>
 
 <template>
-  <div :class="FormLayoutClassName">
+  <form :class="FormLayoutClassName">
     <slot></slot>
-  </div>
+  </form>
 </template>
 
 <style lang="scss">

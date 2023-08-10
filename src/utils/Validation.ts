@@ -4,6 +4,11 @@ class Validation {
     return emailRegExp.test(email) || 'Неверно введена почта'
   }
 
+  checkName(name: string) {
+    const nameRegExp = /^[а-я ,.'-]+$/i
+    return nameRegExp.test(name)
+  }
+
   checkPassword(password: string) {
     if (!password) {
       return 'Это обязательное поле'
