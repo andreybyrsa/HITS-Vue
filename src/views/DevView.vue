@@ -48,7 +48,6 @@ function handleLogin() {
         prepend="текст"
         placeholder="Введите текст"
       />
-      {{ text }}
 
       <div class="nav nav-pills">
         <NavTab

@@ -6,12 +6,19 @@ import ButtonProps from '@Components/Button/Button.types'
 const props = defineProps<ButtonProps>()
 
 const ButtonClassName = computed(() => ['btn btn-lg d-flex', props.className])
+
+const dropDownProps = {
+  'data-bs-toggle': 'collapse',
+  'data-bs-target': `#${props.id}`,
+  'aria-expanded': false,
+}
 </script>
 
 <template>
   <button
     type="button"
     :class="ButtonClassName"
+    v-bind="isDropDownController && dropDownProps"
   >
     <i
       v-if="iconName"

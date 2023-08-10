@@ -2,12 +2,12 @@
 import DemoGrid from './Grid.vue'
 import { ref } from 'vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-import loginInputs from '@Components/Forms/LoginForm/LoginFormInputs'
+import FilterModal from '@Components/FilterModal/FilterModal.vue'
+const isOpenedFilter = ref(false)
 
 const searchQuery = ref('')
 const gridColumns = [
@@ -64,26 +64,29 @@ const gridData = [
       <Typography class-name="fs-2 text-primary w-100">Идеи</Typography>
 
       <div
-        id="search"
         style="width: 100%"
         class="row bg-primary rounded-3 p-3"
       >
-        <Input
-          v-model="searchQuery"
-          placeholder="Поиск идей по названию"
-          class-name="col"
-          style="width: 85%"
-        >
-          <template #prepend>
-            <i class="bi bi-search"></i>
-          </template>
-        </Input>
-
+        <div style="width: 85%">
+          <Input
+            v-model="searchQuery"
+            placeholder="Поиск идей по названию"
+          >
+            <template #prepend>
+              <i class="bi bi-search"></i>
+            </template>
+          </Input>
+        </div>
         <Button
-          class-name="btn-light col"
+          class-name="btn-light"
           style="width: 15%"
+          @click="isOpenedFilter = true"
           ><i class="bi bi-funnel-fill"></i>Фильтр</Button
         >
+        <FilterModal
+          :is-opened="isOpenedFilter"
+          @close-modal="isOpenedFilter = false"
+        />
       </div>
       <DemoGrid
         :data="gridData"

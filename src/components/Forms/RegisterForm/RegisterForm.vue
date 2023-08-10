@@ -13,7 +13,7 @@ import { RegisterUser } from '@Domain/User'
 
 import useUserStore from '@Store/user/userStore'
 
-import AuthService from '@Services/AuthService'
+import ManageUsersService from '@Services/ManageUsersService'
 
 const userStore = useUserStore()
 const route = useRoute()
@@ -31,7 +31,7 @@ function handleRegister(user: RegisterUser) {
 }
 
 onMounted(async () => {
-  const { email, roles } = await AuthService.getInvitationInfo(
+  const { email, roles } = await ManageUsersService.getInvitationInfo(
     route.params.slug,
   )
   userData.email = email
