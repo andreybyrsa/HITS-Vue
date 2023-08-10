@@ -7,6 +7,7 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
+import loginInputs from '@Components/Forms/LoginForm/LoginFormInputs'
 
 const searchQuery = ref('')
 const gridColumns = [
@@ -60,17 +61,30 @@ const gridData = [
     </template>
     <div class="grid-container"></div>
     <template #content>
-      <Typography class-name="fs-2 text-primary">Идеи</Typography>
-      <FormLayout
+      <Typography class-name="fs-2 text-primary w-100">Идеи</Typography>
+
+      <div
         id="search"
         style="width: 100%"
+        class="row bg-primary rounded-3 p-3"
       >
         <Input
           v-model="searchQuery"
           placeholder="Поиск идей по названию"
-          prepend="@"
-        />
-      </FormLayout>
+          class-name="col"
+          style="width: 85%"
+        >
+          <template #prepend>
+            <i class="bi bi-search"></i>
+          </template>
+        </Input>
+
+        <Button
+          class-name="btn-light col"
+          style="width: 15%"
+          ><i class="bi bi-funnel-fill"></i>Фильтр</Button
+        >
+      </div>
       <DemoGrid
         :data="gridData"
         :columns="gridColumns"
@@ -86,7 +100,7 @@ const gridData = [
 <style lang="scss">
 .dev-page {
   &__content {
-    @include flexible(flex-start, flex-start, column, $gap: 16px);
+    @include flexible(center, start, column, $gap: 16px);
   }
 }
 </style>
