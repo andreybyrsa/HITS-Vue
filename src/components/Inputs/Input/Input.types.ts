@@ -21,4 +21,8 @@ interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget
 }
 
-export { InputProps, HTMLInputEvent }
+interface InputEmits {
+  (event: 'change', value: HTMLInputEvent): void
+}
+
+export { InputProps, InputEmits, HTMLInputEvent }

@@ -2,9 +2,15 @@
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
 
-import { InputProps } from '@Components/Inputs/Input/Input.types'
+import {
+  InputProps,
+  InputEmits,
+  HTMLInputEvent,
+} from '@Components/Inputs/Input/Input.types'
 
 const props = defineProps<InputProps>()
+
+const emit = defineEmits<InputEmits>()
 
 defineModel<string>({
   required: false,
@@ -44,6 +50,7 @@ const LabelClassName = computed(() => ['form-label', props.className])
       :class="InputClassName"
       :type="type ?? 'text'"
       v-model="value"
+      @change="(event) => emit('change', event as HTMLInputEvent)"
       :placeholder="placeholder"
       :disabled="disabled"
     />

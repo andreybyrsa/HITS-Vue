@@ -1,7 +1,7 @@
 class Validation {
   checkEmail(email: string) {
     const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegExp.test(email) || 'Неверно введена почта'
+    return emailRegExp.test(email)
   }
 
   checkName(name: string) {

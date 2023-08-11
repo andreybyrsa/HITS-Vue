@@ -21,9 +21,23 @@ const getUsers = async (): Promise<User[]> => {
       },
       {
         token: 'dsam1m23',
-        email: 'admin@mail.com',
+        email: 'andrey@mail.com',
         firstName: 'Andrey1',
         lastName: 'Byrsa2',
+        roles: ['ADMIN', 'INITIATOR'],
+      },
+      {
+        token: 'dsamp23',
+        email: 'byrsa@mail.com',
+        firstName: 'Andrey',
+        lastName: 'Byrsa',
+        roles: ['ADMIN', 'INITIATOR'],
+      },
+      {
+        token: 'dsamp23',
+        email: 'byrsa123andr@mail.com',
+        firstName: 'Andrey',
+        lastName: 'Byrsa',
         roles: ['ADMIN', 'INITIATOR'],
       },
     ])
@@ -45,7 +59,7 @@ const inviteUserByEmail = async (
     .catch((error) => console.warn(`invite ${error}`))
 }
 
-const inviteUsersByFile = async (
+const inviteUsers = async (
   userData: InvitationForm,
 ): Promise<ResponseMessage> => {
   return await axios
@@ -67,7 +81,7 @@ const ManageUsersService = {
   getUsers,
   saveEditedUser,
   inviteUserByEmail,
-  inviteUsersByFile,
+  inviteUsers,
   getInvitationInfo,
 }
 
