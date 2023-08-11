@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
 
-import { CheckboxProps } from '@Components/Inputs/Checkbox/Checkbox.types'
+import CheckboxProps from '@Components/Inputs/Checkbox/Checkbox.types'
 
 const props = defineProps<CheckboxProps>()
 
@@ -22,6 +22,7 @@ const BoxInputClassName = computed(() => [
   { 'is-invalid': errorMessage.value || props.error },
   props.className,
 ])
+
 const BoxLabelClassName = computed(() => ['form-check-label', props.className])
 </script>
 

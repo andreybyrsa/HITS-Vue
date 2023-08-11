@@ -9,8 +9,4 @@ interface CheckboxProps {
   error?: string
 }
 
-interface CheckboxEmits {
-  (event: 'change'): void
-}
-
-export { CheckboxProps, CheckboxEmits }
+export default CheckboxProps

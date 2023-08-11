@@ -3,7 +3,7 @@ import Button from '@Components/Button/Button.vue'
 import {
   FilterModalProps,
   FilterModalEmits,
-} from '@Components/FilterModal/FilterModal.types'
+} from '@Components/Modals/FilterModal/FilterModal.types'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -43,6 +43,7 @@ const emit = defineEmits<FilterModalEmits>()
         >
           <div class="filter-modal__checkbox">
             <Checkbox
+              name="filters"
               :label="Filter"
               v-model="UserFilters"
               :value="Filter"

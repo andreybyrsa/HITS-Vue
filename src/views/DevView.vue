@@ -7,7 +7,6 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
-import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
@@ -20,7 +19,6 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const text = ref('')
-const check = ref(false)
 const isOpenedModal = ref(false)
 
 userStore.checkLastActivity()
@@ -54,11 +52,6 @@ function handleLogin() {
         prepend="текст"
         placeholder="Введите текст"
       />
-      <Checkbox
-        name="checkbox"
-        v-model="check"
-      />
-      {{ check ? '1' : '0' }}
 
       <div class="nav nav-pills">
         <NavTab

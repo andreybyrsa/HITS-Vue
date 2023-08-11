@@ -1,29 +1,48 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { useField } from 'vee-validate'
 
-import { RadioProps, RadioEmits } from '@Components/Inputs/Radio/Radio.types'
+import RadioProps from '@Components/Inputs/Radio/Radio.types'
 
 const props = defineProps<RadioProps>()
 
-const emit = defineEmits<RadioEmits>()
+defineModel({
+  required: false,
+})
 
-const BoxInputClassName = computed(() => ['form-check-input', props.className])
-const BoxLabelClassName = computed(() => ['form-check-label', props.className])
+const { value, errorMessage } = useField(() => props.name, undefined, {
+  type: 'radio',
+  checkedValue: props.value,
+  validateOnValueUpdate: false,
+  syncVModel: true,
+})
+
+const RadioInputClassName = computed(() => [
+  'form-check-input',
+  { 'is-invalid': errorMessage.value || props.error },
+  props.className,
+])
+
+const RadioLabelClassName = computed(() => [
+  'form-check-label',
+  props.className,
+])
 </script>
 
 <template>
   <div class="form-check">
     <label
-      :class="BoxLabelClassName"
-      for="name"
+      :class="RadioLabelClassName"
+      :for="name"
     >
       {{ label }}
     </label>
     <input
-      name="name"
-      :class="BoxInputClassName"
+      :name="name"
       type="radio"
-      @click="emit('click')"
+      :class="RadioInputClassName"
+      v-model="value"
+      :value="props.value"
     />
   </div>
 </template>

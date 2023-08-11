@@ -1,10 +1,12 @@
 interface RadioProps {
   className?: string
+  name: string
+
   label?: string
+
+  value?: string | number | boolean
+
+  error?: string
 }
 
-interface RadioEmits {
-  (event: 'click'): void
-}
-
-export { RadioProps, RadioEmits }
+export default RadioProps
