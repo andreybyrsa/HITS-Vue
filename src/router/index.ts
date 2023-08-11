@@ -9,7 +9,8 @@ import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import NewPasswordView from '@Views/NewPasswordView.vue'
-import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
+
+import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {

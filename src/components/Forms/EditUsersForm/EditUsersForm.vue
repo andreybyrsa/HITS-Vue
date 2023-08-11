@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import Button from '@Components/Button/Button.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
@@ -14,23 +15,37 @@ import ManageUsersService from '@Services/ManageUsersService'
 const isOpenUserModal = ref(false)
 
 const users = ref<User[]>()
-const editingUser = ref()
+const editingUser = ref<User>()
+const searchedValue = ref('')
 
 onMounted(async () => {
   users.value = await ManageUsersService.getUsers()
 })
 
-function handleOpenModal(token: string) {
+const searchedUsers = computed(() => {
+  return users.value?.filter((user) => {
+    const userEmail = user.email.toLowerCase().trim()
+    const currentSearchedValue = searchedValue.value.toLowerCase().trim()
+
+    return userEmail.includes(currentSearchedValue)
+  })
+})
+
+function handleOpenModal(email: string) {
   isOpenUserModal.value = true
-  editingUser.value = { ...users.value?.find((user) => user.token === token) }
+  editingUser.value = {
+    ...users.value?.find((user) => user.email === email),
+  } as User
 }
 
 function handleCloseModal(newUser?: User) {
   isOpenUserModal.value = false
 
-  if (newUser?.token) {
+  if (newUser && editingUser.value) {
+    const { email } = editingUser.value
+
     users.value?.forEach((user, index) => {
-      if (user.token === newUser.token) {
+      if (email === user.email) {
         users.value?.splice(index, 1, newUser)
       }
     })
@@ -40,15 +55,27 @@ function handleCloseModal(newUser?: User) {
 
 <template>
   <FormLayout class-name="edit-users-form">
-    <Typography class-name="fs-3 text-primary">
+    <Typography class-name="fs-2 text-primary text-center w-100">
       Редактирование пользователей
     </Typography>
 
+    <div class="w-50">
+      <Input
+        name="search"
+        v-model="searchedValue"
+        placeholder="Поиск по почте"
+      >
+        <template #prepend>
+          <i class="bi bi-search"></i>
+        </template>
+      </Input>
+    </div>
+
     <div class="edit-users-form__content w-100">
-      <template v-if="users?.length">
+      <template v-if="searchedUsers?.length">
         <div
-          v-for="user in users"
-          :key="user.token"
+          v-for="(user, index) in searchedUsers"
+          :key="index"
           class="edit-users-form__user px-3 py-2 border rounded-3"
         >
           <div class="d-flex flex-column">
@@ -60,14 +87,14 @@ function handleCloseModal(newUser?: User) {
 
           <Button
             icon-name="bi bi-pencil-square text-primary"
-            @click="handleOpenModal(user.token)"
+            @click="handleOpenModal(user.email)"
           ></Button>
         </div>
       </template>
 
       <Typography
-        v-else
-        class-name="text-danger"
+        v-if="!users?.length"
+        class-name="text-danger text-center"
       >
         Ошибка загрузки пользователей
       </Typography>
@@ -83,12 +110,13 @@ function handleCloseModal(newUser?: User) {
 
 <style lang="scss">
 .edit-users-form {
-  width: 500px;
+  width: 100%;
+  height: 100%;
 
   @include flexible(center, flex-start, column, $gap: 16px);
 
   &__content {
-    max-height: 400px;
+    max-height: 100%;
 
     overflow-y: scroll;
 

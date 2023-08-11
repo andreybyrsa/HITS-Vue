@@ -64,15 +64,15 @@ const useUserStore = defineStore('user', {
         LocalStorageUser.setLocalStorageUser(currentUser)
       }
     },
-    setRole(newRole: RolesTypes) {
+    setRole(role: RolesTypes) {
       const currentUser = LocalStorageUser.getLocalStorageUser()
-      currentUser.role = newRole
+
       if (this.user) {
-        this.user.role = newRole
+        this.user.role = role
       }
-      if (currentUser.role) {
-        LocalStorageUser.setLocalStorageUser(currentUser)
-      }
+
+      currentUser.role = role
+      LocalStorageUser.setLocalStorageUser(currentUser)
     },
   },
 })

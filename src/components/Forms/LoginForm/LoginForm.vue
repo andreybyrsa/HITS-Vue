@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { useForm } from 'vee-validate'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -12,27 +12,32 @@ import { LoginUser } from '@Domain/User'
 
 import useUserStore from '@Store/user/userStore'
 
+import Validation from '@Utils/Validation'
+
 const userStore = useUserStore()
 
-const userData = reactive<LoginUser>({
-  email: '',
-  password: '',
+const { handleSubmit } = useForm<LoginUser>({
+  validationSchema: {
+    email: (value: string) =>
+      Validation.checkEmail(value) || 'Неверно введена почта',
+    password: (value: string) => Validation.checkPassword(value),
+  },
 })
 
-function handleLogin(user: LoginUser) {
-  userStore.loginUser(user)
-}
+const handleLogin = handleSubmit((values) => {
+  userStore.loginUser(values)
+})
 </script>
 
 <template>
   <FormLayout>
-    <Typography class-name="fs-3 text-primary"> Авторизация </Typography>
+    <Typography class-name="fs-3 text-primary">Авторизация</Typography>
 
     <Input
       v-for="input in loginInputs"
       :key="input.key"
       :type="input.type"
-      v-model="userData[input.key]"
+      :name="input.name"
       :placeholder="input.placeholder"
       :prepend="input.prepend"
     >
@@ -44,8 +49,9 @@ function handleLogin(user: LoginUser) {
     <router-link to="/forgot-password">Забыли пароль?</router-link>
 
     <Button
+      type="submit"
       class-name="btn-primary w-100"
-      @click="handleLogin(userData)"
+      @click="handleLogin"
     >
       Войти
     </Button>

@@ -1,24 +1,30 @@
 <script lang="ts" setup>
-import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
+
+import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-let isOpenedModal = ref(false)
+const isOpenedModal = ref(false)
 
-if (user.value?.roles.length == 1) {
-  isOpenedModal = ref(false)
-  userStore.setRole(user.value?.roles[0])
-} else {
-  isOpenedModal = ref(true)
-}
+onMounted(() => {
+  if (user.value) {
+    const { roles, role } = user.value
 
-if (user.value?.role) {
-  isOpenedModal = ref(false)
+    if (roles.length == 1 && !role) {
+      userStore.setRole(roles[0])
+    } else if (roles.length > 1 && !role) {
+      isOpenedModal.value = true
+    }
+  }
+})
+
+function handleCloseModal() {
+  isOpenedModal.value = false
 }
 </script>
 
@@ -26,6 +32,6 @@ if (user.value?.role) {
   <router-view />
   <RoleModal
     :is-opened="isOpenedModal"
-    @close-modal="isOpenedModal = false"
+    @close-modal="handleCloseModal"
   />
 </template>

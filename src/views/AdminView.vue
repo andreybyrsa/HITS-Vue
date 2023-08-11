@@ -5,7 +5,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 </script>
 
 <template>
-  <PageLayout content-class-name="admin-page__content p-3">
+  <PageLayout content-class-name="admin-page__content">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
