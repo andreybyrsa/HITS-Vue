@@ -12,7 +12,8 @@ import Validation from '@Utils/Validation'
 
 const { handleSubmit } = useForm({
   validationSchema: {
-    email: (value: string) => Validation.checkEmail(value),
+    email: (value: string) =>
+      Validation.checkEmail(value) || 'Неверно введена почта',
   },
 })
 

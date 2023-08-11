@@ -7,15 +7,19 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
 
+import Validation from '@Utils/Validation'
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const text = ref('')
+const check = ref(false)
 
 userStore.checkLastActivity()
 
@@ -44,9 +48,15 @@ function handleLogin() {
       <Input
         name="email"
         v-model="text"
+        :validation="Validation.checkEmail"
         prepend="текст"
         placeholder="Введите текст"
       />
+      <Checkbox
+        name="checkbox"
+        v-model="check"
+      />
+      {{ check ? '1' : '0' }}
 
       <div class="nav nav-pills">
         <NavTab

@@ -29,9 +29,10 @@ const response = ref('')
 
 const availableRoles = getRoles()
 
-const { setValues, handleSubmit } = useForm<User>({
+const { errors, setValues, handleSubmit } = useForm<User>({
   validationSchema: {
-    email: (value: string) => Validation.checkEmail(value),
+    email: (value: string) =>
+      Validation.checkEmail(value) || 'Неверно введена почта',
     firstName: (value: string) =>
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
@@ -42,10 +43,12 @@ const { setValues, handleSubmit } = useForm<User>({
 
 watch(
   () => props.user,
-  () =>
+  () => {
+    console.log(1)
     setValues({
       ...props.user,
-    }),
+    })
+  },
 )
 
 const handleEditUser = handleSubmit(async (values) => {
@@ -105,7 +108,9 @@ const handleEditUser = handleSubmit(async (values) => {
 
           <Button
             id="checkbox-roles"
-            class-name="px-1 py-0"
+            :class-name="
+              errors.roles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'
+            "
             icon-name="bi bi-chevron-down"
             is-drop-down-controller
           >

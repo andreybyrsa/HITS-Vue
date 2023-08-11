@@ -18,7 +18,8 @@ const userStore = useUserStore()
 
 const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {
-    email: (value: string) => Validation.checkEmail(value),
+    email: (value: string) =>
+      Validation.checkEmail(value) || 'Неверно введена почта',
     password: (value: string) => Validation.checkPassword(value),
   },
 })

@@ -24,7 +24,8 @@ const route = useRoute()
 
 const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
   validationSchema: {
-    email: (value: string) => Validation.checkEmail(value),
+    email: (value: string) =>
+      Validation.checkEmail(value) || 'Неверно введена почта',
     firstName: (value: string) =>
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
