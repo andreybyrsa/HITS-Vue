@@ -32,7 +32,6 @@ import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue
       </option>
       <option>Внутренний</option>
       <option>Внешний</option>
-      <option>Three</option>
     </select>
 
     <div style="width: 50%">
@@ -60,11 +59,36 @@ import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue
     </div>
 
     <div style="width: 50%">
-      <Input
-        label="Заказчик*"
-        placeholder="Укажите заказчика"
-        class-name="fs-6 text-primary"
-      ></Input>
+      <Typography class-name="fs-6 text-primary">Заказчик*</Typography>
+      <select
+        class="form-select w-50"
+        aria-label="Floating label select example"
+      >
+        <option
+          selected
+          disabled
+        >
+          Выберите заказчика
+        </option>
+        <option>Газпром</option>
+        <option>Роснефть</option>
+      </select>
+    </div>
+    <div style="width: 50%">
+      <Typography class-name="fs-6 text-primary">Контактное лицо*</Typography>
+      <select
+        class="form-select w-50"
+        aria-label="Floating label select example"
+      >
+        <option
+          selected
+          disabled
+        >
+          Выберите контактное лицо
+        </option>
+        <option>1</option>
+        <option>2</option>
+      </select>
     </div>
 
     <div style="width: 50%">

@@ -20,8 +20,42 @@ const rating: Ref<RatingData> = ref({
 const totalRating = computed(() => {
   const { realizability, suitability, budget } = rating.value
   const total = ((realizability + suitability + budget) / 3).toFixed(1)
+  console.log(realizability)
   return total
 })
+
+const selectNames = [
+  {
+    label: 'Реализуемость*',
+    get value() {
+      return rating.value.realizability
+    },
+    set value(newValue) {
+      rating.value.realizability = newValue
+    },
+    forName: 'realizability',
+  },
+  {
+    label: 'Пригодность*',
+    get value() {
+      return rating.value.suitability
+    },
+    set value(newValue) {
+      rating.value.suitability = newValue
+    },
+    forName: 'suitability',
+  },
+  {
+    label: 'Бюджет*',
+    get value() {
+      return rating.value.budget
+    },
+    set value(newValue) {
+      rating.value.budget = newValue
+    },
+    forName: 'budget',
+  },
+]
 </script>
 
 <template>
@@ -29,65 +63,24 @@ const totalRating = computed(() => {
     <Typography class-name="fs-6 text-primary"
       >Предварительная оценка идеи</Typography
     >
-    <div class="row w-150">
-      <div class="col">
+    <div class="row">
+      <div
+        class="col"
+        v-for="select in selectNames"
+        :key="select.value"
+      >
         <Typography class="fs-6 text-primary">
-          <label for="realizability">Реализуемость*</label>
+          <label :for="select.forName">{{ select.label }}</label>
           <select
             class="form-select"
             aria-label="Floating label select example"
+            v-model="select.value"
           >
             <option
-              selected
               disabled
+              value=""
             >
-              Выберите значение
-            </option>
-            <option
-              v-for="option in ratingOptions"
-              :value="option.value"
-              :key="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </Typography>
-      </div>
-      <div class="col">
-        <Typography class="fs-6 text-primary">
-          <label for="suitability">Пригодность*</label>
-          <select
-            class="form-select"
-            aria-label="Floating label select example"
-          >
-            <option
-              selected
-              disabled
-            >
-              Выберите значение
-            </option>
-            <option
-              v-for="option in ratingOptions"
-              :value="option.value"
-              :key="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </Typography>
-      </div>
-      <div class="col">
-        <Typography class="fs-6 text-primary">
-          <label for="budget">Бюджет*</label>
-          <select
-            class="form-select"
-            aria-label="Floating label select example"
-          >
-            <option
-              selected
-              disabled
-            >
-              Выберите значение
+              Выберите вариант
             </option>
             <option
               v-for="option in ratingOptions"
