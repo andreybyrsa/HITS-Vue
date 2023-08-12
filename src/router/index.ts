@@ -44,7 +44,7 @@ const routes: Array<RouteRecordRaw> = [
     component: LoginView,
   },
   {
-    path: '/register/:token',
+    path: '/register/:slug',
     name: 'register',
     component: RegisterView,
   },

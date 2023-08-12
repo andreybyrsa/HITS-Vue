@@ -1,6 +1,10 @@
 import RolesTypes from './Roles'
 
-interface InvitationForm {
+interface InviteUserForm {
+  emails: string
+}
+
+interface InviteUsersForm {
   emails: string[]
   roles: RolesTypes[]
 }
@@ -10,4 +14,8 @@ interface InvitationInfo {
   roles: RolesTypes[]
 }
 
-export { InvitationForm, InvitationInfo }
+interface RecoveryData {
+  email: string
+}
+
+export { InviteUserForm, InviteUsersForm, InvitationInfo, RecoveryData }

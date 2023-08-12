@@ -1,7 +1,7 @@
 import RolesTypes from './Roles'
 
 interface User {
-  token: string
+  token?: string
   username?: string
   email: string
   firstName: string
@@ -24,4 +24,12 @@ interface RegisterUser {
   roles: RolesTypes[]
 }
 
-export { User, LoginUser, RegisterUser }
+interface UpdateUserData {
+  email: string
+  newEmail: string
+  newFirstName: string
+  newLastName: string
+  newRoles: RolesTypes[]
+}
+
+export { User, LoginUser, RegisterUser, UpdateUserData }

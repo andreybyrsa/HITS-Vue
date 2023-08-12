@@ -10,6 +10,8 @@ import RolesTypes from '@Domain/Roles'
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
     user: null,
+    loginError: '',
+    registerError: '',
   }),
   actions: {
     async loginUser(user: LoginUser) {
@@ -23,11 +25,14 @@ const useUserStore = defineStore('user', {
           this.user = localStorageUser
 
           this.router.push({ name: 'dev' })
+        } else {
+          this.loginError = response.error
         }
-      } catch (error) {
-        console.warn(error)
+      } catch {
+        this.loginError = 'Ошибка авторизации'
       }
     },
+
     async registerUser(user: RegisterUser) {
       try {
         const response = await AuthService.registerUser(user)
@@ -39,11 +44,14 @@ const useUserStore = defineStore('user', {
           this.user = localStorageUser
 
           this.router.push({ name: 'dev' })
+        } else {
+          this.registerError = response.error
         }
-      } catch (error) {
-        console.warn(error)
+      } catch {
+        this.registerError = 'Ошибка регистрации'
       }
     },
+
     setUserFromLocalStorage(localStorageUser: User) {
       this.user = localStorageUser
     },

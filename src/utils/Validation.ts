@@ -1,6 +1,6 @@
 class Validation {
   checkEmail(email: string) {
-    const emailRegExp = /^\w+@[a-zA-Z_]+\.[a-zA-Z]{2,10}$/
+    const emailRegExp = /[a-zA-Z_.-{0,9}]+@[a-zA-Z_]+\.[a-zA-Z]{2,10}$/
     return emailRegExp.test(email)
   }
 
