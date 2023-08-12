@@ -13,7 +13,7 @@ import {
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
-import { User } from '@Domain/User'
+import { UpdateUserData } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
 import ManageUsersService from '@Services/ManageUsersService'
@@ -29,37 +29,47 @@ const response = ref('')
 
 const availableRoles = getRoles()
 
-const { errors, setValues, handleSubmit } = useForm<User>({
+const { errors, setValues, handleSubmit } = useForm<UpdateUserData>({
   validationSchema: {
-    email: (value: string) =>
+    newEmail: (value: string) =>
       Validation.checkEmail(value) || 'Неверно введена почта',
-    firstName: (value: string) =>
+    newFirstName: (value: string) =>
       Validation.checkName(value) || 'Неверно введено имя',
-    lastName: (value: string) =>
-      Validation.checkName(value) || 'неверно введена фамилия',
-    roles: (value: RolesTypes[]) => value?.length,
+    newLastName: (value: string) =>
+      Validation.checkName(value) || 'Неверно введена фамилия',
+    newRoles: (value: RolesTypes[]) => value?.length,
   },
 })
 
 watch(
   () => props.user,
   () => {
-    console.log(1)
-    setValues({
-      ...props.user,
-    })
+    if (props.user) {
+      const { email, firstName, lastName, roles } = props.user
+
+      setValues({
+        email,
+        newEmail: email,
+        newFirstName: firstName,
+        newLastName: lastName,
+        newRoles: roles,
+      })
+    }
   },
 )
 
 const handleEditUser = handleSubmit(async (values) => {
-  const { error, success } = await ManageUsersService.saveEditedUser(values)
+  try {
+    const { error, success } = await ManageUsersService.updateUserInfo(values)
 
-  if (!success) {
-    response.value = ''
-    return emit('close-modal', values)
-  }
-  if (error) {
-    response.value = error
+    if (success) {
+      response.value = ''
+      return emit('close-modal', values)
+    } else if (error) {
+      response.value = error
+    }
+  } catch {
+    response.value = 'Ошибка редактирования пользователя'
   }
 })
 </script>
@@ -83,13 +93,13 @@ const handleEditUser = handleSubmit(async (values) => {
         <div class="edit-user-modal__inputs w-100">
           <Input
             type="email"
-            name="email"
+            name="newEmail"
             placeholder="Введите email"
             prepend="@"
           />
 
           <Input
-            name="firstName"
+            name="newFirstName"
             placeholder="Введите имя"
           >
             <template #prepend>
@@ -98,7 +108,7 @@ const handleEditUser = handleSubmit(async (values) => {
           </Input>
 
           <Input
-            name="lastName"
+            name="newLastName"
             placeholder="Введите фамилию"
           >
             <template #prepend>
@@ -109,7 +119,7 @@ const handleEditUser = handleSubmit(async (values) => {
           <Button
             id="checkbox-roles"
             :class-name="
-              errors.roles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'
+              errors.newRoles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'
             "
             icon-name="bi bi-chevron-down"
             is-drop-down-controller
@@ -125,7 +135,7 @@ const handleEditUser = handleSubmit(async (values) => {
               :key="role"
             >
               <Checkbox
-                name="roles"
+                name="newRoles"
                 :value="role"
                 :label="availableRoles.translatedRoles[role]"
               />

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useForm } from 'vee-validate'
+import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -15,6 +16,7 @@ import useUserStore from '@Store/user/userStore'
 import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
+const { loginError } = storeToRefs(userStore)
 
 const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {
@@ -55,5 +57,12 @@ const handleLogin = handleSubmit((values) => {
     >
       Войти
     </Button>
+
+    <Typography
+      v-if="loginError"
+      class-name="text-danger text-center fs-6"
+    >
+      {{ loginError }}
+    </Typography>
   </FormLayout>
 </template>

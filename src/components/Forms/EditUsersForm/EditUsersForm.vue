@@ -8,22 +8,35 @@ import Typography from '@Components/Typography/Typography.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import { User } from '@Domain/User'
+import { User, UpdateUserData } from '@Domain/User'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
 const isOpenUserModal = ref(false)
 
-const users = ref<User[]>()
+const users = ref<User[]>([])
 const editingUser = ref<User>()
 const searchedValue = ref('')
 
+const errorResponse = ref('')
+
 onMounted(async () => {
-  users.value = await ManageUsersService.getUsers()
+  try {
+    const response = await ManageUsersService.getUsers()
+    const { error } = response
+
+    if (error) {
+      errorResponse.value = error
+    } else {
+      users.value = response
+    }
+  } catch {
+    errorResponse.value = 'Ошибка загрузки пользователей'
+  }
 })
 
 const searchedUsers = computed(() => {
-  return users.value?.filter((user) => {
+  return users.value.filter((user) => {
     const userEmail = user.email.toLowerCase().trim()
     const currentSearchedValue = searchedValue.value.toLowerCase().trim()
 
@@ -38,15 +51,21 @@ function handleOpenModal(email: string) {
   } as User
 }
 
-function handleCloseModal(newUser?: User) {
+function handleCloseModal(newUser?: UpdateUserData) {
   isOpenUserModal.value = false
 
-  if (newUser && editingUser.value) {
-    const { email } = editingUser.value
+  if (newUser) {
+    const { email, newEmail, newFirstName, newLastName, newRoles } = newUser
+    const newUserData: User = {
+      email: newEmail,
+      firstName: newFirstName,
+      lastName: newLastName,
+      roles: newRoles,
+    }
 
-    users.value?.forEach((user, index) => {
+    users.value.forEach((user, index) => {
       if (email === user.email) {
-        users.value?.splice(index, 1, newUser)
+        users.value.splice(index, 1, newUserData)
       }
     })
   }
@@ -72,31 +91,29 @@ function handleCloseModal(newUser?: User) {
     </div>
 
     <div class="edit-users-form__content w-100">
-      <template v-if="searchedUsers?.length">
-        <div
-          v-for="(user, index) in searchedUsers"
-          :key="index"
-          class="edit-users-form__user px-3 py-2 border rounded-3"
-        >
-          <div class="d-flex flex-column">
-            <Typography class-name="text-primary fs-5">
-              {{ user.email }}
-            </Typography>
-            <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
-          </div>
-
-          <Button
-            icon-name="bi bi-pencil-square text-primary"
-            @click="handleOpenModal(user.email)"
-          ></Button>
+      <div
+        v-for="(user, index) in searchedUsers"
+        :key="index"
+        class="edit-users-form__user px-3 py-2 border rounded-3"
+      >
+        <div class="d-flex flex-column">
+          <Typography class-name="text-primary fs-5">
+            {{ user.email }}
+          </Typography>
+          <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
         </div>
-      </template>
+
+        <Button
+          icon-name="bi bi-pencil-square text-primary"
+          @click="handleOpenModal(user.email)"
+        ></Button>
+      </div>
 
       <Typography
-        v-if="!users?.length"
+        v-if="errorResponse"
         class-name="text-danger text-center"
       >
-        Ошибка загрузки пользователей
+        {{ errorResponse }}
       </Typography>
     </div>
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, VueElement } from 'vue'
+import { reactive, ref, VueElement } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
 
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -11,11 +11,11 @@ import { HTMLInputEvent } from '@Components/Inputs/Input/Input.types'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import { InvitationForm } from '@Domain/Invitation'
+import { InviteUsersForm } from '@Domain/Invitation'
 import ResponseMessage from '@Domain/ResponseMessage'
 import RolesTypes from '@Domain/Roles'
 
-import ManageUsersService from '@Services/ManageUsersService'
+import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
@@ -24,9 +24,13 @@ const currentRoles = getRoles()
 
 const fileInput = ref<VueElement>()
 const loadedFileText = ref('')
-const response = ref<ResponseMessage>()
 
-const { errors, submitCount, handleSubmit } = useForm<InvitationForm>({
+const response = reactive<ResponseMessage>({
+  success: '',
+  error: '',
+})
+
+const { errors, submitCount, handleSubmit } = useForm<InviteUsersForm>({
   validationSchema: {
     emails: (value: string[]) =>
       value?.every((email) => Validation.checkEmail(email)),
@@ -56,7 +60,7 @@ function handleFileChange(event: HTMLInputEvent) {
     fetch(fileURL)
       .then((response) => response.text())
       .then((text) => {
-        const regExpPattern = /^\w+@[a-zA-Z_]+\.[a-zA-Z]{2,10}/gm
+        const regExpPattern = /[a-zA-Z_.-{0,9}]+@[a-zA-Z_]+\.[a-zA-Z]{2,10}$/gm
         const emails = text.split('\n')
 
         const formattedEmails = text.match(regExpPattern)
@@ -70,7 +74,14 @@ function handleFileChange(event: HTMLInputEvent) {
 }
 
 const handleInvite = handleSubmit(async (values) => {
-  response.value = await ManageUsersService.inviteUsers(values)
+  try {
+    const { success, error } = await InvitationService.inviteUsers(values)
+
+    response.success = success
+    response.error = error
+  } catch {
+    response.error = 'Ошибка приглашения'
+  }
 })
 </script>
 
@@ -169,10 +180,10 @@ const handleInvite = handleSubmit(async (values) => {
     </Button>
 
     <Typography
-      v-if="response?.success"
-      class-name="text-success"
+      v-if="response.success || response.error"
+      :class-name="response.success ? 'text-success fs-6' : 'text-danger fs-6'"
     >
-      {{ response?.success }}
+      {{ response.success || response.error }}
     </Typography>
   </FormLayout>
 </template>
