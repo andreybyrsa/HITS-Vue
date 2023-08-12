@@ -56,7 +56,7 @@ function handleFileChange(event: HTMLInputEvent) {
     fetch(fileURL)
       .then((response) => response.text())
       .then((text) => {
-        const regExpPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/gm
+        const regExpPattern = /^\w+@[a-zA-Z_]+\.[a-zA-Z]{2,10}/gm
         const emails = text.split('\n')
 
         const formattedEmails = text.match(regExpPattern)
@@ -84,7 +84,7 @@ const handleInvite = handleSubmit(async (values) => {
       <div class="add-users-form__inputs w-100 p-1">
         <div
           v-for="(field, index) in fields"
-          :key="field.key"
+          :key="index"
           class="add-users-form__input"
         >
           <Input
