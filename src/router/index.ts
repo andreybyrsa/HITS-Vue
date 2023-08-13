@@ -10,7 +10,7 @@ import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import NewPasswordView from '@Views/NewPasswordView.vue'
 
-import IndexView from '@Views/IndexView.vue'
+import IdeasView from '@Views/IdeasView.vue'
 
 import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
 
@@ -56,9 +56,9 @@ const routes: Array<RouteRecordRaw> = [
     component: ForgotPasswordView,
   },
   {
-    path: '/index',
-    name: 'index',
-    component: IndexView,
+    path: '/ideas',
+    name: 'ideas',
+    component: IdeasView,
   },
   {
     path: '/new-password/:slug',

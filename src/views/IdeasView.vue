@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import DemoGrid from './Grid.vue'
+import Grid from '@Components/Ideas/Grid/Grid.vue'
 import { ref } from 'vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
@@ -7,8 +7,8 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import FilterModal from '@Components/FilterModal/FilterModal.vue'
+import Idea from '@Components/Ideas/Idea/Idea.vue'
 const isOpenedFilter = ref(false)
-
 const searchQuery = ref('')
 const gridColumns = [
   'name',
@@ -18,6 +18,16 @@ const gridColumns = [
   'rating',
   'risk',
 ]
+
+const selectedFilters = ref<string[]>([])
+
+function handleCloseModal(filters?: string[]) {
+  if (filters) {
+    selectedFilters.value = filters
+  }
+  isOpenedFilter.value = false
+}
+
 const gridData = [
   {
     name: 'Беспроводные зарядки на партах',
@@ -63,39 +73,36 @@ const gridData = [
     <template #content>
       <Typography class-name="fs-2 text-primary w-100">Идеи</Typography>
 
-      <div
-        style="width: 100%"
-        class="row bg-primary rounded-3 p-3"
-      >
-        <div style="width: 85%">
-          <Input
-            v-model="searchQuery"
-            placeholder="Поиск идей по названию"
-          >
-            <template #prepend>
-              <i class="bi bi-search"></i>
-            </template>
-          </Input>
-        </div>
+      <div class="index-page__search bg-primary rounded-3 p-3 w-100">
+        <Input
+          v-model="searchQuery"
+          placeholder="Поиск идей по названию"
+        >
+          <template #prepend>
+            <i class="bi bi-search"></i>
+          </template>
+        </Input>
+
         <Button
           class-name="btn-light"
-          style="width: 15%"
           @click="isOpenedFilter = true"
           ><i class="bi bi-funnel-fill"></i>Фильтр</Button
         >
         <FilterModal
           :is-opened="isOpenedFilter"
-          @close-modal="isOpenedFilter = false"
+          @close-modal="handleCloseModal"
+          :current-filters="[...selectedFilters]"
         />
       </div>
-      <DemoGrid
+      <div>{{ selectedFilters }}</div>
+      <Grid
         :data="gridData"
         :columns="gridColumns"
         :filter-key="searchQuery"
         class="demogrid"
         style="min-width: 100%"
       >
-      </DemoGrid>
+      </Grid>
     </template>
   </PageLayout>
 </template>
@@ -105,5 +112,9 @@ const gridData = [
   &__content {
     @include flexible(center, start, column, $gap: 16px);
   }
+}
+
+.index-page__search {
+  @include flexible(stretch, space-between, $gap: 16px);
 }
 </style>
