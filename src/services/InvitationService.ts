@@ -13,9 +13,12 @@ const INVITATION_URL =
 
 const inviteUserByEmail = async (
   userData: InviteUserForm,
+  token: string,
 ): Promise<ResponseMessage> => {
   return await axios
-    .post(`${INVITATION_URL}/send/email`, userData)
+    .post(`${INVITATION_URL}/send/email`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response
@@ -27,9 +30,14 @@ const inviteUserByEmail = async (
 
 const inviteUsers = async (
   usersData: InviteUsersForm,
+  token: string,
 ): Promise<ResponseMessage> => {
   return await axios
-    .post(`${INVITATION_URL}/send/emails`, usersData)
+    .post(`${INVITATION_URL}/send/emails`, usersData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response

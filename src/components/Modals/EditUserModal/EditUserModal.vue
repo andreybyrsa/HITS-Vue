@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { reactive, watch } from 'vue'
 import { useForm } from 'vee-validate'
+import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -17,6 +18,8 @@ import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
 import ResponseMessage from '@Domain/ResponseMessage'
 
+import useUserStore from '@Store/user/userStore'
+
 import ManageUsersService from '@Services/ManageUsersService'
 
 import getRoles from '@Utils/getRoles'
@@ -25,6 +28,9 @@ import Validation from '@Utils/Validation'
 const props = defineProps<EditUserModalProps>()
 
 const emit = defineEmits<EditUserModalEmits>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const response = reactive<ResponseMessage>({
   error: '',
@@ -62,13 +68,21 @@ watch(
 )
 
 const handleEditUser = handleSubmit(async (values) => {
-  const { success, error } = await ManageUsersService.updateUserInfo(values)
+  const currentUser = user.value
 
-  if (success) {
-    response.error = ''
-    return emit('close-modal', values)
-  } else {
-    response.error = error
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { success, error } = await ManageUsersService.updateUserInfo(
+      values,
+      token,
+    )
+
+    if (success) {
+      response.error = ''
+      return emit('close-modal', values)
+    } else {
+      response.error = error
+    }
   }
 })
 </script>

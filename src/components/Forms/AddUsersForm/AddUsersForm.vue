@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, VueElement } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
+import { storeToRefs } from 'pinia'
 
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
@@ -15,12 +16,17 @@ import { InviteUsersForm } from '@Domain/Invitation'
 import ResponseMessage from '@Domain/ResponseMessage'
 import RolesTypes from '@Domain/Roles'
 
+import useUserStore from '@Store/user/userStore'
+
 import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
 
 const currentRoles = getRoles()
+const userStore = useUserStore()
+
+const { user } = storeToRefs(userStore)
 
 const fileInput = ref<VueElement>()
 const loadedFileText = ref('')
@@ -79,11 +85,20 @@ function handleFileChange(event: HTMLInputEvent) {
 }
 
 const handleInvite = handleSubmit(async (values) => {
-  const { success, error } = await InvitationService.inviteUsers(values)
-  clearResponseMessages()
+  const currentUser = user.value
 
-  response.success = success
-  response.error = error
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const { success, error } = await InvitationService.inviteUsers(
+      values,
+      token,
+    )
+    clearResponseMessages()
+
+    response.success = success
+    response.error = error
+  }
 })
 </script>
 

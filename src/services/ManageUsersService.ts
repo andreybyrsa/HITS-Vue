@@ -7,9 +7,13 @@ import ResponseMessage from '@Domain/ResponseMessage'
 const MANAGE_USERS_URL =
   process.env.VUE_APP_MANAGE_USERS_API_URL || 'http://localhost:3000'
 
-const getUsers = async (): Promise<{ users: User[] } & ResponseMessage> => {
+const getUsers = async (
+  token: string,
+): Promise<{ users: User[] } & ResponseMessage> => {
   return await axios
-    .get(`${MANAGE_USERS_URL}/get/users-info`)
+    .get(`${MANAGE_USERS_URL}/get/users-info`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response
@@ -21,9 +25,12 @@ const getUsers = async (): Promise<{ users: User[] } & ResponseMessage> => {
 
 const updateUserInfo = async (
   newUserData: UpdateUserData,
+  token: string,
 ): Promise<ResponseMessage> => {
   return await axios
-    .put(`${MANAGE_USERS_URL}/change/userInfo`, newUserData)
+    .put(`${MANAGE_USERS_URL}/change/userInfo`, newUserData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response

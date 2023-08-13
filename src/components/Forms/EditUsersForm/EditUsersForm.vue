@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed, reactive } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -12,9 +13,14 @@ import { User } from '@Domain/User'
 import { UpdateUserData } from '@Domain/ManageUsers'
 import ResponseMessage from '@Domain/ResponseMessage'
 
+import useUserStore from '@Store/user/userStore'
+
 import ManageUsersService from '@Services/ManageUsersService'
 
 const isOpenUserModal = ref(false)
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const currentUsers = ref<User[]>([])
 const editingUser = ref<User>()
@@ -25,12 +31,17 @@ const response = reactive<ResponseMessage>({
 })
 
 onMounted(async () => {
-  const { users, error } = await ManageUsersService.getUsers()
+  const currentUser = user.value
 
-  if (users) {
-    currentUsers.value = users
-  } else {
-    response.error = error
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { users, error } = await ManageUsersService.getUsers(token)
+
+    if (users) {
+      currentUsers.value = users
+    } else {
+      response.error = error
+    }
   }
 })
 
