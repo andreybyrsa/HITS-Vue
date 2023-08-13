@@ -1,15 +1,29 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { InputProps } from '@Components/Inputs/Input/Input.types'
+import { useField } from 'vee-validate'
+
+import {
+  InputProps,
+  InputEmits,
+  HTMLInputEvent,
+} from '@Components/Inputs/Input/Input.types'
 
 const props = defineProps<InputProps>()
 
-const modelValue = defineModel<string>({
+const emit = defineEmits<InputEmits>()
+
+defineModel<string>({
   required: false,
+})
+
+const { value, errorMessage } = useField(props.name, props.validation, {
+  validateOnValueUpdate: !!props.validation,
+  syncVModel: true,
 })
 
 const InputClassName = computed(() => [
   'form-control form-control-lg',
+  { 'is-invalid': props.error || errorMessage.value },
   props.className,
 ])
 const LabelClassName = computed(() => ['form-label', props.className])
@@ -22,6 +36,7 @@ const LabelClassName = computed(() => ['form-label', props.className])
   >
     {{ label }}
   </label>
+
   <div class="input-group">
     <span
       v-if="prepend || $slots.prepend"
@@ -34,9 +49,14 @@ const LabelClassName = computed(() => ['form-label', props.className])
     <input
       :class="InputClassName"
       :type="type ?? 'text'"
+      v-model="value"
+      @change="(event) => emit('change', event as HTMLInputEvent)"
       :placeholder="placeholder"
-      v-model="modelValue"
+      :disabled="disabled"
     />
+    <span class="invalid-feedback">
+      {{ error || errorMessage }}
+    </span>
 
     <span
       v-if="append || $slots.append"

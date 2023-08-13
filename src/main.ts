@@ -33,7 +33,9 @@ router.beforeEach((to) => {
 
   if (
     !userStore.user &&
-    !['login', 'register', 'forgot-password'].includes(currentRoute)
+    !['login', 'register', 'forgot-password', 'new-password'].includes(
+      currentRoute,
+    )
   ) {
     return { name: 'login' }
   }

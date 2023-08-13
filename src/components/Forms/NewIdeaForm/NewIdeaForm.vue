@@ -3,7 +3,6 @@ import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
-import DropDown from '@Components/DropDown/DropDown.vue'
 
 const listRating = [
   'Высокий',
@@ -20,6 +19,7 @@ const listRating = [
 
     <div style="width: 50%">
       <Input
+        name="nameIdea"
         label="Название идеи*"
         placeholder="Введите название идеи"
         class-name="fs-6 text-primary"
@@ -44,6 +44,7 @@ const listRating = [
 
     <div style="width: 50%">
       <Input
+        name="problemIdea"
         label="Проблема*"
         placeholder="Опишите проблему, которую решает ваша идея"
         class-name="fs-6 text-primary"
@@ -52,6 +53,7 @@ const listRating = [
 
     <div style="width: 50%">
       <Input
+        name="resolveIdea"
         label="Предлагаемое решение*"
         placeholder="Опишите, что вы предлагаете для решения проблемы"
         class-name="fs-6 text-primary"
@@ -60,6 +62,7 @@ const listRating = [
 
     <div style="width: 50%">
       <Input
+        name="resultIdea"
         label="Ожидаемый результат*"
         placeholder="Опишите ожидаемый результат"
         class-name="fs-6 text-primary"
@@ -85,6 +88,7 @@ const listRating = [
 
     <div style="width: 50%">
       <Input
+        name="resourcesIdea"
         label="Описание необходимых ресурсов для реализации*"
         placeholder="Укажите список и количественную оценку требуемых для выполнения проекта ресурсов, включая: кол-во человек, компетенций, материальных ценностей, технических средств и т.п."
         class-name="fs-6 text-primary"

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useForm } from 'vee-validate'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -9,14 +10,16 @@ import {
   EditUserModalProps,
   EditUserModalEmits,
 } from '@Components/Modals/EditUserModal/EditUserModal.types'
-
-import { User } from '@Domain/User'
-
-import ManageUsersService from '@Services/ManageUsersService'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
+import { User } from '@Domain/User'
+import RolesTypes from '@Domain/Roles'
+
+import ManageUsersService from '@Services/ManageUsersService'
+
 import getRoles from '@Utils/getRoles'
+import Validation from '@Utils/Validation'
 
 const props = defineProps<EditUserModalProps>()
 
@@ -26,17 +29,39 @@ const response = ref('')
 
 const availableRoles = getRoles()
 
-const handleSubmit = async (user: User) => {
-  const { error, success } = await ManageUsersService.saveEditedUser(user)
+const { errors, setValues, handleSubmit } = useForm<User>({
+  validationSchema: {
+    email: (value: string) =>
+      Validation.checkEmail(value) || 'Неверно введена почта',
+    firstName: (value: string) =>
+      Validation.checkName(value) || 'Неверно введено имя',
+    lastName: (value: string) =>
+      Validation.checkName(value) || 'неверно введена фамилия',
+    roles: (value: RolesTypes[]) => value?.length,
+  },
+})
+
+watch(
+  () => props.user,
+  () => {
+    console.log(1)
+    setValues({
+      ...props.user,
+    })
+  },
+)
+
+const handleEditUser = handleSubmit(async (values) => {
+  const { error, success } = await ManageUsersService.saveEditedUser(values)
 
   if (!success) {
     response.value = ''
-    return emit('close-modal', props.user)
+    return emit('close-modal', values)
   }
   if (error) {
     response.value = error
   }
-}
+})
 </script>
 
 <template>
@@ -46,7 +71,7 @@ const handleSubmit = async (user: User) => {
       class="edit-user-modal p-3 rounded-3"
     >
       <div class="edit-user-modal__header w-100">
-        <Typography class-name="fs-3 text-primary"> Редактировать </Typography>
+        <Typography class-name="fs-3 text-primary">Редактировать</Typography>
 
         <Button
           class-name="btn-close"
@@ -57,13 +82,14 @@ const handleSubmit = async (user: User) => {
       <template v-if="user">
         <div class="edit-user-modal__inputs w-100">
           <Input
-            v-model="user.email"
+            type="email"
+            name="email"
             placeholder="Введите email"
             prepend="@"
           />
 
           <Input
-            v-model="user.firstName"
+            name="firstName"
             placeholder="Введите имя"
           >
             <template #prepend>
@@ -72,7 +98,7 @@ const handleSubmit = async (user: User) => {
           </Input>
 
           <Input
-            v-model="user.lastName"
+            name="lastName"
             placeholder="Введите фамилию"
           >
             <template #prepend>
@@ -82,7 +108,9 @@ const handleSubmit = async (user: User) => {
 
           <Button
             id="checkbox-roles"
-            class-name="px-1 py-0"
+            :class-name="
+              errors.roles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'
+            "
             icon-name="bi bi-chevron-down"
             is-drop-down-controller
           >
@@ -97,7 +125,7 @@ const handleSubmit = async (user: User) => {
               :key="role"
             >
               <Checkbox
-                v-model="user.roles"
+                name="roles"
                 :value="role"
                 :label="availableRoles.translatedRoles[role]"
               />
@@ -106,8 +134,9 @@ const handleSubmit = async (user: User) => {
         </div>
 
         <Button
+          type="submit"
           class-name="btn-primary w-100"
-          @click="handleSubmit(user)"
+          @click="handleEditUser"
         >
           Сохранить изменения
         </Button>

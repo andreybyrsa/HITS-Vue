@@ -2,15 +2,12 @@
 import DemoGrid from './Grid.vue'
 import { ref } from 'vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+// import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
-<<<<<<< HEAD
-=======
 import Button from '@Components/Button/Button.vue'
-import loginInputs from '@Components/Forms/LoginForm/LoginFormInputs'
->>>>>>> de5022acbc5dd22b379bd0f4d504f58e0e856779
+// import loginInputs from '@Components/Forms/LoginForm/LoginFormInputs'
 
 const searchQuery = ref('')
 const gridColumns = [
@@ -72,6 +69,7 @@ const gridData = [
         class="row bg-primary rounded-3 p-3"
       >
         <Input
+          name="asd"
           v-model="searchQuery"
           placeholder="Поиск идей по названию"
           class-name="col"

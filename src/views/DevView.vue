@@ -13,6 +13,8 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
 
+import Validation from '@Utils/Validation'
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -44,7 +46,9 @@ function handleLogin() {
       </Button>
 
       <Input
+        name="email"
         v-model="text"
+        :validation="Validation.checkEmail"
         prepend="текст"
         placeholder="Введите текст"
       />

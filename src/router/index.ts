@@ -5,11 +5,11 @@ import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
 
 import AdminView from '@Views/AdminView.vue'
 import DevView from '@Views/DevView.vue'
+import IndexView from '@Views/IndexView.vue'
 import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import NewPasswordView from '@Views/NewPasswordView.vue'
-import IndexView from '@Views/IndexView.vue'
 import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
 
 const routes: Array<RouteRecordRaw> = [

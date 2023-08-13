@@ -4,8 +4,6 @@ import { computed } from 'vue'
 import Typography from '@Components/Typography/Typography.vue'
 import IdeaProps from '@Components/Idea/Idea.types'
 
-import getCurrentDate from '@Utils/getCurrentDate'
-
 const props = defineProps<IdeaProps>()
 
 const IdeaClassName = computed(() => {
@@ -42,8 +40,8 @@ const getRiskColor = (risk: number) => {
       {{ idea.name }}
     </Typography>
     <div>
-      <Typography>{{ getCurrentDate(idea.dateCreated) }}</Typography>
-      <Typography>{{ getCurrentDate(idea.dateUpdated) }}</Typography>
+      <Typography>{{ idea.dateCreated }}</Typography>
+      <Typography>{{ idea.dateUpdated }}</Typography>
     </div>
     <Typography>{{ idea.status }}</Typography>
     <Typography :class-name="getRatingColor(idea.rating)">
