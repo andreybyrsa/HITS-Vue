@@ -1,44 +1,47 @@
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { useForm } from 'vee-validate'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import NewPasswordModal from '@Components/Modals/NewPasswordModal/NewPasswordModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import ResponseMessage from '@Domain/ResponseMessage'
 import { RecoveryData } from '@Domain/Invitation'
 
 import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
 
-const response = reactive<ResponseMessage>({
-  success: '',
+const isOpenedModal = ref(false)
+
+const response = reactive({
+  key: '',
   error: '',
 })
 
-const { handleSubmit } = useForm<RecoveryData>({
+const { values, handleSubmit } = useForm<RecoveryData>({
   validationSchema: {
     email: (value: string) =>
       Validation.checkEmail(value) || 'Неверно введена почта',
   },
 })
 
-const sendRevoveryEmail = handleSubmit(async (values) => {
-  try {
-    const { success, error } = await InvitationService.sendRecoveryEmail(values)
+function handleCloseModal() {
+  isOpenedModal.value = false
+}
 
-    if (success) {
-      response.success = success
-    } else {
-      response.error = error
-    }
-  } catch {
-    response.error = 'Ошибка отправки почты'
+const sendRevoveryEmail = handleSubmit(async (values) => {
+  const { key, error } = await InvitationService.sendRecoveryEmail(values)
+
+  if (key) {
+    response.key = key
+    isOpenedModal.value = true
+  } else {
+    response.error = error ?? 'Ошибка отправки почты'
   }
 })
 </script>
@@ -67,13 +70,18 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
         </Button>
 
         <Typography
-          v-if="response.success || response.error"
-          :class-name="
-            response.success ? 'text-success fs-6' : 'text-danger fs-6'
-          "
+          v-if="response.error"
+          class-name="text-danger fs-6"
         >
-          {{ response.success || response.error }}
+          {{ response.error }}
         </Typography>
+
+        <NewPasswordModal
+          :is-opened="isOpenedModal"
+          :email="values.email"
+          :auth-key="response.key"
+          @close-modal="handleCloseModal"
+        />
       </FormLayout>
     </template>
   </PageLayout>

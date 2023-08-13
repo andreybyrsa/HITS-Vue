@@ -1,7 +1,7 @@
 import RolesTypes from './Roles'
 
 interface InviteUserForm {
-  emails: string
+  email: string
 }
 
 interface InviteUsersForm {

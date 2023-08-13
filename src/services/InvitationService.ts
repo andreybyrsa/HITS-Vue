@@ -41,12 +41,12 @@ const inviteUsers = async (
 
 const sendRecoveryEmail = async (
   recoveryData: RecoveryData,
-): Promise<ResponseMessage> => {
+): Promise<{ key: string } & ResponseMessage> => {
   return axios
     .post(`${INVITATION_URL}/send/request-to-change-password`, recoveryData)
     .then((response) => response.data)
     .catch(({ response }) => {
-      const { error } = response.data
+      const error = response ? response.data.error : 'Ошибка отпрваки почты'
       return { error }
     })
 }

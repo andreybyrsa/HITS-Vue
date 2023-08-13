@@ -8,4 +8,11 @@ interface UpdateUserData {
   newRoles: RolesTypes[]
 }
 
-export { UpdateUserData }
+interface UpdateUserPassword {
+  key: string
+  email: string
+  code: string
+  password: string
+}
+
+export { UpdateUserData, UpdateUserPassword }
