@@ -1,4 +1,4 @@
-import Idea from '@Domain/Idea'
+import { Idea } from '@Domain/Idea'
 
 function getMockIdeas(): Idea[] {
   return [
@@ -6,7 +6,7 @@ function getMockIdeas(): Idea[] {
       name: 'Идея 1',
       dateCreated: new Date(),
       dateUpdated: new Date(),
-      status: 'new',
+      status: 'ON_EDITING',
       rating: 5,
       risk: 0.2,
     },
@@ -14,7 +14,7 @@ function getMockIdeas(): Idea[] {
       name: 'Идея 2',
       dateCreated: new Date(),
       dateUpdated: new Date(),
-      status: 'on editing',
+      status: 'ON_APPROVAL',
       rating: 5,
       risk: 0.2,
     },
