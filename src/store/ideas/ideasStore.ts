@@ -13,8 +13,6 @@ const useIdeasStore = defineStore('ideas', {
     async fetchIdeas(token: string) {
       this.ideas = await IdeasService.getAdminIdeas(token)
       this.initiatorIdeas = await IdeasService.getInitiatorIdeas(token)
-      console.log(this.ideas)
-      console.log(this.initiatorIdeas)
     },
     async postInitiatorIdeas(idea: Idea, token: string) {
       await IdeasService.postInitiatorIdeas(idea, token)

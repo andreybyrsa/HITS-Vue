@@ -5,7 +5,7 @@ function getMockIdeas(): Idea[] {
     {
       name: 'Идея 1',
       dateCreated: new Date(),
-      dateUpdated: new Date(),
+      dateModified: new Date(),
       status: 'ON_EDITING',
       rating: 5,
       risk: 0.2,
@@ -13,7 +13,7 @@ function getMockIdeas(): Idea[] {
     {
       name: 'Идея 2',
       dateCreated: new Date(),
-      dateUpdated: new Date(),
+      dateModified: new Date(),
       status: 'ON_APPROVAL',
       rating: 5,
       risk: 0.2,

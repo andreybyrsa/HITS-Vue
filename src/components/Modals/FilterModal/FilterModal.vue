@@ -7,19 +7,20 @@ import {
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import { ref, watch } from 'vue'
 
-const FilterNames = [
-  'Мои идеи',
-  'Все идеи',
-  'Утвержденные идеи',
-  'Согласованные идеи',
-]
+const filters = ['Мои идеи', 'Утвержденные идеи', 'Согласованные идеи']
+const selectedFilters = ref<string[]>([])
 
-const UserFilters = ''
-
-defineProps<FilterModalProps>()
+const props = defineProps<FilterModalProps>()
 
 const emit = defineEmits<FilterModalEmits>()
+watch(
+  () => props.currentFilters,
+  () => {
+    selectedFilters.value = props.currentFilters
+  },
+)
 </script>
 
 <template>
@@ -29,7 +30,6 @@ const emit = defineEmits<FilterModalEmits>()
         <div
           class="filter-modal-header d-flex justify-content-between align-items-center mb-3"
         >
-          <div></div>
           <Typography class-name="fs-2 text-primary">Сортировать по</Typography>
           <Button
             class-name="btn-close"
@@ -38,20 +38,25 @@ const emit = defineEmits<FilterModalEmits>()
         </div>
         <div
           class="my-3"
-          v-for="Filter in FilterNames"
-          :key="Filter"
+          v-for="(filter, index) in filters"
+          :key="index"
         >
           <div class="filter-modal__checkbox">
             <Checkbox
-              name="filters"
-              :label="Filter"
-              v-model="UserFilters"
-              :value="Filter"
-              class-name="fs-4 "
+              :label="filter"
+              v-model="selectedFilters"
+              :value="filter"
+              class-name="fs-4"
               class="m-3 px-5"
             />
           </div>
         </div>
+        <Button
+          class-name="btn-primary"
+          @click="emit('close-modal', selectedFilters)"
+          >отправить</Button
+        >
+        <div>{{ selectedFilters }}</div>
       </div>
     </div>
   </ModalLayout>

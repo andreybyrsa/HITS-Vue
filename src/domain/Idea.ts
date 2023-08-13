@@ -3,7 +3,7 @@ interface Idea {
   initiator?: string
   name: string
   dateCreated: Date
-  dateUpdated: Date
+  dateModified: Date
   projectType?: 'inside' | 'outside'
   experts?: string[]
   problem?: string
