@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import { useForm } from 'vee-validate'
 
 import Button from '@Components/Button/Button.vue'
@@ -13,8 +13,9 @@ import {
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
-import { UpdateUserData } from '@Domain/User'
+import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
+import ResponseMessage from '@Domain/ResponseMessage'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
@@ -25,7 +26,9 @@ const props = defineProps<EditUserModalProps>()
 
 const emit = defineEmits<EditUserModalEmits>()
 
-const response = ref('')
+const response = reactive<ResponseMessage>({
+  error: '',
+})
 
 const availableRoles = getRoles()
 
@@ -59,17 +62,13 @@ watch(
 )
 
 const handleEditUser = handleSubmit(async (values) => {
-  try {
-    const { error, success } = await ManageUsersService.updateUserInfo(values)
+  const { success, error } = await ManageUsersService.updateUserInfo(values)
 
-    if (success) {
-      response.value = ''
-      return emit('close-modal', values)
-    } else if (error) {
-      response.value = error
-    }
-  } catch {
-    response.value = 'Ошибка редактирования пользователя'
+  if (success) {
+    response.error = ''
+    return emit('close-modal', values)
+  } else {
+    response.error = error
   }
 })
 </script>
@@ -153,10 +152,10 @@ const handleEditUser = handleSubmit(async (values) => {
       </template>
 
       <Typography
-        v-if="response"
+        v-if="response.error"
         class-name="text-danger w-100 text-center"
       >
-        {{ response }}
+        {{ response.error }}
       </Typography>
     </div>
   </ModalLayout>

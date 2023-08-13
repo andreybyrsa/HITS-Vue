@@ -15,40 +15,32 @@ const useUserStore = defineStore('user', {
   }),
   actions: {
     async loginUser(user: LoginUser) {
-      try {
-        const response = await AuthService.loginUser(user)
+      const response = await AuthService.loginUser(user)
+      const { token, error } = response
 
-        if (response.token) {
-          const localStorageUser =
-            LocalStorageUser.setLocalStorageUser(response)
+      if (token) {
+        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
 
-          this.user = localStorageUser
+        this.user = localStorageUser
 
-          this.router.push({ name: 'dev' })
-        } else {
-          this.loginError = response.error
-        }
-      } catch {
-        this.loginError = 'Ошибка авторизации'
+        this.router.push({ name: 'dev' })
+      } else {
+        this.loginError = error
       }
     },
 
     async registerUser(user: RegisterUser) {
-      try {
-        const response = await AuthService.registerUser(user)
+      const response = await AuthService.registerUser(user)
+      const { token, error } = response
 
-        if (response.token) {
-          const localStorageUser =
-            LocalStorageUser.setLocalStorageUser(response)
+      if (token) {
+        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
 
-          this.user = localStorageUser
+        this.user = localStorageUser
 
-          this.router.push({ name: 'dev' })
-        } else {
-          this.registerError = response.error
-        }
-      } catch {
-        this.registerError = 'Ошибка регистрации'
+        this.router.push({ name: 'dev' })
+      } else {
+        this.registerError = error
       }
     },
 

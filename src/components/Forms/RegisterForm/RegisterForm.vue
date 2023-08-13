@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, onMounted } from 'vue'
+import { reactive, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
@@ -30,6 +30,13 @@ const response = reactive<ResponseMessage>({
   error: '',
 })
 
+watch(
+  () => registerError?.value,
+  () => {
+    response.error = registerError?.value
+  },
+)
+
 const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
   validationSchema: {
     email: (value: string) =>
@@ -44,24 +51,23 @@ const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
 })
 
 const handleRegister = handleSubmit(async (values) => {
+  const { slug } = route.params
+
   await userStore.registerUser(values)
-  await InvitationService.deleteInvitationInfo(route.params.slug)
+  await InvitationService.deleteInvitationInfo(slug)
 })
 
 onMounted(async () => {
-  try {
-    const { email, roles, error } = await InvitationService.getInvitationInfo(
-      route.params.slug,
-    )
+  const { slug } = route.params
+  const { email, roles, error } = await InvitationService.getInvitationInfo(
+    slug,
+  )
 
-    if (email && roles) {
-      setFieldValue('email', email)
-      setFieldValue('roles', roles)
-    } else {
-      response.error = error ?? 'Ошибка приглашения'
-    }
-  } catch {
-    response.error = 'Ошибка приглашения'
+  if (email && roles) {
+    setFieldValue('email', email)
+    setFieldValue('roles', roles)
+  } else {
+    response.error = error ?? 'Ошибка приглашения'
   }
 })
 </script>
@@ -93,10 +99,10 @@ onMounted(async () => {
     </Button>
 
     <Typography
-      v-if="registerError || response.error"
+      v-if="response.error"
       class-name="text-danger text-center fs-6"
     >
-      {{ registerError || response.error }}
+      {{ response.error }}
     </Typography>
   </FormLayout>
 </template>

@@ -24,12 +24,4 @@ interface RegisterUser {
   roles: RolesTypes[]
 }
 
-interface UpdateUserData {
-  email: string
-  newEmail: string
-  newFirstName: string
-  newLastName: string
-  newRoles: RolesTypes[]
-}
-
-export { User, LoginUser, RegisterUser, UpdateUserData }
+export { User, LoginUser, RegisterUser }

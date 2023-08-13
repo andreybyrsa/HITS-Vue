@@ -1,4 +1,5 @@
-import { User, UpdateUserData } from '@Domain/User'
+import { User } from '@Domain/User'
+import { UpdateUserData } from '@Domain/ManageUsers'
 
 interface EditUserModalProps {
   isOpened: boolean

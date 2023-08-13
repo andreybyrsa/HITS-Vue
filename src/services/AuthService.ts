@@ -10,7 +10,7 @@ const loginUser = async (user: LoginUser): Promise<User & ResponseMessage> => {
     .post(`${AUTH_URL}/login`, user)
     .then((response) => response.data)
     .catch(({ response }) => {
-      const { error } = response.data
+      const error = response ? response.data.error : 'Ошибка авторизации'
       return { error }
     })
 }
@@ -22,7 +22,7 @@ const registerUser = async (
     .post(`${AUTH_URL}/register`, user)
     .then((response) => response.data)
     .catch(({ response }) => {
-      const { error } = response.data
+      const error = response ? response.data.error : 'Ошибка регистрации'
       return { error }
     })
 }

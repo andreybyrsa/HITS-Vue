@@ -30,6 +30,11 @@ const response = reactive<ResponseMessage>({
   error: '',
 })
 
+function clearResponseMessages() {
+  response.success = ''
+  response.error = ''
+}
+
 const { errors, submitCount, handleSubmit } = useForm<InviteUsersForm>({
   validationSchema: {
     emails: (value: string[]) =>
@@ -74,14 +79,11 @@ function handleFileChange(event: HTMLInputEvent) {
 }
 
 const handleInvite = handleSubmit(async (values) => {
-  try {
-    const { success, error } = await InvitationService.inviteUsers(values)
+  const { success, error } = await InvitationService.inviteUsers(values)
+  clearResponseMessages()
 
-    response.success = success
-    response.error = error
-  } catch {
-    response.error = 'Ошибка приглашения'
-  }
+  response.success = success
+  response.error = error
 })
 </script>
 

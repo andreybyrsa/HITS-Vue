@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, reactive } from 'vue'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -8,35 +8,34 @@ import Typography from '@Components/Typography/Typography.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import { User, UpdateUserData } from '@Domain/User'
+import { User } from '@Domain/User'
+import { UpdateUserData } from '@Domain/ManageUsers'
+import ResponseMessage from '@Domain/ResponseMessage'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
 const isOpenUserModal = ref(false)
 
-const users = ref<User[]>([])
+const currentUsers = ref<User[]>([])
 const editingUser = ref<User>()
 const searchedValue = ref('')
 
-const errorResponse = ref('')
+const response = reactive<ResponseMessage>({
+  error: '',
+})
 
 onMounted(async () => {
-  try {
-    const response = await ManageUsersService.getUsers()
-    const { error } = response
+  const { users, error } = await ManageUsersService.getUsers()
 
-    if (error) {
-      errorResponse.value = error
-    } else {
-      users.value = response
-    }
-  } catch {
-    errorResponse.value = 'Ошибка загрузки пользователей'
+  if (users) {
+    currentUsers.value = users
+  } else {
+    response.error = error
   }
 })
 
 const searchedUsers = computed(() => {
-  return users.value.filter((user) => {
+  return currentUsers.value.filter((user) => {
     const userEmail = user.email.toLowerCase().trim()
     const currentSearchedValue = searchedValue.value.toLowerCase().trim()
 
@@ -47,7 +46,7 @@ const searchedUsers = computed(() => {
 function handleOpenModal(email: string) {
   isOpenUserModal.value = true
   editingUser.value = {
-    ...users.value?.find((user) => user.email === email),
+    ...currentUsers.value.find((user) => user.email === email),
   } as User
 }
 
@@ -63,9 +62,9 @@ function handleCloseModal(newUser?: UpdateUserData) {
       roles: newRoles,
     }
 
-    users.value.forEach((user, index) => {
+    currentUsers.value.forEach((user, index) => {
       if (email === user.email) {
-        users.value.splice(index, 1, newUserData)
+        currentUsers.value.splice(index, 1, newUserData)
       }
     })
   }
@@ -110,10 +109,10 @@ function handleCloseModal(newUser?: UpdateUserData) {
       </div>
 
       <Typography
-        v-if="errorResponse"
+        v-if="response.error"
         class-name="text-danger text-center"
       >
-        {{ errorResponse }}
+        {{ response.error }}
       </Typography>
     </div>
 

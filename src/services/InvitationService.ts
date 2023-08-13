@@ -18,7 +18,9 @@ const inviteUserByEmail = async (
     .post(`${INVITATION_URL}/send/email`, userData)
     .then((response) => response.data)
     .catch(({ response }) => {
-      const { error } = response.data
+      const error = response
+        ? response.data.error
+        : 'Ошибка приглашения пользователя'
       return { error }
     })
 }
@@ -30,7 +32,9 @@ const inviteUsers = async (
     .post(`${INVITATION_URL}/send/emails`, usersData)
     .then((response) => response.data)
     .catch(({ response }) => {
-      const { error } = response.data
+      const error = response
+        ? response.data.error
+        : 'Ошибка приглашения пользователей'
       return { error }
     })
 }
@@ -54,7 +58,7 @@ const getInvitationInfo = async (
     .get(`${INVITATION_URL}/get/invitation/${slug}`)
     .then((response) => response.data)
     .catch(({ response }) => {
-      const { error } = response.data
+      const error = response ? response.data.error : 'Ошибка приглашения'
       return { error }
     })
 }
@@ -63,7 +67,9 @@ const deleteInvitationInfo = async (slug: string | string[]) => {
   return await axios
     .delete(`${INVITATION_URL}/delete/invitation/${slug}`)
     .catch<ResponseMessage>(({ response }) => {
-      const { error } = response.data
+      const error = response
+        ? response.data.error
+        : 'Ошибка удаления приглашения'
       return { error }
     })
 }
