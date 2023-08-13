@@ -6,10 +6,14 @@ import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
 import AdminView from '@Views/AdminView.vue'
 import DevView from '@Views/DevView.vue'
 import LoginView from '@Views/LoginView.vue'
+import NewIdeas from '@Views/NewIdeas.vue'
+import EditIdeasView from '@Views/EditIdeasView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 
-import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
+import IdeasView from '@Views/IdeasView.vue'
+
+import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -20,6 +24,16 @@ const routes: Array<RouteRecordRaw> = [
         path: 'dev',
         name: 'dev',
         component: DevView,
+      },
+      {
+        path: 'add-idea',
+        name: 'addIdeas',
+        component: NewIdeas,
+      },
+      {
+        path: 'edit-idea/:id',
+        name: 'editIdeas',
+        component: EditIdeasView,
       },
       {
         path: 'admin',
@@ -52,6 +66,16 @@ const routes: Array<RouteRecordRaw> = [
     name: 'forgot-password',
     component: ForgotPasswordView,
   },
+  {
+    path: '/ideas',
+    name: 'ideas',
+    component: IdeasView,
+  },
+  // {
+  //   path: '/new-password/:slug',
+  //   name: 'new-password',
+  //   component: NewPasswordView,
+  // },
 ]
 
 const router = createRouter({

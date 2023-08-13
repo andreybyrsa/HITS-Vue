@@ -1,4 +1,4 @@
-import Idea from '@Domain/Idea'
+import { Idea } from '@Domain/Idea'
 
 interface IdeaProps {
   idea: Idea
