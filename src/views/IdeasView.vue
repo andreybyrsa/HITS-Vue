@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Grid from '@Components/Ideas/Grid/Grid.vue'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import Input from '@Components/Inputs/Input/Input.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
@@ -27,7 +27,7 @@ const { initiatorIdeas } = storeToRefs(ideasStore)
 
 onMounted(async () => {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2RmZnNAbWFpbC5jb20iLCJpYXQiOjE2OTE5MzcyNjcsImV4cCI6MTY5MTk0MDg2N30.6IfqPZtIvQGLbaJQjLXT31sEMkDEzza3sQB2pjX3MBI'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJISEhISEBtYWlsLmNvbSIsImlhdCI6MTY5MTk2NzgzMSwiZXhwIjoxNjkxOTcxNDMxfQ.otyZD_hUNubKnPAnjafWen5IFGKeispJ0FXGQl-C0jg'
   await ideasStore.fetchIdeas(token)
 })
 
@@ -39,21 +39,6 @@ function handleCloseModal(filters?: string[]) {
   }
   isOpenedFilter.value = false
 }
-
-watch(initiatorIdeas, () => {
-  console.log(initiatorIdeas.value)
-})
-
-// const gridData = [
-//   {
-//     name: 'Кондиционеры в кабинетах',
-//     status: 'На согласовании',
-//     creationDate: new Date('2021-01-10'),
-//     updatedDate: new Date('2021-01-15'),
-//     rating: 3.4,
-//     risk: 3.9,
-//   },
-// ]
 </script>
 
 <template>

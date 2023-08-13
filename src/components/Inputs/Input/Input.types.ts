@@ -2,6 +2,7 @@ import { ValidationMethods } from '@Utils/Validation'
 
 interface InputProps {
   className?: string
+  labelClassName?: string
   type?: string
   name: string
 

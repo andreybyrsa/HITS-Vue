@@ -26,7 +26,10 @@ const InputClassName = computed(() => [
   { 'is-invalid': props.error || errorMessage.value },
   props.className,
 ])
-const LabelClassName = computed(() => ['form-label', props.className])
+const LabelClassName = computed(() => [
+  'form-label text-primary',
+  props.labelClassName,
+])
 </script>
 
 <template>

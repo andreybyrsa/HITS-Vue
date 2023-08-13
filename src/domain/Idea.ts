@@ -4,7 +4,7 @@ interface Idea {
   name: string
   dateCreated: Date
   dateModified: Date
-  projectType?: 'inside' | 'outside'
+  projectType?: 'INSIDE' | 'OUTSIDE'
   experts?: string[]
   problem?: string
   solution?: string

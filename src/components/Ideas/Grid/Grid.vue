@@ -1,12 +1,15 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 
-import { GridProps } from '@Components/Ideas/Grid/Grid.types'
-import useIdeasStore from '@Store/ideas/ideasStore'
+import { GridProps, GridEmits } from '@Components/Ideas/Grid/Grid.types'
 import { Idea } from '@Domain/Idea'
 import Button from '@Components/Button/Button.vue'
+import useIdeasStore from '@Store/ideas/ideasStore'
 
 const props = defineProps<GridProps>()
+// const emit = defineEmits<GridEmits>()
+
+const ideasStore = useIdeasStore()
 
 type O = {
   creationDate?: number
@@ -27,8 +30,6 @@ const sortOrders = ref<O>(
     return o
   }, {} as O),
 )
-
-console.log(sortOrders.value)
 
 const filteredData = computed(() => {
   let { data, filterKey } = props
@@ -104,11 +105,13 @@ function getCellClass(key: string, value: number) {
   return ''
 }
 
-const ideasStore = useIdeasStore()
+// function handleIdeaData(idea: Idea) {
+//   emit('set-idea', idea)
+// }
 
 function handleDelete(id: number) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2RmZnNAbWFpbC5jb20iLCJpYXQiOjE2OTE5MzcyNjcsImV4cCI6MTY5MTk0MDg2N30.6IfqPZtIvQGLbaJQjLXT31sEMkDEzza3sQB2pjX3MBI'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJISEhISEBtYWlsLmNvbSIsImlhdCI6MTY5MTk2NzgzMSwiZXhwIjoxNjkxOTcxNDMxfQ.otyZD_hUNubKnPAnjafWen5IFGKeispJ0FXGQl-C0jg'
   ideasStore.deleteInitiatorIdeas(id, token)
 }
 </script>
@@ -116,7 +119,7 @@ function handleDelete(id: number) {
 <template>
   <table v-if="filteredData?.length">
     <thead>
-      <tr>
+      <tr class="tr">
         <th
           v-for="(column, index) in translatedColumns"
           @click="sortBy(props.columns[index] as OType)"
@@ -134,9 +137,10 @@ function handleDelete(id: number) {
           >
           </span>
         </th>
-        <div class="column-delete">Действие</div>
+        <th>Действие</th>
       </tr>
     </thead>
+
     <tbody>
       <tr
         v-for="(entry, index) in filteredData"
@@ -154,11 +158,18 @@ function handleDelete(id: number) {
             }}
           </span>
         </td>
+        <!-- <router-link :to="`edit-idea/${entry.id}`">
+          <Button
+            class-name="button btn-primary w-100"
+            @click="handleIdeaData(entry)"
+            ><i class="bi bi-list fs-1"></i>
+          </Button>
+        </router-link> -->
         <Button
-          class-name="btn-primary"
+          class-name="button btn-primary w-100"
           @click="handleDelete(entry.id as number)"
-          ><i class="bi bi-trash-fill"></i
-        ></Button>
+          ><i class="bi bi-trash-fill fs-1"></i>
+        </Button>
       </tr>
     </tbody>
   </table>
@@ -184,34 +195,24 @@ function handleDelete(id: number) {
 
 <style lang="scss">
 table {
-  border: 2px solid #ffffff;
-  border-radius: 3px;
   background-color: #fff;
 }
 
 th {
-  background-color: #0026ff;
+  background-color: #0d6efd;
   color: rgba(255, 255, 255, 0.66);
+  padding: 20px 10px;
   cursor: pointer;
   user-select: none;
-}
-
-td {
-  background-color: #f9f9f9;
-}
-
-th,
-td {
-  min-width: 120px;
-  padding: 10px 20px;
 }
 
 th.active {
   color: #fff;
 }
 
-th.active .arrow {
-  opacity: 1;
+td {
+  height: 80px;
+  padding: 10px;
 }
 
 .arrow {
@@ -221,6 +222,10 @@ th.active .arrow {
   height: 0;
   margin-left: 5px;
   opacity: 0.66;
+}
+
+th.active .arrow {
+  opacity: 1;
 }
 
 .arrow.asc {
@@ -244,10 +249,9 @@ td .orange {
 td .red {
   color: red;
 }
-.column-delete {
-  @include flexible(center, center);
-  height: 44px;
-  background-color: #0026ff;
-  color: rgb(255, 255, 255);
+
+.button {
+  height: 80px;
+  transform: scale(0.6);
 }
 </style>

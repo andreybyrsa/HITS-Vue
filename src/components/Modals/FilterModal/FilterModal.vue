@@ -52,11 +52,10 @@ watch(
           </div>
         </div>
         <Button
-          class-name="btn-primary"
+          class-name="btn-primary w-100"
           @click="emit('close-modal', selectedFilters)"
           >отправить</Button
         >
-        <div>{{ selectedFilters }}</div>
       </div>
     </div>
   </ModalLayout>

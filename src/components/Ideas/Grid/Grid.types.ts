@@ -9,6 +9,7 @@ interface GridProps {
 interface GridEmits {
   (event: 'close-modal'): void
   (event: 'remove-email', index: number): void
+  (event: 'set-idea', idea: Idea): void
 }
 
 export { GridProps, GridEmits }
