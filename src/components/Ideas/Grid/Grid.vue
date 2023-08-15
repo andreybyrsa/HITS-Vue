@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 import { GridProps, GridEmits } from '@Components/Ideas/Grid/Grid.types'
 import { Idea } from '@Domain/Idea'
@@ -114,17 +114,25 @@ function handleDelete(id: number) {
     'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJraXZhQG1haWwuY29tIiwiaWF0IjoxNjkyMTAxNDQ0LCJleHAiOjE2OTIxMDUwNDR9.Kq_Qef1TlmtwQIGspceLicHz1yqHVwV7XEVcnWln5vY'
   ideasStore.deleteInitiatorIdeas(id, token)
 }
+
+onMounted(() => {
+  console.log(filteredData.value)
+})
 </script>
 
 <template>
-  <table v-if="filteredData?.length">
+  <table
+    v-if="filteredData?.length"
+    class="table-header"
+  >
     <thead>
-      <tr class="tr">
+      <tr>
         <th
           v-for="(column, index) in translatedColumns"
           @click="sortBy(props.columns[index] as OType)"
           :class="{ active: sortKey == props.columns[index] }"
           :key="index"
+          class="fs-5"
         >
           {{ column }}
           <span
@@ -137,7 +145,7 @@ function handleDelete(id: number) {
           >
           </span>
         </th>
-        <th>Действие</th>
+        <th class="fs-5">Действие</th>
       </tr>
     </thead>
 
@@ -145,6 +153,7 @@ function handleDelete(id: number) {
       <tr
         v-for="(entry, index) in filteredData"
         :key="index"
+        class="fs-5 border"
       >
         <td
           v-for="(key, index) in props.columns"
@@ -193,7 +202,7 @@ function handleDelete(id: number) {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 table {
   background-color: #fff;
 }
@@ -204,6 +213,19 @@ th {
   padding: 20px 10px;
   cursor: pointer;
   user-select: none;
+  text-align: center;
+}
+
+td:first-of-type {
+  text-align: start;
+}
+
+th:last-of-type {
+  border-radius: 0 8px 0 0;
+}
+
+th:first-of-type {
+  border-radius: 8px 0 0 0;
 }
 
 th.active {
@@ -213,6 +235,7 @@ th.active {
 td {
   height: 80px;
   padding: 10px;
+  text-align: center;
 }
 
 .arrow {

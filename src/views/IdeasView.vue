@@ -9,6 +9,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import FilterModal from '@Components/Modals/FilterModal/FilterModal.vue'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import { Idea } from '@Domain/Idea'
 
 // import Idea from '@Components/Ideas/Idea/Idea.vue'
 const isOpenedFilter = ref(false)
@@ -21,7 +22,50 @@ const gridColumns = [
   'rating',
   'risk',
 ]
-
+const ideamegahuita = [
+  {
+    name: 'Вафли павшопвыашщ пш пшп вшщ впшощпм гмгмгк пкгшпшпвшпмк штощ',
+    dateCreated: '2023-01-10',
+    dateModified: '2023-01-10',
+    projectType: 'INSIDE',
+    problem: 'проблема',
+    solution: 'еще что то',
+    result: 'результат',
+    customer: 'Газпром',
+    description: 'описание вроде',
+    risk: 0.5,
+    rating: 1,
+    status: 'ON_EDITING',
+  },
+  {
+    name: 'Печеньки',
+    dateCreated: '2024-01-10',
+    dateModified: '2024-01-10',
+    projectType: 'INSIDE',
+    problem: 'проблема',
+    solution: 'еще что то',
+    result: 'результат',
+    customer: 'Газпром',
+    description: 'описание вроде',
+    risk: 0.5,
+    rating: 1,
+    status: 'ON_EDITING',
+  },
+  {
+    name: 'Пряники',
+    dateCreated: '2022-01-10',
+    dateModified: '2022-01-10',
+    projectType: 'INSIDE',
+    problem: 'проблема',
+    solution: 'еще что то',
+    result: 'результат',
+    customer: 'Газпром',
+    description: 'описание вроде',
+    risk: 0.5,
+    rating: 2,
+    status: 'ON_EDITING',
+  },
+]
 const ideasStore = useIdeasStore()
 const { initiatorIdeas } = storeToRefs(ideasStore)
 const { ideas } = storeToRefs(ideasStore)
@@ -75,7 +119,7 @@ function handleCloseModal(filters?: string[]) {
         />
       </div>
       <Grid
-        :data="initiatorIdeas"
+        :data="ideamegahuita"
         :columns="gridColumns"
         :filter-key="searchQuery"
         class="demogrid w-100"
