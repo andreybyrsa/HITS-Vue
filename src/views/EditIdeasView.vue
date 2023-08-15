@@ -3,11 +3,25 @@ import NewIdeaForm from '@Components/Forms/NewIdeaForm/NewIdeaForm.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import { Idea } from '@Domain/Idea'
+import { useRoute } from 'vue-router'
+import { onMounted, ref } from 'vue'
 // import { useRouter } from 'vue-router'
 
-// const route = useRouter()
+import useIdeasStore from '@Store/ideas/ideasStore'
+import { storeToRefs } from 'pinia'
 
-// const id = route.params.id
+const ideasStore = useIdeasStore()
+const { initiatorIdeas } = storeToRefs(ideasStore)
+
+const router = useRoute()
+
+const currentIdea = ref()
+
+onMounted(() => {
+  currentIdea.value = initiatorIdeas.value.find(
+    (idea) => idea.id == router.params.id,
+  )
+})
 
 const idea: Idea = {
   name: 'Пирожки',
@@ -31,8 +45,7 @@ const idea: Idea = {
       <LeftSideBar />
     </template>
     <template #content>
-      <NewIdeaForm :current-idea="idea" />
-      <!-- {{ $route.params.id }} -->
+      <NewIdeaForm :current-idea="currentIdea" />
     </template>
   </PageLayout>
 </template>

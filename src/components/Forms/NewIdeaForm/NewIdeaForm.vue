@@ -1,20 +1,29 @@
 <script lang="ts" setup>
+import { reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+
 import Typography from '@Components/Typography/Typography.vue'
 import NewIdeaProps from '@Components/Forms/NewIdeaForm/NewIdeaForm.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue'
-import { reactive, onMounted } from 'vue'
+
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
 import { Idea } from '@Domain/Idea'
-import { useRouter } from 'vue-router'
+
+import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
 const props = defineProps<NewIdeaProps>()
 
-const route = useRouter()
+const router = useRouter()
 
 const ideasStore = useIdeasStore()
+const userStore = useUserStore()
+
+const { user } = storeToRefs(userStore)
 
 const ideaData = reactive<Idea>({
   name: '',
@@ -46,10 +55,13 @@ function setRatingEmit(rating: number) {
 }
 
 function handlePostIdea(idea: Idea) {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJISEhISEBtYWlsLmNvbSIsImlhdCI6MTY5MTk2NzgzMSwiZXhwIjoxNjkxOTcxNDMxfQ.otyZD_hUNubKnPAnjafWen5IFGKeispJ0FXGQl-C0jg'
-  ideasStore.postInitiatorIdeas(idea, token)
-  route.push('/ideas')
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    ideasStore.postInitiatorIdeas(idea, token)
+    router.push('/ideas')
+  }
 }
 </script>
 

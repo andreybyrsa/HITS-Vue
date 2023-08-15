@@ -21,9 +21,9 @@ const routes: Array<RouteRecordRaw> = [
     component: RoleMiddleware,
     children: [
       {
-        path: 'dev',
-        name: 'dev',
-        component: DevView,
+        path: '/ideas',
+        name: 'ideas',
+        component: IdeasView,
       },
       {
         path: 'add-idea',
@@ -49,6 +49,11 @@ const routes: Array<RouteRecordRaw> = [
           },
         ],
       },
+      {
+        path: 'dev',
+        name: 'dev',
+        component: DevView,
+      },
     ],
   },
   {
@@ -66,16 +71,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'forgot-password',
     component: ForgotPasswordView,
   },
-  {
-    path: '/ideas',
-    name: 'ideas',
-    component: IdeasView,
-  },
-  // {
-  //   path: '/new-password/:slug',
-  //   name: 'new-password',
-  //   component: NewPasswordView,
-  // },
 ]
 
 const router = createRouter({

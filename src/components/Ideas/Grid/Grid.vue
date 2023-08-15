@@ -1,15 +1,22 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { GridProps, GridEmits } from '@Components/Ideas/Grid/Grid.types'
-import { Idea } from '@Domain/Idea'
 import Button from '@Components/Button/Button.vue'
+
+import { Idea } from '@Domain/Idea'
+
 import useIdeasStore from '@Store/ideas/ideasStore'
+import useUserStore from '@Store/user/userStore'
 
 const props = defineProps<GridProps>()
 // const emit = defineEmits<GridEmits>()
 
 const ideasStore = useIdeasStore()
+const userStore = useUserStore()
+
+const { user } = storeToRefs(userStore)
 
 type O = {
   creationDate?: number
@@ -110,9 +117,12 @@ function getCellClass(key: string, value: number) {
 // }
 
 function handleDelete(id: number) {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJISEhISEBtYWlsLmNvbSIsImlhdCI6MTY5MTk2NzgzMSwiZXhwIjoxNjkxOTcxNDMxfQ.otyZD_hUNubKnPAnjafWen5IFGKeispJ0FXGQl-C0jg'
-  ideasStore.deleteInitiatorIdeas(id, token)
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    ideasStore.deleteInitiatorIdeas(id, token)
+  }
 }
 </script>
 

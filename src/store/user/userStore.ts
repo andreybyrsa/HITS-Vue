@@ -23,7 +23,7 @@ const useUserStore = defineStore('user', {
 
         this.user = localStorageUser
 
-        this.router.push({ name: 'dev' })
+        this.router.push({ name: 'ideas' })
       } else {
         this.loginError = error
       }
@@ -38,7 +38,7 @@ const useUserStore = defineStore('user', {
 
         this.user = localStorageUser
 
-        this.router.push({ name: 'dev' })
+        this.router.push({ name: 'ideas' })
       } else {
         this.registerError = error
       }

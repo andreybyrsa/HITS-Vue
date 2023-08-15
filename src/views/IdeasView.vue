@@ -1,14 +1,18 @@
 <script lang="ts" setup>
-import Grid from '@Components/Ideas/Grid/Grid.vue'
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+
+import Grid from '@Components/Ideas/Grid/Grid.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import FilterModal from '@Components/Modals/FilterModal/FilterModal.vue'
+
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+
 import useIdeasStore from '@Store/ideas/ideasStore'
+import useUserStore from '@Store/user/userStore'
 
 // import Idea from '@Components/Ideas/Idea/Idea.vue'
 const isOpenedFilter = ref(false)
@@ -22,13 +26,19 @@ const gridColumns = [
   'risk',
 ]
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
 const ideasStore = useIdeasStore()
 const { initiatorIdeas } = storeToRefs(ideasStore)
 
 onMounted(async () => {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJISEhISEBtYWlsLmNvbSIsImlhdCI6MTY5MTk2NzgzMSwiZXhwIjoxNjkxOTcxNDMxfQ.otyZD_hUNubKnPAnjafWen5IFGKeispJ0FXGQl-C0jg'
-  await ideasStore.fetchIdeas(token)
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await ideasStore.fetchIdeas(token)
+  }
 })
 
 const selectedFilters = ref<string[]>([])
