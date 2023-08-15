@@ -2,8 +2,7 @@ import axios from 'axios'
 
 import { Idea, Risk } from '@Domain/Idea'
 
-const IDEAS_URL =
-  process.env.VUE_APP_IDEAS_API_URL || 'http://localhost:3000/api/v1/idea'
+const IDEAS_URL = process.env.VUE_APP_IDEAS_API_URL || 'http://localhost:3000'
 
 const postInitiatorIdeas = async (idea: Idea, token: string): Promise<Idea> => {
   return await axios

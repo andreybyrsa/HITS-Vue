@@ -23,6 +23,20 @@ const getUsers = async (
     })
 }
 
+const getUsersEmails = async (
+  token: string,
+): Promise<{ emails: string[] } & ResponseMessage> => {
+  return await axios
+    .get(`${MANAGE_USERS_URL}/get/users-emails`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response ? response.data.error : 'Ошибка загрузки почт'
+      return { error }
+    })
+}
+
 const updateUserInfo = async (
   newUserData: UpdateUserData,
   token: string,
@@ -43,7 +57,7 @@ const updateUserInfo = async (
 const updateUserPassword = async (
   newPasswordData: UpdateUserPassword,
 ): Promise<ResponseMessage> => {
-  return axios
+  return await axios
     .put(`${MANAGE_USERS_URL}/change/password`, newPasswordData)
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -54,6 +68,7 @@ const updateUserPassword = async (
 
 const ManageUsersService = {
   getUsers,
+  getUsersEmails,
   updateUserInfo,
   updateUserPassword,
 }

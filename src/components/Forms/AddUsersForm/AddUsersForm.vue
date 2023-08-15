@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref, VueElement } from 'vue'
+import { onMounted, reactive, ref, VueElement } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -19,15 +19,19 @@ import RolesTypes from '@Domain/Roles'
 import useUserStore from '@Store/user/userStore'
 
 import InvitationService from '@Services/InvitationService'
+import ManageUsersService from '@Services/ManageUsersService'
 
 import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
 
-const currentRoles = getRoles()
 const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
 
+const currentRoles = getRoles()
+const DBUsersEmails = ref<string[]>([])
+
+const isEditing = ref<boolean>(false)
 const fileInput = ref<VueElement>()
 const loadedFileText = ref('')
 
@@ -36,28 +40,62 @@ const response = reactive<ResponseMessage>({
   error: '',
 })
 
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { emails } = await ManageUsersService.getUsersEmails(token)
+    DBUsersEmails.value = emails
+  }
+})
+
 function clearResponseMessages() {
   response.success = ''
   response.error = ''
 }
 
-const { errors, submitCount, handleSubmit } = useForm<InviteUsersForm>({
-  validationSchema: {
-    emails: (value: string[]) =>
-      value?.every((email) => Validation.checkEmail(email)),
-    roles: (value: RolesTypes[]) => value?.length,
-  },
-  initialValues: {
-    emails: [''],
-    roles: [],
-  },
-})
+const { values, errors, setValues, submitCount, handleSubmit } =
+  useForm<InviteUsersForm>({
+    validationSchema: {
+      emails: (value: string[]) =>
+        value?.every((email) => Validation.checkEmail(email)),
+      roles: (value: RolesTypes[]) => {
+        if (submitCount.value) {
+          return value?.length
+        }
+        return true
+      },
+    },
+    initialValues: {
+      emails: [''],
+      roles: [],
+    },
+  })
 
-const { fields, push, remove } = useFieldArray<string>('emails')
+const { fields, push, move, remove } = useFieldArray<string>('emails')
 
-function getError(email: string) {
+const moveErrorEmail = async (index: number) => {
+  const prevEmail = values.emails[index - 1]
+
+  if (
+    index > 0 &&
+    !isEditing.value &&
+    Validation.checkEmail(prevEmail) &&
+    !DBUsersEmails.value.includes(prevEmail)
+  ) {
+    move(index, 0)
+  }
+}
+
+function getError(email: string, index: number) {
   if (submitCount.value && !Validation.checkEmail(email)) {
+    moveErrorEmail(index)
     return 'Неверно введена почта'
+  }
+  if (submitCount.value && DBUsersEmails.value.includes(email)) {
+    moveErrorEmail(index)
+    return 'Почта уже зарегистрирована'
   }
   return undefined
 }
@@ -98,6 +136,14 @@ const handleInvite = handleSubmit(async (values) => {
 
     response.success = success
     response.error = error
+
+    if (success) {
+      setValues({
+        emails: [''],
+        roles: [],
+      })
+      submitCount.value = 0
+    }
   }
 })
 </script>
@@ -118,7 +164,9 @@ const handleInvite = handleSubmit(async (values) => {
           <Input
             type="email"
             :name="`emails[${index}]`"
-            :error="getError(field.value)"
+            @focus="isEditing = true"
+            @blur="isEditing = false"
+            :error="getError(field.value, index)"
             placeholder="Введите email"
             prepend="@"
           />
@@ -205,7 +253,7 @@ const handleInvite = handleSubmit(async (values) => {
   </FormLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .add-users-form {
   width: 600px;
 

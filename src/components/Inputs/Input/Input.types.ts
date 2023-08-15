@@ -24,6 +24,8 @@ interface HTMLInputEvent extends Event {
 
 interface InputEmits {
   (event: 'change', value: HTMLInputEvent): void
+  (event: 'focus'): void
+  (event: 'blur'): void
 }
 
 export { InputProps, InputEmits, HTMLInputEvent }
