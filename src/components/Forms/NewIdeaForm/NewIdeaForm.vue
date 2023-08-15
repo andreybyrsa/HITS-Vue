@@ -5,7 +5,7 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue'
-import { reactive, onMounted } from 'vue'
+import { reactive } from 'vue'
 import { Idea } from '@Domain/Idea'
 import { useRouter } from 'vue-router'
 import useIdeasStore from '@Store/ideas/ideasStore'
@@ -47,7 +47,7 @@ function setRatingEmit(rating: number) {
 
 function handlePostIdea(idea: Idea) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJISEhISEBtYWlsLmNvbSIsImlhdCI6MTY5MTk2NzgzMSwiZXhwIjoxNjkxOTcxNDMxfQ.otyZD_hUNubKnPAnjafWen5IFGKeispJ0FXGQl-C0jg'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJraXZhQG1haWwuY29tIiwiaWF0IjoxNjkyMTAxNDQ0LCJleHAiOjE2OTIxMDUwNDR9.Kq_Qef1TlmtwQIGspceLicHz1yqHVwV7XEVcnWln5vY'
   ideasStore.postInitiatorIdeas(idea, token)
   route.push('/ideas')
 }

@@ -24,10 +24,11 @@ const gridColumns = [
 
 const ideasStore = useIdeasStore()
 const { initiatorIdeas } = storeToRefs(ideasStore)
+const { ideas } = storeToRefs(ideasStore)
 
 onMounted(async () => {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJISEhISEBtYWlsLmNvbSIsImlhdCI6MTY5MTk2NzgzMSwiZXhwIjoxNjkxOTcxNDMxfQ.otyZD_hUNubKnPAnjafWen5IFGKeispJ0FXGQl-C0jg'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJraXZhQG1haWwuY29tIiwiaWF0IjoxNjkyMTAxNDQ0LCJleHAiOjE2OTIxMDUwNDR9.Kq_Qef1TlmtwQIGspceLicHz1yqHVwV7XEVcnWln5vY'
   await ideasStore.fetchIdeas(token)
 })
 
@@ -48,6 +49,8 @@ function handleCloseModal(filters?: string[]) {
     </template>
     <template #content>
       <Typography class-name="fs-2 text-primary w-100">Идеи</Typography>
+
+      {{ ideas }}
 
       <div class="index-page__search bg-primary rounded-3 p-3 w-100">
         <Input

@@ -111,7 +111,7 @@ function getCellClass(key: string, value: number) {
 
 function handleDelete(id: number) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJISEhISEBtYWlsLmNvbSIsImlhdCI6MTY5MTk2NzgzMSwiZXhwIjoxNjkxOTcxNDMxfQ.otyZD_hUNubKnPAnjafWen5IFGKeispJ0FXGQl-C0jg'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJraXZhQG1haWwuY29tIiwiaWF0IjoxNjkyMTAxNDQ0LCJleHAiOjE2OTIxMDUwNDR9.Kq_Qef1TlmtwQIGspceLicHz1yqHVwV7XEVcnWln5vY'
   ideasStore.deleteInitiatorIdeas(id, token)
 }
 </script>

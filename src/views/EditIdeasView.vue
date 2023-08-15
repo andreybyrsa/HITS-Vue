@@ -3,11 +3,16 @@ import NewIdeaForm from '@Components/Forms/NewIdeaForm/NewIdeaForm.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import { Idea } from '@Domain/Idea'
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
 
-// const route = useRouter()
+const router = useRouter()
 
-// const id = route.params.id
+onMounted(() => {
+  // const id = { router.params }
+  const id = 1
+  console.log(id)
+})
 
 const idea: Idea = {
   name: 'Пирожки',
@@ -16,7 +21,7 @@ const idea: Idea = {
   projectType: 'INSIDE',
   problem: 'проблема',
   solution: 'еще что то ',
-  result: 'результвт',
+  result: 'результат',
   customer: 'Газпром',
   description: 'описание вроде',
   risk: 0.5,
