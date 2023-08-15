@@ -5,14 +5,15 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue'
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { Idea } from '@Domain/Idea'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
 const props = defineProps<NewIdeaProps>()
 
-const route = useRouter()
+const router = useRouter()
+const route = useRoute()
 
 const ideasStore = useIdeasStore()
 
@@ -31,15 +32,29 @@ const ideaData = reactive<Idea>({
   status: 'ON_EDITING',
 })
 
-// if (props.currentIdea) {
-//   ideaData.name = props.currentIdea.name
-//   ideaData.projectType = props.currentIdea.projectType
-//   ideaData.problem = props.currentIdea.problem
-//   ideaData.solution = props.currentIdea.solution
-//   ideaData.result = props.currentIdea.result
-//   ideaData.customer = props.currentIdea.customer
-//   ideaData.description = props.currentIdea.description
-// }
+watch(
+  () => props.currentIdea,
+  () => {
+    if (props.currentIdea) {
+      const {
+        name,
+        projectType,
+        problem,
+        solution,
+        result,
+        customer,
+        description,
+      } = props.currentIdea
+      ideaData.name = name
+      ideaData.projectType = projectType
+      ideaData.problem = problem
+      ideaData.solution = solution
+      ideaData.result = result
+      ideaData.customer = customer
+      ideaData.description = description
+    }
+  },
+)
 
 function setRatingEmit(rating: number) {
   ideaData.rating = rating
@@ -47,9 +62,21 @@ function setRatingEmit(rating: number) {
 
 function handlePostIdea(idea: Idea) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJraXZhQG1haWwuY29tIiwiaWF0IjoxNjkyMTAxNDQ0LCJleHAiOjE2OTIxMDUwNDR9.Kq_Qef1TlmtwQIGspceLicHz1yqHVwV7XEVcnWln5vY'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpb3VAbWFpbC5jb20iLCJpYXQiOjE2OTIxMDYxNTksImV4cCI6MTY5MjEwOTc1OX0.-rsfH6NeQFKvMg34jNjVqTMiMabMfp0Fonp2OC8fjYM'
   ideasStore.postInitiatorIdeas(idea, token)
-  route.push('/ideas')
+  router.push('/ideas')
+}
+function handleEditIdea(idea: Idea, id: number) {
+  const token =
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpb3VAbWFpbC5jb20iLCJpYXQiOjE2OTIxMDYxNTksImV4cCI6MTY5MjEwOTc1OX0.-rsfH6NeQFKvMg34jNjVqTMiMabMfp0Fonp2OC8fjYM'
+  ideasStore.putInitiatorIdeas(idea, id, token)
+  router.push('/ideas')
+}
+function handleDelete(id: number) {
+  const token =
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpb3VAbWFpbC5jb20iLCJpYXQiOjE2OTIxMDYxNTksImV4cCI6MTY5MjEwOTc1OX0.-rsfH6NeQFKvMg34jNjVqTMiMabMfp0Fonp2OC8fjYM'
+  ideasStore.deleteInitiatorIdeas(id, token)
+  router.push('/ideas')
 }
 </script>
 
@@ -156,10 +183,25 @@ function handlePostIdea(idea: Idea) {
     </div>
     <RatingCalculator @set-rating="setRatingEmit" />
     <Button
+      v-if="!$props.currentIdea"
       class-name="btn-primary d-block mx-auto"
       @click="handlePostIdea(ideaData)"
       >Отправить на рассмотрение</Button
     >
+    <div class="button-props w-100">
+      <Button
+        v-if="$props.currentIdea"
+        class-name="btn-primary"
+        @click="handleEditIdea(ideaData, +route.params.id)"
+        >Редактировать</Button
+      >
+      <Button
+        v-if="$props.currentIdea"
+        class-name="btn-danger"
+        @click="handleDelete(+route.params.id)"
+        >Удалить</Button
+      >
+    </div>
   </FormLayout>
 </template>
 
@@ -177,5 +219,9 @@ function handlePostIdea(idea: Idea) {
 
 ::-webkit-scrollbar-track {
   border-radius: 3rem;
+}
+
+.button-props {
+  @include flexible(flex-start, center, $gap: 20px);
 }
 </style>

@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 
-import { GridProps, GridEmits } from '@Components/Ideas/Grid/Grid.types'
+import { GridProps } from '@Components/Ideas/Grid/Grid.types'
 import { Idea } from '@Domain/Idea'
 import Button from '@Components/Button/Button.vue'
-import useIdeasStore from '@Store/ideas/ideasStore'
+// import useIdeasStore from '@Store/ideas/ideasStore'
+// import DropDown from '@Components/DropDown/DropDown.vue'
 
 const props = defineProps<GridProps>()
-// const emit = defineEmits<GridEmits>()
 
-const ideasStore = useIdeasStore()
+// const ideasStore = useIdeasStore()
 
 type O = {
   creationDate?: number
@@ -104,19 +104,19 @@ function getCellClass(key: string, value: number) {
   }
   return ''
 }
-
-// function handleIdeaData(idea: Idea) {
-//   emit('set-idea', idea)
-// }
-
-function handleDelete(id: number) {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJraXZhQG1haWwuY29tIiwiaWF0IjoxNjkyMTAxNDQ0LCJleHAiOjE2OTIxMDUwNDR9.Kq_Qef1TlmtwQIGspceLicHz1yqHVwV7XEVcnWln5vY'
-  ideasStore.deleteInitiatorIdeas(id, token)
-}
 </script>
 
 <template>
+  <!-- <Button
+    id="checkboxRoles"
+    type="button"
+    class-name="btn-primary"
+    icon-name="bi bi-plus-lg"
+    is-drop-down-controller
+  >
+    Выбрать роли
+  </Button>
+  <DropDown id="checkboxRoles">asd</DropDown> -->
   <table v-if="filteredData?.length">
     <thead>
       <tr class="tr">
@@ -158,18 +158,11 @@ function handleDelete(id: number) {
             }}
           </span>
         </td>
-        <!-- <router-link :to="`edit-idea/${entry.id}`">
-          <Button
-            class-name="button btn-primary w-100"
-            @click="handleIdeaData(entry)"
+        <router-link :to="`edit-idea/${entry.id}`">
+          <Button class-name="button btn-primary w-100"
             ><i class="bi bi-list fs-1"></i>
           </Button>
-        </router-link> -->
-        <Button
-          class-name="button btn-primary w-100"
-          @click="handleDelete(entry.id as number)"
-          ><i class="bi bi-trash-fill fs-1"></i>
-        </Button>
+        </router-link>
       </tr>
     </tbody>
   </table>

@@ -26,6 +26,11 @@ const useIdeasStore = defineStore('ideas', {
       this.ideas = await IdeasService.getAdminIdeas(token)
       this.initiatorIdeas = await IdeasService.getInitiatorIdeas(token)
     },
+    async putInitiatorIdeas(idea: Idea, id: number, token: string) {
+      await IdeasService.putInitiatorIdeas(idea, id, token)
+      this.ideas = await IdeasService.getAdminIdeas(token)
+      this.initiatorIdeas = await IdeasService.getInitiatorIdeas(token)
+    },
   },
 })
 
