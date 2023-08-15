@@ -175,7 +175,7 @@ function handlePostIdea(idea: Idea) {
   </FormLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 ::-webkit-scrollbar {
   width: 10px;
   background-color: #d8d8d8;

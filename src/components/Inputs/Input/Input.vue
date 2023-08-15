@@ -63,7 +63,7 @@ const LabelClassName = computed(() => [
 
     <span
       v-if="append || $slots.append"
-      class="input-group-text"
+      class="input-group-text fs-5"
     >
       {{ append }}
       <slot name="append"></slot>

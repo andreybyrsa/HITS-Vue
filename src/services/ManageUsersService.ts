@@ -28,7 +28,7 @@ const updateUserInfo = async (
   token: string,
 ): Promise<ResponseMessage> => {
   return await axios
-    .put(`${MANAGE_USERS_URL}/change/userInfo`, newUserData, {
+    .put(`${MANAGE_USERS_URL}/change/user-info`, newUserData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

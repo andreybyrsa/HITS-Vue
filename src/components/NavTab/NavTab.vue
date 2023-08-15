@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import DropDown from '@Components/DropDown/DropDown.vue'
 import NavTabProps from '@Components/NavTab/NavTab.types'
+import Collapse from '@Components/Collapse/Collapse.vue'
 
 const props = defineProps<NavTabProps>()
 
-const dropDownProps = {
+const collapseProps = {
   role: 'button',
   'data-bs-toggle': 'collapse',
   'data-bs-target': `#${props.to}`,
@@ -26,7 +26,7 @@ const NavTabClassName = computed(() => [
       :class="NavTabClassName"
       :to="to"
       active-class="active"
-      v-bind="routes && dropDownProps"
+      v-bind="routes && collapseProps"
     >
       <i
         v-if="iconName"
@@ -36,7 +36,7 @@ const NavTabClassName = computed(() => [
       <slot></slot>
     </router-link>
 
-    <DropDown
+    <Collapse
       v-if="routes"
       :id="to"
     >
@@ -49,7 +49,7 @@ const NavTabClassName = computed(() => [
       >
         {{ route.text }}
       </router-link>
-    </DropDown>
+    </Collapse>
   </div>
 </template>
 

@@ -39,7 +39,7 @@ function handleLogin() {
 
       <Button
         class-name="btn-primary"
-        icon-name="bi bi-plus-lg"
+        append-icon-name="bi bi-plus-lg"
         @click="handleLogin"
       >
         Логин
@@ -66,8 +66,9 @@ function handleLogin() {
       <Button
         class-name="btn-warning"
         @click="isOpenedModal = true"
-        >Открыть окно</Button
       >
+        Открыть окно
+      </Button>
 
       <RoleModal
         :is-opened="isOpenedModal"

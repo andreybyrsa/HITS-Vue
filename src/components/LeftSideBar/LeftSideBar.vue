@@ -85,7 +85,7 @@ function handleCloseModal() {
 
       <Button
         class-name="btn-light w-100 text-success"
-        icon-name="bi bi-circle-fill fs-6"
+        prepend-icon-name="bi bi-circle-fill fs-6"
         @click="handleOpenModal"
         :disabled="user?.roles.length === 1"
       >

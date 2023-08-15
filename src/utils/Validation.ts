@@ -5,7 +5,7 @@ class Validation {
   }
 
   checkName(name: string) {
-    const nameRegExp = /^[а-я ,.'-]+$/i
+    const nameRegExp = /^[а-я a-z ,.'-]+$/i
     return nameRegExp.test(name)
   }
 

@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import DropDown from '@Components/DropDown/DropDown.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import { HTMLInputEvent } from '@Components/Inputs/Input/Input.types'
@@ -148,7 +148,7 @@ const handleInvite = handleSubmit(async (values) => {
         <Button
           type="button"
           class-name="btn-primary fs-6"
-          icon-name="bi bi-plus-lg"
+          prepend-icon-name="bi bi-plus-lg"
           @click="push('')"
         >
           Добавить почту
@@ -157,7 +157,7 @@ const handleInvite = handleSubmit(async (values) => {
         <Button
           type="button"
           class-name="btn-primary fs-6"
-          icon-name="bi bi-file-earmark"
+          prepend-icon-name="bi bi-file-earmark"
           @click="fileInput?.click()"
         >
           Загрузить файл
@@ -167,15 +167,15 @@ const handleInvite = handleSubmit(async (values) => {
           id="checkboxRoles"
           type="button"
           :class-name="errors.roles ? 'btn-danger fs-6' : 'btn-primary fs-6'"
-          icon-name="bi bi-plus-lg"
-          is-drop-down-controller
+          prepend-icon-name="bi bi-plus-lg"
+          is-collapse-controller
         >
           Выбрать роли
         </Button>
       </div>
     </div>
 
-    <DropDown
+    <Collapse
       id="checkboxRoles"
       class-name="w-100"
     >
@@ -186,7 +186,7 @@ const handleInvite = handleSubmit(async (values) => {
         :value="role"
         :label="currentRoles.translatedRoles[role]"
       />
-    </DropDown>
+    </Collapse>
 
     <Button
       type="submit"

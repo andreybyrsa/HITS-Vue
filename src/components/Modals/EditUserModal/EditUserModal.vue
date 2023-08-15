@@ -11,7 +11,7 @@ import {
   EditUserModalProps,
   EditUserModalEmits,
 } from '@Components/Modals/EditUserModal/EditUserModal.types'
-import DropDown from '@Components/DropDown/DropDown.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
 import { UpdateUserData } from '@Domain/ManageUsers'
@@ -134,12 +134,12 @@ const handleEditUser = handleSubmit(async (values) => {
             :class-name="
               errors.newRoles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'
             "
-            icon-name="bi bi-chevron-down"
-            is-drop-down-controller
+            append-icon-name="bi bi-chevron-down"
+            is-collapse-controller
           >
             Роли
           </Button>
-          <DropDown
+          <Collapse
             id="checkbox-roles"
             class-name="w-100"
           >
@@ -149,11 +149,12 @@ const handleEditUser = handleSubmit(async (values) => {
             >
               <Checkbox
                 name="newRoles"
-                :value="role"
+                class-name="drop-down-item"
                 :label="availableRoles.translatedRoles[role]"
+                :value="role"
               />
             </template>
-          </DropDown>
+          </Collapse>
         </div>
 
         <Button
