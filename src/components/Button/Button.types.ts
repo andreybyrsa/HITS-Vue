@@ -1,7 +1,10 @@
 interface ButtonProps {
   id?: string
   className?: string
-  iconName?: string
+  prependIconName?: string
+  appendIconName?: string
+
+  isCollapseController?: boolean
   isDropDownController?: boolean
 }
 

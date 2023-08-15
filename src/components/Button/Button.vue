@@ -5,26 +5,46 @@ import ButtonProps from '@Components/Button/Button.types'
 
 const props = defineProps<ButtonProps>()
 
-const ButtonClassName = computed(() => ['btn btn-lg d-flex', props.className])
-
-const dropDownProps = {
+const collapseProps = {
   'data-bs-toggle': 'collapse',
   'data-bs-target': `#${props.id}`,
   'aria-expanded': false,
 }
+const dropDwonProps = {
+  'data-bs-toggle': 'dropdown',
+  'data-bs-auto-close': 'outside',
+  'aria-expanded': false,
+}
+
+const ButtonClassName = computed(() => ['btn btn-lg d-flex', props.className])
+
+const ButtonBinds = computed(() => {
+  if (props.isCollapseController) {
+    return collapseProps
+  }
+  if (props.isDropDownController) {
+    return dropDwonProps
+  }
+  return null
+})
 </script>
 
 <template>
   <button
     type="button"
     :class="ButtonClassName"
-    v-bind="isDropDownController && dropDownProps"
+    v-bind="ButtonBinds"
   >
     <i
-      v-if="iconName"
-      :class="iconName"
+      v-if="prependIconName"
+      :class="prependIconName"
     ></i>
     <slot></slot>
+
+    <i
+      v-if="appendIconName"
+      :class="appendIconName"
+    ></i>
   </button>
 </template>
 
