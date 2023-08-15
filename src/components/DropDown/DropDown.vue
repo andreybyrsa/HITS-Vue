@@ -5,16 +5,11 @@ import DropDownProps from '@Components/DropDown/DropDown.types'
 
 const props = defineProps<DropDownProps>()
 
-const DropDownClassName = computed(() => ['collapse', props.className])
+const DropDownClassName = computed(() => ['dropdown-menu p-2', props.className])
 </script>
 
 <template>
-  <div
-    :id="id"
-    :class="DropDownClassName"
-  >
-    <div class="list-group p-2">
-      <slot></slot>
-    </div>
-  </div>
+  <ul :class="DropDownClassName">
+    <slot></slot>
+  </ul>
 </template>
