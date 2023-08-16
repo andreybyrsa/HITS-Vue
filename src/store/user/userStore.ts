@@ -20,10 +20,11 @@ const useUserStore = defineStore('user', {
 
       if (token) {
         const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-
         this.user = localStorageUser
 
         this.router.push({ name: 'ideas' })
+
+        this.loginError = ''
       } else {
         this.loginError = error
       }
@@ -35,10 +36,11 @@ const useUserStore = defineStore('user', {
 
       if (token) {
         const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-
         this.user = localStorageUser
 
         this.router.push({ name: 'ideas' })
+
+        this.registerError = ''
       } else {
         this.registerError = error
       }

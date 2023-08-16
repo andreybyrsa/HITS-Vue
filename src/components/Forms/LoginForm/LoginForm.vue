@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -6,6 +7,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import loginInputs from '@Components/Forms/LoginForm/LoginFormInputs'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
@@ -18,6 +20,8 @@ import Validation from '@Utils/Validation'
 const userStore = useUserStore()
 const { loginError } = storeToRefs(userStore)
 
+const isOpenedNotification = ref(false)
+
 const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {
     email: (value: string) =>
@@ -26,9 +30,17 @@ const { handleSubmit } = useForm<LoginUser>({
   },
 })
 
-const handleLogin = handleSubmit((values) => {
-  userStore.loginUser(values)
+const handleLogin = handleSubmit(async (values) => {
+  await userStore.loginUser(values)
+
+  if (loginError?.value) {
+    isOpenedNotification.value = true
+  }
 })
+
+function handleCloseNotification() {
+  isOpenedNotification.value = false
+}
 </script>
 
 <template>
@@ -58,11 +70,13 @@ const handleLogin = handleSubmit((values) => {
       Войти
     </Button>
 
-    <Typography
-      v-if="loginError"
-      class-name="text-danger text-center fs-6"
+    <NotificationModal
+      type="error"
+      :is-opened="isOpenedNotification"
+      @close-modal="handleCloseNotification"
+      :time-expired="5000"
     >
       {{ loginError }}
-    </Typography>
+    </NotificationModal>
   </FormLayout>
 </template>

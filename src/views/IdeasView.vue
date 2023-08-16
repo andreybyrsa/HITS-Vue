@@ -14,8 +14,8 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import useIdeasStore from '@Store/ideas/ideasStore'
 import useUserStore from '@Store/user/userStore'
 
-// import Idea from '@Components/Ideas/Idea/Idea.vue'
 const isOpenedFilter = ref(false)
+
 const searchQuery = ref('')
 const gridColumns = [
   'name',
@@ -56,6 +56,7 @@ function handleCloseModal(filters?: string[]) {
     <template #leftSideBar>
       <LeftSideBar />
     </template>
+
     <template #content>
       <Typography class-name="fs-2 text-primary w-100">Идеи</Typography>
 
@@ -81,6 +82,7 @@ function handleCloseModal(filters?: string[]) {
           :current-filters="[...selectedFilters]"
         />
       </div>
+
       <Grid
         :data="initiatorIdeas"
         :columns="gridColumns"

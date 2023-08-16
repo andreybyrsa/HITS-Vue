@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, watch } from 'vue'
+import { watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -13,10 +13,10 @@ import {
 } from '@Components/Modals/EditUserModal/EditUserModal.types'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
-import ResponseMessage from '@Domain/ResponseMessage'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -24,6 +24,7 @@ import ManageUsersService from '@Services/ManageUsersService'
 
 import getRoles from '@Utils/getRoles'
 import Validation from '@Utils/Validation'
+import useNotification from '@Utils/useNotification'
 
 const props = defineProps<EditUserModalProps>()
 
@@ -32,9 +33,12 @@ const emit = defineEmits<EditUserModalEmits>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const response = reactive<ResponseMessage>({
-  error: '',
-})
+const {
+  responseMessage,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 const availableRoles = getRoles()
 
@@ -78,10 +82,9 @@ const handleEditUser = handleSubmit(async (values) => {
     )
 
     if (success) {
-      response.error = ''
-      return emit('close-modal', values)
+      return emit('close-modal', values, success)
     } else {
-      response.error = error
+      handleOpenNotification('error', error)
     }
   }
 })
@@ -166,12 +169,14 @@ const handleEditUser = handleSubmit(async (values) => {
         </Button>
       </template>
 
-      <Typography
-        v-if="response.error"
-        class-name="text-danger w-100 text-center"
+      <NotificationModal
+        :type="responseMessage.type"
+        :is-opened="isOpenedNotification"
+        @close-modal="handleCloseNotification"
+        :time-expired="5000"
       >
-        {{ response.error }}
-      </Typography>
+        {{ responseMessage.message }}
+      </NotificationModal>
     </div>
   </ModalLayout>
 </template>

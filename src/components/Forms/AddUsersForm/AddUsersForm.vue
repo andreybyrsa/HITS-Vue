@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref, VueElement } from 'vue'
+import { onMounted, ref, VueElement } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -9,11 +9,11 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import { HTMLInputEvent } from '@Components/Inputs/Input/Input.types'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { InviteUsersForm } from '@Domain/Invitation'
-import ResponseMessage from '@Domain/ResponseMessage'
 import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
@@ -23,6 +23,7 @@ import ManageUsersService from '@Services/ManageUsersService'
 
 import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
+import useNotification from '@Utils/useNotification'
 
 const userStore = useUserStore()
 
@@ -35,25 +36,27 @@ const isEditing = ref<boolean>(false)
 const fileInput = ref<VueElement>()
 const loadedFileText = ref('')
 
-const response = reactive<ResponseMessage>({
-  success: '',
-  error: '',
-})
+const {
+  responseMessage,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { emails } = await ManageUsersService.getUsersEmails(token)
-    DBUsersEmails.value = emails
+    const { emails, error } = await ManageUsersService.getUsersEmails(token)
+
+    if (emails) {
+      DBUsersEmails.value = emails
+    } else {
+      handleOpenNotification('error', error)
+    }
   }
 })
-
-function clearResponseMessages() {
-  response.success = ''
-  response.error = ''
-}
 
 const { values, errors, setValues, submitCount, handleSubmit } =
   useForm<InviteUsersForm>({
@@ -119,6 +122,10 @@ function handleFileChange(event: HTMLInputEvent) {
           loadedFileText.value = `Загружено ${formattedEmails.length} из ${emails.length}`
         }
       })
+      .catch(({ response }) => {
+        const error = response ? response.data.error : 'Ошибка загрузки файла'
+        handleOpenNotification('error', error)
+      })
   }
 }
 
@@ -132,17 +139,17 @@ const handleInvite = handleSubmit(async (values) => {
       values,
       token,
     )
-    clearResponseMessages()
-
-    response.success = success
-    response.error = error
 
     if (success) {
+      handleOpenNotification('success', success)
+
       setValues({
         emails: [''],
         roles: [],
       })
       submitCount.value = 0
+    } else {
+      handleOpenNotification('error', error)
     }
   }
 })
@@ -244,12 +251,14 @@ const handleInvite = handleSubmit(async (values) => {
       Добавить
     </Button>
 
-    <Typography
-      v-if="response.success || response.error"
-      :class-name="response.success ? 'text-success fs-6' : 'text-danger fs-6'"
+    <NotificationModal
+      :type="responseMessage.type"
+      :is-opened="isOpenedNotification"
+      @close-modal="handleCloseNotification"
+      :time-expired="5000"
     >
-      {{ response.success || response.error }}
-    </Typography>
+      {{ responseMessage.message }}
+    </NotificationModal>
   </FormLayout>
 </template>
 

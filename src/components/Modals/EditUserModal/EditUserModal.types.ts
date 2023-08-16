@@ -7,7 +7,7 @@ interface EditUserModalProps {
 }
 
 interface EditUserModalEmits {
-  (event: 'close-modal', newUser?: UpdateUserData): void
+  (event: 'close-modal', newUser?: UpdateUserData, success?: string): void
 }
 
 export { EditUserModalProps, EditUserModalEmits }

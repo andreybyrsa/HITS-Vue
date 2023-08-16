@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue'
+import { watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 
@@ -9,21 +9,25 @@ import newPasswordModalInputs from '@Components/Modals/NewPasswordModal/NewPassw
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import { UpdateUserPassword } from '@Domain/ManageUsers'
-import ResponseMessage from '@Domain/ResponseMessage'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
 import Validation from '@Utils/Validation'
+import useNotification from '@Utils/useNotification'
 
 const props = defineProps<NewPasswordModalProps>()
 
 const router = useRouter()
-const response = reactive<ResponseMessage>({
-  error: '',
-})
-const expiredTime = ref('')
+
+const {
+  responseMessage,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 const { setValues, handleSubmit } = useForm<UpdateUserPassword>({
   validationSchema: {
@@ -39,32 +43,8 @@ watch(
   () => {
     const { authKey, email } = props
     setValues({ key: authKey, email })
-
-    startTimer()
   },
 )
-
-function startTimer() {
-  let initialSeconds = 300
-
-  const intervalID = setInterval(() => {
-    const minutes = Math.floor(initialSeconds / 60)
-    const seconds = initialSeconds - minutes * 60
-
-    const currentMinutes =
-      minutes.toString().length > 1 ? minutes : `0${minutes}`
-    const currentSeconds =
-      seconds.toString().length > 1 ? seconds : `0${seconds}`
-
-    expiredTime.value = `${currentMinutes}:${currentSeconds}`
-
-    if (initialSeconds > 0) {
-      initialSeconds--
-    } else {
-      clearInterval(intervalID)
-    }
-  }, 1000)
-}
 
 const handleUpdatePassword = handleSubmit(async (values) => {
   const { success, error } = await ManageUsersService.updateUserPassword(values)
@@ -72,7 +52,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
   if (success) {
     router.push('/login')
   } else {
-    response.error = error
+    handleOpenNotification('error', error)
   }
 })
 </script>
@@ -104,20 +84,14 @@ const handleUpdatePassword = handleSubmit(async (values) => {
         Изменить пароль
       </Button>
 
-      <Typography
-        v-if="response.error"
-        class-name="text-danger fs-6"
+      <NotificationModal
+        :type="responseMessage.type"
+        :is-opened="isOpenedNotification"
+        @close-modal="handleCloseNotification"
+        :time-expired="5000"
       >
-        {{ response.error }}
-      </Typography>
-
-      <Typography
-        v-else
-        class-name="text-primary fs-6 text-center"
-      >
-        Код отпрвлен на {{ email }}, время действия кода
-        {{ expiredTime }}
-      </Typography>
+        {{ responseMessage.message }}
+      </NotificationModal>
     </div>
   </ModalLayout>
 </template>

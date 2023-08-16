@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed, reactive } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
@@ -8,10 +8,10 @@ import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import { User } from '@Domain/User'
 import { UpdateUserData } from '@Domain/ManageUsers'
-import ResponseMessage from '@Domain/ResponseMessage'
 import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
@@ -19,6 +19,7 @@ import useUserStore from '@Store/user/userStore'
 import ManageUsersService from '@Services/ManageUsersService'
 
 import getRoles from '@Utils/getRoles'
+import useNotification from '@Utils/useNotification'
 
 const isOpenUserModal = ref(false)
 
@@ -32,9 +33,12 @@ const searchedValue = ref('')
 const availableRoles = getRoles()
 const filteredRoles = ref<RolesTypes[]>([])
 
-const response = reactive<ResponseMessage>({
-  error: '',
-})
+const {
+  responseMessage,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 onMounted(async () => {
   const currentUser = user.value
@@ -46,7 +50,7 @@ onMounted(async () => {
     if (users) {
       currentUsers.value = users
     } else {
-      response.error = error
+      handleOpenNotification('error', error)
     }
   }
 })
@@ -83,7 +87,7 @@ function handleOpenModal(email: string) {
   } as User
 }
 
-function handleCloseModal(newUser?: UpdateUserData) {
+function handleCloseModal(newUser?: UpdateUserData, success?: string) {
   isOpenUserModal.value = false
 
   if (newUser) {
@@ -100,6 +104,8 @@ function handleCloseModal(newUser?: UpdateUserData) {
         currentUsers.value.splice(index, 1, newUserData)
       }
     })
+
+    handleOpenNotification('success', success)
   }
 }
 </script>
@@ -171,12 +177,14 @@ function handleCloseModal(newUser?: UpdateUserData) {
         ></Button>
       </div>
 
-      <Typography
-        v-if="response.error"
-        class-name="text-danger text-center"
+      <NotificationModal
+        :type="responseMessage.type"
+        :is-opened="isOpenedNotification"
+        @close-modal="handleCloseNotification"
+        :time-expired="5000"
       >
-        {{ response.error }}
-      </Typography>
+        {{ responseMessage.message }}
+      </NotificationModal>
     </div>
 
     <EditUserModal
