@@ -7,7 +7,7 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
-import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -25,6 +25,10 @@ userStore.checkLastActivity()
 
 function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
+}
+
+function handleCloseModal() {
+  isOpenedModal.value = false
 }
 </script>
 
@@ -63,17 +67,17 @@ function handleLogin() {
         </NavTab>
       </div>
 
+      <IdeaModal
+        :is-opened="isOpenedModal"
+        @close-modal="handleCloseModal"
+      />
+
       <Button
         class-name="btn-warning"
         @click="isOpenedModal = true"
       >
         Открыть окно
       </Button>
-
-      <RoleModal
-        :is-opened="isOpenedModal"
-        @close-modal="isOpenedModal = false"
-      />
 
       <pre>Пользователь из userStore - {{ user }}</pre>
     </template>
