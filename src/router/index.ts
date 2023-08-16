@@ -10,7 +10,6 @@ import NewIdeas from '@Views/NewIdeas.vue'
 import EditIdeasView from '@Views/EditIdeasView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
-import NewPasswordView from '@Views/NewPasswordView.vue'
 
 import IdeasView from '@Views/IdeasView.vue'
 
@@ -22,9 +21,9 @@ const routes: Array<RouteRecordRaw> = [
     component: RoleMiddleware,
     children: [
       {
-        path: 'dev',
-        name: 'dev',
-        component: DevView,
+        path: '/ideas',
+        name: 'ideas',
+        component: IdeasView,
       },
       {
         path: 'add-idea',
@@ -50,6 +49,11 @@ const routes: Array<RouteRecordRaw> = [
           },
         ],
       },
+      {
+        path: 'dev',
+        name: 'dev',
+        component: DevView,
+      },
     ],
   },
   {
@@ -58,7 +62,7 @@ const routes: Array<RouteRecordRaw> = [
     component: LoginView,
   },
   {
-    path: '/register/:token',
+    path: '/register/:slug',
     name: 'register',
     component: RegisterView,
   },
@@ -66,16 +70,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
-  },
-  {
-    path: '/ideas',
-    name: 'ideas',
-    component: IdeasView,
-  },
-  {
-    path: '/new-password/:slug',
-    name: 'new-password',
-    component: NewPasswordView,
   },
 ]
 

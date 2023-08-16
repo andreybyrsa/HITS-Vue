@@ -43,6 +43,7 @@ watch(
         >
           <div class="filter-modal__checkbox">
             <Checkbox
+              name="checkbox"
               :label="filter"
               v-model="selectedFilters"
               :value="filter"

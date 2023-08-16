@@ -1,13 +1,17 @@
 <script lang="ts" setup>
+import { reactive, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
 import Typography from '@Components/Typography/Typography.vue'
 import NewIdeaProps from '@Components/Forms/NewIdeaForm/NewIdeaForm.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue'
-import { reactive, watch } from 'vue'
+
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
 import { Idea } from '@Domain/Idea'
-import { useRouter, useRoute } from 'vue-router'
+
 import useIdeasStore from '@Store/ideas/ideasStore'
 
 const props = defineProps<NewIdeaProps>()
@@ -30,6 +34,7 @@ const ideaData = reactive<Idea>({
   risk: 0.5,
   rating: 1,
   status: 'ON_EDITING',
+  // status: 'NEW',
 })
 
 watch(
@@ -52,6 +57,7 @@ watch(
       ideaData.result = result
       ideaData.customer = customer
       ideaData.description = description
+      ideaData.status = 'ON_EDITING'
     }
   },
 )
@@ -62,19 +68,19 @@ function setRatingEmit(rating: number) {
 
 function handlePostIdea(idea: Idea) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpb3VAbWFpbC5jb20iLCJpYXQiOjE2OTIxMDYxNTksImV4cCI6MTY5MjEwOTc1OX0.-rsfH6NeQFKvMg34jNjVqTMiMabMfp0Fonp2OC8fjYM'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
   ideasStore.postInitiatorIdeas(idea, token)
   router.push('/ideas')
 }
 function handleEditIdea(idea: Idea, id: number) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpb3VAbWFpbC5jb20iLCJpYXQiOjE2OTIxMDYxNTksImV4cCI6MTY5MjEwOTc1OX0.-rsfH6NeQFKvMg34jNjVqTMiMabMfp0Fonp2OC8fjYM'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
   ideasStore.putInitiatorIdeas(idea, id, token)
   router.push('/ideas')
 }
 function handleDelete(id: number) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpb3VAbWFpbC5jb20iLCJpYXQiOjE2OTIxMDYxNTksImV4cCI6MTY5MjEwOTc1OX0.-rsfH6NeQFKvMg34jNjVqTMiMabMfp0Fonp2OC8fjYM'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
   ideasStore.deleteInitiatorIdeas(id, token)
   router.push('/ideas')
 }
@@ -186,7 +192,7 @@ function handleDelete(id: number) {
       v-if="!$props.currentIdea"
       class-name="btn-primary d-block mx-auto"
       @click="handlePostIdea(ideaData)"
-      >Отправить на рассмотрение</Button
+      >Создать идею</Button
     >
     <div class="button-props w-100">
       <Button
@@ -205,7 +211,7 @@ function handleDelete(id: number) {
   </FormLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 ::-webkit-scrollbar {
   width: 10px;
   background-color: #d8d8d8;

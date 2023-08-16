@@ -1,52 +1,103 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, reactive } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
-
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+import DropDown from '@Components/DropDown/DropDown.vue'
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
 import { User } from '@Domain/User'
+import { UpdateUserData } from '@Domain/ManageUsers'
+import ResponseMessage from '@Domain/ResponseMessage'
+import RolesTypes from '@Domain/Roles'
+
+import useUserStore from '@Store/user/userStore'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
+import getRoles from '@Utils/getRoles'
+
 const isOpenUserModal = ref(false)
 
-const users = ref<User[]>()
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const currentUsers = ref<User[]>([])
 const editingUser = ref<User>()
 const searchedValue = ref('')
 
-onMounted(async () => {
-  users.value = await ManageUsersService.getUsers()
+const availableRoles = getRoles()
+const filteredRoles = ref<RolesTypes[]>([])
+
+const response = reactive<ResponseMessage>({
+  error: '',
 })
 
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { users, error } = await ManageUsersService.getUsers(token)
+
+    if (users) {
+      currentUsers.value = users
+    } else {
+      response.error = error
+    }
+  }
+})
+
+function getCurrentRoleColor(role: RolesTypes) {
+  if (role === 'ADMIN') {
+    return 'text-danger'
+  }
+  return 'text-secondary'
+}
+
 const searchedUsers = computed(() => {
-  return users.value?.filter((user) => {
+  return currentUsers.value.filter((user) => {
     const userEmail = user.email.toLowerCase().trim()
     const currentSearchedValue = searchedValue.value.toLowerCase().trim()
 
-    return userEmail.includes(currentSearchedValue)
+    const isIncludeSearcheValue = userEmail.includes(currentSearchedValue)
+
+    if (filteredRoles.value.length) {
+      return (
+        filteredRoles.value.every((role) => user.roles.includes(role)) &&
+        isIncludeSearcheValue
+      )
+    }
+
+    return isIncludeSearcheValue
   })
 })
 
 function handleOpenModal(email: string) {
   isOpenUserModal.value = true
   editingUser.value = {
-    ...users.value?.find((user) => user.email === email),
+    ...currentUsers.value.find((user) => user.email === email),
   } as User
 }
 
-function handleCloseModal(newUser?: User) {
+function handleCloseModal(newUser?: UpdateUserData) {
   isOpenUserModal.value = false
 
-  if (newUser && editingUser.value) {
-    const { email } = editingUser.value
+  if (newUser) {
+    const { email, newEmail, newFirstName, newLastName, newRoles } = newUser
+    const newUserData: User = {
+      email: newEmail,
+      firstName: newFirstName,
+      lastName: newLastName,
+      roles: newRoles,
+    }
 
-    users.value?.forEach((user, index) => {
+    currentUsers.value.forEach((user, index) => {
       if (email === user.email) {
-        users.value?.splice(index, 1, newUser)
+        currentUsers.value.splice(index, 1, newUserData)
       }
     })
   }
@@ -54,7 +105,7 @@ function handleCloseModal(newUser?: User) {
 </script>
 
 <template>
-  <FormLayout class-name="edit-users-form">
+  <form class="edit-users-form p-3">
     <Typography class-name="fs-2 text-primary text-center w-100">
       Редактирование пользователей
     </Typography>
@@ -65,38 +116,66 @@ function handleCloseModal(newUser?: User) {
         v-model="searchedValue"
         placeholder="Поиск по почте"
       >
-        <template #prepend>
-          <i class="bi bi-search"></i>
+        <template #append>
+          <Button
+            class-name="px-2 py-0"
+            append-icon-name="bi bi-chevron-down"
+            is-drop-down-controller
+          >
+            Роли
+          </Button>
+
+          <DropDown>
+            <template
+              v-for="(role, index) in availableRoles.roles"
+              :key="index"
+            >
+              <Checkbox
+                name="checkboxRole"
+                :label="availableRoles.translatedRoles[role]"
+                v-model="filteredRoles"
+                :value="role"
+              />
+            </template>
+          </DropDown>
         </template>
       </Input>
     </div>
 
     <div class="edit-users-form__content w-100">
-      <template v-if="searchedUsers?.length">
-        <div
-          v-for="(user, index) in searchedUsers"
-          :key="index"
-          class="edit-users-form__user px-3 py-2 border rounded-3"
-        >
-          <div class="d-flex flex-column">
-            <Typography class-name="text-primary fs-5">
-              {{ user.email }}
-            </Typography>
-            <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
-          </div>
+      <div
+        v-for="(user, index) in searchedUsers"
+        :key="index"
+        class="edit-users-form__user px-3 py-2 border rounded-3"
+      >
+        <div class="d-flex flex-column">
+          <Typography class-name="text-primary fs-5">
+            {{ user.email }}
+          </Typography>
+          <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
 
-          <Button
-            icon-name="bi bi-pencil-square text-primary"
-            @click="handleOpenModal(user.email)"
-          ></Button>
+          <div class="edit-users-form__roles">
+            <Typography
+              v-for="(role, index) in user.roles"
+              :key="index"
+              :class-name="`fs-6 ${getCurrentRoleColor(role)}`"
+            >
+              {{ availableRoles.translatedRoles[role] }}
+            </Typography>
+          </div>
         </div>
-      </template>
+
+        <Button
+          prepend-icon-name="bi bi-pencil-square text-primary"
+          @click="handleOpenModal(user.email)"
+        ></Button>
+      </div>
 
       <Typography
-        v-if="!users?.length"
+        v-if="response.error"
         class-name="text-danger text-center"
       >
-        Ошибка загрузки пользователей
+        {{ response.error }}
       </Typography>
     </div>
 
@@ -105,13 +184,14 @@ function handleCloseModal(newUser?: User) {
       @close-modal="handleCloseModal"
       :user="editingUser"
     />
-  </FormLayout>
+  </form>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .edit-users-form {
   width: 100%;
   height: 100%;
+  background-color: $white-color;
 
   @include flexible(center, flex-start, column, $gap: 16px);
 
@@ -125,6 +205,10 @@ function handleCloseModal(newUser?: User) {
 
   &__user {
     @include flexible(center, space-between);
+  }
+
+  &__roles {
+    @include flexible(center, flex-start, $gap: 8px);
   }
 }
 </style>

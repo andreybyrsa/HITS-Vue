@@ -9,6 +9,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
     <template #leftSideBar>
       <LeftSideBar />
     </template>
+
     <template #content>
       <NewIdeaForm />
     </template>

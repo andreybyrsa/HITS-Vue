@@ -10,40 +10,40 @@ import RolesTypes from '@Domain/Roles'
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
     user: null,
+    loginError: '',
+    registerError: '',
   }),
   actions: {
     async loginUser(user: LoginUser) {
-      try {
-        const response = await AuthService.loginUser(user)
+      const response = await AuthService.loginUser(user)
+      const { token, error } = response
 
-        if (response.token) {
-          const localStorageUser =
-            LocalStorageUser.setLocalStorageUser(response)
+      if (token) {
+        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
 
-          this.user = localStorageUser
+        this.user = localStorageUser
 
-          this.router.push({ name: 'dev' })
-        }
-      } catch (error) {
-        console.warn(error)
+        this.router.push({ name: 'ideas' })
+      } else {
+        this.loginError = error
       }
     },
+
     async registerUser(user: RegisterUser) {
-      try {
-        const response = await AuthService.registerUser(user)
+      const response = await AuthService.registerUser(user)
+      const { token, error } = response
 
-        if (response.token) {
-          const localStorageUser =
-            LocalStorageUser.setLocalStorageUser(response)
+      if (token) {
+        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
 
-          this.user = localStorageUser
+        this.user = localStorageUser
 
-          this.router.push({ name: 'dev' })
-        }
-      } catch (error) {
-        console.warn(error)
+        this.router.push({ name: 'ideas' })
+      } else {
+        this.registerError = error
       }
     },
+
     setUserFromLocalStorage(localStorageUser: User) {
       this.user = localStorageUser
     },

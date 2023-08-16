@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { reactive, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
+import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -11,16 +12,30 @@ import registerInputs from '@Components/Forms/RegisterForm/RegisterFormInputs'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { RegisterUser } from '@Domain/User'
+import RolesTypes from '@Domain/Roles'
+import ResponseMessage from '@Domain/ResponseMessage'
 
 import useUserStore from '@Store/user/userStore'
 
-import ManageUsersService from '@Services/ManageUsersService'
+import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
-import RolesTypes from '@Domain/Roles'
 
 const userStore = useUserStore()
+const { registerError } = storeToRefs(userStore)
+
 const route = useRoute()
+
+const response = reactive<ResponseMessage>({
+  error: '',
+})
+
+watch(
+  () => registerError?.value,
+  () => {
+    response.error = registerError?.value
+  },
+)
 
 const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
   validationSchema: {
@@ -35,17 +50,24 @@ const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
   },
 })
 
-const handleRegister = handleSubmit((values) => {
-  userStore.registerUser(values)
+const handleRegister = handleSubmit(async (values) => {
+  const { slug } = route.params
+
+  await userStore.registerUser(values)
+  await InvitationService.deleteInvitationInfo(slug)
 })
 
 onMounted(async () => {
-  const { email, roles } = await ManageUsersService.getInvitationInfo(
-    route.params.slug,
+  const { slug } = route.params
+  const { email, roles, error } = await InvitationService.getInvitationInfo(
+    slug,
   )
+
   if (email && roles) {
     setFieldValue('email', email)
     setFieldValue('roles', roles)
+  } else {
+    response.error = error ?? 'Ошибка приглашения'
   }
 })
 </script>
@@ -75,5 +97,12 @@ onMounted(async () => {
     >
       Зарегистрироваться
     </Button>
+
+    <Typography
+      v-if="response.error"
+      class-name="text-danger text-center fs-6"
+    >
+      {{ response.error }}
+    </Typography>
   </FormLayout>
 </template>

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import { useForm } from 'vee-validate'
+import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -10,11 +11,14 @@ import {
   EditUserModalProps,
   EditUserModalEmits,
 } from '@Components/Modals/EditUserModal/EditUserModal.types'
-import DropDown from '@Components/DropDown/DropDown.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
-import { User } from '@Domain/User'
+import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
+import ResponseMessage from '@Domain/ResponseMessage'
+
+import useUserStore from '@Store/user/userStore'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
@@ -25,41 +29,60 @@ const props = defineProps<EditUserModalProps>()
 
 const emit = defineEmits<EditUserModalEmits>()
 
-const response = ref('')
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const response = reactive<ResponseMessage>({
+  error: '',
+})
 
 const availableRoles = getRoles()
 
-const { errors, setValues, handleSubmit } = useForm<User>({
+const { errors, setValues, handleSubmit } = useForm<UpdateUserData>({
   validationSchema: {
-    email: (value: string) =>
+    newEmail: (value: string) =>
       Validation.checkEmail(value) || 'Неверно введена почта',
-    firstName: (value: string) =>
+    newFirstName: (value: string) =>
       Validation.checkName(value) || 'Неверно введено имя',
-    lastName: (value: string) =>
-      Validation.checkName(value) || 'неверно введена фамилия',
-    roles: (value: RolesTypes[]) => value?.length,
+    newLastName: (value: string) =>
+      Validation.checkName(value) || 'Неверно введена фамилия',
+    newRoles: (value: RolesTypes[]) => value?.length,
   },
 })
 
 watch(
   () => props.user,
   () => {
-    console.log(1)
-    setValues({
-      ...props.user,
-    })
+    if (props.user) {
+      const { email, firstName, lastName, roles } = props.user
+
+      setValues({
+        email,
+        newEmail: email,
+        newFirstName: firstName,
+        newLastName: lastName,
+        newRoles: roles,
+      })
+    }
   },
 )
 
 const handleEditUser = handleSubmit(async (values) => {
-  const { error, success } = await ManageUsersService.saveEditedUser(values)
+  const currentUser = user.value
 
-  if (!success) {
-    response.value = ''
-    return emit('close-modal', values)
-  }
-  if (error) {
-    response.value = error
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { success, error } = await ManageUsersService.updateUserInfo(
+      values,
+      token,
+    )
+
+    if (success) {
+      response.error = ''
+      return emit('close-modal', values)
+    } else {
+      response.error = error
+    }
   }
 })
 </script>
@@ -83,13 +106,13 @@ const handleEditUser = handleSubmit(async (values) => {
         <div class="edit-user-modal__inputs w-100">
           <Input
             type="email"
-            name="email"
+            name="newEmail"
             placeholder="Введите email"
             prepend="@"
           />
 
           <Input
-            name="firstName"
+            name="newFirstName"
             placeholder="Введите имя"
           >
             <template #prepend>
@@ -98,7 +121,7 @@ const handleEditUser = handleSubmit(async (values) => {
           </Input>
 
           <Input
-            name="lastName"
+            name="newLastName"
             placeholder="Введите фамилию"
           >
             <template #prepend>
@@ -109,14 +132,14 @@ const handleEditUser = handleSubmit(async (values) => {
           <Button
             id="checkbox-roles"
             :class-name="
-              errors.roles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'
+              errors.newRoles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'
             "
-            icon-name="bi bi-chevron-down"
-            is-drop-down-controller
+            append-icon-name="bi bi-chevron-down"
+            is-collapse-controller
           >
             Роли
           </Button>
-          <DropDown
+          <Collapse
             id="checkbox-roles"
             class-name="w-100"
           >
@@ -125,12 +148,13 @@ const handleEditUser = handleSubmit(async (values) => {
               :key="role"
             >
               <Checkbox
-                name="roles"
-                :value="role"
+                name="newRoles"
+                class-name="drop-down-item"
                 :label="availableRoles.translatedRoles[role]"
+                :value="role"
               />
             </template>
-          </DropDown>
+          </Collapse>
         </div>
 
         <Button
@@ -143,10 +167,10 @@ const handleEditUser = handleSubmit(async (values) => {
       </template>
 
       <Typography
-        v-if="response"
+        v-if="response.error"
         class-name="text-danger w-100 text-center"
       >
-        {{ response }}
+        {{ response.error }}
       </Typography>
     </div>
   </ModalLayout>

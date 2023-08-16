@@ -2,14 +2,14 @@
 import { ref, computed } from 'vue'
 
 import { GridProps } from '@Components/Ideas/Grid/Grid.types'
-import { Idea } from '@Domain/Idea'
+import DropDown from '@Components/DropDown/DropDown.vue'
 import Button from '@Components/Button/Button.vue'
-// import useIdeasStore from '@Store/ideas/ideasStore'
-// import DropDown from '@Components/DropDown/DropDown.vue'
+import getStatus from '@Utils/getStatus'
+import StatusTypes from '@Domain/Status'
+
+import { Idea } from '@Domain/Idea'
 
 const props = defineProps<GridProps>()
-
-// const ideasStore = useIdeasStore()
 
 type O = {
   creationDate?: number
@@ -85,16 +85,16 @@ const translatedColumns = computed(() =>
   props.columns.map((word) => translate(word as Word)),
 )
 
-function formatDate(date: Date) {
-  if (date) {
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }
-    return date.toLocaleDateString('ru-RU', options)
-  }
-}
+// function formatDate(date: Date) {
+//   if (date) {
+//     const options: Intl.DateTimeFormatOptions = {
+//       year: 'numeric',
+//       month: 'long',
+//       day: 'numeric',
+//     }
+//     return date.toLocaleDateString('ru-RU', options)
+//   }
+// }
 
 function getCellClass(key: string, value: number) {
   if (key === 'rating' || key === 'risk') {
@@ -104,19 +104,15 @@ function getCellClass(key: string, value: number) {
   }
   return ''
 }
+
+const statuses = getStatus()
+
+function getTranslatedStatus(status: StatusTypes) {
+  return statuses.translatedStatus[status]
+}
 </script>
 
 <template>
-  <!-- <Button
-    id="checkboxRoles"
-    type="button"
-    class-name="btn-primary"
-    icon-name="bi bi-plus-lg"
-    is-drop-down-controller
-  >
-    Выбрать роли
-  </Button>
-  <DropDown id="checkboxRoles">asd</DropDown> -->
   <table v-if="filteredData?.length">
     <thead>
       <tr class="tr">
@@ -152,17 +148,38 @@ function getCellClass(key: string, value: number) {
         >
           <span :class="getCellClass(key, entry[key as IdeaType] as number)">
             {{
-              key === 'creationDate' || key === 'updatedDate'
-                ? formatDate(entry[key as IdeaType] as Date)
+              key === 'status'
+                ? getTranslatedStatus(entry[key])
                 : entry[key as IdeaType]
             }}
           </span>
         </td>
-        <router-link :to="`edit-idea/${entry.id}`">
-          <Button class-name="button btn-primary w-100"
-            ><i class="bi bi-list fs-1"></i>
-          </Button>
-        </router-link>
+        <Button
+          type="button"
+          class-name=" button btn-primary w-100"
+          is-drop-down-controller
+        >
+          <i class="bi bi-list fs-1" />
+        </Button>
+        <DropDown>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <router-link
+                class="text-decoration-none d-block text-dark"
+                :to="`edit-idea/${entry.id}`"
+              >
+                Редактировать
+              </router-link>
+            </li>
+            <li class="list-group-item">
+              <router-link
+                class="text-decoration-none d-block text-dark pointers"
+                :to="`edit-idea/${entry.id}`"
+                >Отправить на согласование</router-link
+              >
+            </li>
+          </ul>
+        </DropDown>
       </tr>
     </tbody>
   </table>
@@ -246,5 +263,8 @@ td .red {
 .button {
   height: 80px;
   transform: scale(0.6);
+}
+.drop-down {
+  @include flexible(flex-start, center, column);
 }
 </style>

@@ -1,5 +1,4 @@
 interface DropDownProps {
-  id: string
   className?: string
 }
 

@@ -1,88 +1,76 @@
 import axios from 'axios'
 
 import { User } from '@Domain/User'
-import { InvitationInfo, InvitationForm } from '@Domain/Invitation'
+import { UpdateUserData, UpdateUserPassword } from '@Domain/ManageUsers'
 import ResponseMessage from '@Domain/ResponseMessage'
 
-const INVITE_URL = process.env.VUE_APP_INVITATION_URL || 'http://localhost:3000'
-const USERS_URL = process.env.VUE_APP_USERS_API_URL || 'http://localhost:3000'
+const MANAGE_USERS_URL =
+  process.env.VUE_APP_MANAGE_USERS_API_URL || 'http://localhost:3000'
 
-const getUsers = async (): Promise<User[]> => {
+const getUsers = async (
+  token: string,
+): Promise<{ users: User[] } & ResponseMessage> => {
   return await axios
-    .get(USERS_URL)
+    .get(`${MANAGE_USERS_URL}/get/users-info`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
-    .catch(() => [
-      {
-        token: 'dsamp23',
-        email: 'admin@mail.com',
-        firstName: 'Andrey',
-        lastName: 'Byrsa',
-        roles: ['ADMIN', 'INITIATOR'],
-      },
-      {
-        token: 'dsam1m23',
-        email: 'andrey@mail.com',
-        firstName: 'Andrey1',
-        lastName: 'Byrsa2',
-        roles: ['ADMIN', 'INITIATOR'],
-      },
-      {
-        token: 'dsamp23',
-        email: 'byrsa@mail.com',
-        firstName: 'Andrey',
-        lastName: 'Byrsa',
-        roles: ['ADMIN', 'INITIATOR'],
-      },
-      {
-        token: 'dsamp23',
-        email: 'byrsa123andr@mail.com',
-        firstName: 'Andrey',
-        lastName: 'Byrsa',
-        roles: ['ADMIN', 'INITIATOR'],
-      },
-    ])
+    .catch(({ response }) => {
+      const error = response
+        ? response.data.error
+        : 'Ошибка загрузки пользователей'
+      return { error }
+    })
 }
 
-const saveEditedUser = async (user: User): Promise<ResponseMessage> => {
+const getUsersEmails = async (
+  token: string,
+): Promise<{ emails: string[] } & ResponseMessage> => {
   return await axios
-    .post(`${USERS_URL}/save`, user)
-    .then(() => ({ success: 'Успешное сохранение' }))
-    .catch(() => ({ error: 'Ошибка редактирования' }))
+    .get(`${MANAGE_USERS_URL}/get/users-emails`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response ? response.data.error : 'Ошибка загрузки почт'
+      return { error }
+    })
 }
 
-const inviteUserByEmail = async (
-  userData: InvitationForm,
+const updateUserInfo = async (
+  newUserData: UpdateUserData,
+  token: string,
 ): Promise<ResponseMessage> => {
   return await axios
-    .post(`${INVITE_URL}/email`, userData)
+    .put(`${MANAGE_USERS_URL}/change/user-info`, newUserData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
-    .catch((error) => console.warn(`invite ${error}`))
+    .catch(({ response }) => {
+      const error = response
+        ? response.data.error
+        : 'Ошибка обновления пользователя'
+      return { error }
+    })
 }
 
-const inviteUsers = async (
-  userData: InvitationForm,
+const updateUserPassword = async (
+  newPasswordData: UpdateUserPassword,
 ): Promise<ResponseMessage> => {
   return await axios
-    .post(`${INVITE_URL}/emails`, userData)
+    .put(`${MANAGE_USERS_URL}/change/password`, newPasswordData)
     .then((response) => response.data)
-    .catch((error) => console.warn(error))
-}
-
-const getInvitationInfo = async (
-  slug: string | string[],
-): Promise<InvitationInfo> => {
-  return await axios
-    .get(`${INVITE_URL}/get-invitation/${slug}`)
-    .then((response) => response.data)
-    .catch((error) => console.warn(error))
+    .catch(({ response }) => {
+      const error = response ? response.data.error : 'Ошибка обновления пароля'
+      return { error }
+    })
 }
 
 const ManageUsersService = {
   getUsers,
-  saveEditedUser,
-  inviteUserByEmail,
-  inviteUsers,
-  getInvitationInfo,
+  getUsersEmails,
+  updateUserInfo,
+  updateUserPassword,
 }
 
 export default ManageUsersService

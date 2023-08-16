@@ -2,28 +2,32 @@
 import NewIdeaForm from '@Components/Forms/NewIdeaForm/NewIdeaForm.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import { Idea } from '@Domain/Idea'
+// import { Idea } from '@Domain/Idea'
 import { useRoute } from 'vue-router'
+import { onMounted, ref } from 'vue'
+// import { useRouter } from 'vue-router'
+
 import useIdeasStore from '@Store/ideas/ideasStore'
 import { storeToRefs } from 'pinia'
-import { onMounted } from 'vue'
-
-const router = useRoute()
 
 const ideasStore = useIdeasStore()
 const { initiatorIdeas } = storeToRefs(ideasStore)
 
-onMounted(async () => {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpb3VAbWFpbC5jb20iLCJpYXQiOjE2OTIxMDYxNTksImV4cCI6MTY5MjEwOTc1OX0.-rsfH6NeQFKvMg34jNjVqTMiMabMfp0Fonp2OC8fjYM'
-  await ideasStore.fetchIdeas(token)
+const router = useRoute()
+
+const currentIdea = ref()
+
+onMounted(() => {
+  currentIdea.value = initiatorIdeas.value.find(
+    (idea) => idea.id == +router.params.id,
+  )
 })
 
-const ideaId = +router.params.id
-const currentIdea = initiatorIdeas.value.find((item: Idea) => item.id == ideaId)
-
-console.log(ideaId)
-console.log(currentIdea)
+onMounted(async () => {
+  const token =
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
+  await ideasStore.fetchIdeas(token)
+})
 </script>
 
 <template>

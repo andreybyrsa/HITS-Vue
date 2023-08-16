@@ -1,16 +1,19 @@
 <script lang="ts" setup>
-import Grid from '@Components/Ideas/Grid/Grid.vue'
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+
+import Grid from '@Components/Ideas/Grid/Grid.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import FilterModal from '@Components/Modals/FilterModal/FilterModal.vue'
-import useIdeasStore from '@Store/ideas/ideasStore'
 
-// import Idea from '@Components/Ideas/Idea/Idea.vue'
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+
+import useIdeasStore from '@Store/ideas/ideasStore'
+import useUserStore from '@Store/user/userStore'
+
 const isOpenedFilter = ref(false)
 const searchQuery = ref('')
 const gridColumns = [
@@ -22,13 +25,21 @@ const gridColumns = [
   'risk',
 ]
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
 const ideasStore = useIdeasStore()
 const { initiatorIdeas } = storeToRefs(ideasStore)
 
 onMounted(async () => {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpb3VAbWFpbC5jb20iLCJpYXQiOjE2OTIxMDYxNTksImV4cCI6MTY5MjEwOTc1OX0.-rsfH6NeQFKvMg34jNjVqTMiMabMfp0Fonp2OC8fjYM'
-  await ideasStore.fetchIdeas(token)
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    // const { token } = currentUser
+    const token =
+      'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
+    await ideasStore.fetchIdeas(token)
+  }
 })
 
 const selectedFilters = ref<string[]>([])

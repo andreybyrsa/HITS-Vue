@@ -1,48 +1,101 @@
 <script lang="ts" setup>
-import { ref, VueElement } from 'vue'
+import { onMounted, reactive, ref, VueElement } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
+import { storeToRefs } from 'pinia'
 
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import DropDown from '@Components/DropDown/DropDown.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import { HTMLInputEvent } from '@Components/Inputs/Input/Input.types'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import { InvitationForm } from '@Domain/Invitation'
+import { InviteUsersForm } from '@Domain/Invitation'
 import ResponseMessage from '@Domain/ResponseMessage'
 import RolesTypes from '@Domain/Roles'
 
+import useUserStore from '@Store/user/userStore'
+
+import InvitationService from '@Services/InvitationService'
 import ManageUsersService from '@Services/ManageUsersService'
 
 import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
 
-const currentRoles = getRoles()
+const userStore = useUserStore()
 
+const { user } = storeToRefs(userStore)
+
+const currentRoles = getRoles()
+const DBUsersEmails = ref<string[]>([])
+
+const isEditing = ref<boolean>(false)
 const fileInput = ref<VueElement>()
 const loadedFileText = ref('')
-const response = ref<ResponseMessage>()
 
-const { errors, submitCount, handleSubmit } = useForm<InvitationForm>({
-  validationSchema: {
-    emails: (value: string[]) =>
-      value?.every((email) => Validation.checkEmail(email)),
-    roles: (value: RolesTypes[]) => value?.length,
-  },
-  initialValues: {
-    emails: [''],
-    roles: [],
-  },
+const response = reactive<ResponseMessage>({
+  success: '',
+  error: '',
 })
 
-const { fields, push, remove } = useFieldArray<string>('emails')
+onMounted(async () => {
+  const currentUser = user.value
 
-function getError(email: string) {
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { emails } = await ManageUsersService.getUsersEmails(token)
+    DBUsersEmails.value = emails
+  }
+})
+
+function clearResponseMessages() {
+  response.success = ''
+  response.error = ''
+}
+
+const { values, errors, setValues, submitCount, handleSubmit } =
+  useForm<InviteUsersForm>({
+    validationSchema: {
+      emails: (value: string[]) =>
+        value?.every((email) => Validation.checkEmail(email)),
+      roles: (value: RolesTypes[]) => {
+        if (submitCount.value) {
+          return value?.length
+        }
+        return true
+      },
+    },
+    initialValues: {
+      emails: [''],
+      roles: [],
+    },
+  })
+
+const { fields, push, move, remove } = useFieldArray<string>('emails')
+
+const moveErrorEmail = async (index: number) => {
+  const prevEmail = values.emails[index - 1]
+
+  if (
+    index > 0 &&
+    !isEditing.value &&
+    Validation.checkEmail(prevEmail) &&
+    !DBUsersEmails.value.includes(prevEmail)
+  ) {
+    move(index, 0)
+  }
+}
+
+function getError(email: string, index: number) {
   if (submitCount.value && !Validation.checkEmail(email)) {
+    moveErrorEmail(index)
     return 'Неверно введена почта'
+  }
+  if (submitCount.value && DBUsersEmails.value.includes(email)) {
+    moveErrorEmail(index)
+    return 'Почта уже зарегистрирована'
   }
   return undefined
 }
@@ -56,7 +109,7 @@ function handleFileChange(event: HTMLInputEvent) {
     fetch(fileURL)
       .then((response) => response.text())
       .then((text) => {
-        const regExpPattern = /^\w+@[a-zA-Z_]+\.[a-zA-Z]{2,10}/gm
+        const regExpPattern = /[a-zA-Z_.-{0,9}]+@[a-zA-Z_]+\.[a-zA-Z]{2,10}$/gm
         const emails = text.split('\n')
 
         const formattedEmails = text.match(regExpPattern)
@@ -70,7 +123,28 @@ function handleFileChange(event: HTMLInputEvent) {
 }
 
 const handleInvite = handleSubmit(async (values) => {
-  response.value = await ManageUsersService.inviteUsers(values)
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const { success, error } = await InvitationService.inviteUsers(
+      values,
+      token,
+    )
+    clearResponseMessages()
+
+    response.success = success
+    response.error = error
+
+    if (success) {
+      setValues({
+        emails: [''],
+        roles: [],
+      })
+      submitCount.value = 0
+    }
+  }
 })
 </script>
 
@@ -90,7 +164,9 @@ const handleInvite = handleSubmit(async (values) => {
           <Input
             type="email"
             :name="`emails[${index}]`"
-            :error="getError(field.value)"
+            @focus="isEditing = true"
+            @blur="isEditing = false"
+            :error="getError(field.value, index)"
             placeholder="Введите email"
             prepend="@"
           />
@@ -120,7 +196,7 @@ const handleInvite = handleSubmit(async (values) => {
         <Button
           type="button"
           class-name="btn-primary fs-6"
-          icon-name="bi bi-plus-lg"
+          prepend-icon-name="bi bi-plus-lg"
           @click="push('')"
         >
           Добавить почту
@@ -129,7 +205,7 @@ const handleInvite = handleSubmit(async (values) => {
         <Button
           type="button"
           class-name="btn-primary fs-6"
-          icon-name="bi bi-file-earmark"
+          prepend-icon-name="bi bi-file-earmark"
           @click="fileInput?.click()"
         >
           Загрузить файл
@@ -139,15 +215,15 @@ const handleInvite = handleSubmit(async (values) => {
           id="checkboxRoles"
           type="button"
           :class-name="errors.roles ? 'btn-danger fs-6' : 'btn-primary fs-6'"
-          icon-name="bi bi-plus-lg"
-          is-drop-down-controller
+          prepend-icon-name="bi bi-plus-lg"
+          is-collapse-controller
         >
           Выбрать роли
         </Button>
       </div>
     </div>
 
-    <DropDown
+    <Collapse
       id="checkboxRoles"
       class-name="w-100"
     >
@@ -158,7 +234,7 @@ const handleInvite = handleSubmit(async (values) => {
         :value="role"
         :label="currentRoles.translatedRoles[role]"
       />
-    </DropDown>
+    </Collapse>
 
     <Button
       type="submit"
@@ -169,15 +245,15 @@ const handleInvite = handleSubmit(async (values) => {
     </Button>
 
     <Typography
-      v-if="response?.success"
-      class-name="text-success"
+      v-if="response.success || response.error"
+      :class-name="response.success ? 'text-success fs-6' : 'text-danger fs-6'"
     >
-      {{ response?.success }}
+      {{ response.success || response.error }}
     </Typography>
   </FormLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .add-users-form {
   width: 600px;
 

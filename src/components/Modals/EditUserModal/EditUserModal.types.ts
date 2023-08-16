@@ -1,4 +1,5 @@
 import { User } from '@Domain/User'
+import { UpdateUserData } from '@Domain/ManageUsers'
 
 interface EditUserModalProps {
   isOpened: boolean
@@ -6,7 +7,7 @@ interface EditUserModalProps {
 }
 
 interface EditUserModalEmits {
-  (event: 'close-modal', newUser?: User): void
+  (event: 'close-modal', newUser?: UpdateUserData): void
 }
 
 export { EditUserModalProps, EditUserModalEmits }
