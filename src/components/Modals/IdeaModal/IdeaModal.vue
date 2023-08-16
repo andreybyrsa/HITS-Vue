@@ -7,6 +7,7 @@ import {
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
+import DropDown from '@Components/DropDown/DropDown.vue'
 
 defineProps<IdeaModalProps>()
 
@@ -19,22 +20,22 @@ const emit = defineEmits<IdeaModalEmits>()
     @close-modal="emit('close-modal')"
   >
     <div class="idea-modal p-3 h-100">
-      <Button
-        class-name="idea-modal__close-button btn-primary rounded-end-0"
-        prepend-icon-name="bi bi-x-lg"
-        @click="emit('close-modal')"
-      >
-        Закрыть
-      </Button>
-
       <div class="w-75 h-100 flex">
-        <div class="bg-white rounded p-2">
-          <Typography class-name="fs-3 px-2 text-primary">
-            Создание реактивного двигателя для ракеты
-          </Typography>
+        <div class="header-main">
+          <Button
+            class-name=" btn-primary rounded me-3 "
+            prepend-icon-name="bi bi-backspace-fill"
+            @click="emit('close-modal')"
+            >Назад</Button
+          >
+          <div class="bg-white rounded p-2 w-100">
+            <Typography class-name="fs-3 px-2 text-primary">
+              Создание реактивного двигателя для ракеты
+            </Typography>
+          </div>
         </div>
 
-        <div class="collapse-container bg-white rounded">
+        <div class="collapse-container bg-white rounded overflow-auto">
           <Button
             id="problem"
             is-collapse-controller
@@ -67,14 +68,49 @@ const emit = defineEmits<IdeaModalEmits>()
           <Collapse id="description"><pre>Умы студентов </pre></Collapse>
         </div>
 
-        <div class="comment-container bg-white rounded">
+        <div class="comment-container bg-white rounded overflow-auto">
           <div class="w-100 border-bottom py-2">
             <Typography class-name="fs-5 px-3"> Комментарии </Typography>
           </div>
-          <div class="user-comments p-3">11</div>
+          <div class="user-comments p-3 w-100">
+            <div class="comment shadow border rounded">
+              <div class="comment-header border-bottom w-100 ps-3">
+                <div class="fs-5">Дмитрий Корнеплод</div>
+                <div class="comment-time">
+                  <div class="text-primary">11 мин назад</div>
+
+                  <Button
+                    class-name="button btn-primary  p-1 h-50"
+                    is-drop-down-controller
+                    ><i class="bi bi-list fs-1"></i>
+                  </Button>
+                  <DropDown>
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item">
+                        <div class="text-decoration-none d-block text-dark">
+                          Удалить
+                        </div>
+                      </li>
+                      <!-- <li class="list-group-item">
+                        <router-link
+                          class="text-decoration-none d-block text-dark pointers"
+                          :to="edit-idea/${entry.id}"
+                          >Редактировать</router-link
+                        >
+                      </li> -->
+                    </ul>
+                  </DropDown>
+                </div>
+              </div>
+              <div class="text-break p-3">
+                dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="bg-white rounded w-25 flex">
+
+      <div class="side-panel bg-white rounded w-25 flex">
         <div class="header-container bg-primary">
           <Typography class-name="fs-4 text-light">Текущий статус</Typography>
         </div>
@@ -137,14 +173,39 @@ const emit = defineEmits<IdeaModalEmits>()
     margin-top: 16px;
   }
 
+  .side-panel {
+    max-height: auto;
+  }
+
   .collapse-container__button {
     border-radius: 0;
     width: 100%;
     justify-content: start;
   }
 
+  .header-main {
+    display: flex;
+    align-items: stretch;
+  }
+
   .comment-container {
-    height: 30%;
+    max-height: auto;
+  }
+
+  .comment {
+    width: 40%;
+    margin-bottom: 26px;
+  }
+
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .comment-time {
+    display: flex;
+    align-items: center;
   }
 
   .header-container {
