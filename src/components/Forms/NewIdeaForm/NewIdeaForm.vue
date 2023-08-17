@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
+import { useFieldArray, useForm } from 'vee-validate'
+import Validation from '@Utils/Validation'
 
 import Typography from '@Components/Typography/Typography.vue'
 import NewIdeaProps from '@Components/Forms/NewIdeaForm/NewIdeaForm.types'
@@ -16,6 +18,7 @@ import { Idea } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import RolesTypes from '@Domain/Roles'
 
 const props = defineProps<NewIdeaProps>()
 
@@ -59,11 +62,40 @@ function setRatingEmit(rating: number) {
 function handlePostIdea(idea: Idea) {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && validateForm()) {
     const { token } = currentUser
     ideasStore.postInitiatorIdeas(idea, token)
     router.push('/ideas')
   }
+}
+
+const formErrors = reactive({
+  nameIdea: false,
+  projectType: false,
+  problemIdea: false,
+  resolveIdea: false,
+  resultIdea: false,
+  resourcesIdea: false,
+})
+function validateForm() {
+  formErrors.nameIdea = ideaData.name.trim() === ''
+  formErrors.projectType = ideaData.projectType === ''
+  formErrors.problemIdea = ideaData.problem.trim() === ''
+  formErrors.resolveIdea = ideaData.solution.trim() === ''
+  formErrors.resultIdea = ideaData.result.trim() === ''
+  formErrors.resourcesIdea = ideaData.description.trim() === ''
+  if (
+    formErrors.nameIdea ||
+    formErrors.projectType ||
+    formErrors.problemIdea ||
+    formErrors.resolveIdea ||
+    formErrors.resultIdea ||
+    formErrors.resourcesIdea
+  ) {
+    alert('Проверьте, что все поля заполнены!')
+    return false
+  }
+  return true
 }
 </script>
 
@@ -77,7 +109,14 @@ function handlePostIdea(idea: Idea) {
         label="Название идеи*"
         placeholder="Введите название идеи"
         class-name="fs-6"
+        :error="formErrors.nameIdea"
       ></Input>
+      <div
+        v-if="formErrors.nameIdea"
+        class="text-danger"
+      >
+        Поле не заполнено
+      </div>
     </div>
 
     <Typography class-name="fs-6 text-primary">Тип проекта*</Typography>
@@ -103,7 +142,15 @@ function handlePostIdea(idea: Idea) {
         label="Проблема*"
         placeholder="Опишите проблему, которую решает ваша идея"
         class-name="fs-6"
+        :required="true"
+        :error="formErrors.problemIdea"
       ></Input>
+      <div
+        v-if="formErrors.problemIdea"
+        class="text-danger"
+      >
+        Поле не заполнено
+      </div>
     </div>
 
     <div style="width: 50%">
@@ -113,7 +160,14 @@ function handlePostIdea(idea: Idea) {
         label="Предлагаемое решение*"
         placeholder="Опишите, что вы предлагаете для решения проблемы"
         class-name="fs-6"
+        :error="formErrors.resolveIdea"
       ></Input>
+      <div
+        v-if="formErrors.resolveIdea"
+        class="text-danger"
+      >
+        Поле не заполнено
+      </div>
     </div>
 
     <div style="width: 50%">

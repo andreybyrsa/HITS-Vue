@@ -64,7 +64,6 @@ const getContactPersonsByCompany = (company: string) => {
 watch(
   () => selectedCompany.value,
   (newCompany) => {
-    // Обращаемся к полю ideaData.contactPerson и устанавливаем его в пустую строку
     ideaData.contactPerson = ''
     handleCompanyChange(newCompany.company)
     console.log(selectedCompany.value)
