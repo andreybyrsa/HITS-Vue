@@ -14,7 +14,7 @@ const loginUser = async (user: LoginUser): Promise<User & ResponseMessage> => {
       return {
         token: '21512',
         email: 'admin@mail.com',
-        roles: ['ADMIN'],
+        roles: ['ADMIN', 'INITIATOR', 'EXPERT', 'PROJECT_OFFICE'],
       }
     })
 }

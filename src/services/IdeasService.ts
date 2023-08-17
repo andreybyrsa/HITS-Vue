@@ -22,19 +22,23 @@ const getInitiatorIdeas = async (token: string): Promise<Idea[]> => {
     .catch((error) => console.warn(error))
 }
 
-// const getProjectOfficeIdeas = async (status: string): Promise<Idea> => {
-//   return await axios
-//     .get(`${IDEAS_URL}/project-office`, status)
-//     .then((response) => response.data)
-//     .catch((error) => console.warn(error))
-// }
+const getProjectOfficeIdeas = async (token: string): Promise<Idea> => {
+  return await axios
+    .get(`${IDEAS_URL}/project-office`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
+}
 
-// const getExpertIdeas = async (status: string): Promise<Idea> => {
-//   return await axios
-//     .get(`${IDEAS_URL}/expert`, status)
-//     .then((response) => response.data)
-//     .catch((error) => console.warn(error))
-// }
+const getExpertIdeas = async (token: string): Promise<Idea> => {
+  return await axios
+    .get(`${IDEAS_URL}/expert`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
+}
 
 const getAdminIdeas = async (token: string): Promise<Idea[]> => {
   return await axios
@@ -79,6 +83,18 @@ const putInitiatorIdeas = async (
     .catch((error) => console.warn(error))
 }
 
+const putInitiatorSendIdea = async (
+  id: number,
+  token: string,
+): Promise<Idea> => {
+  return await axios
+    .put(`${IDEAS_URL}/initiator/send/` + id, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
+}
+
 const putAdminIdeas = async (idea: Idea, id: number): Promise<Idea> => {
   return await axios
     .put(`${IDEAS_URL}/admin/update/` + id, idea)
@@ -107,10 +123,13 @@ const IdeasService = {
   fetchIdeas,
   postInitiatorIdeas,
   getInitiatorIdeas,
+  getProjectOfficeIdeas,
+  getExpertIdeas,
   getAdminIdeas,
   deleteInitiatorIdeas,
   deleteAdminIdeas,
   putInitiatorIdeas,
+  putInitiatorSendIdea,
   putAdminIdeas,
   putProjectOfficeIdeas,
   putExpertIdeas,

@@ -69,19 +69,19 @@ function setRatingEmit(rating: number) {
 
 function handlePostIdea(idea: Idea) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiLCJFWFBFUlQiLCJQUk9KRUNUX09GRklDRSJdLCJzdWIiOiJwb2NodGE1NUBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkyMjg1OTYxLCJleHAiOjE2OTIzNzIzNjF9.w-J2jtixlNESXy5uO-xvtc7EybuuJQbbvWJmjHBZ3C8'
   ideasStore.postInitiatorIdeas(idea, token)
   router.push('/ideas')
 }
 function handleEditIdea(idea: Idea, id: number) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiLCJFWFBFUlQiLCJQUk9KRUNUX09GRklDRSJdLCJzdWIiOiJwb2NodGE1NUBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkyMjg1OTYxLCJleHAiOjE2OTIzNzIzNjF9.w-J2jtixlNESXy5uO-xvtc7EybuuJQbbvWJmjHBZ3C8'
   ideasStore.putInitiatorIdeas(idea, id, token)
   router.push('/ideas')
 }
 function handleDelete(id: number) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiLCJFWFBFUlQiLCJQUk9KRUNUX09GRklDRSJdLCJzdWIiOiJwb2NodGE1NUBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkyMjg1OTYxLCJleHAiOjE2OTIzNzIzNjF9.w-J2jtixlNESXy5uO-xvtc7EybuuJQbbvWJmjHBZ3C8'
   ideasStore.deleteInitiatorIdeas(id, token)
   router.push('/ideas')
 }

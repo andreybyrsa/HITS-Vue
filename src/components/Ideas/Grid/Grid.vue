@@ -1,15 +1,22 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+// import { storeToRefs } from 'pinia'
 
 import { GridProps } from '@Components/Ideas/Grid/Grid.types'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Button from '@Components/Button/Button.vue'
 import getStatus from '@Utils/getStatus'
 import StatusTypes from '@Domain/Status'
+// import useIdeasStore from '@Store/ideas/ideasStore'
+// import useUserStore from '@Store/user/userStore'
+import IdeasService from '@Services/IdeasService'
 
 import { Idea } from '@Domain/Idea'
 
 const props = defineProps<GridProps>()
+
+// const ideasStore = useIdeasStore()
+// const { initiatorIdeas } = storeToRefs(ideasStore)
 
 type O = {
   dateCreated?: number
@@ -130,6 +137,12 @@ function getTranslatedKey(entry: Idea, key: string) {
   }
   return entry[key as IdeaType]
 }
+
+function handleSend(id: number) {
+  const token =
+    'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiLCJFWFBFUlQiLCJQUk9KRUNUX09GRklDRSJdLCJzdWIiOiJwb2NodGE1NUBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkyMjg1OTYxLCJleHAiOjE2OTIzNzIzNjF9.w-J2jtixlNESXy5uO-xvtc7EybuuJQbbvWJmjHBZ3C8'
+  IdeasService.putInitiatorSendIdea(id, token)
+}
 </script>
 
 <template>
@@ -193,10 +206,10 @@ function getTranslatedKey(entry: Idea, key: string) {
               </router-link>
             </li>
             <li class="list-group-item">
-              <router-link
-                class="text-decoration-none d-block text-dark pointers"
-                :to="`edit-idea/${entry.id}`"
-                >Отправить на согласование</router-link
+              <a
+                class="link text-decoration-none d-block text-dark pointers"
+                @click="handleSend(entry.id as number)"
+                >Отправить на согласование</a
               >
             </li>
           </ul>
@@ -301,5 +314,9 @@ td .red {
 }
 .drop-down {
   @include flexible(flex-start, center, column);
+}
+
+.link {
+  cursor: pointer;
 }
 </style>
