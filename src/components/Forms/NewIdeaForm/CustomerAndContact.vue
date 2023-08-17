@@ -58,14 +58,14 @@ const handleCompanyChange = (selectedCompany: any) => {
 }
 
 const getContactPersonsByCompany = (company: string) => {
-  return options.value
-    .filter((option) => option.company === company)
-    .map((option) => option.name)
+  return options.value.filter((option) => option.company === company)
 }
 
 watch(
   () => selectedCompany.value,
   (newCompany) => {
+    // Обращаемся к полю ideaData.contactPerson и устанавливаем его в пустую строку
+    ideaData.contactPerson = ''
     handleCompanyChange(newCompany.company)
     console.log(selectedCompany.value)
   },
@@ -101,7 +101,7 @@ watch(
       :filter="filterFn"
       @input="handleCompanyChange(selectedCompany)"
     />
-
+    {{ ideaData.contactPerson }}
     <Typography
       class="fs-6 text-primary"
       v-if="selectedCompany.company !== 'ВШЦТ'"
@@ -117,6 +117,7 @@ watch(
       :multiple="false"
       placeholder="Выберите контактное лицо"
       track-by="name"
+      label="name"
       :required="true"
       @input="updateSelectedContactPersons(selectedContactPersons)"
     />
