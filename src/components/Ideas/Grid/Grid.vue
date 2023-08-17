@@ -14,12 +14,12 @@ import getStatus from '@Utils/getStatus'
 const props = defineProps<GridProps>()
 
 type O = {
-  creationDate?: number
+  dateCreated?: number
   name?: number
   rating?: number
   risk?: number
   status?: number
-  updatedDate?: number
+  dateModified?: number
 }
 
 type OType = keyof O
@@ -34,7 +34,7 @@ const sortOrders = ref<O>(
 )
 
 const filteredData = computed(() => {
-  let { data, filterKey } = props
+  let { data, filterKey, selectedFilters } = props
   if (filterKey) {
     filterKey = filterKey.toLowerCase()
     data = data?.filter((row) => {
@@ -56,6 +56,16 @@ const filteredData = computed(() => {
       const B = b[key as ideaKey]
       return order && A && B ? (A === B ? 0 : A > B ? 1 : -1) * order : 0
     })
+  }
+  if (selectedFilters?.length) {
+    const dataFilter: Idea[] = []
+    data?.forEach(
+      (elem) =>
+        selectedFilters?.every((filter) =>
+          Object.values(elem).includes(filter),
+        ) && dataFilter.push(elem),
+    )
+    return dataFilter
   }
   return data
 })
@@ -87,16 +97,16 @@ const translatedColumns = computed(() =>
   props.columns.map((word) => translate(word as Word)),
 )
 
-// function formatDate(date: Date) {
-//   if (date) {
-//     const options: Intl.DateTimeFormatOptions = {
-//       year: 'numeric',
-//       month: 'long',
-//       day: 'numeric',
-//     }
-//     return date.toLocaleDateString('ru-RU', options)
-//   }
-// }
+function formatDate(date: Date) {
+  if (date) {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }
+    return new Date(date).toLocaleDateString('ru-RU', options)
+  }
+}
 
 function getCellClass(key: string, value: number) {
   if (key === 'rating' || key === 'risk') {
@@ -123,6 +133,15 @@ function handleOpenModal(ideaId: number) {
 
 function handleCloseModal() {
   isOpenedIdeaModal.value = false
+}
+function getTranslatedKey(entry: Idea, key: string) {
+  if (key === 'status') {
+    return getTranslatedStatus(entry[key])
+  }
+  if (key === 'dateCreated' || key === 'dateModified') {
+    return formatDate(entry[key])
+  }
+  return entry[key as IdeaType]
 }
 </script>
 
@@ -166,11 +185,7 @@ function handleCloseModal() {
           :key="index"
         >
           <span :class="getCellClass(key, entry[key as IdeaType] as number)">
-            {{
-              key === 'status'
-                ? getTranslatedStatus(entry[key])
-                : entry[key as IdeaType]
-            }}
+            {{ getTranslatedKey(entry, key) }}
           </span>
         </td>
 

@@ -51,6 +51,7 @@ watch(
         description,
       } = props.currentIdea
       ideaData.name = name
+      ideaData.dateModified = new Date()
       ideaData.projectType = projectType
       ideaData.problem = problem
       ideaData.solution = solution
@@ -68,19 +69,19 @@ function setRatingEmit(rating: number) {
 
 function handlePostIdea(idea: Idea) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
   ideasStore.postInitiatorIdeas(idea, token)
   router.push('/ideas')
 }
 function handleEditIdea(idea: Idea, id: number) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
   ideasStore.putInitiatorIdeas(idea, id, token)
   router.push('/ideas')
 }
 function handleDelete(id: number) {
   const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
   ideasStore.deleteInitiatorIdeas(id, token)
   router.push('/ideas')
 }
@@ -88,7 +89,16 @@ function handleDelete(id: number) {
 
 <template>
   <FormLayout class-name="align-items-start w-100 h-100 overflow-auto">
-    <Typography class-name="fs-1 text-primary">Создание идеи</Typography>
+    <Typography
+      v-if="!$props.currentIdea"
+      class-name="fs-1 text-primary"
+      >Создание идеи</Typography
+    >
+    <Typography
+      v-if="$props.currentIdea"
+      class-name="fs-1 text-primary"
+      >Редактирование идеи</Typography
+    >
     <div style="width: 50%">
       <Input
         v-model="ideaData.name"
@@ -194,15 +204,16 @@ function handleDelete(id: number) {
       @click="handlePostIdea(ideaData)"
       >Создать идею</Button
     >
-    <div class="button-props w-100">
+    <div
+      v-if="$props.currentIdea"
+      class="button-props w-100"
+    >
       <Button
-        v-if="$props.currentIdea"
         class-name="btn-primary"
         @click="handleEditIdea(ideaData, +route.params.id)"
         >Редактировать</Button
       >
       <Button
-        v-if="$props.currentIdea"
         class-name="btn-danger"
         @click="handleDelete(+route.params.id)"
         >Удалить</Button

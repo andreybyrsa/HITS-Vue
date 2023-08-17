@@ -37,6 +37,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
     await ideasStore.fetchIdeas(token)
   }
 })
@@ -87,9 +88,9 @@ function handleCloseModal(filters?: string[]) {
         :data="initiatorIdeas"
         :columns="gridColumns"
         :filter-key="searchQuery"
+        :selectedFilters="selectedFilters"
         class="demogrid w-100"
-      >
-      </Grid>
+      />
     </template>
   </PageLayout>
 </template>

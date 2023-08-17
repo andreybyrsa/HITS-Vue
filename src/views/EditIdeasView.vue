@@ -22,12 +22,6 @@ onMounted(() => {
     (idea) => idea.id == +router.params.id,
   )
 })
-
-onMounted(async () => {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
-  await ideasStore.fetchIdeas(token)
-})
 </script>
 
 <template>
