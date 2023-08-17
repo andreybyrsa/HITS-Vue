@@ -36,9 +36,7 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    // const { token } = currentUser
-    const token =
-      'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrZzNmZEBtaWFsLmNvbSIsImlhdCI6MTY5MjE1OTIxNCwiZXhwIjoxNjkyMTYyODE0fQ.WDjbXR7AQ7zBfuw4uBYanUv7cXPkooFo5-atnU_NOXs'
+    const { token } = currentUser
     await ideasStore.fetchIdeas(token)
   }
 })
@@ -64,7 +62,7 @@ function handleCloseModal(filters?: string[]) {
 
       <div class="index-page__search bg-primary rounded-3 p-3 w-100">
         <Input
-          name="asd"
+          name="search-input"
           v-model="searchQuery"
           placeholder="Поиск идей по названию"
         >

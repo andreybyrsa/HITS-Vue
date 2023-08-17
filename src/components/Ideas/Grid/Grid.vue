@@ -1,13 +1,15 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 
 import { GridProps } from '@Components/Ideas/Grid/Grid.types'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Button from '@Components/Button/Button.vue'
-import getStatus from '@Utils/getStatus'
-import StatusTypes from '@Domain/Status'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
+import StatusTypes from '@Domain/Status'
 import { Idea } from '@Domain/Idea'
+
+import getStatus from '@Utils/getStatus'
 
 const props = defineProps<GridProps>()
 
@@ -111,9 +113,17 @@ function getTranslatedStatus(status: StatusTypes) {
   return statuses.translatedStatus[status]
 }
 
-onMounted(() => {
-  console.log(filteredData.value)
-})
+const isOpenedIdeaModal = ref(false)
+const currentOpenedIdea = ref<Idea>()
+
+function handleOpenModal(ideaId: number) {
+  isOpenedIdeaModal.value = true
+  currentOpenedIdea.value = props.data?.find((idea) => idea.id === ideaId)
+}
+
+function handleCloseModal() {
+  isOpenedIdeaModal.value = false
+}
 </script>
 
 <template>
@@ -163,16 +173,24 @@ onMounted(() => {
             }}
           </span>
         </td>
+
         <Button
           type="button"
           class-name=" button btn-primary w-100"
           is-drop-down-controller
+          drop-down-clickable-inside
         >
-          <i class="bi bi-list fs-1" />
+          <i class="bi bi-list fs-1"></i>
         </Button>
         <DropDown>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item">
+            <li class="list-group-item list-group-item-action">
+              <button @click="handleOpenModal(entry.id)">
+                Просмотреть идею
+              </button>
+            </li>
+
+            <li class="list-group-item list-group-item-action">
               <router-link
                 class="text-decoration-none d-block text-dark"
                 :to="`edit-idea/${entry.id}`"
@@ -180,18 +198,27 @@ onMounted(() => {
                 Редактировать
               </router-link>
             </li>
-            <li class="list-group-item">
+
+            <li class="list-group-item list-group-item-action">
               <router-link
                 class="text-decoration-none d-block text-dark pointers"
                 :to="`edit-idea/${entry.id}`"
-                >Отправить на согласование</router-link
               >
+                Отправить на согласование
+              </router-link>
             </li>
           </ul>
         </DropDown>
       </tr>
+
+      <IdeaModal
+        :is-opened="isOpenedIdeaModal"
+        :idea="currentOpenedIdea"
+        @close-modal="handleCloseModal"
+      />
     </tbody>
   </table>
+
   <div
     v-else
     class="no-data"

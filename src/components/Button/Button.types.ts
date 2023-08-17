@@ -6,6 +6,8 @@ interface ButtonProps {
 
   isCollapseController?: boolean
   isDropDownController?: boolean
+
+  dropDownClickableInside?: boolean
 }
 
 export default ButtonProps

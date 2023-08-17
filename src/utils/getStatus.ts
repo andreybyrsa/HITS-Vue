@@ -18,7 +18,7 @@ function getStatus(): GetRolesType {
     ],
     translatedStatus: {
       NEW: 'Новая',
-      ON_EDITING: 'На редактирование',
+      ON_EDITING: 'На редактировании',
       ON_APPROVAL: 'На согласовании',
       ON_CONFIRMATION: 'На утверждении',
       CONFIRMED: 'Утверждено',

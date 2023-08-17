@@ -3,6 +3,7 @@ import { Idea } from '@Domain/Idea'
 function getMockIdeas(): Idea[] {
   return [
     {
+      id: 0,
       name: 'Идея 1',
       dateCreated: new Date(),
       dateModified: new Date(),
@@ -11,6 +12,7 @@ function getMockIdeas(): Idea[] {
       risk: 0.2,
     },
     {
+      id: 1,
       name: 'Идея 2',
       dateCreated: new Date(),
       dateModified: new Date(),
