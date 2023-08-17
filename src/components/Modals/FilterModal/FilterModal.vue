@@ -17,8 +17,8 @@ const { user } = storeToRefs(userStore)
 const filters = [
   {
     label: 'Мои идеи',
-    value: 'pochta@mail.com',
-    // value: user.value?.email,
+    // value: 'pochta@mail.com',
+    value: user.value?.email,
   },
   {
     label: 'Утвержденные идеи',
