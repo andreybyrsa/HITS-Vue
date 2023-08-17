@@ -1,7 +1,8 @@
 import StatusTypes from '@Domain/Status'
+import Comment from '@Domain/Comment'
 
 interface Idea {
-  id?: number
+  id: number
   initiator?: string
   name: string
   dateCreated: Date
@@ -19,6 +20,7 @@ interface Idea {
   status: StatusTypes
   rating: number
   risk: number
+  comments?: Comment[]
 }
 
 interface Risk {
