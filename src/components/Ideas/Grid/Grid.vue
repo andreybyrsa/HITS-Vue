@@ -12,12 +12,12 @@ import { Idea } from '@Domain/Idea'
 const props = defineProps<GridProps>()
 
 type O = {
-  creationDate?: number
+  dateCreated?: number
   name?: number
   rating?: number
   risk?: number
   status?: number
-  updatedDate?: number
+  dateModified?: number
 }
 
 type OType = keyof O
@@ -32,7 +32,7 @@ const sortOrders = ref<O>(
 )
 
 const filteredData = computed(() => {
-  let { data, filterKey } = props
+  let { data, filterKey, selectedFilters } = props
   if (filterKey) {
     filterKey = filterKey.toLowerCase()
     data = data?.filter((row) => {
@@ -54,6 +54,16 @@ const filteredData = computed(() => {
       const B = b[key as ideaKey]
       return order && A && B ? (A === B ? 0 : A > B ? 1 : -1) * order : 0
     })
+  }
+  if (selectedFilters?.length) {
+    const dataFilter: Idea[] = []
+    data?.forEach(
+      (elem) =>
+        selectedFilters?.every((filter) =>
+          Object.values(elem).includes(filter),
+        ) && dataFilter.push(elem),
+    )
+    return dataFilter
   }
   return data
 })
@@ -85,16 +95,16 @@ const translatedColumns = computed(() =>
   props.columns.map((word) => translate(word as Word)),
 )
 
-// function formatDate(date: Date) {
-//   if (date) {
-//     const options: Intl.DateTimeFormatOptions = {
-//       year: 'numeric',
-//       month: 'long',
-//       day: 'numeric',
-//     }
-//     return date.toLocaleDateString('ru-RU', options)
-//   }
-// }
+function formatDate(date: Date) {
+  if (date) {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }
+    return new Date(date).toLocaleDateString('ru-RU', options)
+  }
+}
 
 function getCellClass(key: string, value: number) {
   if (key === 'rating' || key === 'risk') {
@@ -110,17 +120,31 @@ const statuses = getStatus()
 function getTranslatedStatus(status: StatusTypes) {
   return statuses.translatedStatus[status]
 }
+
+function getTranslatedKey(entry: Idea, key: string) {
+  if (key === 'status') {
+    return getTranslatedStatus(entry[key])
+  }
+  if (key === 'dateCreated' || key === 'dateModified') {
+    return formatDate(entry[key])
+  }
+  return entry[key as IdeaType]
+}
 </script>
 
 <template>
-  <table v-if="filteredData?.length">
+  <table
+    v-if="filteredData?.length"
+    class="table-header"
+  >
     <thead>
-      <tr class="tr">
+      <tr>
         <th
           v-for="(column, index) in translatedColumns"
           @click="sortBy(props.columns[index] as OType)"
           :class="{ active: sortKey == props.columns[index] }"
           :key="index"
+          class="fs-5"
         >
           {{ column }}
           <span
@@ -133,7 +157,7 @@ function getTranslatedStatus(status: StatusTypes) {
           >
           </span>
         </th>
-        <th>Действие</th>
+        <th class="fs-5">Действие</th>
       </tr>
     </thead>
 
@@ -141,17 +165,14 @@ function getTranslatedStatus(status: StatusTypes) {
       <tr
         v-for="(entry, index) in filteredData"
         :key="index"
+        class="fs-5 border"
       >
         <td
           v-for="(key, index) in props.columns"
           :key="index"
         >
           <span :class="getCellClass(key, entry[key as IdeaType] as number)">
-            {{
-              key === 'status'
-                ? getTranslatedStatus(entry[key])
-                : entry[key as IdeaType]
-            }}
+            {{ getTranslatedKey(entry, key) }}
           </span>
         </td>
         <Button
@@ -203,7 +224,7 @@ function getTranslatedStatus(status: StatusTypes) {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 table {
   background-color: #fff;
 }
@@ -214,6 +235,19 @@ th {
   padding: 20px 10px;
   cursor: pointer;
   user-select: none;
+  text-align: center;
+}
+
+td:first-of-type {
+  text-align: start;
+}
+
+th:last-of-type {
+  border-radius: 0 8px 0 0;
+}
+
+th:first-of-type {
+  border-radius: 8px 0 0 0;
 }
 
 th.active {
@@ -223,6 +257,7 @@ th.active {
 td {
   height: 80px;
   padding: 10px;
+  text-align: center;
 }
 
 .arrow {
