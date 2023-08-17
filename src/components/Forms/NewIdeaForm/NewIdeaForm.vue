@@ -8,6 +8,7 @@ import NewIdeaProps from '@Components/Forms/NewIdeaForm/NewIdeaForm.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue'
+import CustomerAndContact from '@Components/Forms/NewIdeaForm/CustomerAndContact.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
@@ -34,6 +35,7 @@ const ideaData = reactive<Idea>({
   solution: '',
   result: '',
   customer: '',
+  contactPerson: '',
   description: '',
   risk: 0.5,
   rating: 1,
@@ -124,38 +126,7 @@ function handlePostIdea(idea: Idea) {
       ></Input>
     </div>
 
-    <div style="width: 50%">
-      <Typography class-name="fs-6 text-primary">Заказчик*</Typography>
-      <select
-        v-model="ideaData.customer"
-        class="form-select w-50"
-      >
-        <option
-          selected
-          disabled
-        >
-          Выберите заказчика
-        </option>
-        <option>Газпром</option>
-        <option>Роснефть</option>
-      </select>
-    </div>
-    <div style="width: 50%">
-      <Typography class-name="fs-6 text-primary">Контактное лицо*</Typography>
-      <select
-        class="form-select w-50"
-        aria-label="Floating label select example"
-      >
-        <option
-          selected
-          disabled
-        >
-          Выберите контактное лицо
-        </option>
-        <option>1</option>
-        <option>2</option>
-      </select>
-    </div>
+    <CustomerAndContact />
 
     <div style="width: 50%">
       <Input

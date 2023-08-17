@@ -10,6 +10,7 @@ interface Idea {
   solution?: string
   result?: string
   customer?: string
+  contactPerson?: string | null
   description?: string
   realizability?: string
   suitability?: string
