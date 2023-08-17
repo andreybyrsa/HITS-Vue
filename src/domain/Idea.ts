@@ -1,3 +1,5 @@
+import StatusTypes from '@Domain/Status'
+
 interface Idea {
   id?: number
   initiator?: string
@@ -14,13 +16,13 @@ interface Idea {
   realizability?: string
   suitability?: string
   budget?: string
-  status: 'ON_EDITING' | 'ON_APPROVAL' | 'ON_CONFIRMATION' | 'CONFIRMED'
+  status: StatusTypes
   rating: number
   risk: number
 }
 
 interface Risk {
-  status: 'ON_EDITING' | 'ON_APPROVAL' | 'ON_CONFIRMATION' | 'CONFIRMED'
+  status: StatusTypes
   risk: number
   price: string
   originality: string

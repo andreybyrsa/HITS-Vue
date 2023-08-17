@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
+import { reactive, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
 import NewIdeaProps from '@Components/Forms/NewIdeaForm/NewIdeaForm.types'
@@ -13,17 +12,14 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
-import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
 const props = defineProps<NewIdeaProps>()
 
 const router = useRouter()
+const route = useRoute()
 
 const ideasStore = useIdeasStore()
-const userStore = useUserStore()
-
-const { user } = storeToRefs(userStore)
 
 const ideaData = reactive<Idea>({
   name: '',
@@ -38,36 +34,71 @@ const ideaData = reactive<Idea>({
   risk: 0.5,
   rating: 1,
   status: 'ON_EDITING',
+  // status: 'NEW',
 })
 
-// if (props.currentIdea) {
-//   ideaData.name = props.currentIdea.name
-//   ideaData.projectType = props.currentIdea.projectType
-//   ideaData.problem = props.currentIdea.problem
-//   ideaData.solution = props.currentIdea.solution
-//   ideaData.result = props.currentIdea.result
-//   ideaData.customer = props.currentIdea.customer
-//   ideaData.description = props.currentIdea.description
-// }
+watch(
+  () => props.currentIdea,
+  () => {
+    if (props.currentIdea) {
+      const {
+        name,
+        projectType,
+        problem,
+        solution,
+        result,
+        customer,
+        description,
+      } = props.currentIdea
+      ideaData.name = name
+      ideaData.dateModified = new Date()
+      ideaData.projectType = projectType
+      ideaData.problem = problem
+      ideaData.solution = solution
+      ideaData.result = result
+      ideaData.customer = customer
+      ideaData.description = description
+      ideaData.status = 'ON_EDITING'
+    }
+  },
+)
 
 function setRatingEmit(rating: number) {
   ideaData.rating = rating
 }
 
 function handlePostIdea(idea: Idea) {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    ideasStore.postInitiatorIdeas(idea, token)
-    router.push('/ideas')
-  }
+  const token =
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
+  ideasStore.postInitiatorIdeas(idea, token)
+  router.push('/ideas')
+}
+function handleEditIdea(idea: Idea, id: number) {
+  const token =
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
+  ideasStore.putInitiatorIdeas(idea, id, token)
+  router.push('/ideas')
+}
+function handleDelete(id: number) {
+  const token =
+    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
+  ideasStore.deleteInitiatorIdeas(id, token)
+  router.push('/ideas')
 }
 </script>
 
 <template>
   <FormLayout class-name="align-items-start w-100 h-100 overflow-auto">
-    <Typography class-name="fs-1 text-primary">Создание идеи</Typography>
+    <Typography
+      v-if="!$props.currentIdea"
+      class-name="fs-1 text-primary"
+      >Создание идеи</Typography
+    >
+    <Typography
+      v-if="$props.currentIdea"
+      class-name="fs-1 text-primary"
+      >Редактирование идеи</Typography
+    >
     <div style="width: 50%">
       <Input
         v-model="ideaData.name"
@@ -168,10 +199,26 @@ function handlePostIdea(idea: Idea) {
     </div>
     <RatingCalculator @set-rating="setRatingEmit" />
     <Button
+      v-if="!$props.currentIdea"
       class-name="btn-primary d-block mx-auto"
       @click="handlePostIdea(ideaData)"
-      >Отправить на рассмотрение</Button
+      >Создать идею</Button
     >
+    <div
+      v-if="$props.currentIdea"
+      class="button-props w-100"
+    >
+      <Button
+        class-name="btn-primary"
+        @click="handleEditIdea(ideaData, +route.params.id)"
+        >Редактировать</Button
+      >
+      <Button
+        class-name="btn-danger"
+        @click="handleDelete(+route.params.id)"
+        >Удалить</Button
+      >
+    </div>
   </FormLayout>
 </template>
 
@@ -189,5 +236,9 @@ function handlePostIdea(idea: Idea) {
 
 ::-webkit-scrollbar-track {
   border-radius: 3rem;
+}
+
+.button-props {
+  @include flexible(flex-start, center, $gap: 20px);
 }
 </style>

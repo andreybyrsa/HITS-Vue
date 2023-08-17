@@ -36,7 +36,9 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token } = currentUser
+    // const { token } = currentUser
+    const token =
+      'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb2NodGFAbWFpbC5jb20iLCJpYXQiOjE2OTIyNDU0MzEsImV4cCI6MTY5MjI0OTAzMX0.n3NPJuUINH2G72bKvf7n8JjTgKJKSMqdkevW0npNBj0'
     await ideasStore.fetchIdeas(token)
   }
 })
@@ -87,9 +89,9 @@ function handleCloseModal(filters?: string[]) {
         :data="initiatorIdeas"
         :columns="gridColumns"
         :filter-key="searchQuery"
+        :selectedFilters="selectedFilters"
         class="demogrid w-100"
-      >
-      </Grid>
+      />
     </template>
   </PageLayout>
 </template>
