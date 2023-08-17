@@ -93,6 +93,12 @@ p {
   margin: 0;
 }
 
+#notifications {
+  @include position(fixed, $top: 8px, $right: 8px, $z-index: 10);
+
+  @include flexible(flex-start, stretch, column, $gap: 8px);
+}
+
 .bi {
   @include flexible(center, center);
 }

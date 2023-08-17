@@ -23,7 +23,10 @@ const BoxInputClassName = computed(() => [
   props.className,
 ])
 
-const BoxLabelClassName = computed(() => ['form-check-label', props.className])
+const BoxLabelClassName = computed(() => [
+  'form-check-label w-100',
+  props.className,
+])
 </script>
 
 <template>

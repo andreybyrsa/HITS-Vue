@@ -2,8 +2,7 @@ import axios from 'axios'
 
 import { Idea, Risk } from '@Domain/Idea'
 
-const IDEAS_URL =
-  process.env.VUE_APP_IDEAS_API_URL || 'http://localhost:3000/api/v1/idea'
+const IDEAS_URL = process.env.VUE_APP_IDEAS_API_URL || 'http://localhost:3000'
 
 const postInitiatorIdeas = async (idea: Idea, token: string): Promise<Idea> => {
   return await axios
@@ -67,9 +66,15 @@ const deleteAdminIdeas = async (id: number) => {
     .catch((error) => console.warn(error))
 }
 
-const putInitiatorIdeas = async (idea: Idea, id: number): Promise<Idea> => {
+const putInitiatorIdeas = async (
+  idea: Idea,
+  id: number,
+  token: string,
+): Promise<Idea> => {
   return await axios
-    .put(`${IDEAS_URL}/initiator/update/` + id, idea)
+    .put(`${IDEAS_URL}/initiator/update/` + id, idea, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch((error) => console.warn(error))
 }

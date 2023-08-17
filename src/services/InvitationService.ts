@@ -11,7 +11,7 @@ import ResponseMessage from '@Domain/ResponseMessage'
 import { ChangeUserEmail } from '@Domain/ManageUsers'
 
 const INVITATION_URL =
-  process.env.VUE_APP_INVITATION_URL || 'http://localhost:3000'
+  process.env.VUE_APP_INVITATION_API_URL || 'http://localhost:3000'
 
 const inviteUserByEmail = async (
   userData: InviteUserForm,
@@ -52,7 +52,7 @@ const inviteUsers = async (
 const sendRecoveryEmail = async (
   recoveryData: RecoveryData,
 ): Promise<{ key: string } & ResponseMessage> => {
-  return axios
+  return await axios
     .post(`${INVITATION_URL}/send/request-to-change-password`, recoveryData)
     .then((response) => response.data)
     .catch(({ response }) => {

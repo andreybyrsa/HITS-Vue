@@ -4,12 +4,31 @@ import {
   FilterModalProps,
   FilterModalEmits,
 } from '@Components/Modals/FilterModal/FilterModal.types'
+import { storeToRefs } from 'pinia'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import { ref, watch } from 'vue'
+import useUserStore from '@Store/user/userStore'
 
-const filters = ['Мои идеи', 'Утвержденные идеи', 'Согласованные идеи']
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const filters = [
+  {
+    label: 'Мои идеи',
+    // value: 'pochta@mail.com',
+    value: user.value?.email,
+  },
+  {
+    label: 'Утвержденные идеи',
+    value: 'CONFIRMED',
+  },
+  {
+    label: 'Согласованные идеи',
+    value: 'ON_CONFIRMATION',
+  },
+]
 const selectedFilters = ref<string[]>([])
 
 const props = defineProps<FilterModalProps>()
@@ -22,61 +41,50 @@ watch(
   },
 )
 </script>
-
 <template>
   <ModalLayout :is-opened="isOpened">
-    <div class="filter-modal p-3 rounded-3">
-      <div class="flex justify-content-center">
-        <div
-          class="filter-modal-header d-flex justify-content-between align-items-center mb-3"
-        >
-          <Typography class-name="fs-2 text-primary">Сортировать по</Typography>
-          <Button
-            class-name="btn-close"
-            @click="emit('close-modal')"
-          ></Button>
-        </div>
-        <div
-          class="my-3"
-          v-for="(filter, index) in filters"
-          :key="index"
-        >
-          <div class="filter-modal__checkbox">
-            <Checkbox
-              :label="filter"
-              v-model="selectedFilters"
-              :value="filter"
-              class-name="fs-4"
-              class="m-3 px-5"
-            />
-          </div>
-        </div>
+    <div class="filter-modal card card-body">
+      <div class="filter-modal__header">
+        <Typography class-name="fs-2 text-primary">Сортировать по</Typography>
         <Button
-          class-name="btn-primary w-100"
-          @click="emit('close-modal', selectedFilters)"
-          >отправить</Button
-        >
+          class-name="btn-close"
+          @click="emit('close-modal')"
+        />
       </div>
+      <div
+        v-for="(filter, index) in filters"
+        :key="index"
+        class="filter-modal__checkbox"
+      >
+        <Checkbox
+          name="checkbox"
+          :label="filter.label"
+          v-model="selectedFilters"
+          :value="filter.value"
+          class-name="fs-5"
+        />
+      </div>
+      <Button
+        class-name="btn-primary w-100"
+        @click="emit('close-modal', selectedFilters)"
+        >Применить</Button
+      >
     </div>
   </ModalLayout>
 </template>
 
 <style lang="scss">
 .filter-modal {
-  width: 400px;
-  background-color: $white-color;
-  @include flexible($align-self: center, $justify-self: center);
-  transition: all 0.3s ease;
-}
+  max-width: 400px;
+  @include flexible($align-self: center, $justify-self: center, $gap: 12px);
 
-.filter-modal-header {
-  width: 350px;
-  transition: all 0.3s ease;
-}
+  &__header {
+    width: 350px;
+    @include flexible(center, space-between);
+  }
 
-.filter-modal__checkbox {
-  width: 100%;
-  border: 1px solid #e4e4e4;
-  border-radius: 16px;
+  &__checkbox {
+    margin-left: 10px;
+  }
 }
 </style>
