@@ -42,6 +42,17 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     iconName: 'bi bi-file-earmark',
     roles: ['EXPERT', 'ADMIN'],
   },
+  {
+    id: 5,
+    text: 'Настройки',
+    to: '/change-email',
+    routes: [
+      { id: 0, to: '/change-email', text: 'Изменение почты' },
+      { id: 1, to: '/confirm-email', text: 'Подтверждение почты' },
+    ],
+    iconName: 'bi bi-gear',
+    roles: ['ADMIN'],
+  },
 ]
 
 export default leftSideBarTabs

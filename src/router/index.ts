@@ -10,6 +10,7 @@ import NewIdeas from '@Views/NewIdeas.vue'
 import EditIdeasView from '@Views/EditIdeasView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
+import ChangeEmailView from '@Views/ChangeEmailView.vue'
 
 import IdeasView from '@Views/IdeasView.vue'
 
@@ -70,6 +71,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
+  },
+  {
+    path: '/change-email',
+    name: 'change-email',
+    component: ChangeEmailView,
   },
 ]
 

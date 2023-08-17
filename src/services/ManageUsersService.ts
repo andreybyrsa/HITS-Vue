@@ -1,7 +1,11 @@
 import axios from 'axios'
 
 import { User } from '@Domain/User'
-import { UpdateUserData, UpdateUserPassword } from '@Domain/ManageUsers'
+import {
+  UpdateUserData,
+  UpdateUserPassword,
+  ChangeUserEmail,
+} from '@Domain/ManageUsers'
 import ResponseMessage from '@Domain/ResponseMessage'
 
 const MANAGE_USERS_URL =
@@ -52,10 +56,23 @@ const updateUserPassword = async (
     })
 }
 
+const updateUserEmail = async (
+  newEmailData: ChangeUserEmail,
+): Promise<ResponseMessage> => {
+  return axios
+    .put(`${MANAGE_USERS_URL}/change/email`, newEmailData)
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response ? response.data.error : 'Ошибка изменения почты'
+      return { error }
+    })
+}
+
 const ManageUsersService = {
   getUsers,
   updateUserInfo,
   updateUserPassword,
+  updateUserEmail,
 }
 
 export default ManageUsersService

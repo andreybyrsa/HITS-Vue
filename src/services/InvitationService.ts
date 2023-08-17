@@ -5,8 +5,10 @@ import {
   InviteUsersForm,
   InvitationInfo,
   RecoveryData,
+  NewEmailForm,
 } from '@Domain/Invitation'
 import ResponseMessage from '@Domain/ResponseMessage'
+import { ChangeUserEmail } from '@Domain/ManageUsers'
 
 const INVITATION_URL =
   process.env.VUE_APP_INVITATION_URL || 'http://localhost:3000'
@@ -82,12 +84,30 @@ const deleteInvitationInfo = async (slug: string | string[]) => {
     })
 }
 
+const sendUrlToChangeEmail = async (
+  userData: NewEmailForm,
+  token: string,
+): Promise<ResponseMessage> => {
+  return await axios
+    .post(`${INVITATION_URL}/send/request-to-change-email`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response
+        ? response.data.error
+        : 'Ошибка отправки ссылки для смены почты'
+      return { error }
+    })
+}
+
 const InvitationService = {
   inviteUserByEmail,
   inviteUsers,
   sendRecoveryEmail,
   getInvitationInfo,
   deleteInvitationInfo,
+  sendUrlToChangeEmail,
 }
 
 export default InvitationService
