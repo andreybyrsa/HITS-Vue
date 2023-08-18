@@ -193,30 +193,32 @@ function getTranslatedKey(entry: Idea, key: string) {
           type="button"
           class-name=" button btn-primary w-100"
           is-drop-down-controller
-          drop-down-clickable-inside
         >
           <i class="bi bi-list fs-1"></i>
         </Button>
         <DropDown>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item list-group-item-action">
-              <button @click="handleOpenModal(entry.id)">
+            <li class="list-group-item list-group-item-action rounded-3">
+              <button
+                class="w-100 text-start"
+                @click="handleOpenModal(entry.id)"
+              >
                 Просмотреть идею
               </button>
             </li>
 
-            <li class="list-group-item list-group-item-action">
+            <li class="list-group-item list-group-item-action rounded-3">
               <router-link
-                class="text-decoration-none d-block text-dark"
+                class="w-100 d-flex text-decoration-none text-dark"
                 :to="`edit-idea/${entry.id}`"
               >
                 Редактировать
               </router-link>
             </li>
 
-            <li class="list-group-item list-group-item-action">
+            <li class="list-group-item list-group-item-action rounded-3">
               <router-link
-                class="text-decoration-none d-block text-dark pointers"
+                class="w-100 d-flex text-decoration-none text-dark"
                 :to="`edit-idea/${entry.id}`"
               >
                 Отправить на согласование

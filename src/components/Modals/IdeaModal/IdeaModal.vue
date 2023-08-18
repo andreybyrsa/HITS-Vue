@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+import { useForm } from 'vee-validate'
+import { string } from 'yup'
+import { storeToRefs } from 'pinia'
+import { vIntersectionObserver } from '@vueuse/components'
+
 import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
 import {
   IdeaModalProps,
@@ -9,18 +14,97 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
+import CommentVue from '@Components/Comment/Comment.vue'
+
+import Comment from '@Domain/Comment'
+
+import useUserStore from '@Store/user/userStore'
+import useIdeasStore from '@Store/ideas/ideasStore'
 
 import getStatus from '@Utils/getStatus'
 
-defineProps<IdeaModalProps>()
+const props = defineProps<IdeaModalProps>()
 
 const emit = defineEmits<IdeaModalEmits>()
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const ideasStore = useIdeasStore()
+
 const status = getStatus()
+
+function checkIsUserComment(comment: Comment) {
+  return user.value?.email === comment.sender
+}
+
+const { resetForm, handleSubmit } = useForm<Comment>({
+  validationSchema: {
+    comment: string().required('Поле обязательно к заполнению'),
+  },
+  initialValues: {
+    comment: '',
+    sender: user.value?.email,
+    checkedBy: [`${user.value?.email}`],
+  },
+})
+
+const handleAddComment = handleSubmit(async (values) => {
+  const currentUser = user.value
+
+  if (props.idea && currentUser?.token) {
+    const { id } = props.idea
+    const { token } = currentUser
+    await ideasStore.addComment(values, id, token)
+
+    resetForm()
+  }
+})
+
+const handleDeleteComment = async (commentID: number) => {
+  const currentUser = user.value
+
+  if (currentUser?.token && props.idea) {
+    const { id } = props.idea
+    const { token } = currentUser
+
+    await ideasStore.deleteComment(id, commentID, token)
+  }
+}
+
+const handleCheckComment = async (
+  ideaID: number,
+  comment: Comment,
+  token: string,
+) => {
+  await ideasStore.checkComment(ideaID, comment, token)
+}
+
+const onIntersectionObserver = async (
+  [{ isIntersecting }]: IntersectionObserverEntry[],
+  comment: Comment,
+) => {
+  const currentUser = user.value
+
+  if (currentUser?.token && props.idea) {
+    const { token, email } = currentUser
+    const { id } = props.idea
+    const checkedUsers = comment.checkedBy
+
+    if (isIntersecting && !checkedUsers.includes(email)) {
+      comment.checkedBy.push(email)
+
+      await handleCheckComment(id, comment, token)
+    }
+  }
+}
 </script>
 
 <template>
-  <ModalLayout :is-opened="isOpened">
+  <ModalLayout
+    :is-opened="isOpened"
+    @on-outside-close="emit('close-modal')"
+  >
     <div class="idea-modal p-3 h-100 overflow-y-scroll">
       <div class="idea-modal__left-side w-75">
         <div class="idea-modal__left-side-header">
@@ -63,11 +147,25 @@ const status = getStatus()
             <Typography class-name="fs-5 px-3">Комментарии</Typography>
           </div>
 
-          <div class="p-3 w-100"></div>
+          <div
+            v-if="idea?.comments"
+            class="idea-modal__comments p-3 w-100"
+          >
+            <CommentVue
+              v-for="comment in idea.comments"
+              :key="comment.id"
+              :class="checkIsUserComment(comment) && 'idea-modal__user-comment'"
+              v-intersection-observer="
+                (elem) => onIntersectionObserver(elem, comment)
+              "
+              :comment="comment"
+              @delete-comment="handleDeleteComment(comment.id)"
+            />
+          </div>
 
           <form class="idea-modal__comment-form pb-3 px-3">
             <Input
-              name="comment-input"
+              name="comment"
               placeholder="Добавить комментарий"
             >
               <template #prepend>
@@ -78,6 +176,7 @@ const status = getStatus()
             <Button
               type="submit"
               class-name="btn-primary"
+              @click="handleAddComment"
             >
               Отправить
             </Button>
@@ -148,8 +247,17 @@ const status = getStatus()
     @include flexible(center, flex-start);
   }
 
+  &__comments {
+    display: grid;
+    gap: 16px;
+  }
+
+  &__user-comment {
+    justify-self: end;
+  }
+
   &__comment-form {
-    @include flexible(stretch, flex-start, $gap: 16px);
+    @include flexible(flex-start, flex-start, $gap: 16px);
   }
 
   transition: all 0.3s ease-out;
