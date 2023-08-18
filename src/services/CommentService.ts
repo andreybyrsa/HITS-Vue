@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 import ResponseMessage from '@Domain/ResponseMessage'
+import Comment from '@Domain/Comment'
 
 const COMMENT_URL =
   process.env.VUE_APP_COMMENT_API_URL || 'http://localhost:3000'
@@ -24,11 +25,12 @@ const addComment = async (
 }
 
 const deleteComment = async (
+  ideaID: number,
   commentID: number,
   token: string,
 ): Promise<ResponseMessage> => {
   return await axios
-    .delete(`${COMMENT_URL}/delete/${commentID}`, {
+    .delete(`${COMMENT_URL}/delete/${ideaID}/${commentID}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -41,11 +43,12 @@ const deleteComment = async (
 }
 
 const checkComment = async (
+  ideaID: number,
   comment: Comment,
   token: string,
 ): Promise<ResponseMessage> => {
   return await axios
-    .put(`${COMMENT_URL}/check`, comment, {
+    .put(`${COMMENT_URL}/check/${ideaID}`, comment, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

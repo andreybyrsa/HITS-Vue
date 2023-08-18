@@ -10,6 +10,7 @@ function getMockIdeas(): Idea[] {
       status: 'ON_EDITING',
       rating: 5,
       risk: 0.2,
+      comments: [],
     },
     {
       id: 1,
@@ -19,6 +20,7 @@ function getMockIdeas(): Idea[] {
       status: 'ON_APPROVAL',
       rating: 5,
       risk: 0.2,
+      comments: [],
     },
   ]
 }

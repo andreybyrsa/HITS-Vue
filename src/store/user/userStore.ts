@@ -2,10 +2,11 @@ import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
 import { User, LoginUser, RegisterUser } from '@Domain/User'
+import RolesTypes from '@Domain/Roles'
 
 import AuthService from '@Services/AuthService'
+
 import LocalStorageUser from '@Utils/LocalStorageUser'
-import RolesTypes from '@Domain/Roles'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({

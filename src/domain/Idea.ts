@@ -20,7 +20,7 @@ interface Idea {
   status: StatusTypes
   rating: number
   risk: number
-  comments?: Comment[]
+  comments: Comment[]
 }
 
 interface Risk {
