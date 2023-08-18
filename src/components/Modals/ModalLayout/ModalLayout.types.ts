@@ -2,4 +2,8 @@ interface ModalLayoutProps {
   isOpened: boolean
 }
 
-export default ModalLayoutProps
+interface ModalLayoutEmits {
+  (event: 'on-outside-close'): void
+}
+
+export { ModalLayoutProps, ModalLayoutEmits }

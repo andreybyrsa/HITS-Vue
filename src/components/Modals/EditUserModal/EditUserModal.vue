@@ -91,7 +91,10 @@ const handleEditUser = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <ModalLayout :is-opened="isOpened">
+  <ModalLayout
+    :is-opened="isOpened"
+    @on-outside-close="emit('close-modal')"
+  >
     <div
       v-if="isOpened"
       class="edit-user-modal p-3 rounded-3"

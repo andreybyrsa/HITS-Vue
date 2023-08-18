@@ -1,7 +1,27 @@
 <script lang="ts" setup>
-import ModalLayoutProps from '@Components/Modals/ModalLayout/ModalLayout.types'
+import { ref, VueElement } from 'vue'
+import { useEventListener } from '@vueuse/core'
+
+import {
+  ModalLayoutProps,
+  ModalLayoutEmits,
+} from '@Components/Modals/ModalLayout/ModalLayout.types'
+
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 defineProps<ModalLayoutProps>()
+
+const emit = defineEmits<ModalLayoutEmits>()
+
+const modalLayoutRef = ref<VueElement>()
+
+useEventListener(modalLayoutRef, 'click', (event: HTMLTargetEvent) => {
+  const modalLayoutClassName = event.target.className
+
+  if (modalLayoutClassName === 'modal-layout' && emit('on-outside-close')) {
+    emit('on-outside-close')
+  }
+})
 </script>
 
 <template>
@@ -9,6 +29,7 @@ defineProps<ModalLayoutProps>()
     <Transition name="modal-layout">
       <div
         v-if="isOpened"
+        ref="modalLayoutRef"
         class="modal-layout"
       >
         <slot></slot>
