@@ -1,25 +1,50 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { toRefs, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 
-import CommentProps from '@Components/Comment/Comment.types'
+import { CommentProps, CommentEmits } from '@Components/Comment/Comment.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 
+import useUserStore from '@Store/user/userStore'
+import { toReactive } from '@vueuse/core'
+
 const props = defineProps<CommentProps>()
+const { comment, className } = toRefs(props)
+const {
+  sender,
+  checkedBy,
+  comment: commentMessage,
+  dateCreated,
+} = toReactive(comment)
+
+const emit = defineEmits<CommentEmits>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const CommentClassName = computed(() => [
   'comment card rounded-3 shadow',
-  props.className,
+  className,
+])
+const CommentHeaderClassName = computed(() => [
+  'comment__header card-header',
+  {
+    'bg-primary bg-opacity-50':
+      user.value && !checkedBy.includes(user.value.email),
+  },
 ])
 
 const getCurrentCommentDate = (dateCreated: Date) => {
-  const dateDifference = new Date(
-    new Date().getMilliseconds() - dateCreated.getMilliseconds(),
-  )
-  const secondsDifference = dateDifference.getSeconds()
-  const minutesDifference = dateDifference.getMinutes()
-  const hoursDifference = dateDifference.getHours()
+  const currentDateCreated = new Date(dateCreated)
+  const currentDate = new Date()
+
+  const dateDifference = currentDate.getTime() - currentDateCreated.getTime()
+  const secondsDifference = Math.floor(dateDifference / 1000)
+  const minutesDifference = Math.floor(secondsDifference / 60)
+  const hoursDifference = Math.floor(minutesDifference / 60)
+  const daysDifference = Math.floor(hoursDifference / 24)
 
   if (secondsDifference < 60) {
     return 'Несколько секунд назад'
@@ -33,43 +58,51 @@ const getCurrentCommentDate = (dateCreated: Date) => {
     return `${hoursDifference} ч. назад`
   }
 
-  return `${Math.floor(hoursDifference / 24)} д. назад`
+  return `${daysDifference} д. назад`
 }
 </script>
 
 <template>
   <div :class="CommentClassName">
-    <div class="comment__header card-header">
-      <Typography>{{ commnet.sender }}</Typography>
+    <div :class="CommentHeaderClassName">
+      <Typography class-name="text-primary">{{ sender }}</Typography>
 
       <div class="comment__info">
         <div class="text-primary">
-          {{ getCurrentCommentDate(new Date()) }}
+          {{ getCurrentCommentDate(dateCreated) }}
         </div>
 
         <Button
+          v-if="sender === user?.email"
           class-name="btn-primary p-1"
           prepend-icon-name="bi bi-list fs-3"
           is-drop-down-controller
         ></Button>
         <DropDown>
-          <button>Удалить</button>
+          <button
+            class="w-100"
+            @click="emit('delete-comment')"
+          >
+            Удалить
+          </button>
         </DropDown>
       </div>
     </div>
 
     <div class="card-body">
-      {{ commnet.comment }}
+      {{ commentMessage }}
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .comment {
-  width: 500px;
+  width: 450px;
 
   &__header {
     @include flexible(center, space-between);
+
+    transition: background-color 5s ease-out;
   }
 
   &__info {
