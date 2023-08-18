@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch, reactive } from 'vue'
+import { computed, watch, reactive, onMounted } from 'vue'
 import {
   RatingData,
   RatingDataEmits,
@@ -52,6 +52,12 @@ const selectNames = [
     forName: 'budget',
   },
 ]
+
+onMounted(() => {
+  rating.realizability = 1
+  rating.suitability = 1
+  rating.budget = 1
+})
 </script>
 
 <template>

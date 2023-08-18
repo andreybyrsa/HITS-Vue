@@ -2,11 +2,8 @@
 import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useFieldArray, useForm } from 'vee-validate'
-import Validation from '@Utils/Validation'
 
 import Typography from '@Components/Typography/Typography.vue'
-import NewIdeaProps from '@Components/Forms/NewIdeaForm/NewIdeaForm.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue'
@@ -19,8 +16,6 @@ import { Idea } from '@Domain/Idea'
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 import RolesTypes from '@Domain/Roles'
-
-const props = defineProps<NewIdeaProps>()
 
 const router = useRouter()
 
@@ -59,44 +54,33 @@ function setRatingEmit(rating: number) {
   ideaData.rating = rating
 }
 
-function handlePostIdea(idea: Idea) {
+import Validation from '@Utils/Validation'
+import { useForm } from 'vee-validate'
+
+const { handleSubmit } = useForm<Idea>({
+  validationSchema: {
+    nameIdea: (value: string) =>
+      Validation.checkName(value) || 'Поле не заполнено',
+    problemIdea: (value: string) =>
+      Validation.checkName(value) || 'Поле не заполнено',
+    resolveIdea: (value: string) =>
+      Validation.checkName(value) || 'Поле не заполнено',
+    resultIdea: (value: string) =>
+      Validation.checkName(value) || 'Поле не заполнено',
+    resourcesIdea: (value: string) =>
+      Validation.checkName(value) || 'Поле не заполнено',
+  },
+})
+
+const handleIdea = handleSubmit(async (values) => {
   const currentUser = user.value
 
-  if (currentUser?.token && validateForm()) {
+  if (currentUser?.token) {
     const { token } = currentUser
-    ideasStore.postInitiatorIdeas(idea, token)
+    ideasStore.postInitiatorIdeas(values, token)
     router.push('/ideas')
   }
-}
-
-const formErrors = reactive({
-  nameIdea: false,
-  projectType: false,
-  problemIdea: false,
-  resolveIdea: false,
-  resultIdea: false,
-  resourcesIdea: false,
 })
-function validateForm() {
-  formErrors.nameIdea = ideaData.name.trim() === ''
-  formErrors.projectType = ideaData.projectType === ''
-  formErrors.problemIdea = ideaData.problem.trim() === ''
-  formErrors.resolveIdea = ideaData.solution.trim() === ''
-  formErrors.resultIdea = ideaData.result.trim() === ''
-  formErrors.resourcesIdea = ideaData.description.trim() === ''
-  if (
-    formErrors.nameIdea ||
-    formErrors.projectType ||
-    formErrors.problemIdea ||
-    formErrors.resolveIdea ||
-    formErrors.resultIdea ||
-    formErrors.resourcesIdea
-  ) {
-    alert('Проверьте, что все поля заполнены!')
-    return false
-  }
-  return true
-}
 </script>
 
 <template>
@@ -109,14 +93,7 @@ function validateForm() {
         label="Название идеи*"
         placeholder="Введите название идеи"
         class-name="fs-6"
-        :error="formErrors.nameIdea"
       ></Input>
-      <div
-        v-if="formErrors.nameIdea"
-        class="text-danger"
-      >
-        Поле не заполнено
-      </div>
     </div>
 
     <Typography class-name="fs-6 text-primary">Тип проекта*</Typography>
@@ -134,7 +111,6 @@ function validateForm() {
       <option value="INSIDE">Внутренний</option>
       <option value="OUTSIDE">Внешний</option>
     </select>
-
     <div style="width: 50%">
       <Input
         v-model="ideaData.problem"
@@ -143,14 +119,7 @@ function validateForm() {
         placeholder="Опишите проблему, которую решает ваша идея"
         class-name="fs-6"
         :required="true"
-        :error="formErrors.problemIdea"
       ></Input>
-      <div
-        v-if="formErrors.problemIdea"
-        class="text-danger"
-      >
-        Поле не заполнено
-      </div>
     </div>
 
     <div style="width: 50%">
@@ -160,14 +129,7 @@ function validateForm() {
         label="Предлагаемое решение*"
         placeholder="Опишите, что вы предлагаете для решения проблемы"
         class-name="fs-6"
-        :error="formErrors.resolveIdea"
       ></Input>
-      <div
-        v-if="formErrors.resolveIdea"
-        class="text-danger"
-      >
-        Поле не заполнено
-      </div>
     </div>
 
     <div style="width: 50%">
@@ -194,7 +156,7 @@ function validateForm() {
     <RatingCalculator @set-rating="setRatingEmit" />
     <Button
       class-name="btn-primary d-block mx-auto"
-      @click="handlePostIdea(ideaData)"
+      @click="handleIdea"
       >Отправить на рассмотрение</Button
     >
   </FormLayout>

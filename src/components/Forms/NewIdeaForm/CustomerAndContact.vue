@@ -37,7 +37,7 @@ const uniqueOptions = Array.from(
 )
 const uniqueOptionsArray = uniqueOptions.map((company) => ({ company }))
 const selectedContactPersons = ref<string[]>([])
-const selectedCompanyContacts = ref<string[]>([])
+const selectedCompanyContacts = ref<{ name: string; company: string }[]>([])
 
 const filterFn = (option: any, query: string) => {
   const company = option.company.toLowerCase()
@@ -75,8 +75,8 @@ watch(
   (newCustomer) => {
     if (!newCustomer || newCustomer === 'ВШЦТ') {
       ideaData.customer = 'ВШЦТ'
-      const contactPersons = getContactPersonsByCompany(value.value)
-      ideaData.contactPerson = contactPersons[0]
+      const contactPersons = getContactPersonsByCompany(value.value.company)
+      ideaData.contactPerson = contactPersons[0].name
       updateSelectedContactPersons([ideaData.contactPerson])
     }
   },
@@ -100,7 +100,6 @@ watch(
       :filter="filterFn"
       @input="handleCompanyChange(selectedCompany)"
     />
-    {{ ideaData.contactPerson }}
     <Typography
       class="fs-6 text-primary"
       v-if="selectedCompany.company !== 'ВШЦТ'"
@@ -397,7 +396,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option--highlight::after {
-  content: attr(data-select);
+  content: 'Нажмите enter, чтобы выбрать';
   background: #2151ffb6;
   color: white;
 }
@@ -409,7 +408,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option--selected::after {
-  content: attr(data-selected);
+  content: 'Выбрано';
   color: silver;
   background: inherit;
 }
@@ -421,7 +420,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--selected.multiselect__option--highlight::after {
   background: #2151ff;
-  content: attr(data-deselect);
+  content: 'Нажмите enter, чтобы отменить выбор';
   color: #fff;
 }
 
