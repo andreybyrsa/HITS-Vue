@@ -58,7 +58,7 @@ onMounted(async () => {
   }
 })
 
-const { values, errors, setValues, submitCount, handleSubmit } =
+const { values, errors, resetForm, submitCount, handleSubmit } =
   useForm<InviteUsersForm>({
     validationSchema: {
       emails: (value: string[]) =>
@@ -143,11 +143,7 @@ const handleInvite = handleSubmit(async (values) => {
     if (success) {
       handleOpenNotification('success', success)
 
-      setValues({
-        emails: [''],
-        roles: [],
-      })
-      submitCount.value = 0
+      resetForm()
     } else {
       handleOpenNotification('error', error)
     }

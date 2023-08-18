@@ -71,7 +71,7 @@ const searchedUsers = computed(() => {
 
     if (filteredRoles.value.length) {
       return (
-        filteredRoles.value.every((role) => user.roles.includes(role)) &&
+        filteredRoles.value.some((role) => user.roles.includes(role)) &&
         isIncludeSearcheValue
       )
     }
@@ -127,6 +127,7 @@ function handleCloseModal(newUser?: UpdateUserData, success?: string) {
             class-name="px-2 py-0"
             append-icon-name="bi bi-chevron-down"
             is-drop-down-controller
+            drop-down-clickable-inside
           >
             Роли
           </Button>
