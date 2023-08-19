@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref, VueElement } from 'vue'
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
 import { storeToRefs } from 'pinia'
@@ -15,6 +16,7 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
 import CommentVue from '@Components/Comment/Comment.vue'
+import Icon from '@Components/Icon/Icon.vue'
 
 import Comment from '@Domain/Comment'
 
@@ -33,6 +35,7 @@ const { user } = storeToRefs(userStore)
 const ideasStore = useIdeasStore()
 
 const status = getStatus()
+const ideaModalRef = ref<VueElement>()
 
 function checkIsUserComment(comment: Comment) {
   return user.value?.email === comment.sender
@@ -58,6 +61,11 @@ const handleAddComment = handleSubmit(async (values) => {
     await ideasStore.addComment(values, id, token)
 
     resetForm()
+
+    ideaModalRef.value?.scrollTo({
+      top: ideaModalRef.value.scrollHeight,
+      behavior: 'smooth',
+    })
   }
 })
 
@@ -105,7 +113,10 @@ const onIntersectionObserver = async (
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="idea-modal p-3 h-100 overflow-y-scroll">
+    <div
+      ref="ideaModalRef"
+      class="idea-modal p-3 h-100 overflow-y-scroll"
+    >
       <div class="idea-modal__left-side w-75">
         <div class="idea-modal__left-side-header">
           <Button
@@ -117,7 +128,7 @@ const onIntersectionObserver = async (
           </Button>
 
           <Typography
-            class-name="p-2 w-100 bg-white rounded-3 fs-3 text-primary text-nowrap overflow-scroll"
+            class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-scroll"
           >
             {{ idea?.name }}
           </Typography>
@@ -137,7 +148,9 @@ const onIntersectionObserver = async (
               {{ collapse.text }}
             </Button>
             <Collapse :id="collapse.id">
-              {{ idea?.[collapse.ideaKey] }}
+              <div class="p-2">
+                {{ idea?.[collapse.ideaKey] }}
+              </div>
             </Collapse>
           </li>
         </ul>
@@ -187,18 +200,67 @@ const onIntersectionObserver = async (
       <div class="idea-modal__right-side w-25 bg-white rounded">
         <Typography
           v-if="idea"
-          class-name="p-2 bg-primary rounded-top fs-3 text-center text-white"
+          class-name="p-2 bg-primary rounded-top fs-4 text-center text-white"
         >
           {{ status.translatedStatus[idea.status] }}
         </Typography>
 
-        <div class="idea-modal__idea-info px-3 w-100">
-          <div class="w-100 pb-4">
-            <div class="w-100 border-bottom">
-              <Typography class="text-secondary">Заказчик</Typography>
+        <div class="idea-modal__info px-3 pb-3 w-100">
+          <div v-if="idea?.customer">
+            <Typography class-name="border-bottom text-secondary d-block">
+              Заказчик
+            </Typography>
+
+            <div class="idea-modal__info-user pt-2">
+              <i class="bi bi-circle-fill fs-1 text-secondary"></i>
+
+              <Typography class-name="text-primary">
+                {{ idea?.customer }}
+              </Typography>
+            </div>
+          </div>
+
+          <div v-if="idea?.initiator">
+            <Typography class-name="border-bottom text-secondary d-block">
+              Инициатор
+            </Typography>
+
+            <div class="idea-modal__info-user pt-2">
+              <i class="bi bi-circle-fill fs-1 text-secondary"></i>
+
+              <Typography class-name="text-primary">
+                {{ idea?.initiator }}
+              </Typography>
+            </div>
+          </div>
+
+          <div v-if="idea?.experts">
+            <div
+              class="idea-modal__info-header border-bottom pointers"
+              data-bs-toggle="collapse"
+              data-bs-target="#experts"
+              aria-expanded="false"
+            >
+              <Typography class-name="text-secondary">Эксперты</Typography>
+
+              <Icon class-name="bi bi-chevron-down me-2 fs-5 text-secondary" />
             </div>
 
-            <div class="p-3 fs-5">ВШЦТ</div>
+            <Collapse id="experts">
+              <div class="idea-modal__info-users py-2">
+                <div
+                  v-for="(value, index) in idea.experts"
+                  :key="index"
+                  class="idea-modal__info-user"
+                >
+                  <i class="bi bi-circle-fill fs-1 text-secondary"></i>
+
+                  <Typography class-name="text-primary">
+                    {{ value }}
+                  </Typography>
+                </div>
+              </div>
+            </Collapse>
           </div>
         </div>
       </div>
@@ -221,6 +283,8 @@ const onIntersectionObserver = async (
     $align-self: stretch,
     $justify-self: flex-end
   );
+
+  transition: all 0.3s ease-out;
 
   &__left-side {
     height: fit-content;
@@ -260,7 +324,23 @@ const onIntersectionObserver = async (
     @include flexible(flex-start, flex-start, $gap: 16px);
   }
 
-  transition: all 0.3s ease-out;
+  &__info {
+    @include flexible(stretch, flex-start, column, $gap: 16px);
+
+    &-header {
+      cursor: pointer;
+
+      @include flexible(center, space-between);
+    }
+
+    &-users {
+      @include flexible(stretch, flex-start, column, $gap: 8px);
+    }
+
+    &-user {
+      @include flexible(center, flex-start, $gap: 8px);
+    }
+  }
 }
 
 .modal-layout-enter-from .idea-modal,

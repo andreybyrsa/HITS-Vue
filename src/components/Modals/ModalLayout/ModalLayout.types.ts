@@ -1,4 +1,6 @@
 interface ModalLayoutProps {
+  className?: string
+
   isOpened: boolean
 }
 

@@ -13,7 +13,7 @@ const CollapseClassName = computed(() => ['collapse', props.className])
     :id="id"
     :class="CollapseClassName"
   >
-    <div class="list-group p-2">
+    <div class="list-group">
       <slot></slot>
     </div>
   </div>

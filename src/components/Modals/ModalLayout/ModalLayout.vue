@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, VueElement } from 'vue'
+import { computed, ref, VueElement } from 'vue'
 import { useEventListener } from '@vueuse/core'
 
 import {
@@ -9,11 +9,13 @@ import {
 
 import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
-defineProps<ModalLayoutProps>()
+const props = defineProps<ModalLayoutProps>()
 
 const emit = defineEmits<ModalLayoutEmits>()
 
 const modalLayoutRef = ref<VueElement>()
+
+const ModalLayoutClassName = computed(() => ['modal-layout', props.className])
 
 useEventListener(modalLayoutRef, 'click', (event: HTMLTargetEvent) => {
   const modalLayoutClassName = event.target.className
@@ -30,7 +32,7 @@ useEventListener(modalLayoutRef, 'click', (event: HTMLTargetEvent) => {
       <div
         v-if="isOpened"
         ref="modalLayoutRef"
-        class="modal-layout"
+        :class="ModalLayoutClassName"
       >
         <slot></slot>
       </div>

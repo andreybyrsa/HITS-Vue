@@ -22,12 +22,12 @@ const filters = [
     value: user.value?.email,
   },
   {
-    label: 'Утвержденные идеи',
-    value: 'CONFIRMED',
-  },
-  {
     label: 'Согласованные идеи',
     value: 'ON_CONFIRMATION',
+  },
+  {
+    label: 'Утвержденные идеи',
+    value: 'CONFIRMED',
   },
 ]
 const selectedFilters = ref<string[]>([])
@@ -49,7 +49,7 @@ watch(
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="filter-modal card card-body">
+    <div class="filter-modal p-3 bg-white rounded-3">
       <div class="filter-modal__header">
         <Typography class-name="fs-2 text-primary">Сортировать по</Typography>
         <Button
@@ -58,19 +58,22 @@ watch(
         ></Button>
       </div>
 
-      <div
-        v-for="(filter, index) in filters"
-        :key="index"
-        class="ms-2"
-      >
-        <Checkbox
-          name="checkbox"
-          :label="filter.label"
-          v-model="selectedFilters"
-          :value="filter.value"
-          class-name="fs-5"
-        />
-      </div>
+      <ul class="list-group">
+        <div
+          v-for="(filter, index) in filters"
+          :key="index"
+          class="list-group-item"
+        >
+          <Checkbox
+            name="checkbox"
+            :label="filter.label"
+            v-model="selectedFilters"
+            :value="filter.value"
+            class-name="fs-5"
+          />
+        </div>
+      </ul>
+
       <Button
         class-name="btn-primary w-100"
         @click="emit('close-modal', selectedFilters)"
@@ -83,13 +86,18 @@ watch(
 
 <style lang="scss">
 .filter-modal {
-  max-width: 400px;
+  width: 400px;
 
-  @include flexible($align-self: center, $justify-self: center, $gap: 12px);
+  @include flexible(
+    stretch,
+    flex-start,
+    column,
+    $align-self: center,
+    $justify-self: center,
+    $gap: 12px
+  );
 
   &__header {
-    width: 350px;
-
     @include flexible(center, space-between);
   }
 
