@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { reactive, onMounted, ref } from 'vue'
+import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue'
 import CustomerAndContact from '@Components/Forms/NewIdeaForm/CustomerAndContact.vue'
+import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
@@ -15,7 +15,6 @@ import { Idea } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
-import RolesTypes from '@Domain/Roles'
 
 const router = useRouter()
 
@@ -87,13 +86,13 @@ const handleIdea = handleSubmit(async (values) => {
   <FormLayout class-name="align-items-start w-100 h-100 overflow-auto">
     <Typography class-name="fs-1 text-primary">Создание идеи</Typography>
     <div style="width: 50%">
-      <Input
+      <Textarea
         v-model="ideaData.name"
         name="nameIdea"
         label="Название идеи*"
         placeholder="Введите название идеи"
         class-name="fs-6"
-      ></Input>
+      ></Textarea>
     </div>
 
     <Typography class-name="fs-6 text-primary">Тип проекта*</Typography>
@@ -112,46 +111,46 @@ const handleIdea = handleSubmit(async (values) => {
       <option value="OUTSIDE">Внешний</option>
     </select>
     <div style="width: 50%">
-      <Input
+      <Textarea
         v-model="ideaData.problem"
         name="problemIdea"
         label="Проблема*"
         placeholder="Опишите проблему, которую решает ваша идея"
         class-name="fs-6"
         :required="true"
-      ></Input>
+      ></Textarea>
     </div>
 
     <div style="width: 50%">
-      <Input
+      <Textarea
         v-model="ideaData.solution"
         name="resolveIdea"
         label="Предлагаемое решение*"
         placeholder="Опишите, что вы предлагаете для решения проблемы"
         class-name="fs-6"
-      ></Input>
+      ></Textarea>
     </div>
 
     <div style="width: 50%">
-      <Input
+      <Textarea
         v-model="ideaData.result"
         name="resultIdea"
         label="Ожидаемый результат*"
         placeholder="Опишите ожидаемый результат"
         class-name="fs-6"
-      ></Input>
+      ></Textarea>
     </div>
 
     <CustomerAndContact />
 
     <div style="width: 50%">
-      <Input
+      <Textarea
         v-model="ideaData.description"
         name="resourcesIdea"
         label="Описание необходимых ресурсов для реализации*"
         placeholder="Укажите список требуемых для выполнения проекта ресурсов"
         class-name="fs-6"
-      ></Input>
+      ></Textarea>
     </div>
     <RatingCalculator @set-rating="setRatingEmit" />
     <Button
