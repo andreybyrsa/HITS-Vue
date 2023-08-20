@@ -24,6 +24,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const ideaData = reactive<Idea>({
+  id: 0,
   name: '',
   dateCreated: new Date(),
   dateModified: new Date(),
@@ -37,6 +38,7 @@ const ideaData = reactive<Idea>({
   risk: 0.5,
   rating: 1,
   status: 'ON_EDITING',
+  comments: [],
 })
 
 // if (props.currentIdea) {

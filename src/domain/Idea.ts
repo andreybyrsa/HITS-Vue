@@ -1,5 +1,8 @@
+import StatusTypes from '@Domain/Status'
+import Comment from '@Domain/Comment'
+
 interface Idea {
-  id?: number
+  id: number
   initiator?: string
   name: string
   dateCreated: Date
@@ -15,13 +18,14 @@ interface Idea {
   realizability?: string
   suitability?: string
   budget?: string
-  status: 'ON_EDITING' | 'ON_APPROVAL' | 'ON_CONFIRMATION' | 'CONFIRMED'
+  status: StatusTypes
   rating: number
   risk: number
+  comments: Comment[]
 }
 
 interface Risk {
-  status: 'ON_EDITING' | 'ON_APPROVAL' | 'ON_CONFIRMATION' | 'CONFIRMED'
+  status: StatusTypes
   risk: number
   price: string
   originality: string

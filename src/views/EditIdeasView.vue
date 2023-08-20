@@ -2,7 +2,7 @@
 import NewIdeaForm from '@Components/Forms/NewIdeaForm/NewIdeaForm.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import { Idea } from '@Domain/Idea'
+// import { Idea } from '@Domain/Idea'
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 // import { useRouter } from 'vue-router'
@@ -19,24 +19,9 @@ const currentIdea = ref()
 
 onMounted(() => {
   currentIdea.value = initiatorIdeas.value.find(
-    (idea) => idea.id == router.params.id,
+    (idea) => idea.id == +router.params.id,
   )
 })
-
-const idea: Idea = {
-  name: 'Пирожки',
-  dateCreated: new Date(),
-  dateModified: new Date(),
-  projectType: 'INSIDE',
-  problem: 'проблема',
-  solution: 'еще что то ',
-  result: 'результвт',
-  customer: 'Газпром',
-  description: 'описание вроде',
-  risk: 0.5,
-  rating: 1,
-  status: 'ON_EDITING',
-}
 </script>
 
 <template>

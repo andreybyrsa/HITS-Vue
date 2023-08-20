@@ -2,10 +2,11 @@ import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
 import { User, LoginUser, RegisterUser } from '@Domain/User'
+import RolesTypes from '@Domain/Roles'
 
 import AuthService from '@Services/AuthService'
+
 import LocalStorageUser from '@Utils/LocalStorageUser'
-import RolesTypes from '@Domain/Roles'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
@@ -16,32 +17,34 @@ const useUserStore = defineStore('user', {
   actions: {
     async loginUser(user: LoginUser) {
       const response = await AuthService.loginUser(user)
-      const { token, error } = response
 
-      if (token) {
-        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-
-        this.user = localStorageUser
-
-        this.router.push({ name: 'ideas' })
-      } else {
-        this.loginError = error
+      if (response instanceof Error) {
+        const { message } = response
+        return (this.loginError = message)
       }
+
+      const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
+      this.user = localStorageUser
+
+      this.loginError = ''
+
+      this.router.push({ name: 'ideas' })
     },
 
     async registerUser(user: RegisterUser) {
       const response = await AuthService.registerUser(user)
-      const { token, error } = response
 
-      if (token) {
-        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-
-        this.user = localStorageUser
-
-        this.router.push({ name: 'ideas' })
-      } else {
-        this.registerError = error
+      if (response instanceof Error) {
+        const { message } = response
+        return (this.registerError = message)
       }
+
+      const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
+      this.user = localStorageUser
+
+      this.registerError = ''
+
+      this.router.push({ name: 'ideas' })
     },
 
     setUserFromLocalStorage(localStorageUser: User) {

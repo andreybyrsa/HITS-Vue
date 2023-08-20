@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, watch, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
@@ -8,12 +8,14 @@ import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import registerInputs from '@Components/Forms/RegisterForm/RegisterFormInputs'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { RegisterUser } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
-import ResponseMessage from '@Domain/ResponseMessage'
+
+import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -26,16 +28,30 @@ const { registerError } = storeToRefs(userStore)
 
 const route = useRoute()
 
-const response = reactive<ResponseMessage>({
-  error: '',
-})
+const {
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
-watch(
-  () => registerError?.value,
-  () => {
-    response.error = registerError?.value
-  },
-)
+onMounted(async () => {
+  const { slug } = route.params
+  const response = await InvitationService.getInvitationInfo(slug)
+
+  if (response instanceof Error) {
+    userStore.registerError = response.message
+    return handleOpenNotification()
+  }
+
+  const { email, roles } = response
+  if (email && roles) {
+    setFieldValue('email', email)
+    setFieldValue('roles', roles)
+  } else {
+    userStore.registerError = 'Ошибка приглашения'
+    handleOpenNotification()
+  }
+})
 
 const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
   validationSchema: {
@@ -54,20 +70,11 @@ const handleRegister = handleSubmit(async (values) => {
   const { slug } = route.params
 
   await userStore.registerUser(values)
-  await InvitationService.deleteInvitationInfo(slug)
-})
 
-onMounted(async () => {
-  const { slug } = route.params
-  const { email, roles, error } = await InvitationService.getInvitationInfo(
-    slug,
-  )
-
-  if (email && roles) {
-    setFieldValue('email', email)
-    setFieldValue('roles', roles)
+  if (registerError?.value) {
+    handleOpenNotification()
   } else {
-    response.error = error ?? 'Ошибка приглашения'
+    await InvitationService.deleteInvitationInfo(slug)
   }
 })
 </script>
@@ -98,11 +105,13 @@ onMounted(async () => {
       Зарегистрироваться
     </Button>
 
-    <Typography
-      v-if="response.error"
-      class-name="text-danger text-center fs-6"
+    <NotificationModal
+      type="error"
+      :is-opened="isOpenedNotification"
+      @close-modal="handleCloseNotification"
+      :time-expired="5000"
     >
-      {{ response.error }}
-    </Typography>
+      {{ registerError }}
+    </NotificationModal>
   </FormLayout>
 </template>

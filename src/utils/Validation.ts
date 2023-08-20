@@ -6,7 +6,7 @@ class Validation {
 
   checkName(name: string) {
     const nameRegExp = /^[а-я a-z ,.'-]+$/i
-    return nameRegExp.test(name)
+    return nameRegExp.test(name) && name?.length > 0
   }
 
   checkPassword(password: string) {

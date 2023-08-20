@@ -4,6 +4,7 @@ interface GridProps {
   data?: Idea[]
   columns: string[]
   filterKey?: string
+  selectedFilters?: string[]
 }
 
 interface GridEmits {

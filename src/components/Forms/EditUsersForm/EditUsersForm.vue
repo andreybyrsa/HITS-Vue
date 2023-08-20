@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed, reactive } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
@@ -8,11 +8,13 @@ import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import { User } from '@Domain/User'
 import { UpdateUserData } from '@Domain/ManageUsers'
-import ResponseMessage from '@Domain/ResponseMessage'
 import RolesTypes from '@Domain/Roles'
+
+import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -26,28 +28,31 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const currentUsers = ref<User[]>([])
-const editingUser = ref<User>()
+const editingUser = ref<UpdateUserData>()
 const searchedValue = ref('')
 
 const availableRoles = getRoles()
 const filteredRoles = ref<RolesTypes[]>([])
 
-const response = reactive<ResponseMessage>({
-  error: '',
-})
+const {
+  notificationOptions,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { users, error } = await ManageUsersService.getUsers(token)
+    const response = await ManageUsersService.getUsers(token)
 
-    if (users) {
-      currentUsers.value = users
-    } else {
-      response.error = error
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    currentUsers.value = response.users
   }
 })
 
@@ -63,27 +68,37 @@ const searchedUsers = computed(() => {
     const userEmail = user.email.toLowerCase().trim()
     const currentSearchedValue = searchedValue.value.toLowerCase().trim()
 
-    const isIncludeSearcheValue = userEmail.includes(currentSearchedValue)
+    const isIncludesSearcheValue = userEmail.includes(currentSearchedValue)
 
     if (filteredRoles.value.length) {
       return (
-        filteredRoles.value.every((role) => user.roles.includes(role)) &&
-        isIncludeSearcheValue
+        filteredRoles.value.some((role) => user.roles.includes(role)) &&
+        isIncludesSearcheValue
       )
     }
 
-    return isIncludeSearcheValue
+    return isIncludesSearcheValue
   })
 })
 
 function handleOpenModal(email: string) {
-  isOpenUserModal.value = true
-  editingUser.value = {
-    ...currentUsers.value.find((user) => user.email === email),
-  } as User
+  const selectedUser = currentUsers.value.find((user) => user.email === email)
+
+  if (selectedUser) {
+    const { email, firstName, lastName, roles } = selectedUser
+    editingUser.value = {
+      email: email,
+      newEmail: email,
+      newFirstName: firstName,
+      newLastName: lastName,
+      newRoles: roles,
+    }
+
+    isOpenUserModal.value = true
+  }
 }
 
-function handleCloseModal(newUser?: UpdateUserData) {
+function handleCloseModal(newUser?: UpdateUserData, success?: string) {
   isOpenUserModal.value = false
 
   if (newUser) {
@@ -100,6 +115,8 @@ function handleCloseModal(newUser?: UpdateUserData) {
         currentUsers.value.splice(index, 1, newUserData)
       }
     })
+
+    handleOpenNotification('success', success)
   }
 }
 </script>
@@ -121,6 +138,7 @@ function handleCloseModal(newUser?: UpdateUserData) {
             class-name="px-2 py-0"
             append-icon-name="bi bi-chevron-down"
             is-drop-down-controller
+            drop-down-clickable-inside
           >
             Роли
           </Button>
@@ -171,12 +189,14 @@ function handleCloseModal(newUser?: UpdateUserData) {
         ></Button>
       </div>
 
-      <Typography
-        v-if="response.error"
-        class-name="text-danger text-center"
+      <NotificationModal
+        :type="notificationOptions.type"
+        :is-opened="isOpenedNotification"
+        @close-modal="handleCloseNotification"
+        :time-expired="5000"
       >
-        {{ response.error }}
-      </Typography>
+        {{ notificationOptions.message }}
+      </NotificationModal>
     </div>
 
     <EditUserModal

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref, VueElement } from 'vue'
+import { onMounted, ref, VueElement } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -9,55 +9,92 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import { HTMLInputEvent } from '@Components/Inputs/Input/Input.types'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { InviteUsersForm } from '@Domain/Invitation'
-import ResponseMessage from '@Domain/ResponseMessage'
 import RolesTypes from '@Domain/Roles'
+
+import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
 import InvitationService from '@Services/InvitationService'
+import ManageUsersService from '@Services/ManageUsersService'
 
 import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
 
-const currentRoles = getRoles()
 const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
 
+const currentRoles = getRoles()
+const DBUsersEmails = ref<string[]>([])
+
+const isEditing = ref<boolean>(false)
 const fileInput = ref<VueElement>()
 const loadedFileText = ref('')
 
-const response = reactive<ResponseMessage>({
-  success: '',
-  error: '',
+const {
+  notificationOptions,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await ManageUsersService.getUsersEmails(token)
+
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
+
+    DBUsersEmails.value = response.emails
+  }
 })
 
-function clearResponseMessages() {
-  response.success = ''
-  response.error = ''
+const { values, errors, resetForm, submitCount, handleSubmit } =
+  useForm<InviteUsersForm>({
+    validationSchema: {
+      emails: (value: string[]) =>
+        value?.every((email) => Validation.checkEmail(email)),
+      roles: (value: RolesTypes[]) => value?.length,
+    },
+    initialValues: {
+      emails: [''],
+      roles: [],
+    },
+  })
+
+const { fields, push, move, remove } = useFieldArray<string>('emails')
+
+const moveErrorEmail = async (index: number) => {
+  const prevEmail = values.emails[index - 1]
+
+  if (
+    index > 0 &&
+    !isEditing.value &&
+    Validation.checkEmail(prevEmail) &&
+    !DBUsersEmails.value.includes(prevEmail)
+  ) {
+    move(index, 0)
+  }
 }
 
-const { errors, submitCount, handleSubmit } = useForm<InviteUsersForm>({
-  validationSchema: {
-    emails: (value: string[]) =>
-      value?.every((email) => Validation.checkEmail(email)),
-    roles: (value: RolesTypes[]) => value?.length,
-  },
-  initialValues: {
-    emails: [''],
-    roles: [],
-  },
-})
-
-const { fields, push, remove } = useFieldArray<string>('emails')
-
-function getError(email: string) {
+function getError(email: string, index: number) {
   if (submitCount.value && !Validation.checkEmail(email)) {
+    moveErrorEmail(index)
     return 'Неверно введена почта'
+  }
+  if (submitCount.value && DBUsersEmails.value.includes(email)) {
+    moveErrorEmail(index)
+    return 'Почта уже зарегистрирована'
   }
   return undefined
 }
@@ -81,6 +118,10 @@ function handleFileChange(event: HTMLInputEvent) {
           loadedFileText.value = `Загружено ${formattedEmails.length} из ${emails.length}`
         }
       })
+      .catch(({ response }) => {
+        const error = response?.data?.error ?? 'Ошибка загрузки файла'
+        handleOpenNotification('error', error)
+      })
   }
 }
 
@@ -90,14 +131,14 @@ const handleInvite = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const { success, error } = await InvitationService.inviteUsers(
-      values,
-      token,
-    )
-    clearResponseMessages()
+    const response = await InvitationService.inviteUsers(values, token)
 
-    response.success = success
-    response.error = error
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
+
+    handleOpenNotification('success', response.success)
+    resetForm()
   }
 })
 </script>
@@ -118,7 +159,9 @@ const handleInvite = handleSubmit(async (values) => {
           <Input
             type="email"
             :name="`emails[${index}]`"
-            :error="getError(field.value)"
+            @focus="isEditing = true"
+            @blur="isEditing = false"
+            :error="getError(field.value, index)"
             placeholder="Введите email"
             prepend="@"
           />
@@ -196,16 +239,18 @@ const handleInvite = handleSubmit(async (values) => {
       Добавить
     </Button>
 
-    <Typography
-      v-if="response.success || response.error"
-      :class-name="response.success ? 'text-success fs-6' : 'text-danger fs-6'"
+    <NotificationModal
+      :type="notificationOptions.type"
+      :is-opened="isOpenedNotification"
+      @close-modal="handleCloseNotification"
+      :time-expired="5000"
     >
-      {{ response.success || response.error }}
-    </Typography>
+      {{ notificationOptions.message }}
+    </NotificationModal>
   </FormLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .add-users-form {
   width: 600px;
 

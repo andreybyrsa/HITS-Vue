@@ -1,6 +1,5 @@
-interface ResponseMessage {
-  success?: string
-  error?: string
+interface Success {
+  success: string
 }
 
-export default ResponseMessage
+export default Success

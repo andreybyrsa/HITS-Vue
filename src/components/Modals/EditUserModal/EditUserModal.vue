@@ -1,22 +1,24 @@
 <script lang="ts" setup>
-import { reactive, watch } from 'vue'
+import { watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
   EditUserModalProps,
   EditUserModalEmits,
 } from '@Components/Modals/EditUserModal/EditUserModal.types'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
-import ResponseMessage from '@Domain/ResponseMessage'
+
+import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -32,9 +34,12 @@ const emit = defineEmits<EditUserModalEmits>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const response = reactive<ResponseMessage>({
-  error: '',
-})
+const {
+  notificationOptions,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 const availableRoles = getRoles()
 
@@ -54,15 +59,7 @@ watch(
   () => props.user,
   () => {
     if (props.user) {
-      const { email, firstName, lastName, roles } = props.user
-
-      setValues({
-        email,
-        newEmail: email,
-        newFirstName: firstName,
-        newLastName: lastName,
-        newRoles: roles,
-      })
+      setValues({ ...props.user })
     }
   },
 )
@@ -72,23 +69,22 @@ const handleEditUser = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { success, error } = await ManageUsersService.updateUserInfo(
-      values,
-      token,
-    )
+    const response = await ManageUsersService.updateUserInfo(values, token)
 
-    if (success) {
-      response.error = ''
-      return emit('close-modal', values)
-    } else {
-      response.error = error
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    emit('close-modal', values, response.success)
   }
 })
 </script>
 
 <template>
-  <ModalLayout :is-opened="isOpened">
+  <ModalLayout
+    :is-opened="isOpened"
+    @on-outside-close="emit('close-modal')"
+  >
     <div
       v-if="isOpened"
       class="edit-user-modal p-3 rounded-3"
@@ -166,12 +162,14 @@ const handleEditUser = handleSubmit(async (values) => {
         </Button>
       </template>
 
-      <Typography
-        v-if="response.error"
-        class-name="text-danger w-100 text-center"
+      <NotificationModal
+        :type="notificationOptions.type"
+        :is-opened="isOpenedNotification"
+        @close-modal="handleCloseNotification"
+        :time-expired="5000"
       >
-        {{ response.error }}
-      </Typography>
+        {{ notificationOptions.message }}
+      </NotificationModal>
     </div>
   </ModalLayout>
 </template>

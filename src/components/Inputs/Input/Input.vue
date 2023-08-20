@@ -54,6 +54,8 @@ const LabelClassName = computed(() => [
       :type="type ?? 'text'"
       v-model="value"
       @change="(event) => emit('change', event as HTMLInputEvent)"
+      @focus="emit('focus')"
+      @blur="emit('blur')"
       :placeholder="placeholder"
       :disabled="disabled"
     />

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { useForm } from 'vee-validate'
 
 import Button from '@Components/Button/Button.vue'
@@ -7,10 +7,13 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NewPasswordModal from '@Components/Modals/NewPasswordModal/NewPasswordModal.vue'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { RecoveryData } from '@Domain/Invitation'
+
+import useNotification from '@Hooks/useNotification'
 
 import InvitationService from '@Services/InvitationService'
 
@@ -18,10 +21,15 @@ import Validation from '@Utils/Validation'
 
 const isOpenedModal = ref(false)
 
-const response = reactive({
-  key: '',
-  error: '',
-})
+const authKey = ref('')
+const expiredTime = ref('')
+
+const {
+  notificationOptions,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 const { values, handleSubmit } = useForm<RecoveryData>({
   validationSchema: {
@@ -30,19 +38,41 @@ const { values, handleSubmit } = useForm<RecoveryData>({
   },
 })
 
-function handleCloseModal() {
-  isOpenedModal.value = false
+function startTimer() {
+  let initialSeconds = 300
+
+  const intervalID = setInterval(() => {
+    const minutes = Math.floor(initialSeconds / 60)
+    const seconds = initialSeconds - minutes * 60
+
+    const currentMinutes =
+      minutes.toString().length > 1 ? minutes : `0${minutes}`
+    const currentSeconds =
+      seconds.toString().length > 1 ? seconds : `0${seconds}`
+
+    expiredTime.value = `${currentMinutes}:${currentSeconds}`
+
+    if (initialSeconds > 0) {
+      initialSeconds--
+    } else {
+      clearInterval(intervalID)
+    }
+  }, 1000)
 }
 
 const sendRevoveryEmail = handleSubmit(async (values) => {
-  const { key, error } = await InvitationService.sendRecoveryEmail(values)
+  const response = await InvitationService.sendRecoveryEmail(values)
 
-  if (key) {
-    response.key = key
-    isOpenedModal.value = true
-  } else {
-    response.error = error ?? 'Ошибка отправки почты'
+  if (response instanceof Error) {
+    return handleOpenNotification('error', response.message)
   }
+
+  authKey.value = response.key
+  isOpenedModal.value = true
+
+  startTimer()
+
+  handleOpenNotification('success')
 })
 </script>
 
@@ -69,18 +99,22 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
           Отправить
         </Button>
 
-        <Typography
-          v-if="response.error"
-          class-name="text-danger fs-6"
+        <NotificationModal
+          :type="notificationOptions.type"
+          :is-opened="isOpenedNotification"
+          @close-modal="handleCloseNotification"
         >
-          {{ response.error }}
-        </Typography>
+          {{
+            notificationOptions.type === 'success'
+              ? `Код отправлен на почту ${values.email}. Время действия кода ${expiredTime}`
+              : notificationOptions.message
+          }}
+        </NotificationModal>
 
         <NewPasswordModal
           :is-opened="isOpenedModal"
           :email="values.email"
-          :auth-key="response.key"
-          @close-modal="handleCloseModal"
+          :auth-key="authKey"
         />
       </FormLayout>
     </template>

@@ -1,13 +1,14 @@
-interface ButtonProps {
+interface IconProps {
   id?: string
   className?: string
-  prependIconName?: string
-  appendIconName?: string
 
   isCollapseController?: boolean
   isDropDownController?: boolean
-
   dropDownClickableInside?: boolean
 }
 
-export default ButtonProps
+interface IconEmits {
+  (event: 'click'): void
+}
+
+export { IconProps, IconEmits }

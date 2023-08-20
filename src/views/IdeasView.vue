@@ -14,8 +14,9 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import useIdeasStore from '@Store/ideas/ideasStore'
 import useUserStore from '@Store/user/userStore'
 
-// import Idea from '@Components/Ideas/Idea/Idea.vue'
 const isOpenedFilter = ref(false)
+
+const selectedFilters = ref<string[]>([])
 const searchQuery = ref('')
 const gridColumns = [
   'name',
@@ -30,18 +31,17 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const ideasStore = useIdeasStore()
-const { initiatorIdeas } = storeToRefs(ideasStore)
+const { ideas } = storeToRefs(ideasStore)
 
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
+
     await ideasStore.fetchIdeas(token)
   }
 })
-
-const selectedFilters = ref<string[]>([])
 
 function handleCloseModal(filters?: string[]) {
   if (filters) {
@@ -56,12 +56,13 @@ function handleCloseModal(filters?: string[]) {
     <template #leftSideBar>
       <LeftSideBar />
     </template>
+
     <template #content>
       <Typography class-name="fs-2 text-primary w-100">Идеи</Typography>
 
       <div class="index-page__search bg-primary rounded-3 p-3 w-100">
         <Input
-          name="asd"
+          name="search-input"
           v-model="searchQuery"
           placeholder="Поиск идей по названию"
         >
@@ -81,13 +82,14 @@ function handleCloseModal(filters?: string[]) {
           :current-filters="[...selectedFilters]"
         />
       </div>
+
       <Grid
-        :data="initiatorIdeas"
+        :data="ideas"
         :columns="gridColumns"
         :filter-key="searchQuery"
+        :selectedFilters="selectedFilters"
         class="demogrid w-100"
-      >
-      </Grid>
+      />
     </template>
   </PageLayout>
 </template>
