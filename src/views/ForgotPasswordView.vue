@@ -13,10 +13,11 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { RecoveryData } from '@Domain/Invitation'
 
+import useNotification from '@Hooks/useNotification'
+
 import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
-import useNotification from '@Utils/useNotification'
 
 const isOpenedModal = ref(false)
 
@@ -60,19 +61,18 @@ function startTimer() {
 }
 
 const sendRevoveryEmail = handleSubmit(async (values) => {
-  const { key, error } = await InvitationService.sendRecoveryEmail(values)
+  const response = await InvitationService.sendRecoveryEmail(values)
 
-  if (key) {
-    authKey.value = key
-    isOpenedModal.value = true
-
-    startTimer()
-
-    handleOpenNotification('success')
-  } else {
-    const currentError = error ?? 'Ошибка отправки почты'
-    handleOpenNotification('error', currentError)
+  if (response instanceof Error) {
+    return handleOpenNotification('error', response.message)
   }
+
+  authKey.value = response.key
+  isOpenedModal.value = true
+
+  startTimer()
+
+  handleOpenNotification('success')
 })
 </script>
 

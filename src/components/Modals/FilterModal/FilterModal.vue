@@ -8,7 +8,7 @@ import {
   FilterModalEmits,
 } from '@Components/Modals/FilterModal/FilterModal.types'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
-import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
 import useUserStore from '@Store/user/userStore'

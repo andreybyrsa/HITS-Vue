@@ -16,6 +16,8 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import { InviteUsersForm } from '@Domain/Invitation'
 import RolesTypes from '@Domain/Roles'
 
+import useNotification from '@Hooks/useNotification'
+
 import useUserStore from '@Store/user/userStore'
 
 import InvitationService from '@Services/InvitationService'
@@ -23,7 +25,6 @@ import ManageUsersService from '@Services/ManageUsersService'
 
 import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
-import useNotification from '@Utils/useNotification'
 
 const userStore = useUserStore()
 
@@ -48,13 +49,13 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { emails, error } = await ManageUsersService.getUsersEmails(token)
+    const response = await ManageUsersService.getUsersEmails(token)
 
-    if (emails) {
-      DBUsersEmails.value = emails
-    } else {
-      handleOpenNotification('error', error)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    DBUsersEmails.value = response.emails
   }
 })
 
@@ -63,12 +64,7 @@ const { values, errors, resetForm, submitCount, handleSubmit } =
     validationSchema: {
       emails: (value: string[]) =>
         value?.every((email) => Validation.checkEmail(email)),
-      roles: (value: RolesTypes[]) => {
-        if (submitCount.value) {
-          return value?.length
-        }
-        return true
-      },
+      roles: (value: RolesTypes[]) => value?.length,
     },
     initialValues: {
       emails: [''],
@@ -123,7 +119,7 @@ function handleFileChange(event: HTMLInputEvent) {
         }
       })
       .catch(({ response }) => {
-        const error = response ? response.data.error : 'Ошибка загрузки файла'
+        const error = response?.data?.error ?? 'Ошибка загрузки файла'
         handleOpenNotification('error', error)
       })
   }
@@ -135,18 +131,14 @@ const handleInvite = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const { success, error } = await InvitationService.inviteUsers(
-      values,
-      token,
-    )
+    const response = await InvitationService.inviteUsers(values, token)
 
-    if (success) {
-      handleOpenNotification('success', success)
-
-      resetForm()
-    } else {
-      handleOpenNotification('error', error)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    handleOpenNotification('success', response.success)
+    resetForm()
   }
 })
 </script>

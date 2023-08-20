@@ -5,4 +5,8 @@ interface ResponseMessage {
   message?: string
 }
 
-export default ResponseMessage
+interface Success {
+  success: string
+}
+
+export { ResponseMessage, Success }

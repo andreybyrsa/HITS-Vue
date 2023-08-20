@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
@@ -15,6 +15,8 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import { RegisterUser } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
+import useNotification from '@Hooks/useNotification'
+
 import useUserStore from '@Store/user/userStore'
 
 import InvitationService from '@Services/InvitationService'
@@ -24,8 +26,32 @@ import Validation from '@Utils/Validation'
 const userStore = useUserStore()
 const { registerError } = storeToRefs(userStore)
 
-const isOpenedNotification = ref(false)
 const route = useRoute()
+
+const {
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
+
+onMounted(async () => {
+  const { slug } = route.params
+  const response = await InvitationService.getInvitationInfo(slug)
+
+  if (response instanceof Error) {
+    userStore.registerError = response.message
+    return handleOpenNotification()
+  }
+
+  const { email, roles } = response
+  if (email && roles) {
+    setFieldValue('email', email)
+    setFieldValue('roles', roles)
+  } else {
+    userStore.registerError = 'Ошибка приглашения'
+    handleOpenNotification()
+  }
+})
 
 const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
   validationSchema: {
@@ -46,30 +72,11 @@ const handleRegister = handleSubmit(async (values) => {
   await userStore.registerUser(values)
 
   if (registerError?.value) {
-    isOpenedNotification.value = true
+    handleOpenNotification()
   } else {
     await InvitationService.deleteInvitationInfo(slug)
   }
 })
-
-onMounted(async () => {
-  const { slug } = route.params
-  const { email, roles, error } = await InvitationService.getInvitationInfo(
-    slug,
-  )
-
-  if (email && roles) {
-    setFieldValue('email', email)
-    setFieldValue('roles', roles)
-  } else {
-    userStore.registerError = error ?? 'Ошибка приглашения'
-    isOpenedNotification.value = true
-  }
-})
-
-function handleNotificationClose() {
-  isOpenedNotification.value = false
-}
 </script>
 
 <template>
@@ -101,7 +108,7 @@ function handleNotificationClose() {
     <NotificationModal
       type="error"
       :is-opened="isOpenedNotification"
-      @close-modal="handleNotificationClose"
+      @close-modal="handleCloseNotification"
       :time-expired="5000"
     >
       {{ registerError }}

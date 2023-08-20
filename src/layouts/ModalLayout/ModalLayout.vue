@@ -5,7 +5,7 @@ import { useEventListener } from '@vueuse/core'
 import {
   ModalLayoutProps,
   ModalLayoutEmits,
-} from '@Components/Modals/ModalLayout/ModalLayout.types'
+} from '@Layouts/ModalLayout/ModalLayout.types'
 
 import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
@@ -20,7 +20,10 @@ const ModalLayoutClassName = computed(() => ['modal-layout', props.className])
 useEventListener(modalLayoutRef, 'click', (event: HTMLTargetEvent) => {
   const modalLayoutClassName = event.target.className
 
-  if (modalLayoutClassName === 'modal-layout' && emit('on-outside-close')) {
+  if (
+    modalLayoutClassName === 'modal-layout' &&
+    emit('on-outside-close') !== undefined
+  ) {
     emit('on-outside-close')
   }
 })

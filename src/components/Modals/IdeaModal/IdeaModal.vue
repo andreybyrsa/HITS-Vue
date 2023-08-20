@@ -5,7 +5,7 @@ import { string } from 'yup'
 import { storeToRefs } from 'pinia'
 import { vIntersectionObserver } from '@vueuse/components'
 
-import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
   IdeaModalProps,
   IdeaModalEmits,

@@ -14,12 +14,13 @@ import { User } from '@Domain/User'
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
 
+import useNotification from '@Hooks/useNotification'
+
 import useUserStore from '@Store/user/userStore'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
 import getRoles from '@Utils/getRoles'
-import useNotification from '@Utils/useNotification'
 
 const isOpenUserModal = ref(false)
 
@@ -27,7 +28,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const currentUsers = ref<User[]>([])
-const editingUser = ref<User>()
+const editingUser = ref<UpdateUserData>()
 const searchedValue = ref('')
 
 const availableRoles = getRoles()
@@ -45,13 +46,13 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { users, error } = await ManageUsersService.getUsers(token)
+    const response = await ManageUsersService.getUsers(token)
 
-    if (users) {
-      currentUsers.value = users
-    } else {
-      handleOpenNotification('error', error)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    currentUsers.value = response.users
   }
 })
 
@@ -67,24 +68,34 @@ const searchedUsers = computed(() => {
     const userEmail = user.email.toLowerCase().trim()
     const currentSearchedValue = searchedValue.value.toLowerCase().trim()
 
-    const isIncludeSearcheValue = userEmail.includes(currentSearchedValue)
+    const isIncludesSearcheValue = userEmail.includes(currentSearchedValue)
 
     if (filteredRoles.value.length) {
       return (
         filteredRoles.value.some((role) => user.roles.includes(role)) &&
-        isIncludeSearcheValue
+        isIncludesSearcheValue
       )
     }
 
-    return isIncludeSearcheValue
+    return isIncludesSearcheValue
   })
 })
 
 function handleOpenModal(email: string) {
-  isOpenUserModal.value = true
-  editingUser.value = {
-    ...currentUsers.value.find((user) => user.email === email),
-  } as User
+  const selectedUser = currentUsers.value.find((user) => user.email === email)
+
+  if (selectedUser) {
+    const { email, firstName, lastName, roles } = selectedUser
+    editingUser.value = {
+      email: email,
+      newEmail: email,
+      newFirstName: firstName,
+      newLastName: lastName,
+      newRoles: roles,
+    }
+
+    isOpenUserModal.value = true
+  }
 }
 
 function handleCloseModal(newUser?: UpdateUserData, success?: string) {

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { toRefs, computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import { toReactive } from '@vueuse/core'
 
 import { CommentProps, CommentEmits } from '@Components/Comment/Comment.types'
 import Typography from '@Components/Typography/Typography.vue'
@@ -8,7 +9,6 @@ import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 
 import useUserStore from '@Store/user/userStore'
-import { toReactive } from '@vueuse/core'
 
 const props = defineProps<CommentProps>()
 const { comment, className } = toRefs(props)
@@ -26,7 +26,7 @@ const { user } = storeToRefs(userStore)
 
 const CommentClassName = computed(() => [
   'comment card rounded-3 shadow',
-  className,
+  className?.value,
 ])
 const CommentHeaderClassName = computed(() => [
   'comment__header card-header',
@@ -59,6 +59,9 @@ const getCurrentCommentDate = (dateCreated: Date) => {
   }
 
   return `${daysDifference} д. назад`
+}
+if (comment.value.sender !== user.value?.email) {
+  console.log(comment.value)
 }
 </script>
 

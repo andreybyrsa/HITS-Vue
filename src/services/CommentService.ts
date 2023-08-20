@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import ResponseMessage from '@Domain/ResponseMessage'
+import { ResponseMessage } from '@Domain/ResponseMessage'
 import Comment from '@Domain/Comment'
 
 const COMMENT_URL =

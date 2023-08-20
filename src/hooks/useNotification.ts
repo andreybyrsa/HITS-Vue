@@ -1,6 +1,6 @@
 import { ref, reactive } from 'vue'
 
-import ResponseMessage from '@Domain/ResponseMessage'
+import { ResponseMessage } from '@Domain/ResponseMessage'
 
 function useNotification() {
   const responseMessage = reactive<ResponseMessage>({})

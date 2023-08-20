@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
   EditUserModalProps,
   EditUserModalEmits,
@@ -18,13 +18,14 @@ import NotificationModal from '@Components/Modals/NotificationModal/Notification
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
 
+import useNotification from '@Hooks/useNotification'
+
 import useUserStore from '@Store/user/userStore'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
 import getRoles from '@Utils/getRoles'
 import Validation from '@Utils/Validation'
-import useNotification from '@Utils/useNotification'
 
 const props = defineProps<EditUserModalProps>()
 
@@ -58,15 +59,7 @@ watch(
   () => props.user,
   () => {
     if (props.user) {
-      const { email, firstName, lastName, roles } = props.user
-
-      setValues({
-        email,
-        newEmail: email,
-        newFirstName: firstName,
-        newLastName: lastName,
-        newRoles: roles,
-      })
+      setValues({ ...props.user })
     }
   },
 )
@@ -76,16 +69,13 @@ const handleEditUser = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { success, error } = await ManageUsersService.updateUserInfo(
-      values,
-      token,
-    )
+    const response = await ManageUsersService.updateUserInfo(values, token)
 
-    if (success) {
-      return emit('close-modal', values, success)
-    } else {
-      handleOpenNotification('error', error)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    emit('close-modal', values, response.success)
   }
 })
 </script>
