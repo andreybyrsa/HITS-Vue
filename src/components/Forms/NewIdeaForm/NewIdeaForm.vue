@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { reactive, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
@@ -9,12 +10,16 @@ import Button from '@Components/Button/Button.vue'
 import RatingCalculator from '@Components/Forms/NewIdeaForm/ratingCalculator.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+import useUserStore from '@Store/user/userStore'
 
 import { Idea } from '@Domain/Idea'
 
 import useIdeasStore from '@Store/ideas/ideasStore'
 
 const props = defineProps<NewIdeaProps>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const router = useRouter()
 const route = useRoute()
@@ -68,21 +73,18 @@ function setRatingEmit(rating: number) {
 }
 
 function handlePostIdea(idea: Idea) {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiLCJFWFBFUlQiLCJQUk9KRUNUX09GRklDRSJdLCJzdWIiOiJwb2NodGE1NUBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkyMjg1OTYxLCJleHAiOjE2OTIzNzIzNjF9.w-J2jtixlNESXy5uO-xvtc7EybuuJQbbvWJmjHBZ3C8'
-  ideasStore.postInitiatorIdeas(idea, token)
+  const token = user.value?.token
+  ideasStore.postInitiatorIdeas(idea, token as string)
   router.push('/ideas')
 }
 function handleEditIdea(idea: Idea, id: number) {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiLCJFWFBFUlQiLCJQUk9KRUNUX09GRklDRSJdLCJzdWIiOiJwb2NodGE1NUBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkyMjg1OTYxLCJleHAiOjE2OTIzNzIzNjF9.w-J2jtixlNESXy5uO-xvtc7EybuuJQbbvWJmjHBZ3C8'
-  ideasStore.putInitiatorIdeas(idea, id, token)
+  const token = user.value?.token
+  ideasStore.putInitiatorIdeas(idea, id, token as string)
   router.push('/ideas')
 }
 function handleDelete(id: number) {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiLCJFWFBFUlQiLCJQUk9KRUNUX09GRklDRSJdLCJzdWIiOiJwb2NodGE1NUBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkyMjg1OTYxLCJleHAiOjE2OTIzNzIzNjF9.w-J2jtixlNESXy5uO-xvtc7EybuuJQbbvWJmjHBZ3C8'
-  ideasStore.deleteInitiatorIdeas(id, token)
+  const token = user.value?.token
+  ideasStore.deleteInitiatorIdeas(id, token as string)
   router.push('/ideas')
 }
 </script>

@@ -1,30 +1,30 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-// import { storeToRefs } from 'pinia'
+import { storeToRefs } from 'pinia'
 
 import { GridProps } from '@Components/Ideas/Grid/Grid.types'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Button from '@Components/Button/Button.vue'
 import getStatus from '@Utils/getStatus'
 import StatusTypes from '@Domain/Status'
-// import useIdeasStore from '@Store/ideas/ideasStore'
-// import useUserStore from '@Store/user/userStore'
+import useUserStore from '@Store/user/userStore'
 import IdeasService from '@Services/IdeasService'
 
 import { Idea } from '@Domain/Idea'
 
 const props = defineProps<GridProps>()
 
-// const ideasStore = useIdeasStore()
-// const { initiatorIdeas } = storeToRefs(ideasStore)
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 type O = {
   dateCreated?: number
+  date?: number
   name?: number
   rating?: number
   risk?: number
   status?: number
-  dateModified?: number
+  // dateModified?: number
 }
 
 type OType = keyof O
@@ -33,7 +33,7 @@ type IdeaType = keyof Idea
 const sortKey = ref<OType>()
 const sortOrders = ref<O>(
   props.columns.reduce((o, key) => {
-    o[key as OType] = 1
+    o[key as OType] = -1
     return o
   }, {} as O),
 )
@@ -50,6 +50,11 @@ const filteredData = computed(() => {
               .indexOf(filterKey) > -1
           : undefined
       })
+    })
+  }
+  if (data) {
+    data.sort((a, b) => {
+      return b.rating - a.rating
     })
   }
   const key = sortKey.value
@@ -76,18 +81,25 @@ const filteredData = computed(() => {
 })
 
 function sortBy(key: OType) {
-  if (key === 'name' || key === 'status') return
+  if (key == 'name' || key == 'status') return
   sortKey.value = key
-  if (sortOrders.value[key] && sortOrders.value) {
+  if (sortOrders.value[key]) {
+    if (key == 'date') {
+      // const keyS = 'dateCreated'
+      sortOrders.value.date = sortOrders.value['dateCreated'] == -1 ? 1 : -1
+      console.log(sortOrders.value.date)
+    }
     sortOrders.value[key] = sortOrders.value[key] == -1 ? 1 : -1
+    // console.log(sortOrders.value.date)
   }
 }
 
 const translations = {
   name: 'Название',
   status: 'Статус',
-  dateCreated: 'Дата создания',
-  dateModified: 'Дата редактирования',
+  // dateCreated: 'Дата создания',
+  // dateModified: 'Дата редактирования',
+  date: 'Дата создания/ редактирования',
   rating: 'Рейтинг',
   risk: 'Риск',
 }
@@ -101,6 +113,8 @@ function translate(word: Word) {
 const translatedColumns = computed(() =>
   props.columns.map((word) => translate(word as Word)),
 )
+
+console.log(translatedColumns.value)
 
 function formatDate(date: Date) {
   if (date) {
@@ -132,6 +146,11 @@ function getTranslatedKey(entry: Idea, key: string) {
   if (key === 'status') {
     return getTranslatedStatus(entry[key])
   }
+  if (key == 'date') {
+    return `${formatDate(entry['dateCreated'])} ${formatDate(
+      entry['dateModified'],
+    )}`
+  }
   if (key === 'dateCreated' || key === 'dateModified') {
     return formatDate(entry[key])
   }
@@ -139,9 +158,8 @@ function getTranslatedKey(entry: Idea, key: string) {
 }
 
 function handleSend(id: number) {
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiLCJFWFBFUlQiLCJQUk9KRUNUX09GRklDRSJdLCJzdWIiOiJwb2NodGE1NUBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkyMjg1OTYxLCJleHAiOjE2OTIzNzIzNjF9.w-J2jtixlNESXy5uO-xvtc7EybuuJQbbvWJmjHBZ3C8'
-  IdeasService.putInitiatorSendIdea(id, token)
+  // const token = user.value?.token
+  IdeasService.putInitiatorSendIdea(id, user.value?.token as string)
 }
 </script>
 
@@ -247,6 +265,8 @@ th {
   color: rgba(255, 255, 255, 0.66);
   padding: 20px 10px;
   cursor: pointer;
+  // width: 100%;
+  max-width: 200px;
   user-select: none;
   text-align: center;
 }

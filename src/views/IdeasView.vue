@@ -20,8 +20,9 @@ const searchQuery = ref('')
 const gridColumns = [
   'name',
   'status',
-  'dateCreated',
-  'dateModified',
+  // 'dateCreated',
+  // 'dateModified',
+  'date',
   'rating',
   'risk',
 ]
@@ -37,9 +38,8 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     // const { token } = currentUser
-    const token =
-      'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiLCJFWFBFUlQiLCJQUk9KRUNUX09GRklDRSJdLCJzdWIiOiJwb2NodGE1NUBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkyMjg1OTYxLCJleHAiOjE2OTIzNzIzNjF9.w-J2jtixlNESXy5uO-xvtc7EybuuJQbbvWJmjHBZ3C8'
-    await ideasStore.fetchIdeas(token)
+    const token = user.value?.token
+    await ideasStore.fetchIdeas(token as string)
   }
 })
 

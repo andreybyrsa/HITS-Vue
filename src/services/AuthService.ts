@@ -8,13 +8,14 @@ const AUTH_URL = process.env.VUE_APP_AUTH_API_URL || 'http://localhost:3000'
 const loginUser = async (user: LoginUser): Promise<User & ResponseMessage> => {
   return await axios
     .post(`${AUTH_URL}/login`, user)
-    .then((response) => response.data)
+    .then((response) => {
+      console.log(response.data)
+      return response.data
+    })
     .catch(({ response }) => {
       const error = response ? response.data.error : 'Ошибка авторизации'
       return {
-        token: '21512',
-        email: 'admin@mail.com',
-        roles: ['ADMIN', 'INITIATOR', 'EXPERT', 'PROJECT_OFFICE'],
+        error,
       }
     })
 }
