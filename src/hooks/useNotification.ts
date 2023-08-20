@@ -1,17 +1,20 @@
 import { ref, reactive } from 'vue'
 
-import { ResponseMessage } from '@Domain/ResponseMessage'
+interface NotificationOptions {
+  type?: 'success' | 'error'
+  message?: string
+}
 
 function useNotification() {
-  const responseMessage = reactive<ResponseMessage>({})
+  const notificationOptions = reactive<NotificationOptions>({})
   const isOpenedNotification = ref(false)
 
   const handleOpenNotification = (
     type?: 'success' | 'error',
     message?: string,
   ) => {
-    responseMessage.type = type
-    responseMessage.message = message
+    notificationOptions.type = type
+    notificationOptions.message = message
     isOpenedNotification.value = true
   }
 
@@ -20,7 +23,7 @@ function useNotification() {
   }
 
   return {
-    responseMessage,
+    notificationOptions,
     isOpenedNotification,
     handleOpenNotification,
     handleCloseNotification,

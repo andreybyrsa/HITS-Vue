@@ -35,7 +35,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -163,12 +163,12 @@ const handleEditUser = handleSubmit(async (values) => {
       </template>
 
       <NotificationModal
-        :type="responseMessage.type"
+        :type="notificationOptions.type"
         :is-opened="isOpenedNotification"
         @close-modal="handleCloseNotification"
         :time-expired="5000"
       >
-        {{ responseMessage.message }}
+        {{ notificationOptions.message }}
       </NotificationModal>
     </div>
   </ModalLayout>

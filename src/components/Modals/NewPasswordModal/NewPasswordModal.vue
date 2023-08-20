@@ -24,7 +24,7 @@ const props = defineProps<NewPasswordModalProps>()
 const router = useRouter()
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -86,12 +86,12 @@ const handleUpdatePassword = handleSubmit(async (values) => {
       </Button>
 
       <NotificationModal
-        :type="responseMessage.type"
+        :type="notificationOptions.type"
         :is-opened="isOpenedNotification"
         @close-modal="handleCloseNotification"
         :time-expired="5000"
       >
-        {{ responseMessage.message }}
+        {{ notificationOptions.message }}
       </NotificationModal>
     </div>
   </ModalLayout>

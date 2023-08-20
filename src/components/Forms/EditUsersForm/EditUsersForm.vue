@@ -35,7 +35,7 @@ const availableRoles = getRoles()
 const filteredRoles = ref<RolesTypes[]>([])
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -190,12 +190,12 @@ function handleCloseModal(newUser?: UpdateUserData, success?: string) {
       </div>
 
       <NotificationModal
-        :type="responseMessage.type"
+        :type="notificationOptions.type"
         :is-opened="isOpenedNotification"
         @close-modal="handleCloseNotification"
         :time-expired="5000"
       >
-        {{ responseMessage.message }}
+        {{ notificationOptions.message }}
       </NotificationModal>
     </div>
 

@@ -25,7 +25,7 @@ const authKey = ref('')
 const expiredTime = ref('')
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -100,14 +100,14 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
         </Button>
 
         <NotificationModal
-          :type="responseMessage.type"
+          :type="notificationOptions.type"
           :is-opened="isOpenedNotification"
           @close-modal="handleCloseNotification"
         >
           {{
-            responseMessage.type === 'success'
+            notificationOptions.type === 'success'
               ? `Код отправлен на почту ${values.email}. Время действия кода ${expiredTime}`
-              : responseMessage.message
+              : notificationOptions.message
           }}
         </NotificationModal>
 

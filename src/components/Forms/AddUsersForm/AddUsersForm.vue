@@ -38,7 +38,7 @@ const fileInput = ref<VueElement>()
 const loadedFileText = ref('')
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -240,12 +240,12 @@ const handleInvite = handleSubmit(async (values) => {
     </Button>
 
     <NotificationModal
-      :type="responseMessage.type"
+      :type="notificationOptions.type"
       :is-opened="isOpenedNotification"
       @close-modal="handleCloseNotification"
       :time-expired="5000"
     >
-      {{ responseMessage.message }}
+      {{ notificationOptions.message }}
     </NotificationModal>
   </FormLayout>
 </template>
