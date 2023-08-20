@@ -197,8 +197,8 @@ function getTranslatedKey(entry: Idea, key: string) {
           <i class="bi bi-list fs-1"></i>
         </Button>
         <DropDown>
-          <ul class="list-group">
-            <li class="list-group-item list-group-item-action p-0 rounded-3">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item list-group-item-action p-0">
               <button
                 class="p-2 w-100 text-start"
                 @click="handleOpenModal(entry.id)"
@@ -207,18 +207,18 @@ function getTranslatedKey(entry: Idea, key: string) {
               </button>
             </li>
 
-            <li class="list-group-item list-group-item-action p-0 rounded-3">
+            <li class="list-group-item list-group-item-action p-0">
               <router-link
-                class="p-2 w-100 d-flex text-decoration-none text-dark"
+                class="p-2 w-100 text-decoration-none text-dark d-flex"
                 :to="`edit-idea/${entry.id}`"
               >
                 Редактировать
               </router-link>
             </li>
 
-            <li class="list-group-item list-group-item-action p-0 rounded-3">
+            <li class="list-group-item list-group-item-action p-0">
               <router-link
-                class="p-2 w-100 d-flex text-decoration-none text-dark"
+                class="p-2 w-100 text-decoration-none text-dark d-flex"
                 :to="`edit-idea/${entry.id}`"
               >
                 Отправить на согласование

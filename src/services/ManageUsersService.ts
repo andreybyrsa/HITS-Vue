@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { User } from '@Domain/User'
 import { UpdateUserData, UpdateUserPassword } from '@Domain/ManageUsers'
-import { Success } from '@Domain/ResponseMessage'
+import Success from '@Domain/ResponseMessage'
 
 const MANAGE_USERS_URL =
   process.env.VUE_APP_MANAGE_USERS_API_URL || 'http://localhost:3000'

@@ -38,27 +38,31 @@ const useIdeasStore = defineStore('ideas', {
     async addComment(comment: Comment, ideaID: number, token: string) {
       const response = await CommentService.addComment(comment, ideaID, token)
 
-      if (response.sender) {
-        const currentIdea = this.ideas.find((idea) => idea.id === ideaID)
-        currentIdea?.comments.push(response)
+      if (response instanceof Error) {
+        return
       }
+
+      const currentIdea = this.ideas.find((idea) => idea.id === ideaID)
+      currentIdea?.comments.push(response)
     },
 
     async deleteComment(ideaID: number, commentID: number, token: string) {
-      const { success } = await CommentService.deleteComment(
+      const response = await CommentService.deleteComment(
         ideaID,
         commentID,
         token,
       )
 
-      if (success) {
-        const currentIdea = this.ideas.find((idea) => idea.id === ideaID)
+      if (response instanceof Error) {
+        return
+      }
 
-        if (currentIdea) {
-          currentIdea.comments = currentIdea.comments.filter(
-            (comment) => comment.id !== commentID,
-          )
-        }
+      const currentIdea = this.ideas.find((idea) => idea.id === ideaID)
+
+      if (currentIdea) {
+        currentIdea.comments = currentIdea.comments.filter(
+          (comment) => comment.id !== commentID,
+        )
       }
     },
 
