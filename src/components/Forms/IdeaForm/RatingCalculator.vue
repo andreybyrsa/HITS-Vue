@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import { computed, watch, reactive, onMounted } from 'vue'
+import { computed, reactive } from 'vue'
+
 import {
   RatingData,
-  RatingDataEmits,
-} from '@Components/Forms/NewIdeaForm/ratingCalculator'
+  RatingCalculatorEmits,
+} from '@Components/Forms/IdeaForm/RatingCalculator.types'
 import Typography from '@Components/Typography/Typography.vue'
 
-const emit = defineEmits<RatingDataEmits>()
+const emit = defineEmits<RatingCalculatorEmits>()
+
+interface SelectName {
+  label: string
+  key: keyof RatingData
+  forName: string
+}
 
 const ratingOptions = [
   { label: 'Низкий', value: 1 },
@@ -17,25 +24,20 @@ const ratingOptions = [
 ]
 
 const rating = reactive<RatingData>({
-  realizability: 0,
-  suitability: 0,
-  budget: 0,
+  realizability: 1,
+  suitability: 1,
+  budget: 1,
 })
 
 const totalRating = computed(() => {
   const { realizability, suitability, budget } = rating
   const total = ((realizability + suitability + budget) / 3).toFixed(1)
+  emit('set-rating', +total)
+
   return total
 })
 
-watch(
-  () => totalRating.value,
-  () => {
-    return emit('set-rating', +totalRating.value)
-  },
-)
-
-const selectNames = [
+const selectNames: SelectName[] = [
   {
     label: 'Реализуемость*',
     key: 'realizability',
@@ -52,19 +54,14 @@ const selectNames = [
     forName: 'budget',
   },
 ]
-
-onMounted(() => {
-  rating.realizability = 1
-  rating.suitability = 1
-  rating.budget = 1
-})
 </script>
 
 <template>
   <div>
-    <Typography class-name="fs-6 text-primary"
-      >Предварительная оценка идеи</Typography
-    >
+    <Typography class-name="fs-6 text-primary">
+      Предварительная оценка идеи
+    </Typography>
+
     <div class="row">
       <div
         class="col"
@@ -75,15 +72,8 @@ onMounted(() => {
           <label :for="select.forName">{{ select.label }}</label>
           <select
             class="form-select"
-            aria-label="Floating label select example"
             v-model="rating[select.key]"
           >
-            <option
-              disabled
-              value=""
-            >
-              Выберите вариант
-            </option>
             <option
               v-for="option in ratingOptions"
               :value="option.value"
@@ -96,10 +86,10 @@ onMounted(() => {
       </div>
     </div>
   </div>
+
   <div class="col">
-    <Typography class-name="fs-6 text-primary">Рейтинг</Typography>
-    <Typography class-name="fs-6 text-primary m-2">{{
-      totalRating
-    }}</Typography>
+    <Typography class-name="fs-6 text-primary">
+      Рейтинг: {{ totalRating }}
+    </Typography>
   </div>
 </template>

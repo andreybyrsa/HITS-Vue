@@ -3,18 +3,18 @@ import Comment from '@Domain/Comment'
 
 interface Idea {
   id: number
-  initiator?: string
+  initiator: string
   name: string
   dateCreated: Date
   dateModified: Date
-  projectType?: 'INSIDE' | 'OUTSIDE'
+  projectType: 'INSIDE' | 'OUTSIDE'
   experts?: string[]
-  problem?: string
-  solution?: string
-  result?: string
-  customer?: string
+  problem: string
+  solution: string
+  result: string
+  customer: string
   contactPerson?: string | null
-  description?: string
+  description: string
   realizability?: string
   suitability?: string
   budget?: string

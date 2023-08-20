@@ -212,7 +212,7 @@ const onIntersectionObserver = async (
             </Typography>
 
             <div class="idea-modal__info-user pt-2">
-              <i class="bi bi-circle-fill fs-1 text-secondary opacity-25"></i>
+              <i class="bi bi-person-circle text-secondary fs-1 opacity-25"></i>
 
               <Typography class-name="text-primary">
                 {{ idea?.customer }}
@@ -226,7 +226,7 @@ const onIntersectionObserver = async (
             </Typography>
 
             <div class="idea-modal__info-user pt-2">
-              <i class="bi bi-circle-fill fs-1 text-secondary opacity-25"></i>
+              <i class="bi bi-person-circle text-secondary fs-1 opacity-25"></i>
 
               <Typography class-name="text-primary">
                 {{ idea?.initiator }}
@@ -254,7 +254,7 @@ const onIntersectionObserver = async (
                   class="idea-modal__info-user"
                 >
                   <i
-                    class="bi bi-circle-fill fs-1 text-secondary opacity-25"
+                    class="bi bi-person-circle text-secondary fs-1 opacity-25"
                   ></i>
 
                   <Typography class-name="text-primary">

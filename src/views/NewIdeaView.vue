@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import NewIdeaForm from '@Components/Forms/NewIdeaForm/NewIdeaForm.vue'
+import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
+
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 </script>
 
@@ -11,7 +12,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
     </template>
 
     <template #content>
-      <NewIdeaForm />
+      <IdeaForm />
     </template>
   </PageLayout>
 </template>

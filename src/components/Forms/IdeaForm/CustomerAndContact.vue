@@ -1,123 +1,75 @@
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue'
-import { Idea } from '@Domain/Idea'
+import { ref, watch } from 'vue'
 import VueMultiselect from 'vue-multiselect'
+
 import Typography from '@Components/Typography/Typography.vue'
+import CustomerAndContactEmits from './CustomerAndContact.types'
 
-const ideaData = reactive<Idea>({
-  name: '',
-  dateCreated: new Date(),
-  dateModified: new Date(),
-  projectType: 'INSIDE',
-  problem: '',
-  solution: '',
-  result: '',
-  customer: '',
-  contactPerson: '',
-  description: '',
-  risk: 0.5,
-  rating: 1,
-  status: 'ON_EDITING',
-})
+const emit = defineEmits<CustomerAndContactEmits>()
 
-const options = ref([
-  { name: 'ВШЦТ', company: 'ВШЦТ' },
-  { name: 'Человек 1', company: 'Роснефть' },
-  { name: 'Человек 2', company: 'Газпром' },
-  { name: 'Человек 3', company: 'Роснефть' },
-  { name: 'Человек 4', company: 'Газпром' },
-  { name: 'Человек 5', company: 'Лукойл' },
-  { name: 'Человек 6', company: 'Газпром' },
+const companies = ref([
+  { contacts: ['ВШЦТ'], company: 'ВШЦТ' },
+  { contacts: ['Человек 1', 'Человек 2'], company: 'Роснефть' },
+  { contacts: ['Человек 3', 'Человек 4', 'Человек 5'], company: 'Газпром' },
+  {
+    contacts: ['Человек 6', 'Человек 7', 'Человек 8', 'Человек 9'],
+    company: 'Лукойл',
+  },
 ])
 
-const value = ref({ name: 'ВШЦТ', company: 'ВШЦТ' })
+const selectedCompany = ref({ contacts: ['ВШЦТ'], company: 'ВШЦТ' })
+const selectedContactPerson = ref('')
 
-const uniqueOptions = Array.from(
-  new Set(options.value.map((option) => option.company)),
-)
-const uniqueOptionsArray = uniqueOptions.map((company) => ({ company }))
-const selectedContactPersons = ref<string[]>([])
-const selectedCompanyContacts = ref<{ name: string; company: string }[]>([])
-
-const filterFn = (option: any, query: string) => {
-  const company = option.company.toLowerCase()
-  return (
-    company.includes(query.toLowerCase()) && !query.toLowerCase().includes(' ')
-  )
-}
-
-const updateSelectedContactPersons = (selectedNames: string[]) => {
-  console.log(selectedNames)
-  selectedContactPersons.value = selectedNames
-}
-
-const selectedCompany = ref({ name: 'ВШЦТ', company: 'ВШЦТ' })
-
-const handleCompanyChange = (selectedCompany: any) => {
-  selectedCompanyContacts.value = getContactPersonsByCompany(selectedCompany)
-}
+const currentCompanyContacts = ref<string[]>([])
 
 const getContactPersonsByCompany = (company: string) => {
-  return options.value.filter((option) => option.company === company)
+  return companies.value.find((option) => option.company === company)
+}
+
+const handleCompanyChange = (selectedCompany: string) => {
+  const currentContacts = getContactPersonsByCompany(selectedCompany)?.contacts
+  if (currentContacts) {
+    currentCompanyContacts.value = currentContacts
+    selectedContactPerson.value = currentContacts[0]
+  }
 }
 
 watch(
   () => selectedCompany.value,
   (newCompany) => {
-    ideaData.contactPerson = ''
-    handleCompanyChange(newCompany.company)
-    console.log(selectedCompany.value)
-  },
-)
+    emit('set-customer', newCompany.company)
 
-watch(
-  () => ideaData.customer,
-  (newCustomer) => {
-    if (!newCustomer || newCustomer === 'ВШЦТ') {
-      ideaData.customer = 'ВШЦТ'
-      const contactPersons = getContactPersonsByCompany(value.value.company)
-      ideaData.contactPerson = contactPersons[0].name
-      updateSelectedContactPersons([ideaData.contactPerson])
-    }
+    selectedContactPerson.value = ''
+    handleCompanyChange(newCompany.company)
   },
-  { immediate: true },
 )
 </script>
 
 <template>
-  <div style="width: 50%">
+  <div class="w-50">
     <Typography class="fs-6 text-primary">Заказчик*</Typography>
     <VueMultiselect
-      v-model="selectedCompany"
-      name="customerIdea"
-      :options="uniqueOptionsArray"
-      :close-on-select="true"
-      :clear-on-select="false"
-      placeholder="Выберите заказчика"
+      class="mt-2"
+      :options="companies"
       label="company"
       track-by="company"
-      :required="true"
-      :filter="filterFn"
-      @input="handleCompanyChange(selectedCompany)"
+      v-model="selectedCompany"
+      :allow-empty="false"
+      placeholder="Выберите заказчика"
     />
-    <Typography
-      class="fs-6 text-primary"
-      v-if="selectedCompany.company !== 'ВШЦТ'"
-      >Контактное лицо*</Typography
-    >
+  </div>
+
+  <div
+    v-if="selectedCompany.company !== 'ВШЦТ'"
+    class="w-50"
+  >
+    <Typography class="fs-6 text-primary">Контактное лицо*</Typography>
     <VueMultiselect
-      v-if="selectedCompany.company !== 'ВШЦТ'"
-      v-model="ideaData.contactPerson"
-      name="contactPersonIdea"
-      :options="selectedCompanyContacts"
-      :close-on-select="true"
-      :clear-on-select="false"
-      :multiple="false"
+      class="mt-2"
+      :options="currentCompanyContacts"
+      v-model="selectedContactPerson"
+      :allow-empty="false"
       placeholder="Выберите контактное лицо"
-      track-by="name"
-      label="name"
-      :required="true"
-      @input="updateSelectedContactPersons(selectedContactPersons)"
     />
   </div>
 </template>
@@ -373,7 +325,6 @@ fieldset[disabled] .multiselect {
   line-height: 16px;
   text-decoration: none;
   text-transform: none;
-  vertical-align: middle;
   position: relative;
   cursor: pointer;
   white-space: nowrap;
@@ -396,7 +347,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option--highlight::after {
-  content: 'Нажмите enter, чтобы выбрать';
+  content: 'Нажмите, чтобы выбрать';
   background: #2151ffb6;
   color: white;
 }
@@ -420,7 +371,6 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--selected.multiselect__option--highlight::after {
   background: #2151ff;
-  content: 'Нажмите enter, чтобы отменить выбор';
   color: #fff;
 }
 

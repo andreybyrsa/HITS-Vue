@@ -1,26 +1,26 @@
 <script lang="ts" setup>
-import NewIdeaForm from '@Components/Forms/NewIdeaForm/NewIdeaForm.vue'
-import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-// import { Idea } from '@Domain/Idea'
-import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
-// import { useRouter } from 'vue-router'
-
-import useIdeasStore from '@Store/ideas/ideasStore'
+import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
+import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.vue'
+import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
+
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+
+import { Idea } from '@Domain/Idea'
+
+import useIdeasStore from '@Store/ideas/ideasStore'
+
 const ideasStore = useIdeasStore()
-const { initiatorIdeas } = storeToRefs(ideasStore)
+const { ideas } = storeToRefs(ideasStore)
 
 const router = useRoute()
 
-const currentIdea = ref()
+const currentIdea = ref<Idea>()
 
 onMounted(() => {
-  currentIdea.value = initiatorIdeas.value.find(
-    (idea) => idea.id == +router.params.id,
-  )
+  currentIdea.value = ideas.value.find((idea) => idea.id == +router.params.id)
 })
 </script>
 
@@ -29,8 +29,12 @@ onMounted(() => {
     <template #leftSideBar>
       <LeftSideBar />
     </template>
+
     <template #content>
-      <NewIdeaForm :current-idea="currentIdea" />
+      <IdeaForm
+        v-if="currentIdea"
+        :idea="currentIdea"
+      />
     </template>
   </PageLayout>
 </template>

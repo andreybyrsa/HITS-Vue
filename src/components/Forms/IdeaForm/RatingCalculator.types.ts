@@ -4,8 +4,8 @@ interface RatingData {
   budget: number
 }
 
-interface RatingDataEmits {
+interface RatingCalculatorEmits {
   (event: 'set-rating', rating: number): void
 }
 
-export { RatingData, RatingDataEmits }
+export { RatingData, RatingCalculatorEmits }

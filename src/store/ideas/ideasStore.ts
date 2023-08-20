@@ -19,7 +19,6 @@ const useIdeasStore = defineStore('ideas', {
     },
     async postInitiatorIdeas(idea: Idea, token: string) {
       await IdeasService.postInitiatorIdeas(idea, token)
-      this.initiatorIdeas = await IdeasService.getInitiatorIdeas(token)
     },
     async getInitiatorIdeas(token: string) {
       await IdeasService.getInitiatorIdeas(token)
@@ -31,8 +30,6 @@ const useIdeasStore = defineStore('ideas', {
     },
     async putInitiatorIdeas(idea: Idea, id: number, token: string) {
       await IdeasService.putInitiatorIdeas(idea, id, token)
-      this.ideas = await IdeasService.getAdminIdeas(token)
-      this.initiatorIdeas = await IdeasService.getInitiatorIdeas(token)
     },
 
     async addComment(comment: Comment, ideaID: number, token: string) {
