@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 import VueMultiselect from 'vue-multiselect'
 
 import Typography from '@Components/Typography/Typography.vue'
-import CustomerAndContactEmits from './CustomerAndContact.types'
+import CustomerAndContactEmits from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 
 const emit = defineEmits<CustomerAndContactEmits>()
 

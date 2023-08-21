@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
 import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
+import ExpertGroupForm from '@Components/Forms/ExpertGroupForm/ExpertGroupForm.vue'
 
 import AdminView from '@Views/AdminView.vue'
 import DevView from '@Views/DevView.vue'
@@ -46,6 +47,10 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: 'edit-users',
             component: EditUsersForm,
+          },
+          {
+            path: 'expert-group',
+            component: ExpertGroupForm,
           },
         ],
       },

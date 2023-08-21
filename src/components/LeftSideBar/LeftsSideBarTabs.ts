@@ -31,6 +31,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     routes: [
       { id: 0, to: '/admin/add-users', text: 'Добавить пользователей' },
       { id: 1, to: '/admin/edit-users', text: 'Редактировать пользователей' },
+      { id: 2, to: '/admin/expert-group', text: 'Экспертные группы' },
     ],
     iconName: 'bi bi-sliders',
     roles: ['ADMIN'],
