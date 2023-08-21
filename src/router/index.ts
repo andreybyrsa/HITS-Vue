@@ -10,7 +10,7 @@ import NewIdeas from '@Views/NewIdeas.vue'
 import EditIdeasView from '@Views/EditIdeasView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
-import ChangesListView from '@Views/ChangesListView.vue'
+import NotificationListView from '@Views/NotificationListView.vue'
 
 import IdeasView from '@Views/IdeasView.vue'
 
@@ -73,9 +73,9 @@ const routes: Array<RouteRecordRaw> = [
     component: ForgotPasswordView,
   },
   {
-    path: '/changes-list',
-    name: 'changes-list',
-    component: ChangesListView,
+    path: '/notification-list',
+    name: 'notification-list',
+    component: NotificationListView,
   },
 ]
 

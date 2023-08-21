@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import { NotificationModalProps } from '@Components/ChangesElement/ChangesElement.types'
+import { NotificationModalProps } from '@Components/NotificationElement/NotificationElement.types'
 import Typography from '@Components/Typography/Typography.vue'
 
 const props = defineProps<NotificationModalProps>()
@@ -50,10 +50,9 @@ const NotificationHeader = computed(() => {
 
 <style lang="scss" scoped>
 .card {
-  width: 400px;
+  width: 100%;
   height: min-content;
   margin: 16px;
-  margin-right: 100px;
 
   transition: opacity $default-transition-settings;
 
