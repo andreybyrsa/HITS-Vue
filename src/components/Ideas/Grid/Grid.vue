@@ -176,6 +176,7 @@ function handleSend(id: number) {
           :class="{ active: sortKey == props.columns[index] }"
           :key="index"
           class="fs-5"
+          :id="columns[index]"
         >
           {{ column }}
           <span
@@ -285,6 +286,10 @@ th:first-of-type {
 
 th.active {
   color: #fff;
+}
+
+#date {
+  width: 100px;
 }
 
 td {
