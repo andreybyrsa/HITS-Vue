@@ -1,5 +1,5 @@
 interface Comment {
-  id?: number
+  id: number
   dateCreated: Date
   comment: string
   sender: string

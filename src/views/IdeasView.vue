@@ -16,6 +16,7 @@ import useUserStore from '@Store/user/userStore'
 
 const isOpenedFilter = ref(false)
 
+const selectedFilters = ref<string[]>([])
 const searchQuery = ref('')
 const gridColumns = [
   'name',
@@ -30,7 +31,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const ideasStore = useIdeasStore()
-const { initiatorIdeas } = storeToRefs(ideasStore)
+const { ideas } = storeToRefs(ideasStore)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -41,8 +42,6 @@ onMounted(async () => {
     await ideasStore.fetchIdeas(token)
   }
 })
-
-const selectedFilters = ref<string[]>([])
 
 function handleCloseModal(filters?: string[]) {
   if (filters) {
@@ -85,7 +84,7 @@ function handleCloseModal(filters?: string[]) {
       </div>
 
       <Grid
-        :data="initiatorIdeas"
+        :data="ideas"
         :columns="gridColumns"
         :filter-key="searchQuery"
         :selectedFilters="selectedFilters"

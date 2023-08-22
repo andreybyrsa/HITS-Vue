@@ -12,7 +12,7 @@ const collapseProps = {
 }
 const dropDwonProps = {
   'data-bs-toggle': 'dropdown',
-  'data-bs-auto-close': props.dropDownClickableInside ? 'inside' : 'outside',
+  'data-bs-auto-close': props.dropDownClickableInside ? 'outside' : true,
   'aria-expanded': false,
 }
 

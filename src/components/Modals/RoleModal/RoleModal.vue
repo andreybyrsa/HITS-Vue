@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
   RoleModalProps,
   RoleModalEmits,

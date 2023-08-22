@@ -17,7 +17,7 @@ import { useRoute } from 'vue-router'
 import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
-import useNotification from '@Utils/useNotification'
+import useNotification from '@Hooks/useNotification'
 import ManageUsersService from '@Services/ManageUsersService'
 
 const isOpenedModal = ref(false)
@@ -55,10 +55,8 @@ function startTimer() {
     const minutes = Math.floor(initialSeconds / 60)
     const seconds = initialSeconds - minutes * 60
 
-    const currentMinutes =
-      minutes.toString().length > 1 ? minutes : `0${minutes}`
-    const currentSeconds =
-      seconds.toString().length > 1 ? seconds : `0${seconds}`
+    const currentMinutes = minutes.toString().length > 1 ? minutes : `0${minutes}`
+    const currentSeconds = seconds.toString().length > 1 ? seconds : `0${seconds}`
 
     expiredTime.value = `${currentMinutes}:${currentSeconds}`
 
@@ -107,9 +105,7 @@ function handleNotificationClose() {
 
 <template>
   <FormLayout class-name="text-center">
-    <Typography class-name="fs-3 text-primary">
-      Востановление пароля
-    </Typography>
+    <Typography class-name="fs-3 text-primary"> Востановление пароля </Typography>
 
     <Input
       type="email"

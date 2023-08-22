@@ -3,7 +3,11 @@ import Comment from '@Domain/Comment'
 interface CommentProps {
   className?: string
 
-  commnet: Comment
+  comment: Comment
 }
 
-export default CommentProps
+interface CommentEmits {
+  (event: 'delete-comment'): void
+}
+
+export { CommentProps, CommentEmits }

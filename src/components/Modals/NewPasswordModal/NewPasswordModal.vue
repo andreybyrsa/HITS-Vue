@@ -3,7 +3,7 @@ import { watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 
-import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import { NewPasswordModalProps } from '@Components/Modals/NewPasswordModal/NewPasswordModal.types'
 import newPasswordModalInputs from '@Components/Modals/NewPasswordModal/NewPasswordModalInputs'
 import Typography from '@Components/Typography/Typography.vue'
@@ -13,17 +13,18 @@ import NotificationModal from '@Components/Modals/NotificationModal/Notification
 
 import { UpdateUserPassword } from '@Domain/ManageUsers'
 
+import useNotification from '@Hooks/useNotification'
+
 import ManageUsersService from '@Services/ManageUsersService'
 
 import Validation from '@Utils/Validation'
-import useNotification from '@Utils/useNotification'
 
 const props = defineProps<NewPasswordModalProps>()
 
 const router = useRouter()
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -33,7 +34,7 @@ const { setValues, handleSubmit } = useForm<UpdateUserPassword>({
   validationSchema: {
     key: (value: string) => value?.length,
     email: (value: string) => Validation.checkEmail(value),
-    code: (value: string) => value?.length === 6 || 'Неверно введен код',
+    code: (value: string) => value?.length || 'Неверно введен код',
     password: (value: string) => Validation.checkPassword(value),
   },
 })
@@ -47,13 +48,13 @@ watch(
 )
 
 const handleUpdatePassword = handleSubmit(async (values) => {
-  const { success, error } = await ManageUsersService.updateUserPassword(values)
+  const response = await ManageUsersService.updateUserPassword(values)
 
-  if (success) {
-    router.push('/login')
-  } else {
-    handleOpenNotification('error', error)
+  if (response instanceof Error) {
+    return handleOpenNotification('error', response.message)
   }
+
+  router.push('/login')
 })
 </script>
 
@@ -85,12 +86,12 @@ const handleUpdatePassword = handleSubmit(async (values) => {
       </Button>
 
       <NotificationModal
-        :type="responseMessage.type"
+        :type="notificationOptions.type"
         :is-opened="isOpenedNotification"
         @close-modal="handleCloseNotification"
         :time-expired="5000"
       >
-        {{ responseMessage.message }}
+        {{ notificationOptions.message }}
       </NotificationModal>
     </div>
   </ModalLayout>

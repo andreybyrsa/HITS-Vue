@@ -6,8 +6,8 @@ import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
 import AdminView from '@Views/AdminView.vue'
 import DevView from '@Views/DevView.vue'
 import LoginView from '@Views/LoginView.vue'
-import NewIdeas from '@Views/NewIdeas.vue'
-import EditIdeasView from '@Views/EditIdeasView.vue'
+import NewIdeaView from '@Views/NewIdeaView.vue'
+import EditIdeaView from '@Views/EditIdeaView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
@@ -29,12 +29,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'add-idea',
         name: 'addIdeas',
-        component: NewIdeas,
+        component: NewIdeaView,
       },
       {
         path: 'edit-idea/:id',
         name: 'editIdeas',
-        component: EditIdeasView,
+        component: EditIdeaView,
       },
       {
         path: 'admin',

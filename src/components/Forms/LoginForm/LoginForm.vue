@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -13,6 +12,8 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { LoginUser } from '@Domain/User'
 
+import useNotification from '@Hooks/useNotification'
+
 import useUserStore from '@Store/user/userStore'
 
 import Validation from '@Utils/Validation'
@@ -20,7 +21,8 @@ import Validation from '@Utils/Validation'
 const userStore = useUserStore()
 const { loginError } = storeToRefs(userStore)
 
-const isOpenedNotification = ref(false)
+const { isOpenedNotification, handleOpenNotification, handleCloseNotification } =
+  useNotification()
 
 const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {
@@ -34,13 +36,9 @@ const handleLogin = handleSubmit(async (values) => {
   await userStore.loginUser(values)
 
   if (loginError?.value) {
-    isOpenedNotification.value = true
+    handleOpenNotification()
   }
 })
-
-function handleCloseNotification() {
-  isOpenedNotification.value = false
-}
 </script>
 
 <template>

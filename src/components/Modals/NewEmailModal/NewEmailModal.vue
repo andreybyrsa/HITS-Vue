@@ -2,7 +2,7 @@
 import { ref, reactive, watch, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { useRouter, useRoute } from 'vue-router'
-import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import { NewEmailModalProps } from '@Components/Modals/NewEmailModal/NewEmailModal.types'
 import newEmailModalInputs from '@Components/Modals/NewEmailModal/NewEmailModalInputs'
 import Typography from '@Components/Typography/Typography.vue'
@@ -14,7 +14,7 @@ import { storeToRefs } from 'pinia'
 import useUserStore from '@Store/user/userStore'
 import { NewEmailForm } from '@Domain/Invitation'
 import InvitationService from '@Services/InvitationService'
-import useNotification from '@Utils/useNotification'
+import useNotification from '@Hooks/useNotification'
 
 const route = useRoute()
 const { slug } = route.params
@@ -55,10 +55,8 @@ function startTimer() {
   const intervalID = setInterval(() => {
     const minutes = Math.floor(initialSeconds / 60)
     const seconds = initialSeconds - minutes * 60
-    const currentMinutes =
-      minutes.toString().length > 1 ? minutes : `0${minutes}`
-    const currentSeconds =
-      seconds.toString().length > 1 ? seconds : `0${seconds}`
+    const currentMinutes = minutes.toString().length > 1 ? minutes : `0${minutes}`
+    const currentSeconds = seconds.toString().length > 1 ? seconds : `0${seconds}`
 
     expiredTime.value = `${currentMinutes}:${currentSeconds}`
 
@@ -88,16 +86,14 @@ const handleChangeEmail = handleSubmit(async (values) => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const { success, error } = await ManageUsersService.updateUserEmail(
+    const response = await ManageUsersService.updateUserEmail(
       values as unknown as NewEmailForm,
       token,
     )
-    if (success) {
-      router.push('/login')
-    } else {
-      const currentError = error ?? 'Ошибка смены почты'
-      handleOpenNotification('error', currentError)
+    if (response instanceof Error) {
+      handleOpenNotification('error', response.message)
     }
+    router.push('/login')
   }
 })
 </script>

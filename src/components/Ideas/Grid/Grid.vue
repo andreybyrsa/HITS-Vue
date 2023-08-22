@@ -61,9 +61,8 @@ const filteredData = computed(() => {
     const dataFilter: Idea[] = []
     data?.forEach(
       (elem) =>
-        selectedFilters?.every((filter) =>
-          Object.values(elem).includes(filter),
-        ) && dataFilter.push(elem),
+        selectedFilters?.every((filter) => Object.values(elem).includes(filter)) &&
+        dataFilter.push(elem),
     )
     return dataFilter
   }
@@ -162,8 +161,7 @@ function getTranslatedKey(entry: Idea, key: string) {
           {{ column }}
           <span
             v-if="
-              props.columns[index] !== 'name' &&
-              props.columns[index] !== 'status'
+              props.columns[index] !== 'name' && props.columns[index] !== 'status'
             "
             class="arrow"
             :class="sortOrders[props.columns[index] as OType] == 1 ? 'asc' : 'dsc'"
@@ -193,30 +191,32 @@ function getTranslatedKey(entry: Idea, key: string) {
           type="button"
           class-name=" button btn-primary w-100"
           is-drop-down-controller
-          drop-down-clickable-inside
         >
           <i class="bi bi-list fs-1"></i>
         </Button>
         <DropDown>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item list-group-item-action">
-              <button @click="handleOpenModal(entry.id)">
+            <li class="list-group-item list-group-item-action p-0">
+              <button
+                class="p-2 w-100 text-start"
+                @click="handleOpenModal(entry.id)"
+              >
                 Просмотреть идею
               </button>
             </li>
 
-            <li class="list-group-item list-group-item-action">
+            <li class="list-group-item list-group-item-action p-0">
               <router-link
-                class="text-decoration-none d-block text-dark"
+                class="p-2 w-100 text-decoration-none text-dark d-flex"
                 :to="`edit-idea/${entry.id}`"
               >
                 Редактировать
               </router-link>
             </li>
 
-            <li class="list-group-item list-group-item-action">
+            <li class="list-group-item list-group-item-action p-0">
               <router-link
-                class="text-decoration-none d-block text-dark pointers"
+                class="p-2 w-100 text-decoration-none text-dark d-flex"
                 :to="`edit-idea/${entry.id}`"
               >
                 Отправить на согласование

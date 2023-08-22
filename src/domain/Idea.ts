@@ -1,26 +1,27 @@
-import StatusTypes from '@Domain/Status'
+import StatusTypes from '@Domain/IdeaStatus'
 import Comment from '@Domain/Comment'
 
 interface Idea {
   id: number
-  initiator?: string
+  initiator: string
   name: string
   dateCreated: Date
   dateModified: Date
-  projectType?: 'INSIDE' | 'OUTSIDE'
+  projectType: 'INSIDE' | 'OUTSIDE'
   experts?: string[]
-  problem?: string
-  solution?: string
-  result?: string
-  customer?: string
-  description?: string
-  realizability?: string
-  suitability?: string
-  budget?: string
+  problem: string
+  solution: string
+  result: string
+  customer: string
+  contactPerson: string
+  description: string
+  realizability: number
+  suitability: number
+  budget: number
   status: StatusTypes
   rating: number
   risk: number
-  comments?: Comment[]
+  comments: Comment[]
 }
 
 interface Risk {

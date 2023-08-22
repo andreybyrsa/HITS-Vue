@@ -40,15 +40,17 @@ const NavTabClassName = computed(() => [
       v-if="routes"
       :id="to"
     >
-      <router-link
-        v-for="route in routes"
-        :key="route.id"
-        class="list-group-item list-group-item-light"
-        active-class="active"
-        :to="route.to"
-      >
-        {{ route.text }}
-      </router-link>
+      <div class="p-2 rounded">
+        <router-link
+          v-for="route in routes"
+          :key="route.id"
+          class="list-group-item list-group-item-light"
+          active-class="active"
+          :to="route.to"
+        >
+          {{ route.text }}
+        </router-link>
+      </div>
     </Collapse>
   </div>
 </template>
