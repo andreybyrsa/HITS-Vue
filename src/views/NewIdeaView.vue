@@ -12,7 +12,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
     </template>
 
     <template #content>
-      <IdeaForm />
+      <IdeaForm title="Создание идеи" />
     </template>
   </PageLayout>
 </template>
