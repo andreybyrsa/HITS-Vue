@@ -2,10 +2,31 @@ interface RatingData {
   realizability: number
   suitability: number
   budget: number
+  rating: number
 }
 
-interface RatingCalculatorEmits {
-  (event: 'set-rating', rating: number): void
+interface RatingSelect {
+  label: string
+  forName: string
+  key: keyof RatingData
 }
 
-export { RatingData, RatingCalculatorEmits }
+const ratingSelects: RatingSelect[] = [
+  {
+    label: 'Реализуемость*',
+    forName: 'realizability',
+    key: 'realizability',
+  },
+  {
+    label: 'Пригодность*',
+    forName: 'suitability',
+    key: 'suitability',
+  },
+  {
+    label: 'Бюджет*',
+    forName: 'budget',
+    key: 'budget',
+  },
+]
+
+export { RatingData, RatingSelect, ratingSelects }

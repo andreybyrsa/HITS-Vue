@@ -33,42 +33,44 @@ const LabelClassName = computed(() => [
 </script>
 
 <template>
-  <label
-    :class="LabelClassName"
-    v-if="label"
-  >
-    {{ label }}
-  </label>
-
-  <div class="input-group">
-    <span
-      v-if="prepend || $slots.prepend"
-      class="input-group-text fs-5"
+  <div class="w-100">
+    <label
+      :class="LabelClassName"
+      v-if="label"
     >
-      {{ prepend }}
-      <slot name="prepend"></slot>
-    </span>
+      {{ label }}
+    </label>
 
-    <textarea
-      :class="TextareaClassName"
-      :name="name"
-      v-model="value"
-      @change="(event) => emit('change', event as HTMLTextareaEvent)"
-      @focus="emit('focus')"
-      @blur="emit('blur')"
-      :placeholder="placeholder"
-      :disabled="disabled"
-    ></textarea>
-    <span class="invalid-feedback">
-      {{ error || errorMessage }}
-    </span>
+    <div class="input-group">
+      <span
+        v-if="prepend || $slots.prepend"
+        class="input-group-text fs-5"
+      >
+        {{ prepend }}
+        <slot name="prepend"></slot>
+      </span>
 
-    <span
-      v-if="append || $slots.append"
-      class="input-group-text fs-5"
-    >
-      {{ append }}
-      <slot name="append"></slot>
-    </span>
+      <textarea
+        :class="TextareaClassName"
+        :name="name"
+        v-model="value"
+        @change="(event) => emit('change', event as HTMLTextareaEvent)"
+        @focus="emit('focus')"
+        @blur="emit('blur')"
+        :placeholder="placeholder"
+        :disabled="disabled"
+      ></textarea>
+      <span class="invalid-feedback">
+        {{ error || errorMessage }}
+      </span>
+
+      <span
+        v-if="append || $slots.append"
+        class="input-group-text fs-5"
+      >
+        {{ append }}
+        <slot name="append"></slot>
+      </span>
+    </div>
   </div>
 </template>

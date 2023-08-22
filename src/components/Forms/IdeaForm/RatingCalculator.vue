@@ -1,19 +1,16 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, watch } from 'vue'
 
 import {
+  ratingSelects,
   RatingData,
-  RatingCalculatorEmits,
 } from '@Components/Forms/IdeaForm/RatingCalculator.types'
 import Typography from '@Components/Typography/Typography.vue'
+import Select from '@Components/Inputs/Select/Select.vue'
 
-const emit = defineEmits<RatingCalculatorEmits>()
-
-interface SelectName {
-  label: string
-  key: keyof RatingData
-  forName: string
-}
+const ratingData = defineModel<RatingData>({
+  required: true,
+})
 
 const ratingOptions = [
   { label: 'Низкий', value: 1 },
@@ -23,73 +20,36 @@ const ratingOptions = [
   { label: 'Высокий', value: 5 },
 ]
 
-const rating = reactive<RatingData>({
-  realizability: 1,
-  suitability: 1,
-  budget: 1,
-})
-
 const totalRating = computed(() => {
-  const { realizability, suitability, budget } = rating
-  const total = ((realizability + suitability + budget) / 3).toFixed(1)
-  emit('set-rating', +total)
+  const { realizability, suitability, budget } = ratingData.value
+  const rating = +((+realizability + +suitability + +budget) / 3).toFixed(1)
 
-  return total
+  return rating
 })
 
-const selectNames: SelectName[] = [
-  {
-    label: 'Реализуемость*',
-    key: 'realizability',
-    forName: 'realizability',
-  },
-  {
-    label: 'Пригодность*',
-    key: 'suitability',
-    forName: 'suitability',
-  },
-  {
-    label: 'Бюджет*',
-    key: 'budget',
-    forName: 'budget',
-  },
-]
+watch(totalRating, () => {
+  ratingData.value.rating = totalRating.value
+})
 </script>
 
 <template>
-  <div>
-    <Typography class-name="fs-6 text-primary">
-      Предварительная оценка идеи
-    </Typography>
-
-    <div class="row">
-      <div
-        class="col"
-        v-for="(select, index) in selectNames"
-        :key="index"
-      >
-        <Typography class="fs-6 text-primary">
-          <label :for="select.forName">{{ select.label }}</label>
-          <select
-            class="form-select"
-            v-model="rating[select.key]"
-          >
-            <option
-              v-for="option in ratingOptions"
-              :value="option.value"
-              :key="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </Typography>
-      </div>
+  <div class="row">
+    <div
+      class="col"
+      v-for="(select, index) in ratingSelects"
+      :key="index"
+    >
+      <Select
+        :label="select.label"
+        :options="ratingOptions"
+        v-model="ratingData[select.key]"
+      ></Select>
     </div>
   </div>
 
   <div class="col">
     <Typography class-name="fs-6 text-primary">
-      Рейтинг: {{ totalRating }}
+      Рейтинг: {{ ratingData.rating }}
     </Typography>
   </div>
 </template>
