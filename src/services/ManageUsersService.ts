@@ -7,6 +7,7 @@ import {
   ChangeUserEmail,
 } from '@Domain/ManageUsers'
 import ResponseMessage from '@Domain/ResponseMessage'
+import { NewEmailForm } from '@Domain/Invitation'
 
 const MANAGE_USERS_URL =
   process.env.VUE_APP_MANAGE_USERS_API_URL || 'http://localhost:3000'
@@ -71,10 +72,13 @@ const updateUserPassword = async (
 }
 
 const updateUserEmail = async (
-  newEmailData: ChangeUserEmail,
+  newEmailData: NewEmailForm,
+  token: string,
 ): Promise<ResponseMessage> => {
   return axios
-    .put(`${MANAGE_USERS_URL}/change/email`, newEmailData)
+    .put(`${MANAGE_USERS_URL}/change/email`, newEmailData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response ? response.data.error : 'Ошибка изменения почты'

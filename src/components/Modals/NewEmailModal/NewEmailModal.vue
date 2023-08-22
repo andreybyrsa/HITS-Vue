@@ -1,43 +1,49 @@
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
 import { NewEmailModalProps } from '@Components/Modals/NewEmailModal/NewEmailModal.types'
 import newEmailModalInputs from '@Components/Modals/NewEmailModal/NewEmailModalInputs'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-
-import { ChangeUserEmail } from '@Domain/ManageUsers'
-import ResponseMessage from '@Domain/ResponseMessage'
-
 import ManageUsersService from '@Services/ManageUsersService'
-
 import Validation from '@Utils/Validation'
+import { storeToRefs } from 'pinia'
+import useUserStore from '@Store/user/userStore'
+import { NewEmailForm } from '@Domain/Invitation'
+import InvitationService from '@Services/InvitationService'
+import useNotification from '@Utils/useNotification'
 
-const props = defineProps<NewEmailModalProps>()
-
-const router = useRouter()
-const response = reactive<ResponseMessage>({
+const route = useRoute()
+const { slug } = route.params
+const expiredTime = ref('')
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+const response = reactive({
+  success: '',
+  key: '',
   error: '',
 })
-const expiredTime = ref('')
-
-const { setValues, handleSubmit } = useForm<ChangeUserEmail>({
+const { handleOpenNotification } = useNotification()
+const props = defineProps<NewEmailModalProps>()
+const router = useRouter()
+const { setValues, handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
-    key: (value: string) => value?.length,
-    email: (value: string) => Validation.checkEmail(value),
+    oldEmail: (value: string) => Validation.checkEmail(value),
     code: (value: string) => value?.length === 6 || 'Неверно введен код',
     newEmail: (value: string) => Validation.checkEmail(value),
+    url: (value: string) => value?.length,
   },
+  initialValues: { oldEmail: user.value?.email, url: slug },
 })
 
 watch(
   () => props.authKey,
   () => {
-    const { authKey, email } = props
-    setValues({ key: authKey, email })
+    const { authKey } = props
+    setValues({ key: authKey })
 
     startTimer()
   },
@@ -49,7 +55,6 @@ function startTimer() {
   const intervalID = setInterval(() => {
     const minutes = Math.floor(initialSeconds / 60)
     const seconds = initialSeconds - minutes * 60
-
     const currentMinutes =
       minutes.toString().length > 1 ? minutes : `0${minutes}`
     const currentSeconds =
@@ -58,28 +63,49 @@ function startTimer() {
     expiredTime.value = `${currentMinutes}:${currentSeconds}`
 
     if (initialSeconds > 0) {
-      initialSeconds--
+      initialSeconds
     } else {
       clearInterval(intervalID)
     }
   }, 1000)
 }
 
-const handleChangeEmail = handleSubmit(async (values) => {
-  const { success, error } = await ManageUsersService.updateUserEmail(values)
+onMounted(async () => {
+  const { slug } = route.params
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await InvitationService.sendNewCode(slug, token)
+    startTimer()
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
+    setValues({ ...response })
+  }
+})
 
-  if (success) {
-    router.push('/login')
-  } else {
-    response.error = error
+const handleChangeEmail = handleSubmit(async (values) => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { success, error } = await ManageUsersService.updateUserEmail(
+      values as unknown as NewEmailForm,
+      token,
+    )
+    if (success) {
+      router.push('/login')
+    } else {
+      const currentError = error ?? 'Ошибка смены почты'
+      handleOpenNotification('error', currentError)
+    }
   }
 })
 </script>
 
 <template>
-  <ModalLayout :is-opened="isOpened">
+  <ModalLayout :is-opened="true">
     <div
-      v-if="isOpened"
+      v-if="true"
       class="new-email-modal p-3 rounded"
     >
       <Typography class-name="fs-3 text-primary">Новая почта</Typography>
@@ -100,7 +126,7 @@ const handleChangeEmail = handleSubmit(async (values) => {
         class-name="btn-primary w-100"
         @click="handleChangeEmail"
       >
-        Изменить почту
+        Подтвердить
       </Button>
 
       <Typography
@@ -114,7 +140,7 @@ const handleChangeEmail = handleSubmit(async (values) => {
         v-else
         class-name="text-primary fs-6 text-center"
       >
-        Код отправлен на {{ email }}, время действия кода:
+        Код отправлен на почту, время действия кода:
         {{ expiredTime }}
       </Typography>
     </div>

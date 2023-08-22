@@ -11,9 +11,9 @@ import EditIdeasView from '@Views/EditIdeasView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
-
+import ChangeEmailConfirmationView from '@Views/ChangeEmailConfirmationView.vue'
 import IdeasView from '@Views/IdeasView.vue'
-
+import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -76,6 +76,13 @@ const routes: Array<RouteRecordRaw> = [
     path: '/change-email',
     name: 'change-email',
     component: ChangeEmailView,
+    children: [
+      {
+        path: ':slug',
+        name: 'change-email-confirmation',
+        component: NewEmail,
+      },
+    ],
   },
 ]
 

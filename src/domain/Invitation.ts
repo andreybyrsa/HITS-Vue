@@ -19,8 +19,11 @@ interface RecoveryData {
 }
 
 interface NewEmailForm {
+  key: string
   oldEmail: string
   newEmail: string
+  code: number
+  url?: string | string[]
 }
 
 export {

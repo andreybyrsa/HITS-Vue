@@ -17,9 +17,11 @@ interface UpdateUserPassword {
 
 interface ChangeUserEmail {
   key: string
-  email: string
+  oldEmail: string
   code: string
   password: string
+  newEmail: string
+  url: string
 }
 
 export { UpdateUserData, UpdateUserPassword, ChangeUserEmail }

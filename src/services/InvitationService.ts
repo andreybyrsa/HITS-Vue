@@ -56,7 +56,7 @@ const sendRecoveryEmail = async (
     .post(`${INVITATION_URL}/send/request-to-change-password`, recoveryData)
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response ? response.data.error : 'Ошибка отпрваки почты'
+      const error = response ? response.data.error : 'Ошибка отправки почты'
       return { error }
     })
 }
@@ -101,6 +101,20 @@ const sendUrlToChangeEmail = async (
     })
 }
 
+const sendNewCode = async (
+  slug: string | string[],
+  token: string,
+): Promise<NewEmailForm | Error> => {
+  return await axios
+    .get(`${INVITATION_URL}/change/email/${slug}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка приглашения'
+      return new Error(error)
+    })
+}
 const InvitationService = {
   inviteUserByEmail,
   inviteUsers,
@@ -108,6 +122,7 @@ const InvitationService = {
   getInvitationInfo,
   deleteInvitationInfo,
   sendUrlToChangeEmail,
+  sendNewCode,
 }
 
 export default InvitationService

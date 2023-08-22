@@ -6,18 +6,28 @@ import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import NewPasswordModal from '@Components/Modals/NewPasswordModal/NewPasswordModal.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import useUserStore from '@Store/user/userStore'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
-
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+import useNotification from '@Utils/useNotification'
 import { NewEmailForm } from '@Domain/Invitation'
-
 import InvitationService from '@Services/InvitationService'
-
 import Validation from '@Utils/Validation'
 
-const isOpenedModal = ref(false)
+const isConfirmationModalOpen = ref(false)
+
+function openConfirmationModal() {
+  isConfirmationModalOpen.value = true
+}
+
+const {
+  responseMessage,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const response = reactive({
@@ -25,68 +35,51 @@ const response = reactive({
   key: '',
   error: '',
 })
-
 const { values, handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
-    email: (value: string) =>
+    newEmail: (value: string) =>
+      Validation.checkEmail(value) || 'Ошибка авторизации',
+    oldEmail: (value: string) =>
       Validation.checkEmail(value) || 'Ошибка авторизации',
   },
+  initialValues: { oldEmail: user.value?.email },
 })
-
-function handleCloseModal() {
-  isOpenedModal.value = false
-}
-
-// const sendChangingCode = handleSubmit(async (values) => {
-//   const { key, error } = await InvitationService.changeEmailRequest(values)
-
-//   if (key) {
-//     response.key = key
-//     isOpenedModal.value = true
-//   } else {
-//     response.error = error ?? 'Ошибка отправки кода'
-//   }
-// })
 
 const sendChangingUrl = handleSubmit(async (values) => {
   const currentUser = user.value
-
+  console.log(values)
   if (currentUser?.token) {
     const { token } = currentUser
-
     const { success, error } = await InvitationService.sendUrlToChangeEmail(
       values,
       token,
     )
     if (success) {
-      response.success = success
-      isOpenedModal.value = true
+      openConfirmationModal()
+      handleOpenNotification('success', success)
     } else {
-      response.error = error ?? 'Ошибка отправки ссылки'
-      console.log(error)
+      handleOpenNotification('error', error)
     }
   }
 })
 </script>
-
 <template>
   <PageLayout content-class-name="change-email-page__content">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
     <template #content>
+      <router-view></router-view>
       <FormLayout class-name="text-center">
         <Typography class-name="fs-3 text-primary">
           Изменение почты
         </Typography>
-
         <Input
           type="email"
-          name="email"
+          name="newEmail"
           placeholder="Введите ваш новый email"
           prepend="@"
         />
-
         <Button
           type="submit"
           class-name="btn-primary w-100"
@@ -94,25 +87,24 @@ const sendChangingUrl = handleSubmit(async (values) => {
         >
           Отправить
         </Button>
-
+        <NotificationModal
+          :type="responseMessage.type"
+          :is-opened="isOpenedNotification"
+          @close-modal="handleCloseNotification"
+          :time-expired="5000"
+        >
+          {{ responseMessage.message }}
+        </NotificationModal>
         <Typography
           v-if="response.error"
           class-name="text-danger fs-6"
         >
           {{ response.error }}
         </Typography>
-
-        <NewPasswordModal
-          :is-opened="isOpenedModal"
-          :email="values.oldEmail"
-          :auth-key="response.key"
-          @close-modal="handleCloseModal"
-        />
       </FormLayout>
     </template>
   </PageLayout>
 </template>
-
 <style lang="scss">
 .change-email-page {
   &__content {
