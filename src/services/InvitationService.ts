@@ -82,7 +82,7 @@ const deleteInvitationInfo = async (slug: string | string[]) => {
 const sendUrlToChangeEmail = async (
   userData: NewEmailForm,
   token: string,
-): Promise<Success> => {
+): Promise<Success | Error> => {
   return await axios
     .post(`${INVITATION_URL}/send/request-to-change-email`, userData, {
       headers: { Authorization: `Bearer ${token}` },
@@ -96,7 +96,7 @@ const sendUrlToChangeEmail = async (
     })
 }
 
-const sendNewCode = async (
+const getInfoToChangeEmail = async (
   slug: string | string[],
   token: string,
 ): Promise<NewEmailForm | Error> => {
@@ -117,7 +117,7 @@ const InvitationService = {
   getInvitationInfo,
   deleteInvitationInfo,
   sendUrlToChangeEmail,
-  sendNewCode,
+  getInfoToChangeEmail,
 }
 
 export default InvitationService

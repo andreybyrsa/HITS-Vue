@@ -73,7 +73,7 @@ onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await InvitationService.sendNewCode(slug, token)
+    const response = await InvitationService.getInfoToChangeEmail(slug, token)
     startTimer()
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)
