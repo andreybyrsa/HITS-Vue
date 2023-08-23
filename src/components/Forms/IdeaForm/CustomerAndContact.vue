@@ -29,7 +29,13 @@ function handleCustomerChange(selectedCompany: string) {
   const currentContacts = getContactPersonsByCompany(selectedCompany)?.contacts
   if (currentContacts) {
     currentCompanyContacts.value = currentContacts
-    customerAndContact.value.contactPerson = currentContacts[0]
+    const currentContactPerson = customerAndContact.value.contactPerson
+
+    customerAndContact.value.contactPerson = currentContacts.includes(
+      currentContactPerson,
+    )
+      ? currentContactPerson
+      : currentContacts[0]
   }
 }
 
@@ -40,6 +46,7 @@ watch(
       handleCustomerChange(newCustomer)
     }
   },
+  { immediate: true },
 )
 </script>
 
