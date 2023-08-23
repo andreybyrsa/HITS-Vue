@@ -75,7 +75,8 @@ const handleEditUser = handleSubmit(async (values) => {
       return handleOpenNotification('error', response.message)
     }
 
-    emit('close-modal', values, response.success)
+    emit('save-user', values, response.success)
+    emit('close-modal')
   }
 })
 </script>
