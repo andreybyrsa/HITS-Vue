@@ -9,10 +9,7 @@ function useNotification() {
   const notificationOptions = reactive<NotificationOptions>({})
   const isOpenedNotification = ref(false)
 
-  const handleOpenNotification = (
-    type?: 'success' | 'error',
-    message?: string,
-  ) => {
+  const handleOpenNotification = (type?: 'success' | 'error', message?: string) => {
     notificationOptions.type = type
     notificationOptions.message = message
     isOpenedNotification.value = true

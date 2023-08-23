@@ -45,10 +45,8 @@ function startTimer() {
     const minutes = Math.floor(initialSeconds / 60)
     const seconds = initialSeconds - minutes * 60
 
-    const currentMinutes =
-      minutes.toString().length > 1 ? minutes : `0${minutes}`
-    const currentSeconds =
-      seconds.toString().length > 1 ? seconds : `0${seconds}`
+    const currentMinutes = minutes.toString().length > 1 ? minutes : `0${minutes}`
+    const currentSeconds = seconds.toString().length > 1 ? seconds : `0${seconds}`
 
     expiredTime.value = `${currentMinutes}:${currentSeconds}`
 

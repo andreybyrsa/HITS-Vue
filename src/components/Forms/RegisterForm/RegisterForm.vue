@@ -28,11 +28,8 @@ const { registerError } = storeToRefs(userStore)
 
 const route = useRoute()
 
-const {
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
+const { isOpenedNotification, handleOpenNotification, handleCloseNotification } =
+  useNotification()
 
 onMounted(async () => {
   const { slug } = route.params

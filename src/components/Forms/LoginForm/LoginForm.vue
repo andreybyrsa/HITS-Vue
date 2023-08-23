@@ -21,11 +21,8 @@ import Validation from '@Utils/Validation'
 const userStore = useUserStore()
 const { loginError } = storeToRefs(userStore)
 
-const {
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
+const { isOpenedNotification, handleOpenNotification, handleCloseNotification } =
+  useNotification()
 
 const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {

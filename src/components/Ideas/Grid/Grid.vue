@@ -6,7 +6,7 @@ import DropDown from '@Components/DropDown/DropDown.vue'
 import Button from '@Components/Button/Button.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
-import StatusTypes from '@Domain/Status'
+import StatusTypes from '@Domain/IdeaStatus'
 import { Idea } from '@Domain/Idea'
 
 import getStatus from '@Utils/getStatus'
@@ -61,9 +61,8 @@ const filteredData = computed(() => {
     const dataFilter: Idea[] = []
     data?.forEach(
       (elem) =>
-        selectedFilters?.every((filter) =>
-          Object.values(elem).includes(filter),
-        ) && dataFilter.push(elem),
+        selectedFilters?.every((filter) => Object.values(elem).includes(filter)) &&
+        dataFilter.push(elem),
     )
     return dataFilter
   }
@@ -123,12 +122,12 @@ function getTranslatedStatus(status: StatusTypes) {
   return statuses.translatedStatus[status]
 }
 
-const isOpenedIdeaModal = ref(false)
 const currentOpenedIdea = ref<Idea>()
+const isOpenedIdeaModal = ref(false)
 
 function handleOpenModal(ideaId: number) {
-  isOpenedIdeaModal.value = true
   currentOpenedIdea.value = props.data?.find((idea) => idea.id === ideaId)
+  isOpenedIdeaModal.value = true
 }
 
 function handleCloseModal() {
@@ -162,8 +161,7 @@ function getTranslatedKey(entry: Idea, key: string) {
           {{ column }}
           <span
             v-if="
-              props.columns[index] !== 'name' &&
-              props.columns[index] !== 'status'
+              props.columns[index] !== 'name' && props.columns[index] !== 'status'
             "
             class="arrow"
             :class="sortOrders[props.columns[index] as OType] == 1 ? 'asc' : 'dsc'"
