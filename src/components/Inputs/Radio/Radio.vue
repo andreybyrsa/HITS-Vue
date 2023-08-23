@@ -23,10 +23,7 @@ const RadioInputClassName = computed(() => [
   props.className,
 ])
 
-const RadioLabelClassName = computed(() => [
-  'form-check-label',
-  props.className,
-])
+const RadioLabelClassName = computed(() => ['form-check-label', props.className])
 </script>
 
 <template>

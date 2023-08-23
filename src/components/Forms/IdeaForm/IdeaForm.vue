@@ -74,14 +74,10 @@ const currentIdea = computed(() => ({
 
 const handlePostIdea = handleSubmit(async () => {
   const currentUser = user.value
-  const currentValues: Idea = {
-    ...currentIdea.value,
-    status: 'NEW',
-  }
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await IdeasService.postInitiatorIdea(currentValues, token)
+    const response = await IdeasService.postInitiatorIdea(currentIdea.value, token)
 
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)
@@ -93,15 +89,15 @@ const handlePostIdea = handleSubmit(async () => {
 
 const handleUpdateIdea = handleSubmit(async () => {
   const currentUser = user.value
-  const currentValues: Idea = {
-    ...currentIdea.value,
-    status: 'ON_EDITING',
-  }
 
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
-    const response = await IdeasService.putInitiatorIdea(currentValues, id, token)
+    const response = await IdeasService.putInitiatorIdea(
+      currentIdea.value,
+      id,
+      token,
+    )
 
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)

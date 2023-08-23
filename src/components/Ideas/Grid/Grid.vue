@@ -6,7 +6,7 @@ import DropDown from '@Components/DropDown/DropDown.vue'
 import Button from '@Components/Button/Button.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
-import StatusTypes from '@Domain/Status'
+import StatusTypes from '@Domain/IdeaStatus'
 import { Idea } from '@Domain/Idea'
 
 import getStatus from '@Utils/getStatus'
@@ -122,12 +122,12 @@ function getTranslatedStatus(status: StatusTypes) {
   return statuses.translatedStatus[status]
 }
 
-const isOpenedIdeaModal = ref(false)
 const currentOpenedIdea = ref<Idea>()
+const isOpenedIdeaModal = ref(false)
 
 function handleOpenModal(ideaId: number) {
-  isOpenedIdeaModal.value = true
   currentOpenedIdea.value = props.data?.find((idea) => idea.id === ideaId)
+  isOpenedIdeaModal.value = true
 }
 
 function handleCloseModal() {

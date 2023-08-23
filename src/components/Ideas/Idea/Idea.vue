@@ -57,10 +57,6 @@ const getRiskColor = (risk: number) => {
 
 <style lang="scss">
 .idea {
-  @include gridable(
-    2fr 1fr 1fr 100px 100px 100px,
-    $gap: 16px,
-    $align-items: center
-  );
+  @include gridable(2fr 1fr 1fr 100px 100px 100px, $gap: 16px, $align-items: center);
 }
 </style>
