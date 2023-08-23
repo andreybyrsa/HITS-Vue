@@ -9,6 +9,7 @@ import getStatus from '@Utils/getStatus'
 import StatusTypes from '@Domain/IdeaStatus'
 import useUserStore from '@Store/user/userStore'
 import IdeasService from '@Services/IdeasService'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
 import { Idea } from '@Domain/Idea'
 
@@ -108,8 +109,6 @@ const translatedColumns = computed(() =>
   props.columns.map((word) => translate(word as Word)),
 )
 
-console.log(translatedColumns.value)
-
 function formatDate(date: Date) {
   if (date) {
     const options: Intl.DateTimeFormatOptions = {
@@ -150,8 +149,18 @@ function getTranslatedKey(entry: Idea, key: string) {
 }
 
 function handleSend(id: number) {
-  // const token = user.value?.token
   IdeasService.putInitiatorSendIdea(id, user.value?.token as string)
+}
+
+const currentOpenedIdea = ref<Idea>()
+const isOpenedIdeaModal = ref(false)
+
+function handleOpenModal(ideaId: number) {
+  currentOpenedIdea.value = props.data?.find((idea) => idea.id === ideaId)
+  isOpenedIdeaModal.value = true
+}
+function handleCloseModal() {
+  isOpenedIdeaModal.value = false
 }
 </script>
 
@@ -208,6 +217,14 @@ function handleSend(id: number) {
         <DropDown>
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
+              <a
+                class="link text-decoration-none d-block text-dark pointers"
+                @click="handleOpenModal(entry.id)"
+              >
+                Просмотреть идею
+              </a>
+            </li>
+            <li class="list-group-item">
               <router-link
                 class="text-decoration-none d-block text-dark"
                 :to="`edit-idea/${entry.id}`"
@@ -225,6 +242,11 @@ function handleSend(id: number) {
           </ul>
         </DropDown>
       </tr>
+      <IdeaModal
+        :is-opened="isOpenedIdeaModal"
+        :idea="currentOpenedIdea"
+        @close-modal="handleCloseModal"
+      />
     </tbody>
   </table>
   <div
