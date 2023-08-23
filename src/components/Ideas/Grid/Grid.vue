@@ -1,25 +1,29 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { GridProps } from '@Components/Ideas/Grid/Grid.types'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Button from '@Components/Button/Button.vue'
-import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
-
-import StatusTypes from '@Domain/IdeaStatus'
-import { Idea } from '@Domain/Idea'
-
 import getStatus from '@Utils/getStatus'
+import StatusTypes from '@Domain/IdeaStatus'
+import useUserStore from '@Store/user/userStore'
+import IdeasService from '@Services/IdeasService'
+
+import { Idea } from '@Domain/Idea'
 
 const props = defineProps<GridProps>()
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
 type O = {
   dateCreated?: number
+  date?: number
   name?: number
   rating?: number
   risk?: number
   status?: number
-  dateModified?: number
 }
 
 type OType = keyof O
@@ -28,7 +32,7 @@ type IdeaType = keyof Idea
 const sortKey = ref<OType>()
 const sortOrders = ref<O>(
   props.columns.reduce((o, key) => {
-    o[key as OType] = 1
+    o[key as OType] = -1
     return o
   }, {} as O),
 )
@@ -45,6 +49,11 @@ const filteredData = computed(() => {
               .indexOf(filterKey) > -1
           : undefined
       })
+    })
+  }
+  if (data) {
+    data.sort((a, b) => {
+      return b.rating - a.rating
     })
   }
   const key = sortKey.value
@@ -70,9 +79,12 @@ const filteredData = computed(() => {
 })
 
 function sortBy(key: OType) {
-  if (key === 'name' || key === 'status') return
+  if (key == 'name' || key == 'status') return
   sortKey.value = key
-  if (sortOrders.value[key] && sortOrders.value) {
+  if (sortOrders.value[key]) {
+    if (key == 'date') {
+      sortOrders.value.date = sortOrders.value['dateCreated'] == -1 ? 1 : -1
+    }
     sortOrders.value[key] = sortOrders.value[key] == -1 ? 1 : -1
   }
 }
@@ -95,6 +107,8 @@ function translate(word: Word) {
 const translatedColumns = computed(() =>
   props.columns.map((word) => translate(word as Word)),
 )
+
+console.log(translatedColumns.value)
 
 function formatDate(date: Date) {
   if (date) {
@@ -122,25 +136,22 @@ function getTranslatedStatus(status: StatusTypes) {
   return statuses.translatedStatus[status]
 }
 
-const currentOpenedIdea = ref<Idea>()
-const isOpenedIdeaModal = ref(false)
-
-function handleOpenModal(ideaId: number) {
-  currentOpenedIdea.value = props.data?.find((idea) => idea.id === ideaId)
-  isOpenedIdeaModal.value = true
-}
-
-function handleCloseModal() {
-  isOpenedIdeaModal.value = false
-}
 function getTranslatedKey(entry: Idea, key: string) {
   if (key === 'status') {
     return getTranslatedStatus(entry[key])
+  }
+  if (key == 'date') {
+    return `${formatDate(entry['dateCreated'])} ${formatDate(entry['dateModified'])}`
   }
   if (key === 'dateCreated' || key === 'dateModified') {
     return formatDate(entry[key])
   }
   return entry[key as IdeaType]
+}
+
+function handleSend(id: number) {
+  // const token = user.value?.token
+  IdeasService.putInitiatorSendIdea(id, user.value?.token as string)
 }
 </script>
 
@@ -157,6 +168,7 @@ function getTranslatedKey(entry: Idea, key: string) {
           :class="{ active: sortKey == props.columns[index] }"
           :key="index"
           class="fs-5"
+          :id="columns[index]"
         >
           {{ column }}
           <span
@@ -186,54 +198,35 @@ function getTranslatedKey(entry: Idea, key: string) {
             {{ getTranslatedKey(entry, key) }}
           </span>
         </td>
-
         <Button
           type="button"
           class-name=" button btn-primary w-100"
           is-drop-down-controller
         >
-          <i class="bi bi-list fs-1"></i>
+          <i class="bi bi-list fs-1" />
         </Button>
         <DropDown>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item list-group-item-action p-0">
-              <button
-                class="p-2 w-100 text-start"
-                @click="handleOpenModal(entry.id)"
-              >
-                Просмотреть идею
-              </button>
-            </li>
-
-            <li class="list-group-item list-group-item-action p-0">
+            <li class="list-group-item">
               <router-link
-                class="p-2 w-100 text-decoration-none text-dark d-flex"
+                class="text-decoration-none d-block text-dark"
                 :to="`edit-idea/${entry.id}`"
               >
                 Редактировать
               </router-link>
             </li>
-
-            <li class="list-group-item list-group-item-action p-0">
-              <router-link
-                class="p-2 w-100 text-decoration-none text-dark d-flex"
-                :to="`edit-idea/${entry.id}`"
+            <li class="list-group-item">
+              <a
+                class="link text-decoration-none d-block text-dark pointers"
+                @click="handleSend(entry.id as number)"
+                >Отправить на согласование</a
               >
-                Отправить на согласование
-              </router-link>
             </li>
           </ul>
         </DropDown>
       </tr>
-
-      <IdeaModal
-        :is-opened="isOpenedIdeaModal"
-        :idea="currentOpenedIdea"
-        @close-modal="handleCloseModal"
-      />
     </tbody>
   </table>
-
   <div
     v-else
     class="no-data"
@@ -264,6 +257,8 @@ th {
   color: rgba(255, 255, 255, 0.66);
   padding: 20px 10px;
   cursor: pointer;
+  // width: 100%;
+  max-width: 200px;
   user-select: none;
   text-align: center;
 }
@@ -282,6 +277,10 @@ th:first-of-type {
 
 th.active {
   color: #fff;
+}
+
+#date {
+  width: 100px;
 }
 
 td {
@@ -331,5 +330,9 @@ td .red {
 }
 .drop-down {
   @include flexible(flex-start, center, column);
+}
+
+.link {
+  cursor: pointer;
 }
 </style>

@@ -79,7 +79,7 @@ function handleCloseModal() {
         Открыть окно
       </Button>
 
-      <pre>Пользователь из userStore - {{ user }}</pre>
+      <pre class="sss">Пользователь из userStore - {{ user }}</pre>
     </template>
   </PageLayout>
 </template>
@@ -89,5 +89,9 @@ function handleCloseModal() {
   &__content {
     @include flexible(flex-start, flex-start, column, $gap: 16px);
   }
+}
+
+.sss {
+  width: 500px;
 }
 </style>

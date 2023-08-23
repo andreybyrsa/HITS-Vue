@@ -73,19 +73,23 @@ const deleteInitiatorIdea = async (id: number, token: string) => {
     })
 }
 
-// const getProjectOfficeIdeas = async (status: string): Promise<Idea> => {
-//   return await axios
-//     .get(`${IDEAS_URL}/project-office`, status)
-//     .then((response) => response.data)
-//     .catch((error) => console.warn(error))
-// }
+const getProjectOfficeIdeas = async (token: string): Promise<Idea> => {
+  return await axios
+    .get(`${IDEAS_URL}/project-office`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
+}
 
-// const getExpertIdeas = async (status: string): Promise<Idea> => {
-//   return await axios
-//     .get(`${IDEAS_URL}/expert`, status)
-//     .then((response) => response.data)
-//     .catch((error) => console.warn(error))
-// }
+const getExpertIdeas = async (token: string): Promise<Idea> => {
+  return await axios
+    .get(`${IDEAS_URL}/expert`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
+}
 
 const getAdminIdeas = async (token: string): Promise<Idea[]> => {
   return await axios
@@ -104,6 +108,28 @@ const fetchIdeas = async (token: string) => {
 const deleteAdminIdeas = async (id: number) => {
   return await axios
     .delete(`${IDEAS_URL}/admin/delete/` + id)
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
+}
+
+const putInitiatorIdeas = async (
+  idea: Idea,
+  id: number,
+  token: string,
+): Promise<Idea> => {
+  return await axios
+    .put(`${IDEAS_URL}/initiator/update/` + id, idea, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch((error) => console.warn(error))
+}
+
+const putInitiatorSendIdea = async (id: number, token: string): Promise<Idea> => {
+  return await axios
+    .put(`${IDEAS_URL}/initiator/send/` + id, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch((error) => console.warn(error))
 }
@@ -130,16 +156,18 @@ const putExpertIdeas = async (risk: Risk, id: number): Promise<Idea> => {
 }
 
 const IdeasService = {
-  fetchIdeas,
-  getInitiatorIdeas,
-
-  getInitiatorIdea,
   postInitiatorIdea,
-  putInitiatorIdea,
-  deleteInitiatorIdea,
-
+  fetchIdeas,
+  getInitiatorIdea,
+  getInitiatorIdeas,
+  getProjectOfficeIdeas,
+  getExpertIdeas,
   getAdminIdeas,
   deleteAdminIdeas,
+  deleteInitiatorIdea,
+  putInitiatorIdea,
+  putInitiatorIdeas,
+  putInitiatorSendIdea,
   putAdminIdeas,
   putProjectOfficeIdeas,
   putExpertIdeas,
