@@ -18,14 +18,7 @@ const isOpenedFilter = ref(false)
 
 const selectedFilters = ref<string[]>([])
 const searchQuery = ref('')
-const gridColumns = [
-  'name',
-  'status',
-  'dateCreated',
-  'dateModified',
-  'rating',
-  'risk',
-]
+const gridColumns = ['name', 'status', 'dateCreated', 'dateModified', 'rating']
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -37,9 +30,9 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token } = currentUser
-
-    await ideasStore.fetchIdeas(token)
+    // const { token } = currentUser
+    const token = user.value?.token
+    await ideasStore.fetchIdeas(token as string)
   }
 })
 
