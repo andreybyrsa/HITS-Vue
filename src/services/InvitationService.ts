@@ -9,7 +9,6 @@ import {
 } from '@Domain/Invitation'
 
 import Success from '@Domain/ResponseMessage'
-import useNotification from '@Hooks/useNotification'
 
 const INVITATION_URL =
   process.env.VUE_APP_INVITATION_API_URL || 'http://localhost:3000'

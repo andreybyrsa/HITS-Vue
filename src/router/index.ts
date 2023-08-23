@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
 import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
+import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 
 import AdminView from '@Views/AdminView.vue'
 import DevView from '@Views/DevView.vue'
@@ -11,9 +12,8 @@ import EditIdeaView from '@Views/EditIdeaView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
-import ChangeEmailConfirmationView from '@Views/ChangeEmailConfirmationView.vue'
 import IdeasView from '@Views/IdeasView.vue'
-import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
+
 import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
 
 const routes: Array<RouteRecordRaw> = [
