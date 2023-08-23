@@ -24,7 +24,7 @@ type O = {
   rating?: number
   risk?: number
   status?: number
-  // dateModified?: number
+  dateModified?: number
 }
 
 type OType = keyof O
@@ -33,7 +33,7 @@ type IdeaType = keyof Idea
 const sortKey = ref<OType>()
 const sortOrders = ref<O>(
   props.columns.reduce((o, key) => {
-    o[key as OType] = -1
+    o[key as OType] = 1
     return o
   }, {} as O),
 )
@@ -54,12 +54,30 @@ const filteredData = computed(() => {
   }
   if (data) {
     data.sort((a, b) => {
+      if (a.rating == b.rating) {
+        const A = new Date(a.dateCreated)
+        const B = new Date(b.dateCreated)
+        return A.getTime() - B.getTime()
+      }
       return b.rating - a.rating
     })
   }
   const key = sortKey.value
   if (key) {
     const order = sortOrders.value[key]
+    // if (key == 'date') {
+    //   data?.sort((a, b) => {
+    //     const A = new Date(a.dateModified ?? a.dateCreated)
+    //     const B = new Date(b.dateModified ?? b.dateCreated)
+    //     return order && A.getTime() && B.getTime()
+    //       ? (A.getTime() === B.getTime()
+    //           ? 0
+    //           : A.getTime() > B.getTime()
+    //           ? 1
+    //           : -1) * order
+    //       : 0
+    //   })
+    // } ЛОГИКА СОРТИРОВКИ ДАТЫ СОЗДАНИЯ\РЕДАКТИРОВАНИЯ
     data = data?.slice().sort((a, b) => {
       type ideaKey = keyof typeof a
       const A = a[key as ideaKey]
@@ -84,22 +102,16 @@ function sortBy(key: OType) {
   if (key == 'name' || key == 'status') return
   sortKey.value = key
   if (sortOrders.value[key]) {
-    if (key == 'date') {
-      // const keyS = 'dateCreated'
-      sortOrders.value.date = sortOrders.value['dateCreated'] == -1 ? 1 : -1
-      console.log(sortOrders.value.date)
-    }
     sortOrders.value[key] = sortOrders.value[key] == -1 ? 1 : -1
-    // console.log(sortOrders.value.date)
   }
 }
 
 const translations = {
   name: 'Название',
   status: 'Статус',
-  // dateCreated: 'Дата создания',
-  // dateModified: 'Дата редактирования',
-  date: 'Дата создания/ редактирования',
+  dateCreated: 'Дата создания',
+  dateModified: 'Дата редактирования',
+  // date: 'Дата создания/ редактирования',
   rating: 'Рейтинг',
   risk: 'Риск',
 }
@@ -113,8 +125,6 @@ function translate(word: Word) {
 const translatedColumns = computed(() =>
   props.columns.map((word) => translate(word as Word)),
 )
-
-console.log(translatedColumns.value)
 
 function formatDate(date: Date) {
   if (date) {
@@ -158,7 +168,6 @@ function getTranslatedKey(entry: Idea, key: string) {
 }
 
 function handleSend(id: number) {
-  // const token = user.value?.token
   IdeasService.putInitiatorSendIdea(id, user.value?.token as string)
 }
 </script>

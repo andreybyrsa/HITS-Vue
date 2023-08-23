@@ -17,15 +17,7 @@ import useUserStore from '@Store/user/userStore'
 const isOpenedFilter = ref(false)
 
 const searchQuery = ref('')
-const gridColumns = [
-  'name',
-  'status',
-  // 'dateCreated',
-  // 'dateModified',
-  'date',
-  'rating',
-  'risk',
-]
+const gridColumns = ['name', 'status', 'dateCreated', 'dateModified', 'rating']
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
