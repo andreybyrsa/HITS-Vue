@@ -7,6 +7,7 @@ import {
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
 import IdeaDescription from '@Components/Modals/IdeaModal/IdeaDescription.vue'
 import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
+import IdeaActions from '@Components/Modals/IdeaModal/IdeaActions.vue'
 import IdeaInfo from '@Components/Modals/IdeaModal/IdeaInfo.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
@@ -32,6 +33,8 @@ const ideaModalRef = ref<VueElement>()
           :idea="idea"
           @close-modal="emit('close-modal')"
         />
+
+        <IdeaActions :idea="idea" />
 
         <IdeaComments
           :idea="idea"

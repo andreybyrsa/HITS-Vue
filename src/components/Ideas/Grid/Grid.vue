@@ -10,6 +10,7 @@ import StatusTypes from '@Domain/IdeaStatus'
 import useUserStore from '@Store/user/userStore'
 import IdeasService from '@Services/IdeasService'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import DeleteIdeaModal from '@Components/Modals/DeleteIdeaModal/DeleteModal.vue'
 
 import { Idea } from '@Domain/Idea'
 
@@ -33,7 +34,7 @@ type IdeaType = keyof Idea
 const sortKey = ref<OType>()
 const sortOrders = ref<O>(
   props.columns.reduce((o, key) => {
-    o[key as OType] = -1
+    o[key as OType] = 1
     return o
   }, {} as O),
 )
@@ -148,10 +149,6 @@ function getTranslatedKey(entry: Idea, key: string) {
   return entry[key as IdeaType]
 }
 
-function handleSend(id: number) {
-  IdeasService.putInitiatorSendIdea(id, user.value?.token as string)
-}
-
 const currentOpenedIdea = ref<Idea>()
 const isOpenedIdeaModal = ref(false)
 
@@ -161,6 +158,17 @@ function handleOpenModal(ideaId: number) {
 }
 function handleCloseModal() {
   isOpenedIdeaModal.value = false
+}
+
+const currentOpenedDeleteIdea = ref<number>()
+const isOpenedIdeaDeleteModal = ref(false)
+
+function handleOpenDeleteModal(ideaId: number) {
+  currentOpenedDeleteIdea.value = ideaId
+  isOpenedIdeaDeleteModal.value = true
+}
+function handleCloseDeleteModal() {
+  isOpenedIdeaDeleteModal.value = false
 }
 </script>
 
@@ -218,25 +226,17 @@ function handleCloseModal() {
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <a
-                class="link text-decoration-none d-block text-dark pointers"
+                class="link text-decoration-none d-block pointers"
                 @click="handleOpenModal(entry.id)"
               >
                 Просмотреть идею
               </a>
             </li>
             <li class="list-group-item">
-              <router-link
-                class="text-decoration-none d-block text-dark"
-                :to="`edit-idea/${entry.id}`"
-              >
-                Редактировать
-              </router-link>
-            </li>
-            <li class="list-group-item">
               <a
-                class="link text-decoration-none d-block text-dark pointers"
-                @click="handleSend(entry.id as number)"
-                >Отправить на согласование</a
+                class="link text-decoration-none d-block text-danger pointers"
+                @click="handleOpenDeleteModal(entry.id)"
+                >Удалить</a
               >
             </li>
           </ul>
@@ -246,6 +246,11 @@ function handleCloseModal() {
         :is-opened="isOpenedIdeaModal"
         :idea="currentOpenedIdea"
         @close-modal="handleCloseModal"
+      />
+      <DeleteIdeaModal
+        :ideaId="(currentOpenedDeleteIdea as number)"
+        :is-opened="isOpenedIdeaDeleteModal"
+        @close-modal="handleCloseDeleteModal"
       />
     </tbody>
   </table>
@@ -356,5 +361,12 @@ td .red {
 
 .link {
   cursor: pointer;
+  color: rgb(33, 37, 41);
+
+  transition: $default-transition-settings;
+}
+
+.link:hover {
+  color: #0d6efd;
 }
 </style>

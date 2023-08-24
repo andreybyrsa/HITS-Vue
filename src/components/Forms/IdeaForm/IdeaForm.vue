@@ -106,22 +106,6 @@ const handleUpdateIdea = handleSubmit(async () => {
     router.push('/ideas')
   }
 })
-
-const handleDeleteIdea = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && props.idea) {
-    const { token } = currentUser
-    const { id } = props.idea
-    const response = await IdeasService.deleteInitiatorIdea(id, token)
-
-    if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
-    }
-
-    router.push('/ideas')
-  }
-}
 </script>
 
 <template>
@@ -141,7 +125,6 @@ const handleDeleteIdea = async () => {
         :is-editing="!!idea"
         @on-submit="handlePostIdea"
         @on-update="handleUpdateIdea"
-        @on-delete="handleDeleteIdea"
       />
     </div>
 

@@ -30,9 +30,8 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    // const { token } = currentUser
-    const token = user.value?.token
-    await ideasStore.fetchIdeas(token as string)
+    const { token } = currentUser
+    await ideasStore.fetchIdeas(token)
   }
 })
 
