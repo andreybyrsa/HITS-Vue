@@ -16,6 +16,8 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import { InviteUsersForm } from '@Domain/Invitation'
 import RolesTypes from '@Domain/Roles'
 
+import useNotification from '@Hooks/useNotification'
+
 import useUserStore from '@Store/user/userStore'
 
 import InvitationService from '@Services/InvitationService'
@@ -23,7 +25,6 @@ import ManageUsersService from '@Services/ManageUsersService'
 
 import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
-import useNotification from '@Utils/useNotification'
 
 const userStore = useUserStore()
 
@@ -37,7 +38,7 @@ const fileInput = ref<VueElement>()
 const loadedFileText = ref('')
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -48,27 +49,22 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { emails, error } = await ManageUsersService.getUsersEmails(token)
+    const response = await ManageUsersService.getUsersEmails(token)
 
-    if (emails) {
-      DBUsersEmails.value = emails
-    } else {
-      handleOpenNotification('error', error)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    DBUsersEmails.value = response.emails
   }
 })
 
-const { values, errors, setValues, submitCount, handleSubmit } =
+const { values, errors, resetForm, submitCount, handleSubmit } =
   useForm<InviteUsersForm>({
     validationSchema: {
       emails: (value: string[]) =>
         value?.every((email) => Validation.checkEmail(email)),
-      roles: (value: RolesTypes[]) => {
-        if (submitCount.value) {
-          return value?.length
-        }
-        return true
-      },
+      roles: (value: RolesTypes[]) => value?.length,
     },
     initialValues: {
       emails: [''],
@@ -123,7 +119,7 @@ function handleFileChange(event: HTMLInputEvent) {
         }
       })
       .catch(({ response }) => {
-        const error = response ? response.data.error : 'Ошибка загрузки файла'
+        const error = response?.data?.error ?? 'Ошибка загрузки файла'
         handleOpenNotification('error', error)
       })
   }
@@ -135,22 +131,14 @@ const handleInvite = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const { success, error } = await InvitationService.inviteUsers(
-      values,
-      token,
-    )
+    const response = await InvitationService.inviteUsers(values, token)
 
-    if (success) {
-      handleOpenNotification('success', success)
-
-      setValues({
-        emails: [''],
-        roles: [],
-      })
-      submitCount.value = 0
-    } else {
-      handleOpenNotification('error', error)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    handleOpenNotification('success', response.success)
+    resetForm()
   }
 })
 </script>
@@ -252,22 +240,22 @@ const handleInvite = handleSubmit(async (values) => {
     </Button>
 
     <NotificationModal
-      :type="responseMessage.type"
+      :type="notificationOptions.type"
       :is-opened="isOpenedNotification"
       @close-modal="handleCloseNotification"
       :time-expired="5000"
     >
-      {{ responseMessage.message }}
+      {{ notificationOptions.message }}
     </NotificationModal>
   </FormLayout>
 </template>
 
 <style lang="scss" scoped>
 .add-users-form {
-  width: 600px;
+  width: fit-content;
 
   &__content {
-    @include flexible(stretch, space-between, column, $gap: 16px);
+    @include flexible(stretch, space-between, column, $gap: 12px);
   }
 
   &__inputs {
@@ -283,7 +271,7 @@ const handleInvite = handleSubmit(async (values) => {
   }
 
   &__settings {
-    @include flexible(center, center, $gap: 16px);
+    @include flexible(center, center, $gap: 12px);
   }
 }
 </style>

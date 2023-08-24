@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
   RoleModalProps,
   RoleModalEmits,
@@ -66,9 +66,9 @@ function handleRole(currentRole: RolesTypes) {
     center,
     flex-start,
     column,
-    $gap: 16px,
     $align-self: center,
-    $justify-self: center
+    $justify-self: center,
+    $gap: 12px
   );
 
   transition: all $default-transition-settings;

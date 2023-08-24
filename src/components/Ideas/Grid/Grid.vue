@@ -6,9 +6,10 @@ import { GridProps } from '@Components/Ideas/Grid/Grid.types'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Button from '@Components/Button/Button.vue'
 import getStatus from '@Utils/getStatus'
-import StatusTypes from '@Domain/Status'
+import StatusTypes from '@Domain/IdeaStatus'
 import useUserStore from '@Store/user/userStore'
 import IdeasService from '@Services/IdeasService'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
 import { Idea } from '@Domain/Idea'
 
@@ -24,7 +25,6 @@ type O = {
   rating?: number
   risk?: number
   status?: number
-  // dateModified?: number
 }
 
 type OType = keyof O
@@ -71,9 +71,8 @@ const filteredData = computed(() => {
     const dataFilter: Idea[] = []
     data?.forEach(
       (elem) =>
-        selectedFilters?.every((filter) =>
-          Object.values(elem).includes(filter),
-        ) && dataFilter.push(elem),
+        selectedFilters?.every((filter) => Object.values(elem).includes(filter)) &&
+        dataFilter.push(elem),
     )
     return dataFilter
   }
@@ -85,21 +84,17 @@ function sortBy(key: OType) {
   sortKey.value = key
   if (sortOrders.value[key]) {
     if (key == 'date') {
-      // const keyS = 'dateCreated'
       sortOrders.value.date = sortOrders.value['dateCreated'] == -1 ? 1 : -1
-      console.log(sortOrders.value.date)
     }
     sortOrders.value[key] = sortOrders.value[key] == -1 ? 1 : -1
-    // console.log(sortOrders.value.date)
   }
 }
 
 const translations = {
   name: 'Название',
   status: 'Статус',
-  // dateCreated: 'Дата создания',
-  // dateModified: 'Дата редактирования',
-  date: 'Дата создания/ редактирования',
+  dateCreated: 'Дата создания',
+  dateModified: 'Дата редактирования',
   rating: 'Рейтинг',
   risk: 'Риск',
 }
@@ -113,8 +108,6 @@ function translate(word: Word) {
 const translatedColumns = computed(() =>
   props.columns.map((word) => translate(word as Word)),
 )
-
-console.log(translatedColumns.value)
 
 function formatDate(date: Date) {
   if (date) {
@@ -147,9 +140,7 @@ function getTranslatedKey(entry: Idea, key: string) {
     return getTranslatedStatus(entry[key])
   }
   if (key == 'date') {
-    return `${formatDate(entry['dateCreated'])} ${formatDate(
-      entry['dateModified'],
-    )}`
+    return `${formatDate(entry['dateCreated'])} ${formatDate(entry['dateModified'])}`
   }
   if (key === 'dateCreated' || key === 'dateModified') {
     return formatDate(entry[key])
@@ -158,8 +149,18 @@ function getTranslatedKey(entry: Idea, key: string) {
 }
 
 function handleSend(id: number) {
-  // const token = user.value?.token
   IdeasService.putInitiatorSendIdea(id, user.value?.token as string)
+}
+
+const currentOpenedIdea = ref<Idea>()
+const isOpenedIdeaModal = ref(false)
+
+function handleOpenModal(ideaId: number) {
+  currentOpenedIdea.value = props.data?.find((idea) => idea.id === ideaId)
+  isOpenedIdeaModal.value = true
+}
+function handleCloseModal() {
+  isOpenedIdeaModal.value = false
 }
 </script>
 
@@ -181,8 +182,7 @@ function handleSend(id: number) {
           {{ column }}
           <span
             v-if="
-              props.columns[index] !== 'name' &&
-              props.columns[index] !== 'status'
+              props.columns[index] !== 'name' && props.columns[index] !== 'status'
             "
             class="arrow"
             :class="sortOrders[props.columns[index] as OType] == 1 ? 'asc' : 'dsc'"
@@ -217,6 +217,14 @@ function handleSend(id: number) {
         <DropDown>
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
+              <a
+                class="link text-decoration-none d-block text-dark pointers"
+                @click="handleOpenModal(entry.id)"
+              >
+                Просмотреть идею
+              </a>
+            </li>
+            <li class="list-group-item">
               <router-link
                 class="text-decoration-none d-block text-dark"
                 :to="`edit-idea/${entry.id}`"
@@ -234,6 +242,11 @@ function handleSend(id: number) {
           </ul>
         </DropDown>
       </tr>
+      <IdeaModal
+        :is-opened="isOpenedIdeaModal"
+        :idea="currentOpenedIdea"
+        @close-modal="handleCloseModal"
+      />
     </tbody>
   </table>
   <div

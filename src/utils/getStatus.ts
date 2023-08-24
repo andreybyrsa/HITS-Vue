@@ -1,4 +1,4 @@
-import StatusTypes from '@Domain/Status'
+import StatusTypes from '@Domain/IdeaStatus'
 
 interface GetRolesType {
   status: StatusTypes[]
@@ -9,16 +9,10 @@ interface GetRolesType {
 
 function getStatus(): GetRolesType {
   return {
-    status: [
-      'NEW',
-      'ON_EDITING',
-      'ON_APPROVAL',
-      'ON_CONFIRMATION',
-      'CONFIRMED',
-    ],
+    status: ['NEW', 'ON_EDITING', 'ON_APPROVAL', 'ON_CONFIRMATION', 'CONFIRMED'],
     translatedStatus: {
       NEW: 'Новая',
-      ON_EDITING: 'На редактирование',
+      ON_EDITING: 'На редактировании',
       ON_APPROVAL: 'На согласовании',
       ON_CONFIRMATION: 'На утверждении',
       CONFIRMED: 'Утверждено',

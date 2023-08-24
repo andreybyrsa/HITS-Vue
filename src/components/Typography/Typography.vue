@@ -8,7 +8,7 @@ const props = defineProps<TypographyProps>()
 const isTextProperty = props.className?.includes('fs')
 
 const typographyClassName = computed(() => {
-  return [{ 'fs-5': !isTextProperty }, props.className]
+  return [{ 'fs-6': !isTextProperty }, props.className]
 })
 </script>
 

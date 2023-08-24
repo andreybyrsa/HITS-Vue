@@ -13,10 +13,11 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { RecoveryData } from '@Domain/Invitation'
 
+import useNotification from '@Hooks/useNotification'
+
 import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
-import useNotification from '@Utils/useNotification'
 
 const isOpenedModal = ref(false)
 
@@ -24,7 +25,7 @@ const authKey = ref('')
 const expiredTime = ref('')
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -44,10 +45,8 @@ function startTimer() {
     const minutes = Math.floor(initialSeconds / 60)
     const seconds = initialSeconds - minutes * 60
 
-    const currentMinutes =
-      minutes.toString().length > 1 ? minutes : `0${minutes}`
-    const currentSeconds =
-      seconds.toString().length > 1 ? seconds : `0${seconds}`
+    const currentMinutes = minutes.toString().length > 1 ? minutes : `0${minutes}`
+    const currentSeconds = seconds.toString().length > 1 ? seconds : `0${seconds}`
 
     expiredTime.value = `${currentMinutes}:${currentSeconds}`
 
@@ -60,19 +59,18 @@ function startTimer() {
 }
 
 const sendRevoveryEmail = handleSubmit(async (values) => {
-  const { key, error } = await InvitationService.sendRecoveryEmail(values)
+  const response = await InvitationService.sendRecoveryEmail(values)
 
-  if (key) {
-    authKey.value = key
-    isOpenedModal.value = true
-
-    startTimer()
-
-    handleOpenNotification('success')
-  } else {
-    const currentError = error ?? 'Ошибка отправки почты'
-    handleOpenNotification('error', currentError)
+  if (response instanceof Error) {
+    return handleOpenNotification('error', response.message)
   }
+
+  authKey.value = response.key
+  isOpenedModal.value = true
+
+  startTimer()
+
+  handleOpenNotification('success')
 })
 </script>
 
@@ -87,6 +85,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
         <Input
           type="email"
           name="email"
+          class-name="rounded-end"
           placeholder="Введите email"
           prepend="@"
         />
@@ -100,14 +99,14 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
         </Button>
 
         <NotificationModal
-          :type="responseMessage.type"
+          :type="notificationOptions.type"
           :is-opened="isOpenedNotification"
           @close-modal="handleCloseNotification"
         >
           {{
-            responseMessage.type === 'success'
+            notificationOptions.type === 'success'
               ? `Код отправлен на почту ${values.email}. Время действия кода ${expiredTime}`
-              : responseMessage.message
+              : notificationOptions.message
           }}
         </NotificationModal>
 

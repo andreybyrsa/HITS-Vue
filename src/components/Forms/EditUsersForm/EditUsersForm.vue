@@ -2,39 +2,37 @@
 import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import DropDown from '@Components/DropDown/DropDown.vue'
-import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+import SearchUsers from '@Components/Forms/EditUsersForm/SearchUsers.vue'
+import UsersList from '@Components/Forms/EditUsersForm/UsersList.vue'
+import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
 import { User } from '@Domain/User'
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
 
+import useNotification from '@Hooks/useNotification'
+
 import useUserStore from '@Store/user/userStore'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
-import getRoles from '@Utils/getRoles'
-import useNotification from '@Utils/useNotification'
-
 const isOpenUserModal = ref(false)
+const isLoading = ref(true)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const currentUsers = ref<User[]>([])
-const editingUser = ref<User>()
-const searchedValue = ref('')
+const editingUser = ref<UpdateUserData>()
 
-const availableRoles = getRoles()
+const searchedValue = ref('')
 const filteredRoles = ref<RolesTypes[]>([])
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -45,49 +43,57 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { users, error } = await ManageUsersService.getUsers(token)
+    const response = await ManageUsersService.getUsers(token)
 
-    if (users) {
-      currentUsers.value = users
-    } else {
-      handleOpenNotification('error', error)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    currentUsers.value = response.users
+    isLoading.value = false
   }
 })
-
-function getCurrentRoleColor(role: RolesTypes) {
-  if (role === 'ADMIN') {
-    return 'text-danger'
-  }
-  return 'text-secondary'
-}
 
 const searchedUsers = computed(() => {
   return currentUsers.value.filter((user) => {
     const userEmail = user.email.toLowerCase().trim()
     const currentSearchedValue = searchedValue.value.toLowerCase().trim()
 
-    const isIncludeSearcheValue = userEmail.includes(currentSearchedValue)
+    const isIncludesSearcheValue = userEmail.includes(currentSearchedValue)
 
     if (filteredRoles.value.length) {
       return (
-        filteredRoles.value.every((role) => user.roles.includes(role)) &&
-        isIncludeSearcheValue
+        filteredRoles.value.some((role) => user.roles.includes(role)) &&
+        isIncludesSearcheValue
       )
     }
 
-    return isIncludeSearcheValue
+    return isIncludesSearcheValue
   })
 })
 
 function handleOpenModal(email: string) {
-  isOpenUserModal.value = true
-  editingUser.value = {
-    ...currentUsers.value.find((user) => user.email === email),
-  } as User
+  const selectedUser = currentUsers.value.find((user) => user.email === email)
+
+  if (selectedUser) {
+    const { email, firstName, lastName, roles } = selectedUser
+    editingUser.value = {
+      email: email,
+      newEmail: email,
+      newFirstName: firstName,
+      newLastName: lastName,
+      newRoles: roles,
+    }
+
+    isOpenUserModal.value = true
+  }
 }
 
-function handleCloseModal(newUser?: UpdateUserData, success?: string) {
+function handleCloseModal() {
+  isOpenUserModal.value = false
+}
+
+function handleSaveUser(newUser: UpdateUserData, success: string) {
   isOpenUserModal.value = false
 
   if (newUser) {
@@ -116,81 +122,40 @@ function handleCloseModal(newUser?: UpdateUserData, success?: string) {
       Редактирование пользователей
     </Typography>
 
-    <div class="w-50">
-      <Input
-        name="search"
-        v-model="searchedValue"
-        placeholder="Поиск по почте"
-      >
-        <template #append>
-          <Button
-            class-name="px-2 py-0"
-            append-icon-name="bi bi-chevron-down"
-            is-drop-down-controller
-          >
-            Роли
-          </Button>
-
-          <DropDown>
-            <template
-              v-for="(role, index) in availableRoles.roles"
-              :key="index"
-            >
-              <Checkbox
-                name="checkboxRole"
-                :label="availableRoles.translatedRoles[role]"
-                v-model="filteredRoles"
-                :value="role"
-              />
-            </template>
-          </DropDown>
-        </template>
-      </Input>
-    </div>
+    <SearchUsers
+      v-model:searchedValue="searchedValue"
+      v-model:filteredRoles="filteredRoles"
+    />
 
     <div class="edit-users-form__content w-100">
-      <div
-        v-for="(user, index) in searchedUsers"
-        :key="index"
-        class="edit-users-form__user px-3 py-2 border rounded-3"
-      >
-        <div class="d-flex flex-column">
-          <Typography class-name="text-primary fs-5">
-            {{ user.email }}
-          </Typography>
-          <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
-
-          <div class="edit-users-form__roles">
-            <Typography
-              v-for="(role, index) in user.roles"
-              :key="index"
-              :class-name="`fs-6 ${getCurrentRoleColor(role)}`"
-            >
-              {{ availableRoles.translatedRoles[role] }}
-            </Typography>
-          </div>
-        </div>
-
-        <Button
-          prepend-icon-name="bi bi-pencil-square text-primary"
-          @click="handleOpenModal(user.email)"
-        ></Button>
-      </div>
+      <template v-if="isLoading">
+        <LoadingPlaceholder
+          v-for="value in 3"
+          :key="value"
+          height="medium"
+        />
+      </template>
+      <UsersList
+        v-else
+        :searched-users="searchedUsers"
+        @open-edit-modal="handleOpenModal"
+      />
 
       <NotificationModal
-        :type="responseMessage.type"
+        :type="notificationOptions.type"
         :is-opened="isOpenedNotification"
         @close-modal="handleCloseNotification"
         :time-expired="5000"
       >
-        {{ responseMessage.message }}
+        {{ notificationOptions.message }}
       </NotificationModal>
     </div>
 
     <EditUserModal
       :is-opened="isOpenUserModal"
-      @close-modal="handleCloseModal"
       :user="editingUser"
+      @save-user="handleSaveUser"
+      @close-modal="handleCloseModal"
     />
   </form>
 </template>
@@ -201,22 +166,14 @@ function handleCloseModal(newUser?: UpdateUserData, success?: string) {
   height: 100%;
   background-color: $white-color;
 
-  @include flexible(center, flex-start, column, $gap: 16px);
+  @include flexible(center, flex-start, column, $gap: 12px);
 
   &__content {
     max-height: 100%;
 
     overflow-y: scroll;
 
-    @include flexible(stretch, flex-start, column, $gap: 8px);
-  }
-
-  &__user {
-    @include flexible(center, space-between);
-  }
-
-  &__roles {
-    @include flexible(center, flex-start, $gap: 8px);
+    @include flexible(stretch, flex-start, column, $gap: 12px);
   }
 }
 </style>

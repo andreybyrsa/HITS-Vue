@@ -12,11 +12,11 @@ const collapseProps = {
 }
 const dropDwonProps = {
   'data-bs-toggle': 'dropdown',
-  'data-bs-auto-close': 'outside',
+  'data-bs-auto-close': props.dropDownClickableInside ? 'outside' : true,
   'aria-expanded': false,
 }
 
-const ButtonClassName = computed(() => ['btn btn-lg d-flex', props.className])
+const ButtonClassName = computed(() => ['btn d-flex', props.className])
 
 const ButtonBinds = computed(() => {
   if (props.isCollapseController) {

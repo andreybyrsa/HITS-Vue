@@ -5,9 +5,6 @@ interface GetRolesType {
   translatedRoles: {
     [key in RolesTypes]: string
   }
-  colors: {
-    [key in RolesTypes]: string
-  }
 }
 
 function getRoles(): GetRolesType {
@@ -18,12 +15,6 @@ function getRoles(): GetRolesType {
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперт',
       ADMIN: 'Админ',
-    },
-    colors: {
-      INITIATOR: 'text-secondary',
-      PROJECT_OFFICE: 'text-secondary',
-      EXPERT: 'text-secondary',
-      ADMIN: 'text-danger',
     },
   }
 }

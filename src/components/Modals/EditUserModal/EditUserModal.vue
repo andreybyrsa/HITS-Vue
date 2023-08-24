@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import ModalLayout from '@Components/Modals/ModalLayout/ModalLayout.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
   EditUserModalProps,
   EditUserModalEmits,
@@ -18,13 +18,14 @@ import NotificationModal from '@Components/Modals/NotificationModal/Notification
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
 
+import useNotification from '@Hooks/useNotification'
+
 import useUserStore from '@Store/user/userStore'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
 import getRoles from '@Utils/getRoles'
 import Validation from '@Utils/Validation'
-import useNotification from '@Utils/useNotification'
 
 const props = defineProps<EditUserModalProps>()
 
@@ -34,7 +35,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const {
-  responseMessage,
+  notificationOptions,
   isOpenedNotification,
   handleOpenNotification,
   handleCloseNotification,
@@ -58,15 +59,7 @@ watch(
   () => props.user,
   () => {
     if (props.user) {
-      const { email, firstName, lastName, roles } = props.user
-
-      setValues({
-        email,
-        newEmail: email,
-        newFirstName: firstName,
-        newLastName: lastName,
-        newRoles: roles,
-      })
+      setValues({ ...props.user })
     }
   },
 )
@@ -76,22 +69,23 @@ const handleEditUser = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { success, error } = await ManageUsersService.updateUserInfo(
-      values,
-      token,
-    )
+    const response = await ManageUsersService.updateUserInfo(values, token)
 
-    if (success) {
-      return emit('close-modal', values, success)
-    } else {
-      handleOpenNotification('error', error)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
     }
+
+    emit('save-user', values, response.success)
+    emit('close-modal')
   }
 })
 </script>
 
 <template>
-  <ModalLayout :is-opened="isOpened">
+  <ModalLayout
+    :is-opened="isOpened"
+    @on-outside-close="emit('close-modal')"
+  >
     <div
       v-if="isOpened"
       class="edit-user-modal p-3 rounded-3"
@@ -110,12 +104,14 @@ const handleEditUser = handleSubmit(async (values) => {
           <Input
             type="email"
             name="newEmail"
+            class-name="rounded-end"
             placeholder="Введите email"
             prepend="@"
           />
 
           <Input
             name="newFirstName"
+            class-name="rounded-end"
             placeholder="Введите имя"
           >
             <template #prepend>
@@ -125,6 +121,7 @@ const handleEditUser = handleSubmit(async (values) => {
 
           <Input
             name="newLastName"
+            class-name="rounded-end"
             placeholder="Введите фамилию"
           >
             <template #prepend>
@@ -170,12 +167,12 @@ const handleEditUser = handleSubmit(async (values) => {
       </template>
 
       <NotificationModal
-        :type="responseMessage.type"
+        :type="notificationOptions.type"
         :is-opened="isOpenedNotification"
         @close-modal="handleCloseNotification"
         :time-expired="5000"
       >
-        {{ responseMessage.message }}
+        {{ notificationOptions.message }}
       </NotificationModal>
     </div>
   </ModalLayout>
@@ -190,9 +187,9 @@ const handleEditUser = handleSubmit(async (values) => {
     flex-end,
     flex-start,
     column,
-    $gap: 16px,
     $align-self: center,
-    $justify-self: center
+    $justify-self: center,
+    $gap: 12px
   );
 
   transition: all $default-transition-settings;
@@ -202,7 +199,7 @@ const handleEditUser = handleSubmit(async (values) => {
   }
 
   &__inputs {
-    @include flexible(center, flex-start, column, $gap: 8px);
+    @include flexible(center, flex-start, column, $gap: 12px);
   }
 }
 

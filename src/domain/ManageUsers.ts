@@ -15,4 +15,13 @@ interface UpdateUserPassword {
   password: string
 }
 
-export { UpdateUserData, UpdateUserPassword }
+interface ChangeUserEmail {
+  key: string
+  oldEmail: string
+  code: string
+  password: string
+  newEmail: string
+  url: string
+}
+
+export { UpdateUserData, UpdateUserPassword, ChangeUserEmail }

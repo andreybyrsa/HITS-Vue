@@ -1,50 +1,46 @@
-@@ -1,110 +1,155 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import Grid from '@Components/Ideas/Grid/Grid.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import FilterModal from '@Components/Modals/FilterModal/FilterModal.vue'
+import Table from '@Components/Table/Table.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useIdeasStore from '@Store/ideas/ideasStore'
 import useUserStore from '@Store/user/userStore'
-import Table from '@Components/Table/Table.vue'
-import { date } from 'yup'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const ideasStore = useIdeasStore()
+const { ideas } = storeToRefs(ideasStore)
 
 const isOpenedFilter = ref(false)
-const clickFunction = '1'
-const searchValue = ref('')
+
+const searchedValue = ref('')
+const selectedFilters = ref<string[]>([])
+
 const gridColumns = [
-  { key: 'name', label: 'Название', click: () => console.log(clickFunction) },
+  { key: 'name', label: 'Название', click: () => console.log(1) },
   { key: 'status', label: 'Статус' },
   { key: 'dateCreated', label: 'Дата создания' },
   { key: 'dateModified', label: 'Дата изменения' },
   { key: 'rating', label: 'Рейтинг' },
 ]
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
-const ideasStore = useIdeasStore()
-const { initiatorIdeas } = storeToRefs(ideasStore)
-
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    // const { token } = currentUser
-    const token = user.value?.token
-    await ideasStore.fetchIdeas(token as string)
+    const { token } = currentUser
+    await ideasStore.fetchIdeas(token)
   }
 })
-
-const selectedFilters = ref<string[]>([])
 
 function handleCloseModal(filters?: string[]) {
   if (filters) {
@@ -106,12 +102,13 @@ const ideamegahuita = [
     </template>
 
     <template #content>
-      <Typography class-name="fs-2 text-primary w-100">Идеи</Typography>
+      <Typography class-name="fs-2 text-primary w-100">Список идей</Typography>
 
-      <div class="index-page__search bg-primary rounded-3 p-3 w-100">
+      <div class="ideas-page__search bg-primary rounded-3 p-2 w-100">
         <Input
-          name="asd"
-          v-model="searchValue"
+          name="search-input"
+          class-name="rounded-end"
+          v-model="searchedValue"
           placeholder="Поиск идей по названию"
         >
           <template #prepend>
@@ -121,9 +118,11 @@ const ideamegahuita = [
 
         <Button
           class-name="btn-light"
+          prepend-icon-name="bi bi-funnel"
           @click="isOpenedFilter = true"
-          ><i class="bi bi-funnel-fill"></i>Фильтр</Button
         >
+          Фильтр
+        </Button>
         <FilterModal
           :is-opened="isOpenedFilter"
           @close-modal="handleCloseModal"
@@ -133,17 +132,17 @@ const ideamegahuita = [
 
       <Table
         :columns="gridColumns"
-        :data="ideamegahuita"
-        :search-value="searchValue"
-        :filter-value="gridColumns[0].key"
+        :data="ideas"
+        :search-value="searchedValue"
       >
         <template #actions="{ item }">
           <div>
             <Button
               class-name=" btn-primary text-white  fs-3  "
               prepend-icon-name="bi bi-list"
-              >{{ item.number }}</Button
             >
+              {{ item.number }}
+            </Button>
           </div>
         </template>
       </Table>
@@ -154,11 +153,11 @@ const ideamegahuita = [
 <style lang="scss">
 .ideas-page {
   &__content {
-    @include flexible(stretch, flex-start, column, $gap: 16px);
+    @include flexible(center, start, column, $gap: 12px);
   }
-}
 
-.index-page__search {
-  @include flexible(stretch, space-between, $gap: 16px);
+  &__search {
+    @include flexible(stretch, space-between, $gap: 8px);
+  }
 }
 </style>

@@ -1,25 +1,78 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import VueMultiselect from 'vue-multiselect'
 
-const options = ref([
-  { id: 1, name: 'Apple', category: 'Fruit' },
-  { id: 2, name: 'Banana', category: 'Fruit' },
-  { id: 3, name: 'Carrot', category: 'Vegetable' },
-  { id: 4, name: 'Broccoli', category: 'Vegetable' },
+import Typography from '@Components/Typography/Typography.vue'
+import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.types'
+
+const customerAndContact = defineModel<CustomerAndContact>({ required: true })
+
+const customers = ref([
+  { contacts: ['ВШЦТ'], company: 'ВШЦТ' },
+  { contacts: ['Человек 1', 'Человек 2'], company: 'Роснефть' },
+  { contacts: ['Человек 3', 'Человек 4', 'Человек 5'], company: 'Газпром' },
+  {
+    contacts: ['Человек 6', 'Человек 7', 'Человек 8', 'Человек 9'],
+    company: 'Лукойл',
+  },
 ])
+const currentCompanies = ref<string[]>(
+  customers.value.map((option) => option.company),
+)
+const currentCompanyContacts = ref<string[]>([])
+
+function getContactPersonsByCompany(company: string) {
+  return customers.value.find((option) => option.company === company)
+}
+
+function handleCustomerChange(selectedCompany: string) {
+  const currentContacts = getContactPersonsByCompany(selectedCompany)?.contacts
+  if (currentContacts) {
+    currentCompanyContacts.value = currentContacts
+    const currentContactPerson = customerAndContact.value.contactPerson
+
+    customerAndContact.value.contactPerson = currentContacts.includes(
+      currentContactPerson,
+    )
+      ? currentContactPerson
+      : currentContacts[0]
+  }
+}
+
+watch(
+  () => customerAndContact.value.customer,
+  (newCustomer) => {
+    if (newCustomer) {
+      handleCustomerChange(newCustomer)
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
-  <div style="width: 100%">
-    <Typography class-name="fs-6 text-primary">Заказчик*</Typography>
+  <div class="w-100">
+    <Typography class="fs-6 text-primary">Заказчик*</Typography>
     <VueMultiselect
-      :options="options"
-      :close-on-select="true"
-      :clear-on-select="false"
+      class="mt-2"
+      :options="currentCompanies"
+      v-model="customerAndContact.customer"
+      :allow-empty="false"
       placeholder="Выберите заказчика"
-      label="category"
-      track-by="category"
+    />
+  </div>
+
+  <div
+    v-if="customerAndContact.customer !== 'ВШЦТ'"
+    class="w-100"
+  >
+    <Typography class="fs-6 text-primary">Контактное лицо*</Typography>
+    <VueMultiselect
+      class="mt-2"
+      :options="currentCompanyContacts"
+      v-model="customerAndContact.contactPerson"
+      :allow-empty="false"
+      placeholder="Выберите контактное лицо"
     />
   </div>
 </template>
@@ -275,7 +328,6 @@ fieldset[disabled] .multiselect {
   line-height: 16px;
   text-decoration: none;
   text-transform: none;
-  vertical-align: middle;
   position: relative;
   cursor: pointer;
   white-space: nowrap;
@@ -298,7 +350,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option--highlight::after {
-  content: attr(data-select);
+  content: 'Нажмите, чтобы выбрать';
   background: #2151ffb6;
   color: white;
 }
@@ -310,7 +362,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option--selected::after {
-  content: attr(data-selected);
+  content: 'Выбрано';
   color: silver;
   background: inherit;
 }
@@ -322,7 +374,6 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--selected.multiselect__option--highlight::after {
   background: #2151ff;
-  content: attr(data-deselect);
   color: #fff;
 }
 
@@ -371,59 +422,5 @@ fieldset[disabled] .multiselect {
 .multiselect-enter-active,
 .multiselect-leave-active {
   transition: all 0.15s ease;
-}
-
-.multiselect-enter,
-.multiselect-leave-active {
-  opacity: 0;
-}
-
-.multiselect__strong {
-  margin-bottom: 8px;
-  line-height: 20px;
-  display: inline-block;
-  vertical-align: top;
-}
-
-*[dir='rtl'] .multiselect {
-  text-align: right;
-}
-
-*[dir='rtl'] .multiselect__select {
-  right: auto;
-  left: 1px;
-}
-
-*[dir='rtl'] .multiselect__tags {
-  padding: 8px 8px 0 40px;
-}
-
-*[dir='rtl'] .multiselect__content {
-  text-align: right;
-}
-
-*[dir='rtl'] .multiselect__option::after {
-  right: auto;
-  left: 0;
-}
-
-*[dir='rtl'] .multiselect__clear {
-  right: auto;
-  left: 12px;
-}
-
-*[dir='rtl'] .multiselect__spinner {
-  right: auto;
-  left: 1px;
-}
-
-@keyframes spinning {
-  from {
-    transform: rotate(0);
-  }
-
-  to {
-    transform: rotate(2turn);
-  }
 }
 </style>

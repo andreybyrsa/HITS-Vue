@@ -2,15 +2,16 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
 import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
+import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 
 import AdminView from '@Views/AdminView.vue'
 import DevView from '@Views/DevView.vue'
 import LoginView from '@Views/LoginView.vue'
-import NewIdeas from '@Views/NewIdeas.vue'
-import EditIdeasView from '@Views/EditIdeasView.vue'
+import NewIdeaView from '@Views/NewIdeaView.vue'
+import EditIdeaView from '@Views/EditIdeaView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
-
+import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import IdeasView from '@Views/IdeasView.vue'
 
 import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
@@ -28,12 +29,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'add-idea',
         name: 'addIdeas',
-        component: NewIdeas,
+        component: NewIdeaView,
       },
       {
         path: 'edit-idea/:id',
         name: 'editIdeas',
-        component: EditIdeasView,
+        component: EditIdeaView,
       },
       {
         path: 'admin',
@@ -70,6 +71,18 @@ const routes: Array<RouteRecordRaw> = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
+  },
+  {
+    path: '/change-email',
+    name: 'change-email',
+    component: ChangeEmailView,
+    children: [
+      {
+        path: ':slug',
+        name: 'change-email-confirmation',
+        component: NewEmail,
+      },
+    ],
   },
 ]
 
