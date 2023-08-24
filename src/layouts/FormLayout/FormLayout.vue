@@ -21,6 +21,6 @@ const FormLayoutClassName = computed(() => [
   width: 400px;
   background-color: $white-color;
 
-  @include flexible(center, flex-start, column, $gap: 16px);
+  @include flexible(center, flex-start, column, $gap: 12px);
 }
 </style>

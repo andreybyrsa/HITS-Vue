@@ -31,7 +31,7 @@ function getCurrentRoleColor(role: RolesTypes) {
     class="user px-3 py-2 border rounded-3"
   >
     <div class="d-flex flex-column">
-      <Typography class-name="text-primary fs-5">
+      <Typography class-name="text-primary">
         {{ user.email }}
       </Typography>
       <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
@@ -40,7 +40,7 @@ function getCurrentRoleColor(role: RolesTypes) {
         <Typography
           v-for="(role, index) in user.roles"
           :key="index"
-          :class-name="`fs-6 ${getCurrentRoleColor(role)}`"
+          :class-name="getCurrentRoleColor(role)"
         >
           {{ availableRoles.translatedRoles[role] }}
         </Typography>

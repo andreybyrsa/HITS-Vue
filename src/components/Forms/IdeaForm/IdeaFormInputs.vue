@@ -17,7 +17,7 @@ const modelValue = defineModel({
     <Input
       name="name"
       label="Название идеи*"
-      class-name="fs-6"
+      class-name="rounded-end"
       placeholder="Введите название идеи"
     />
 
@@ -32,7 +32,7 @@ const modelValue = defineModel({
       :key="index"
       :name="textarea.name"
       :label="textarea.label"
-      :class-name="textarea.className"
+      class-name="rounded-end"
       :placeholder="textarea.placeholder"
     ></Textarea>
   </div>

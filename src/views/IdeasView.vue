@@ -45,17 +45,18 @@ function handleCloseModal(filters?: string[]) {
 </script>
 
 <template>
-  <PageLayout content-class-name="dev-page__content p-3">
+  <PageLayout content-class-name="ideas-page__content p-3">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
 
     <template #content>
-      <Typography class-name="fs-2 text-primary w-100">Идеи</Typography>
+      <Typography class-name="fs-2 text-primary w-100">Список идей</Typography>
 
-      <div class="index-page__search bg-primary rounded-3 p-3 w-100">
+      <div class="ideas-page__search bg-primary rounded-3 p-2 w-100">
         <Input
           name="search-input"
+          class-name="rounded-end"
           v-model="searchQuery"
           placeholder="Поиск идей по названию"
         >
@@ -66,9 +67,11 @@ function handleCloseModal(filters?: string[]) {
 
         <Button
           class-name="btn-light"
+          prepend-icon-name="bi bi-funnel"
           @click="isOpenedFilter = true"
-          ><i class="bi bi-funnel-fill"></i>Фильтр</Button
         >
+          Фильтр
+        </Button>
         <FilterModal
           :is-opened="isOpenedFilter"
           @close-modal="handleCloseModal"
@@ -88,13 +91,13 @@ function handleCloseModal(filters?: string[]) {
 </template>
 
 <style lang="scss">
-.dev-page {
+.ideas-page {
   &__content {
-    @include flexible(center, start, column, $gap: 16px);
+    @include flexible(center, start, column, $gap: 12px);
   }
-}
 
-.index-page__search {
-  @include flexible(stretch, space-between, $gap: 16px);
+  &__search {
+    @include flexible(stretch, space-between, $gap: 8px);
+  }
 }
 </style>

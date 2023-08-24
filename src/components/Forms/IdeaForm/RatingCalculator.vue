@@ -48,7 +48,7 @@ watch(totalRating, () => {
   </div>
 
   <div class="col">
-    <Typography class-name="fs-6 text-primary">
+    <Typography class-name="text-primary">
       Рейтинг: {{ ratingData.rating }}
     </Typography>
   </div>

@@ -85,6 +85,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
         <Input
           type="email"
           name="email"
+          class-name="rounded-end"
           placeholder="Введите email"
           prepend="@"
         />

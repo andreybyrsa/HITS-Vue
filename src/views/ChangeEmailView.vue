@@ -1,18 +1,24 @@
 <script lang="ts" setup>
-import { reactive } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
+
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import useUserStore from '@Store/user/userStore'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
-import useNotification from '@Hooks/useNotification'
+
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
 import { NewEmailForm } from '@Domain/Invitation'
+
+import useNotification from '@Hooks/useNotification'
+
+import useUserStore from '@Store/user/userStore'
+
 import InvitationService from '@Services/InvitationService'
+
 import Validation from '@Utils/Validation'
 
 const {
@@ -24,11 +30,6 @@ const {
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const response = reactive({
-  success: '',
-  key: '',
-  error: '',
-})
 const { handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
     newEmail: (value: string) =>
@@ -51,11 +52,13 @@ const sendChangingUrl = handleSubmit(async (values) => {
   }
 })
 </script>
+
 <template>
   <PageLayout content-class-name="change-email-page__content">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
+
     <template #content>
       <router-view></router-view>
       <FormLayout class-name="text-center">
@@ -63,6 +66,7 @@ const sendChangingUrl = handleSubmit(async (values) => {
         <Input
           type="email"
           name="newEmail"
+          class-name="rounded-end"
           placeholder="Введите ваш новый email"
           prepend="@"
         />
@@ -81,12 +85,6 @@ const sendChangingUrl = handleSubmit(async (values) => {
         >
           {{ notificationOptions.message }}
         </NotificationModal>
-        <Typography
-          v-if="response.error"
-          class-name="text-danger fs-6"
-        >
-          {{ response.error }}
-        </Typography>
       </FormLayout>
     </template>
   </PageLayout>

@@ -2,19 +2,26 @@
 import { ref, reactive, watch, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { useRouter, useRoute } from 'vue-router'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import { storeToRefs } from 'pinia'
+
 import { NewEmailModalProps } from '@Components/Modals/NewEmailModal/NewEmailModal.types'
 import newEmailModalInputs from '@Components/Modals/NewEmailModal/NewEmailModalInputs'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import ManageUsersService from '@Services/ManageUsersService'
-import Validation from '@Utils/Validation'
-import { storeToRefs } from 'pinia'
-import useUserStore from '@Store/user/userStore'
+
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
 import { NewEmailForm } from '@Domain/Invitation'
-import InvitationService from '@Services/InvitationService'
+
 import useNotification from '@Hooks/useNotification'
+
+import useUserStore from '@Store/user/userStore'
+
+import ManageUsersService from '@Services/ManageUsersService'
+import InvitationService from '@Services/InvitationService'
+
+import Validation from '@Utils/Validation'
 
 const route = useRoute()
 const { slug } = route.params
@@ -109,8 +116,9 @@ const handleChangeEmail = handleSubmit(async (values) => {
       <Input
         v-for="input in newEmailModalInputs"
         :key="input.id"
-        :name="input.name"
         :type="input.type"
+        :name="input.name"
+        class-name="rounded-end"
         :placeholder="input.placeholder"
       >
         <template #prepend>
@@ -149,15 +157,13 @@ const handleChangeEmail = handleSubmit(async (values) => {
   background-color: $white-color;
 
   @include flexible(
-    flex-end,
+    center,
     flex-start,
     column,
-    $gap: 16px,
+    $gap: 12px,
     $align-self: center,
     $justify-self: center
   );
-
-  @include flexible(center, flex-start, column, $gap: 16px);
 
   transition: all $default-transition-settings;
 }

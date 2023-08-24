@@ -46,12 +46,9 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     id: 5,
     text: 'Настройки',
     to: '/change-email',
-    routes: [
-      { id: 0, to: '/change-email', text: 'Изменение почты' },
-      { id: 1, to: '/confirm-email', text: 'Подтверждение почты' },
-    ],
+    routes: [{ id: 0, to: '/change-email', text: 'Изменение почты' }],
     iconName: 'bi bi-gear',
-    roles: ['ADMIN'],
+    roles: getRoles().roles,
   },
 ]
 

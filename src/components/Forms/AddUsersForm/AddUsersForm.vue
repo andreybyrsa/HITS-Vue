@@ -252,10 +252,10 @@ const handleInvite = handleSubmit(async (values) => {
 
 <style lang="scss" scoped>
 .add-users-form {
-  width: 600px;
+  width: fit-content;
 
   &__content {
-    @include flexible(stretch, space-between, column, $gap: 16px);
+    @include flexible(stretch, space-between, column, $gap: 12px);
   }
 
   &__inputs {
@@ -271,7 +271,7 @@ const handleInvite = handleSubmit(async (values) => {
   }
 
   &__settings {
-    @include flexible(center, center, $gap: 16px);
+    @include flexible(center, center, $gap: 12px);
   }
 }
 </style>

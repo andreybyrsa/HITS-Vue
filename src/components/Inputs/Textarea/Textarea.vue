@@ -22,7 +22,7 @@ const { value, errorMessage } = useField(props.name, props.validation, {
 })
 
 const TextareaClassName = computed(() => [
-  'form-control form-control-lg',
+  'form-control',
   { 'is-invalid': props.error || errorMessage.value },
   props.className,
 ])
@@ -44,7 +44,7 @@ const LabelClassName = computed(() => [
     <div class="input-group">
       <span
         v-if="prepend || $slots.prepend"
-        class="input-group-text fs-5"
+        class="input-group-text fs-6"
       >
         {{ prepend }}
         <slot name="prepend"></slot>
@@ -66,7 +66,7 @@ const LabelClassName = computed(() => [
 
       <span
         v-if="append || $slots.append"
-        class="input-group-text fs-5"
+        class="input-group-text fs-6"
       >
         {{ append }}
         <slot name="append"></slot>
