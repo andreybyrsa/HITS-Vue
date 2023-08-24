@@ -1,3 +1,4 @@
+@@ -1,110 +1,155 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -13,18 +14,18 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useIdeasStore from '@Store/ideas/ideasStore'
 import useUserStore from '@Store/user/userStore'
+import Table from '@Components/Table/Table.vue'
+import { date } from 'yup'
 
 const isOpenedFilter = ref(false)
-
-const searchQuery = ref('')
+const clickFunction = '1'
+const searchValue = ref('')
 const gridColumns = [
-  'name',
-  'status',
-  // 'dateCreated',
-  // 'dateModified',
-  'date',
-  'rating',
-  'risk',
+  { key: 'name', label: 'Название', click: () => console.log(clickFunction) },
+  { key: 'status', label: 'Статус' },
+  { key: 'dateCreated', label: 'Дата создания' },
+  { key: 'dateModified', label: 'Дата изменения' },
+  { key: 'rating', label: 'Рейтинг' },
 ]
 
 const userStore = useUserStore()
@@ -51,10 +52,55 @@ function handleCloseModal(filters?: string[]) {
   }
   isOpenedFilter.value = false
 }
+
+const ideamegahuita = [
+  {
+    name: 'Тортики Тортики Тортики Тортики Тортики Тортики ',
+    dateCreated: '2023-01-10',
+    dateModified: '2023-01-10',
+    projectType: 'INSIDE',
+    problem: 'проблема',
+    solution: 'еще что то',
+    result: 'результат',
+    customer: 'Газпром',
+    description: 'описание вроде',
+    risk: 0.5,
+    rating: 1,
+    status: 'ON_EDITING',
+  },
+  {
+    name: 'Печеньки',
+    dateCreated: '2024-01-10',
+    dateModified: '2024-01-10',
+    projectType: 'INSIDE',
+    problem: 'проблема',
+    solution: 'еще что то',
+    result: 'результат',
+    customer: 'Газпром',
+    description: 'описание вроде',
+    risk: 0.5,
+    rating: 1,
+    status: 'ON_EDITING',
+  },
+  {
+    name: 'Пряники',
+    dateCreated: '2022-01-10',
+    dateModified: '2022-01-10',
+    projectType: 'INSIDE',
+    problem: 'проблема',
+    solution: 'еще что то',
+    result: 'результат',
+    customer: 'Газпром',
+    description: 'описание вроде',
+    risk: 0.5,
+    rating: 2,
+    status: 'ON_EDITING',
+  },
+]
 </script>
 
 <template>
-  <PageLayout content-class-name="dev-page__content p-3">
+  <PageLayout content-class-name="ideas-page__content p-3">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
@@ -65,7 +111,7 @@ function handleCloseModal(filters?: string[]) {
       <div class="index-page__search bg-primary rounded-3 p-3 w-100">
         <Input
           name="asd"
-          v-model="searchQuery"
+          v-model="searchValue"
           placeholder="Поиск идей по названию"
         >
           <template #prepend>
@@ -85,21 +131,30 @@ function handleCloseModal(filters?: string[]) {
         />
       </div>
 
-      <Grid
-        :data="initiatorIdeas"
+      <Table
         :columns="gridColumns"
-        :filter-key="searchQuery"
-        :selectedFilters="selectedFilters"
-        class="demogrid w-100"
-      />
+        :data="ideamegahuita"
+        :search-value="searchValue"
+        :filter-value="gridColumns[0].key"
+      >
+        <template #actions="{ item }">
+          <div>
+            <Button
+              class-name=" btn-primary text-white  fs-3  "
+              prepend-icon-name="bi bi-list"
+              >{{ item.number }}</Button
+            >
+          </div>
+        </template>
+      </Table>
     </template>
   </PageLayout>
 </template>
 
 <style lang="scss">
-.dev-page {
+.ideas-page {
   &__content {
-    @include flexible(center, start, column, $gap: 16px);
+    @include flexible(stretch, flex-start, column, $gap: 16px);
   }
 }
 
