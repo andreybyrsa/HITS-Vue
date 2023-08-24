@@ -1,4 +1,5 @@
 import RolesTypes from './Roles'
+import { User } from '@Domain/User'
 
 interface UpdateUserData {
   email: string
@@ -15,4 +16,12 @@ interface UpdateUserPassword {
   password: string
 }
 
-export { UpdateUserData, UpdateUserPassword }
+interface UserGroupData {
+  id: number
+  name: string
+  users: User[]
+  isExsperts?: boolean
+  isProjectOffice?: boolean
+}
+
+export { UpdateUserData, UpdateUserPassword, UserGroupData }

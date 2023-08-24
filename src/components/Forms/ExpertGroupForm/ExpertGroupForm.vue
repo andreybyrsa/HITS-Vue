@@ -1,24 +1,81 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import AddExpertGroup from '@Components/Modals/AddExpertGroupModal/AddExpertGroupModal.vue'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+import { User } from '@Domain/User'
+import GroupService from '@Services/GroupsService'
+import ManageUsersService from '@Services/ManageUsersService'
+import useNotification from '@Hooks/useNotification'
+
+import { AddExpertGroupModalProps } from '@Components/Modals/AddExpertGroupModal/AddExpertGroupModal.types'
+import UserGroup from '@Domain/Group'
 
 const searchedValue = ref('')
 
 const isOpenedAddGroup = ref(false)
 const currentAddExpertGroup = ref([] as string[])
 
+const userStore = useUserStore()
+
+const { user } = storeToRefs(userStore)
+
+const props = defineProps<AddExpertGroupModalProps>()
+const usersarray = ref<User[]>([])
+
+const {
+  notificationOptions,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
+
 function openAddGroupModal() {
   isOpenedAddGroup.value = true
 }
 
-function closeAddGroupModal(addExpertGroup?: string[]) {
+function closeAddGroupModal() {
   isOpenedAddGroup.value = false
-  currentAddExpertGroup.value = addExpertGroup ?? []
 }
+
+const usersGroup = ref<UserGroup[]>([])
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const responseUsers = await ManageUsersService.getUsers(token)
+    const responseGroups = await GroupService.getUsersGroups(token)
+
+    if (responseUsers instanceof Error) {
+      return handleOpenNotification('error', responseUsers.message)
+    }
+    if (responseGroups instanceof Error) {
+      return handleOpenNotification('error', responseGroups.message)
+    }
+
+    usersarray.value = responseUsers.users
+    usersGroup.value = responseGroups
+  }
+})
+
+const searchedGroupAndUsers = computed(() => {
+  return usersarray.value.filter((groups) => {
+    const name = AddExpertGroup.nameOfGroup?.toLowerCase().trim()
+    const currentSearchedValue = searchedValue.value?.toLowerCase().trim()
+
+    const isIncludesSearcheValue = name?.includes(currentSearchedValue)
+
+    return isIncludesSearcheValue
+  })
+})
+
+//const searchedGroupAndUsers[] = ManageUsersService.getUsersGroup(user.value?.token as string)
 </script>
 
 <template>
@@ -26,6 +83,7 @@ function closeAddGroupModal(addExpertGroup?: string[]) {
     <Typography class-name="fs-2 text-primary text-center w-100"
       >Экспертные группы</Typography
     >
+    {{ usersarray }}
     <div class="w-50">
       <Input
         name="search"
@@ -36,8 +94,8 @@ function closeAddGroupModal(addExpertGroup?: string[]) {
           <Button
             class-name="px-2 py-0"
             @click="openAddGroupModal"
-          >
-            <i class="bi bi-plus-lg"></i> Добавить группу
+            prepend-icon-name="bi bi-plus-lg"
+            >Добавить группу
           </Button>
         </template>
       </Input>
@@ -46,17 +104,29 @@ function closeAddGroupModal(addExpertGroup?: string[]) {
           :isOpened="isOpenedAddGroup"
           :currentAddExpertGroup="currentAddExpertGroup"
           @close-modal="closeAddGroupModal"
+          :usersarray="usersarray"
+          v-model="usersGroup"
         >
-          <template #append>
-            <Button
-              class-name="btn-close"
-              @click="closeAddGroupModal"
-            >
-              <i class="bi bi-x-lg"></i>
-            </Button>
-          </template>
         </AddExpertGroup>
       </div>
+    </div>
+    <div class="expert-group-form w-100">
+      <div
+        v-for="(group, index) in searchedGroupAndUsers"
+        :key="index"
+        class="expert-group-form__group px-3 py-2 border rounded-3"
+      >
+        <div class="d-flex flex-column">
+          <Typography class-name="text-primary fs-5">
+            {{ usersGroup }}
+          </Typography>
+        </div>
+      </div>
+
+      <!--<Button
+        prepend-icon-name="bi bi-pencil-square text-primary"
+        @click="handleOpenModal(user.email)"
+      ></Button>-->
     </div>
   </FormLayout>
 </template>
@@ -75,6 +145,9 @@ function closeAddGroupModal(addExpertGroup?: string[]) {
     overflow-y: scroll;
 
     @include flexible(stretch, flex-start, column, $gap: 8px);
+  }
+  &__group {
+    @include flexible(center, space-between);
   }
 }
 </style>

@@ -1,15 +1,16 @@
+import { UserGroupData } from '@Domain/ManageUsers'
+import { User } from '@Domain/User'
+import Group from '@Domain/Group'
+
 interface AddExpertGroupModalProps {
   isOpened: boolean
-  currentAddExpertGroup: string[]
+  user?: UserGroupData
+  usersarray: User[]
+  group?: Group
 }
 
 interface AddExpertGroupModalEmits {
-  (event: 'close-modal', addExpertGroup?: string[]): void
+  (event: 'close-modal', success?: string): void
 }
 
-interface User {
-  id: number
-  name: string
-}
-
-export { AddExpertGroupModalProps, AddExpertGroupModalEmits, User }
+export { AddExpertGroupModalProps, AddExpertGroupModalEmits }

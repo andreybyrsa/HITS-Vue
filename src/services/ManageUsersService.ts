@@ -1,8 +1,13 @@
 import axios from 'axios'
 
 import { User } from '@Domain/User'
-import { UpdateUserData, UpdateUserPassword } from '@Domain/ManageUsers'
+import {
+  UpdateUserData,
+  UpdateUserPassword,
+  UserGroupData,
+} from '@Domain/ManageUsers'
 import Success from '@Domain/ResponseMessage'
+import UserGroup from '@Domain/Group'
 
 const MANAGE_USERS_URL =
   process.env.VUE_APP_MANAGE_USERS_API_URL || 'http://localhost:3000'
@@ -15,6 +20,7 @@ const getUsers = async (token: string): Promise<{ users: User[] } | Error> => {
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки пользователей'
+      console.log(MANAGE_USERS_URL)
       return new Error(error)
     })
 }
