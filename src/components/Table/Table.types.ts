@@ -1,12 +1,16 @@
+interface TableColumn {
+  key: string
+  label: string
+  className?: string
+  click?: () => void
+  getStyle?: (value: any) => string
+  getFormat?: (value: any) => string | number | undefined
+}
+
 interface TableProps {
-  columns: {
-    key: string
-    label: string
-    click?: () => void
-    getColor?: (value: string | number) => string
-  }[]
+  columns: TableColumn[]
   data: any[]
   searchValue: string
 }
 
-export default TableProps
+export { TableProps, TableColumn }

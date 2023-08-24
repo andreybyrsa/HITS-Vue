@@ -43,6 +43,11 @@ watch(
     selectedFilters.value = props.currentFilters
   },
 )
+
+function handleSetFilters() {
+  emit('set-filters', selectedFilters.value)
+  emit('close-modal')
+}
 </script>
 
 <template>
@@ -76,7 +81,7 @@ watch(
 
       <Button
         class-name="btn-primary w-100"
-        @click="emit('close-modal', selectedFilters)"
+        @click="handleSetFilters"
       >
         Применить
       </Button>

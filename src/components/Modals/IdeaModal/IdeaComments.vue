@@ -86,6 +86,7 @@ const onIntersectionObserver = async (
     <form class="comment-form p-3">
       <Input
         name="comment"
+        class-name="rounded-end"
         placeholder="Добавить комментарий"
       >
         <template #prepend>
