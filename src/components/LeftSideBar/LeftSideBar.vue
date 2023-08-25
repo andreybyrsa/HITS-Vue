@@ -1,13 +1,11 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { ref, VueElement } from 'vue'
+import { watchImmediate, useElementHover } from '@vueuse/core'
 import { useRouter } from 'vue-router'
-
-import { logo } from '@Assets/images/index'
+import { storeToRefs } from 'pinia'
 
 import NavTab from '@Components/NavTab/NavTab.vue'
 import Button from '@Components/Button/Button.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
@@ -25,6 +23,24 @@ const router = useRouter()
 const isOpenedModal = ref(false)
 
 const userRoles = getRoles()
+
+const leftSideBarRef = ref<VueElement | null>(null)
+const LeftSideBarClassName = ref<string[]>()
+
+const isHovered = useElementHover(leftSideBarRef, {
+  delayEnter: 400,
+})
+
+watchImmediate(isHovered, (value, prevValue) => {
+  const opendAnimationClass = value ? 'left-side-bar--opened' : ''
+  const closeAnimationClass = prevValue ? 'left-side-bar--closed' : ''
+
+  LeftSideBarClassName.value = [
+    'left-side-bar p-3 h-100',
+    opendAnimationClass,
+    closeAnimationClass,
+  ]
+})
 
 function checkUserRole(tab: LeftSideBarTabType) {
   const currentRole = user.value?.role
@@ -50,68 +66,114 @@ function handleCloseModal() {
 </script>
 
 <template>
-  <div class="left-side-bar p-3 w-100 h-100">
-    <div class="left-side-bar__header w-100">
-      <img
-        :src="logo"
-        alt="logo"
-      />
-      <Typography class-name="fs-2 text-primary">HITS Ideas</Typography>
-    </div>
+  <div
+    ref="leftSideBarRef"
+    :class="LeftSideBarClassName"
+  >
+    <ul class="left-side-bar__content nav nav-pills w-100 gap-2">
+      <template
+        v-for="tab in LeftSideBarTabs"
+        :key="tab.id"
+      >
+        <NavTab
+          v-if="checkUserRole(tab)"
+          :wrapper-class-name="isHovered ? 'left-side-bar__link w-100' : ''"
+          :class-name="isHovered ? 'text-white' : ''"
+          :icon-name="tab.iconName"
+          :label="isHovered ? tab.text : ''"
+          :to="tab.to"
+          :routes="tab.routes"
+        />
+      </template>
+    </ul>
 
-    <div class="left-side-bar__content h-100 w-100">
-      <ul class="nav nav-pills w-100 gap-2">
-        <template
-          v-for="tab in LeftSideBarTabs"
-          :key="tab.id"
-        >
-          <NavTab
-            v-if="checkUserRole(tab)"
-            :icon-name="tab.iconName"
-            :to="tab.to"
-            :routes="tab.routes"
-          >
-            {{ tab.text }}
-          </NavTab>
-        </template>
-
-        <Button
-          class-name="btn-light w-100"
-          @click="handleLogout"
-        >
-          Выйти
-        </Button>
-      </ul>
-
+    <div class="d-flex flex-column gap-2">
       <Button
-        class-name="btn-light w-100 text-success"
+        class-name="left-side-bar__role-button btn-light w-100 text-success"
         prepend-icon-name="bi bi-circle-fill fs-6"
         @click="handleOpenModal"
         :disabled="user?.roles.length === 1"
       >
-        {{ user?.role ? getTranslatedRole(user.role) : 'Выберите роль' }}
+        <template v-if="isHovered">
+          {{ user?.role ? getTranslatedRole(user.role) : 'Выберите роль' }}
+        </template>
       </Button>
 
-      <RoleModal
-        :is-opened="isOpenedModal"
-        @close-modal="handleCloseModal"
-      />
+      <Button
+        class-name="left-side-bar__logout-button btn-light w-100"
+        @click="handleLogout"
+        prepend-icon-name="bi bi-box-arrow-left"
+      >
+        {{ isHovered ? 'Выйти' : '' }}
+      </Button>
     </div>
+
+    <RoleModal
+      :is-opened="isOpenedModal"
+      @close-modal="handleCloseModal"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .left-side-bar {
-  background-color: $white-color;
+  @include position(relative, $z-index: 1);
 
-  @include flexible(flex-start, stretch, column, $gap: 16px);
+  overflow: hidden;
 
-  &__header {
-    @include flexible(center, center, $gap: 4px);
-  }
+  @include flexible(stretch, space-between, column);
 
   &__content {
-    @include flexible(flex-start, space-between, column);
+    @include fixedWidth(280px);
+
+    @include flexible(flex-start, flex-start, column, $gap: 8px);
+  }
+
+  &__link {
+    border-radius: 6px;
+
+    transition: background-color $default-transition-settings;
+
+    &:hover {
+      background-color: #0000006c;
+    }
+  }
+
+  &__logout-button,
+  &__role-button {
+    @include fixedHeight(40px);
+  }
+
+  &--opened {
+    color: $white-color;
+
+    animation: openLeftSideBar 0.15s ease-out forwards;
+  }
+
+  &--closed {
+    animation: closeLeftSideBar 0.15s ease-out forwards;
+  }
+}
+
+@keyframes openLeftSideBar {
+  from {
+    width: 80px;
+    background-color: transparent;
+  }
+  to {
+    width: 312px;
+    background-color: #000000ba;
+  }
+}
+
+@keyframes closeLeftSideBar {
+  from {
+    width: 312px;
+    background-color: #00000080;
+  }
+  to {
+    width: 80px;
+    background-color: transparent;
   }
 }
 </style>
