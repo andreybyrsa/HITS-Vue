@@ -75,7 +75,8 @@ const handleEditUser = handleSubmit(async (values) => {
       return handleOpenNotification('error', response.message)
     }
 
-    emit('close-modal', values, response.success)
+    emit('save-user', values, response.success)
+    emit('close-modal')
   }
 })
 </script>
@@ -103,12 +104,14 @@ const handleEditUser = handleSubmit(async (values) => {
           <Input
             type="email"
             name="newEmail"
+            class-name="rounded-end"
             placeholder="Введите email"
             prepend="@"
           />
 
           <Input
             name="newFirstName"
+            class-name="rounded-end"
             placeholder="Введите имя"
           >
             <template #prepend>
@@ -118,6 +121,7 @@ const handleEditUser = handleSubmit(async (values) => {
 
           <Input
             name="newLastName"
+            class-name="rounded-end"
             placeholder="Введите фамилию"
           >
             <template #prepend>
@@ -183,9 +187,9 @@ const handleEditUser = handleSubmit(async (values) => {
     flex-end,
     flex-start,
     column,
-    $gap: 16px,
     $align-self: center,
-    $justify-self: center
+    $justify-self: center,
+    $gap: 12px
   );
 
   transition: all $default-transition-settings;
@@ -195,7 +199,7 @@ const handleEditUser = handleSubmit(async (values) => {
   }
 
   &__inputs {
-    @include flexible(center, flex-start, column, $gap: 8px);
+    @include flexible(center, flex-start, column, $gap: 12px);
   }
 }
 

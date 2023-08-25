@@ -8,8 +8,9 @@ import {
   FilterModalEmits,
 } from '@Components/Modals/FilterModal/FilterModal.types'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
+
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -22,12 +23,12 @@ const filters = [
     value: user.value?.email,
   },
   {
-    label: 'Согласованные идеи',
-    value: 'ON_CONFIRMATION',
+    label: 'На согласованнии',
+    value: 'ON_APPROVAL',
   },
   {
-    label: 'Утвержденные идеи',
-    value: 'CONFIRMED',
+    label: ' На утверждении',
+    value: 'ON_CONFIRMATION',
   },
 ]
 const selectedFilters = ref<string[]>([])
@@ -42,6 +43,11 @@ watch(
     selectedFilters.value = props.currentFilters
   },
 )
+
+function handleSetFilters() {
+  emit('set-filters', selectedFilters.value)
+  emit('close-modal')
+}
 </script>
 
 <template>
@@ -51,7 +57,7 @@ watch(
   >
     <div class="filter-modal p-3 bg-white rounded-3">
       <div class="filter-modal__header">
-        <Typography class-name="fs-2 text-primary">Сортировать по</Typography>
+        <Typography class-name="fs-3 text-primary">Сортировать по</Typography>
         <Button
           class-name="btn-close"
           @click="emit('close-modal')"
@@ -69,14 +75,13 @@ watch(
             :label="filter.label"
             v-model="selectedFilters"
             :value="filter.value"
-            class-name="fs-5"
           />
         </div>
       </ul>
 
       <Button
         class-name="btn-primary w-100"
-        @click="emit('close-modal', selectedFilters)"
+        @click="handleSetFilters"
       >
         Применить
       </Button>

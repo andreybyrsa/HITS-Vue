@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import { watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useMagicKeys } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
@@ -19,6 +21,12 @@ const emit = defineEmits<DeleteModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const { enter } = useMagicKeys()
+
+watch(enter, () => {
+  emit('close-modal')
+})
 
 async function handleDeleteIdea() {
   await IdeasService.deleteInitiatorIdea(props.ideaId, user.value?.token as string)

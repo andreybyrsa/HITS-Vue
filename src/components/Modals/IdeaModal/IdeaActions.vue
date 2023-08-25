@@ -22,29 +22,37 @@ function checkUserRoleForButtons(button: IdeaActionsType) {
   return currentRole && button.roles.includes(currentRole)
 }
 
-function checkStatusIdea(button: IdeaActionsType) {
+function checkStatusAndRole() {
+  const currentRole = user.value?.role
   const currentStatusIdea = props.idea?.status
-  return currentStatusIdea && button.status.includes(currentStatusIdea)
-}
-
-function checkStatus() {
-  return (user.value?.role == 'INITIATOR' &&
-    (props.idea?.status == 'NEW' || props.idea?.status == 'ON_EDITING')) ||
-    user.value?.role == 'ADMIN'
-    ? false
-    : true
+  if (currentRole == 'ADMIN') {
+    return true
+  } else
+    return (
+      currentRole &&
+      currentStatusIdea &&
+      actionsButton.find(
+        (e) =>
+          currentRole &&
+          currentStatusIdea &&
+          e.roles.includes(currentRole) &&
+          e.status.includes(currentStatusIdea),
+      )
+    )
 }
 </script>
 
 <template>
-  <div class="rounded-3 bg-white p-3">
+  <div
+    class="rounded-3 bg-white p-3"
+    v-if="checkStatusAndRole()"
+  >
     <div class="idea-actions">
       <template v-for="button in actionsButton">
         <Button
           :key="button.id"
           v-if="checkUserRoleForButtons(button)"
           type="submit"
-          :disabled="!checkStatusIdea(button)"
           :class-name="button.class"
         >
           {{ button.text }}
@@ -54,7 +62,6 @@ function checkStatus() {
         type="submit"
         v-if="user?.role == 'ADMIN' || user?.role == 'INITIATOR'"
         @click="router.push(`edit-idea/${props.idea?.id}`)"
-        :disabled="checkStatus()"
         class-name="btn-light"
       >
         Редактировать

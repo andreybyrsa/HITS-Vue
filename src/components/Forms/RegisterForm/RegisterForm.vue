@@ -85,6 +85,7 @@ const handleRegister = handleSubmit(async (values) => {
       :key="input.key"
       :type="input.type"
       :name="input.name"
+      class-name="rounded-end"
       :placeholder="input.placeholder"
       :prepend="input.prepend"
       :disabled="input.disabled"
