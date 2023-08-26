@@ -1,12 +1,12 @@
 import { UserGroupData } from '@Domain/ManageUsers'
 import { User } from '@Domain/User'
-import Group from '@Domain/Group'
+import UserGroup from '@Domain/Group'
 
 interface AddExpertGroupModalProps {
   isOpened: boolean
   user?: UserGroupData
   usersarray: User[]
-  group?: Group
+  group?: UserGroup
 }
 
 interface AddExpertGroupModalEmits {

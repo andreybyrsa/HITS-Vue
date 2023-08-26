@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import {
   AddExpertGroupModalProps,
   AddExpertGroupModalEmits,
@@ -10,7 +10,6 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 
-import ManageUsersService from '@Services/ManageUsersService'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 import { User } from '@Domain/User'
@@ -20,9 +19,7 @@ import useNotification from '@Hooks/useNotification'
 
 import { useFieldArray, useForm } from 'vee-validate'
 import { UserGroupData } from '@Domain/ManageUsers'
-import Validation from '@Utils/Validation'
 import GroupService from '@Services/GroupsService'
-import Group from '@Domain/Group'
 
 const props = defineProps<AddExpertGroupModalProps>()
 const emit = defineEmits<AddExpertGroupModalEmits>()
@@ -41,7 +38,7 @@ const {
   handleCloseNotification,
 } = useNotification()
 
-const { fields, push, remove } = useFieldArray<User>('users')
+const { fields, push, remove } = useFieldArray<User>('user')
 
 const removeUser = (user: User) => {
   const index = selectedUsers.value.indexOf(user)
@@ -50,9 +47,14 @@ const removeUser = (user: User) => {
   }
 }
 
+watch(selectedUsers, (newSelectedUsers) => {
+  setValues({ ...values, users: newSelectedUsers })
+})
+
 const { errors, setValues, handleSubmit, values } = useForm<UserGroupData>({
   validationSchema: {
     name: (value: string) => value?.length > 0 || 'Поле не заполнено',
+    users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
   },
 })
 
@@ -70,6 +72,7 @@ const handleCreate = handleSubmit(async (values) => {
     groups.value.push(values)
   }
 })
+
 //const fullName = ref([user.value?.firstName, user.value?.lastName])
 </script>
 
@@ -78,12 +81,9 @@ const handleCreate = handleSubmit(async (values) => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    {{ values }}
     <div class="add-expert-group-modal p-3 bg-white rounded-3">
       <div class="add-expert-group-modal__header">
-        <Typography class-name="fs-2 text-primary"
-          >Добавить группу экспертов</Typography
-        >
+        <Typography class-name="fs-2 text-primary">Добавить группу</Typography>
         <Button
           class-name="btn-close"
           @click="emit('close-modal')"

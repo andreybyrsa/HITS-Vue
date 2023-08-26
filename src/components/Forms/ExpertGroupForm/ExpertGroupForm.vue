@@ -14,6 +14,7 @@ import useNotification from '@Hooks/useNotification'
 
 import { AddExpertGroupModalProps } from '@Components/Modals/AddExpertGroupModal/AddExpertGroupModal.types'
 import UserGroup from '@Domain/Group'
+import Collapse from '@Components/Collapse/Collapse.vue'
 
 const searchedValue = ref('')
 
@@ -75,20 +76,27 @@ const searchedGroupAndUsers = computed(() => {
   })
 })
 
+const isOpenedCollapse = ref(true)
+
+function openCollapse() {
+  isOpenedCollapse.value = !isOpenedCollapse.value
+}
+
+const visible = ref(true)
 //const searchedGroupAndUsers[] = ManageUsersService.getUsersGroup(user.value?.token as string)
 </script>
 
 <template>
-  <FormLayout class-name="expert-group-form p-3">
+  <FormLayout class-name="users-group-form p-3">
     <Typography class-name="fs-2 text-primary text-center w-100"
-      >Экспертные группы</Typography
+      >Группы пользователей</Typography
     >
     {{ usersarray }}
     <div class="w-50">
       <Input
         name="search"
         v-model="searchedValue"
-        placeholder="Поиск группы или эксперта"
+        placeholder="Поиск группы или пользователя"
       >
         <template #append>
           <Button
@@ -110,11 +118,34 @@ const searchedGroupAndUsers = computed(() => {
         </AddExpertGroup>
       </div>
     </div>
-    <div class="expert-group-form w-100">
+    <div class="users-group-form__contetnt w-100">
+      <div
+        v-for="(users, index) in usersGroup"
+        :key="index"
+        class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 accordion"
+      >
+        <Button
+          :id="index.toString()"
+          is-collapse-controller
+        >
+          {{ users.name }}
+        </Button>
+        <Collapse
+          :id="index.toString()"
+          class="mt-2"
+        >
+          <div>
+            <Typography class-name="m-2">{{ user.lastName }}</Typography>
+            <Typography>{{ user.firstName }}</Typography>
+          </div>
+        </Collapse>
+      </div>
+    </div>
+    <div class="users-group-form w-100">
       <div
         v-for="(group, index) in searchedGroupAndUsers"
         :key="index"
-        class="expert-group-form__group px-3 py-2 border rounded-3"
+        class="users-group-form__group px-3 py-2 border rounded-3"
       >
         <div class="d-flex flex-column">
           <Typography class-name="text-primary fs-5">
@@ -132,7 +163,7 @@ const searchedGroupAndUsers = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.expert-group-form {
+.users-group-form {
   width: 100%;
   height: 100%;
   background-color: $white-color;

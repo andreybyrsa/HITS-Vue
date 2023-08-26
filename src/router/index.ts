@@ -49,7 +49,7 @@ const routes: Array<RouteRecordRaw> = [
             component: EditUsersForm,
           },
           {
-            path: 'expert-group',
+            path: 'users-group',
             component: ExpertGroupForm,
           },
         ],
