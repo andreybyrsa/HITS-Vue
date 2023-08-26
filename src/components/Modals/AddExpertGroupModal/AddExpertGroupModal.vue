@@ -94,7 +94,7 @@ const handleCreate = handleSubmit(async (values) => {
         class-name="fs-6 h-50"
         placeholder="Введите название группы"
       />
-      <VueMultiselect
+      <!-- <VueMultiselect
         v-model="selectedUsers"
         :options="props.usersarray"
         label="lastName"
@@ -119,7 +119,22 @@ const handleCreate = handleSubmit(async (values) => {
             </Button>
           </div>
         </li>
-      </ul>
+      </ul> -->
+
+      <div class="d-flex justify-content-between">
+        <div class="selectors">
+          <Typography class-name="fs-6 text-primary"
+            >Пользователи не в группе</Typography
+          >
+          <div class="select-block border">1</div>
+        </div>
+        <div class="selectors">
+          <Typography class-name="fs-6 text-primary"
+            >Пользователи в группе</Typography
+          >
+          <div class="select-block border">1</div>
+        </div>
+      </div>
 
       <Button
         class-name="btn-primary w-100"
@@ -132,7 +147,7 @@ const handleCreate = handleSubmit(async (values) => {
 
 <style lang="scss">
 .add-expert-group-modal {
-  width: 400px;
+  width: 600px;
 
   @include flexible(
     stretch,
@@ -185,5 +200,15 @@ const handleCreate = handleSubmit(async (values) => {
   width: 100%;
   justify-content: space-between;
   align-items: center;
+}
+
+.selectors {
+  width: 48%;
+}
+
+.select-block {
+  border-radius: 12px;
+  height: 250px;
+  overflow-y: scroll;
 }
 </style>

@@ -96,7 +96,7 @@ const visible = ref(true)
       <Input
         name="search"
         v-model="searchedValue"
-        placeholder="Поиск группы или пользователя"
+        placeholder="Поиск группы пользователей"
       >
         <template #append>
           <Button
@@ -124,7 +124,7 @@ const visible = ref(true)
         :key="index"
         class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 accordion"
       >
-        <Button
+        <!-- <Button
           :id="index.toString()"
           is-collapse-controller
         >
@@ -138,7 +138,7 @@ const visible = ref(true)
             <Typography class-name="m-2">{{ user.lastName }}</Typography>
             <Typography>{{ user.firstName }}</Typography>
           </div>
-        </Collapse>
+        </Collapse> -->
       </div>
     </div>
     <div class="users-group-form w-100">
