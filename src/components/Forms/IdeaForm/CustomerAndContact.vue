@@ -414,8 +414,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option--group-selected.multiselect__option--highlight::after {
-  background: primary;
-  content: attr(data-deselect);
+  background: #2151ffb6;
   color: #fff;
 }
 
