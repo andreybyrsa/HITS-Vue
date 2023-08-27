@@ -93,7 +93,7 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
   &__row-cell {
     max-height: 100px;
 
-    overflow: scroll;
+    overflow: auto;
 
     @include flexible(center, center);
   }

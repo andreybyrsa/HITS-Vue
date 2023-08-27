@@ -12,6 +12,10 @@ interface IdeaDescriptionProps {
   idea?: Idea
 }
 
+interface IdeaActionsProps {
+  idea?: Idea
+}
+
 interface IdeaCommentsProps {
   idea?: Idea
 
@@ -40,6 +44,7 @@ interface IdeaModalCollapseType {
 export {
   IdeaModalProps,
   IdeaDescriptionProps,
+  IdeaActionsProps,
   IdeaCommentsProps,
   IdeaInfoProps,
   IdeaModalEmits,

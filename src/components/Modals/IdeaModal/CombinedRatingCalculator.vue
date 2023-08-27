@@ -104,7 +104,6 @@ const progressBarStyle = computed(() => {
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
-  margin-bottom: 20px;
 }
 
 .extra-gap {

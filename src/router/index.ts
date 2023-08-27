@@ -18,7 +18,7 @@ import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
+    path: '',
     component: RoleMiddleware,
     children: [
       {
