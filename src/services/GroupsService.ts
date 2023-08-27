@@ -19,8 +19,7 @@ const createUsersGroup = async (
     })
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error =
-        response?.data?.error ?? 'Ошибка создания группы пользователей'
+      const error = response?.data?.error ?? 'Ошибка создания группы пользователей'
       return new Error(error)
     })
 }
