@@ -53,6 +53,7 @@ const useUserStore = defineStore('user', {
     removeUser() {
       this.user = null
       LocalStorageUser.removeLocalStorageUser()
+      this.router.push({ name: 'login' })
     },
     checkLastActivity() {
       const currentActivity = new Date()

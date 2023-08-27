@@ -34,8 +34,7 @@ const currentRoles = getRoles()
 const DBUsersEmails = ref<string[]>([])
 
 const isEditing = ref<boolean>(false)
-const fileInput = ref<VueElement>()
-const loadedFileText = ref('')
+const fileInput = ref<VueElement | null>(null)
 
 const {
   notificationOptions,
@@ -108,15 +107,18 @@ function handleFileChange(event: HTMLInputEvent) {
     fetch(fileURL)
       .then((response) => response.text())
       .then((text) => {
-        const regExpPattern = /[a-zA-Z_.-{0,9}]+@[a-zA-Z_]+\.[a-zA-Z]{2,10}$/gm
+        const regExpPattern = /[a-zA-Z_.-{0,9}]+@[a-zA-Z_]+\.[a-zA-Z]{2,10}/gm
         const emails = text.split('\n')
 
-        const formattedEmails = text.match(regExpPattern)
+        const formattedEmails = text.match(regExpPattern) ?? []
         if (formattedEmails) {
           formattedEmails.forEach((email) => push(email))
-
-          loadedFileText.value = `Загружено ${formattedEmails.length} из ${emails.length}`
         }
+
+        handleOpenNotification(
+          'success',
+          `Загружено ${formattedEmails.length} из ${emails.length}`,
+        )
       })
       .catch(({ response }) => {
         const error = response?.data?.error ?? 'Ошибка загрузки файла'
@@ -159,6 +161,7 @@ const handleInvite = handleSubmit(async (values) => {
           <Input
             type="email"
             :name="`emails[${index}]`"
+            class-name="rounded-end"
             @focus="isEditing = true"
             @blur="isEditing = false"
             :error="getError(field.value, index)"
@@ -180,12 +183,6 @@ const handleInvite = handleSubmit(async (values) => {
         @change="(event) => handleFileChange(event as HTMLInputEvent)"
         hidden
       />
-      <Typography
-        v-if="loadedFileText"
-        class-name="text-success text-center"
-      >
-        {{ loadedFileText }}
-      </Typography>
 
       <div class="add-users-form__settings">
         <Button

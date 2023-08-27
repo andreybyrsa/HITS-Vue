@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import NavTabProps from '@Components/NavTab/NavTab.types'
+import { NavTabProps } from '@Components/NavTab/NavTab.types'
 import Collapse from '@Components/Collapse/Collapse.vue'
 
 const props = defineProps<NavTabProps>()
@@ -13,15 +13,17 @@ const collapseProps = {
   'aria-expanded': false,
 }
 
+const WrapperClassName = computed(() => ['nav-item', props.wrapperClassName])
+
 const NavTabClassName = computed(() => [
-  'nav-link d-flex fs-5',
+  'nav-link d-flex',
   { active: props.isActive },
   props.className,
 ])
 </script>
 
 <template>
-  <div class="nav-item w-100">
+  <div :class="WrapperClassName">
     <router-link
       :class="NavTabClassName"
       :to="to"
@@ -32,23 +34,27 @@ const NavTabClassName = computed(() => [
         v-if="iconName"
         :class="iconName"
       ></i>
-
-      <slot></slot>
+      {{ label }}
     </router-link>
 
     <Collapse
       v-if="routes"
       :id="to"
     >
-      <div class="p-2 rounded">
+      <div class="pt-2 rounded">
         <router-link
           v-for="route in routes"
           :key="route.id"
-          class="list-group-item list-group-item-light"
+          class="nav-route list-group-item list-group-item-light"
           active-class="active"
           :to="route.to"
         >
-          {{ route.text }}
+          <i
+            v-if="route.iconName"
+            :class="route.iconName"
+          ></i>
+
+          <span v-if="label">{{ route.text }}</span>
         </router-link>
       </div>
     </Collapse>
@@ -57,7 +63,15 @@ const NavTabClassName = computed(() => [
 
 <style lang="scss" scoped>
 .nav-link {
+  @include fixedHeight(40px);
+
   color: $black-color;
+
+  @include flexible(center, flex-start, $gap: 4px);
+}
+
+.nav-route {
+  @include fixedHeight(40px);
 
   @include flexible(center, flex-start, $gap: 4px);
 }

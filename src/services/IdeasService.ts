@@ -6,7 +6,7 @@ const IDEAS_URL = process.env.VUE_APP_IDEAS_API_URL || 'http://localhost:3000'
 
 const fetchIdeas = async (token: string): Promise<Idea[]> => {
   return await axios
-    .get(`${IDEAS_URL}/admin`, {
+    .get(`${IDEAS_URL}/all`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
