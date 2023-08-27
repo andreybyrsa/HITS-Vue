@@ -8,14 +8,14 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import Table from '@Components/Table/Table.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import Table from '@Components/Table/Table.vue'
 
 import useUserStore from '@Store/user/userStore'
 
 import Validation from '@Utils/Validation'
-import { Idea } from '@Domain/Idea'
+
 const searchValue = ref('')
 
 const columns = [
