@@ -29,9 +29,24 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     text: 'Админ панель',
     to: '/admin',
     routes: [
-      { id: 0, to: '/admin/add-users', text: 'Добавить пользователей' },
-      { id: 1, to: '/admin/edit-users', text: 'Редактировать пользователей' },
-      { id: 2, to: '/admin/users-group', text: 'Группы пользователей' },
+      {
+        id: 0,
+        to: '/admin/add-users',
+        text: 'Добавить пользователей',
+        iconName: 'bi bi-person-add',
+      },
+      {
+        id: 1,
+        to: '/admin/edit-users',
+        text: 'Редактировать пользователей',
+        iconName: 'bi bi-person-gear',
+      },
+      {
+        id: 2,
+        to: '/admin/users-group',
+        text: 'Группы пользователей',
+        iconName: 'bi bi-people',
+      },
     ],
     iconName: 'bi bi-sliders',
     roles: ['ADMIN'],
@@ -42,6 +57,21 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     to: '/notes',
     iconName: 'bi bi-file-earmark',
     roles: ['EXPERT', 'ADMIN'],
+  },
+  {
+    id: 5,
+    text: 'Настройки',
+    to: '/change-email',
+    routes: [
+      {
+        id: 0,
+        to: '/change-email',
+        text: 'Изменение почты',
+        iconName: 'bi bi-pencil-square',
+      },
+    ],
+    iconName: 'bi bi-gear',
+    roles: getRoles().roles,
   },
 ]
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 
@@ -11,7 +11,7 @@ const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
 
-onMounted(() => {
+onBeforeMount(() => {
   if (user.value) {
     const { roles, role } = user.value
 

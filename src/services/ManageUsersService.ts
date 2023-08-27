@@ -2,8 +2,8 @@ import axios from 'axios'
 
 import { User } from '@Domain/User'
 import { UpdateUserData, UpdateUserPassword } from '@Domain/ManageUsers'
+import { NewEmailForm } from '@Domain/Invitation'
 import Success from '@Domain/ResponseMessage'
-
 const MANAGE_USERS_URL =
   process.env.VUE_APP_MANAGE_USERS_API_URL || 'http://localhost:3000'
 
@@ -61,11 +61,27 @@ const updateUserPassword = async (
     })
 }
 
+const updateUserEmail = async (
+  newEmailData: NewEmailForm,
+  token: string,
+): Promise<Success | Error> => {
+  return axios
+    .put(`${MANAGE_USERS_URL}/change/email`, newEmailData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка обновления почты'
+      return new Error(error)
+    })
+}
+
 const ManageUsersService = {
   getUsers,
   getUsersEmails,
   updateUserInfo,
   updateUserPassword,
+  updateUserEmail,
 }
 
 export default ManageUsersService

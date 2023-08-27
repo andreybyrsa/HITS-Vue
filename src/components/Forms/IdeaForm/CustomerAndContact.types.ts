@@ -1,5 +1,6 @@
-interface CustomerAndContactEmits {
-  (event: 'set-customer', customer: string): void
+interface CustomerAndContact {
+  customer: string
+  contactPerson: string
 }
 
-export default CustomerAndContactEmits
+export default CustomerAndContact

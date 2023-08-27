@@ -5,7 +5,9 @@ import {
   InviteUsersForm,
   InvitationInfo,
   RecoveryData,
+  NewEmailForm,
 } from '@Domain/Invitation'
+
 import Success from '@Domain/ResponseMessage'
 
 const INVITATION_URL =
@@ -76,12 +78,43 @@ const deleteInvitationInfo = async (slug: string | string[]) => {
     })
 }
 
+const sendUrlToChangeEmail = async (
+  userData: NewEmailForm,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .post(`${INVITATION_URL}/send/request-to-change-email`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка отправки ссылки для смены почты'
+      return new Error(error)
+    })
+}
+
+const getInfoToChangeEmail = async (
+  slug: string | string[],
+  token: string,
+): Promise<NewEmailForm | Error> => {
+  return await axios
+    .get(`${INVITATION_URL}/change/email/${slug}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка приглашения'
+      return new Error(error)
+    })
+}
 const InvitationService = {
   inviteUserByEmail,
   inviteUsers,
   sendRecoveryEmail,
   getInvitationInfo,
   deleteInvitationInfo,
+  sendUrlToChangeEmail,
+  getInfoToChangeEmail,
 }
 
 export default InvitationService

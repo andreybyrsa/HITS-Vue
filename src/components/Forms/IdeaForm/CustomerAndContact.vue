@@ -3,11 +3,11 @@ import { ref, watch } from 'vue'
 import VueMultiselect from 'vue-multiselect'
 
 import Typography from '@Components/Typography/Typography.vue'
-import CustomerAndContactEmits from '@Components/Forms/IdeaForm/CustomerAndContact.types'
+import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 
-const emit = defineEmits<CustomerAndContactEmits>()
+const customerAndContact = defineModel<CustomerAndContact>({ required: true })
 
-const companies = ref([
+const customers = ref([
   { contacts: ['ВШЦТ'], company: 'ВШЦТ' },
   { contacts: ['Человек 1', 'Человек 2'], company: 'Роснефть' },
   { contacts: ['Человек 3', 'Человек 4', 'Человек 5'], company: 'Газпром' },
@@ -16,58 +16,61 @@ const companies = ref([
     company: 'Лукойл',
   },
 ])
-
-const selectedCompany = ref({ contacts: ['ВШЦТ'], company: 'ВШЦТ' })
-const selectedContactPerson = ref('')
-
+const currentCompanies = ref<string[]>(
+  customers.value.map((option) => option.company),
+)
 const currentCompanyContacts = ref<string[]>([])
 
-const getContactPersonsByCompany = (company: string) => {
-  return companies.value.find((option) => option.company === company)
+function getContactPersonsByCompany(company: string) {
+  return customers.value.find((option) => option.company === company)
 }
 
-const handleCompanyChange = (selectedCompany: string) => {
+function handleCustomerChange(selectedCompany: string) {
   const currentContacts = getContactPersonsByCompany(selectedCompany)?.contacts
   if (currentContacts) {
     currentCompanyContacts.value = currentContacts
-    selectedContactPerson.value = currentContacts[0]
+    const currentContactPerson = customerAndContact.value.contactPerson
+
+    customerAndContact.value.contactPerson = currentContacts.includes(
+      currentContactPerson,
+    )
+      ? currentContactPerson
+      : currentContacts[0]
   }
 }
 
 watch(
-  () => selectedCompany.value,
-  (newCompany) => {
-    emit('set-customer', newCompany.company)
-
-    selectedContactPerson.value = ''
-    handleCompanyChange(newCompany.company)
+  () => customerAndContact.value.customer,
+  (newCustomer) => {
+    if (newCustomer) {
+      handleCustomerChange(newCustomer)
+    }
   },
+  { immediate: true },
 )
 </script>
 
 <template>
-  <div class="w-50">
+  <div class="w-100">
     <Typography class="fs-6 text-primary">Заказчик*</Typography>
     <VueMultiselect
       class="mt-2"
-      :options="companies"
-      label="company"
-      track-by="company"
-      v-model="selectedCompany"
+      :options="currentCompanies"
+      v-model="customerAndContact.customer"
       :allow-empty="false"
       placeholder="Выберите заказчика"
     />
   </div>
 
   <div
-    v-if="selectedCompany.company !== 'ВШЦТ'"
-    class="w-50"
+    v-if="customerAndContact.customer !== 'ВШЦТ'"
+    class="w-100"
   >
     <Typography class="fs-6 text-primary">Контактное лицо*</Typography>
     <VueMultiselect
       class="mt-2"
       :options="currentCompanyContacts"
-      v-model="selectedContactPerson"
+      v-model="customerAndContact.contactPerson"
       :allow-empty="false"
       placeholder="Выберите контактное лицо"
     />
@@ -418,59 +421,5 @@ fieldset[disabled] .multiselect {
 .multiselect-enter-active,
 .multiselect-leave-active {
   transition: all 0.15s ease;
-}
-
-.multiselect-enter,
-.multiselect-leave-active {
-  opacity: 0;
-}
-
-.multiselect__strong {
-  margin-bottom: 8px;
-  line-height: 20px;
-  display: inline-block;
-  vertical-align: top;
-}
-
-*[dir='rtl'] .multiselect {
-  text-align: right;
-}
-
-*[dir='rtl'] .multiselect__select {
-  right: auto;
-  left: 1px;
-}
-
-*[dir='rtl'] .multiselect__tags {
-  padding: 8px 8px 0 40px;
-}
-
-*[dir='rtl'] .multiselect__content {
-  text-align: right;
-}
-
-*[dir='rtl'] .multiselect__option::after {
-  right: auto;
-  left: 0;
-}
-
-*[dir='rtl'] .multiselect__clear {
-  right: auto;
-  left: 12px;
-}
-
-*[dir='rtl'] .multiselect__spinner {
-  right: auto;
-  left: 1px;
-}
-
-@keyframes spinning {
-  from {
-    transform: rotate(0);
-  }
-
-  to {
-    transform: rotate(2turn);
-  }
 }
 </style>

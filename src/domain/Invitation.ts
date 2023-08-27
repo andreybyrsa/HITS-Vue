@@ -18,4 +18,18 @@ interface RecoveryData {
   email: string
 }
 
-export { InviteUserForm, InviteUsersForm, InvitationInfo, RecoveryData }
+interface NewEmailForm {
+  key: string
+  oldEmail: string
+  newEmail: string
+  code: number
+  url?: string | string[]
+}
+
+export {
+  InviteUserForm,
+  InviteUsersForm,
+  InvitationInfo,
+  RecoveryData,
+  NewEmailForm,
+}

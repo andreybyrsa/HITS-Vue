@@ -124,7 +124,7 @@ function closeEditGroupModal(
     <Typography class-name="fs-3 text-primary text-center w-100"
       >Группы пользователей</Typography
     >
-    {{ usersarray }}
+    <!-- {{ usersarray }} -->
     <div class="w-50">
       <Input
         name="search"

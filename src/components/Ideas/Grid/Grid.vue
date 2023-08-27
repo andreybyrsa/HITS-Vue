@@ -1,25 +1,31 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { GridProps } from '@Components/Ideas/Grid/Grid.types'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Button from '@Components/Button/Button.vue'
-import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
-
-import StatusTypes from '@Domain/Status'
-import { Idea } from '@Domain/Idea'
-
 import getStatus from '@Utils/getStatus'
+import StatusTypes from '@Domain/IdeaStatus'
+import useUserStore from '@Store/user/userStore'
+import IdeasService from '@Services/IdeasService'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import DeleteIdeaModal from '@Components/Modals/DeleteIdeaModal/DeleteModal.vue'
+
+import { Idea } from '@Domain/Idea'
 
 const props = defineProps<GridProps>()
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
 type O = {
   dateCreated?: number
+  date?: number
   name?: number
   rating?: number
   risk?: number
   status?: number
-  dateModified?: number
 }
 
 type OType = keyof O
@@ -47,6 +53,11 @@ const filteredData = computed(() => {
       })
     })
   }
+  if (data) {
+    data.sort((a, b) => {
+      return b.rating - a.rating
+    })
+  }
   const key = sortKey.value
   if (key) {
     const order = sortOrders.value[key]
@@ -61,9 +72,8 @@ const filteredData = computed(() => {
     const dataFilter: Idea[] = []
     data?.forEach(
       (elem) =>
-        selectedFilters?.every((filter) =>
-          Object.values(elem).includes(filter),
-        ) && dataFilter.push(elem),
+        selectedFilters?.every((filter) => Object.values(elem).includes(filter)) &&
+        dataFilter.push(elem),
     )
     return dataFilter
   }
@@ -71,9 +81,12 @@ const filteredData = computed(() => {
 })
 
 function sortBy(key: OType) {
-  if (key === 'name' || key === 'status') return
+  if (key == 'name' || key == 'status') return
   sortKey.value = key
-  if (sortOrders.value[key] && sortOrders.value) {
+  if (sortOrders.value[key]) {
+    if (key == 'date') {
+      sortOrders.value.date = sortOrders.value['dateCreated'] == -1 ? 1 : -1
+    }
     sortOrders.value[key] = sortOrders.value[key] == -1 ? 1 : -1
   }
 }
@@ -123,25 +136,39 @@ function getTranslatedStatus(status: StatusTypes) {
   return statuses.translatedStatus[status]
 }
 
-const isOpenedIdeaModal = ref(false)
-const currentOpenedIdea = ref<Idea>()
-
-function handleOpenModal(ideaId: number) {
-  isOpenedIdeaModal.value = true
-  currentOpenedIdea.value = props.data?.find((idea) => idea.id === ideaId)
-}
-
-function handleCloseModal() {
-  isOpenedIdeaModal.value = false
-}
 function getTranslatedKey(entry: Idea, key: string) {
   if (key === 'status') {
     return getTranslatedStatus(entry[key])
+  }
+  if (key == 'date') {
+    return `${formatDate(entry['dateCreated'])} ${formatDate(entry['dateModified'])}`
   }
   if (key === 'dateCreated' || key === 'dateModified') {
     return formatDate(entry[key])
   }
   return entry[key as IdeaType]
+}
+
+const currentOpenedIdea = ref<Idea>()
+const isOpenedIdeaModal = ref(false)
+
+function handleOpenModal(ideaId: number) {
+  currentOpenedIdea.value = props.data?.find((idea) => idea.id === ideaId)
+  isOpenedIdeaModal.value = true
+}
+function handleCloseModal() {
+  isOpenedIdeaModal.value = false
+}
+
+const currentOpenedDeleteIdea = ref<number>()
+const isOpenedIdeaDeleteModal = ref(false)
+
+function handleOpenDeleteModal(ideaId: number) {
+  currentOpenedDeleteIdea.value = ideaId
+  isOpenedIdeaDeleteModal.value = true
+}
+function handleCloseDeleteModal() {
+  isOpenedIdeaDeleteModal.value = false
 }
 </script>
 
@@ -158,12 +185,12 @@ function getTranslatedKey(entry: Idea, key: string) {
           :class="{ active: sortKey == props.columns[index] }"
           :key="index"
           class="fs-5"
+          :id="columns[index]"
         >
           {{ column }}
           <span
             v-if="
-              props.columns[index] !== 'name' &&
-              props.columns[index] !== 'status'
+              props.columns[index] !== 'name' && props.columns[index] !== 'status'
             "
             class="arrow"
             :class="sortOrders[props.columns[index] as OType] == 1 ? 'asc' : 'dsc'"
@@ -188,54 +215,45 @@ function getTranslatedKey(entry: Idea, key: string) {
             {{ getTranslatedKey(entry, key) }}
           </span>
         </td>
-
         <Button
           type="button"
           class-name=" button btn-primary w-100"
           is-drop-down-controller
         >
-          <i class="bi bi-list fs-1"></i>
+          <i class="bi bi-list fs-1" />
         </Button>
         <DropDown>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item list-group-item-action p-0">
-              <button
-                class="p-2 w-100 text-start"
+            <li class="list-group-item">
+              <a
+                class="link text-decoration-none d-block pointers"
                 @click="handleOpenModal(entry.id)"
               >
                 Просмотреть идею
-              </button>
+              </a>
             </li>
-
-            <li class="list-group-item list-group-item-action p-0">
-              <router-link
-                class="p-2 w-100 text-decoration-none text-dark d-flex"
-                :to="`edit-idea/${entry.id}`"
+            <li class="list-group-item">
+              <a
+                class="link text-decoration-none d-block text-danger pointers"
+                @click="handleOpenDeleteModal(entry.id)"
+                >Удалить</a
               >
-                Редактировать
-              </router-link>
-            </li>
-
-            <li class="list-group-item list-group-item-action p-0">
-              <router-link
-                class="p-2 w-100 text-decoration-none text-dark d-flex"
-                :to="`edit-idea/${entry.id}`"
-              >
-                Отправить на согласование
-              </router-link>
             </li>
           </ul>
         </DropDown>
       </tr>
-
       <IdeaModal
         :is-opened="isOpenedIdeaModal"
         :idea="currentOpenedIdea"
         @close-modal="handleCloseModal"
       />
+      <DeleteIdeaModal
+        :ideaId="(currentOpenedDeleteIdea as number)"
+        :is-opened="isOpenedIdeaDeleteModal"
+        @close-modal="handleCloseDeleteModal"
+      />
     </tbody>
   </table>
-
   <div
     v-else
     class="no-data"
@@ -266,6 +284,8 @@ th {
   color: rgba(255, 255, 255, 0.66);
   padding: 20px 10px;
   cursor: pointer;
+  // width: 100%;
+  max-width: 200px;
   user-select: none;
   text-align: center;
 }
@@ -284,6 +304,10 @@ th:first-of-type {
 
 th.active {
   color: #fff;
+}
+
+#date {
+  width: 100px;
 }
 
 td {
@@ -333,5 +357,16 @@ td .red {
 }
 .drop-down {
   @include flexible(flex-start, center, column);
+}
+
+.link {
+  cursor: pointer;
+  color: rgb(33, 37, 41);
+
+  transition: $default-transition-settings;
+}
+
+.link:hover {
+  color: #0d6efd;
 }
 </style>

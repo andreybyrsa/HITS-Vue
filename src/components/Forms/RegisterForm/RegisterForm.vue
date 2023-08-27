@@ -28,11 +28,8 @@ const { registerError } = storeToRefs(userStore)
 
 const route = useRoute()
 
-const {
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
+const { isOpenedNotification, handleOpenNotification, handleCloseNotification } =
+  useNotification()
 
 onMounted(async () => {
   const { slug } = route.params
@@ -88,6 +85,7 @@ const handleRegister = handleSubmit(async (values) => {
       :key="input.key"
       :type="input.type"
       :name="input.name"
+      class-name="rounded-end"
       :placeholder="input.placeholder"
       :prepend="input.prepend"
       :disabled="input.disabled"

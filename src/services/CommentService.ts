@@ -3,8 +3,7 @@ import axios from 'axios'
 import Success from '@Domain/ResponseMessage'
 import Comment from '@Domain/Comment'
 
-const COMMENT_URL =
-  process.env.VUE_APP_COMMENT_API_URL || 'http://localhost:3000'
+const COMMENT_URL = process.env.VUE_APP_COMMENT_API_URL || 'http://localhost:3000'
 
 const addComment = async (
   comment: Comment,
@@ -38,11 +37,7 @@ const deleteComment = async (
     })
 }
 
-const checkComment = async (
-  ideaID: number,
-  comment: Comment,
-  token: string,
-) => {
+const checkComment = async (ideaID: number, comment: Comment, token: string) => {
   return await axios
     .put(`${COMMENT_URL}/check/${ideaID}`, comment, {
       headers: { Authorization: `Bearer ${token}` },

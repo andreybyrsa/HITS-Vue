@@ -6,19 +6,19 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 </script>
 
 <template>
-  <PageLayout content-class-name="login-page__content">
+  <PageLayout content-class-name="new-idea-page__content">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
 
     <template #content>
-      <IdeaForm />
+      <IdeaForm title="Создание идеи" />
     </template>
   </PageLayout>
 </template>
 
 <style lang="scss">
-.login-page {
+.new-idea-page {
   &__content {
     @include flexible(center, center);
   }

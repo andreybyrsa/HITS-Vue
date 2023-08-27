@@ -1,4 +1,4 @@
-import StatusTypes from '@Domain/Status'
+import StatusTypes from '@Domain/IdeaStatus'
 import Comment from '@Domain/Comment'
 
 interface Idea {
@@ -13,11 +13,11 @@ interface Idea {
   solution: string
   result: string
   customer: string
-  contactPerson?: string | null
+  contactPerson: string
   description: string
-  realizability?: string
-  suitability?: string
-  budget?: string
+  realizability: number
+  suitability: number
+  budget: number
   status: StatusTypes
   rating: number
   risk: number
@@ -27,7 +27,7 @@ interface Idea {
 interface Risk {
   status: StatusTypes
   risk: number
-  price: string
+  marketValue: string
   originality: string
   techniclFeasibility: string
   understanding: string

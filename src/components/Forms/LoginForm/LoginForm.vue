@@ -21,11 +21,8 @@ import Validation from '@Utils/Validation'
 const userStore = useUserStore()
 const { loginError } = storeToRefs(userStore)
 
-const {
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
+const { isOpenedNotification, handleOpenNotification, handleCloseNotification } =
+  useNotification()
 
 const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {
@@ -53,6 +50,7 @@ const handleLogin = handleSubmit(async (values) => {
       :key="input.key"
       :type="input.type"
       :name="input.name"
+      class-name="rounded-end"
       :placeholder="input.placeholder"
       :prepend="input.prepend"
     >

@@ -12,7 +12,7 @@ import EditIdeaView from '@Views/EditIdeaView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 
-import IdeasView from '@Views/IdeasView.vue'
+import IdeasView from '@Views/IdeasView/IdeasView.vue'
 
 import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
 

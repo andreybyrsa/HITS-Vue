@@ -14,22 +14,19 @@ const useIdeasStore = defineStore('ideas', {
   }),
   actions: {
     async fetchIdeas(token: string) {
-      this.ideas = await IdeasService.getAdminIdeas(token)
-      this.initiatorIdeas = await IdeasService.getInitiatorIdeas(token)
+      this.ideas = await IdeasService.fetchIdeas(token)
     },
     async postInitiatorIdeas(idea: Idea, token: string) {
-      await IdeasService.postInitiatorIdeas(idea, token)
+      await IdeasService.postInitiatorIdea(idea, token)
     },
     async getInitiatorIdeas(token: string) {
       await IdeasService.getInitiatorIdeas(token)
     },
     async deleteInitiatorIdeas(id: number, token: string) {
-      await IdeasService.deleteInitiatorIdeas(id, token)
-      this.ideas = await IdeasService.getAdminIdeas(token)
-      this.initiatorIdeas = await IdeasService.getInitiatorIdeas(token)
+      await IdeasService.deleteInitiatorIdea(id, token)
     },
     async putInitiatorIdeas(idea: Idea, id: number, token: string) {
-      await IdeasService.putInitiatorIdeas(idea, id, token)
+      await IdeasService.putInitiatorIdea(idea, id, token)
     },
 
     async addComment(comment: Comment, ideaID: number, token: string) {
@@ -44,11 +41,7 @@ const useIdeasStore = defineStore('ideas', {
     },
 
     async deleteComment(ideaID: number, commentID: number, token: string) {
-      const response = await CommentService.deleteComment(
-        ideaID,
-        commentID,
-        token,
-      )
+      const response = await CommentService.deleteComment(ideaID, commentID, token)
 
       if (response instanceof Error) {
         return

@@ -16,6 +16,15 @@ interface UpdateUserPassword {
   password: string
 }
 
+interface ChangeUserEmail {
+  key: string
+  oldEmail: string
+  code: string
+  password: string
+  newEmail: string
+  url: string
+}
+
 interface UserGroupData {
   id: number
   name: string
@@ -24,4 +33,4 @@ interface UserGroupData {
   isProjectOffice?: boolean
 }
 
-export { UpdateUserData, UpdateUserPassword, UserGroupData }
+export { UpdateUserData, UpdateUserPassword, ChangeUserEmail, UserGroupData }

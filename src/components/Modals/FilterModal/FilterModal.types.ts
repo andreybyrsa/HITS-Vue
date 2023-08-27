@@ -4,7 +4,8 @@ interface FilterModalProps {
 }
 
 interface FilterModalEmits {
-  (event: 'close-modal', filters?: string[]): void
+  (event: 'close-modal'): void
+  (event: 'set-filters', filters: string[]): void
 }
 
 export { FilterModalProps, FilterModalEmits }
