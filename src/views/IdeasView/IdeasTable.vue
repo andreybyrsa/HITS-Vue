@@ -8,10 +8,10 @@ import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
+import IdeasTableProps from '@Views/IdeasView/IdeasView.types'
+
 import { Idea } from '@Domain/Idea'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
-
-import IdeasTableProps from '@Views/IdeasView/IdeasView.types'
 
 import getStatus from '@Utils/getStatus'
 

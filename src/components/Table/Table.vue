@@ -62,7 +62,11 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
           column.className ?? ''
         }`"
       >
-        {{ column.getFormat ? column.getFormat(row[column.key]) : row[column.key] }}
+        <template v-if="row[column.key]">
+          {{
+            column.getFormat ? column.getFormat(row[column.key]) : row[column.key]
+          }}
+        </template>
       </div>
       <div
         v-if="$slots.actions"
