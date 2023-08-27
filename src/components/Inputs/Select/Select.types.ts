@@ -6,9 +6,8 @@ interface OptionType {
 interface SelectProps {
   className?: string
   labelClassName?: string
-
   label?: string
-
+  defaultValue?: string | number
   options?: OptionType[]
 }
 

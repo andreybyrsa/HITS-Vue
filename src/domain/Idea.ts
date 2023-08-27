@@ -27,7 +27,7 @@ interface Idea {
 interface Risk {
   status: StatusTypes
   risk: number
-  price: string
+  marketValue: string
   originality: string
   techniclFeasibility: string
   understanding: string

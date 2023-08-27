@@ -8,7 +8,7 @@ import {
 import IdeaDescription from '@Components/Modals/IdeaModal/IdeaDescription.vue'
 import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import IdeaInfo from '@Components/Modals/IdeaModal/IdeaInfo.vue'
-
+import IdeaActions from './IdeaActions.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 defineProps<IdeaModalProps>()
@@ -32,7 +32,10 @@ const ideaModalRef = ref<VueElement>()
           :idea="idea"
           @close-modal="emit('close-modal')"
         />
-
+        <IdeaActions
+          :role="role"
+          :idea="idea"
+        />
         <IdeaComments
           :idea="idea"
           :idea-modal-ref="ideaModalRef"
