@@ -1,19 +1,22 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { watchImmediate } from '@vueuse/core'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+
 import SearchAndFilters from '@Views/IdeasView/SearchAndFilters.vue'
+import IdeasTable from '@Views/IdeasView/IdeasTable.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
-import useUserStore from '@Store/user/userStore'
 import IdeasService from '@Services/IdeasService'
-import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
-import IdeasTable from './IdeasTable.vue'
+
+import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -28,7 +31,7 @@ const isLoading = ref(true)
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role) {
+  if (currentUser?.token) {
     const { token } = currentUser
 
     const response = await IdeasService.fetchIdeas(token)
@@ -51,7 +54,7 @@ onMounted(async () => {
   }
 })
 
-watch(
+watchImmediate(
   () => user.value?.role,
   () => {
     switch (user.value?.role) {

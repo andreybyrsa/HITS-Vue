@@ -49,7 +49,7 @@ const preAssessmentData = ref<PreAssessmentData>({
   realizability: props.idea?.realizability ?? 1,
   suitability: props.idea?.suitability ?? 1,
   budget: props.idea?.budget ?? 1,
-  preAssessment: props.idea?.rating ?? 1,
+  preAssessment: props.idea?.preAssessment ?? 1,
 })
 
 const { values, handleSubmit } = useForm<Idea>({

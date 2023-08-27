@@ -30,7 +30,7 @@ const gridColumns: TableColumn[] = [
   {
     key: 'name',
     label: 'Название',
-    className: 'col-5 justify-content-start text-start',
+    className: 'col-4 justify-content-start text-start',
   },
   { key: 'status', label: 'Статус', getFormat: getTranslatedStatus },
   {
@@ -45,7 +45,11 @@ const gridColumns: TableColumn[] = [
     getFormat: getFormattedDate,
     click: () => sortDateModified(props.ideas),
   },
-  { key: 'preAssessment', label: 'Оценка', getStyle: getRatingColor },
+  {
+    key: 'preAssessment',
+    label: 'Оценка',
+    getStyle: getRatingColor,
+  },
   {
     key: 'rating',
     label: 'Рейтинг',

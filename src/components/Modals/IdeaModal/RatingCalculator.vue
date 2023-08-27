@@ -32,9 +32,8 @@ watch(totalRating, () => {
 </script>
 
 <template>
-  <div class="row">
+  <div class="w-50 d-flex flex-column gap-2">
     <div
-      class="col"
       v-for="(select, index) in ratingSelects"
       :key="index"
     >

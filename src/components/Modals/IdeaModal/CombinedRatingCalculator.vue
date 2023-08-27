@@ -78,11 +78,11 @@ const progressBarStyle = computed(() => {
 </script>
 
 <template>
-  <div class="calculator-container">
-    <ExpertRatingCalculator v-model="expertRatingData" />
-    <div class="extra-gap"></div>
-    <RatingCalculator v-model="ratingData" />
-    <div class="extra-gap"></div>
+  <div class="w-100 d-flex flex-column gap-3">
+    <div class="d-flex gap-3">
+      <ExpertRatingCalculator v-model="expertRatingData" />
+      <RatingCalculator v-model="ratingData" />
+    </div>
 
     <div class="combined-rating">
       <Typography class-name="fs-6 text-primary">
@@ -101,9 +101,6 @@ const progressBarStyle = computed(() => {
 <style scoped>
 .calculator-container {
   background-color: white;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
 }
 
 .extra-gap {
@@ -111,7 +108,6 @@ const progressBarStyle = computed(() => {
 }
 
 .combined-rating {
-  margin-top: 10px;
   font-weight: bold;
 }
 </style>
