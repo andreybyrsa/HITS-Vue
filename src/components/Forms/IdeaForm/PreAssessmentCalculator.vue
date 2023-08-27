@@ -2,17 +2,17 @@
 import { computed, watch } from 'vue'
 
 import {
-  ratingSelects,
-  RatingData,
-} from '@Components/Forms/IdeaForm/RatingCalculator.types'
+  PreAssessmentData,
+  preAssessmentSelects,
+} from '@Components/Forms/IdeaForm/PreAssessmentCalculator.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 
-const ratingData = defineModel<RatingData>({
+const preAssessmentData = defineModel<PreAssessmentData>({
   required: true,
 })
 
-const ratingOptions = [
+const preAssessmentOptions = [
   { label: 'Низкий', value: 1 },
   { label: 'Ниже среднего', value: 2 },
   { label: 'Средний', value: 3 },
@@ -20,15 +20,15 @@ const ratingOptions = [
   { label: 'Высокий', value: 5 },
 ]
 
-const totalRating = computed(() => {
-  const { realizability, suitability, budget } = ratingData.value
+const totalPreAssessment = computed(() => {
+  const { realizability, suitability, budget } = preAssessmentData.value
   const rating = +((+realizability + +suitability + +budget) / 3).toFixed(1)
 
   return rating
 })
 
-watch(totalRating, () => {
-  ratingData.value.rating = totalRating.value
+watch(totalPreAssessment, () => {
+  preAssessmentData.value.preAssessment = totalPreAssessment.value
 })
 </script>
 
@@ -36,20 +36,20 @@ watch(totalRating, () => {
   <div class="row">
     <div
       class="col"
-      v-for="(select, index) in ratingSelects"
+      v-for="(select, index) in preAssessmentSelects"
       :key="index"
     >
       <Select
         :label="select.label"
-        :options="ratingOptions"
-        v-model="ratingData[select.key]"
+        :options="preAssessmentOptions"
+        v-model="preAssessmentData[select.key]"
       ></Select>
     </div>
   </div>
 
   <div class="col">
     <Typography class-name="text-primary">
-      Рейтинг: {{ ratingData.rating }}
+      Предварительная оценка: {{ preAssessmentData.preAssessment }}
     </Typography>
   </div>
 </template>

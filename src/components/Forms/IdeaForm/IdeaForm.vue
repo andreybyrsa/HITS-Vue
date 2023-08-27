@@ -5,11 +5,11 @@ import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 
 import Typography from '@Components/Typography/Typography.vue'
-import RatingCalculator from '@Components/Forms/IdeaForm/RatingCalculator.vue'
 import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.vue'
 import CustomerAndContactType from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.types'
-import { RatingData } from '@Components/Forms/IdeaForm/RatingCalculator.types'
+import { PreAssessmentData } from '@Components/Forms/IdeaForm/PreAssessmentCalculator.types'
+import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCalculator.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
 import IdeaFormSubmit from '@Components/Forms/IdeaForm/IdeaFormSubmit.vue'
@@ -45,11 +45,11 @@ const customerAndContact = ref<CustomerAndContactType>({
   customer: props.idea?.customer ?? 'ВШЦТ',
   contactPerson: props.idea?.contactPerson ?? 'ВШЦТ',
 })
-const ratingData = ref<RatingData>({
+const preAssessmentData = ref<PreAssessmentData>({
   realizability: props.idea?.realizability ?? 1,
   suitability: props.idea?.suitability ?? 1,
   budget: props.idea?.budget ?? 1,
-  rating: props.idea?.rating ?? 1,
+  preAssessment: props.idea?.rating ?? 1,
 })
 
 const { values, handleSubmit } = useForm<Idea>({
@@ -69,7 +69,7 @@ const currentIdea = computed(() => ({
   ...values,
   ...projectType.value,
   ...customerAndContact.value,
-  ...ratingData.value,
+  ...preAssessmentData.value,
 }))
 
 const handlePostIdea = handleSubmit(async () => {
@@ -119,7 +119,7 @@ const handleUpdateIdea = handleSubmit(async () => {
 
       <CustomerAndContact v-model="customerAndContact" />
 
-      <RatingCalculator v-model="ratingData" />
+      <PreAssessmentCalculator v-model="preAssessmentData" />
 
       <IdeaFormSubmit
         :is-editing="!!idea"

@@ -16,7 +16,7 @@ defineProps<IdeaModalProps>()
 
 const emit = defineEmits<IdeaModalEmits>()
 
-const ideaModalRef = ref<VueElement>()
+const ideaModalRef = ref<VueElement | null>(null)
 </script>
 
 <template>

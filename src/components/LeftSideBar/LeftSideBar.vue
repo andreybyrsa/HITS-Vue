@@ -96,7 +96,7 @@ function handleCloseModal() {
         @click="handleOpenModal"
         :disabled="user?.roles.length === 1"
       >
-        {{ isHovered ? getTranslatedRole(user.role) : 'Выберите роль' }}
+        {{ isHovered ? getTranslatedRole(user.role) : '' }}
       </Button>
 
       <Button

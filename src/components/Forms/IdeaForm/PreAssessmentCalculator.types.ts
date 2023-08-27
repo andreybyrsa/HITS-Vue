@@ -1,17 +1,17 @@
-interface RatingData {
+interface PreAssessmentData {
   realizability: number
   suitability: number
   budget: number
-  rating: number
+  preAssessment: number
 }
 
-interface RatingSelect {
+interface PreAssessmentSelect {
   label: string
   forName: string
-  key: keyof RatingData
+  key: keyof PreAssessmentData
 }
 
-const ratingSelects: RatingSelect[] = [
+const preAssessmentSelects: PreAssessmentSelect[] = [
   {
     label: 'Реализуемость*',
     forName: 'realizability',
@@ -29,4 +29,4 @@ const ratingSelects: RatingSelect[] = [
   },
 ]
 
-export { RatingData, RatingSelect, ratingSelects }
+export { PreAssessmentData, PreAssessmentSelect, preAssessmentSelects }
