@@ -13,6 +13,7 @@ import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import IdeasView from '@Views/IdeasView/IdeasView.vue'
+import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
 
@@ -83,6 +84,11 @@ const routes: Array<RouteRecordRaw> = [
         component: NewEmail,
       },
     ],
+  },
+  {
+    path: '/last-activity-note',
+    name: 'last-activity-note',
+    component: LastActivityNote,
   },
 ]
 

@@ -153,7 +153,7 @@ function handleCloseModal() {
   </PageLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .dev-page {
   &__content {
     @include flexible(flex-start, flex-start, column, $gap: 16px);

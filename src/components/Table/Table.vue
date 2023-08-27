@@ -71,6 +71,7 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
         <slot
           :item="row"
           name="actions"
+          class="table__action-cell"
         >
         </slot>
       </div>
@@ -93,9 +94,32 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
   &__row-cell {
     max-height: 100px;
 
-    overflow: scroll;
+    overflow: auto;
 
     @include flexible(center, center);
   }
+
+  &__row-cell:last-child {
+    max-height: 100px;
+
+    overflow: hidden;
+
+    @include flexible(center, center);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(209, 209, 209);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #0d6efd;
+  border-radius: 20px;
+  border: 3px solid #0d6efd;
 }
 </style>

@@ -24,6 +24,14 @@ interface Idea {
   comments: Comment[]
 }
 
+interface Change {
+  name: string
+  date: Date
+  who: string
+  number: number
+  doing: string
+}
+
 interface Risk {
   status: StatusTypes
   risk: number
@@ -33,4 +41,4 @@ interface Risk {
   understanding: string
 }
 
-export { Idea, Risk }
+export { Idea, Risk, Change }

@@ -10,7 +10,7 @@ interface TableColumn {
 interface TableProps {
   columns: TableColumn[]
   data: any[]
-  searchValue: string
+  searchValue?: string
 }
 
 export { TableProps, TableColumn }
