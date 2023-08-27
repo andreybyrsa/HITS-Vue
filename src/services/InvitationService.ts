@@ -88,10 +88,8 @@ const sendUrlToChangeEmail = async (
     })
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response
-        ? response.data.error
-        : 'Ошибка отправки ссылки для смены почты'
-      return { error }
+      const error = response?.data?.error ?? 'Ошибка отправки ссылки для смены почты'
+      return new Error(error)
     })
 }
 

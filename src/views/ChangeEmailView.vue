@@ -33,21 +33,24 @@ const { user } = storeToRefs(userStore)
 const { handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
     newEmail: (value: string) =>
-      Validation.checkEmail(value) || 'Ошибка авторизации',
+      Validation.checkEmail(value) || 'Неверно введена почта',
     oldEmail: (value: string) =>
-      Validation.checkEmail(value) || 'Ошибка авторизации',
+      Validation.checkEmail(value) || 'Неверно введена почта',
   },
   initialValues: { oldEmail: user.value?.email },
 })
 
 const sendChangingUrl = handleSubmit(async (values) => {
   const currentUser = user.value
+
   if (currentUser?.token) {
     const { token } = currentUser
     const response = await InvitationService.sendUrlToChangeEmail(values, token)
+
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)
     }
+
     return handleOpenNotification('success', response.success)
   }
 })
@@ -61,7 +64,8 @@ const sendChangingUrl = handleSubmit(async (values) => {
 
     <template #content>
       <router-view></router-view>
-      <FormLayout class-name="text-center">
+
+      <FormLayout>
         <Typography class-name="fs-3 text-primary">Изменение почты</Typography>
         <Input
           type="email"
@@ -77,11 +81,11 @@ const sendChangingUrl = handleSubmit(async (values) => {
         >
           Отправить
         </Button>
+
         <NotificationModal
           :type="notificationOptions.type"
           :is-opened="isOpenedNotification"
           @close-modal="handleCloseNotification"
-          :time-expired="5000"
         >
           {{ notificationOptions.message }}
         </NotificationModal>
