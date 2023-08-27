@@ -33,6 +33,7 @@ const gridColumns: TableColumn[] = [
   { key: 'status', label: 'Статус', getFormat: getTranslatedStatus },
   { key: 'dateCreated', label: 'Дата создания', getFormat: getFormattedDate },
   { key: 'dateModified', label: 'Дата изменения', getFormat: getFormattedDate },
+  { key: 'preAssessment', label: 'Оценка', getStyle: getRatingColor },
   { key: 'rating', label: 'Рейтинг', getStyle: getRatingColor },
 ]
 

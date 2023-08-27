@@ -51,7 +51,7 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
     </div>
 
     <div
-      class="row w-100 bg-light p-3 rounded-4 border border-2 text-center fs-6"
+      class="row w-100 bg-light p-3 rounded-4 border text-center fs-6"
       v-for="(row, index) in searchedValue"
       :key="index"
     >
