@@ -15,7 +15,7 @@ interface IdeaDescriptionProps {
 interface IdeaCommentsProps {
   idea?: Idea
 
-  ideaModalRef?: VueElement
+  ideaModalRef: VueElement | null
 }
 
 interface IdeaInfoProps {
