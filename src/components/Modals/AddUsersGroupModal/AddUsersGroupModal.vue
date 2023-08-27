@@ -118,9 +118,9 @@ const handleCreate = handleSubmit(async () => {
               :key="index"
             >
               <div class="unselected-selected-usesrs">
-                <Typography class-name="m-2 fs-6">{{
-                  user.lastName
-                }}</Typography>
+                <Typography class-name="m-2 fs-6">
+                  {{ user.lastName }}
+                </Typography>
                 <Typography class-name="fs-6">{{ user.firstName }}</Typography>
               </div>
             </div>
@@ -138,9 +138,9 @@ const handleCreate = handleSubmit(async () => {
               :key="index"
             >
               <div class="unselected-selected-usesrs">
-                <Typography class-name="m-2 fs-6">{{
-                  user.lastName
-                }}</Typography>
+                <Typography class-name="m-2 fs-6">
+                  {{ user.lastName }}
+                </Typography>
                 <Typography class-name="fs-6">{{ user.firstName }}</Typography>
               </div>
             </div>

@@ -49,17 +49,17 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
     const responseUsers = await ManageUsersService.getUsers(token)
-    const responseGroups = await GroupService.getUsersGroups(token)
+    // const responseGroups = await GroupService.getUsersGroups(token)
 
     if (responseUsers instanceof Error) {
       return handleOpenNotification('error', responseUsers.message)
     }
-    if (responseGroups instanceof Error) {
-      return handleOpenNotification('error', responseGroups.message)
-    }
+    // if (responseGroups instanceof Error) {
+    //   return handleOpenNotification('error', responseGroups.message)
+    // }
 
     usersarray.value = responseUsers.users
-    usersGroup.value = responseGroups
+    // usersGroup.value = responseGroups
   }
 })
 
@@ -120,7 +120,7 @@ function closeEditGroupModal(
 </script>
 
 <template>
-  <FormLayout class-name="users-group-form p-3">
+  <FormLayout class-name="users-group-form p-3 w-100 h-100 bg-white">
     <Typography class-name="fs-3 text-primary text-center w-100"
       >Группы пользователей</Typography
     >
@@ -151,15 +151,15 @@ function closeEditGroupModal(
         </AddUsersGroup>
       </div>
     </div>
-    <div class="users-group-form__contetnt w-100">
+    <div class="users-group-form__content w-100">
       <div
         v-for="(users, index) in searchedGroup"
         :key="index"
-        class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 row"
+        class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 w-100"
       >
-        <Typography class-name="text-primary fs-4 col">{{
-          users.name
-        }}</Typography>
+        <Typography class-name="text-primary fs-4 col">
+          {{ users.name }}
+        </Typography>
         <Button
           class-name="users-group-form__edit-btn col-1"
           prepend-icon-name="bi bi-pencil-square text-primary"
@@ -181,10 +181,6 @@ function closeEditGroupModal(
 
 <style lang="scss" scoped>
 .users-group-form {
-  width: 100%;
-  height: 100%;
-  background-color: $white-color;
-
   @include flexible(center, flex-start, column, $gap: 16px);
 
   &__content {
@@ -194,13 +190,13 @@ function closeEditGroupModal(
 
     @include flexible(stretch, flex-start, column, $gap: 8px);
   }
+
   &__group {
-    width: 100%;
     @include flexible(space-between, center);
   }
+
   &__edit-btn {
-    display: flex;
-    justify-content: end;
+    @include flexible(flex-start, end);
   }
 }
 </style>
