@@ -69,8 +69,9 @@ const handleUpdatePassword = handleSubmit(async (values) => {
       <Input
         v-for="input in newPasswordModalInputs"
         :key="input.id"
-        :name="input.name"
         :type="input.type"
+        :name="input.name"
+        class-name="rounded-end"
         :placeholder="input.placeholder"
       >
         <template #prepend>
@@ -103,15 +104,13 @@ const handleUpdatePassword = handleSubmit(async (values) => {
   background-color: $white-color;
 
   @include flexible(
-    flex-end,
+    center,
     flex-start,
     column,
-    $gap: 16px,
     $align-self: center,
-    $justify-self: center
+    $justify-self: center,
+    $gap: 12px
   );
-
-  @include flexible(center, flex-start, column, $gap: 16px);
 
   transition: all $default-transition-settings;
 }

@@ -4,6 +4,18 @@ import { Idea, Risk } from '@Domain/Idea'
 
 const IDEAS_URL = process.env.VUE_APP_IDEAS_API_URL || 'http://localhost:3000'
 
+const fetchIdeas = async (token: string): Promise<Idea[]> => {
+  return await axios
+    .get(`${IDEAS_URL}/all`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки идей'
+      return new Error(error)
+    })
+}
+
 const getInitiatorIdeas = async (token: string): Promise<Idea[] | Error> => {
   return await axios
     .get(`${IDEAS_URL}/initiator`, {
@@ -91,20 +103,6 @@ const getExpertIdeas = async (token: string): Promise<Idea> => {
     .catch((error) => console.warn(error))
 }
 
-const getAdminIdeas = async (token: string): Promise<Idea[]> => {
-  return await axios
-    .get(`${IDEAS_URL}/admin`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch((error) => console.warn(error))
-}
-
-const fetchIdeas = async (token: string) => {
-  const ideas = await getAdminIdeas(token)
-  return ideas
-}
-
 const deleteAdminIdeas = async (id: number) => {
   return await axios
     .delete(`${IDEAS_URL}/admin/delete/` + id)
@@ -162,21 +160,24 @@ const putExpertIdeas = async (
 }
 
 const IdeasService = {
-  postInitiatorIdea,
   fetchIdeas,
-  getInitiatorIdea,
+
   getInitiatorIdeas,
-  getProjectOfficeIdeas,
-  getExpertIdeas,
-  getAdminIdeas,
-  deleteAdminIdeas,
-  deleteInitiatorIdea,
-  putInitiatorIdea,
+  getInitiatorIdea,
+  postInitiatorIdea,
   putInitiatorIdeas,
+  putInitiatorIdea,
   putInitiatorSendIdea,
-  putAdminIdeas,
+  deleteInitiatorIdea,
+
+  getProjectOfficeIdeas,
   putProjectOfficeIdeas,
+
+  getExpertIdeas,
   putExpertIdeas,
+
+  putAdminIdeas,
+  deleteAdminIdeas,
 }
 
 export default IdeasService

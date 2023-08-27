@@ -54,7 +54,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <PageLayout content-class-name="login-page__content">
+  <PageLayout content-class-name="edit-idea-page__content">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
@@ -85,7 +85,7 @@ onMounted(async () => {
 </template>
 
 <style lang="scss">
-.login-page {
+.edit-idea-page {
   &__content {
     @include flexible(center, center);
   }

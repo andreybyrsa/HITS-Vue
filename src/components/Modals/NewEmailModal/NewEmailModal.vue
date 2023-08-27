@@ -1,101 +1,93 @@
 <script lang="ts" setup>
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, onMounted, Ref } from 'vue'
 import { useForm } from 'vee-validate'
-import { useRouter, useRoute } from 'vue-router'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import { NewEmailModalProps } from '@Components/Modals/NewEmailModal/NewEmailModal.types'
-import newEmailModalInputs from '@Components/Modals/NewEmailModal/NewEmailModalInputs'
+import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
+
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import ManageUsersService from '@Services/ManageUsersService'
-import Validation from '@Utils/Validation'
-import { storeToRefs } from 'pinia'
-import useUserStore from '@Store/user/userStore'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
 import { NewEmailForm } from '@Domain/Invitation'
-import InvitationService from '@Services/InvitationService'
+
 import useNotification from '@Hooks/useNotification'
+import useTimer from '@Hooks/useTimer'
+
+import useUserStore from '@Store/user/userStore'
+
+import ManageUsersService from '@Services/ManageUsersService'
+import InvitationService from '@Services/InvitationService'
+
+import Validation from '@Utils/Validation'
 
 const route = useRoute()
 const { slug } = route.params
-const expiredTime = ref('')
+
+let expiredTime: Ref<string>
+const isOpenedCodeModal = ref(false)
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const response = reactive({
-  success: '',
-  key: '',
-  error: '',
-})
-const { handleOpenNotification } = useNotification()
-const props = defineProps<NewEmailModalProps>()
-const router = useRouter()
-const { setValues, handleSubmit } = useForm<NewEmailForm>({
+
+const {
+  notificationOptions,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
+
+const { setFieldValue, handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
     oldEmail: (value: string) => Validation.checkEmail(value),
     code: (value: string) => value?.length === 6 || 'Неверно введен код',
     newEmail: (value: string) => Validation.checkEmail(value),
     url: (value: string) => value?.length,
   },
-  initialValues: { oldEmail: user.value?.email, url: slug },
+  initialValues: { url: slug },
 })
-
-watch(
-  () => props.authKey,
-  () => {
-    const { authKey } = props
-    setValues({ key: authKey })
-
-    startTimer()
-  },
-)
-
-function startTimer() {
-  let initialSeconds = 300
-
-  const intervalID = setInterval(() => {
-    const minutes = Math.floor(initialSeconds / 60)
-    const seconds = initialSeconds - minutes * 60
-    const currentMinutes = minutes.toString().length > 1 ? minutes : `0${minutes}`
-    const currentSeconds = seconds.toString().length > 1 ? seconds : `0${seconds}`
-
-    expiredTime.value = `${currentMinutes}:${currentSeconds}`
-
-    if (initialSeconds > 0) {
-      initialSeconds
-    } else {
-      clearInterval(intervalID)
-    }
-  }, 1000)
-}
 
 onMounted(async () => {
   const { slug } = route.params
   const currentUser = user.value
+
   if (currentUser?.token) {
     const { token } = currentUser
     const response = await InvitationService.getInfoToChangeEmail(slug, token)
-    startTimer()
+
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)
     }
-    setValues({ ...response })
+
+    const { newEmail, oldEmail } = response
+    isOpenedCodeModal.value = true
+    expiredTime = useTimer(300)
+
+    setFieldValue('newEmail', newEmail)
+    setFieldValue('oldEmail', oldEmail)
   }
 })
 
 const handleChangeEmail = handleSubmit(async (values) => {
   const currentUser = user.value
+
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await ManageUsersService.updateUserEmail(
-      values as unknown as NewEmailForm,
-      token,
-    )
+    const response = await ManageUsersService.updateUserEmail(values, token)
+
     if (response instanceof Error) {
-      handleOpenNotification('error', response.message)
+      return handleOpenNotification('error', response.message)
     }
-    router.push('/login')
+
+    userStore.removeUser()
   }
 })
+
+function handleCloseCodeModal() {
+  isOpenedCodeModal.value = false
+}
 </script>
 
 <template>
@@ -107,14 +99,13 @@ const handleChangeEmail = handleSubmit(async (values) => {
       <Typography class-name="fs-3 text-primary">Новая почта</Typography>
 
       <Input
-        v-for="input in newEmailModalInputs"
-        :key="input.id"
-        :name="input.name"
-        :type="input.type"
-        :placeholder="input.placeholder"
+        type="text"
+        name="code"
+        class-name="rounded-end"
+        placeholder="Введите код аутентификации"
       >
         <template #prepend>
-          <i :class="input.prepend"></i>
+          <i class="bi bi-shield-check"></i>
         </template>
       </Input>
 
@@ -124,22 +115,24 @@ const handleChangeEmail = handleSubmit(async (values) => {
       >
         Подтвердить
       </Button>
-
-      <Typography
-        v-if="response.error"
-        class-name="text-danger fs-6"
-      >
-        {{ response.error }}
-      </Typography>
-
-      <Typography
-        v-else
-        class-name="text-primary fs-6 text-center"
-      >
-        Код отправлен на почту, время действия кода:
-        {{ expiredTime }}
-      </Typography>
     </div>
+
+    <NotificationModal
+      type="success"
+      :is-opened="isOpenedCodeModal"
+      @close-modal="handleCloseCodeModal"
+    >
+      Код отправлен на старую почту, время действия кода: {{ expiredTime }}
+    </NotificationModal>
+
+    <NotificationModal
+      :type="notificationOptions.type"
+      :is-opened="isOpenedNotification"
+      @close-modal="handleCloseNotification"
+      :time-expired="5000"
+    >
+      {{ notificationOptions.message }}
+    </NotificationModal>
   </ModalLayout>
 </template>
 
@@ -149,15 +142,13 @@ const handleChangeEmail = handleSubmit(async (values) => {
   background-color: $white-color;
 
   @include flexible(
-    flex-end,
+    center,
     flex-start,
     column,
-    $gap: 16px,
+    $gap: 12px,
     $align-self: center,
     $justify-self: center
   );
-
-  @include flexible(center, flex-start, column, $gap: 16px);
 
   transition: all $default-transition-settings;
 }

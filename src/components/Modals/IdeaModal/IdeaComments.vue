@@ -66,7 +66,7 @@ const onIntersectionObserver = async (
 <template>
   <div class="bg-white rounded-3">
     <div class="py-2 w-100 border-bottom">
-      <Typography class-name="fs-5 px-3">Комментарии</Typography>
+      <Typography class-name="fs-6 px-3">Комментарии</Typography>
     </div>
 
     <div
@@ -86,6 +86,7 @@ const onIntersectionObserver = async (
     <form class="comment-form p-3">
       <Input
         name="comment"
+        class-name="rounded-end"
         placeholder="Добавить комментарий"
       >
         <template #prepend>

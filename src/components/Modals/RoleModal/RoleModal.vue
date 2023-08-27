@@ -66,9 +66,9 @@ function handleRole(currentRole: RolesTypes) {
     center,
     flex-start,
     column,
-    $gap: 16px,
     $align-self: center,
-    $justify-self: center
+    $justify-self: center,
+    $gap: 12px
   );
 
   transition: all $default-transition-settings;

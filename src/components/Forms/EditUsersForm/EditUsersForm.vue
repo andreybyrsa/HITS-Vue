@@ -166,14 +166,14 @@ function handleSaveUser(newUser: UpdateUserData, success: string) {
   height: 100%;
   background-color: $white-color;
 
-  @include flexible(center, flex-start, column, $gap: 16px);
+  @include flexible(center, flex-start, column, $gap: 12px);
 
   &__content {
     max-height: 100%;
 
     overflow-y: scroll;
 
-    @include flexible(stretch, flex-start, column, $gap: 8px);
+    @include flexible(stretch, flex-start, column, $gap: 12px);
   }
 }
 </style>
