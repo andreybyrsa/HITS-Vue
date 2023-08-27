@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import {
-  AddExpertGroupModalProps,
-  AddExpertGroupModalEmits,
-} from '@Components/Modals/AddExpertGroupModal/AddExpertGroupModal.types'
-import VueMultiselect from 'vue-multiselect'
+  AddUsersGroupModalProps,
+  AddUsersGroupModalEmits,
+} from '@Components/Modals/AddUsersGroupModal/AddUsersGroupModal.types'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -13,20 +12,19 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 import { User } from '@Domain/User'
-import UserGroup from '@Domain/Group'
+import { UserGroup } from '@Domain/Group'
 
 import useNotification from '@Hooks/useNotification'
 
-import { useFieldArray, useForm } from 'vee-validate'
+import { useForm } from 'vee-validate'
 import { UserGroupData } from '@Domain/ManageUsers'
 import GroupService from '@Services/GroupsService'
 
-const props = defineProps<AddExpertGroupModalProps>()
-const emit = defineEmits<AddExpertGroupModalEmits>()
+const props = defineProps<AddUsersGroupModalProps>()
+const emit = defineEmits<AddUsersGroupModalEmits>()
 
 const groups = defineModel<UserGroup[]>({ required: true })
 
-const selectedUsers = ref<User[]>([])
 const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
@@ -38,27 +36,42 @@ const {
   handleCloseNotification,
 } = useNotification()
 
-const { fields, push, remove } = useFieldArray<User>('user')
+//const { fields, push, remove } = useFieldArray<User>('user')
 
-const removeUser = (user: User) => {
-  const index = selectedUsers.value.indexOf(user)
-  if (index !== -1) {
-    selectedUsers.value.splice(index, 1)
-  }
+const selectedUsers = ref<User[]>([])
+
+const unselectedUsers = props.usersarray.filter(
+  (users) => !selectedUsers.value.includes(users),
+)
+
+const selectUser = (user: any) => {
+  selectedUsers.value.push(user)
+  unselectedUsers.splice(unselectedUsers.indexOf(user), 1)
 }
 
-watch(selectedUsers, (newSelectedUsers) => {
-  setValues({ ...values, users: newSelectedUsers })
-})
+const unselectUser = (user: any) => {
+  selectedUsers.value.splice(selectedUsers.value.indexOf(user), 1)
+  unselectedUsers.push(user)
+}
+
+watch(
+  () => selectedUsers.value,
+  (newSelectedUsers) => {
+    newSelectedUsers.forEach((user) => {
+      if (!values.users.includes(user)) {
+        values.users.push(user)
+      }
+    })
+  },
+)
 
 const { errors, setValues, handleSubmit, values } = useForm<UserGroupData>({
   validationSchema: {
     name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
+    //users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
   },
 })
-
-const handleCreate = handleSubmit(async (values) => {
+const handleCreate = handleSubmit(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -72,8 +85,6 @@ const handleCreate = handleSubmit(async (values) => {
     groups.value.push(values)
   }
 })
-
-//const fullName = ref([user.value?.firstName, user.value?.lastName])
 </script>
 
 <template>
@@ -81,8 +92,8 @@ const handleCreate = handleSubmit(async (values) => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="add-expert-group-modal p-3 bg-white rounded-3">
-      <div class="add-expert-group-modal__header">
+    <div class="add-Users-group-modal p-3 bg-white rounded-3">
+      <div class="add-Users-group-modal__header">
         <Typography class-name="fs-2 text-primary">Добавить группу</Typography>
         <Button
           class-name="btn-close"
@@ -94,45 +105,46 @@ const handleCreate = handleSubmit(async (values) => {
         class-name="fs-6 h-50"
         placeholder="Введите название группы"
       />
-      <!-- <VueMultiselect
-        v-model="selectedUsers"
-        :options="props.usersarray"
-        label="lastName"
-        multiple
-        track-by="email"
-        placeholder="Выберите пользователя"
-      ></VueMultiselect>
-
-      <ul class="list-group">
-        <li
-          v-for="user in selectedUsers"
-          :key="user.email"
-          class="list-group-item"
-        >
-          <div class="choose-user">
-            <div>{{ user.firstName }} {{ user.lastName }}</div>
-            <Button
-              @click="removeUser(user)"
-              prepend-icon-name="bi bi-trash-fill"
-              class="w-25% p-1"
-            >
-            </Button>
-          </div>
-        </li>
-      </ul> -->
 
       <div class="d-flex justify-content-between">
         <div class="selectors">
           <Typography class-name="fs-6 text-primary"
             >Пользователи не в группе</Typography
           >
-          <div class="select-block border">1</div>
+          <div class="select-block border">
+            <div
+              @click="selectUser(user)"
+              v-for="(user, index) in unselectedUsers"
+              :key="index"
+            >
+              <div class="unselected-selected-usesrs">
+                <Typography class-name="m-2 fs-6">{{
+                  user.lastName
+                }}</Typography>
+                <Typography class-name="fs-6">{{ user.firstName }}</Typography>
+              </div>
+            </div>
+          </div>
         </div>
+
         <div class="selectors">
           <Typography class-name="fs-6 text-primary"
             >Пользователи в группе</Typography
           >
-          <div class="select-block border">1</div>
+          <div class="select-block border">
+            <div
+              @click="unselectUser(user)"
+              v-for="(user, index) in selectedUsers"
+              :key="index"
+            >
+              <div class="unselected-selected-usesrs">
+                <Typography class-name="m-2 fs-6">{{
+                  user.lastName
+                }}</Typography>
+                <Typography class-name="fs-6">{{ user.firstName }}</Typography>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -146,7 +158,7 @@ const handleCreate = handleSubmit(async (values) => {
 </template>
 
 <style lang="scss">
-.add-expert-group-modal {
+.add-Users-group-modal {
   width: 600px;
 
   @include flexible(
@@ -210,5 +222,9 @@ const handleCreate = handleSubmit(async (values) => {
   border-radius: 12px;
   height: 250px;
   overflow-y: scroll;
+}
+
+.unselected-selected-usesrs {
+  cursor: pointer;
 }
 </style>

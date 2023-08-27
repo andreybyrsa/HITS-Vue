@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { UserGroupData } from '@Domain/ManageUsers'
 import Success from '@Domain/ResponseMessage'
-import UserGroup from '@Domain/Group'
+import { UserGroup } from '@Domain/Group'
 
 const MANAGE_GROUPS_URL =
   process.env.VUE_APP_MANAGE_GROUPS_API_URL || 'http://localhost:3000'

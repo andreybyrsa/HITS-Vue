@@ -4,7 +4,7 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import AddExpertGroup from '@Components/Modals/AddExpertGroupModal/AddExpertGroupModal.vue'
+import AddUsersGroup from '@Components/Modals/AddUsersGroupModal/AddUsersGroupModal.vue'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 import { User } from '@Domain/User'
@@ -12,21 +12,19 @@ import GroupService from '@Services/GroupsService'
 import ManageUsersService from '@Services/ManageUsersService'
 import useNotification from '@Hooks/useNotification'
 
-import { AddExpertGroupModalProps } from '@Components/Modals/AddExpertGroupModal/AddExpertGroupModal.types'
-import UserGroup from '@Domain/Group'
-import Collapse from '@Components/Collapse/Collapse.vue'
-
+import { UserGroup, UpdateUserGroup } from '@Domain/Group'
 const searchedValue = ref('')
 
 const isOpenedAddGroup = ref(false)
-const currentAddExpertGroup = ref([] as string[])
+const isOpenedEditGroup = ref(false)
+const currentAddUsersGroup = ref([] as string[])
 
 const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
 
-const props = defineProps<AddExpertGroupModalProps>()
 const usersarray = ref<User[]>([])
+const group = ref<UserGroup>()
 
 const {
   notificationOptions,
@@ -65,30 +63,65 @@ onMounted(async () => {
   }
 })
 
-const searchedGroupAndUsers = computed(() => {
-  return usersarray.value.filter((groups) => {
-    const name = AddExpertGroup.nameOfGroup?.toLowerCase().trim()
+const searchedGroup = computed(() => {
+  return usersGroup.value.filter((users) => {
+    const groupName = users.name?.toLowerCase().trim()
     const currentSearchedValue = searchedValue.value?.toLowerCase().trim()
 
-    const isIncludesSearcheValue = name?.includes(currentSearchedValue)
+    const isIncludesSearcheValue =
+      groupName && groupName.includes(currentSearchedValue)
 
     return isIncludesSearcheValue
   })
 })
 
-const isOpenedCollapse = ref(true)
+const editingGroup = ref<UpdateUserGroup>()
 
-function openCollapse() {
-  isOpenedCollapse.value = !isOpenedCollapse.value
+function openEditGroupModal(id: number) {
+  const currentSelectedUsers = usersGroup.value.find((users) => users.id == id)
+
+  if (currentSelectedUsers) {
+    const { id, name, users } = currentSelectedUsers
+    editingGroup.value = {
+      id: id,
+      newName: name,
+      newUsers: users,
+    }
+
+    isOpenedEditGroup.value = true
+  }
 }
 
-const visible = ref(true)
-//const searchedGroupAndUsers[] = ManageUsersService.getUsersGroup(user.value?.token as string)
+function closeEditGroupModal(
+  newGroupOrSuccess?: UpdateUserGroup | string,
+  success?: string,
+): void {
+  isOpenedEditGroup.value = false
+
+  if (typeof newGroupOrSuccess === 'object') {
+    const { id, newName, newUsers } = newGroupOrSuccess
+    const newGroupData: UserGroup = {
+      id: id,
+      name: newName,
+      users: newUsers,
+    }
+
+    usersGroup.value.forEach((group, index) => {
+      if (group.id === id) {
+        usersGroup.value.splice(index, 1, newGroupData)
+      }
+    })
+  }
+
+  if (success) {
+    handleOpenNotification('success', success)
+  }
+}
 </script>
 
 <template>
   <FormLayout class-name="users-group-form p-3">
-    <Typography class-name="fs-2 text-primary text-center w-100"
+    <Typography class-name="fs-3 text-primary text-center w-100"
       >Группы пользователей</Typography
     >
     {{ usersarray }}
@@ -108,56 +141,40 @@ const visible = ref(true)
         </template>
       </Input>
       <div v-if="isOpenedAddGroup">
-        <AddExpertGroup
+        <AddUsersGroup
           :isOpened="isOpenedAddGroup"
-          :currentAddExpertGroup="currentAddExpertGroup"
+          :currentAddUsersGroup="currentAddUsersGroup"
           @close-modal="closeAddGroupModal"
           :usersarray="usersarray"
           v-model="usersGroup"
         >
-        </AddExpertGroup>
+        </AddUsersGroup>
       </div>
     </div>
     <div class="users-group-form__contetnt w-100">
       <div
-        v-for="(users, index) in usersGroup"
+        v-for="(users, index) in searchedGroup"
         :key="index"
-        class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 accordion"
+        class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 row"
       >
-        <!-- <Button
-          :id="index.toString()"
-          is-collapse-controller
-        >
-          {{ users.name }}
-        </Button>
-        <Collapse
-          :id="index.toString()"
-          class="mt-2"
-        >
-          <div>
-            <Typography class-name="m-2">{{ user.lastName }}</Typography>
-            <Typography>{{ user.firstName }}</Typography>
-          </div>
-        </Collapse> -->
+        <Typography class-name="text-primary fs-4 col">{{
+          users.name
+        }}</Typography>
+        <Button
+          class-name="users-group-form__edit-btn col-1"
+          prepend-icon-name="bi bi-pencil-square text-primary"
+          @click="openEditGroupModal"
+        ></Button>
       </div>
-    </div>
-    <div class="users-group-form w-100">
-      <div
-        v-for="(group, index) in searchedGroupAndUsers"
-        :key="index"
-        class="users-group-form__group px-3 py-2 border rounded-3"
+      <AddUsersGroup
+        :isOpened="isOpenedEditGroup"
+        :currentAddUsersGroup="currentAddUsersGroup"
+        :group="group"
+        :usersarray="usersarray"
+        @close-modal="closeEditGroupModal"
+        v-model="usersGroup"
       >
-        <div class="d-flex flex-column">
-          <Typography class-name="text-primary fs-5">
-            {{ usersGroup }}
-          </Typography>
-        </div>
-      </div>
-
-      <!--<Button
-        prepend-icon-name="bi bi-pencil-square text-primary"
-        @click="handleOpenModal(user.email)"
-      ></Button>-->
+      </AddUsersGroup>
     </div>
   </FormLayout>
 </template>
@@ -178,7 +195,12 @@ const visible = ref(true)
     @include flexible(stretch, flex-start, column, $gap: 8px);
   }
   &__group {
-    @include flexible(center, space-between);
+    width: 100%;
+    @include flexible(space-between, center);
+  }
+  &__edit-btn {
+    display: flex;
+    justify-content: end;
   }
 }
 </style>

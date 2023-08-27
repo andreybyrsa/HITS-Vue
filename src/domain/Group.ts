@@ -6,4 +6,10 @@ interface UserGroup {
   users: User[]
 }
 
-export default UserGroup
+interface UpdateUserGroup {
+  id: number
+  newName: string
+  newUsers: User[]
+}
+
+export { UserGroup, UpdateUserGroup }
