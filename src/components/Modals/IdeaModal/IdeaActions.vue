@@ -11,8 +11,9 @@ import actionsButton from './IdeaActionsButton'
 import IdeaActionsType from './IdeaActions.types'
 
 const userStore = useUserStore()
-const props = defineProps<{ idea: Idea }>()
 const { user } = storeToRefs(userStore)
+
+const props = defineProps<{ idea: Idea }>()
 const router = useRouter()
 
 function checkUserRoleForButtons(button: IdeaActionsType) {

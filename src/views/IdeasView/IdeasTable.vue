@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useDateFormat, useToggle } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 
 import Table from '@Components/Table/Table.vue'
 import { TableColumn } from '@Components/Table/Table.types'
@@ -10,6 +11,7 @@ import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import DeleteIdeaModal from '@Components/Modals/DeleteIdeaModal/DeleteModal.vue'
 
 import { Idea } from '@Domain/Idea'
+import useUserStore from '@Store/user/userStore'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 import IdeasTableProps from '@Views/IdeasView/IdeasView.types'
@@ -23,6 +25,9 @@ const isOpenedIdeaModal = ref(false)
 const currentOpenedIdea = ref<Idea>()
 
 const availableStatus = getStatus()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const [isSorted, setIsSorted] = useToggle(true)
 
@@ -122,6 +127,13 @@ function handleOpenDeleteModal(ideaId: number) {
 function handleCloseDeleteModal() {
   isOpenedIdeaDeleteModal.value = false
 }
+
+function checkButtonDelete(email: string) {
+  return (user.value?.role == 'INITIATOR' && user.value.email == email) ||
+    user.value?.role == 'ADMIN'
+    ? true
+    : false
+}
 </script>
 
 <template>
@@ -147,7 +159,10 @@ function handleCloseDeleteModal() {
               Просмотреть идею
             </button>
           </li>
-          <li class="list-group-item list-group-item-action p-1">
+          <li
+            v-if="checkButtonDelete(item.initiator)"
+            class="list-group-item list-group-item-action p-1"
+          >
             <button
               class="w-100 text-start text-danger"
               @click="handleOpenDeleteModal(item.id)"
