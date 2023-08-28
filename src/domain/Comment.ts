@@ -1,5 +1,6 @@
 interface Comment {
   id: number
+  ideaId: number
   dateCreated: Date
   comment: string
   sender: string

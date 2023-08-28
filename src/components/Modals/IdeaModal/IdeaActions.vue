@@ -52,30 +52,32 @@ function checkStatusAndRole() {
         :idea="props.idea"
       />
 
-      <template v-for="button in actionsButton">
+      <div class="d-flex gap-3">
+        <template v-for="button in actionsButton">
+          <Button
+            :key="button.id"
+            v-if="checkUserRoleForButtons(button)"
+            type="submit"
+            :class-name="button.class"
+          >
+            {{ button.text }}
+          </Button>
+        </template>
         <Button
-          :key="button.id"
-          v-if="checkUserRoleForButtons(button)"
           type="submit"
-          :class-name="button.class"
+          v-if="user?.role == 'ADMIN' || user?.role == 'INITIATOR'"
+          @click="router.push(`edit-idea/${props.idea?.id}`)"
+          class-name="btn-light"
         >
-          {{ button.text }}
+          Редактировать
         </Button>
-      </template>
-      <Button
-        type="submit"
-        v-if="user?.role == 'ADMIN' || user?.role == 'INITIATOR'"
-        @click="router.push(`edit-idea/${props.idea?.id}`)"
-        class-name="btn-light"
-      >
-        Редактировать
-      </Button>
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .idea-actions {
-  @include flexible(center, flex-start, row, wrap, $gap: 16px);
+  @include flexible(flex-start, flex-start, column, $gap: 16px);
 }
 </style>

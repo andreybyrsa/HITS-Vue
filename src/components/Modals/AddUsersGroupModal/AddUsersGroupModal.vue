@@ -157,7 +157,7 @@ const handleCreate = handleSubmit(async () => {
   </ModalLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .add-Users-group-modal {
   width: 600px;
 

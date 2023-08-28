@@ -10,11 +10,11 @@ import DropDown from '@Components/DropDown/DropDown.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import DeleteIdeaModal from '@Components/Modals/DeleteIdeaModal/DeleteModal.vue'
 
+import IdeasTableProps from '@Views/IdeasView/IdeasView.types'
+
 import { Idea } from '@Domain/Idea'
 import useUserStore from '@Store/user/userStore'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
-
-import IdeasTableProps from '@Views/IdeasView/IdeasView.types'
 
 import getStatus from '@Utils/getStatus'
 
@@ -35,7 +35,7 @@ const gridColumns: TableColumn[] = [
   {
     key: 'name',
     label: 'Название',
-    className: 'col-5 justify-content-start text-start',
+    className: 'col-4 justify-content-start text-start',
   },
   { key: 'status', label: 'Статус', getFormat: getTranslatedStatus },
   {
@@ -49,6 +49,11 @@ const gridColumns: TableColumn[] = [
     label: 'Дата изменения',
     getFormat: getFormattedDate,
     click: () => sortDateModified(props.ideas),
+  },
+  {
+    key: 'preAssessment',
+    label: 'Оценка',
+    getStyle: getRatingColor,
   },
   {
     key: 'rating',
