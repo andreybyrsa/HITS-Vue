@@ -1,25 +1,29 @@
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
+import { useField } from 'vee-validate'
 
-import SelectProps from '@Components/Inputs/Select/Select.types'
+import { SelectProps } from '@Components/Inputs/Select/Select.types'
 
 const props = defineProps<SelectProps>()
 
-const modelValue = defineModel({
+defineModel({
   required: false,
 })
 
-const SelectClassName = computed(() => ['form-select', props.className])
+const { value: selectValue, errorMessage } = useField(props.name, props.validation, {
+  validateOnValueUpdate: !!props.validation,
+  syncVModel: true,
+})
+
+const SelectClassName = computed(() => [
+  'form-select',
+  { 'is-invalid': props.error || errorMessage.value },
+  props.className,
+])
 const LabelClassName = computed(() => [
   'form-label text-primary',
   props.labelClassName,
 ])
-
-onMounted(() => {
-  if (props.defaultValue !== undefined) {
-    modelValue.value = props.defaultValue
-  }
-})
 </script>
 
 <template>
@@ -33,14 +37,16 @@ onMounted(() => {
 
     <select
       :class="SelectClassName"
-      v-model="modelValue"
+      v-model="selectValue"
+      :disabled="disabled"
     >
       <option
-        :value="defaultValue"
+        v-if="placeholder"
+        :value="undefined"
         selected
         disabled
       >
-        Выберите значение
+        {{ placeholder }}
       </option>
       <option
         v-for="(option, index) in options"
@@ -50,5 +56,9 @@ onMounted(() => {
         {{ option.label }}
       </option>
     </select>
+
+    <div class="invalid-feedback">
+      {{ error || errorMessage }}
+    </div>
   </div>
 </template>

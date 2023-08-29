@@ -38,9 +38,6 @@ const {
   handleCloseNotification,
 } = useNotification()
 
-const projectType = ref({
-  projectType: props.idea?.projectType ?? 'INSIDE',
-})
 const customerAndContact = ref<CustomerAndContactType>({
   customer: props.idea?.customer ?? 'ВШЦТ',
   contactPerson: props.idea?.contactPerson ?? 'ВШЦТ',
@@ -55,6 +52,7 @@ const preAssessmentData = ref<PreAssessmentData>({
 const { values, handleSubmit } = useForm<Idea>({
   validationSchema: {
     name: (value: string) => value?.length > 0 || 'Поле не заполнено',
+    projectType: (value: string) => value?.length > 0 || 'Поле не заполнено',
     problem: (value: string) => value?.length > 0 || 'Поле не заполнено',
     solution: (value: string) => value?.length > 0 || 'Поле не заполнено',
     result: (value: string) => value?.length > 0 || 'Поле не заполнено',
@@ -67,7 +65,6 @@ const { values, handleSubmit } = useForm<Idea>({
 
 const currentIdea = computed(() => ({
   ...values,
-  ...projectType.value,
   ...customerAndContact.value,
   ...preAssessmentData.value,
 }))
@@ -115,7 +112,7 @@ const handleUpdateIdea = handleSubmit(async () => {
     </Typography>
 
     <div class="w-75 d-flex flex-column gap-3">
-      <IdeaFormInputs v-model="projectType.projectType" />
+      <IdeaFormInputs />
 
       <CustomerAndContact v-model="customerAndContact" />
 

@@ -6,10 +6,6 @@ import {
   projectTypeOptions,
   textareas,
 } from '@Components/Forms/IdeaForm/IdeaFormInputs'
-
-const modelValue = defineModel({
-  required: true,
-})
 </script>
 
 <template>
@@ -22,9 +18,10 @@ const modelValue = defineModel({
     />
 
     <Select
-      label="Тип проекта*"
+      name="projectType"
       :options="projectTypeOptions"
-      v-model="modelValue"
+      label="Тип проекта*"
+      placeholder="Выберите тип проекта"
     ></Select>
 
     <Textarea

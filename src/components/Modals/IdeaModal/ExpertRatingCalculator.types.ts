@@ -6,6 +6,7 @@ interface ExpertRatingData {
   rating: number
 }
 interface RatingSelect {
+  name: 'marketValue' | 'originality' | 'technicalFeasibility' | 'understanding'
   label: string
   forName: string
   key: keyof ExpertRatingData
@@ -13,6 +14,7 @@ interface RatingSelect {
 }
 const ratingSelects: RatingSelect[] = [
   {
+    name: 'marketValue',
     label: 'Рыночная ценность*',
     forName: 'marketValue',
     key: 'marketValue',
@@ -24,6 +26,7 @@ const ratingSelects: RatingSelect[] = [
     ],
   },
   {
+    name: 'originality',
     label: 'Уникальность*',
     forName: 'originality',
     key: 'originality',
@@ -35,6 +38,7 @@ const ratingSelects: RatingSelect[] = [
     ],
   },
   {
+    name: 'technicalFeasibility',
     label: 'Техническая реализуемость*',
     forName: 'technicalFeasibility',
     key: 'technicalFeasibility',
@@ -46,6 +50,7 @@ const ratingSelects: RatingSelect[] = [
     ],
   },
   {
+    name: 'understanding',
     label: 'Понимание идеи инициатором*',
     forName: 'understanding',
     key: 'understanding',

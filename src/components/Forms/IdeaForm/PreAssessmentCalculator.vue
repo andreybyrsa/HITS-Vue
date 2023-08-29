@@ -40,6 +40,7 @@ watch(totalPreAssessment, () => {
       :key="index"
     >
       <Select
+        :name="select.name"
         :label="select.label"
         :options="preAssessmentOptions"
         v-model="preAssessmentData[select.key]"
