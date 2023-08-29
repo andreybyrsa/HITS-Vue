@@ -2,11 +2,9 @@
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
 
-import {
-  InputProps,
-  InputEmits,
-  HTMLInputEvent,
-} from '@Components/Inputs/Input/Input.types'
+import { InputProps, InputEmits } from '@Components/Inputs/Input/Input.types'
+
+import HTMLInputEvent from '@Domain/HTMLInputEvent'
 
 const props = defineProps<InputProps>()
 

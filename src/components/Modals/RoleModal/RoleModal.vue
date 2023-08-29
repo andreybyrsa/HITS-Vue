@@ -31,7 +31,6 @@ function getTranslatedRole(currentRole: RolesTypes) {
 function handleRole(currentRole: RolesTypes) {
   userStore.setRole(currentRole)
   emit('close-modal')
-  // window.location.reload()
 }
 </script>
 

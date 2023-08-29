@@ -29,9 +29,13 @@ watch(enter, () => {
 })
 
 async function handleDeleteIdea() {
-  await IdeasService.deleteInitiatorIdea(props.ideaId, user.value?.token as string)
-  emit('close-modal')
-  window.location.reload()
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await IdeasService.deleteInitiatorIdea(props.ideaId, token)
+    emit('close-modal')
+    window.location.reload()
+  }
 }
 </script>
 
@@ -41,9 +45,9 @@ async function handleDeleteIdea() {
     @on-outside-close="emit('close-modal')"
   >
     <div class="delete-modal p-3 rounded bg-white">
-      <Typography class-name="text-center"
-        >Вы действительно хотите удалить?</Typography
-      >
+      <Typography class-name="text-center">
+        Вы действительно хотите удалить?
+      </Typography>
       <Button
         @click="handleDeleteIdea"
         class-name="btn-danger w-100"
