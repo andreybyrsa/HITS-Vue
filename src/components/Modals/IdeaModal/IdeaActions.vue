@@ -24,18 +24,19 @@ function checkUserRoleForButtons(button: IdeaActionsType) {
 function checkStatusAndRole() {
   const currentRole = user.value?.role
   const currentStatusIdea = props.idea?.status
+  const currentInitiatorIdea = props.idea.initiator
   if (currentRole == 'ADMIN') {
     return true
   } else
     return (
       currentRole &&
       currentStatusIdea &&
-      actionsButton.find(
-        (e) =>
-          currentRole &&
-          currentStatusIdea &&
-          e.roles.includes(currentRole) &&
-          e.status.includes(currentStatusIdea),
+      actionsButton.find((e) =>
+        currentRole == 'INITIATOR'
+          ? currentInitiatorIdea == user.value?.email &&
+            e.roles.includes(currentRole) &&
+            e.status.includes(currentStatusIdea)
+          : e.roles.includes(currentRole) && e.status.includes(currentStatusIdea),
       )
     )
 }
@@ -65,7 +66,10 @@ function checkStatusAndRole() {
         </template>
         <Button
           type="submit"
-          v-if="user?.role == 'ADMIN' || user?.role == 'INITIATOR'"
+          v-if="
+            user?.role == 'ADMIN' ||
+            (user?.role == 'INITIATOR' && user.email == idea.initiator)
+          "
           @click="router.push(`edit-idea/${props.idea?.id}`)"
           class-name="btn-light"
         >

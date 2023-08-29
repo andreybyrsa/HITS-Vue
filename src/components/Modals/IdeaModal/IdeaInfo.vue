@@ -17,9 +17,12 @@ const { user } = storeToRefs(userStore)
 
 function checkViewMode() {
   const currentRole = user.value?.role
+  const currentEmail = user.value?.email
+  const currentInitiatorIdea = props.idea?.initiator
   const currentStatusIdea = props.idea?.status
   if (
     currentRole == 'INITIATOR' &&
+    currentEmail == currentInitiatorIdea &&
     (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING')
   ) {
     return false
@@ -34,8 +37,11 @@ function checkViewMode() {
 
 function checkEditMode() {
   const currentRole = user.value?.role
+  const currentEmail = user.value?.email
+  const currentInitiatorIdea = props.idea?.initiator
   const currentStatusIdea = props.idea?.status
   return (currentRole == 'INITIATOR' &&
+    currentEmail == currentInitiatorIdea &&
     (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING')) ||
     currentRole == 'ADMIN'
     ? true
