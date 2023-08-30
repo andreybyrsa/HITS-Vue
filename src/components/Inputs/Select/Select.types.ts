@@ -1,3 +1,5 @@
+import { ValidationMethods } from '@Utils/Validation'
+
 interface OptionType {
   value: string | number | boolean
   label: string
@@ -6,9 +8,17 @@ interface OptionType {
 interface SelectProps {
   className?: string
   labelClassName?: string
+  name: string
+
+  validation?: ValidationMethods
+
+  options: OptionType[]
+
   label?: string
-  defaultValue?: string | number
-  options?: OptionType[]
+  placeholder?: string
+  error?: string
+
+  disabled?: boolean
 }
 
-export default SelectProps
+export { SelectProps, OptionType }

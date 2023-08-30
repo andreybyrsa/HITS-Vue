@@ -29,6 +29,7 @@ watch(totalRating, () => {
       :key="index"
     >
       <Select
+        :name="select.name"
         :label="select.label"
         :options="select.choices"
         v-model="ratingData[select.key]"

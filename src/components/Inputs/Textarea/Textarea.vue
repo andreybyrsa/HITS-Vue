@@ -5,8 +5,9 @@ import { useField } from 'vee-validate'
 import {
   TextareaProps,
   TextareaEmits,
-  HTMLTextareaEvent,
 } from '@Components/Inputs/Textarea/Textarea.types'
+
+import HTMLInputEvent from '@Domain/HTMLInputEvent'
 
 const props = defineProps<TextareaProps>()
 
@@ -54,7 +55,7 @@ const LabelClassName = computed(() => [
         :class="TextareaClassName"
         :name="name"
         v-model="value"
-        @change="(event) => emit('change', event as HTMLTextareaEvent)"
+        @change="(event) => emit('change', event as HTMLInputEvent)"
         @focus="emit('focus')"
         @blur="emit('blur')"
         :placeholder="placeholder"
