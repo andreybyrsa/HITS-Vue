@@ -119,7 +119,7 @@ function handleCloseModal() {
 
 <style lang="scss" scoped>
 .left-side-bar {
-  @include position(relative, $z-index: 1);
+  @include position(relative, $z-index: 5);
 
   overflow: hidden;
 

@@ -21,21 +21,16 @@ function checkMode(mode: ModeButtonsType) {
   const currentRole = user.value?.role
   const currentStatusIdea = props.idea?.status
   const currentInitiatorIdea = props.idea?.initiator
-  if (currentRole == 'INITIATOR') {
-    return (
-      currentRole &&
-      currentStatusIdea &&
-      currentInitiatorIdea == user.value?.email &&
-      mode.roles.includes(currentRole) &&
-      mode.status.includes(currentStatusIdea)
-    )
-  } else
-    return (
-      currentRole &&
-      currentStatusIdea &&
-      mode.roles.includes(currentRole) &&
-      mode.status.includes(currentStatusIdea)
-    )
+  return currentRole == 'INITIATOR'
+    ? currentRole &&
+        currentStatusIdea &&
+        currentInitiatorIdea == user.value?.email &&
+        mode.roles.includes(currentRole) &&
+        mode.status.includes(currentStatusIdea)
+    : currentRole &&
+        currentStatusIdea &&
+        mode.roles.includes(currentRole) &&
+        mode.status.includes(currentStatusIdea)
 }
 
 function checkViewMode() {
@@ -43,19 +38,17 @@ function checkViewMode() {
   const currentEmail = user.value?.email
   const currentInitiatorIdea = props.idea?.initiator
   const currentStatusIdea = props.idea?.status
-  if (
-    currentRole == 'INITIATOR' &&
+  return currentRole == 'INITIATOR' &&
     currentEmail == currentInitiatorIdea &&
     (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING')
-  ) {
-    return false
-  } else if (currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL') {
-    return false
-  } else if (currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION') {
-    return false
-  } else if (currentRole == 'ADMIN') {
-    return false
-  } else return true
+    ? false
+    : currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL'
+    ? false
+    : currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
+    ? false
+    : currentRole == 'ADMIN'
+    ? false
+    : true
 }
 </script>
 
@@ -74,7 +67,7 @@ function checkViewMode() {
       </Typography>
 
       <div class="idea-info__user pt-2">
-        <Icon class-name="bi bi-person-circle text-secondary fs-1 opacity-25" />
+        <Icon class-name="bi bi-person-circle text-secondary fs-2 opacity-25" />
 
         <Typography class-name="text-primary">
           {{ idea.customer }}
@@ -88,7 +81,7 @@ function checkViewMode() {
       </Typography>
 
       <div class="idea-info__user pt-2">
-        <Icon class-name="bi bi-envelope text-secondary fs-1 opacity-25" />
+        <Icon class-name="bi bi-envelope text-secondary fs-2 opacity-25" />
 
         <Typography class-name="text-primary">
           {{ idea.initiator }}
@@ -119,7 +112,7 @@ function checkViewMode() {
       </Typography>
 
       <div class="idea-info__user pt-2">
-        <Icon class-name="bi bi-eye text-secondary fs-1 opacity-25" />
+        <Icon class-name="bi bi-eye text-secondary fs-2 opacity-25" />
 
         <Typography class-name="text-primary"> Просмотр </Typography>
       </div>

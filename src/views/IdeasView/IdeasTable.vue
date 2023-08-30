@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useDateFormat, useToggle } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 import Table from '@Components/Table/Table.vue'
 import { TableColumn } from '@Components/Table/Table.types'
@@ -9,6 +10,7 @@ import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import DeleteIdeaModal from '@Components/Modals/DeleteIdeaModal/DeleteModal.vue'
+import Icon from '@Components/Icon/Icon.vue'
 
 import IdeasTableProps from '@Views/IdeasView/IdeasView.types'
 
@@ -29,15 +31,22 @@ const availableStatus = getStatus()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const router = useRouter()
+
 const [isSorted, setIsSorted] = useToggle(true)
 
 const gridColumns: TableColumn[] = [
   {
     key: 'name',
     label: 'Название',
-    className: 'col-4 justify-content-start text-start',
+    className: 'col-3 justify-content-start text-start',
   },
-  { key: 'status', label: 'Статус', getFormat: getTranslatedStatus },
+  {
+    key: 'status',
+    label: 'Статус',
+    className: 'col-2',
+    getFormat: getTranslatedStatus,
+  },
   {
     key: 'dateCreated',
     label: 'Дата создания',
@@ -133,9 +142,34 @@ function handleCloseDeleteModal() {
   isOpenedIdeaDeleteModal.value = false
 }
 
-function checkButtonDelete(email: string) {
-  return (user.value?.role == 'INITIATOR' && user.value.email == email) ||
+function checkButtonDelete(initiator: string) {
+  return (user.value?.role == 'INITIATOR' && user.value.email == initiator) ||
     user.value?.role == 'ADMIN'
+    ? true
+    : false
+}
+
+function checkButtonEdit(initiator: string, status: IdeaStatusTypes) {
+  return (user.value?.role == 'INITIATOR' &&
+    user.value.email == initiator &&
+    (status == 'NEW' || status == 'ON_EDITING')) ||
+    user.value?.role == 'ADMIN'
+    ? true
+    : false
+}
+
+function checkMark(row: Idea) {
+  const currentRole = user.value?.role
+  const currentStatusIdea = row.status
+  const currentInitiatorIdea = row.initiator
+  const currentEmail = user.value?.email
+  return currentRole == 'INITIATOR' &&
+    (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING') &&
+    currentInitiatorIdea == currentEmail
+    ? true
+    : currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL'
+    ? true
+    : currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
     ? true
     : false
 }
@@ -165,6 +199,17 @@ function checkButtonDelete(email: string) {
             </button>
           </li>
           <li
+            v-if="checkButtonEdit(item.initiator, item.status)"
+            class="list-group-item list-group-item-action p-1"
+          >
+            <button
+              class="w-100 text-start"
+              @click="router.push(`edit-idea/${item.id}`)"
+            >
+              Редактировать
+            </button>
+          </li>
+          <li
             v-if="checkButtonDelete(item.initiator)"
             class="list-group-item list-group-item-action p-1"
           >
@@ -177,6 +222,19 @@ function checkButtonDelete(email: string) {
           </li>
         </ul>
       </DropDown>
+    </template>
+    <template
+      v-if="user?.role != 'ADMIN'"
+      #icon="{ item }: { item: Idea }"
+    >
+      <Icon
+        v-if="checkMark(item)"
+        class-name="bi bi-circle-fill text-success bg-transparent fs-6"
+      />
+      <Icon
+        v-else
+        class-name="bi bi-circle-fill text-secondary bg-transparent fs-6 opacity-25"
+      />
     </template>
   </Table>
 

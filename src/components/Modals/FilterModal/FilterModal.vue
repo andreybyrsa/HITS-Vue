@@ -68,7 +68,7 @@ function handleSetFilters() {
         <div
           v-for="(filter, index) in filters"
           :key="index"
-          class="list-group-item"
+          class="list-group-item list-group-item-action"
         >
           <Checkbox
             name="checkbox"

@@ -21,7 +21,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     id: 2,
     text: 'Журнал изменений',
     to: '/history',
-    iconName: 'bi bi-book',
+    iconName: 'bi bi-journal-text',
     roles: getRoles().roles,
   },
   {
@@ -48,7 +48,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         iconName: 'bi bi-people',
       },
     ],
-    iconName: 'bi bi-sliders',
+    iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
   },
   {
