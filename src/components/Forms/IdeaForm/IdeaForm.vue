@@ -8,7 +8,6 @@ import Typography from '@Components/Typography/Typography.vue'
 import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.vue'
 import CustomerAndContactType from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.types'
-import { PreAssessmentData } from '@Components/Forms/IdeaForm/PreAssessmentCalculator.types'
 import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCalculator.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
@@ -42,10 +41,7 @@ const customerAndContact = ref<CustomerAndContactType>({
   customer: props.idea?.customer ?? 'ВШЦТ',
   contactPerson: props.idea?.contactPerson ?? 'ВШЦТ',
 })
-const preAssessmentData = ref<PreAssessmentData>({
-  realizability: props.idea?.realizability ?? 1,
-  suitability: props.idea?.suitability ?? 1,
-  budget: props.idea?.budget ?? 1,
+const preAssessment = ref({
   preAssessment: props.idea?.preAssessment ?? 1,
 })
 
@@ -57,6 +53,10 @@ const { values, handleSubmit } = useForm<Idea>({
     solution: (value: string) => value?.length > 0 || 'Поле не заполнено',
     result: (value: string) => value?.length > 0 || 'Поле не заполнено',
     description: (value: string) => value?.length > 0 || 'Поле не заполнено',
+
+    realizability: (value: number) => (value && value > 0) || 'Поле не заполнено',
+    suitability: (value: number) => (value && value > 0) || 'Поле не заполнено',
+    budget: (value: number) => (value && value > 0) || 'Поле не заполнено',
   },
   initialValues: {
     ...props.idea,
@@ -66,7 +66,7 @@ const { values, handleSubmit } = useForm<Idea>({
 const currentIdea = computed(() => ({
   ...values,
   ...customerAndContact.value,
-  ...preAssessmentData.value,
+  ...preAssessment.value,
 }))
 
 const handlePostIdea = handleSubmit(async () => {
@@ -116,7 +116,10 @@ const handleUpdateIdea = handleSubmit(async () => {
 
       <CustomerAndContact v-model="customerAndContact" />
 
-      <PreAssessmentCalculator v-model="preAssessmentData" />
+      <PreAssessmentCalculator
+        :idea="values"
+        v-model="preAssessment"
+      />
 
       <IdeaFormSubmit
         :is-editing="!!idea"

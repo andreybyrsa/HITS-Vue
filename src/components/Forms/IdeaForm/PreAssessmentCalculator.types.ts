@@ -1,36 +1,41 @@
-interface PreAssessmentData {
-  realizability: number
-  suitability: number
-  budget: number
-  preAssessment: number
+import { OptionType } from '@Components/Inputs/Select/Select.types'
+
+import { Idea } from '@Domain/Idea'
+
+interface PreAssessmentProps {
+  idea: Idea
 }
 
 interface PreAssessmentSelect {
   name: 'realizability' | 'suitability' | 'budget'
   label: string
-  forName: string
-  key: keyof PreAssessmentData
+  options: OptionType[]
 }
+
+const preAssessmentOptions = [
+  { label: 'Низкий', value: 1 },
+  { label: 'Ниже среднего', value: 2 },
+  { label: 'Средний', value: 3 },
+  { label: 'Выше среднего', value: 4 },
+  { label: 'Высокий', value: 5 },
+]
 
 const preAssessmentSelects: PreAssessmentSelect[] = [
   {
     name: 'realizability',
     label: 'Реализуемость*',
-    forName: 'realizability',
-    key: 'realizability',
+    options: preAssessmentOptions,
   },
   {
     name: 'suitability',
     label: 'Пригодность*',
-    forName: 'suitability',
-    key: 'suitability',
+    options: preAssessmentOptions,
   },
   {
     name: 'budget',
     label: 'Бюджет*',
-    forName: 'budget',
-    key: 'budget',
+    options: preAssessmentOptions,
   },
 ]
 
-export { PreAssessmentData, PreAssessmentSelect, preAssessmentSelects }
+export { PreAssessmentProps, PreAssessmentSelect, preAssessmentSelects }
