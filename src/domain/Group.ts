@@ -4,6 +4,8 @@ interface UserGroup {
   id: number
   name: string
   users: User[]
+  isExperts?: boolean
+  isProjectOffice?: boolean
 }
 
 interface UpdateUserGroup {

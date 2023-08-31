@@ -1,8 +1,11 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
+import GroupService from '@Services/GroupsService'
+import { UserGroup } from '@Domain/Group'
+import { UserGroupData } from '@Domain/ManageUsers'
 
 import Typography from '@Components/Typography/Typography.vue'
 import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.vue'
@@ -67,7 +70,30 @@ const currentIdea = computed(() => ({
   ...values,
   ...customerAndContact.value,
   ...preAssessmentData.value,
+  ...expertGroups.value,
+  ...projectOfficeGroups.value,
 }))
+
+const expertGroups = ref<UserGroup[]>([])
+const projectOfficeGroups = ref<UserGroup[]>([])
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const responseGroups = await GroupService.getUsersGroups(token)
+
+    if (responseGroups instanceof Error) {
+      return 1
+    }
+
+    expertGroups.value = responseGroups.filter((group) => group.isExperts)
+    projectOfficeGroups.value = responseGroups.filter(
+      (group) => group.isProjectOffice,
+    )
+  }
+})
 
 const handlePostIdea = handleSubmit(async () => {
   const currentUser = user.value
