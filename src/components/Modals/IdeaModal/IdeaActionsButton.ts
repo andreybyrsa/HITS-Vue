@@ -25,14 +25,6 @@ const actionsButton: IdeaActionsType[] = [
     roles: ['PROJECT_OFFICE'],
     status: ['ON_APPROVAL'],
   },
-  {
-    id: 3,
-    text: 'Утвердить',
-    class: 'btn-primary',
-    to: '/ideas',
-    roles: ['EXPERT'],
-    status: ['ON_CONFIRMATION'],
-  },
 ]
 
 export default actionsButton
