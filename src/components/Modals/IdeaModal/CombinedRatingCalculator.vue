@@ -1,113 +1,81 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import ExpertRatingCalculator from './ExpertRatingCalculator.vue'
-import RatingCalculator from './RatingCalculator.vue'
-import { ExpertRatingData } from '@Components/Modals/IdeaModal/ExpertRatingCalculator.types'
-import { RatingData } from '@Components/Modals/IdeaModal/RatingCalculator.types'
+import { useForm } from 'vee-validate'
+import { useRouter } from 'vue-router'
+
+import { ExpertConfirmation } from '@Components/Modals/IdeaModal/ExpertRatingCalculator.types'
 import Typography from '@Components/Typography/Typography.vue'
+import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
+import RatingCalculator from '@Components/Modals/IdeaModal/RatingCalculator.vue'
+import Button from '@Components/Button/Button.vue'
+import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
 
-const expertRatingData = ref<ExpertRatingData>({
-  marketValue: -1,
-  originality: -1,
-  technicalFeasibility: -1,
-  understanding: -1,
-  rating: -1,
+const router = useRouter()
+
+const initialOverallRating = ref('вычисление')
+
+const { values, handleSubmit } = useForm<ExpertConfirmation>({
+  validationSchema: {
+    marketValue: (value: number) => value > 0 || 'Поле не заполнено',
+    originality: (value: number) => value > 0 || 'Поле не заполнено',
+    technicalFeasibility: (value: number) => value > 0 || 'Поле не заполнено',
+    understanding: (value: number) => value > 0 || 'Поле не заполнено',
+
+    realizability: (value: number) => value > 0 || 'Поле не заполнено',
+    suitability: (value: number) => value > 0 || 'Поле не заполнено',
+    budget: (value: number) => value > 0 || 'Поле не заполнено',
+  },
 })
-
-const ratingData = ref<RatingData>({
-  realizability: -1,
-  suitability: -1,
-  budget: -1,
-  rating: -1,
-})
-
-const initialOverallRating = '1'
 
 const overallRating = computed(() => {
-  if (
-    expertRatingData.value.marketValue === -1 &&
-    expertRatingData.value.originality === -1 &&
-    expertRatingData.value.technicalFeasibility === -1 &&
-    expertRatingData.value.understanding === -1 &&
-    ratingData.value.realizability === -1 &&
-    ratingData.value.suitability === -1 &&
-    ratingData.value.budget === -1
-  ) {
-    return initialOverallRating
+  const expertValues = Object.values(values)
+  if (expertValues.every((value) => value > 0)) {
+    const expertRatingSum = expertValues.reduce(
+      (prevValue, value) => (prevValue += value),
+      0,
+    )
+    console.log(expertRatingSum / 7)
+    return +(expertRatingSum / 7).toFixed(1)
   }
 
-  const expertRatingSum =
-    expertRatingData.value.marketValue +
-    expertRatingData.value.originality +
-    expertRatingData.value.technicalFeasibility +
-    expertRatingData.value.understanding
-  const ratingSum =
-    ratingData.value.realizability +
-    ratingData.value.suitability +
-    ratingData.value.budget
-
-  const expertRating = expertRatingSum !== -4 ? expertRatingSum / 4 : 0
-  const rating = ratingSum !== -3 ? ratingSum / 3 : 0
-
-  return ((expertRating + rating) / 2).toFixed(2).toString()
+  return NaN
 })
 
-const progressBarStyle = computed(() => {
-  const width = (parseFloat(overallRating.value) / 5) * 100
-
-  if (parseFloat(overallRating.value) < 3) {
-    return {
-      width: `${width}%`,
-      backgroundColor: '#dc3545',
-    }
-  } else if (
-    parseFloat(overallRating.value) >= 3 &&
-    parseFloat(overallRating.value) <= 4
-  ) {
-    return {
-      width: `${width}%`,
-      backgroundColor: '#ffc107',
-    }
-  } else {
-    return {
-      width: `${width}%`,
-      backgroundColor: '#28a745',
-    }
-  }
+const handleUpdateIdea = handleSubmit(async () => {
+  router.push('/ideas')
 })
 </script>
 
 <template>
-  <div class="w-100 d-flex flex-column gap-3">
+  <div class="combined-rating w-100">
     <div class="d-flex gap-3">
-      <ExpertRatingCalculator v-model="expertRatingData" />
-      <RatingCalculator v-model="ratingData" />
+      <ExpertRatingCalculator />
+      <RatingCalculator />
     </div>
 
-    <div class="combined-rating">
-      <Typography class-name="fs-6 text-primary">
-        Рейтинг: {{ overallRating }}
-      </Typography>
-      <div class="progress">
-        <div
-          class="progress-bar"
-          :style="progressBarStyle"
-        ></div>
-      </div>
-    </div>
+    <Typography class-name="fs-6 text-primary">
+      Рейтинг: {{ overallRating || initialOverallRating }}
+    </Typography>
+
+    <ProgressBar
+      v-if="overallRating"
+      :value="overallRating"
+      :max="5"
+    />
+    <LoadingPlaceholder v-else />
   </div>
+  <Button
+    type="submit"
+    class-name="btn-primary"
+    @click="handleUpdateIdea"
+  >
+    Утвердить
+  </Button>
 </template>
 
-<style scoped>
-.calculator-container {
-  background-color: white;
-}
-
-.extra-gap {
-  margin-bottom: 25px;
-}
-
+<style lang="scss" scoped>
 .combined-rating {
-  font-weight: bold;
+  @include flexible(flex-start, flex-start, column, $gap: 8px);
 }
 </style>
