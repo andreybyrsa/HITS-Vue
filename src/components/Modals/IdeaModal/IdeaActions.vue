@@ -2,8 +2,8 @@
 import { Idea } from '@Domain/Idea'
 
 import Button from '@Components/Button/Button.vue'
+import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
 import useUserStore from '@Store/user/userStore'
-import CombinedRatingCalculator from '@Components/Modals/IdeaModal/CombinedRatingCalculator.vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
@@ -50,7 +50,7 @@ function checkStatusAndRole() {
       class="idea-actions"
       v-if="checkStatusAndRole()"
     >
-      <CombinedRatingCalculator v-if="user?.role == 'EXPERT'" />
+      <ExpertRatingCalculator v-if="user?.role == 'EXPERT'" />
 
       <div class="d-flex gap-3">
         <template v-for="button in actionsButton">
