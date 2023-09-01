@@ -1,21 +1,21 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import Table from '@Components/Table/Table.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import Table from '@Components/Table/Table.vue'
 
 import useUserStore from '@Store/user/userStore'
 
-import Validation from '@Utils/Validation'
-import { Idea } from '@Domain/Idea'
+import Select from '@Components/Inputs/Select/Select.vue'
+
 const searchValue = ref('')
 
 const columns = [
@@ -60,10 +60,17 @@ const data = [
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const text = ref('')
 const isOpenedModal = ref(false)
 
 userStore.checkLastActivity()
+
+const { handleSubmit } = useForm({
+  validationSchema: {
+    component: (value: string) => value?.length || 'Обязательно к заполнению',
+  },
+})
+
+const fieldSubmit = handleSubmit((values) => console.log(values))
 
 function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
@@ -82,6 +89,18 @@ function handleCloseModal() {
 
     <template #content>
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
+      <Select
+        name="component"
+        :options="[{ value: '123', label: '1' }]"
+        placeholder="Выберите значение"
+      ></Select>
+      <Button
+        type="submit"
+        class-name="btn-primary"
+        @click="fieldSubmit"
+      >
+        Submit
+      </Button>
 
       <Button
         class-name="btn-primary"
@@ -90,14 +109,6 @@ function handleCloseModal() {
       >
         Логин
       </Button>
-
-      <Input
-        name="email"
-        v-model="text"
-        :validation="Validation.checkEmail"
-        prepend="текст"
-        placeholder="Введите текст"
-      />
 
       <div class="nav nav-pills">
         <NavTab
@@ -122,16 +133,6 @@ function handleCloseModal() {
       </Button>
 
       <pre class="sss">Пользователь из userStore - {{ user }}</pre>
-
-      <Input
-        name="asd"
-        v-model="searchValue"
-        placeholder="Поиск журнала по названию"
-      >
-        <template #prepend>
-          <i class="bi bi-search"></i>
-        </template>
-      </Input>
 
       <Table
         :columns="columns"

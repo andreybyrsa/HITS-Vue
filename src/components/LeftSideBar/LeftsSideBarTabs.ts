@@ -41,6 +41,12 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Редактировать пользователей',
         iconName: 'bi bi-person-gear',
       },
+      {
+        id: 2,
+        to: '/admin/users-group',
+        text: 'Группы пользователей',
+        iconName: 'bi bi-people',
+      },
     ],
     iconName: 'bi bi-sliders',
     roles: ['ADMIN'],

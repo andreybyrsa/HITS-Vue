@@ -4,23 +4,28 @@ import Comment from '@Domain/Comment'
 interface Idea {
   id: number
   initiator: string
+
   name: string
-  dateCreated: Date
-  dateModified: Date
-  projectType: 'INSIDE' | 'OUTSIDE'
-  experts?: string[]
   problem: string
+  description: string
   solution: string
   result: string
-  customer: string
-  contactPerson: string
-  description: string
+  projectType: 'INSIDE' | 'OUTSIDE'
+  status: StatusTypes
+
+  preAssessment: number
   realizability: number
   suitability: number
   budget: number
-  status: StatusTypes
   rating: number
-  risk: number
+
+  dateCreated: Date
+  dateModified: Date
+
+  experts?: string[]
+  customer: string
+  contactPerson: string
+
   comments: Comment[]
 }
 
@@ -35,7 +40,7 @@ interface Change {
 interface Risk {
   status: StatusTypes
   risk: number
-  price: string
+  marketValue: string
   originality: string
   techniclFeasibility: string
   understanding: string

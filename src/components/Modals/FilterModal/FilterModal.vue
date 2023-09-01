@@ -23,12 +23,12 @@ const filters = [
     value: user.value?.email,
   },
   {
-    label: 'Согласованные идеи',
-    value: 'ON_CONFIRMATION',
+    label: 'На согласованнии',
+    value: 'ON_APPROVAL',
   },
   {
-    label: 'Утвержденные идеи',
-    value: 'CONFIRMED',
+    label: ' На утверждении',
+    value: 'ON_CONFIRMATION',
   },
 ]
 const selectedFilters = ref<string[]>([])

@@ -146,9 +146,15 @@ const putProjectOfficeIdeas = async (status: string, id: number): Promise<Idea> 
     .catch((error) => console.warn(error))
 }
 
-const putExpertIdeas = async (risk: Risk, id: number): Promise<Idea> => {
+const putExpertIdeas = async (
+  risk: Risk,
+  id: number,
+  token: string,
+): Promise<Risk> => {
   return await axios
-    .put(`${IDEAS_URL}/expert/update` + id, risk)
+    .put(`${IDEAS_URL}/expert/update` + id, risk, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch((error) => console.warn(error))
 }

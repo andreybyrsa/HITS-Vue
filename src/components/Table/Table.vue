@@ -8,7 +8,7 @@ const props = defineProps<TableProps>()
 const searchedValue = computed(() => {
   return props.data.filter((element) => {
     const elementData = element.name.toLowerCase().trim()
-    const currentSearchedValue = props.searchValue.toLowerCase().trim()
+    const currentSearchedValue = props.searchValue?.toLowerCase().trim()
 
     const isIncludesSearcheValue = elementData.includes(currentSearchedValue)
 
@@ -51,7 +51,7 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
     </div>
 
     <div
-      class="row w-100 bg-light p-3 rounded-4 border border-2 text-center fs-6"
+      class="row w-100 bg-light p-3 rounded-4 border text-center fs-6"
       v-for="(row, index) in searchedValue"
       :key="index"
     >
@@ -62,7 +62,11 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
           column.className ?? ''
         }`"
       >
-        {{ column.getFormat ? column.getFormat(row[column.key]) : row[column.key] }}
+        <template v-if="row[column.key]">
+          {{
+            column.getFormat ? column.getFormat(row[column.key]) : row[column.key]
+          }}
+        </template>
       </div>
       <div
         v-if="$slots.actions"

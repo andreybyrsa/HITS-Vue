@@ -13,7 +13,8 @@ defineModel({
 const { value, errorMessage } = useField(() => props.name, undefined, {
   type: 'radio',
   checkedValue: props.value,
-  validateOnValueUpdate: false,
+  validateOnValueUpdate: true,
+  validateOnMount: false,
   syncVModel: true,
 })
 

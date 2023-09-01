@@ -21,12 +21,6 @@ const emit = defineEmits<IdeaFormSubmitEmits>()
     >
       Сохранить изменения
     </Button>
-    <Button
-      class-name="btn-danger px-4"
-      @click="emit('on-delete')"
-    >
-      Удалить идею
-    </Button>
   </div>
 
   <Button

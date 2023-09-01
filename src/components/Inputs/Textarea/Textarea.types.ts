@@ -1,3 +1,5 @@
+import HTMLInputEvent from '@Domain/HTMLInputEvent'
+
 import { ValidationMethods } from '@Utils/Validation'
 
 interface TextareaProps {
@@ -17,14 +19,10 @@ interface TextareaProps {
   disabled?: boolean
 }
 
-interface HTMLTextareaEvent extends Event {
-  target: HTMLTextAreaElement & EventTarget
-}
-
 interface TextareaEmits {
-  (event: 'change', value: HTMLTextareaEvent): void
+  (event: 'change', value: HTMLInputEvent): void
   (event: 'focus'): void
   (event: 'blur'): void
 }
 
-export { TextareaProps, TextareaEmits, HTMLTextareaEvent }
+export { TextareaProps, TextareaEmits }

@@ -24,7 +24,7 @@ function getMockIdeas(): Idea[] {
       budget: 1,
       suitability: 1,
       realizability: 1,
-      risk: 0.2,
+      preAssessment: 0,
       comments: [],
     },
     {
@@ -49,7 +49,7 @@ function getMockIdeas(): Idea[] {
       budget: 1,
       suitability: 1,
       realizability: 1,
-      risk: 0.2,
+      preAssessment: 0,
       comments: [],
     },
   ]

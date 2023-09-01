@@ -6,8 +6,12 @@ interface CommentProps {
   comment: Comment
 }
 
+interface CommentPlaceholderProps {
+  className?: string
+}
+
 interface CommentEmits {
   (event: 'delete-comment'): void
 }
 
-export { CommentProps, CommentEmits }
+export { CommentProps, CommentPlaceholderProps, CommentEmits }

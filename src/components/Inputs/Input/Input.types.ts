@@ -1,3 +1,5 @@
+import HTMLInputEvent from '@Domain/HTMLInputEvent'
+
 import { ValidationMethods } from '@Utils/Validation'
 
 interface InputProps {
@@ -18,14 +20,10 @@ interface InputProps {
   disabled?: boolean
 }
 
-interface HTMLInputEvent extends Event {
-  target: HTMLInputElement & EventTarget
-}
-
 interface InputEmits {
   (event: 'change', value: HTMLInputEvent): void
   (event: 'focus'): void
   (event: 'blur'): void
 }
 
-export { InputProps, InputEmits, HTMLInputEvent }
+export { InputProps, InputEmits }

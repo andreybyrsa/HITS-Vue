@@ -31,7 +31,7 @@ const PageLayoutContentClassName = computed(() => [
   @include flexible(flex-start, flex-start);
 
   &__leftsidebar {
-    @include fixedWidth(80px);
+    @include fixedWidth(85px);
     height: 100vh;
   }
 

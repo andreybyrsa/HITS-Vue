@@ -9,6 +9,7 @@ import Button from '@Components/Button/Button.vue'
 import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
+import LeftSideBarPlaceholder from '@Components/LeftSideBar/LeftSideBarPlaceholder.vue'
 
 import RolesTypes from '@Domain/Roles'
 
@@ -67,6 +68,7 @@ function handleCloseModal() {
 
 <template>
   <div
+    v-if="user?.role"
     ref="leftSideBarRef"
     :class="LeftSideBarClassName"
   >
@@ -94,9 +96,7 @@ function handleCloseModal() {
         @click="handleOpenModal"
         :disabled="user?.roles.length === 1"
       >
-        <template v-if="isHovered">
-          {{ user?.role ? getTranslatedRole(user.role) : 'Выберите роль' }}
-        </template>
+        {{ isHovered ? getTranslatedRole(user.role) : '' }}
       </Button>
 
       <Button
@@ -113,6 +113,8 @@ function handleCloseModal() {
       @close-modal="handleCloseModal"
     />
   </div>
+
+  <LeftSideBarPlaceholder v-else />
 </template>
 
 <style lang="scss" scoped>

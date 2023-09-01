@@ -1,19 +1,22 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { watchImmediate } from '@vueuse/core'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+
 import SearchAndFilters from '@Views/IdeasView/SearchAndFilters.vue'
+import IdeasTable from '@Views/IdeasView/IdeasTable.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
-import useUserStore from '@Store/user/userStore'
 import IdeasService from '@Services/IdeasService'
-import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
-import IdeasTable from './IdeasTable.vue'
+
+import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -30,16 +33,55 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
     const response = await IdeasService.fetchIdeas(token)
 
     if (response instanceof Error) {
       return
     }
 
+    response.sort((a, b) => {
+      if (a.rating == b.rating) {
+        const A = new Date(a.dateCreated).getTime()
+        const B = new Date(b.dateCreated).getTime()
+        return A - B
+      } else return b.rating - a.rating
+    })
+
     ideas.value = response
+
     isLoading.value = false
   }
 })
+
+watchImmediate(
+  () => user.value?.role,
+  () => {
+    switch (user.value?.role) {
+      case 'EXPERT':
+        return (selectedFilters.value = ['ON_CONFIRMATION'])
+      case 'PROJECT_OFFICE':
+        return (selectedFilters.value = ['ON_APPROVAL'])
+      case 'INITIATOR':
+        return (selectedFilters.value = [user.value.email])
+      default:
+        selectedFilters.value = []
+    }
+  },
+)
+
+function filterIdeas(ideasData: Idea[]) {
+  if (selectedFilters.value.length) {
+    const dataFilter: Idea[] = []
+    ideasData?.forEach(
+      (elem) =>
+        selectedFilters.value?.every((filter) =>
+          Object.values(elem).includes(filter),
+        ) && dataFilter.push(elem),
+    )
+    return dataFilter
+  } else false
+}
 </script>
 
 <template>
@@ -65,7 +107,7 @@ onMounted(async () => {
       </template>
       <IdeasTable
         v-else
-        :ideas="ideas"
+        :ideas="filterIdeas(ideas) || ideas"
         :searched-value="searchedValue"
       />
     </template>

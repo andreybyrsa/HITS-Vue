@@ -37,13 +37,13 @@ const ButtonBinds = computed(() => {
   >
     <i
       v-if="prependIconName"
-      :class="prependIconName"
+      :class="`${prependIconName} fs-5`"
     ></i>
     <slot></slot>
 
     <i
       v-if="appendIconName"
-      :class="appendIconName"
+      :class="`${appendIconName} fs-5`"
     ></i>
   </button>
 </template>

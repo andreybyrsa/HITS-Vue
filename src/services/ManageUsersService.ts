@@ -15,6 +15,7 @@ const getUsers = async (token: string): Promise<{ users: User[] } | Error> => {
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки пользователей'
+      console.log(MANAGE_USERS_URL)
       return new Error(error)
     })
 }
@@ -70,8 +71,8 @@ const updateUserEmail = async (
     })
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response ? response.data.error : 'Ошибка изменения почты'
-      return { error }
+      const error = response?.data?.error ?? 'Ошибка обновления почты'
+      return new Error(error)
     })
 }
 

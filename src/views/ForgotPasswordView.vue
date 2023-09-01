@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, Ref } from 'vue'
 import { useForm } from 'vee-validate'
 
 import Button from '@Components/Button/Button.vue'
@@ -14,6 +14,7 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import { RecoveryData } from '@Domain/Invitation'
 
 import useNotification from '@Hooks/useNotification'
+import useTimer from '@Hooks/useTimer'
 
 import InvitationService from '@Services/InvitationService'
 
@@ -22,7 +23,7 @@ import Validation from '@Utils/Validation'
 const isOpenedModal = ref(false)
 
 const authKey = ref('')
-const expiredTime = ref('')
+let expiredTime: Ref<string>
 
 const {
   notificationOptions,
@@ -38,26 +39,6 @@ const { values, handleSubmit } = useForm<RecoveryData>({
   },
 })
 
-function startTimer() {
-  let initialSeconds = 300
-
-  const intervalID = setInterval(() => {
-    const minutes = Math.floor(initialSeconds / 60)
-    const seconds = initialSeconds - minutes * 60
-
-    const currentMinutes = minutes.toString().length > 1 ? minutes : `0${minutes}`
-    const currentSeconds = seconds.toString().length > 1 ? seconds : `0${seconds}`
-
-    expiredTime.value = `${currentMinutes}:${currentSeconds}`
-
-    if (initialSeconds > 0) {
-      initialSeconds--
-    } else {
-      clearInterval(intervalID)
-    }
-  }, 1000)
-}
-
 const sendRevoveryEmail = handleSubmit(async (values) => {
   const response = await InvitationService.sendRecoveryEmail(values)
 
@@ -68,7 +49,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
   authKey.value = response.key
   isOpenedModal.value = true
 
-  startTimer()
+  expiredTime = useTimer(300)
 
   handleOpenNotification('success')
 })

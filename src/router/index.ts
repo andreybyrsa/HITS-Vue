@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
 import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
+import UserGroupForm from '@Components/Forms/UsersGroupForm/UsersGroupForm.vue'
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 
 import AdminView from '@Views/AdminView.vue'
@@ -15,7 +16,7 @@ import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import IdeasView from '@Views/IdeasView/IdeasView.vue'
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
-import RoleMiddleware from '../middlewares/RoleMiddleware.vue'
+import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -23,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
     component: RoleMiddleware,
     children: [
       {
-        path: '/ideas',
+        path: 'ideas',
         name: 'ideas',
         component: IdeasView,
       },
@@ -38,6 +39,11 @@ const routes: Array<RouteRecordRaw> = [
         component: EditIdeaView,
       },
       {
+        path: 'last-activity-note',
+        name: 'last-activity-note',
+        component: LastActivityNote,
+      },
+      {
         path: 'admin',
         component: AdminView,
         children: [
@@ -48,6 +54,22 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: 'edit-users',
             component: EditUsersForm,
+          },
+          {
+            path: 'users-groups',
+            component: UserGroupForm,
+          },
+        ],
+      },
+      {
+        path: '/change-email',
+        name: 'change-email',
+        component: ChangeEmailView,
+        children: [
+          {
+            path: ':slug',
+            name: 'change-email-confirmation',
+            component: NewEmail,
           },
         ],
       },
@@ -72,23 +94,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
-  },
-  {
-    path: '/change-email',
-    name: 'change-email',
-    component: ChangeEmailView,
-    children: [
-      {
-        path: ':slug',
-        name: 'change-email-confirmation',
-        component: NewEmail,
-      },
-    ],
-  },
-  {
-    path: '/last-activity-note',
-    name: 'last-activity-note',
-    component: LastActivityNote,
   },
 ]
 

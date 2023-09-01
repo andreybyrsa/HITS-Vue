@@ -59,9 +59,6 @@ const getCurrentCommentDate = (dateCreated: Date) => {
 
   return `${daysDifference} д. назад`
 }
-if (comment.value.sender !== user.value?.email) {
-  console.log(comment.value)
-}
 </script>
 
 <template>
@@ -70,14 +67,14 @@ if (comment.value.sender !== user.value?.email) {
       <Typography class-name="text-primary">{{ sender }}</Typography>
 
       <div class="comment__info">
-        <div class="text-primary">
+        <span class="text-primary">
           {{ getCurrentCommentDate(dateCreated) }}
-        </div>
+        </span>
 
         <Button
           v-if="sender === user?.email"
           class-name="btn-primary p-1"
-          prepend-icon-name="bi bi-list fs-3"
+          prepend-icon-name="bi bi-list fs-5"
           is-drop-down-controller
         ></Button>
         <DropDown>
@@ -91,7 +88,7 @@ if (comment.value.sender !== user.value?.email) {
       </div>
     </div>
 
-    <div class="card-body">
+    <div class="card-body py-2">
       {{ commentMessage }}
     </div>
   </div>
@@ -99,7 +96,7 @@ if (comment.value.sender !== user.value?.email) {
 
 <style lang="scss" scoped>
 .comment {
-  width: 450px;
+  width: 400px;
 
   &__header {
     @include flexible(center, space-between);

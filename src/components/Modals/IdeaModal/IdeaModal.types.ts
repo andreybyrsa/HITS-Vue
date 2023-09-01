@@ -12,10 +12,14 @@ interface IdeaDescriptionProps {
   idea?: Idea
 }
 
+interface IdeaActionsProps {
+  idea?: Idea
+}
+
 interface IdeaCommentsProps {
   idea?: Idea
 
-  ideaModalRef?: VueElement
+  ideaModalRef: VueElement | null
 }
 
 interface IdeaInfoProps {
@@ -40,6 +44,7 @@ interface IdeaModalCollapseType {
 export {
   IdeaModalProps,
   IdeaDescriptionProps,
+  IdeaActionsProps,
   IdeaCommentsProps,
   IdeaInfoProps,
   IdeaModalEmits,

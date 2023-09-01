@@ -5,17 +5,18 @@ import {
   IdeaModalProps,
   IdeaModalEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
+import { Idea } from '@Domain/Idea'
 import IdeaDescription from '@Components/Modals/IdeaModal/IdeaDescription.vue'
 import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
+import IdeaActions from '@Components/Modals/IdeaModal/IdeaActions.vue'
 import IdeaInfo from '@Components/Modals/IdeaModal/IdeaInfo.vue'
-
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 defineProps<IdeaModalProps>()
 
 const emit = defineEmits<IdeaModalEmits>()
 
-const ideaModalRef = ref<VueElement>()
+const ideaModalRef = ref<VueElement | null>(null)
 </script>
 
 <template>
@@ -32,6 +33,8 @@ const ideaModalRef = ref<VueElement>()
           :idea="idea"
           @close-modal="emit('close-modal')"
         />
+
+        <IdeaActions :idea="(idea as Idea)" />
 
         <IdeaComments
           :idea="idea"
