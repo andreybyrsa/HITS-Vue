@@ -70,6 +70,7 @@ const intervalId = setInterval(() => {
       >
         <Select
           :name="select.name"
+          validate-on-update
           :label="select.label"
           :options="select.options"
           placeholder="Выберите значение"
@@ -88,6 +89,7 @@ const intervalId = setInterval(() => {
     />
     <LoadingPlaceholder v-else />
   </div>
+
   <Button
     type="submit"
     class-name="btn-primary"

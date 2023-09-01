@@ -15,7 +15,7 @@ defineModel<string>({
 })
 
 const { value, errorMessage } = useField(props.name, props.validation, {
-  validateOnValueUpdate: true,
+  validateOnValueUpdate: props.validateOnUpdate ?? false,
   validateOnMount: false,
   syncVModel: true,
 })

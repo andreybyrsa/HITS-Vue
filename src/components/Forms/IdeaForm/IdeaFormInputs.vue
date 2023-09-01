@@ -12,6 +12,7 @@ import {
   <div class="d-flex flex-column gap-3">
     <Input
       name="name"
+      validate-on-update
       label="Название идеи*"
       class-name="rounded-end"
       placeholder="Введите название идеи"
@@ -19,6 +20,7 @@ import {
 
     <Select
       name="projectType"
+      validate-on-update
       :options="projectTypeOptions"
       label="Тип проекта*"
       placeholder="Выберите тип проекта"
@@ -28,6 +30,7 @@ import {
       v-for="(textarea, index) in textareas"
       :key="index"
       :name="textarea.name"
+      validate-on-update
       :label="textarea.label"
       class-name="rounded-end"
       :placeholder="textarea.placeholder"

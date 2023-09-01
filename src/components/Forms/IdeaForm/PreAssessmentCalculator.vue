@@ -55,6 +55,7 @@ const intervalId = setInterval(() => {
     >
       <Select
         :name="select.name"
+        validate-on-update
         :label="select.label"
         :options="select.options"
         placeholder="Выберите значение"
@@ -68,6 +69,7 @@ const intervalId = setInterval(() => {
     </Typography>
     <ProgressBar
       v-if="currentPreAssessment"
+      class="mt-2"
       :value="currentPreAssessment"
       :max="5"
     />
