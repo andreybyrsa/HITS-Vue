@@ -49,17 +49,17 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
     const responseUsers = await ManageUsersService.getUsers(token)
-    // const responseGroups = await GroupService.getUsersGroups(token)
+    const responseGroups = await GroupService.getUsersGroups(token)
 
     if (responseUsers instanceof Error) {
       return handleOpenNotification('error', responseUsers.message)
     }
-    // if (responseGroups instanceof Error) {
-    //   return handleOpenNotification('error', responseGroups.message)
-    // }
+    if (responseGroups instanceof Error) {
+      return handleOpenNotification('error', responseGroups.message)
+    }
 
     usersarray.value = responseUsers.users
-    // usersGroup.value = responseGroups
+    usersGroup.value = responseGroups
   }
 })
 
@@ -155,7 +155,7 @@ function closeEditGroupModal(
       <div
         v-for="(users, index) in searchedGroup"
         :key="index"
-        class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 w-100"
+        class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 w-100 row_group"
       >
         <Typography class-name="text-primary fs-4 col">
           {{ users.name }}
@@ -193,10 +193,36 @@ function closeEditGroupModal(
 
   &__group {
     @include flexible(space-between, center);
+    --bs-gutter-x: 0;
   }
 
   &__edit-btn {
     @include flexible(flex-start, end);
   }
+}
+
+.row_group {
+  --bs-gutter-x: 0;
+  --bs-gutter-y: 0;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: calc(-1 * var(--bs-gutter-y));
+  margin-right: calc(-0.5 * var(--bs-gutter-x));
+  margin-left: calc(-0.5 * var(--bs-gutter-x));
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(209, 209, 209);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #0d6efd;
+  border-radius: 20px;
+  border: 3px solid #0d6efd;
 }
 </style>
