@@ -11,6 +11,7 @@ import CommentVue from '@Components/Comment/Comment.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPlaceholder.vue'
 
 import Comment from '@Domain/Comment'
 
@@ -18,7 +19,6 @@ import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 import useCommentsStore from '@Store/comments/commentsStore'
-import IdeaCommentsPlaceholder from './IdeaCommentsPlaceholder.vue'
 
 const props = defineProps<IdeaCommentsProps>()
 

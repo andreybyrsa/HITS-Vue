@@ -54,7 +54,8 @@ const { values, handleSubmit } = useForm<Idea>({
     result: (value: string) => value?.length > 0 || 'Поле не заполнено',
     description: (value: string) => value?.length > 0 || 'Поле не заполнено',
 
-    realizability: (value: number) => (value && value > 0) || 'Поле не заполнено',
+    technicalRealizability: (value: number) =>
+      (value && value > 0) || 'Поле не заполнено',
     suitability: (value: number) => (value && value > 0) || 'Поле не заполнено',
     budget: (value: number) => (value && value > 0) || 'Поле не заполнено',
   },

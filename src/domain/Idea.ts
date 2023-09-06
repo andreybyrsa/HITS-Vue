@@ -14,7 +14,7 @@ interface Idea {
   status: StatusTypes
 
   preAssessment: number
-  realizability: number
+  technicalRealizability: number
   suitability: number
   budget: number
   rating: number

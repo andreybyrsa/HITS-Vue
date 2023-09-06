@@ -6,6 +6,7 @@ import router from './router'
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
+import tooltipDirective from '@Utils/tooltip'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -39,5 +40,7 @@ router.beforeEach((to) => {
   }
 })
 app.use(router)
+
+app.directive('tooltip', tooltipDirective)
 
 app.mount('#app')

@@ -64,7 +64,7 @@ const isOpenedModal = ref(false)
 
 userStore.checkLastActivity()
 
-const { handleSubmit } = useForm({
+const { values, handleSubmit } = useForm({
   validationSchema: {
     component: (value: string) => value?.length || 'Обязательно к заполнению',
   },
@@ -89,9 +89,14 @@ function handleCloseModal() {
 
     <template #content>
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
+
       <Select
         name="component"
-        :options="[{ value: '123', label: '1' }]"
+        :options="[
+          { value: '123', label: '1' },
+          { value: '231', label: '1' },
+        ]"
+        v-tooltip="values.component"
         placeholder="Выберите значение"
       ></Select>
       <Button

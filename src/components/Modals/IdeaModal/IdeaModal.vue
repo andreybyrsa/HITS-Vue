@@ -5,12 +5,14 @@ import {
   IdeaModalProps,
   IdeaModalEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
-import { Idea } from '@Domain/Idea'
 import IdeaDescription from '@Components/Modals/IdeaModal/IdeaDescription.vue'
 import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import IdeaActions from '@Components/Modals/IdeaModal/IdeaActions.vue'
 import IdeaInfo from '@Components/Modals/IdeaModal/IdeaInfo.vue'
+
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
+import { Idea } from '@Domain/Idea'
 
 defineProps<IdeaModalProps>()
 

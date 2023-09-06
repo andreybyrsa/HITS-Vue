@@ -11,7 +11,7 @@ import {
 } from '@Components/Forms/AddUsersForm/AddUsersForm.types'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
-import HTMLInputEvent from '@Domain/HTMLInputEvent'
+import HTMLInputEvent from '@Domain/HTMLTargetEvent'
 
 import useNotification from '@Hooks/useNotification'
 

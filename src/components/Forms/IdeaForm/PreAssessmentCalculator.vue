@@ -4,6 +4,7 @@ import { watchImmediate } from '@vueuse/core'
 
 import {
   PreAssessmentProps,
+  PreAssessmentSelect,
   preAssessmentSelects,
 } from '@Components/Forms/IdeaForm/PreAssessmentCalculator.types'
 import Typography from '@Components/Typography/Typography.vue'
@@ -20,9 +21,9 @@ const props = defineProps<PreAssessmentProps>()
 const preAssessmentPlaceholder = ref('вычисление')
 
 const currentPreAssessment = computed(() => {
-  const { realizability, suitability, budget } = props.idea
-  if (realizability && suitability && budget) {
-    return +((+realizability + +suitability + +budget) / 3).toFixed(1)
+  const { technicalRealizability, suitability, budget } = props.idea
+  if (technicalRealizability && suitability && budget) {
+    return +((+technicalRealizability + +suitability + +budget) / 3).toFixed(1)
   }
 
   return NaN
@@ -36,7 +37,7 @@ watchImmediate(currentPreAssessment, (currentValue) => {
 
 const intervalId = setInterval(() => {
   if (currentPreAssessment.value) {
-    clearInterval(intervalId)
+    return clearInterval(intervalId)
   }
 
   if (preAssessmentPlaceholder.value.includes('...')) {
@@ -44,6 +45,13 @@ const intervalId = setInterval(() => {
   }
   return (preAssessmentPlaceholder.value += '.')
 }, 200)
+
+function getCurrentTooltip(select: PreAssessmentSelect) {
+  const selectValue = props.idea[select.name]
+  if (selectValue) {
+    return select.options.find((option) => option.value === selectValue)?.label
+  }
+}
 </script>
 
 <template>
@@ -58,6 +66,7 @@ const intervalId = setInterval(() => {
         validate-on-update
         :label="select.label"
         :options="select.options"
+        v-tooltip="getCurrentTooltip(select)"
         placeholder="Выберите значение"
       ></Select>
     </div>
@@ -67,6 +76,7 @@ const intervalId = setInterval(() => {
     <Typography class-name="text-primary">
       Предварительная оценка: {{ currentPreAssessment || preAssessmentPlaceholder }}
     </Typography>
+
     <ProgressBar
       v-if="currentPreAssessment"
       class="mt-2"
