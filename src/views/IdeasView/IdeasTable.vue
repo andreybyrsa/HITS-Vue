@@ -131,7 +131,7 @@ function handleCloseIdeaModal() {
   isOpenedIdeaModal.value = false
 }
 
-const currentOpenedDeleteIdea = ref<number>()
+const currentOpenedDeleteIdea = ref()
 const isOpenedIdeaDeleteModal = ref(false)
 
 function handleOpenDeleteModal(ideaId: number) {
@@ -244,7 +244,7 @@ function checkMark(row: Idea) {
     @close-modal="handleCloseIdeaModal"
   />
   <DeleteIdeaModal
-    :ideaId="(currentOpenedDeleteIdea as number)"
+    :ideaId="currentOpenedDeleteIdea"
     :is-opened="isOpenedIdeaDeleteModal"
     @close-modal="handleCloseDeleteModal"
   />
