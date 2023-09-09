@@ -11,14 +11,15 @@ import CommentVue from '@Components/Comment/Comment.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPlaceholder.vue'
 
 import Comment from '@Domain/Comment'
 
 import useNotification from '@Hooks/useNotification'
+import useWebSocket from '@Hooks/useWebSocket'
 
 import useUserStore from '@Store/user/userStore'
 import useCommentsStore from '@Store/comments/commentsStore'
-import IdeaCommentsPlaceholder from './IdeaCommentsPlaceholder.vue'
 
 const props = defineProps<IdeaCommentsProps>()
 
@@ -37,15 +38,14 @@ const {
 } = useNotification()
 
 onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && props.idea) {
-    const { token } = currentUser
-    const { id } = props.idea
-    await commentsStore.fetchIdeaComments(id, token)
-
-    isLoading.value = false
-  }
+  useWebSocket()
+  // const currentUser = user.value
+  // if (currentUser?.token && props.idea) {
+  //   const { token } = currentUser
+  //   const { id } = props.idea
+  //   await commentsStore.fetchIdeaComments(id, token)
+  //   isLoading.value = false
+  // }
 })
 
 watch(commentsError, (error) => handleOpenNotification('error', error))
@@ -56,7 +56,6 @@ const { handleSubmit, resetForm } = useForm<Comment>({
   },
   initialValues: {
     comment: '',
-    sender: user.value?.email,
   },
 })
 
@@ -72,7 +71,7 @@ const handleSendComment = handleSubmit(async (values) => {
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
-    await commentsStore.postComment(values, id, token)
+    await commentsStore.postComment(values.comment, id, token)
 
     resetForm()
 
@@ -88,7 +87,8 @@ const handleDeleteComment = async (commentId: number) => {
 
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
-    await commentsStore.deleteComment(commentId, token)
+    const { id } = props.idea
+    await commentsStore.deleteComment(id, commentId, token)
   }
 }
 
@@ -96,8 +96,8 @@ const handleCheckComment = async (commentId: number) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token, email } = currentUser
-    await commentsStore.checkComment(email, commentId, token)
+    const { token } = currentUser
+    await commentsStore.checkComment(commentId, token)
   }
 }
 
