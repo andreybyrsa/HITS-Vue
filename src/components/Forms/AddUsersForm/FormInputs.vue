@@ -52,7 +52,7 @@ onMounted(async () => {
       return handleOpenNotification('error', response.message)
     }
 
-    DBUsersEmails.value = response.emails
+    DBUsersEmails.value = response
   }
 })
 

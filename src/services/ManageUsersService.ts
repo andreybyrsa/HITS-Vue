@@ -4,27 +4,25 @@ import { User } from '@Domain/User'
 import { UpdateUserData, UpdateUserPassword } from '@Domain/ManageUsers'
 import { NewEmailForm } from '@Domain/Invitation'
 import Success from '@Domain/ResponseMessage'
+
 const MANAGE_USERS_URL =
   process.env.VUE_APP_MANAGE_USERS_API_URL || 'http://localhost:3000'
 
-const getUsers = async (token: string): Promise<{ users: User[] } | Error> => {
+const getUsers = async (token: string): Promise<User[] | Error> => {
   return await axios
-    .get(`${MANAGE_USERS_URL}/get/users-info`, {
+    .get(`${MANAGE_USERS_URL}/get/users`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки пользователей'
-      console.log(MANAGE_USERS_URL)
       return new Error(error)
     })
 }
 
-const getUsersEmails = async (
-  token: string,
-): Promise<{ emails: string[] } | Error> => {
+const getUsersEmails = async (token: string): Promise<string[] | Error> => {
   return await axios
-    .get(`${MANAGE_USERS_URL}/get/users-emails`, {
+    .get(`${MANAGE_USERS_URL}/get/emails`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -39,7 +37,7 @@ const updateUserInfo = async (
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .put(`${MANAGE_USERS_URL}/change/user-info`, newUserData, {
+    .put(`${MANAGE_USERS_URL}/change/info`, newUserData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

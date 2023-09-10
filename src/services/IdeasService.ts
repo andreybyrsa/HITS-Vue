@@ -17,18 +17,6 @@ const fetchIdeas = async (token: string): Promise<Idea[] | Error> => {
     })
 }
 
-const getInitiatorIdeas = async (token: string): Promise<Idea[] | Error> => {
-  return await axios
-    .get(`${IDEAS_URL}/initiator`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идей'
-      return new Error(error)
-    })
-}
-
 const getInitiatorIdea = async (
   id: string,
   token: string,
@@ -71,6 +59,21 @@ const putInitiatorIdea = async (
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка редактирования идеи'
+      return new Error(error)
+    })
+}
+
+const sendInitiatorIdeaOnApproval = async (
+  id: string,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .put(`${IDEAS_URL}/initiator/send/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка отправки идеи на согласование'
       return new Error(error)
     })
 }
@@ -156,10 +159,10 @@ const deleteAdminIdea = async (
 const IdeasService = {
   fetchIdeas,
 
-  getInitiatorIdeas,
   getInitiatorIdea,
   postInitiatorIdea,
   putInitiatorIdea,
+  sendInitiatorIdeaOnApproval,
   deleteInitiatorIdea,
 
   putProjectOfficeIdea,

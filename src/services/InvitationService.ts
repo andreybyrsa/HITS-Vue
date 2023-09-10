@@ -13,50 +13,6 @@ import Success from '@Domain/ResponseMessage'
 const INVITATION_URL =
   process.env.VUE_APP_INVITATION_API_URL || 'http://localhost:3000'
 
-const inviteUserByEmail = async (
-  userData: InviteUserForm,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .post(`${INVITATION_URL}/send/email`, userData, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
-      return new Error(error)
-    })
-}
-
-const inviteUsers = async (
-  usersData: InviteUsersForm,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .post(`${INVITATION_URL}/send/emails`, usersData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка приглашения пользователей'
-      return new Error(error)
-    })
-}
-
-const sendRecoveryEmail = async (
-  recoveryData: RecoveryData,
-): Promise<{ key: string } | Error> => {
-  return await axios
-    .post(`${INVITATION_URL}/send/request-to-change-password`, recoveryData)
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка отпрваки почты'
-      return new Error(error)
-    })
-}
-
 const getInvitationInfo = async (
   slug: string | string[],
 ): Promise<InvitationInfo | Error> => {
@@ -78,12 +34,54 @@ const deleteInvitationInfo = async (slug: string | string[]) => {
     })
 }
 
+const inviteUserByEmail = async (
+  userData: InviteUserForm,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .post(`${INVITATION_URL}/send/email`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
+      return new Error(error)
+    })
+}
+
+const inviteUsers = async (
+  usersData: InviteUsersForm,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .post(`${INVITATION_URL}/send/emails`, usersData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка приглашения пользователей'
+      return new Error(error)
+    })
+}
+
+const sendRecoveryEmail = async (
+  recoveryData: RecoveryData,
+): Promise<string | Error> => {
+  return await axios
+    .post(`${INVITATION_URL}/send/change/password`, recoveryData)
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка отпрваки почты'
+      return new Error(error)
+    })
+}
+
 const sendUrlToChangeEmail = async (
   userData: NewEmailForm,
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .post(`${INVITATION_URL}/send/request-to-change-email`, userData, {
+    .post(`${INVITATION_URL}/send/change/email`, userData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -107,12 +105,14 @@ const getInfoToChangeEmail = async (
       return new Error(error)
     })
 }
+
 const InvitationService = {
+  getInvitationInfo,
+  deleteInvitationInfo,
+
   inviteUserByEmail,
   inviteUsers,
   sendRecoveryEmail,
-  getInvitationInfo,
-  deleteInvitationInfo,
   sendUrlToChangeEmail,
   getInfoToChangeEmail,
 }
