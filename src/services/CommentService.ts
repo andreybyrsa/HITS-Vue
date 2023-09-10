@@ -2,24 +2,9 @@ import axios from 'axios'
 
 const COMMENT_URL = process.env.VUE_APP_COMMENT_API_URL || 'http://localhost:3000'
 
-// const fetchIdeaComments = async (
-//   ideaId: number,
-//   token: string,
-// ): Promise<{ comments: Comment[] } | Error> => {
-//   return await axios
-//     .get(`${COMMENT_URL}/get-idea-comments/${ideaId}`, {
-//       headers: { Authorization: `Bearer ${token}` },
-//     })
-//     .then((response) => response.data)
-//     .catch(({ response }) => {
-//       const error = response?.data?.error ?? 'Ошибка получения комментариев'
-//       return new Error(error)
-//     })
-// }
-
-const addComment = async (
-  comment: string,
-  ideaId: number,
+const postComment = async (
+  comment: Comment,
+  ideaId: string,
   token: string,
 ): Promise<undefined | Error> => {
   return await axios
@@ -34,8 +19,8 @@ const addComment = async (
 }
 
 const deleteComment = async (
-  ideaId: number,
-  commentId: number,
+  commentId: string,
+  ideaId: string,
   token: string,
 ): Promise<undefined | Error> => {
   return await axios
@@ -49,10 +34,7 @@ const deleteComment = async (
     })
 }
 
-const checkComment = async (
-  commentId: number,
-  token: string,
-): Promise<undefined | Error> => {
+const checkComment = async (commentId: string, token: string) => {
   return await axios
     .put(`${COMMENT_URL}/check/${commentId}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -65,8 +47,7 @@ const checkComment = async (
 }
 
 const CommentService = {
-  // fetchIdeaComments,
-  addComment,
+  postComment,
   deleteComment,
   checkComment,
 }

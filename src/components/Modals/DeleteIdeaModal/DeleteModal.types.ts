@@ -1,5 +1,5 @@
 interface DeleteModalProps {
-  ideaId: number
+  ideaId: string
   isOpened: boolean
 }
 

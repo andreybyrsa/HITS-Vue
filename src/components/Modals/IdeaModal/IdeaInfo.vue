@@ -1,9 +1,11 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
+
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import { IdeaInfoProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
-import { storeToRefs } from 'pinia'
+
 import useUserStore from '@Store/user/userStore'
 
 import getStatus from '@Utils/getStatus'

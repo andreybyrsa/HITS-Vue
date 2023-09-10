@@ -42,8 +42,8 @@ onMounted(async () => {
 
     response.sort((a, b) => {
       if (a.rating == b.rating) {
-        const A = new Date(a.dateCreated).getTime()
-        const B = new Date(b.dateCreated).getTime()
+        const A = new Date(a.createdAt).getTime()
+        const B = new Date(b.createdAt).getTime()
         return A - B
       } else return b.rating - a.rating
     })

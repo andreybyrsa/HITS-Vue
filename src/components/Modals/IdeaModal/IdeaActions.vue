@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import { Idea } from '@Domain/Idea'
-
-import Button from '@Components/Button/Button.vue'
-import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
-import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-import actionsButton from './IdeaActionsButton'
-import IdeaActionsType from './IdeaActions.types'
+import Button from '@Components/Button/Button.vue'
+import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
+import actionsButton from '@Components/Modals/IdeaModal/IdeaActionsButton'
+import IdeaActionsType from '@Components/Modals/IdeaModal/IdeaActions.types'
+
+import { Idea } from '@Domain/Idea'
+
+import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
