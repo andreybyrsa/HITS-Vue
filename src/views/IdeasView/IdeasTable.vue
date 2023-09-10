@@ -15,8 +15,9 @@ import Icon from '@Components/Icon/Icon.vue'
 import IdeasTableProps from '@Views/IdeasView/IdeasView.types'
 
 import { Idea } from '@Domain/Idea'
-import useUserStore from '@Store/user/userStore'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
+
+import useUserStore from '@Store/user/userStore'
 
 import getStatus from '@Utils/getStatus'
 
@@ -48,13 +49,13 @@ const gridColumns: TableColumn[] = [
     getFormat: getTranslatedStatus,
   },
   {
-    key: 'dateCreated',
+    key: 'createdAt',
     label: 'Дата создания',
     getFormat: getFormattedDate,
     click: () => sortDateCreated(props.ideas),
   },
   {
-    key: 'dateModified',
+    key: 'modifiedAt',
     label: 'Дата изменения',
     getFormat: getFormattedDate,
     click: () => sortDateModified(props.ideas),
@@ -75,8 +76,8 @@ const gridColumns: TableColumn[] = [
 function sortRating(ideas: Idea[]) {
   ideas.sort((a, b) => {
     if (a.rating == b.rating) {
-      const A = new Date(a.dateCreated).getTime()
-      const B = new Date(b.dateCreated).getTime()
+      const A = new Date(a.createdAt).getTime()
+      const B = new Date(b.createdAt).getTime()
       return A - B
     } else return isSorted.value ? a.rating - b.rating : b.rating - a.rating
   })
@@ -85,8 +86,8 @@ function sortRating(ideas: Idea[]) {
 
 function sortDateModified(ideas: Idea[]) {
   ideas.sort((a, b) => {
-    const A = new Date(a.dateModified).getTime()
-    const B = new Date(b.dateModified).getTime()
+    const A = new Date(a.modifiedAt).getTime()
+    const B = new Date(b.modifiedAt).getTime()
     return isSorted.value ? B - A : A - B
   })
   setIsSorted()
@@ -94,8 +95,8 @@ function sortDateModified(ideas: Idea[]) {
 
 function sortDateCreated(ideas: Idea[]) {
   ideas.sort((a, b) => {
-    const A = new Date(a.dateCreated).getTime()
-    const B = new Date(b.dateCreated).getTime()
+    const A = new Date(a.createdAt).getTime()
+    const B = new Date(b.createdAt).getTime()
     return isSorted.value ? B - A : A - B
   })
   setIsSorted()
@@ -131,10 +132,10 @@ function handleCloseIdeaModal() {
   isOpenedIdeaModal.value = false
 }
 
-const currentOpenedDeleteIdea = ref<number>()
+const currentOpenedDeleteIdea = ref('')
 const isOpenedIdeaDeleteModal = ref(false)
 
-function handleOpenDeleteModal(ideaId: number) {
+function handleOpenDeleteModal(ideaId: string) {
   currentOpenedDeleteIdea.value = ideaId
   isOpenedIdeaDeleteModal.value = true
 }
@@ -244,7 +245,7 @@ function checkMark(row: Idea) {
     @close-modal="handleCloseIdeaModal"
   />
   <DeleteIdeaModal
-    :ideaId="(currentOpenedDeleteIdea as number)"
+    :ideaId="currentOpenedDeleteIdea"
     :is-opened="isOpenedIdeaDeleteModal"
     @close-modal="handleCloseDeleteModal"
   />

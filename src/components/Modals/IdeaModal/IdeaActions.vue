@@ -1,15 +1,20 @@
 <script lang="ts" setup>
-import { Idea } from '@Domain/Idea'
-
-import Button from '@Components/Button/Button.vue'
-import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
-import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-import actionsButton from './IdeaActionsButton'
-import IdeaActionsType from './IdeaActions.types'
+import Button from '@Components/Button/Button.vue'
+import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
+import actionsButton from '@Components/Modals/IdeaModal/IdeaActionsButton'
+import IdeaActionsType from '@Components/Modals/IdeaModal/IdeaActions.types'
 import IdeasService from '@Services/IdeasService'
+
+import { Idea } from '@Domain/Idea'
+
+import useUserStore from '@Store/user/userStore'
+import useIdeasStore from '@Store/ideas/ideasStore'
+
+const ideaStore = useIdeasStore()
+// const { idea } = storeToRefs(userStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -44,9 +49,10 @@ function checkStatusAndRole() {
     )
 }
 
-async function hundleSendIdea(id: number) {
-  await IdeasService.putInitiatorSendIdea(id, user.value?.token as string)
-  window.location.reload()
+function hundleSendIdea(id: string) {
+  // await IdeasService.sendInitiatorIdeaOnApproval(id, user.value?.token as string)
+  // window.location.reload()
+  ideaStore.sendInitiatorIdeaOnApproval(id, user.value?.token as string)
 }
 </script>
 
@@ -65,6 +71,7 @@ async function hundleSendIdea(id: number) {
             v-if="checkUserRoleForButtons(button)"
             type="submit"
             :class-name="button.class"
+            @click="hundleSendIdea(idea.id)"
           >
             {{ button.text }}
           </Button>

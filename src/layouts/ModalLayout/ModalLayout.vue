@@ -7,7 +7,7 @@ import {
   ModalLayoutEmits,
 } from '@Layouts/ModalLayout/ModalLayout.types'
 
-import HTMLTargetEvent from '@Domain/HTMLInputEvent'
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 const props = defineProps<ModalLayoutProps>()
 

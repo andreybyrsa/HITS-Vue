@@ -26,7 +26,7 @@ interface ChangeUserEmail {
 }
 
 interface UserGroupData {
-  id: number
+  id: string
   name: string
   users: User[]
   isExsperts?: boolean

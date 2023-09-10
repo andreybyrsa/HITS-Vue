@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
 import { storeToRefs } from 'pinia'
@@ -11,6 +11,7 @@ import CommentVue from '@Components/Comment/Comment.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPlaceholder.vue'
 
 import Comment from '@Domain/Comment'
 
@@ -18,7 +19,6 @@ import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 import useCommentsStore from '@Store/comments/commentsStore'
-import IdeaCommentsPlaceholder from './IdeaCommentsPlaceholder.vue'
 
 const props = defineProps<IdeaCommentsProps>()
 
@@ -35,18 +35,6 @@ const {
   handleOpenNotification,
   handleCloseNotification,
 } = useNotification()
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && props.idea) {
-    const { token } = currentUser
-    const { id } = props.idea
-    await commentsStore.fetchIdeaComments(id, token)
-
-    isLoading.value = false
-  }
-})
 
 watch(commentsError, (error) => handleOpenNotification('error', error))
 
@@ -83,16 +71,17 @@ const handleSendComment = handleSubmit(async (values) => {
   }
 })
 
-const handleDeleteComment = async (commentId: number) => {
+const handleDeleteComment = async (commentId: string) => {
   const currentUser = user.value
 
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
-    await commentsStore.deleteComment(commentId, token)
+    const { id } = props.idea
+    await commentsStore.deleteComment(commentId, id, token)
   }
 }
 
-const handleCheckComment = async (commentId: number) => {
+const handleCheckComment = async (commentId: string) => {
   const currentUser = user.value
 
   if (currentUser?.token) {

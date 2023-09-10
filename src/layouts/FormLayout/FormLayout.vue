@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import FormLayoutProps from '@Layouts/FormLayout/FormLayout.types'
 import { computed } from 'vue'
+
+import FormLayoutProps from '@Layouts/FormLayout/FormLayout.types'
 
 const props = defineProps<FormLayoutProps>()
 

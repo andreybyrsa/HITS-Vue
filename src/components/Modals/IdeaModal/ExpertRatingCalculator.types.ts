@@ -3,9 +3,7 @@ import { OptionType } from '@Components/Inputs/Select/Select.types'
 interface ExpertRatingData {
   marketValue: number
   originality: number
-  technicalFeasibility: number
-  understanding: number
-  realizability: number
+  technicalRealizability: number
   suitability: number
   budget: number
   rating: number
@@ -14,109 +12,89 @@ interface RatingSelect {
   name:
     | 'marketValue'
     | 'originality'
-    | 'technicalFeasibility'
-    | 'understanding'
-    | 'realizability'
+    | 'technicalRealizability'
     | 'suitability'
     | 'budget'
   label: string
-  forName: string
-  key: keyof ExpertRatingData
   options: OptionType[]
 }
 
 interface ExpertConfirmation {
   marketValue: number
   originality: number
-  technicalFeasibility: number
-  understanding: number
-
-  realizability: number
+  technicalRealizability: number
   suitability: number
   budget: number
 }
 
-const defaultRatingOptions = [
-  { label: 'Высокий', value: 5 },
-  { label: 'Выше среднего', value: 4 },
-  { label: 'Средний', value: 3 },
-  { label: 'Ниже среднего', value: 2 },
-  { label: 'Низкий', value: 1 },
+const marketValueOptions = [
+  { label: 'В идеи полостью описана рыночная ценность', value: 5 },
+  { label: 'Инициатор плохо описал рыночную ценность', value: 4 },
+  { label: 'Эксперт не увидел рыночной ценности идеи', value: 3 },
+  { label: 'Экспер не видит, что рыночная ценность етсь', value: 2 },
+  { label: 'Эксперт понимает, что рыночной ценности нет', value: 1 },
+]
+
+const originalityOptions = [
+  {
+    label: 'Подобное решение не встречалось, эксперт полностью понимает инициатора',
+    value: 5,
+  },
+  { label: 'Встречалось похожее решение, инициатор расскрыл идею', value: 4 },
+  { label: 'Встречалось похожее решение, инициатор не расскрыл идею', value: 3 },
+  { label: 'Решение есть на рынке - ниша занята', value: 2 },
+  { label: 'Эксперт не понял инициатора', value: 1 },
+]
+
+const technicalRealizabilityOptions = [
+  { label: 'Команда уже делала такие проекты', value: 5 },
+  { label: 'Есть занания реализации, но нет практического опыта', value: 4 },
+  { label: 'Команда делала проекты на альтернативных стеках', value: 3 },
+  { label: 'Есть знания в другом стеке, но нет практического опыта', value: 2 },
+  { label: 'Нет знаний и опыта', value: 1 },
+]
+
+const suitabilityOptions = [
+  { label: 'Есть заказчик, инвестор и эксперт в предметной области', value: 5 },
+  { label: 'Есть заказчик, инвестор, но нет эксперта', value: 4 },
+  { label: 'Есть инвестор, но нет заказчика и эксперта', value: 3 },
+  { label: 'Есть заказчик, но нет инвестора и эксперта', value: 2 },
+  { label: 'Нет ни заказчика, ни инвестора, ни эксперта', value: 1 },
+]
+
+const budgetOptions = [
+  { label: 'Не требуется', value: 5 },
+  { label: 'До 30.000 руб', value: 4 },
+  { label: '30.000 - 50.000 руб', value: 3 },
+  { label: '50.000 - 100.000 руб', value: 2 },
+  { label: 'Свыше 100.000 руб', value: 1 },
 ]
 
 const ratingSelects: RatingSelect[] = [
   {
     name: 'marketValue',
     label: 'Рыночная ценность*',
-    forName: 'marketValue',
-    key: 'marketValue',
-    options: [
-      { label: 'Очень востребована', value: 5 },
-      { label: 'Средне востребована', value: 4 },
-      { label: 'Имеет некоторую востребованность', value: 3 },
-      { label: 'Скорее всего не будет востребована', value: 2 },
-      { label: 'Точно не востребована', value: 1 },
-    ],
+    options: marketValueOptions,
   },
   {
     name: 'originality',
     label: 'Уникальность*',
-    forName: 'originality',
-    key: 'originality',
-    options: [
-      { label: 'Точно не было решений', value: 5 },
-      { label: 'Скорее всего нет решений', value: 4 },
-      { label: 'Решение встречалось в ином виде', value: 3 },
-      { label: 'Решение реализуется конкурентами', value: 2 },
-      { label: 'Решение уже существует', value: 1 },
-    ],
+    options: originalityOptions,
   },
   {
-    name: 'technicalFeasibility',
-    label: 'Техническая реализуемость*',
-    forName: 'technicalFeasibility',
-    key: 'technicalFeasibility',
-    options: [
-      { label: 'Точно реализуемо', value: 5 },
-      { label: 'Скорее всего реализуемо', value: 4 },
-      { label: 'Возможно реализуемо', value: 3 },
-      { label: 'Частично реализуемо', value: 2 },
-      { label: 'Не реализуемо', value: 1 },
-    ],
-  },
-  {
-    name: 'understanding',
-    label: 'Понимание идеи инициатором*',
-    forName: 'understanding',
-    key: 'understanding',
-    options: [
-      { label: 'Понимает', value: 5 },
-      { label: 'Понимание выше среднего', value: 4 },
-      { label: 'Среднее понимание', value: 3 },
-      { label: 'Понимание ниже среднего', value: 2 },
-      { label: 'Не понимает', value: 1 },
-    ],
-  },
-  {
-    name: 'realizability',
+    name: 'technicalRealizability',
     label: 'Реализуемость*',
-    forName: 'realizability',
-    key: 'realizability',
-    options: defaultRatingOptions,
+    options: technicalRealizabilityOptions,
   },
   {
     name: 'suitability',
     label: 'Пригодность*',
-    forName: 'suitability',
-    key: 'suitability',
-    options: defaultRatingOptions,
+    options: suitabilityOptions,
   },
   {
     name: 'budget',
     label: 'Бюджет*',
-    forName: 'budget',
-    key: 'budget',
-    options: defaultRatingOptions,
+    options: budgetOptions,
   },
 ]
 export { ExpertRatingData, RatingSelect, ratingSelects, ExpertConfirmation }

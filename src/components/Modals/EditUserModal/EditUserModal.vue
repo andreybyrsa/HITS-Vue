@@ -15,6 +15,7 @@ import editUserInputs from '@Components/Modals/EditUserModal/EditUserInputs'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+import Icon from '@Components/Icon/Icon.vue'
 
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
@@ -27,7 +28,6 @@ import ManageUsersService from '@Services/ManageUsersService'
 
 import getRoles from '@Utils/getRoles'
 import Validation from '@Utils/Validation'
-import Icon from '@Components/Icon/Icon.vue'
 
 const props = defineProps<EditUserModalProps>()
 

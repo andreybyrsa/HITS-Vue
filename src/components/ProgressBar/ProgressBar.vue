@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import ProgressBarProps from '@Components/ProgressBar/ProgressBar.types'
 import { computed } from 'vue'
+
+import ProgressBarProps from '@Components/ProgressBar/ProgressBar.types'
 
 const props = defineProps<ProgressBarProps>()
 const progressBarStyle = computed(() => {

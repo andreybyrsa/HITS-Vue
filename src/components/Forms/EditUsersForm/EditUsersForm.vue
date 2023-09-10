@@ -49,7 +49,7 @@ onMounted(async () => {
       return handleOpenNotification('error', response.message)
     }
 
-    currentUsers.value = response.users
+    currentUsers.value = response
     isLoading.value = false
   }
 })

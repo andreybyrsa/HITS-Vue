@@ -71,7 +71,7 @@ const { errors, setValues, handleSubmit, values } = useForm<UserGroupData>({
     //users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
   },
 })
-const handleCreate = handleSubmit(async () => {
+const handleCreate = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
