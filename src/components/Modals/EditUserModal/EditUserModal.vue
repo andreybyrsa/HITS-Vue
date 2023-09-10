@@ -11,9 +11,11 @@ import {
   EditUserModalProps,
   EditUserModalEmits,
 } from '@Components/Modals/EditUserModal/EditUserModal.types'
+import editUserInputs from '@Components/Modals/EditUserModal/EditUserInputs'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+import Icon from '@Components/Icon/Icon.vue'
 
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
@@ -102,30 +104,17 @@ const handleEditUser = handleSubmit(async (values) => {
       <template v-if="user">
         <div class="edit-user-modal__inputs w-100">
           <Input
-            type="email"
-            name="newEmail"
+            v-for="input in editUserInputs"
+            :key="input.id"
+            :type="input.type"
+            :name="input.name"
+            validate-on-update
             class-name="rounded-end"
-            placeholder="Введите email"
-            prepend="@"
-          />
-
-          <Input
-            name="newFirstName"
-            class-name="rounded-end"
-            placeholder="Введите имя"
+            :placeholder="input.placeholder"
+            :prepend="input.prepend"
           >
             <template #prepend>
-              <i class="bi bi-fonts"></i>
-            </template>
-          </Input>
-
-          <Input
-            name="newLastName"
-            class-name="rounded-end"
-            placeholder="Введите фамилию"
-          >
-            <template #prepend>
-              <i class="bi bi-fonts"></i>
+              <Icon :class-name="input.prependIconName" />
             </template>
           </Input>
 
@@ -150,6 +139,7 @@ const handleEditUser = handleSubmit(async (values) => {
               <Checkbox
                 name="newRoles"
                 class-name="drop-down-item"
+                validate-on-update
                 :label="availableRoles.translatedRoles[role]"
                 :value="role"
               />

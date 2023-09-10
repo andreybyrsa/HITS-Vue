@@ -1,4 +1,4 @@
-import LeftSideBarTabType from './LeftSideBar.types'
+import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 
 import getRoles from '@Utils/getRoles'
 
@@ -20,7 +20,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
   {
     id: 2,
     text: 'Журнал изменений',
-    to: '/history',
+    to: '/last-activity-note',
     iconName: 'bi bi-book',
     roles: getRoles().roles,
   },
@@ -43,7 +43,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
       {
         id: 2,
-        to: '/admin/users-group',
+        to: '/admin/users-groups',
         text: 'Группы пользователей',
         iconName: 'bi bi-people',
       },

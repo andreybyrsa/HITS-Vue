@@ -1,65 +1,100 @@
+import { OptionType } from '@Components/Inputs/Select/Select.types'
+
 interface ExpertRatingData {
   marketValue: number
   originality: number
-  technicalFeasibility: number
-  understanding: number
+  technicalRealizability: number
+  suitability: number
+  budget: number
   rating: number
 }
 interface RatingSelect {
-  name: 'marketValue' | 'originality' | 'technicalFeasibility' | 'understanding'
+  name:
+    | 'marketValue'
+    | 'originality'
+    | 'technicalRealizability'
+    | 'suitability'
+    | 'budget'
   label: string
-  forName: string
-  key: keyof ExpertRatingData
-  choices: { label: string; value: number }[]
+  options: OptionType[]
 }
+
+interface ExpertConfirmation {
+  marketValue: number
+  originality: number
+  technicalRealizability: number
+  suitability: number
+  budget: number
+}
+
+const marketValueOptions = [
+  { label: 'В идеи полостью описана рыночная ценность', value: 5 },
+  { label: 'Инициатор плохо описал рыночную ценность', value: 4 },
+  { label: 'Эксперт не увидел рыночной ценности идеи', value: 3 },
+  { label: 'Экспер не видит, что рыночная ценность етсь', value: 2 },
+  { label: 'Эксперт понимает, что рыночной ценности нет', value: 1 },
+]
+
+const originalityOptions = [
+  {
+    label: 'Подобное решение не встречалось, эксперт полностью понимает инициатора',
+    value: 5,
+  },
+  { label: 'Встречалось похожее решение, инициатор расскрыл идею', value: 4 },
+  { label: 'Встречалось похожее решение, инициатор не расскрыл идею', value: 3 },
+  { label: 'Решение есть на рынке - ниша занята', value: 2 },
+  { label: 'Эксперт не понял инициатора', value: 1 },
+]
+
+const technicalRealizabilityOptions = [
+  { label: 'Команда уже делала такие проекты', value: 5 },
+  { label: 'Есть занания реализации, но нет практического опыта', value: 4 },
+  { label: 'Команда делала проекты на альтернативных стеках', value: 3 },
+  { label: 'Есть знания в другом стеке, но нет практического опыта', value: 2 },
+  { label: 'Нет знаний и опыта', value: 1 },
+]
+
+const suitabilityOptions = [
+  { label: 'Есть заказчик, инвестор и эксперт в предметной области', value: 5 },
+  { label: 'Есть заказчик, инвестор, но нет эксперта', value: 4 },
+  { label: 'Есть инвестор, но нет заказчика и эксперта', value: 3 },
+  { label: 'Есть заказчик, но нет инвестора и эксперта', value: 2 },
+  { label: 'Нет ни заказчика, ни инвестора, ни эксперта', value: 1 },
+]
+
+const budgetOptions = [
+  { label: 'Не требуется', value: 5 },
+  { label: 'До 30.000 руб', value: 4 },
+  { label: '30.000 - 50.000 руб', value: 3 },
+  { label: '50.000 - 100.000 руб', value: 2 },
+  { label: 'Свыше 100.000 руб', value: 1 },
+]
+
 const ratingSelects: RatingSelect[] = [
   {
     name: 'marketValue',
     label: 'Рыночная ценность*',
-    forName: 'marketValue',
-    key: 'marketValue',
-    choices: [
-      { label: 'Очень востребована', value: 5 },
-      { label: 'Не очень востребована', value: 3.75 },
-      { label: 'Скорее всего не будет востребована', value: 2.5 },
-      { label: 'Точно не востребована', value: 1.25 },
-    ],
+    options: marketValueOptions,
   },
   {
     name: 'originality',
     label: 'Уникальность*',
-    forName: 'originality',
-    key: 'originality',
-    choices: [
-      { label: 'Решение есть', value: 5 },
-      { label: 'Решение встречалось', value: 3.75 },
-      { label: 'Скорее всего нет решений', value: 2.5 },
-      { label: 'Точно не было', value: 1.25 },
-    ],
+    options: originalityOptions,
   },
   {
-    name: 'technicalFeasibility',
-    label: 'Техническая реализуемость*',
-    forName: 'technicalFeasibility',
-    key: 'technicalFeasibility',
-    choices: [
-      { label: 'Точно существует', value: 5 },
-      { label: 'Скорее всего существует', value: 3.75 },
-      { label: 'Возможно существует', value: 2.5 },
-      { label: 'Не существует', value: 1.25 },
-    ],
+    name: 'technicalRealizability',
+    label: 'Реализуемость*',
+    options: technicalRealizabilityOptions,
   },
   {
-    name: 'understanding',
-    label: 'Понимание идеи инициатором*',
-    forName: 'understanding',
-    key: 'understanding',
-    choices: [
-      { label: 'Понимает', value: 5 },
-      { label: 'Понимание среднее', value: 3.75 },
-      { label: 'Понимание ниже среднего', value: 2.5 },
-      { label: 'Не понимает', value: 1.25 },
-    ],
+    name: 'suitability',
+    label: 'Пригодность*',
+    options: suitabilityOptions,
+  },
+  {
+    name: 'budget',
+    label: 'Бюджет*',
+    options: budgetOptions,
   },
 ]
-export { ExpertRatingData, RatingSelect, ratingSelects }
+export { ExpertRatingData, RatingSelect, ratingSelects, ExpertConfirmation }

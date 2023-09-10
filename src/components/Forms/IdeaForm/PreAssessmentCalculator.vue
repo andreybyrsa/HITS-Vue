@@ -1,35 +1,49 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { ref, computed } from 'vue'
+import { watchImmediate } from '@vueuse/core'
 
 import {
-  PreAssessmentData,
+  PreAssessmentProps,
   preAssessmentSelects,
 } from '@Components/Forms/IdeaForm/PreAssessmentCalculator.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
+import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
+import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
-const preAssessmentData = defineModel<PreAssessmentData>({
+const preAssessmentValue = defineModel<{ preAssessment: number }>({
   required: true,
 })
 
-const preAssessmentOptions = [
-  { label: 'Низкий', value: 1 },
-  { label: 'Ниже среднего', value: 2 },
-  { label: 'Средний', value: 3 },
-  { label: 'Выше среднего', value: 4 },
-  { label: 'Высокий', value: 5 },
-]
+const props = defineProps<PreAssessmentProps>()
 
-const totalPreAssessment = computed(() => {
-  const { realizability, suitability, budget } = preAssessmentData.value
-  const rating = +((+realizability + +suitability + +budget) / 3).toFixed(1)
+const preAssessmentPlaceholder = ref('вычисление')
 
-  return rating
+const currentPreAssessment = computed(() => {
+  const { technicalRealizability, suitability, budget } = props.idea
+  if (technicalRealizability && suitability && budget) {
+    return +((technicalRealizability + suitability + budget) / 3).toFixed(1)
+  }
+
+  return NaN
 })
 
-watch(totalPreAssessment, () => {
-  preAssessmentData.value.preAssessment = totalPreAssessment.value
+watchImmediate(currentPreAssessment, (currentValue) => {
+  if (currentValue) {
+    preAssessmentValue.value.preAssessment = currentValue
+  }
 })
+
+const intervalId = setInterval(() => {
+  if (currentPreAssessment.value) {
+    return clearInterval(intervalId)
+  }
+
+  if (preAssessmentPlaceholder.value.includes('...')) {
+    return (preAssessmentPlaceholder.value = 'вычисление')
+  }
+  return (preAssessmentPlaceholder.value += '.')
+}, 200)
 </script>
 
 <template>
@@ -41,16 +55,25 @@ watch(totalPreAssessment, () => {
     >
       <Select
         :name="select.name"
+        validate-on-update
         :label="select.label"
-        :options="preAssessmentOptions"
-        v-model="preAssessmentData[select.key]"
+        :options="select.options"
+        placeholder="Выберите значение"
       ></Select>
     </div>
   </div>
 
   <div class="col">
     <Typography class-name="text-primary">
-      Предварительная оценка: {{ preAssessmentData.preAssessment }}
+      Предварительная оценка: {{ currentPreAssessment || preAssessmentPlaceholder }}
     </Typography>
+
+    <ProgressBar
+      v-if="currentPreAssessment"
+      class="mt-2"
+      :value="currentPreAssessment"
+      :max="5"
+    />
+    <LoadingPlaceholder v-else />
   </div>
 </template>

@@ -3,6 +3,7 @@ import { computed } from 'vue'
 
 import { NavTabProps } from '@Components/NavTab/NavTab.types'
 import Collapse from '@Components/Collapse/Collapse.vue'
+import Icon from '@Components/Icon/Icon.vue'
 
 const props = defineProps<NavTabProps>()
 
@@ -30,10 +31,11 @@ const NavTabClassName = computed(() => [
       active-class="active"
       v-bind="routes && collapseProps"
     >
-      <i
+      <Icon
         v-if="iconName"
-        :class="iconName"
-      ></i>
+        :class-name="`${iconName} fs-5`"
+      />
+
       {{ label }}
     </router-link>
 
@@ -49,10 +51,10 @@ const NavTabClassName = computed(() => [
           active-class="active"
           :to="route.to"
         >
-          <i
+          <Icon
             v-if="route.iconName"
-            :class="route.iconName"
-          ></i>
+            :class-name="route.iconName"
+          />
 
           <span v-if="label">{{ route.text }}</span>
         </router-link>

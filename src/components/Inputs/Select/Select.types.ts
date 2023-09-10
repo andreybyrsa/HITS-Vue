@@ -11,6 +11,7 @@ interface SelectProps {
   name: string
 
   validation?: ValidationMethods
+  validateOnUpdate?: boolean
 
   options: OptionType[]
 

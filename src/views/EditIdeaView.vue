@@ -41,7 +41,7 @@ onMounted(async () => {
     const { id } = router.params
     const { token } = currentUser
 
-    const response = await IdeasService.getInitiatorIdea(+id, token)
+    const response = await IdeasService.getInitiatorIdea(`${id}`, token)
 
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)

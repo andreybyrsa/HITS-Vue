@@ -7,7 +7,7 @@ import {
   TextareaEmits,
 } from '@Components/Inputs/Textarea/Textarea.types'
 
-import HTMLInputEvent from '@Domain/HTMLInputEvent'
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 const props = defineProps<TextareaProps>()
 
@@ -18,7 +18,8 @@ defineModel<string>({
 })
 
 const { value, errorMessage } = useField(props.name, props.validation, {
-  validateOnValueUpdate: !!props.validation,
+  validateOnValueUpdate: props.validateOnUpdate ?? false,
+  validateOnMount: false,
   syncVModel: true,
 })
 
@@ -55,7 +56,7 @@ const LabelClassName = computed(() => [
         :class="TextareaClassName"
         :name="name"
         v-model="value"
-        @change="(event) => emit('change', event as HTMLInputEvent)"
+        @change="(event) => emit('change', event as HTMLTargetEvent)"
         @focus="emit('focus')"
         @blur="emit('blur')"
         :placeholder="placeholder"

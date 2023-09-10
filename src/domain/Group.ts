@@ -1,7 +1,7 @@
 import { User } from './User'
 
 interface UserGroup {
-  id: number
+  id: string
   name: string
   users: User[]
   isExperts?: boolean
@@ -9,7 +9,7 @@ interface UserGroup {
 }
 
 interface UpdateUserGroup {
-  id: number
+  id: string
   newName: string
   newUsers: User[]
 }

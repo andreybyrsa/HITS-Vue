@@ -1,12 +1,13 @@
 import { UserGroupData } from '@Domain/ManageUsers'
 import { User } from '@Domain/User'
-import { UserGroup } from '@Domain/Group'
+import { UserGroup, UpdateUserGroup } from '@Domain/Group'
 
 interface AddUsersGroupModalProps {
   isOpened: boolean
   user?: UserGroupData
   usersarray: User[]
   group?: UserGroup
+  editingGroup?: UpdateUserGroup
 }
 
 interface AddUsersGroupModalEmits {

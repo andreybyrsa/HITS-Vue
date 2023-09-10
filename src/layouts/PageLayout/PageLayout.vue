@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+
 import PageLayoutProps from '@Layouts/PageLayout/PageLayout.types'
 
 const props = defineProps<PageLayoutProps>()
@@ -31,7 +32,7 @@ const PageLayoutContentClassName = computed(() => [
   @include flexible(flex-start, flex-start);
 
   &__leftsidebar {
-    @include fixedWidth(80px);
+    @include fixedWidth(85px);
     height: 100vh;
   }
 

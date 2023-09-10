@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, watch, watchEffect, computed } from 'vue'
+import { watchImmediate } from '@vueuse/core'
 import {
   AddUsersGroupModalProps,
   AddUsersGroupModalEmits,
@@ -54,24 +55,25 @@ const unselectUser = (user: any) => {
   unselectedUsers.push(user)
 }
 
+const { errors, setValues, handleSubmit, values, setFieldValue } =
+  useForm<UserGroupData>({
+    validationSchema: {
+      name: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
+    },
+  })
+
 watch(
-  () => selectedUsers.value,
-  (newSelectedUsers) => {
-    newSelectedUsers.forEach((user) => {
-      if (!values.users.includes(user)) {
-        values.users.push(user)
-      }
-    })
+  () => props.editingGroup,
+  (editingGroup) => {
+    console.log(editingGroup)
+    if (editingGroup && editingGroup.newName) {
+      setFieldValue('name', editingGroup.newName)
+    }
   },
 )
 
-const { errors, setValues, handleSubmit, values } = useForm<UserGroupData>({
-  validationSchema: {
-    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    //users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
-  },
-})
-const handleCreate = handleSubmit(async () => {
+const handleCreate = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
