@@ -21,10 +21,7 @@ const { values, handleSubmit } = useForm<ExpertConfirmation>({
   validationSchema: {
     marketValue: (value: number) => value > 0 || 'Поле не заполнено',
     originality: (value: number) => value > 0 || 'Поле не заполнено',
-    technicalFeasibility: (value: number) => value > 0 || 'Поле не заполнено',
-    understanding: (value: number) => value > 0 || 'Поле не заполнено',
-
-    realizability: (value: number) => value > 0 || 'Поле не заполнено',
+    technicalRealizability: (value: number) => value > 0 || 'Поле не заполнено',
     suitability: (value: number) => value > 0 || 'Поле не заполнено',
     budget: (value: number) => value > 0 || 'Поле не заполнено',
   },
@@ -37,7 +34,7 @@ const overallRating = computed(() => {
       (prevValue, value) => (prevValue += value),
       0,
     )
-    console.log(expertRatingSum / 7)
+
     return +(expertRatingSum / 7).toFixed(1)
   }
 
