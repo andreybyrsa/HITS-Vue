@@ -11,7 +11,7 @@ import {
 } from '@Components/Forms/AddUsersForm/AddUsersForm.types'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
-import HTMLInputEvent from '@Domain/HTMLInputEvent'
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 import useNotification from '@Hooks/useNotification'
 
@@ -56,7 +56,7 @@ onMounted(async () => {
   }
 })
 
-const handleFileLoad = async (event: HTMLInputEvent) => {
+const handleFileLoad = async (event: HTMLTargetEvent) => {
   const rawFile = event.target.files?.length && event.target.files[0]
 
   if (rawFile) {
@@ -141,7 +141,7 @@ function getError(email: string, index: number) {
   <input
     type="file"
     ref="fileInputRef"
-    @change="(event) => handleFileLoad(event as HTMLInputEvent)"
+    @change="(event) => handleFileLoad(event as HTMLTargetEvent)"
     hidden
   />
 

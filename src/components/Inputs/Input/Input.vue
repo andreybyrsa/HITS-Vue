@@ -4,7 +4,7 @@ import { useField } from 'vee-validate'
 
 import { InputProps, InputEmits } from '@Components/Inputs/Input/Input.types'
 
-import HTMLInputEvent from '@Domain/HTMLInputEvent'
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 const props = defineProps<InputProps>()
 
@@ -53,7 +53,7 @@ const LabelClassName = computed(() => [
         :class="InputClassName"
         :type="type ?? 'text'"
         v-model="value"
-        @change="(event) => emit('change', event as HTMLInputEvent)"
+        @change="(event) => emit('change', event as HTMLTargetEvent)"
         @focus="emit('focus')"
         @blur="emit('blur')"
         :placeholder="placeholder"
