@@ -13,7 +13,8 @@ defineModel({
 const { value, errorMessage } = useField(() => props.name, undefined, {
   type: 'checkbox',
   checkedValue: props.value,
-  validateOnValueUpdate: false,
+  validateOnValueUpdate: props.validateOnUpdate ?? false,
+  validateOnMount: false,
   syncVModel: true,
 })
 

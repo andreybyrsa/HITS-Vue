@@ -9,6 +9,7 @@ interface InputProps {
   name: string
 
   validation?: ValidationMethods
+  validateOnUpdate?: boolean
 
   label?: string
   placeholder?: string

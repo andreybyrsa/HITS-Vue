@@ -20,8 +20,8 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
   {
     id: 2,
     text: 'Журнал изменений',
-    to: '/history',
-    iconName: 'bi bi-journal-text',
+    to: '/last-activity-note',
+    iconName: 'bi bi-book',
     roles: getRoles().roles,
   },
   {

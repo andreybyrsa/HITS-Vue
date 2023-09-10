@@ -10,4 +10,13 @@ interface EditUserModalEmits {
   (event: 'save-user', newUser: UpdateUserData, success: string): void
 }
 
-export { EditUserModalProps, EditUserModalEmits }
+interface EditUserInputType {
+  id: number
+  type?: string
+  name: 'newEmail' | 'newFirstName' | 'newLastName'
+  placeholder: string
+  prepend?: string
+  prependIconName?: string
+}
+
+export { EditUserModalProps, EditUserModalEmits, EditUserInputType }

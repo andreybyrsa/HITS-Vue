@@ -2,13 +2,14 @@
 import { Idea } from '@Domain/Idea'
 
 import Button from '@Components/Button/Button.vue'
+import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
 import useUserStore from '@Store/user/userStore'
-import CombinedRatingCalculator from '@Components/Modals/IdeaModal/CombinedRatingCalculator.vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
 import actionsButton from './IdeaActionsButton'
 import IdeaActionsType from './IdeaActions.types'
+import IdeasService from '@Services/IdeasService'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -32,7 +33,9 @@ function checkStatusAndRole() {
       currentRole &&
       currentStatusIdea &&
       actionsButton.find((e) =>
-        currentRole == 'INITIATOR'
+        currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
+          ? true
+          : currentRole == 'INITIATOR'
           ? currentInitiatorIdea == user.value?.email &&
             e.roles.includes(currentRole) &&
             e.status.includes(currentStatusIdea)
@@ -40,18 +43,20 @@ function checkStatusAndRole() {
       )
     )
 }
+
+async function hundleSendIdea(id: number) {
+  await IdeasService.putInitiatorSendIdea(id, user.value?.token as string)
+  window.location.reload()
+}
 </script>
 
 <template>
   <div
-    class="rounded-3 bg-white p-3"
     v-if="checkStatusAndRole()"
+    class="rounded-3 bg-white p-3"
   >
     <div class="idea-actions">
-      <CombinedRatingCalculator
-        v-if="user?.role == 'EXPERT'"
-        :idea="props.idea"
-      />
+      <ExpertRatingCalculator v-if="user?.role == 'EXPERT'" />
 
       <div class="d-flex gap-3">
         <template v-for="button in actionsButton">

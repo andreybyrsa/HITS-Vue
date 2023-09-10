@@ -15,7 +15,7 @@ const { user } = storeToRefs(userStore)
 const searchedValue = computed(() => {
   return props.data.filter((element) => {
     const elementData = element.name.toLowerCase().trim()
-    const currentSearchedValue = props.searchValue.toLowerCase().trim()
+    const currentSearchedValue = props.searchValue?.toLowerCase().trim()
 
     const isIncludesSearcheValue = elementData.includes(currentSearchedValue)
 
@@ -113,6 +113,7 @@ function checkMark(row: Idea) {
         <slot
           :item="row"
           name="actions"
+          class="table__action-cell"
         >
         </slot>
       </div>
@@ -139,5 +140,28 @@ function checkMark(row: Idea) {
 
     @include flexible(center, center);
   }
+
+  &__row-cell:last-child {
+    max-height: 100px;
+
+    overflow: hidden;
+
+    @include flexible(center, center);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(209, 209, 209);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #0d6efd;
+  border-radius: 20px;
+  border: 3px solid #0d6efd;
 }
 </style>

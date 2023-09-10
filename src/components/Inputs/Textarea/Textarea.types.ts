@@ -8,6 +8,7 @@ interface TextareaProps {
   name: string
 
   validation?: ValidationMethods
+  validateOnUpdate?: boolean
 
   label?: string
   placeholder?: string

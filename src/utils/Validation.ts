@@ -13,7 +13,6 @@ class Validation {
     if (!password) {
       return 'Это обязательное поле'
     }
-    return true
     if (password.length < 8) {
       return 'Пароль меньше 8 символов'
     }

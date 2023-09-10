@@ -8,6 +8,8 @@ import {
 } from '@Components/Forms/IdeaForm/PreAssessmentCalculator.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
+import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
+import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
 const preAssessmentValue = defineModel<{ preAssessment: number }>({
   required: true,
@@ -53,6 +55,7 @@ const intervalId = setInterval(() => {
     >
       <Select
         :name="select.name"
+        validate-on-update
         :label="select.label"
         :options="select.options"
         placeholder="Выберите значение"
@@ -64,5 +67,12 @@ const intervalId = setInterval(() => {
     <Typography class-name="text-primary">
       Предварительная оценка: {{ currentPreAssessment || preAssessmentPlaceholder }}
     </Typography>
+    <ProgressBar
+      v-if="currentPreAssessment"
+      class="mt-2"
+      :value="currentPreAssessment"
+      :max="5"
+    />
+    <LoadingPlaceholder v-else />
   </div>
 </template>
