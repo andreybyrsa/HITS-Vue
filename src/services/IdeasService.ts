@@ -96,13 +96,17 @@ const deleteInitiatorIdea = async (
 
 const changeStatusIdeaByProjectOffice = async (
   id: string,
-  status: string,
+  status: IdeaStatusTypes,
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .put(`${IDEAS_URL}/project-office/update/${id}`, status, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .put(
+      `${IDEAS_URL}/project-office/update/${id}`,
+      { status: status },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка редактирования идеи'

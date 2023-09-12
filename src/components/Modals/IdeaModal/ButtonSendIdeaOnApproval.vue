@@ -2,19 +2,20 @@
 import { storeToRefs } from 'pinia'
 
 import IdeaActionsType from '@Components/Modals/IdeaModal/IdeaActions.types'
+import Button from '@Components/Button/Button.vue'
+import actionsButton from '@Components/Modals/IdeaModal/IdeaActionsButton'
+
 import { Idea } from '@Domain/Idea'
+
+import IdeasService from '@Services/IdeasService'
 
 import useIdeasStore from '@Store/ideas/ideasStore'
 import useUserStore from '@Store/user/userStore'
-import IdeasService from '@Services/IdeasService'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const ideaStore = useIdeasStore()
-
-import Button from '@Components/Button/Button.vue'
-import actionsButton from '@Components/Modals/IdeaModal/IdeaActionsButton'
 
 defineProps<{ idea: Idea }>()
 
@@ -31,16 +32,19 @@ function hundleSendIdea(idea: Idea, text: string) {
     }
     if (text == 'Отправить на утверждение') {
       idea.status = 'ON_CONFIRMATION'
-      return IdeasService.putAdminIdea(idea, idea.id, userToken)
-      // return IdeasService.changeStatusIdeaByProjectOffice(
-      //   idea.id,
-      //   'ON_CONFIRMATION',
-      //   userToken,
-      // )
+      return IdeasService.changeStatusIdeaByProjectOffice(
+        idea.id,
+        'ON_CONFIRMATION',
+        userToken,
+      )
     }
     if (text == 'Отправить на доработку') {
       idea.status = 'ON_EDITING'
-      return IdeasService.putAdminIdea(idea, idea.id, userToken)
+      return IdeasService.changeStatusIdeaByProjectOffice(
+        idea.id,
+        'ON_EDITING',
+        userToken,
+      )
     }
   }
 }
