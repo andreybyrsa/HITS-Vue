@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
 import { storeToRefs } from 'pinia'
@@ -37,6 +37,13 @@ const {
   handleCloseNotification,
 } = useNotification()
 
+onMounted(() => {
+  if (props.idea) {
+    const { id } = props.idea
+    useWebSocket(`comment.${id}.receive`)
+  }
+})
+
 watch(commentsError, (error) => handleOpenNotification('error', error))
 
 const { handleSubmit, resetForm } = useForm<Comment>({
@@ -60,7 +67,7 @@ const handleSendComment = handleSubmit(async (values) => {
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
-    await commentsStore.postComment(values.comment, id, token)
+    await commentsStore.postComment(values, id, token)
 
     resetForm()
 
@@ -85,8 +92,8 @@ const handleCheckComment = async (commentId: string) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token } = currentUser
-    await commentsStore.checkComment(commentId, token)
+    const { token, email } = currentUser
+    await commentsStore.checkComment(email, commentId, token)
   }
 }
 

@@ -1,11 +1,22 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
+import Comment from '@Domain/Comment'
+
 import CommentService from '@Services/CommentService'
 
 const useCommentsStore = defineStore('comments', {
   state: (): InitialState => ({ comments: [], commentsError: '' }),
   actions: {
+    async fetchComments(ideaId: string, token: string) {
+      const response = await CommentService.fetchComments(ideaId, token)
+
+      if (response instanceof Error) {
+        return (this.commentsError = response.message)
+      }
+
+      this.comments = response
+    },
     async postComment(comment: Comment, ideaId: string, token: string) {
       const response = await CommentService.postComment(comment, ideaId, token)
 

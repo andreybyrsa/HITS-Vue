@@ -1,6 +1,22 @@
 import axios from 'axios'
 
+import Comment from '@Domain/Comment'
+
 const COMMENT_URL = process.env.VUE_APP_COMMENT_API_URL || 'http://localhost:3000'
+
+const fetchComments = async (
+  ideaId: string,
+  token: string,
+): Promise<Comment[] | Error> => {
+  return await axios(`${COMMENT_URL}/all/${ideaId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения комментариев'
+      return new Error(error)
+    })
+}
 
 const postComment = async (
   comment: Comment,
@@ -47,6 +63,7 @@ const checkComment = async (commentId: string, token: string) => {
 }
 
 const CommentService = {
+  fetchComments,
   postComment,
   deleteComment,
   checkComment,
