@@ -1,17 +1,37 @@
 import { defineStore } from 'pinia'
-import InitialState from './initialState'
 import { Idea } from '@Domain/Idea'
+
+import InitialState from './initialState'
 import IdeasService from '@Services/IdeasService'
 
 const useIdeasStore = defineStore('ideas', {
   state: (): InitialState => ({
     ideas: [],
-    initiatorIdeas: [],
   }),
   actions: {
+    async fetchIdeas(token: string) {
+      const response = await IdeasService.fetchIdeas(token)
+
+      if (response instanceof Error) {
+        return
+      }
+
+      this.ideas = response
+    },
+    async deleteInitiatorIdea(id: string, token: string) {
+      await IdeasService.deleteInitiatorIdea(id, token)
+
+      const deleteIdea = this.ideas.find((idea) => idea.id == id)
+      if (deleteIdea) {
+        const index = this.ideas.indexOf(deleteIdea)
+        this.ideas.splice(index, 1)
+      }
+    },
     async sendInitiatorIdeaOnApproval(id: string, token: string) {
-      const idea: Idea[] = await IdeasService.fetchIdeas(token)
-      const currentIdea = await idea.find((e: Idea) => e.id == id)
+      await IdeasService.sendInitiatorIdeaOnApproval(id, token)
+      this.ideas.forEach((idea: Idea) =>
+        idea.id == id ? (idea.status = 'ON_APPROVAL') : idea,
+      )
     },
   },
 })

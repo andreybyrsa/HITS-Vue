@@ -132,7 +132,7 @@ function handleCloseIdeaModal() {
   isOpenedIdeaModal.value = false
 }
 
-const currentOpenedDeleteIdea = ref('')
+const currentOpenedDeleteIdea = ref()
 const isOpenedIdeaDeleteModal = ref(false)
 
 function handleOpenDeleteModal(ideaId: string) {
