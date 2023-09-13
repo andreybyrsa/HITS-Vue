@@ -13,11 +13,12 @@ interface Idea {
   result: string
   projectType: 'INSIDE' | 'OUTSIDE'
   status: StatusTypes
-  confirmedBy: string[]
+  stack: StackTechnologies[]
 
   initiator: string
   projectOffice: UserGroup[]
   experts: UserGroup[]
+  confirmedBy: string[]
   customer: string
   contactPerson: string
 
@@ -28,6 +29,11 @@ interface Idea {
   budget: number
   marketValue: number
   originality: number
+}
+
+interface StackTechnologies {
+  id: string
+  name: string
 }
 
 interface Change {
@@ -47,4 +53,4 @@ interface Risk {
   understanding: string
 }
 
-export { Idea, Risk, Change }
+export { Idea, StackTechnologies, Risk, Change }

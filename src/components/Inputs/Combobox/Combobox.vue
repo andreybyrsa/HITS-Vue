@@ -1,80 +1,34 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import VueMultiselect from 'vue-multiselect'
 
+import ComboboxProps from '@Components/Inputs/Combobox/Combobox.types'
 import Typography from '@Components/Typography/Typography.vue'
-import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.types'
-import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
-const customerAndContact = defineModel<CustomerAndContact>({ required: true })
+const comboboxValue = defineModel<unknown[] | unknown>({
+  required: true,
+})
 
-const customers = ref([
-  { contacts: ['ВШЦТ'], company: 'ВШЦТ' },
-  { contacts: ['Человек 1', 'Человек 2'], company: 'Роснефть' },
-  { contacts: ['Человек 3', 'Человек 4', 'Человек 5'], company: 'Газпром' },
-  {
-    contacts: ['Человек 6', 'Человек 7', 'Человек 8', 'Человек 9'],
-    company: 'Лукойл',
-  },
-])
-const currentCompanies = ref(customers.value.map((option) => option.company))
-const currentCompanyContacts = ref<string[]>([])
-
-function getContactPersonsByCompany(company: string) {
-  return customers.value.find((option) => option.company === company)
-}
-
-function handleCustomerChange(selectedCompany: string) {
-  const currentContacts = getContactPersonsByCompany(selectedCompany)?.contacts
-  if (currentContacts) {
-    currentCompanyContacts.value = currentContacts
-    const currentContactPerson = customerAndContact.value.contactPerson
-
-    customerAndContact.value.contactPerson = currentContacts.includes(
-      currentContactPerson,
-    )
-      ? currentContactPerson
-      : currentContacts[0]
-  }
-}
-
-watch(
-  () => customerAndContact.value.customer,
-  (newCustomer) => {
-    if (newCustomer) {
-      handleCustomerChange(newCustomer)
-    }
-  },
-  { immediate: true },
-)
+defineProps<ComboboxProps>()
 </script>
 
 <template>
-  <div class="w-100">
-    <Typography class="fs-6 text-primary">Заказчик*</Typography>
-    <Combobox
-      class="mt-2"
-      :options="currentCompanies"
-      v-model="customerAndContact.customer"
-      placeholder="Выберите заказчика"
-      required
-      close-on-select
-    />
-  </div>
-
-  <div
-    v-if="customerAndContact.customer !== 'ВШЦТ'"
-    class="w-100"
+  <VueMultiselect
+    :options="options"
+    v-model="comboboxValue"
+    :placeholder="placeholder"
+    :allow-empty="required"
+    :multiple="multiple"
+    :close-on-select="closeOnSelect"
   >
-    <Typography class="fs-6 text-primary">Контактное лицо*</Typography>
-    <Combobox
-      class="mt-2"
-      :options="currentCompanyContacts"
-      v-model="customerAndContact.contactPerson"
-      placeholder="Выберите контактное лицо"
-      required
-      close-on-select
-    />
-  </div>
+    <template
+      v-if="selectionPlaceholder"
+      #selection
+    >
+      <Typography>
+        {{ selectionPlaceholder }}
+      </Typography>
+    </template>
+  </VueMultiselect>
 </template>
 
 <style lang="scss">
