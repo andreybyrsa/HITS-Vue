@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch, watchEffect, computed } from 'vue'
-import { watchImmediate } from '@vueuse/core'
+import { ref, watch, onMounted } from 'vue'
 import {
   AddUsersGroupModalProps,
   AddUsersGroupModalEmits,
@@ -17,18 +16,22 @@ import { UserGroup } from '@Domain/Group'
 
 import useNotification from '@Hooks/useNotification'
 
-import { useForm } from 'vee-validate'
-import { UserGroupData } from '@Domain/ManageUsers'
+import { useForm, useFieldArray } from 'vee-validate'
 import GroupService from '@Services/GroupsService'
+import ManageUsersService from '@Services/ManageUsersService'
 
 const props = defineProps<AddUsersGroupModalProps>()
 const emit = defineEmits<AddUsersGroupModalEmits>()
 
-const groups = defineModel<UserGroup[]>({ required: true })
+const users = ref<User[]>([])
 
 const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
+
+const selectedUsers = ref<User[]>([])
+
+const unselectedUsers = ref<User[]>([])
 
 const {
   notificationOptions,
@@ -37,38 +40,78 @@ const {
   handleCloseNotification,
 } = useNotification()
 
-//const { fields, push, remove } = useFieldArray<User>('user')
+const { push, remove } = useFieldArray<User>('user')
 
-const selectedUsers = ref<User[]>([])
+onMounted(async () => {
+  const currentUser = user.value
 
-const unselectedUsers = props.usersarray.filter(
-  (users) => !selectedUsers.value.includes(users),
-)
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const responseUsers = await ManageUsersService.getUsers(token)
 
-const selectUser = (user: any) => {
-  selectedUsers.value.push(user)
-  unselectedUsers.splice(unselectedUsers.indexOf(user), 1)
-}
+    if (responseUsers instanceof Error) {
+      return handleOpenNotification('error', responseUsers.message)
+    }
 
-const unselectUser = (user: any) => {
-  selectedUsers.value.splice(selectedUsers.value.indexOf(user), 1)
-  unselectedUsers.push(user)
-}
+    users.value = responseUsers
+  }
+})
 
-const { errors, setValues, handleSubmit, values, setFieldValue } =
-  useForm<UserGroupData>({
-    validationSchema: {
-      name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-      users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
-    },
-  })
+// const selectUser = (user: any) => {
+//   selectedUsers.value.push(user)
+//   unselectedUsers.splice(unselectedUsers.indexOf(user), 1)
+// }
 
+// const unselectUser = (user: any) => {
+//   selectedUsers.value.splice(selectedUsers.value.indexOf(user), 1)
+//   unselectedUsers.push(user)
+// }
+
+const { setValues, handleSubmit } = useForm<UserGroup>({
+  validationSchema: {
+    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
+    users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
+  },
+})
+
+// watch(
+//   () => props.editingGroup,
+//   (editingGroup) => {
+//     if (editingGroup && editingGroup.newName) {
+//       setFieldValue('name', editingGroup.newName)
+//     }
+//   },
+// )
+
+// watch(
+//   () => props.isOpened,
+//   () => console.log(1),
+// )
+
+//юзеров подгрузили вначале, когда создать группы модал, сработал вотч, сработало добавить группу тайтл,
+//потом в модалке селектед и не селектед, создаем группу, если добавить группу, то не селектед, то unselected = users, selected = [],
+//второе условие: когда происходит редактирование, передаем группу в едитинг групп, в форме вытаскивали сетвельюс функция, надо взять ее и туда через ... пропс.едитинггрупп
+//форма заполнилась
+//селектед сразу присвоить едининггрупп.юзерс, анселектед фильтр по массиву(по пользователям)
+//надо сделать две кнопки, по условию выводить:и если тайтл добавить, то добавть, если редактировать - редактировать, у каждой кнопки своя функция
+//написать сервис для функции редактирования
+//написать хендледит функцию по хендлсабмит, хендлкриейт типа того же
 watch(
   () => props.editingGroup,
   (editingGroup) => {
-    console.log(editingGroup)
-    if (editingGroup && editingGroup.newName) {
-      setFieldValue('name', editingGroup.newName)
+    if (editingGroup) {
+      setValues({ ...editingGroup })
+      selectedUsers.value = editingGroup.users
+      unselectedUsers.value = users.value.filter((user) =>
+        editingGroup.users?.every((groupUser) => groupUser.email !== user.email),
+      )
+    } else {
+      setValues({
+        name: '',
+        users: [],
+      })
+      unselectedUsers.value = users.value
+      selectedUsers.value = []
     }
   },
 )
@@ -84,7 +127,19 @@ const handleCreate = handleSubmit(async (values) => {
     }
     handleOpenNotification('success', response.success)
     emit('close-modal')
-    groups.value.push(values)
+  }
+})
+
+const handleEdit = handleSubmit(async (values) => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await GroupService.editUsersGroup(values, token)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
+    handleOpenNotification('success', response.success)
+    emit('close-modal')
   }
 })
 </script>
@@ -96,7 +151,7 @@ const handleCreate = handleSubmit(async (values) => {
   >
     <div class="add-Users-group-modal p-3 bg-white rounded-3">
       <div class="add-Users-group-modal__header">
-        <Typography class-name="fs-2 text-primary">Добавить группу</Typography>
+        <Typography class-name="fs-2 text-primary">{{ groupModalTitle }}</Typography>
         <Button
           class-name="btn-close"
           @click="emit('close-modal')"
@@ -149,12 +204,20 @@ const handleCreate = handleSubmit(async (values) => {
           </div>
         </div>
       </div>
-
-      <Button
-        class-name="btn-primary w-100"
-        @click="handleCreate()"
-        >Добавить</Button
-      >
+      <div v-if="groupModalTitle == 'Добавить группу'">
+        <Button
+          class-name="btn-primary w-100"
+          @click="handleCreate()"
+          >Добавить</Button
+        >
+      </div>
+      <div v-if="groupModalTitle == 'Редактировать группу'">
+        <Button
+          class-name="btn-primary w-100"
+          @click="handleEdit()"
+          >Редактировать</Button
+        >
+      </div>
     </div>
   </ModalLayout>
 </template>

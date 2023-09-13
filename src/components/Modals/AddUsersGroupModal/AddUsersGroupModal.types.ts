@@ -1,17 +1,15 @@
-import { UserGroupData } from '@Domain/ManageUsers'
-import { User } from '@Domain/User'
-import { UserGroup, UpdateUserGroup } from '@Domain/Group'
+import { UserGroup } from '@Domain/Group'
 
 interface AddUsersGroupModalProps {
   isOpened: boolean
-  user?: UserGroupData
-  usersarray: User[]
-  group?: UserGroup
-  editingGroup?: UpdateUserGroup
+  user?: UserGroup
+  editingGroup?: UserGroup
+  groupModalTitle: 'Добавить группу' | 'Редактировать группу'
 }
 
 interface AddUsersGroupModalEmits {
-  (event: 'close-modal', success?: string): void
+  (event: 'close-modal'): void
+  (event: 'save-group'): void
 }
 
 export { AddUsersGroupModalProps, AddUsersGroupModalEmits }

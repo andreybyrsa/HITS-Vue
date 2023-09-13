@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-import { UserGroupData } from '@Domain/ManageUsers'
 import Success from '@Domain/ResponseMessage'
 import { UserGroup } from '@Domain/Group'
 
@@ -8,7 +7,7 @@ const MANAGE_GROUPS_URL =
   process.env.VUE_APP_MANAGE_GROUPS_API_URL || 'http://localhost:3000'
 
 const createUsersGroup = async (
-  usersData: UserGroupData,
+  usersData: UserGroup,
   token: string,
 ): Promise<Success | Error> => {
   return await axios
@@ -38,9 +37,28 @@ const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
     })
 }
 
+const editUsersGroup = async (
+  usersData: UserGroup,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .post(`${MANAGE_GROUPS_URL}/update`, usersData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error =
+        response?.data?.error ?? 'Ошибка редактирования группы пользователей'
+      return new Error(error)
+    })
+}
+
 const GroupService = {
   createUsersGroup,
   getUsersGroups,
+  editUsersGroup,
 }
 
 export default GroupService

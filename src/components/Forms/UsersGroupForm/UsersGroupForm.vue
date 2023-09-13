@@ -9,30 +9,26 @@ import AddUsersGroup from '@Components/Modals/AddUsersGroupModal/AddUsersGroupMo
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import { User } from '@Domain/User'
-
 import useNotification from '@Hooks/useNotification'
-
-import ManageUsersService from '@Services/ManageUsersService'
 
 import useUserStore from '@Store/user/userStore'
 
-import { UserGroup, UpdateUserGroup } from '@Domain/Group'
+import { UserGroup } from '@Domain/Group'
 
 import GroupService from '@Services/GroupsService'
 
 const searchedValue = ref('')
 
-const isOpenedAddGroup = ref(false)
-const isOpenedEditGroup = ref(false)
-const currentAddUsersGroup = ref([] as string[])
+const isOpenedGroupModal = ref(false)
 
 const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
 
-const usersarray = ref<User[]>([])
-const group = ref<UserGroup>()
+const groups = ref<UserGroup[]>([])
+const editingGroup = ref<UserGroup>()
+
+const groupModalTitle = ref()
 
 const {
   notificationOptions,
@@ -41,38 +37,23 @@ const {
   handleCloseNotification,
 } = useNotification()
 
-function openAddGroupModal() {
-  isOpenedAddGroup.value = true
-}
-
-function closeAddGroupModal() {
-  isOpenedAddGroup.value = false
-}
-
-const usersGroup = ref<UserGroup[]>([])
-
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const responseUsers = await ManageUsersService.getUsers(token)
     const responseGroups = await GroupService.getUsersGroups(token)
 
-    if (responseUsers instanceof Error) {
-      return handleOpenNotification('error', responseUsers.message)
-    }
     if (responseGroups instanceof Error) {
       return handleOpenNotification('error', responseGroups.message)
     }
 
-    usersarray.value = responseUsers
-    usersGroup.value = responseGroups
+    groups.value = responseGroups
   }
 })
 
 const searchedGroup = computed(() => {
-  return usersGroup.value.filter((users) => {
+  return groups.value.filter((users) => {
     const groupName = users.name?.toLowerCase().trim()
     const currentSearchedValue = searchedValue.value?.toLowerCase().trim()
 
@@ -83,40 +64,40 @@ const searchedGroup = computed(() => {
   })
 })
 
-const editingGroup = ref<UpdateUserGroup>()
-
-function openEditGroupModal(id: string) {
-  const currentSelectedUsers = usersGroup.value.find((group) => group.id == id)
-
-  if (currentSelectedUsers) {
-    const { id, name, users } = currentSelectedUsers
-    editingGroup.value = {
-      id,
-      newName: name,
-      newUsers: users,
-    }
-
-    isOpenedEditGroup.value = true
-  }
+function closeGroupModal() {
+  isOpenedGroupModal.value = false
 }
 
-function closeEditGroupModal(
-  newGroupOrSuccess?: UpdateUserGroup | string,
-  success?: string,
-): void {
-  isOpenedEditGroup.value = false
+function openGroupModal(id?: string) {
+  if (id) {
+    const currentSelectedGroup = groups.value.find((group) => group.id == id)
+    if (currentSelectedGroup) {
+      editingGroup.value = {
+        ...currentSelectedGroup,
+      }
+      groupModalTitle.value = 'Редактировать группу'
+    }
+  } else {
+    editingGroup.value = undefined
+    groupModalTitle.value = 'Добавить группу'
+  }
+  isOpenedGroupModal.value = true
+}
+
+function saveGroup(newGroupOrSuccess?: UserGroup | string, success?: string): void {
+  isOpenedGroupModal.value = false
 
   if (typeof newGroupOrSuccess === 'object') {
-    const { id, newName, newUsers } = newGroupOrSuccess
+    const { id, name, users } = newGroupOrSuccess
     const newGroupData: UserGroup = {
       id,
-      name: newName,
-      users: newUsers,
+      name: name,
+      users: users,
     }
 
-    usersGroup.value.forEach((group, index) => {
+    groups.value.forEach((group, index) => {
       if (group.id === id) {
-        usersGroup.value.splice(index, 1, newGroupData)
+        groups.value.splice(index, 1, newGroupData)
       }
     })
   }
@@ -132,7 +113,6 @@ function closeEditGroupModal(
     <Typography class-name="fs-3 text-primary text-center w-100"
       >Группы пользователей</Typography
     >
-    <!-- {{ usersarray }} -->
     <div class="w-50">
       <Input
         name="search"
@@ -142,22 +122,22 @@ function closeEditGroupModal(
         <template #append>
           <Button
             class-name="px-2 py-0"
-            @click="openAddGroupModal"
+            @click="() => openGroupModal()"
             prepend-icon-name="bi bi-plus-lg"
             >Добавить группу
           </Button>
         </template>
       </Input>
-      <div v-if="isOpenedAddGroup">
+      <!-- <div v-if="isOpenedAddGroup">
         <AddUsersGroup
-          :isOpened="isOpenedAddGroup"
+          :isOpened="isOpenedGroupModal"
           :currentAddUsersGroup="currentAddUsersGroup"
           @close-modal="closeAddGroupModal"
           :usersarray="usersarray"
           v-model="usersGroup"
         >
-        </AddUsersGroup>
-      </div>
+        </AddUsersGroup> 
+      </div> -->
     </div>
     <div class="users-group-form__content w-100">
       <div
@@ -168,19 +148,18 @@ function closeEditGroupModal(
         <Typography class-name="text-primary fs-4 col">
           {{ group.name }}
         </Typography>
-        {{ usersGroup }}
         <Button
           class-name="users-group-form__edit-btn col-1"
           prepend-icon-name="bi bi-pencil-square text-primary"
-          @click="openEditGroupModal(group.id)"
+          @click="openGroupModal(group.id)"
         ></Button>
       </div>
       <AddUsersGroup
-        :isOpened="isOpenedEditGroup"
-        :group="editingGroup"
-        :usersarray="usersarray"
-        @close-modal="closeEditGroupModal"
-        v-model="usersGroup"
+        :isOpened="isOpenedGroupModal"
+        :editing-group="editingGroup"
+        @close-modal="closeGroupModal"
+        @save-group="saveGroup"
+        :group-modal-title="groupModalTitle"
       >
       </AddUsersGroup>
     </div>
