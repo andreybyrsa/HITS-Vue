@@ -10,6 +10,8 @@ import LocalStorageUser from '@Utils/LocalStorageUser'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import RolesTypes from '@Domain/Roles'
+import { string } from 'yup'
 
 const app = createApp(App)
 
@@ -30,6 +32,14 @@ router.beforeEach((to) => {
   }
 
   const currentRoute = to.name?.toString() ?? ''
+  const checkRole = to.meta.roles as string
+
+  if (userStore.user?.role?.includes(checkRole)) {
+    router.push('ideas')
+  }
+  // if (to.meta.isAdmin && userStore.user?.role != 'ADMIN') {
+  //   // router.push('ideas')
+  // }
 
   if (
     !userStore.user &&

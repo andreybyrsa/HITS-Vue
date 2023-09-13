@@ -49,14 +49,17 @@ const routes: Array<RouteRecordRaw> = [
         children: [
           {
             path: 'add-users',
+            meta: { roles: ['ADMIN'] },
             component: AddUsersForm,
           },
           {
             path: 'edit-users',
+            meta: { isAdmin: true },
             component: EditUsersForm,
           },
           {
             path: 'users-groups',
+            meta: { isAdmin: true },
             component: UserGroupForm,
           },
         ],
@@ -97,9 +100,35 @@ const routes: Array<RouteRecordRaw> = [
   },
 ]
 
+// declare module 'vue-router' {
+//   interface RouteMeta {
+//     // is optional
+//     isAdmin?: boolean
+//     isInitiator?: boolean
+//     isProjectOffice?: boolean
+//     isExpert?: boolean
+//     // must be declared by every route
+//     requiresAuth?: boolean
+//   }
+// }
+
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 })
+
+// router.beforeEach((to, from) => {
+//   // instead of having to check every route record with
+//   // to.matched.some(record => record.meta.requiresAuth)
+//   if (to.meta.requiresAuth) {
+//     // this route requires auth, check if logged in
+//     // if not, redirect to login page.
+//     return {
+//       path: '/login',
+//       // save the location we were at to come back later
+//       // query: { redirect: to.fullPath },
+//     }
+//   }
+// })
 
 export default router
