@@ -5,11 +5,11 @@ import { useRouter } from 'vue-router'
 import Button from '@Components/Button/Button.vue'
 import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
 import actionsButton from '@Components/Modals/IdeaModal/IdeaActionsButton'
+import ButtonSendIdeaOnApproval from '@Components/Modals/IdeaModal/ButtonSendIdeaOnApproval.vue'
 
 import { Idea } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
-import ButtonSendIdeaOnApproval from './ButtonSendIdeaOnApproval.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -17,10 +17,43 @@ const { user } = storeToRefs(userStore)
 const props = defineProps<{ idea: Idea }>()
 const router = useRouter()
 
+function getAccessToEditing() {
+  if (user.value && props.idea) {
+    const { email, role } = user.value
+    const { status, initiator } = props.idea
+
+    if (role === 'ADMIN') return true
+
+    if (status === 'NEW' || status === 'ON_EDITING') {
+      return role === 'INITIATOR' && email === initiator
+    }
+  }
+  return false
+}
+
+function getAccessToApproval() {
+  if (user.value && props.idea) {
+    const { role } = user.value
+    const { status } = props.idea
+
+    if (status === 'ON_APPROVAL') {
+      if (role === 'ADMIN') return true
+
+      return role === 'PROJECT_OFFICE'
+    }
+  }
+}
+
 function getAccessToConfirmation() {
-  if (props.idea && user.value) {
-    const { email } = user.value
-    return !props.idea.confirmedBy?.includes(email)
+  if (user.value && props.idea) {
+    const { email, role } = user.value
+    const { status } = props.idea
+
+    if (status === 'ON_CONFIRMATION') {
+      if (role === 'ADMIN') return true
+
+      return role === 'EXPERT' && !props.idea.confirmedBy?.includes(email)
+    }
   }
   return false
 }
@@ -50,31 +83,23 @@ function checkStatusAndRole() {
 </script>
 
 <template>
-  <div
-    v-if="checkStatusAndRole()"
-    class="rounded-3 bg-white p-3"
-  >
-    <div class="idea-actions">
-      <ExpertRatingCalculator
-        v-if="user?.role == 'EXPERT' && getAccessToConfirmation()"
-        :idea="idea"
-      />
+  <ExpertRatingCalculator
+    v-if="getAccessToConfirmation()"
+    :idea="idea"
+  />
 
-      <div class="d-flex gap-3">
-        <ButtonSendIdeaOnApproval :idea="idea" />
-        <Button
-          type="submit"
-          v-if="
-            user?.role == 'ADMIN' ||
-            (user?.role == 'INITIATOR' && user.email == idea.initiator)
-          "
-          @click="router.push(`edit-idea/${props.idea?.id}`)"
-          class-name="btn-light"
-        >
-          Редактировать
-        </Button>
-      </div>
-    </div>
+  <div
+    v-if="getAccessToEditing() || getAccessToApproval()"
+    class="rounded-3 bg-white p-3 d-flex gap-3"
+  >
+    <ButtonSendIdeaOnApproval :idea="idea" />
+    <Button
+      v-if="getAccessToEditing()"
+      class-name="btn-light"
+      @click="router.push(`edit-idea/${props.idea?.id}`)"
+    >
+      Редактировать
+    </Button>
   </div>
 </template>
 

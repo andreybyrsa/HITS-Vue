@@ -73,42 +73,44 @@ const intervalId = setInterval(() => {
 </script>
 
 <template>
-  <div class="combined-rating d-grid w-100">
-    <div class="w-100 row row-cols-2">
-      <div
-        class="w-50 col-2 mb-2"
-        v-for="(select, index) in ratingSelects"
-        :key="index"
-      >
-        <Select
-          :name="select.name"
-          validate-on-update
-          :label="select.label"
-          :options="select.options"
-          placeholder="Выберите значение"
-        ></Select>
+  <div class="bg-white p-3 rounded-3">
+    <div class="combined-rating w-100">
+      <div class="w-100 row row-cols-2">
+        <div
+          class="w-50 col-2 mb-2"
+          v-for="(select, index) in ratingSelects"
+          :key="index"
+        >
+          <Select
+            :name="select.name"
+            validate-on-update
+            :label="select.label"
+            :options="select.options"
+            placeholder="Выберите значение"
+          ></Select>
+        </div>
       </div>
+
+      <Typography class-name="fs-6 text-primary">
+        Рейтинг: {{ overallRating || initialOverallRating }}
+      </Typography>
+
+      <ProgressBar
+        v-if="overallRating"
+        :value="overallRating"
+        :max="5"
+      />
+      <LoadingPlaceholder v-else />
+
+      <Button
+        type="submit"
+        class-name="btn-primary"
+        @click="handleUpdateIdea"
+      >
+        Утвердить
+      </Button>
     </div>
-
-    <Typography class-name="fs-6 text-primary">
-      Рейтинг: {{ overallRating || initialOverallRating }}
-    </Typography>
-
-    <ProgressBar
-      v-if="overallRating"
-      :value="overallRating"
-      :max="5"
-    />
-    <LoadingPlaceholder v-else />
   </div>
-
-  <Button
-    type="submit"
-    class-name="btn-primary"
-    @click="handleUpdateIdea"
-  >
-    Утвердить
-  </Button>
 </template>
 
 <style lang="scss" scoped>
