@@ -17,6 +17,14 @@ const { user } = storeToRefs(userStore)
 const props = defineProps<{ idea: Idea }>()
 const router = useRouter()
 
+function getAccessToConfirmation() {
+  if (props.idea && user.value) {
+    const { email } = user.value
+    return !props.idea.confirmedBy?.includes(email)
+  }
+  return false
+}
+
 function checkStatusAndRole() {
   const currentRole = user.value?.role
   const currentStatusIdea = props.idea?.status
@@ -47,7 +55,10 @@ function checkStatusAndRole() {
     class="rounded-3 bg-white p-3"
   >
     <div class="idea-actions">
-      <ExpertRatingCalculator v-if="user?.role == 'EXPERT'" />
+      <ExpertRatingCalculator
+        v-if="user?.role == 'EXPERT' && getAccessToConfirmation()"
+        :idea="idea"
+      />
 
       <div class="d-flex gap-3">
         <ButtonSendIdeaOnApproval :idea="idea" />

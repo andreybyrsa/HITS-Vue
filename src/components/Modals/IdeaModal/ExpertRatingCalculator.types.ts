@@ -1,4 +1,5 @@
 import { OptionType } from '@Components/Inputs/Select/Select.types'
+import { Idea } from '@Domain/Idea'
 
 interface ExpertRatingData {
   marketValue: number
@@ -20,11 +21,16 @@ interface RatingSelect {
 }
 
 interface ExpertConfirmation {
+  rating: number
   marketValue: number
   originality: number
   technicalRealizability: number
   suitability: number
   budget: number
+}
+
+interface ExperCalculatorProps {
+  idea: Idea
 }
 
 const marketValueOptions = [
@@ -97,4 +103,10 @@ const ratingSelects: RatingSelect[] = [
     options: budgetOptions,
   },
 ]
-export { ExpertRatingData, RatingSelect, ratingSelects, ExpertConfirmation }
+export {
+  ExpertRatingData,
+  RatingSelect,
+  ratingSelects,
+  ExpertConfirmation,
+  ExperCalculatorProps,
+}

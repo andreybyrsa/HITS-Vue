@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Idea } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
+import { ExpertConfirmation } from '@Components/Modals/IdeaModal/ExpertRatingCalculator.types'
 
 const IDEAS_URL = process.env.VUE_APP_IDEAS_API_URL || 'http://localhost:3000'
 
@@ -114,22 +115,6 @@ const changeStatusIdeaByProjectOffice = async (
     })
 }
 
-const putExpertIdea = async (
-  idea: Idea,
-  id: string,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .put(`${IDEAS_URL}/admin/update/${id}`, idea, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка редактирования идеи'
-      return new Error(error)
-    })
-}
-
 const putAdminIdea = async (
   idea: Idea,
   id: string,
@@ -161,6 +146,21 @@ const deleteAdminIdea = async (
     })
 }
 
+const putExpertIdea = async (
+  rating: ExpertConfirmation,
+  id: string,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .put(`${IDEAS_URL}/expert/update/${id}`, rating, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка редактирования идеи'
+      return new Error(error)
+    })
+}
 const IdeasService = {
   fetchIdeas,
 
