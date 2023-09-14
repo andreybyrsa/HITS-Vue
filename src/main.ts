@@ -11,7 +11,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import RolesTypes from '@Domain/Roles'
-import { string } from 'yup'
 
 const app = createApp(App)
 
@@ -32,14 +31,23 @@ router.beforeEach((to) => {
   }
 
   const currentRoute = to.name?.toString() ?? ''
-  const checkRole = to.meta.roles as string
+  const currentRouteHatch = to.path?.toString() ?? ''
+  const metaRoles = to.meta.roles as RolesTypes[]
+  const path: string[] = []
+  router.getRoutes().forEach((e) => path.push(e.path))
 
-  if (userStore.user?.role?.includes(checkRole)) {
-    router.push('ideas')
+  if (
+    (metaRoles &&
+      userStore.user?.role &&
+      !metaRoles.includes(userStore.user?.role)) ||
+    (userStore.user &&
+      ['login', 'register', 'forgot-password', 'new-password'].includes(
+        currentRoute,
+      )) ||
+    (path && !path.includes(currentRouteHatch))
+  ) {
+    router.push('error')
   }
-  // if (to.meta.isAdmin && userStore.user?.role != 'ADMIN') {
-  //   // router.push('ideas')
-  // }
 
   if (
     !userStore.user &&
@@ -48,6 +56,7 @@ router.beforeEach((to) => {
     return { name: 'login' }
   }
 })
+
 app.use(router)
 
 app.mount('#app')
