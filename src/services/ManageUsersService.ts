@@ -10,7 +10,10 @@ const MANAGE_USERS_URL =
 
 const getUsers = async (token: string): Promise<User[] | Error> => {
   return await axios
+
     .get(`${MANAGE_USERS_URL}/get/users`, {
+      //.get(`${MANAGE_USERS_URL}/get/info`, {
+
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

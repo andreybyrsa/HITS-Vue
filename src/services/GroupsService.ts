@@ -33,6 +33,7 @@ const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка групп пользователей'
+      console.log(MANAGE_GROUPS_URL)
       return new Error(error)
     })
 }
