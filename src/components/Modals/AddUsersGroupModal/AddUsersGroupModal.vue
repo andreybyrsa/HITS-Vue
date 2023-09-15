@@ -19,6 +19,7 @@ import useNotification from '@Hooks/useNotification'
 import { useForm, useFieldArray } from 'vee-validate'
 import GroupService from '@Services/GroupsService'
 import ManageUsersService from '@Services/ManageUsersService'
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
 const props = defineProps<AddUsersGroupModalProps>()
 const emit = defineEmits<AddUsersGroupModalEmits>()
@@ -30,6 +31,27 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const unselectedUsers = ref<User[]>([])
+
+// const selectedUsers = ref<User[]>([])
+
+// const unselectedUsers = ref<User[]>([
+//   {
+//     token:
+//       'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSUCJJTklUSUFUT1IiXSwic3ViIjoiZmhqdkBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkzOTI0MTQ4LCJleHAiOjE2OTQwMTA1NDh9.m8ubC0ekCqmbHNBWEgPX4By5lVQ_F7F-ZlA2YFh-Mmw',
+//     email: 'fhv@mail.com',
+//     lastName: 'Че',
+//     firstName: 'Пользователь',
+//     roles: ['ADMIN', 'INITIATOR'],
+//   },
+//   {
+//     token:
+//       'eyJhbGciOiJIUzI1NiJ9.eyzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiXSwic3ViIjoiZmhqdkBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkzOTI0MTQ4LCJleHAiOjE2OTQwMTA1NDh9.m8ubC0ekCqmbHNBWEgPX4By5lVQ_F7F-ZlA2YFh-Mmw',
+//     email: 'fhjvv@mail.com',
+//     lastName: 'Четный',
+//     firstName: 'Пользователь1',
+//     roles: ['ADMIN', 'INITIATOR'],
+//   },
+// ])
 
 const editGroup = ref<UserGroup>()
 
@@ -137,6 +159,10 @@ const handleDelete = async () => {
     emit('delete-group', values.id)
   }
 }
+
+// const selectedUser = defineModel<UserGroup[]>('selectedUser', {
+//   required: true,
+// })
 </script>
 
 <template>
@@ -174,8 +200,25 @@ const handleDelete = async () => {
                 {{ user.lastName }}
               </Typography>
               <Typography class-name="fs-6">{{ user.firstName }}</Typography>
+
+              <div class="unselected-selected-usesrs">
+                <!-- <Checkbox
+                  name="checkboxUser"
+                  :label="user.lastName + user.firstName"
+                  v-model="selectedUser"
+                  :value="user"
+                ></Checkbox> -->
+              </div>
             </div>
           </div>
+        </div>
+
+        <div class="move-buttons m-2 flex-column">
+          <Button
+            prepend-icon-name="bi bi-arrow-left-right"
+            class-name="shadow-sm bg-light min-vh-10 mb-4"
+          ></Button>
+          <Button class-name="shadow-sm bg-light min-vh-10">ALL</Button>
         </div>
 
         <div class="selectors">
@@ -292,5 +335,10 @@ const handleDelete = async () => {
 
 .unselected-selected-usesrs {
   cursor: pointer;
+  margin: 8px;
+}
+
+.move-buttons {
+  @include flexible(center, center, columns);
 }
 </style>
