@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
 import { storeToRefs } from 'pinia'
@@ -16,7 +16,6 @@ import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPl
 import Comment from '@Domain/Comment'
 
 import useNotification from '@Hooks/useNotification'
-import useWebSocket from '@Hooks/useWebSocket'
 
 import useUserStore from '@Store/user/userStore'
 import useCommentsStore from '@Store/comments/commentsStore'
@@ -27,8 +26,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const commentsStore = useCommentsStore()
-const { comments, commentsError } = storeToRefs(commentsStore)
-const isLoading = ref(true)
+const { comments, rsocketIsConnected, commentsError } = storeToRefs(commentsStore)
 
 const {
   notificationOptions,
@@ -37,10 +35,11 @@ const {
   handleCloseNotification,
 } = useNotification()
 
-onMounted(() => {
+onMounted(async () => {
   if (props.idea) {
     const { id } = props.idea
-    useWebSocket(`comment.${id}.receive`)
+
+    await commentsStore.connectRsocket(id)
   }
 })
 
@@ -109,7 +108,6 @@ const onIntersectionObserver = async (
     isIntersecting
   ) {
     await handleCheckComment(comment.id)
-    console.log(`updated - ${comment.comment}`)
   }
 }
 </script>
@@ -120,7 +118,7 @@ const onIntersectionObserver = async (
       <Typography class-name="fs-6 px-3">Комментарии</Typography>
     </div>
 
-    <IdeaCommentsPlaceholder v-if="isLoading" />
+    <IdeaCommentsPlaceholder v-if="!rsocketIsConnected" />
     <div
       v-else
       class="d-grid gap-3 pt-3 px-3 w-100"

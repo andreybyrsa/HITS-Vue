@@ -1,7 +1,11 @@
+import { ref } from 'vue'
 import { RSocketClient, JsonSerializer, IdentitySerializer } from 'rsocket-core'
 import RSocketWebsocketClient from 'rsocket-websocket-client'
 
-async function useWebSocket(subscribeUrl: string) {
+async function useWebSocket<Type>(subscribeUrl: string) {
+  const data = ref<Type[]>([])
+  const isConnected = ref(false)
+
   const client = new RSocketClient({
     serializers: {
       data: JsonSerializer,
@@ -18,20 +22,32 @@ async function useWebSocket(subscribeUrl: string) {
     }),
   })
 
-  client.connect().subscribe({
-    onComplete: (socket) => {
-      socket
-        .requestStream({
-          metadata: String.fromCharCode(subscribeUrl.length) + subscribeUrl,
-        })
-        .subscribe({
-          onError: (error) => console.log(error.message),
-          onNext: (payload) => console.log(payload.data),
-          onSubscribe: (subscirbe) => subscirbe.request(1000),
-        })
-    },
-    onError: (error) => console.log(error),
+  function closeConnection() {
+    client.close()
+  }
+
+  await new Promise((resolve, reject) => {
+    client.connect().then(
+      (socket) => {
+        resolve((isConnected.value = true))
+
+        socket
+          .requestStream({
+            metadata: String.fromCharCode(subscribeUrl.length) + subscribeUrl,
+          })
+          .subscribe({
+            onError: (error) => reject(error),
+            onNext: (payload) => {
+              data.value.push(payload.data)
+            },
+            onSubscribe: (subscirbe) => subscirbe.request(1000),
+          })
+      },
+      (error) => reject(error),
+    )
   })
+
+  return { data, isConnected, closeConnection }
 }
 
 export default useWebSocket
