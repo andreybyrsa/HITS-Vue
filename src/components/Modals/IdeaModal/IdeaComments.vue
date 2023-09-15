@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
 import { storeToRefs } from 'pinia'
@@ -26,8 +26,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const commentsStore = useCommentsStore()
-const { comments, commentsError } = storeToRefs(commentsStore)
-const isLoading = ref(true)
+const { comments, rsocketIsConnected, commentsError } = storeToRefs(commentsStore)
 
 const {
   notificationOptions,
@@ -35,6 +34,14 @@ const {
   handleOpenNotification,
   handleCloseNotification,
 } = useNotification()
+
+onMounted(async () => {
+  if (props.idea) {
+    const { id } = props.idea
+
+    await commentsStore.connectRsocket(id)
+  }
+})
 
 watch(commentsError, (error) => handleOpenNotification('error', error))
 
@@ -44,7 +51,6 @@ const { handleSubmit, resetForm } = useForm<Comment>({
   },
   initialValues: {
     comment: '',
-    sender: user.value?.email,
   },
 })
 
@@ -102,7 +108,6 @@ const onIntersectionObserver = async (
     isIntersecting
   ) {
     await handleCheckComment(comment.id)
-    console.log(`updated - ${comment.comment}`)
   }
 }
 </script>
@@ -113,7 +118,7 @@ const onIntersectionObserver = async (
       <Typography class-name="fs-6 px-3">Комментарии</Typography>
     </div>
 
-    <IdeaCommentsPlaceholder v-if="isLoading" />
+    <IdeaCommentsPlaceholder v-if="!rsocketIsConnected" />
     <div
       v-else
       class="d-grid gap-3 pt-3 px-3 w-100"
