@@ -78,33 +78,23 @@ function openGroupModal(id?: string) {
       groupModalTitle.value = 'Редактировать группу'
     }
   } else {
-    editingGroup.value = undefined
+    editingGroup.value = null
     groupModalTitle.value = 'Добавить группу'
   }
   isOpenedGroupModal.value = true
 }
 
-function saveGroup(newGroupOrSuccess?: UserGroup | string, success?: string): void {
-  isOpenedGroupModal.value = false
+function saveGroup(newGroup: UserGroup) {
+  groups.value.push(newGroup)
+}
 
-  if (typeof newGroupOrSuccess === 'object') {
-    const { id, name, users } = newGroupOrSuccess
-    const newGroupData: UserGroup = {
-      id,
-      name: name,
-      users: users,
-    }
+function deleteGroup(id: string) {
+  groups.value = groups.value.filter((group) => group.id !== id)
+}
 
-    groups.value.forEach((group, index) => {
-      if (group.id === id) {
-        groups.value.splice(index, 1, newGroupData)
-      }
-    })
-  }
-
-  if (success) {
-    handleOpenNotification('success', success)
-  }
+function editGroup(userGroup: UserGroup) {
+  const groupIndex = groups.value.findIndex((group) => group.id === userGroup.id)
+  groups.value.splice(groupIndex, 1, userGroup)
 }
 </script>
 
@@ -128,16 +118,6 @@ function saveGroup(newGroupOrSuccess?: UserGroup | string, success?: string): vo
           </Button>
         </template>
       </Input>
-      <!-- <div v-if="isOpenedAddGroup">
-        <AddUsersGroup
-          :isOpened="isOpenedGroupModal"
-          :currentAddUsersGroup="currentAddUsersGroup"
-          @close-modal="closeAddGroupModal"
-          :usersarray="usersarray"
-          v-model="usersGroup"
-        >
-        </AddUsersGroup> 
-      </div> -->
     </div>
     <div class="users-group-form__content w-100">
       <div
@@ -159,6 +139,8 @@ function saveGroup(newGroupOrSuccess?: UserGroup | string, success?: string): vo
         :editing-group="editingGroup"
         @close-modal="closeGroupModal"
         @save-group="saveGroup"
+        @delete-group="deleteGroup"
+        @edit-group="editGroup"
         :group-modal-title="groupModalTitle"
       >
       </AddUsersGroup>

@@ -40,9 +40,10 @@ const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
 const editUsersGroup = async (
   usersData: UserGroup,
   token: string,
+  id: string,
 ): Promise<Success | Error> => {
   return await axios
-    .post(`${MANAGE_GROUPS_URL}/update`, usersData, {
+    .put(`${MANAGE_GROUPS_URL}/update/${id}`, usersData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -55,10 +56,29 @@ const editUsersGroup = async (
     })
 }
 
+const deleteUsersGroup = async (
+  usersData: UserGroup,
+  token: string,
+  id: string,
+): Promise<Success | Error> => {
+  return await axios
+    .delete(`${MANAGE_GROUPS_URL}/delete/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка удаления группы пользователей'
+      return new Error(error)
+    })
+}
+
 const GroupService = {
   createUsersGroup,
   getUsersGroups,
   editUsersGroup,
+  deleteUsersGroup,
 }
 
 export default GroupService

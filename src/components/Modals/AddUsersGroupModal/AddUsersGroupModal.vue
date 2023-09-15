@@ -29,9 +29,9 @@ const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
 
-const selectedUsers = ref<User[]>([])
-
 const unselectedUsers = ref<User[]>([])
+
+const editGroup = ref<UserGroup>()
 
 const {
   notificationOptions,
@@ -39,8 +39,6 @@ const {
   handleOpenNotification,
   handleCloseNotification,
 } = useNotification()
-
-const { push, remove } = useFieldArray<User>('user')
 
 onMounted(async () => {
   const currentUser = user.value
@@ -57,51 +55,21 @@ onMounted(async () => {
   }
 })
 
-// const selectUser = (user: any) => {
-//   selectedUsers.value.push(user)
-//   unselectedUsers.splice(unselectedUsers.indexOf(user), 1)
-// }
-
-// const unselectUser = (user: any) => {
-//   selectedUsers.value.splice(selectedUsers.value.indexOf(user), 1)
-//   unselectedUsers.push(user)
-// }
-
-const { setValues, handleSubmit } = useForm<UserGroup>({
+const { setValues, handleSubmit, values } = useForm<UserGroup>({
   validationSchema: {
     name: (value: string) => value?.length > 0 || 'Поле не заполнено',
     users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
   },
 })
 
-// watch(
-//   () => props.editingGroup,
-//   (editingGroup) => {
-//     if (editingGroup && editingGroup.newName) {
-//       setFieldValue('name', editingGroup.newName)
-//     }
-//   },
-// )
+const { fields, push, remove } = useFieldArray<User>('users')
 
-// watch(
-//   () => props.isOpened,
-//   () => console.log(1),
-// )
-
-//юзеров подгрузили вначале, когда создать группы модал, сработал вотч, сработало добавить группу тайтл,
-//потом в модалке селектед и не селектед, создаем группу, если добавить группу, то не селектед, то unselected = users, selected = [],
-//второе условие: когда происходит редактирование, передаем группу в едитинг групп, в форме вытаскивали сетвельюс функция, надо взять ее и туда через ... пропс.едитинггрупп
-//форма заполнилась
-//селектед сразу присвоить едининггрупп.юзерс, анселектед фильтр по массиву(по пользователям)
-//надо сделать две кнопки, по условию выводить:и если тайтл добавить, то добавть, если редактировать - редактировать, у каждой кнопки своя функция
-//написать сервис для функции редактирования
-//написать хендледит функцию по хендлсабмит, хендлкриейт типа того же
 watch(
   () => props.editingGroup,
   (editingGroup) => {
     if (editingGroup) {
       setValues({ ...editingGroup })
-      selectedUsers.value = editingGroup.users
+      editGroup.value = editingGroup
       unselectedUsers.value = users.value.filter((user) =>
         editingGroup.users?.every((groupUser) => groupUser.email !== user.email),
       )
@@ -111,37 +79,64 @@ watch(
         users: [],
       })
       unselectedUsers.value = users.value
-      selectedUsers.value = []
     }
   },
 )
 
+function selectUser(user: User, index: number) {
+  push(user)
+  unselectedUsers.value.splice(index, 1)
+}
+
+function unselectUser(user: User, index: number) {
+  remove(index)
+  unselectedUsers.value.push(user)
+}
+
 const handleCreate = handleSubmit(async (values) => {
   const currentUser = user.value
-
   if (currentUser?.token) {
     const { token } = currentUser
     const response = await GroupService.createUsersGroup(values, token)
+
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)
     }
     handleOpenNotification('success', response.success)
     emit('close-modal')
+    emit('save-group', values)
   }
 })
 
 const handleEdit = handleSubmit(async (values) => {
   const currentUser = user.value
-  if (currentUser?.token) {
+  if (currentUser?.token && editGroup.value) {
     const { token } = currentUser
-    const response = await GroupService.editUsersGroup(values, token)
+    const { id } = editGroup.value
+    const response = await GroupService.editUsersGroup(values, token, id)
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)
     }
     handleOpenNotification('success', response.success)
     emit('close-modal')
+    emit('edit-group', values)
   }
 })
+
+const handleDelete = async () => {
+  const currentUser = user.value
+  if (currentUser?.token && editGroup.value) {
+    const { token } = currentUser
+    const { id } = editGroup.value
+    const response = await GroupService.deleteUsersGroup(values, token, id)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
+    handleOpenNotification('success', response.success)
+    emit('close-modal')
+    emit('delete-group', values.id)
+  }
+}
 </script>
 
 <template>
@@ -170,16 +165,15 @@ const handleEdit = handleSubmit(async (values) => {
           >
           <div class="select-block border">
             <div
-              @click="selectUser(user)"
+              class="unselected-selected-usesrs"
               v-for="(user, index) in unselectedUsers"
               :key="index"
+              @click="selectUser(user, index)"
             >
-              <div class="unselected-selected-usesrs">
-                <Typography class-name="m-2 fs-6">
-                  {{ user.lastName }}
-                </Typography>
-                <Typography class-name="fs-6">{{ user.firstName }}</Typography>
-              </div>
+              <Typography class-name="m-2 fs-6">
+                {{ user.lastName }}
+              </Typography>
+              <Typography class-name="fs-6">{{ user.firstName }}</Typography>
             </div>
           </div>
         </div>
@@ -190,16 +184,15 @@ const handleEdit = handleSubmit(async (values) => {
           >
           <div class="select-block border">
             <div
-              @click="unselectUser(user)"
-              v-for="(user, index) in selectedUsers"
+              class="unselected-selected-usesrs"
+              v-for="(user, index) in fields"
               :key="index"
+              @click="unselectUser(user.value, index)"
             >
-              <div class="unselected-selected-usesrs">
-                <Typography class-name="m-2 fs-6">
-                  {{ user.lastName }}
-                </Typography>
-                <Typography class-name="fs-6">{{ user.firstName }}</Typography>
-              </div>
+              <Typography class-name="m-2 fs-6">
+                {{ user.value.lastName }}
+              </Typography>
+              <Typography class-name="fs-6">{{ user.value.firstName }}</Typography>
             </div>
           </div>
         </div>
@@ -207,14 +200,22 @@ const handleEdit = handleSubmit(async (values) => {
       <div v-if="groupModalTitle == 'Добавить группу'">
         <Button
           class-name="btn-primary w-100"
-          @click="handleCreate()"
+          @click="handleCreate"
           >Добавить</Button
         >
       </div>
-      <div v-if="groupModalTitle == 'Редактировать группу'">
+      <div
+        class="w-100 d-flex gap-2"
+        v-if="groupModalTitle == 'Редактировать группу'"
+      >
         <Button
-          class-name="btn-primary w-100"
-          @click="handleEdit()"
+          class-name="btn-danger w-50"
+          @click="handleDelete"
+          >Удалить</Button
+        >
+        <Button
+          class-name="btn-primary w-50"
+          @click="handleEdit"
           >Редактировать</Button
         >
       </div>
