@@ -27,7 +27,7 @@ interface ExpertConfirmation {
   budget: number
 }
 
-const marketValue = [
+const marketValueOptions = [
   { label: 'В идеи полостью описана рыночная ценность', value: 5 },
   { label: 'Инициатор плохо описал рыночную ценность', value: 4 },
   { label: 'Эксперт не увидел рыночной ценности идеи', value: 3 },
@@ -35,7 +35,7 @@ const marketValue = [
   { label: 'Эксперт понимает, что рыночной ценности нет', value: 1 },
 ]
 
-const originality = [
+const originalityOptions = [
   {
     label: 'Подобное решение не встречалось, эксперт полностью понимает инициатора',
     value: 5,
@@ -74,12 +74,12 @@ const ratingSelects: RatingSelect[] = [
   {
     name: 'marketValue',
     label: 'Рыночная ценность*',
-    options: marketValue,
+    options: marketValueOptions,
   },
   {
     name: 'originality',
     label: 'Уникальность*',
-    options: originality,
+    options: originalityOptions,
   },
   {
     name: 'technicalRealizability',

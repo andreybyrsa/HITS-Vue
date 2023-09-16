@@ -10,11 +10,7 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка авторизации'
-      return {
-        token: '2132313',
-        email: 'admin@mail.com',
-        roles: ['ADMIN'],
-      }
+      return new Error(error)
     })
 }
 

@@ -12,8 +12,7 @@ import {
 } from '@Components/Modals/DeleteIdeaModal/DeleteModal.types'
 
 import useUserStore from '@Store/user/userStore'
-
-import IdeasService from '@Services/IdeasService'
+import useIdeasStore from '@Store/ideas/ideasStore'
 
 const props = defineProps<DeleteModalProps>()
 
@@ -21,6 +20,9 @@ const emit = defineEmits<DeleteModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const ideaStore = useIdeasStore()
+const { ideas } = storeToRefs(ideaStore)
 
 const { enter } = useMagicKeys()
 
@@ -32,9 +34,12 @@ async function handleDeleteIdea() {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    await IdeasService.deleteInitiatorIdea(props.ideaId, token)
+    await ideaStore.deleteInitiatorIdea(props.ideaId, token)
+    if (ideas instanceof Error) {
+      return
+    }
+    // ДЕЛАЙ В СТОРЕ
     emit('close-modal')
-    window.location.reload()
   }
 }
 </script>

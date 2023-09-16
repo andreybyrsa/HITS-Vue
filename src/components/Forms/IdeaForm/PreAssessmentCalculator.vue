@@ -23,7 +23,7 @@ const preAssessmentPlaceholder = ref('вычисление')
 const currentPreAssessment = computed(() => {
   const { technicalRealizability, suitability, budget } = props.idea
   if (technicalRealizability && suitability && budget) {
-    return +((+technicalRealizability + +suitability + +budget) / 3).toFixed(1)
+    return +((technicalRealizability + suitability + budget) / 3).toFixed(1)
   }
 
   return NaN

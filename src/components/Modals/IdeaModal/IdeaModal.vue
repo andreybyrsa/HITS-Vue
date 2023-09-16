@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, VueElement } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import {
   IdeaModalProps,
@@ -14,17 +15,30 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
+import useCommentsStore from '@Store/comments/commentsStore'
+
 defineProps<IdeaModalProps>()
 
 const emit = defineEmits<IdeaModalEmits>()
 
+const commentStore = useCommentsStore()
+const { rsocketIsConnected, closeRsocket } = storeToRefs(commentStore)
+
 const ideaModalRef = ref<VueElement | null>(null)
+
+function closeIdeaModal() {
+  emit('close-modal')
+
+  if (rsocketIsConnected.value) {
+    closeRsocket.value()
+  }
+}
 </script>
 
 <template>
   <ModalLayout
     :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
+    @on-outside-close="closeIdeaModal"
   >
     <div
       class="idea-modal p-3 h-100 overflow-y-scroll"
@@ -33,7 +47,7 @@ const ideaModalRef = ref<VueElement | null>(null)
       <div class="idea-modal__left-side w-75">
         <IdeaDescription
           :idea="idea"
-          @close-modal="emit('close-modal')"
+          @close-modal="closeIdeaModal"
         />
 
         <IdeaActions :idea="(idea as Idea)" />

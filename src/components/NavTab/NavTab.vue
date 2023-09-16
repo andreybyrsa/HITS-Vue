@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import { NavTabProps } from '@Components/NavTab/NavTab.types'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 const props = defineProps<NavTabProps>()
 
@@ -36,7 +37,12 @@ const NavTabClassName = computed(() => [
         :class-name="`${iconName} fs-5`"
       />
 
-      {{ label }}
+      <Typography
+        v-if="label"
+        class-name="ms-2"
+      >
+        {{ label }}</Typography
+      >
     </router-link>
 
     <Collapse

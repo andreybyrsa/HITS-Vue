@@ -48,6 +48,14 @@ function handleSetFilters() {
   emit('set-filters', selectedFilters.value)
   emit('close-modal')
 }
+
+function handleAddFilters(filter: string) {
+  const repeatFilter = selectedFilters.value.find((e) => e == filter)
+  if (repeatFilter) {
+    const index = selectedFilters.value.indexOf(repeatFilter)
+    selectedFilters.value.splice(index, 1)
+  } else selectedFilters.value.push(filter)
+}
 </script>
 
 <template>
@@ -68,7 +76,8 @@ function handleSetFilters() {
         <div
           v-for="(filter, index) in filters"
           :key="index"
-          class="list-group-item"
+          class="list-group-item list-group-item-action"
+          @click="handleAddFilters(filter.value as string)"
         >
           <Checkbox
             name="checkbox"
