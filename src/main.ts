@@ -43,8 +43,9 @@ router.beforeEach((to) => {
     (userStore.user &&
       ['login', 'register', 'forgot-password', 'new-password'].includes(
         currentRoute,
-      )) ||
-    (path && !path.includes(currentRouteHatch))
+      )) 
+    //   ||
+    // (path && !path.includes(currentRouteHatch))
   ) {
     router.push('error')
   }
