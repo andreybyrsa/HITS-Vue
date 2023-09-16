@@ -20,6 +20,9 @@ import { useForm, useFieldArray } from 'vee-validate'
 import GroupService from '@Services/GroupsService'
 import ManageUsersService from '@Services/ManageUsersService'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import Select from '@Components/Inputs/Select/Select.vue'
+import FilterModal from '@Components/Modals/FilterModal/FilterModalGroupRoles.vue'
+import RolesTypes from '@Domain/Roles'
 
 const props = defineProps<AddUsersGroupModalProps>()
 const emit = defineEmits<AddUsersGroupModalEmits>()
@@ -160,9 +163,27 @@ const handleDelete = async () => {
   }
 }
 
-// const selectedUser = defineModel<UserGroup[]>('selectedUser', {
-//   required: true,
-// })
+const groupTypeOptions = [
+  { value: 'ProjectOfficeGroup', label: 'Группа проектого офиса' },
+  { value: 'ExpertsGroup', label: 'Группа экспертов' },
+  { value: 'UsersGroup', label: 'Группа пользователей' },
+]
+
+const selectedFilters = ref<RolesTypes[]>([])
+
+const isOpenedFilterModal = ref(false)
+
+function handleOpenFilterModal() {
+  isOpenedFilterModal.value = true
+}
+
+function handleCloseFilterModal() {
+  isOpenedFilterModal.value = false
+}
+
+function handleSetFilters(filters: RolesTypes[]) {
+  selectedFilters.value = filters
+}
 </script>
 
 <template>
@@ -191,7 +212,7 @@ const handleDelete = async () => {
           >
           <div class="select-block border">
             <div
-              class="unselected-selected-usesrs"
+              class="unselected-selected-usesrs shadow-sm rounded border"
               v-for="(user, index) in unselectedUsers"
               :key="index"
               @click="selectUser(user, index)"
@@ -200,25 +221,22 @@ const handleDelete = async () => {
                 {{ user.lastName }}
               </Typography>
               <Typography class-name="fs-6">{{ user.firstName }}</Typography>
-
-              <div class="unselected-selected-usesrs">
-                <!-- <Checkbox
-                  name="checkboxUser"
-                  :label="user.lastName + user.firstName"
-                  v-model="selectedUser"
-                  :value="user"
-                ></Checkbox> -->
-              </div>
             </div>
           </div>
         </div>
 
-        <div class="move-buttons m-2 flex-column">
+        <div class="move-buttons m-2 pt-4">
           <Button
-            prepend-icon-name="bi bi-arrow-left-right"
-            class-name="shadow-sm bg-light min-vh-10 mb-4"
+            prepend-icon-name="bi bi-funnel-fill text-light"
+            class-name="shadow-sm bg-primary min-vh-10 mb-4"
+            @click="handleOpenFilterModal"
           ></Button>
-          <Button class-name="shadow-sm bg-light min-vh-10">ALL</Button>
+          <FilterModal
+            :is-opened="isOpenedFilterModal"
+            @close-modal="handleCloseFilterModal"
+            @set-filters="handleSetFilters"
+            :current-filters="[selectedFilters]"
+          />
         </div>
 
         <div class="selectors">
@@ -227,7 +245,7 @@ const handleDelete = async () => {
           >
           <div class="select-block border">
             <div
-              class="unselected-selected-usesrs"
+              class="unselected-selected-usesrs shadow-sm rounded border"
               v-for="(user, index) in fields"
               :key="index"
               @click="unselectUser(user.value, index)"
@@ -239,6 +257,16 @@ const handleDelete = async () => {
             </div>
           </div>
         </div>
+      </div>
+      <div>
+        <Select
+          name="groupType"
+          validate-on-update
+          :options="groupTypeOptions"
+          label="Тип группы"
+          placeholder="Выберите тип группы"
+          prepend
+        ></Select>
       </div>
       <div v-if="groupModalTitle == 'Добавить группу'">
         <Button
@@ -338,7 +366,11 @@ const handleDelete = async () => {
   margin: 8px;
 }
 
+.unselected-selected-usesrs:hover {
+  background-color: rgb(240, 240, 240);
+}
+
 .move-buttons {
-  @include flexible(center, center, columns);
+  @include flexible(flex-start, center, columns);
 }
 </style>
