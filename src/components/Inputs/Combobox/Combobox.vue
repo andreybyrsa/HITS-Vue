@@ -1,379 +1,202 @@
-<script lang="ts" setup>
-import VueMultiselect from 'vue-multiselect'
+<script setup lang="ts" generic="OptionType">
+import { Ref, ref, computed, watch, VueElement } from 'vue'
+import { onClickOutside } from '@vueuse/core'
+import { useField } from 'vee-validate'
 
-import ComboboxProps from '@Components/Inputs/Combobox/Combobox.types'
-import Typography from '@Components/Typography/Typography.vue'
+import {
+  ComboboxProps,
+  SearchedOptionType,
+} from '@Components/Inputs/Combobox/Combobox.types'
+import Input from '@Components/Inputs/Input/Input.vue'
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import Radio from '@Components/Inputs/Radio/Radio.vue'
 
-const comboboxValue = defineModel<unknown[] | unknown>({
-  required: true,
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
+
+defineModel<OptionType | OptionType[]>({
+  required: false,
 })
 
-defineProps<ComboboxProps>()
+const props = defineProps<ComboboxProps<OptionType>>()
+const options = ref(props.options) as Ref<OptionType[]>
+
+const searchedValue = ref('')
+
+const choicesRef = ref<VueElement | null>(null)
+const isOpenedChoices = ref(false)
+
+const { value: selectedValue, errorMessage } = useField<OptionType | OptionType[]>(
+  () => props.name,
+  undefined,
+  {
+    syncVModel: true,
+  },
+)
+
+watch(
+  () => props.options,
+  (currentOptions) => (options.value = currentOptions),
+)
+
+function isMultiselect(
+  selectedValue: OptionType | OptionType[],
+): selectedValue is OptionType[] {
+  return selectedValue instanceof Array
+}
+
+function getCurrentOption(option: OptionType) {
+  if (props.displayBy) {
+    const label = props.displayBy.reduce(
+      (prevValue, key) => (prevValue += `${option[key]} `),
+      '',
+    )
+
+    return { label, option }
+  }
+
+  return { label: `${option}`, option }
+}
+
+const searchedOptions = computed(() => {
+  const currentSearchedValue = searchedValue.value.trim().toLocaleLowerCase()
+
+  return options.value.reduce<SearchedOptionType<OptionType>[]>(
+    (optionsArray, option) => {
+      const currentOption = getCurrentOption(option)
+
+      const isIncludesSeachedValue = currentOption.label
+        .trim()
+        .toLocaleLowerCase()
+        .includes(currentSearchedValue)
+
+      if (isIncludesSeachedValue) {
+        optionsArray.push(currentOption)
+      }
+
+      return optionsArray
+    },
+    [],
+  )
+})
+
+function selectOption(currentOption: OptionType) {
+  if (isMultiselect(selectedValue.value)) {
+    const selectedOptionIndex = selectedValue.value.findIndex(
+      (option) => option === currentOption,
+    )
+
+    if (selectedOptionIndex !== -1) {
+      return selectedValue.value.splice(selectedOptionIndex, 1)
+    }
+    return selectedValue.value.push(currentOption)
+  }
+
+  selectedValue.value = currentOption
+}
+
+function getComboboxPlaceholder() {
+  if (isMultiselect(selectedValue.value)) {
+    const selectedValueLength = selectedValue.value.length
+    return selectedValueLength > 0
+      ? `Выбрано ${selectedValueLength}`
+      : props.placeholder
+  }
+
+  return selectedValue.value
+    ? getCurrentOption(selectedValue.value).label
+    : props.placeholder
+}
+
+function focusCombobox() {
+  isOpenedChoices.value = true
+}
+
+onClickOutside(choicesRef, (event) => {
+  const elementeClassName = (event as PointerEvent & HTMLTargetEvent).target
+    .className
+  if (!elementeClassName.includes('combobox__search')) {
+    isOpenedChoices.value = false
+    searchedValue.value = ''
+  }
+})
 </script>
 
 <template>
-  <VueMultiselect
-    :options="options"
-    v-model="comboboxValue"
-    :placeholder="placeholder"
-    :allow-empty="required"
-    :multiple="multiple"
-    :close-on-select="closeOnSelect"
-  >
-    <template
-      v-if="selectionPlaceholder"
-      #selection
+  <div class="w-100">
+    <label
+      v-if="props.label"
+      class="form-label mb-2 text-primary"
     >
-      <Typography>
-        {{ selectionPlaceholder }}
-      </Typography>
-    </template>
-  </VueMultiselect>
+      {{ props.label }}
+    </label>
+
+    <div class="combobox">
+      <Input
+        :name="`search-${props.label}`"
+        class-name="combobox__search rounded-end"
+        v-model="searchedValue"
+        :error="errorMessage"
+        :placeholder="getComboboxPlaceholder()"
+        @focus="focusCombobox"
+      />
+
+      <div
+        v-if="isOpenedChoices"
+        ref="choicesRef"
+        class="combobox__choices list-group w-100"
+      >
+        <div
+          v-for="{ label, option } in searchedOptions"
+          :key="label"
+          class="combobox__choice list-group-item list-group-item-action"
+          @click="selectOption(option)"
+        >
+          <Checkbox
+            v-if="isMultiselect(selectedValue)"
+            :name="`checkbox-${label}`"
+            :label="label"
+            :value="option"
+            v-model="selectedValue"
+          />
+          <Radio
+            v-else
+            :name="`radio-${label}`"
+            :label="label"
+            :value="option"
+            v-model="selectedValue"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
-<style lang="scss">
-fieldset[disabled] .multiselect {
-  pointer-events: none;
-}
-
-.multiselect__spinner {
-  position: absolute;
-  right: 1px;
-  top: 1px;
-  width: 40px;
-  height: 38px;
-  background: #fff;
-  display: block;
-}
-
-.multiselect__spinner::before,
-.multiselect__spinner::after {
-  position: absolute;
-  content: '';
-  top: 50%;
-  left: 50%;
-  margin: -8px 0 0 -8px;
-  width: 16px;
-  height: 16px;
-  border-radius: 100%;
-  border-color: #2151ffb6 transparent transparent;
-  border-style: solid;
-  border-width: 2px;
-  box-shadow: 0 0 0 1px transparent;
-}
-
-.multiselect__spinner::before {
-  animation: spinning 2.4s cubic-bezier(0.41, 0.26, 0.2, 0.62);
-  animation-iteration-count: infinite;
-}
-
-.multiselect__spinner::after {
-  animation: spinning 2.4s cubic-bezier(0.51, 0.09, 0.21, 0.8);
-  animation-iteration-count: infinite;
-}
-
-.multiselect,
-.multiselect__input,
-.multiselect__single {
-  font-family: inherit;
-  font-size: 16px;
-  touch-action: manipulation;
-}
-
-.multiselect {
-  box-sizing: content-box;
-  display: block;
+<style lang="scss" scoped>
+.combobox {
   position: relative;
-  width: 100%;
-  min-height: 40px;
-  text-align: left;
-  color: #35495e;
-}
 
-.multiselect * {
-  box-sizing: border-box;
-}
+  &__placeholder {
+    @include position(absolute, 0, 0, 0, 12px);
 
-.multiselect:focus {
-  outline: none;
-}
+    border-radius: 6px;
 
-.multiselect--disabled {
-  background: #ededed;
-  pointer-events: none;
-  opacity: 0.6;
-}
+    @include flexible(center, flex-start);
+  }
 
-.multiselect--active {
-  z-index: 50;
-}
+  &__choices {
+    @include position(absolute, $top: 42px, $z-index: 5);
 
-.multiselect--active:not(.multiselect--above) .multiselect__current,
-.multiselect--active:not(.multiselect--above) .multiselect__input,
-.multiselect--active:not(.multiselect--above) .multiselect__tags {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
+    max-height: 173px;
 
-.multiselect--active .multiselect__select {
-  transform: rotateZ(180deg);
-}
+    overflow-y: scroll;
+  }
 
-.multiselect--above.multiselect--active .multiselect__current,
-.multiselect--above.multiselect--active .multiselect__input,
-.multiselect--above.multiselect--active .multiselect__tags {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
+  &__choice {
+    padding: 8px 12px;
 
-.multiselect__input:hover,
-.multiselect__single:hover {
-  border-color: #cfcfcf;
-}
+    cursor: pointer;
 
-.multiselect__input:focus,
-.multiselect__single:focus {
-  border-color: #a8a8a8;
-  outline: none;
-}
-
-.multiselect__single {
-  padding-left: 5px;
-  margin-bottom: 8px;
-}
-
-.multiselect__tags-wrap {
-  display: inline;
-}
-
-.multiselect__tags {
-  min-height: 40px;
-  display: block;
-  padding: 8px 40px 0 8px;
-  border-radius: 5px;
-  border: 1px solid #e8e8e8;
-  background: #fff;
-  font-size: 14px;
-}
-
-.multiselect__tag-icon {
-  cursor: pointer;
-  margin-left: 7px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  font-weight: 700;
-  font-style: initial;
-  width: 22px;
-  text-align: center;
-  line-height: 22px;
-  transition: all 0.2s ease;
-  border-radius: 5px;
-}
-
-.multiselect__tag-icon:focus::after,
-.multiselect__tag-icon:hover::after {
-  color: white;
-}
-
-.multiselect__current {
-  line-height: 16px;
-  min-height: 40px;
-  box-sizing: border-box;
-  display: block;
-  overflow: hidden;
-  padding: 8px 12px 0;
-  padding-right: 30px;
-  white-space: nowrap;
-  margin: 0;
-  text-decoration: none;
-  border-radius: 5px;
-  border: 1px solid #e8e8e8;
-  cursor: pointer;
-}
-
-.multiselect__select {
-  line-height: 16px;
-  display: block;
-  position: absolute;
-  box-sizing: border-box;
-  width: 40px;
-  height: 38px;
-  right: 1px;
-  top: 1px;
-  padding: 4px 8px;
-  margin: 0;
-  text-decoration: none;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.multiselect__select::before {
-  position: relative;
-  right: 0;
-  top: 65%;
-  color: #999;
-  margin-top: 4px;
-  border-style: solid;
-  border-width: 5px 5px 0 5px;
-  border-color: #999 transparent transparent transparent;
-  content: '';
-}
-
-.multiselect__placeholder {
-  color: #adadad;
-  display: inline-block;
-  margin-bottom: 10px;
-  padding-top: 2px;
-}
-
-.multiselect--active .multiselect__placeholder {
-  display: none;
-}
-
-.multiselect__content-wrapper {
-  position: absolute;
-  display: block;
-  background: #fff;
-  width: 100%;
-  max-height: 240px;
-  overflow: auto;
-  border: 1px solid #e8e8e8;
-  border-top: none;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  z-index: 50;
-  -webkit-overflow-scrolling: touch;
-}
-
-.multiselect__content {
-  list-style: none;
-  display: inline-block;
-  padding: 0;
-  margin: 0;
-  min-width: 100%;
-  vertical-align: top;
-}
-
-.multiselect--above .multiselect__content-wrapper {
-  bottom: 100%;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  border-bottom: none;
-  border-top: 1px solid #e8e8e8;
-}
-
-.multiselect__content::-webkit-scrollbar {
-  display: none;
-}
-
-.multiselect__element {
-  display: block;
-}
-
-.multiselect__option {
-  display: block;
-  padding: 12px;
-  min-height: 40px;
-  line-height: 16px;
-  text-decoration: none;
-  text-transform: none;
-  position: relative;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.multiselect__option::after {
-  top: 0;
-  right: 0;
-  position: absolute;
-  line-height: 40px;
-  padding-right: 12px;
-  padding-left: 20px;
-  font-size: 13px;
-}
-
-.multiselect__option--highlight {
-  background: #2151ffb6;
-  outline: none;
-  color: white;
-}
-
-.multiselect__option--highlight::after {
-  content: 'Нажмите, чтобы выбрать';
-  background: #2151ffb6;
-  color: white;
-}
-
-.multiselect__option--selected {
-  background: #f3f3f3;
-  color: #35495e;
-  font-weight: bold;
-}
-
-.multiselect__option--selected::after {
-  content: 'Выбрано';
-  color: silver;
-  background: inherit;
-}
-
-.multiselect__option--selected.multiselect__option--highlight {
-  background: #2151ff;
-  color: #fff;
-}
-
-.multiselect__option--selected.multiselect__option--highlight::after {
-  background: #2151ff;
-  color: #fff;
-}
-
-.multiselect--disabled .multiselect__current,
-.multiselect--disabled .multiselect__select {
-  background: #ededed;
-  color: #a6a6a6;
-}
-
-.multiselect__option--disabled {
-  background: #ededed !important;
-  color: #a6a6a6 !important;
-  cursor: text;
-  pointer-events: none;
-}
-
-.multiselect__option--group {
-  background: #ededed;
-  color: #35495e;
-}
-
-.multiselect__option--group.multiselect__option--highlight {
-  background: #35495e;
-  color: #fff;
-}
-
-.multiselect__option--group.multiselect__option--highlight::after {
-  background: #35495e;
-}
-
-.multiselect__option--disabled.multiselect__option--highlight {
-  background: #dedede;
-}
-
-.multiselect__option--group-selected.multiselect__option--highlight {
-  background: #2151ffb6;
-  color: #fff;
-}
-
-.multiselect__option--group-selected.multiselect__option--highlight::after {
-  background: #2151ffb6;
-  color: #fff;
-}
-
-.multiselect-enter-active,
-.multiselect-leave-active {
-  transition: all 0.15s ease;
+    @include flexible(center, flex-start);
+  }
 }
 </style>

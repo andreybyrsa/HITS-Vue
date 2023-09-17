@@ -1,12 +1,16 @@
-interface ComboboxProps {
-  options: unknown[]
+interface ComboboxProps<OptionType> {
+  name: string
 
+  options: OptionType[]
+  displayBy?: (keyof OptionType)[]
+
+  label?: string
   placeholder?: string
-  selectionPlaceholder?: string
-
-  multiple?: boolean
-  required?: boolean
-  closeOnSelect?: boolean
 }
 
-export default ComboboxProps
+interface SearchedOptionType<OptionType> {
+  label: string
+  option: OptionType
+}
+
+export { ComboboxProps, SearchedOptionType }
