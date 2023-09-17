@@ -11,7 +11,6 @@ import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCal
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
 import IdeaFormSubmit from '@Components/Forms/IdeaForm/IdeaFormSubmit.vue'
-import StackTechnologies from '@Components/Forms/IdeaForm/StackTechnologies.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
@@ -37,18 +36,11 @@ const {
   handleCloseNotification,
 } = useNotification()
 
-const stackTechnologies = ref({
-  stack: props.idea?.stack ?? [],
-})
-const customerAndContact = ref({
-  customer: props.idea?.customer ?? 'ВШЦТ',
-  contactPerson: props.idea?.contactPerson ?? 'ВШЦТ',
-})
 const preAssessment = ref({
   preAssessment: props.idea?.preAssessment ?? 1,
 })
 
-const { values, handleSubmit } = useForm<Idea>({
+const { values, setFieldValue, handleSubmit } = useForm<Idea>({
   validationSchema: {
     name: (value: string) => value?.length > 0 || 'Поле не заполнено',
     projectType: (value: string) => value?.length > 0 || 'Поле не заполнено',
@@ -57,20 +49,23 @@ const { values, handleSubmit } = useForm<Idea>({
     result: (value: string) => value?.length > 0 || 'Поле не заполнено',
     description: (value: string) => value?.length > 0 || 'Поле не заполнено',
 
+    customer: (value: string) => value?.length > 0 || 'Поле не заполнено',
+    contactPerson: (value: string) => value?.length > 0 || 'Поле не заполнено',
+
     technicalRealizability: (value: number) =>
       (value && value > 0) || 'Поле не заполнено',
     suitability: (value: number) => (value && value > 0) || 'Поле не заполнено',
     budget: (value: number) => (value && value > 0) || 'Поле не заполнено',
   },
   initialValues: {
+    customer: 'ВШЦТ',
+    contactPerson: 'ВШЦТ',
     ...props.idea,
   },
 })
 
 const currentIdea = computed(() => ({
   ...values,
-  ...stackTechnologies.value,
-  ...customerAndContact.value,
   ...preAssessment.value,
 }))
 
@@ -112,6 +107,7 @@ const handleUpdateIdea = handleSubmit(async () => {
 
 <template>
   <FormLayout class-name="w-100 h-100 overflow-auto">
+    {{ values }}
     <Typography class-name="fs-2 text-primary">
       {{ title }}
     </Typography>
@@ -119,9 +115,10 @@ const handleUpdateIdea = handleSubmit(async () => {
     <div class="w-75 d-flex flex-column gap-3">
       <IdeaFormInputs />
 
-      <StackTechnologies v-model="stackTechnologies.stack" />
-
-      <CustomerAndContact v-model="customerAndContact" />
+      <CustomerAndContact
+        :idea="values"
+        @set-value="setFieldValue"
+      />
 
       <PreAssessmentCalculator
         :idea="values"
