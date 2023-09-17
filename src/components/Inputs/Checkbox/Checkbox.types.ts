@@ -6,7 +6,7 @@ interface CheckboxProps {
 
   label?: string
 
-  value?: number | string | boolean
+  value?: unknown
 
   error?: string
 }

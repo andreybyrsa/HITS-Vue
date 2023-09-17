@@ -6,7 +6,7 @@ interface RadioProps {
 
   label?: string
 
-  value?: string | number | boolean
+  value?: unknown
 
   error?: string
 }
