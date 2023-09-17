@@ -1,66 +1,41 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import {
-  AddUsersGroupModalProps,
-  AddUsersGroupModalEmits,
-} from '@Components/Modals/AddUsersGroupModal/AddUsersGroupModal.types'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import AddUsersGroup from '@Components/Modals/AddUsersGroupModal/AddUsersGroupModal.vue'
+import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
+import UserGroup from '@Domain/Group'
 
 import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
-import { UserGroup } from '@Domain/Group'
-
-import { User } from '@Domain/User'
-
 import GroupService from '@Services/GroupsService'
 
-import { useForm, useFieldArray } from 'vee-validate'
+import getRoles from '@Utils/getRoles'
 
-import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-
-const emit = defineEmits<AddUsersGroupModalEmits>()
+const roles = getRoles()
 
 const searchedValue = ref('')
 
-const currentOpenedDeleteIdea = ref('')
-
-const isOpenedIdeaDeleteModal = ref(false)
-
-const isOpenedGroupModal = ref(false)
-
 const userStore = useUserStore()
-
 const { user } = storeToRefs(userStore)
 
-const editGroup = ref<UserGroup>()
-
 const groups = ref<UserGroup[]>([])
-const editingGroup = ref<UserGroup>()
+const groupModalTitle = ref('Добавить группу')
+const openedGroup = ref<UserGroup>()
+const isOpenedGroupModal = ref(false)
 
-const groupModalTitle = ref()
+const currentGroupId = ref('')
+const isOpenedDeleteModal = ref(false)
 
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
-
-const { setValues, handleSubmit, values } = useForm<UserGroup>({
-  validationSchema: {
-    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
-  },
-})
+const { handleOpenNotification } = useNotification()
 
 onMounted(async () => {
   const currentUser = user.value
@@ -78,79 +53,60 @@ onMounted(async () => {
 })
 
 const searchedGroup = computed(() => {
-  return groups.value.filter((users) => {
-    const groupName = users.name?.toLowerCase().trim()
-    const currentSearchedValue = searchedValue.value?.toLowerCase().trim()
+  return groups.value.filter((group) => {
+    const groupName = group.name.trim().toLowerCase()
+    const currentSearchedValue = searchedValue.value.trim().toLowerCase()
 
-    const isIncludesSearcheValue =
-      groupName && groupName.includes(currentSearchedValue)
-
-    return isIncludesSearcheValue
+    return groupName.includes(currentSearchedValue)
   })
 })
+
+function openCreateGroupModal() {
+  openedGroup.value = { id: '', name: '', users: [], role: 'INITIATOR' }
+  groupModalTitle.value = 'Добавить группу'
+  isOpenedGroupModal.value = true
+}
+
+function openEditGroupModal(group: UserGroup) {
+  openedGroup.value = { ...group }
+  groupModalTitle.value = 'Редактировать группу'
+  isOpenedGroupModal.value = true
+}
 
 function closeGroupModal() {
   isOpenedGroupModal.value = false
 }
 
-function openGroupModal(id?: string) {
-  if (id) {
-    const currentSelectedGroup = groups.value.find((group) => group.id == id)
-    if (currentSelectedGroup) {
-      editingGroup.value = {
-        ...currentSelectedGroup,
-      }
-      groupModalTitle.value = 'Редактировать группу'
-    }
-  } else {
-    editingGroup.value = null
-    groupModalTitle.value = 'Добавить группу'
-  }
-  isOpenedGroupModal.value = true
-}
-
-function saveGroup(newGroup: UserGroup) {
-  groups.value.push(newGroup)
-}
-
-function deleteGroup(id: string) {
-  isOpenedIdeaDeleteModal.value = true
-  currentOpenedDeleteIdea.value = id
-  // groups.value = groups.value.filter((group) => group.id !== id)
-}
-
-function editCurrentGroup(userGroup: UserGroup) {
-  const groupIndex = groups.value.findIndex((group) => group.id === userGroup.id)
-  groups.value.splice(groupIndex, 1, userGroup)
-}
-
-const handleDelete = async () => {
-  isOpenedIdeaDeleteModal.value = true
-  const currentUser = user.value
-  if (currentUser?.token && editGroup.value) {
-    const { token } = currentUser
-    const { id } = editGroup.value
-    const response = await GroupService.deleteUsersGroup(values, token, id)
-    if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
-    }
-    handleOpenNotification('success', response.success)
-    emit('close-modal')
-    emit('delete-group', values.id)
-  }
+function openDeleteGroupModal(id: string) {
+  isOpenedDeleteModal.value = true
+  currentGroupId.value = id
 }
 
 function handleCloseDeleteModal() {
-  isOpenedIdeaDeleteModal.value = false
+  isOpenedDeleteModal.value = false
 }
-console.log(searchedGroup)
+
+const handleDelete = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await GroupService.deleteUsersGroup(currentGroupId.value, token)
+
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
+
+    groups.value = groups.value.filter((group) => group.id !== currentGroupId.value)
+  }
+}
 </script>
 
 <template>
   <FormLayout class-name="users-group-form p-3 w-100 h-100 bg-white">
-    <Typography class-name="fs-3 text-primary text-center w-100"
-      >Группы пользователей</Typography
-    >
+    <Typography class-name="fs-3 text-primary text-center w-100">
+      Группы пользователей
+    </Typography>
     <div class="w-50">
       <Input
         name="search"
@@ -160,13 +116,15 @@ console.log(searchedGroup)
         <template #append>
           <Button
             class-name="px-2 py-0"
-            @click="() => openGroupModal()"
+            @click="openCreateGroupModal"
             prepend-icon-name="bi bi-plus-lg"
-            >Добавить группу
+          >
+            Добавить группу
           </Button>
         </template>
       </Input>
     </div>
+
     <div class="users-group-form__content w-100">
       <div
         v-for="(group, index) in searchedGroup"
@@ -177,32 +135,32 @@ console.log(searchedGroup)
           <Typography class-name="text-primary fs-4 ">
             {{ group.name }}
           </Typography>
-          <Typography class-name="fs-6 ">{{ group.groupType }}</Typography>
+          <Typography class-name="fs-6">
+            {{ roles.translatedRoles[group.role] }}
+          </Typography>
         </div>
 
         <Button
-          class-name="users-group-form__edit-btn "
+          class-name="users-group-form__edit-btn"
           prepend-icon-name="bi bi-pencil-square text-primary"
-          @click="openGroupModal(group.id)"
+          @click="openEditGroupModal(group)"
         ></Button>
         <Button
-          @click="deleteGroup(group.id)"
+          @click="openDeleteGroupModal(group.id)"
           prepend-icon-name="bi bi-trash-fill text-danger"
         ></Button>
       </div>
       <DeleteModal
-        :is-opened="isOpenedIdeaDeleteModal"
-        @close-modal="handleCloseDeleteModal"
+        :is-opened="isOpenedDeleteModal"
         @delete="handleDelete"
+        @close-modal="handleCloseDeleteModal"
       />
       <AddUsersGroup
         :isOpened="isOpenedGroupModal"
-        :editing-group="editingGroup"
-        @close-modal="closeGroupModal"
-        @save-group="saveGroup"
-        @delete-group="deleteGroup"
-        @edit-group="editCurrentGroup"
         :group-modal-title="groupModalTitle"
+        :opened-group="openedGroup"
+        v-model="groups"
+        @close-modal="closeGroupModal"
       >
       </AddUsersGroup>
     </div>

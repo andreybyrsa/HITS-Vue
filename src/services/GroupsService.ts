@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import Success from '@Domain/ResponseMessage'
-import { UserGroup } from '@Domain/Group'
+import UserGroup from '@Domain/Group'
 
 const MANAGE_GROUPS_URL =
   process.env.VUE_APP_MANAGE_GROUPS_API_URL || 'http://localhost:3000'
@@ -9,7 +9,7 @@ const MANAGE_GROUPS_URL =
 const createUsersGroup = async (
   usersData: UserGroup,
   token: string,
-): Promise<Success | Error> => {
+): Promise<UserGroup | Error> => {
   return await axios
     .post(`${MANAGE_GROUPS_URL}/add`, usersData, {
       headers: {
@@ -58,9 +58,8 @@ const editUsersGroup = async (
 }
 
 const deleteUsersGroup = async (
-  usersData: UserGroup,
-  token: string,
   id: string,
+  token: string,
 ): Promise<Success | Error> => {
   return await axios
     .delete(`${MANAGE_GROUPS_URL}/delete/${id}`, {
