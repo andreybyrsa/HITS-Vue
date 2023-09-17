@@ -4,15 +4,17 @@ import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
 import {
-  FilterModalProps,
-  FilterModalEmits,
-} from '@Components/Modals/FilterModal/FilterModal.types'
+  GroupTypesFilterModalProps,
+  GroupTypesFilterModalEmits,
+} from '@Components/Modals/GroupTypesFilterModal/GroupTypesFilterModal.types'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
+
+import RolesTypes from '@Domain/Roles'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -31,11 +33,11 @@ const filters = [
     value: 'EXPERT',
   },
 ]
-const selectedFilters = ref<string[]>([])
+const selectedFilters = ref<RolesTypes[]>([])
 
-const props = defineProps<FilterModalProps>()
+const props = defineProps<GroupTypesFilterModalProps>()
 
-const emit = defineEmits<FilterModalEmits>()
+const emit = defineEmits<GroupTypesFilterModalEmits>()
 
 watch(
   () => props.currentFilters,

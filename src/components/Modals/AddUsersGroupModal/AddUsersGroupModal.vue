@@ -19,9 +19,9 @@ import useNotification from '@Hooks/useNotification'
 import { useForm, useFieldArray } from 'vee-validate'
 import GroupService from '@Services/GroupsService'
 import ManageUsersService from '@Services/ManageUsersService'
-import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+//import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
-import FilterModal from '@Components/Modals/FilterModal/FilterModalGroupRoles.vue'
+import GroupTypesFilterModal from '../GroupTypesFilterModal/GroupTypesFilterModal.vue'
 import RolesTypes from '@Domain/Roles'
 
 const props = defineProps<AddUsersGroupModalProps>()
@@ -35,27 +35,6 @@ const { user } = storeToRefs(userStore)
 
 const unselectedUsers = ref<User[]>([])
 
-// const selectedUsers = ref<User[]>([])
-
-// const unselectedUsers = ref<User[]>([
-//   {
-//     token:
-//       'eyJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiQURNSUCJJTklUSUFUT1IiXSwic3ViIjoiZmhqdkBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkzOTI0MTQ4LCJleHAiOjE2OTQwMTA1NDh9.m8ubC0ekCqmbHNBWEgPX4By5lVQ_F7F-ZlA2YFh-Mmw',
-//     email: 'fhv@mail.com',
-//     lastName: 'Че',
-//     firstName: 'Пользователь',
-//     roles: ['ADMIN', 'INITIATOR'],
-//   },
-//   {
-//     token:
-//       'eyJhbGciOiJIUzI1NiJ9.eyzY29wZXMiOlsiQURNSU4iLCJJTklUSUFUT1IiXSwic3ViIjoiZmhqdkBtYWlsLmNvbSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiaWF0IjoxNjkzOTI0MTQ4LCJleHAiOjE2OTQwMTA1NDh9.m8ubC0ekCqmbHNBWEgPX4By5lVQ_F7F-ZlA2YFh-Mmw',
-//     email: 'fhjvv@mail.com',
-//     lastName: 'Четный',
-//     firstName: 'Пользователь1',
-//     roles: ['ADMIN', 'INITIATOR'],
-//   },
-// ])
-
 const editGroup = ref<UserGroup>()
 
 const {
@@ -67,15 +46,12 @@ const {
 
 onMounted(async () => {
   const currentUser = user.value
-
   if (currentUser?.token) {
     const { token } = currentUser
     const responseUsers = await ManageUsersService.getUsers(token)
-
     if (responseUsers instanceof Error) {
       return handleOpenNotification('error', responseUsers.message)
     }
-
     users.value = responseUsers
   }
 })
@@ -102,6 +78,7 @@ watch(
       setValues({
         name: '',
         users: [],
+        groupType: '',
       })
       unselectedUsers.value = users.value
     }
@@ -116,6 +93,44 @@ function selectUser(user: User, index: number) {
 function unselectUser(user: User, index: number) {
   remove(index)
   unselectedUsers.value.push(user)
+}
+
+const groupTypeOptions = [
+  { value: 'ProjectOfficeGroup', label: 'Группа проектого офиса' },
+  { value: 'ExpertsGroup', label: 'Группа экспертов' },
+  { value: 'UsersGroup', label: 'Группа пользователей' },
+]
+
+const selectedFilters = ref<RolesTypes[]>([])
+
+const isOpenedFilterModal = ref(false)
+
+function handleOpenFilterModal() {
+  isOpenedFilterModal.value = true
+}
+
+function handleCloseFilterModal() {
+  isOpenedFilterModal.value = false
+}
+
+function handleSetFilters(filters: RolesTypes[]) {
+  selectedFilters.value = filters
+}
+
+function usersRolesFilter(usersData: User[]) {
+  if (selectedFilters.value.length) {
+    const dataFilter: User[] = []
+    usersData?.forEach((elem) => {
+      const hasSelectedRole = selectedFilters.value.some((filter) =>
+        elem.roles?.includes(filter),
+      )
+      if (hasSelectedRole) {
+        dataFilter.push(elem)
+      }
+    })
+    return dataFilter
+  }
+  return usersData
 }
 
 const handleCreate = handleSubmit(async (values) => {
@@ -162,28 +177,6 @@ const handleDelete = async () => {
     emit('delete-group', values.id)
   }
 }
-
-const groupTypeOptions = [
-  { value: 'ProjectOfficeGroup', label: 'Группа проектого офиса' },
-  { value: 'ExpertsGroup', label: 'Группа экспертов' },
-  { value: 'UsersGroup', label: 'Группа пользователей' },
-]
-
-const selectedFilters = ref<RolesTypes[]>([])
-
-const isOpenedFilterModal = ref(false)
-
-function handleOpenFilterModal() {
-  isOpenedFilterModal.value = true
-}
-
-function handleCloseFilterModal() {
-  isOpenedFilterModal.value = false
-}
-
-function handleSetFilters(filters: RolesTypes[]) {
-  selectedFilters.value = filters
-}
 </script>
 
 <template>
@@ -213,7 +206,8 @@ function handleSetFilters(filters: RolesTypes[]) {
           <div class="select-block border">
             <div
               class="unselected-selected-usesrs shadow-sm rounded border"
-              v-for="(user, index) in unselectedUsers"
+              v-for="(user, index) in usersRolesFilter(unselectedUsers) ||
+              unselectedUsers"
               :key="index"
               @click="selectUser(user, index)"
             >
@@ -231,11 +225,11 @@ function handleSetFilters(filters: RolesTypes[]) {
             class-name="shadow-sm bg-primary min-vh-10 mb-4"
             @click="handleOpenFilterModal"
           ></Button>
-          <FilterModal
+          <GroupTypesFilterModal
             :is-opened="isOpenedFilterModal"
             @close-modal="handleCloseFilterModal"
             @set-filters="handleSetFilters"
-            :current-filters="[selectedFilters]"
+            :current-filters="[...selectedFilters]"
           />
         </div>
 
