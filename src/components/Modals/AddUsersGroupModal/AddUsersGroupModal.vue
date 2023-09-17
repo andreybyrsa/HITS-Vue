@@ -60,6 +60,7 @@ const { setValues, handleSubmit, values } = useForm<UserGroup>({
   validationSchema: {
     name: (value: string) => value?.length > 0 || 'Поле не заполнено',
     users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
+    role: (value: string) => value?.length > 0 || 'Выберите тип группы',
   },
 })
 
@@ -78,7 +79,6 @@ watch(
       setValues({
         name: '',
         users: [],
-        groupType: '',
       })
       unselectedUsers.value = users.value
     }
@@ -96,9 +96,9 @@ function unselectUser(user: User, index: number) {
 }
 
 const groupTypeOptions = [
-  { value: 'ProjectOfficeGroup', label: 'Группа проектого офиса' },
-  { value: 'ExpertsGroup', label: 'Группа экспертов' },
-  { value: 'UsersGroup', label: 'Группа пользователей' },
+  { value: 'PROJECT_OFFICE', label: 'Группа проектого офиса' },
+  { value: 'EXPERT', label: 'Группа экспертов' },
+  { value: 'INITIATOR', label: 'Группа пользователей' },
 ]
 
 const selectedFilters = ref<RolesTypes[]>([])
@@ -254,7 +254,7 @@ const handleDelete = async () => {
       </div>
       <div>
         <Select
-          name="groupType"
+          name="role"
           validate-on-update
           :options="groupTypeOptions"
           label="Тип группы"

@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import {
+  AddUsersGroupModalProps,
+  AddUsersGroupModalEmits,
+} from '@Components/Modals/AddUsersGroupModal/AddUsersGroupModal.types'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -15,15 +19,29 @@ import useUserStore from '@Store/user/userStore'
 
 import { UserGroup } from '@Domain/Group'
 
+import { User } from '@Domain/User'
+
 import GroupService from '@Services/GroupsService'
 
+import { useForm, useFieldArray } from 'vee-validate'
+
+import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+
+const emit = defineEmits<AddUsersGroupModalEmits>()
+
 const searchedValue = ref('')
+
+const currentOpenedDeleteIdea = ref('')
+
+const isOpenedIdeaDeleteModal = ref(false)
 
 const isOpenedGroupModal = ref(false)
 
 const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
+
+const editGroup = ref<UserGroup>()
 
 const groups = ref<UserGroup[]>([])
 const editingGroup = ref<UserGroup>()
@@ -36,6 +54,13 @@ const {
   handleOpenNotification,
   handleCloseNotification,
 } = useNotification()
+
+const { setValues, handleSubmit, values } = useForm<UserGroup>({
+  validationSchema: {
+    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
+    users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
+  },
+})
 
 onMounted(async () => {
   const currentUser = user.value
@@ -89,13 +114,36 @@ function saveGroup(newGroup: UserGroup) {
 }
 
 function deleteGroup(id: string) {
-  groups.value = groups.value.filter((group) => group.id !== id)
+  isOpenedIdeaDeleteModal.value = true
+  currentOpenedDeleteIdea.value = id
+  // groups.value = groups.value.filter((group) => group.id !== id)
 }
 
-function editGroup(userGroup: UserGroup) {
+function editCurrentGroup(userGroup: UserGroup) {
   const groupIndex = groups.value.findIndex((group) => group.id === userGroup.id)
   groups.value.splice(groupIndex, 1, userGroup)
 }
+
+const handleDelete = async () => {
+  isOpenedIdeaDeleteModal.value = true
+  const currentUser = user.value
+  if (currentUser?.token && editGroup.value) {
+    const { token } = currentUser
+    const { id } = editGroup.value
+    const response = await GroupService.deleteUsersGroup(values, token, id)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
+    handleOpenNotification('success', response.success)
+    emit('close-modal')
+    emit('delete-group', values.id)
+  }
+}
+
+function handleCloseDeleteModal() {
+  isOpenedIdeaDeleteModal.value = false
+}
+console.log(searchedGroup)
 </script>
 
 <template>
@@ -125,22 +173,35 @@ function editGroup(userGroup: UserGroup) {
         :key="index"
         class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 w-100 row_group"
       >
-        <Typography class-name="text-primary fs-4 col">
-          {{ group.name }}
-        </Typography>
+        <div class="col d-grid">
+          <Typography class-name="text-primary fs-4 ">
+            {{ group.name }}
+          </Typography>
+          <Typography class-name="fs-6 ">{{ group.groupType }}</Typography>
+        </div>
+
         <Button
-          class-name="users-group-form__edit-btn col-1"
+          class-name="users-group-form__edit-btn "
           prepend-icon-name="bi bi-pencil-square text-primary"
           @click="openGroupModal(group.id)"
         ></Button>
+        <Button
+          @click="deleteGroup(group.id)"
+          prepend-icon-name="bi bi-trash-fill text-danger"
+        ></Button>
       </div>
+      <DeleteModal
+        :is-opened="isOpenedIdeaDeleteModal"
+        @close-modal="handleCloseDeleteModal"
+        @delete="handleDelete"
+      />
       <AddUsersGroup
         :isOpened="isOpenedGroupModal"
         :editing-group="editingGroup"
         @close-modal="closeGroupModal"
         @save-group="saveGroup"
         @delete-group="deleteGroup"
-        @edit-group="editGroup"
+        @edit-group="editCurrentGroup"
         :group-modal-title="groupModalTitle"
       >
       </AddUsersGroup>
