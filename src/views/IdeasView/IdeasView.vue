@@ -14,14 +14,18 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
-import IdeasService from '@Services/IdeasService'
+// import IdeasService from '@Services/IdeasService'
 
 import useUserStore from '@Store/user/userStore'
+import useIdeasStore from '@Store/ideas/ideasStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const ideas = ref<Idea[]>([])
+const ideaStore = useIdeasStore()
+const { ideas } = storeToRefs(ideaStore)
+
+const ideasData = ref<Idea[]>([])
 
 const searchedValue = ref('')
 const selectedFilters = ref<string[]>([])
@@ -34,13 +38,9 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await IdeasService.fetchIdeas(token)
+    await ideaStore.fetchIdeas(token)
 
-    if (response instanceof Error) {
-      return
-    }
-
-    response.sort((a, b) => {
+    ideas.value.sort((a, b) => {
       if (a.rating == b.rating) {
         const A = new Date(a.createdAt).getTime()
         const B = new Date(b.createdAt).getTime()
@@ -48,7 +48,7 @@ onMounted(async () => {
       } else return b.rating - a.rating
     })
 
-    ideas.value = response
+    ideasData.value = ideas.value
 
     isLoading.value = false
   }
@@ -107,7 +107,7 @@ function filterIdeas(ideasData: Idea[]) {
       </template>
       <IdeasTable
         v-else
-        :ideas="filterIdeas(ideas) || ideas"
+        :ideas="filterIdeas(ideasData) || ideasData"
         :searched-value="searchedValue"
       />
     </template>

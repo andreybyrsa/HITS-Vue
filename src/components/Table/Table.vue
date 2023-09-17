@@ -1,9 +1,16 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { TableProps } from '@Components/Table/Table.types'
 
+import useUserStore from '@Store/user/userStore'
+import { Idea } from '@Domain/Idea'
+
 const props = defineProps<TableProps>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const searchedValue = computed(() => {
   return props.data.filter((element) => {
@@ -23,6 +30,22 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
   }
   return CellClass
 }
+
+function checkMark(row: Idea) {
+  const currentRole = user.value?.role
+  const currentStatusIdea = row.status
+  const currentInitiatorIdea = row.initiator
+  const currentEmail = user.value?.email
+  return currentRole == 'INITIATOR' &&
+    (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING') &&
+    currentInitiatorIdea == currentEmail
+    ? true
+    : currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL'
+    ? true
+    : currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
+    ? true
+    : false
+}
 </script>
 
 <template>
@@ -30,6 +53,12 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
     <div
       class="row w-100 text-center bg-primary text-light p-3 rounded-3 fs-6 fw-semibold"
     >
+      <div
+        v-if="$slots.icon"
+        class="table__header-cell col-1"
+      >
+        Активные
+      </div>
       <div
         v-for="column in columns"
         :key="column.key"
@@ -55,6 +84,15 @@ function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
       v-for="(row, index) in searchedValue"
       :key="index"
     >
+      <div
+        v-if="$slots.icon"
+        class="table__row-cell col-1"
+      >
+        <slot
+          :item="row"
+          name="icon"
+        />
+      </div>
       <div
         v-for="column in columns"
         :key="column.key"

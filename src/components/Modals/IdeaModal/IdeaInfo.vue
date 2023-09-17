@@ -7,6 +7,8 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import { IdeaInfoProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
 
 import useUserStore from '@Store/user/userStore'
+import modeButtons from './IdeaInfo.types'
+import ModeButtonsType from './modeButtons.types'
 
 import getStatus from '@Utils/getStatus'
 
@@ -17,37 +19,38 @@ const status = getStatus()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+function checkMode(mode: ModeButtonsType) {
+  const currentRole = user.value?.role
+  const currentStatusIdea = props.idea?.status
+  const currentInitiatorIdea = props.idea?.initiator
+  return currentRole == 'INITIATOR'
+    ? currentRole &&
+        currentStatusIdea &&
+        currentInitiatorIdea == user.value?.email &&
+        mode.roles.includes(currentRole) &&
+        mode.status.includes(currentStatusIdea)
+    : currentRole &&
+        currentStatusIdea &&
+        mode.roles.includes(currentRole) &&
+        mode.status.includes(currentStatusIdea)
+}
+
 function checkViewMode() {
   const currentRole = user.value?.role
   const currentEmail = user.value?.email
   const currentInitiatorIdea = props.idea?.initiator
   const currentStatusIdea = props.idea?.status
-  if (
-    currentRole == 'INITIATOR' &&
+  return currentRole == 'INITIATOR' &&
     currentEmail == currentInitiatorIdea &&
     (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING')
-  ) {
-    return false
-  } else if (currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL') {
-    return false
-  } else if (currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION') {
-    return false
-  } else if (currentRole == 'ADMIN') {
-    return false
-  } else return true
-}
-
-function checkEditMode() {
-  const currentRole = user.value?.role
-  const currentEmail = user.value?.email
-  const currentInitiatorIdea = props.idea?.initiator
-  const currentStatusIdea = props.idea?.status
-  return (currentRole == 'INITIATOR' &&
-    currentEmail == currentInitiatorIdea &&
-    (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING')) ||
-    currentRole == 'ADMIN'
-    ? true
-    : false
+    ? false
+    : currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL'
+    ? false
+    : currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
+    ? false
+    : currentRole == 'ADMIN'
+    ? false
+    : true
 }
 </script>
 
@@ -66,7 +69,7 @@ function checkEditMode() {
       </Typography>
 
       <div class="idea-info__user pt-2">
-        <Icon class-name="bi bi-person-circle text-secondary fs-1 opacity-25" />
+        <Icon class-name="bi bi-person-circle text-secondary fs-2 opacity-25" />
 
         <Typography class-name="text-primary">
           {{ idea.customer }}
@@ -80,7 +83,7 @@ function checkEditMode() {
       </Typography>
 
       <div class="idea-info__user pt-2">
-        <Icon class-name="bi bi-person-circle text-secondary fs-1 opacity-25" />
+        <Icon class-name="bi bi-envelope text-secondary fs-2 opacity-25" />
 
         <Typography class-name="text-primary">
           {{ idea.initiator }}
@@ -88,53 +91,32 @@ function checkEditMode() {
       </div>
     </div>
 
+    <template
+      v-for="mode in modeButtons"
+      :key="mode.id"
+    >
+      <div v-if="checkMode(mode)">
+        <Typography class-name="border-bottom text-secondary d-block">
+          Режим
+        </Typography>
+
+        <div class="idea-info__user pt-2">
+          <Icon :class-name="mode.iconClass" />
+
+          <Typography class-name="text-primary"> {{ mode.text }} </Typography>
+        </div>
+      </div>
+    </template>
+
     <div v-if="checkViewMode()">
       <Typography class-name="border-bottom text-secondary d-block">
         Режим
       </Typography>
 
       <div class="idea-info__user pt-2">
-        <Icon class-name="bi bi-person-circle text-secondary fs-1 opacity-25" />
+        <Icon class-name="bi bi-eye text-secondary fs-2 opacity-25" />
 
         <Typography class-name="text-primary"> Просмотр </Typography>
-      </div>
-    </div>
-
-    <div v-if="checkEditMode()">
-      <Typography class-name="border-bottom text-secondary d-block">
-        Режим
-      </Typography>
-
-      <div class="idea-info__user pt-2">
-        <Icon class-name="bi bi-person-circle text-secondary fs-1 opacity-25" />
-
-        <Typography class-name="text-primary"> Редактирования </Typography>
-      </div>
-    </div>
-
-    <div
-      v-if="user?.role == 'PROJECT_OFFICE' && props.idea?.status == 'ON_APPROVAL'"
-    >
-      <Typography class-name="border-bottom text-secondary d-block">
-        Режим
-      </Typography>
-
-      <div class="idea-info__user pt-2">
-        <Icon class-name="bi bi-person-circle text-secondary fs-1 opacity-25" />
-
-        <Typography class-name="text-primary"> Согласование идеи </Typography>
-      </div>
-    </div>
-
-    <div v-if="user?.role == 'EXPERT' && props.idea?.status == 'ON_CONFIRMATION'">
-      <Typography class-name="border-bottom text-secondary d-block">
-        Режим
-      </Typography>
-
-      <div class="idea-info__user pt-2">
-        <Icon class-name="bi bi-person-circle text-secondary fs-1 opacity-25" />
-
-        <Typography class-name="text-primary"> Утверждение идеи </Typography>
       </div>
     </div>
 

@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import { Idea } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
+import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 const IDEAS_URL = process.env.VUE_APP_IDEAS_API_URL || 'http://localhost:3000'
 
@@ -93,15 +94,19 @@ const deleteInitiatorIdea = async (
     })
 }
 
-const putProjectOfficeIdea = async (
-  idea: Idea,
+const changeStatusIdeaByProjectOffice = async (
   id: string,
+  status: IdeaStatusTypes,
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .put(`${IDEAS_URL}/project-office/update/${id}`, idea, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .put(
+      `${IDEAS_URL}/project-office/update/${id}`,
+      { status: status },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка редактирования идеи'
@@ -165,7 +170,7 @@ const IdeasService = {
   sendInitiatorIdeaOnApproval,
   deleteInitiatorIdea,
 
-  putProjectOfficeIdea,
+  changeStatusIdeaByProjectOffice,
   putExpertIdea,
   putAdminIdea,
   deleteAdminIdea,

@@ -48,7 +48,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         iconName: 'bi bi-people',
       },
     ],
-    iconName: 'bi bi-sliders',
+    iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
   },
   {
