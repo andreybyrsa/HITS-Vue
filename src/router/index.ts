@@ -41,7 +41,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'edit-idea/:id',
         name: 'editIdeas',
-        meta: { roles: ['INITIATOR', 'ADMIN'] },
+        meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
         component: EditIdeaView,
       },
       {
@@ -86,6 +86,7 @@ const routes: Array<RouteRecordRaw> = [
             name: 'change-email-confirmation',
             meta: {
               roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+              isPageEmail: true,
             },
             component: NewEmail,
           },
@@ -115,6 +116,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/register/:slug',
     name: 'register',
+    meta: { isPageRegister: true },
     component: RegisterView,
   },
   {
@@ -124,35 +126,8 @@ const routes: Array<RouteRecordRaw> = [
   },
 ]
 
-// declare module 'vue-router' {
-//   interface RouteMeta {
-//     // is optional
-//     isAdmin?: boolean
-//     isInitiator?: boolean
-//     isProjectOffice?: boolean
-//     isExpert?: boolean
-//     // must be declared by every route
-//     requiresAuth?: boolean
-//   }
-// }
-
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 })
-
-// router.beforeEach((to, from) => {
-//   // instead of having to check every route record with
-//   // to.matched.some(record => record.meta.requiresAuth)
-//   if (to.meta.requiresAuth) {
-//     // this route requires auth, check if logged in
-//     // if not, redirect to login page.
-//     return {
-//       path: '/login',
-//       // save the location we were at to come back later
-//       // query: { redirect: to.fullPath },
-//     }
-//   }
-// })
-
 export default router

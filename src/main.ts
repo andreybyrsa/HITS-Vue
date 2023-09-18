@@ -30,9 +30,10 @@ router.beforeEach((to) => {
     userStore.setUserFromLocalStorage(localStorageUser)
   }
 
-  const currentRoute = to.name?.toString() ?? ''
-  const currentRouteHatch = to.path?.toString() ?? ''
+  const currentRouteName = to.name?.toString() ?? ''
+  const currentRoutePath = to.path?.toString() ?? ''
   const metaRoles = to.meta.roles as RolesTypes[]
+
   const path: string[] = []
   router.getRoutes().forEach((e) => path.push(e.path))
 
@@ -42,17 +43,24 @@ router.beforeEach((to) => {
       !metaRoles.includes(userStore.user?.role)) ||
     (userStore.user &&
       ['login', 'register', 'forgot-password', 'new-password'].includes(
-        currentRoute,
-      ))
-    //   ||
-    // (path && !path.includes(currentRouteHatch))
+        currentRouteName,
+      )) ||
+    (to.meta.isPageEdit
+      ? currentRoutePath != '/edit-idea/' + to.params.id
+      : to.meta.isPageEmail
+      ? currentRoutePath != '/change-email/' + to.params.slug
+      : to.meta.isPageRegister
+      ? currentRoutePath != '/register/' + to.params.slug
+      : !path.includes(currentRoutePath))
   ) {
     router.push('error')
   }
 
   if (
     !userStore.user &&
-    !['login', 'register', 'forgot-password', 'new-password'].includes(currentRoute)
+    !['login', 'register', 'forgot-password', 'new-password'].includes(
+      currentRouteName,
+    )
   ) {
     return { name: 'login' }
   }
