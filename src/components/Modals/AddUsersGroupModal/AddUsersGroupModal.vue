@@ -201,9 +201,8 @@ const handleEdit = handleSubmit(async (values) => {
               @click="selectUser(user, index)"
             >
               <Typography class-name="m-2 fs-6">
-                {{ user.lastName }}
+                {{ user.lastName }} {{ user.firstName }}
               </Typography>
-              <Typography class-name="fs-6">{{ user.firstName }}</Typography>
             </div>
           </div>
         </div>
@@ -234,9 +233,8 @@ const handleEdit = handleSubmit(async (values) => {
               @click="unselectUser(user.value, index)"
             >
               <Typography class-name="m-2 fs-6">
-                {{ user.value.lastName }}
+                {{ user.value.lastName }} {{ user.value.firstName }}
               </Typography>
-              <Typography class-name="fs-6">{{ user.value.firstName }}</Typography>
             </div>
           </div>
         </div>
@@ -334,7 +332,7 @@ const handleEdit = handleSubmit(async (values) => {
 .select-block {
   border-radius: 12px;
   height: 250px;
-  overflow-y: scroll;
+  overflow-y: hidden;
 }
 
 .unselected-selected-usesrs {
