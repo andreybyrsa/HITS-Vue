@@ -3,6 +3,7 @@ interface RadioProps {
   name: string
 
   validateOnUpdate?: boolean
+  noFormCotrolled?: boolean
 
   label?: string
 

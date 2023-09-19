@@ -3,6 +3,7 @@ interface CheckboxProps {
   name: string
 
   validateOnUpdate?: boolean
+  noFormControlled?: boolean
 
   label?: string
 

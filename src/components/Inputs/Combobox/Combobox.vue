@@ -10,6 +10,7 @@ import {
 import Input from '@Components/Inputs/Input/Input.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
+import Icon from '@Components/Icon/Icon.vue'
 
 import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
@@ -26,9 +27,10 @@ const choicesRef = ref<VueElement | null>(null)
 const isOpenedChoices = ref(false)
 
 const { value: selectedValue, errorMessage } = useField<OptionType | OptionType[]>(
-  () => props.name,
+  props.name,
   undefined,
   {
+    controlled: props.noFormControlled ? false : true,
     syncVModel: true,
   },
 )
@@ -82,7 +84,9 @@ const searchedOptions = computed(() => {
 function selectOption(currentOption: OptionType) {
   if (isMultiselect(selectedValue.value)) {
     const selectedOptionIndex = selectedValue.value.findIndex(
-      (option) => option === currentOption,
+      (option) =>
+        option === currentOption ||
+        JSON.stringify(option) === JSON.stringify(currentOption),
     )
 
     if (selectedOptionIndex !== -1) {
@@ -96,10 +100,26 @@ function selectOption(currentOption: OptionType) {
 
 function getComboboxPlaceholder() {
   if (isMultiselect(selectedValue.value)) {
-    const selectedValueLength = selectedValue.value.length
-    return selectedValueLength > 0
-      ? `Выбрано ${selectedValueLength}`
-      : props.placeholder
+    const selectedValueLength = selectedValue.value.reduce(
+      (selectedAmount, currentValue) => {
+        const isExistInOptions = options.value.find(
+          (option) =>
+            option === currentValue ||
+            JSON.stringify(option) === JSON.stringify(currentValue),
+        )
+
+        if (isExistInOptions) return (selectedAmount += 1)
+        return selectedAmount
+      },
+      0,
+    )
+
+    if (selectedValueLength > 0) {
+      return props.multiselectPlaceholder
+        ? `${props.multiselectPlaceholder} (${selectedValueLength})`
+        : `Выбрано ${selectedValueLength}`
+    }
+    return props.placeholder
   }
 
   return selectedValue.value
@@ -132,13 +152,16 @@ onClickOutside(choicesRef, (event) => {
 
     <div class="combobox">
       <Input
-        :name="`search-${props.label}`"
+        :name="`search-${Math.random() * 100}`"
         class-name="combobox__search rounded-end"
         v-model="searchedValue"
         :error="errorMessage"
+        no-form-controlled
         :placeholder="getComboboxPlaceholder()"
         @focus="focusCombobox"
       />
+
+      <Icon class-name="combobox__icon bi bi-chevron-down" />
 
       <div
         v-if="isOpenedChoices"
@@ -157,6 +180,7 @@ onClickOutside(choicesRef, (event) => {
             :label="label"
             :value="option"
             v-model="selectedValue"
+            no-form-controlled
           />
           <Radio
             v-else
@@ -164,6 +188,7 @@ onClickOutside(choicesRef, (event) => {
             :label="label"
             :value="option"
             v-model="selectedValue"
+            no-form-cotrolled
           />
         </div>
       </div>
@@ -175,12 +200,8 @@ onClickOutside(choicesRef, (event) => {
 .combobox {
   position: relative;
 
-  &__placeholder {
-    @include position(absolute, 0, 0, 0, 12px);
-
-    border-radius: 6px;
-
-    @include flexible(center, flex-start);
+  &__icon {
+    @include position(absolute, $top: 11px, $right: 12px);
   }
 
   &__choices {

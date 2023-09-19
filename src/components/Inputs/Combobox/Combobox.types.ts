@@ -4,8 +4,11 @@ interface ComboboxProps<OptionType> {
   options: OptionType[]
   displayBy?: (keyof OptionType)[]
 
+  noFormControlled?: boolean
+
   label?: string
   placeholder?: string
+  multiselectPlaceholder?: string
 }
 
 interface SearchedOptionType<OptionType> {
