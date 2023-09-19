@@ -1,5 +1,6 @@
 import StatusTypes from '@Domain/IdeaStatus'
 import { UserGroup } from '@Domain/Group'
+import { Skill } from '@Domain/Skill'
 
 interface Idea {
   id: string
@@ -13,7 +14,7 @@ interface Idea {
   result: string
   projectType: 'INSIDE' | 'OUTSIDE'
   status: StatusTypes
-  stack: StackTechnologies[]
+  stack?: Skill[]
 
   initiator: string
   projectOffice: UserGroup[]
@@ -29,11 +30,6 @@ interface Idea {
   budget: number
   marketValue: number
   originality: number
-}
-
-interface StackTechnologies {
-  id: string
-  name: string
 }
 
 interface Change {
@@ -53,4 +49,4 @@ interface Risk {
   understanding: string
 }
 
-export { Idea, StackTechnologies, Risk, Change }
+export { Idea, Risk, Change }

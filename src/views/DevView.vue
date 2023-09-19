@@ -66,9 +66,12 @@ const selectedOption = ref()
 
 userStore.checkLastActivity()
 
-const { handleSubmit } = useForm({
+const { values, handleSubmit } = useForm({
   validationSchema: {
     component: (value: string) => value?.length || 'Обязательно к заполнению',
+  },
+  initialValues: {
+    combobox: [],
   },
 })
 
@@ -104,6 +107,8 @@ function handleCloseModal() {
         Submit
       </Button>
 
+      {{ values }}
+
       <Combobox
         name="combobox"
         :options="[
@@ -113,7 +118,6 @@ function handleCloseModal() {
           { lang: 'Mongo DB', name: 'Монго ДБ' },
         ]"
         :display-by="['lang']"
-        v-model="selectedOption"
         label="Стек"
         placeholder="Выберите стек технологий"
       />

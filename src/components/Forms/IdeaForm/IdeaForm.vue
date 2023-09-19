@@ -11,6 +11,7 @@ import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCal
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
 import IdeaFormSubmit from '@Components/Forms/IdeaForm/IdeaFormSubmit.vue'
+import StackCategories from '@Components/Forms/IdeaForm/StackCategories.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
@@ -36,6 +37,9 @@ const {
   handleCloseNotification,
 } = useNotification()
 
+const stackTechnologies = ref({
+  stack: props.idea?.stack ?? [],
+})
 const preAssessment = ref({
   preAssessment: props.idea?.preAssessment ?? 1,
 })
@@ -66,6 +70,7 @@ const { values, setFieldValue, handleSubmit } = useForm<Idea>({
 
 const currentIdea = computed(() => ({
   ...values,
+  ...stackTechnologies.value,
   ...preAssessment.value,
 }))
 
@@ -107,13 +112,14 @@ const handleUpdateIdea = handleSubmit(async () => {
 
 <template>
   <FormLayout class-name="w-100 h-100 overflow-auto">
-    {{ values }}
     <Typography class-name="fs-2 text-primary">
       {{ title }}
     </Typography>
 
     <div class="w-75 d-flex flex-column gap-3">
       <IdeaFormInputs />
+
+      <StackCategories v-model="stackTechnologies.stack" />
 
       <CustomerAndContact
         :idea="values"
