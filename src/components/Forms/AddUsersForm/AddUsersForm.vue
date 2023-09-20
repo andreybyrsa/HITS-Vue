@@ -95,7 +95,7 @@ const handleInvite = handleSubmit(async (values) => {
     </div>
 
     <Collapse
-      id="checkboxRoles"
+      id="addUsersFromCollapse"
       class-name="w-100"
     >
       <Checkbox

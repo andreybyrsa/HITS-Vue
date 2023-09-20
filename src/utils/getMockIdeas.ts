@@ -55,7 +55,9 @@ function getMockIdeas(): Idea[] {
       rating: 5,
       budget: 1,
       suitability: 1,
-      realizability: 1,
+      technicalRealizability: 1,
+      marketValue: 1,
+      originality: 1,
       preAssessment: 0,
     },
   ]

@@ -7,10 +7,12 @@ import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 import tooltipDirective from '@Utils/tooltip'
+import dropdownDirective from '@Utils/dropdown'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import collapseDirective from '@Utils/collapse'
 
 const app = createApp(App)
 
@@ -42,5 +44,7 @@ router.beforeEach((to) => {
 app.use(router)
 
 app.directive('tooltip', tooltipDirective)
+app.directive('dropdown', dropdownDirective)
+app.directive('collapse', collapseDirective)
 
 app.mount('#app')
