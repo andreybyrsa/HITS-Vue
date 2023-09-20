@@ -5,7 +5,7 @@ interface UserGroup {
   id: string
   name: string
   users: User[]
-  role: RolesTypes
+  roles: RolesTypes[]
 }
 
 export default UserGroup

@@ -11,7 +11,6 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-import Select from '@Components/Inputs/Select/Select.vue'
 import GroupTypesFilterModal from '@Components/Modals/GroupTypesFilterModal/GroupTypesFilterModal.vue'
 
 import useNotification from '@Hooks/useNotification'
@@ -24,6 +23,8 @@ import RolesTypes from '@Domain/Roles'
 
 import GroupService from '@Services/GroupsService'
 import ManageUsersService from '@Services/ManageUsersService'
+
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
 const props = defineProps<AddUsersGroupModalProps>()
 const emit = defineEmits<AddUsersGroupModalEmits>()
@@ -42,13 +43,6 @@ const isOpenedFilterModal = ref(false)
 const groups = defineModel<UserGroup[]>({
   required: true,
 })
-
-const groupTypeOptions = [
-  { value: 'INITIATOR', label: 'Группа пользователей' },
-  { value: 'PROJECT_OFFICE', label: 'Группа проектого офиса' },
-  { value: 'EXPERT', label: 'Группа экспертов' },
-  { value: 'ADMIN', label: 'Группа админов' },
-]
 
 const { handleOpenNotification } = useNotification()
 
@@ -71,18 +65,26 @@ const { setValues, handleSubmit } = useForm<UserGroup>({
   validationSchema: {
     name: (value: string) => value?.length > 0 || 'Поле не заполнено',
     users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
-    role: (value: string) => value?.length > 0 || 'Выберите тип группы',
+    roles: (value: RolesTypes[]) => value?.length > 0 || 'Выберите тип группы',
   },
+  initialValues: { roles: [] },
 })
 
 const { fields, push, remove } = useFieldArray<User>('users')
+
+const groupTypes = [
+  { id: 1, name: 'Группа инициаторов', roles: 'INITIATOR' },
+  { id: 2, name: 'Группа админов', roles: 'ADMIN' },
+  { id: 3, name: 'Группа проектного офиса', roles: 'PROJECT_OFFICE' },
+  { id: 3, name: 'Группа экспертов', roles: 'EXPERT' },
+]
 
 watch(
   () => props.openedGroup,
   (openedGroup) => {
     if (openedGroup) {
-      const { name, users: groupUsers, role } = openedGroup
-      setValues({ name, users: groupUsers, role })
+      const { name, users: groupUsers, roles } = openedGroup
+      setValues({ name, users: groupUsers, roles })
 
       editGroup.value = openedGroup
       unselectedUsers.value = users.value.filter((user) =>
@@ -240,14 +242,19 @@ const handleEdit = handleSubmit(async (values) => {
         </div>
       </div>
       <div>
-        <Select
-          name="role"
-          validate-on-update
-          :options="groupTypeOptions"
-          label="Тип группы"
-          placeholder="Выберите тип группы"
-          prepend
-        ></Select>
+        <div>
+          <Typography class-name="text-primary">Выберите тип группы</Typography>
+        </div>
+        <div class="mt-2 w-100">
+          <Combobox
+            name="roles"
+            :options="groupTypes"
+            :display-by="['name']"
+            no-form-controlled
+            placeholder="Выберите тип группы"
+            multiselect-placeholder="Выберите тип группы"
+          />
+        </div>
       </div>
       <div v-if="groupModalTitle === 'Добавить группу'">
         <Button
@@ -346,5 +353,17 @@ const handleEdit = handleSubmit(async (values) => {
 
 .move-buttons {
   @include flexible(flex-start, center, columns);
+}
+
+.group-categories {
+  @include flexible(flex-start, stretch, $gap: 16px);
+
+  &__technologies {
+    @include flexible(center, flex-start, $flex-wrap: wrap, $gap: 4px);
+  }
+
+  &__delete-technology {
+    cursor: pointer;
+  }
 }
 </style>

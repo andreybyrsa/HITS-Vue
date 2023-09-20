@@ -62,7 +62,7 @@ const searchedGroup = computed(() => {
 })
 
 function openCreateGroupModal() {
-  openedGroup.value = { id: '', name: '', users: [], role: 'INITIATOR' }
+  openedGroup.value = { id: '', name: '', users: [], roles: [] }
   groupModalTitle.value = 'Добавить группу'
   isOpenedGroupModal.value = true
 }
@@ -136,7 +136,7 @@ const handleDelete = async () => {
             {{ group.name }}
           </Typography>
           <Typography class-name="fs-6">
-            {{ roles.translatedRoles[group.role] }}
+            {{ roles.translatedRoles[group.roles] }}
           </Typography>
         </div>
 
