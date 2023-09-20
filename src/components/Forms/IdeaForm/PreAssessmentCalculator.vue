@@ -41,9 +41,10 @@ const intervalId = setInterval(() => {
   }
 
   if (preAssessmentPlaceholder.value.includes('...')) {
-    return (preAssessmentPlaceholder.value = 'вычисление')
+    preAssessmentPlaceholder.value = 'вычисление'
+  } else {
+    preAssessmentPlaceholder.value += '.'
   }
-  return (preAssessmentPlaceholder.value += '.')
 }, 200)
 
 function getCurrentTooltip(select: PreAssessmentSelect) {

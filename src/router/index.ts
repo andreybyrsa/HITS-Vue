@@ -15,6 +15,7 @@ import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import IdeasView from '@Views/IdeasView/IdeasView.vue'
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
+import ErrorView from '@Views/ErrorView.vue'
 
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
 
@@ -26,21 +27,29 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'ideas',
         name: 'ideas',
+        meta: {
+          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
         component: IdeasView,
       },
       {
         path: 'add-idea',
         name: 'addIdeas',
+        meta: { roles: ['INITIATOR', 'ADMIN'] },
         component: NewIdeaView,
       },
       {
         path: 'edit-idea/:id',
         name: 'editIdeas',
+        meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
         component: EditIdeaView,
       },
       {
         path: 'last-activity-note',
         name: 'last-activity-note',
+        meta: {
+          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
         component: LastActivityNote,
       },
       {
@@ -50,14 +59,17 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: 'add-users',
             component: AddUsersForm,
+            meta: { roles: ['ADMIN'] },
           },
           {
             path: 'edit-users',
             component: EditUsersForm,
+            meta: { roles: ['ADMIN'] },
           },
           {
             path: 'users-groups',
             component: UserGroupForm,
+            meta: { roles: ['ADMIN'] },
           },
         ],
       },
@@ -65,10 +77,17 @@ const routes: Array<RouteRecordRaw> = [
         path: '/change-email',
         name: 'change-email',
         component: ChangeEmailView,
+        meta: {
+          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
         children: [
           {
             path: ':slug',
             name: 'change-email-confirmation',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+              isPageEmail: true,
+            },
             component: NewEmail,
           },
         ],
@@ -76,7 +95,16 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'dev',
         name: 'dev',
+        meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
         component: DevView,
+      },
+      {
+        path: 'error',
+        name: 'error',
+        meta: {
+          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
+        component: ErrorView,
       },
     ],
   },
@@ -88,6 +116,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/register/:slug',
     name: 'register',
+    meta: { isPageRegister: true },
     component: RegisterView,
   },
   {
@@ -101,5 +130,4 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 })
-
 export default router

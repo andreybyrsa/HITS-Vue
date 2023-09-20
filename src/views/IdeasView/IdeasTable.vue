@@ -9,7 +9,7 @@ import { TableColumn } from '@Components/Table/Table.types'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
-import DeleteIdeaModal from '@Components/Modals/DeleteIdeaModal/DeleteModal.vue'
+import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
 import IdeasTableProps from '@Views/IdeasView/IdeasView.types'
@@ -18,6 +18,7 @@ import { Idea } from '@Domain/Idea'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 import useUserStore from '@Store/user/userStore'
+import useIdeasStore from '@Store/ideas/ideasStore'
 
 import getStatus from '@Utils/getStatus'
 
@@ -35,6 +36,8 @@ const { user } = storeToRefs(userStore)
 const router = useRouter()
 
 const [isSorted, setIsSorted] = useToggle(true)
+
+const ideaStore = useIdeasStore()
 
 const gridColumns: TableColumn[] = [
   {
@@ -132,15 +135,23 @@ function handleCloseIdeaModal() {
   isOpenedIdeaModal.value = false
 }
 
-const currentOpenedDeleteIdea = ref()
+const ideaId = ref<string>('')
 const isOpenedIdeaDeleteModal = ref(false)
 
-function handleOpenDeleteModal(ideaId: string) {
-  currentOpenedDeleteIdea.value = ideaId
+function handleOpenDeleteModal(id: string) {
+  ideaId.value = id
   isOpenedIdeaDeleteModal.value = true
 }
 function handleCloseDeleteModal() {
   isOpenedIdeaDeleteModal.value = false
+}
+
+async function handleDeleteIdea() {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await ideaStore.deleteInitiatorIdea(ideaId.value, token)
+  }
 }
 
 function checkButtonDelete(initiator: string) {
@@ -244,9 +255,9 @@ function checkMark(row: Idea) {
     :idea="currentOpenedIdea"
     @close-modal="handleCloseIdeaModal"
   />
-  <DeleteIdeaModal
-    :ideaId="currentOpenedDeleteIdea"
+  <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
     @close-modal="handleCloseDeleteModal"
+    @delete="handleDeleteIdea"
   />
 </template>

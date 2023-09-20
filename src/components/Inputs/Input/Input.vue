@@ -17,6 +17,7 @@ defineModel<string>({
 const { value, errorMessage } = useField(props.name, props.validation, {
   validateOnValueUpdate: props.validateOnUpdate ?? false,
   validateOnMount: false,
+  controlled: props.noFormControlled ? false : true,
   syncVModel: true,
 })
 
@@ -53,6 +54,7 @@ const LabelClassName = computed(() => [
         :class="InputClassName"
         :type="type ?? 'text'"
         v-model="value"
+        @input="(event) => emit('input', event as HTMLTargetEvent)"
         @change="(event) => emit('change', event as HTMLTargetEvent)"
         @focus="emit('focus')"
         @blur="emit('blur')"
@@ -73,3 +75,9 @@ const LabelClassName = computed(() => [
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.form-control::placeholder {
+  color: $black-color;
+}
+</style>
