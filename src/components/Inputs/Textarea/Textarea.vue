@@ -76,3 +76,9 @@ const LabelClassName = computed(() => [
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.form-control::placeholder {
+  color: $black-color;
+}
+</style>

@@ -10,6 +10,7 @@ interface InputProps {
 
   validation?: ValidationMethods
   validateOnUpdate?: boolean
+  noFormControlled?: boolean
 
   label?: string
   placeholder?: string
@@ -22,6 +23,7 @@ interface InputProps {
 }
 
 interface InputEmits {
+  (event: 'input', value: HTMLTargetEvent): void
   (event: 'change', value: HTMLTargetEvent): void
   (event: 'focus'): void
   (event: 'blur'): void

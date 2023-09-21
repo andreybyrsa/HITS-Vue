@@ -36,13 +36,14 @@ watchImmediate(currentPreAssessment, (currentValue) => {
 
 const intervalId = setInterval(() => {
   if (currentPreAssessment.value) {
-    return clearInterval(intervalId)
+    clearInterval(intervalId)
   }
 
   if (preAssessmentPlaceholder.value.includes('...')) {
-    return (preAssessmentPlaceholder.value = 'вычисление')
+    preAssessmentPlaceholder.value = 'вычисление'
+  } else {
+    preAssessmentPlaceholder.value += '.'
   }
-  return (preAssessmentPlaceholder.value += '.')
 }, 200)
 </script>
 

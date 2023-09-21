@@ -19,7 +19,11 @@ const useIdeasStore = defineStore('ideas', {
       this.ideas = response
     },
     async deleteInitiatorIdea(id: string, token: string) {
-      await IdeasService.deleteInitiatorIdea(id, token)
+      const response = await IdeasService.deleteInitiatorIdea(id, token)
+
+      if (response instanceof Error) {
+        return
+      }
 
       const deleteIdea = this.ideas.find((idea) => idea.id == id)
       if (deleteIdea) {
