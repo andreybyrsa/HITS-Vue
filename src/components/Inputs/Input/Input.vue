@@ -4,7 +4,7 @@ import { useField } from 'vee-validate'
 
 import { InputProps, InputEmits } from '@Components/Inputs/Input/Input.types'
 
-import HTMLInputEvent from '@Domain/HTMLInputEvent'
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 const props = defineProps<InputProps>()
 
@@ -17,6 +17,7 @@ defineModel<string>({
 const { value, errorMessage } = useField(props.name, props.validation, {
   validateOnValueUpdate: props.validateOnUpdate ?? false,
   validateOnMount: false,
+  controlled: props.noFormControlled ? false : true,
   syncVModel: true,
 })
 
@@ -53,7 +54,8 @@ const LabelClassName = computed(() => [
         :class="InputClassName"
         :type="type ?? 'text'"
         v-model="value"
-        @change="(event) => emit('change', event as HTMLInputEvent)"
+        @input="(event) => emit('input', event as HTMLTargetEvent)"
+        @change="(event) => emit('change', event as HTMLTargetEvent)"
         @focus="emit('focus')"
         @blur="emit('blur')"
         :placeholder="placeholder"
@@ -73,3 +75,9 @@ const LabelClassName = computed(() => [
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.form-control::placeholder {
+  color: $black-color;
+}
+</style>

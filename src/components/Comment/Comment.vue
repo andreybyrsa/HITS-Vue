@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { toRefs, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { toReactive } from '@vueuse/core'
+import { toReactive, useDateFormat } from '@vueuse/core'
 
 import { CommentProps, CommentEmits } from '@Components/Comment/Comment.types'
 import Typography from '@Components/Typography/Typography.vue'
@@ -12,12 +12,7 @@ import useUserStore from '@Store/user/userStore'
 
 const props = defineProps<CommentProps>()
 const { comment, className } = toRefs(props)
-const {
-  sender,
-  checkedBy,
-  comment: commentMessage,
-  dateCreated,
-} = toReactive(comment)
+const { sender, checkedBy, comment: commentMessage, createdAt } = toReactive(comment)
 
 const emit = defineEmits<CommentEmits>()
 
@@ -39,25 +34,20 @@ const getCurrentCommentDate = (dateCreated: Date) => {
   const currentDateCreated = new Date(dateCreated)
   const currentDate = new Date()
 
-  const dateDifference = currentDate.getTime() - currentDateCreated.getTime()
-  const secondsDifference = Math.floor(dateDifference / 1000)
-  const minutesDifference = Math.floor(secondsDifference / 60)
-  const hoursDifference = Math.floor(minutesDifference / 60)
-  const daysDifference = Math.floor(hoursDifference / 24)
+  const time = useDateFormat(currentDateCreated, 'HH:mm')
+  const date = useDateFormat(currentDateCreated, 'DD.MM.YYYY')
 
-  if (secondsDifference < 60) {
-    return 'Несколько секунд назад'
+  const dateDifference = currentDate.getDate() - currentDateCreated.getDate()
+
+  if (dateDifference === 1) {
+    return `вчера в ${time.value}`
   }
 
-  if (minutesDifference < 60) {
-    return `${minutesDifference} мин. назад`
+  if (dateDifference > 1) {
+    return `${date.value} ${time.value}`
   }
 
-  if (hoursDifference < 24) {
-    return `${hoursDifference} ч. назад`
-  }
-
-  return `${daysDifference} д. назад`
+  return time.value
 }
 </script>
 
@@ -68,7 +58,7 @@ const getCurrentCommentDate = (dateCreated: Date) => {
 
       <div class="comment__info">
         <span class="text-primary">
-          {{ getCurrentCommentDate(dateCreated) }}
+          {{ getCurrentCommentDate(createdAt) }}
         </span>
 
         <Button

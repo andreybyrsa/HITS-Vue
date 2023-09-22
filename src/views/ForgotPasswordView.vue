@@ -46,7 +46,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
     return handleOpenNotification('error', response.message)
   }
 
-  authKey.value = response.key
+  authKey.value = response
   isOpenedModal.value = true
 
   expiredTime = useTimer(300)

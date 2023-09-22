@@ -20,7 +20,7 @@ module.exports = {
     'plugin:import/warnings',
     'prettier',
   ],
-  plugins: ['eslint-plugin-prettier', 'eslint-plugin-import'],
+  plugins: ['eslint-plugin-vue', 'eslint-plugin-prettier', 'eslint-plugin-import'],
   settings: {
     'import/resolver': {
       typescript: {
@@ -39,4 +39,12 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
   },
+  overrides: [
+    {
+      files: ['*.vue', '*.ts'],
+      rules: {
+        'no-undef': 'off',
+      },
+    },
+  ],
 }

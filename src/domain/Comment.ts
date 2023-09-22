@@ -1,7 +1,8 @@
 interface Comment {
-  id: number
-  ideaId: number
-  dateCreated: Date
+  id: string
+  ideaId: string
+  createdAt: Date
+
   comment: string
   sender: string
   checkedBy: string[]

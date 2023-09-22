@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
 import { storeToRefs } from 'pinia'
@@ -11,6 +11,7 @@ import CommentVue from '@Components/Comment/Comment.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPlaceholder.vue'
 
 import Comment from '@Domain/Comment'
 
@@ -18,7 +19,6 @@ import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 import useCommentsStore from '@Store/comments/commentsStore'
-import IdeaCommentsPlaceholder from './IdeaCommentsPlaceholder.vue'
 
 const props = defineProps<IdeaCommentsProps>()
 
@@ -26,8 +26,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const commentsStore = useCommentsStore()
-const { comments, commentsError } = storeToRefs(commentsStore)
-const isLoading = ref(true)
+const { comments, rsocketIsConnected, commentsError } = storeToRefs(commentsStore)
 
 const {
   notificationOptions,
@@ -42,9 +41,9 @@ onMounted(async () => {
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
-    await commentsStore.fetchIdeaComments(id, token)
 
-    isLoading.value = false
+    await commentsStore.fetchComments(id, token)
+    await commentsStore.connectRsocket(id)
   }
 })
 
@@ -56,7 +55,6 @@ const { handleSubmit, resetForm } = useForm<Comment>({
   },
   initialValues: {
     comment: '',
-    sender: user.value?.email,
   },
 })
 
@@ -83,16 +81,16 @@ const handleSendComment = handleSubmit(async (values) => {
   }
 })
 
-const handleDeleteComment = async (commentId: number) => {
+const handleDeleteComment = async (commentId: string) => {
   const currentUser = user.value
 
-  if (currentUser?.token && props.idea) {
+  if (currentUser?.token) {
     const { token } = currentUser
     await commentsStore.deleteComment(commentId, token)
   }
 }
 
-const handleCheckComment = async (commentId: number) => {
+const handleCheckComment = async (commentId: string) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -113,7 +111,6 @@ const onIntersectionObserver = async (
     isIntersecting
   ) {
     await handleCheckComment(comment.id)
-    console.log(`updated - ${comment.comment}`)
   }
 }
 </script>
@@ -124,9 +121,8 @@ const onIntersectionObserver = async (
       <Typography class-name="fs-6 px-3">Комментарии</Typography>
     </div>
 
-    <IdeaCommentsPlaceholder v-if="isLoading" />
     <div
-      v-else
+      v-if="rsocketIsConnected"
       class="d-grid gap-3 pt-3 px-3 w-100"
     >
       <CommentVue
@@ -138,6 +134,7 @@ const onIntersectionObserver = async (
         @delete-comment="handleDeleteComment(comment.id)"
       />
     </div>
+    <IdeaCommentsPlaceholder v-else />
 
     <form class="comment-form p-3">
       <Input

@@ -1,16 +1,21 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+import { storeToRefs } from 'pinia'
+
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import AddUsersGroup from '@Components/Modals/AddUsersGroupModal/AddUsersGroupModal.vue'
-import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
+
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
 import { User } from '@Domain/User'
-import GroupService from '@Services/GroupsService'
-import ManageUsersService from '@Services/ManageUsersService'
+
 import useNotification from '@Hooks/useNotification'
+
+import ManageUsersService from '@Services/ManageUsersService'
+
+import useUserStore from '@Store/user/userStore'
 
 import { UserGroup, UpdateUserGroup } from '@Domain/Group'
 const searchedValue = ref('')
@@ -77,13 +82,13 @@ const searchedGroup = computed(() => {
 
 const editingGroup = ref<UpdateUserGroup>()
 
-function openEditGroupModal(id: number) {
+function openEditGroupModal(id: string) {
   const currentSelectedUsers = usersGroup.value.find((users) => users.id == id)
 
   if (currentSelectedUsers) {
     const { id, name, users } = currentSelectedUsers
     editingGroup.value = {
-      id: id,
+      id,
       newName: name,
       newUsers: users,
     }
@@ -101,7 +106,7 @@ function closeEditGroupModal(
   if (typeof newGroupOrSuccess === 'object') {
     const { id, newName, newUsers } = newGroupOrSuccess
     const newGroupData: UserGroup = {
-      id: id,
+      id,
       name: newName,
       users: newUsers,
     }

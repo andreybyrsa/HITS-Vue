@@ -4,8 +4,9 @@ import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
-import getRoles from '@Utils/getRoles'
 import RolesTypes from '@Domain/Roles'
+
+import getRoles from '@Utils/getRoles'
 
 const availableRoles = getRoles()
 

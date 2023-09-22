@@ -20,9 +20,9 @@ const props = defineProps<PreAssessmentProps>()
 const preAssessmentPlaceholder = ref('вычисление')
 
 const currentPreAssessment = computed(() => {
-  const { realizability, suitability, budget } = props.idea
-  if (realizability && suitability && budget) {
-    return +((+realizability + +suitability + +budget) / 3).toFixed(1)
+  const { technicalRealizability, suitability, budget } = props.idea
+  if (technicalRealizability && suitability && budget) {
+    return +((technicalRealizability + suitability + budget) / 3).toFixed(1)
   }
 
   return NaN
@@ -40,9 +40,10 @@ const intervalId = setInterval(() => {
   }
 
   if (preAssessmentPlaceholder.value.includes('...')) {
-    return (preAssessmentPlaceholder.value = 'вычисление')
+    preAssessmentPlaceholder.value = 'вычисление'
+  } else {
+    preAssessmentPlaceholder.value += '.'
   }
-  return (preAssessmentPlaceholder.value += '.')
 }, 200)
 </script>
 
@@ -67,6 +68,7 @@ const intervalId = setInterval(() => {
     <Typography class-name="text-primary">
       Предварительная оценка: {{ currentPreAssessment || preAssessmentPlaceholder }}
     </Typography>
+
     <ProgressBar
       v-if="currentPreAssessment"
       class="mt-2"

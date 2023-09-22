@@ -1,6 +1,7 @@
 interface TableColumn {
   key: string
   label: string
+  icon?: string
   className?: string
   click?: () => void
   getStyle?: (value: any) => string
