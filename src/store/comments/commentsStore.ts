@@ -27,6 +27,16 @@ const useCommentsStore = defineStore('comments', {
       }
     },
 
+    async fetchComments(ideaId: string, token: string) {
+      const response = await CommentService.fetchComments(ideaId, token)
+
+      if (response instanceof Error) {
+        return (this.commentsError = response.message)
+      }
+
+      this.comments = response
+    },
+
     async postComment(comment: Comment, ideaId: string, token: string) {
       const response = await CommentService.postComment(comment, ideaId, token)
 
@@ -35,8 +45,8 @@ const useCommentsStore = defineStore('comments', {
       }
     },
 
-    async deleteComment(commentId: string, ideaId: string, token: string) {
-      const response = await CommentService.deleteComment(commentId, ideaId, token)
+    async deleteComment(commentId: string, token: string) {
+      const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
         return (this.commentsError = response.message)

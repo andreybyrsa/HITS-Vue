@@ -24,7 +24,7 @@ const getInitiatorIdea = async (
   token: string,
 ): Promise<Idea | Error> => {
   return await axios
-    .get(`${IDEAS_URL}/initiator/${id}`, {
+    .get(`${IDEAS_URL}/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -39,7 +39,7 @@ const postInitiatorIdea = async (
   token: string,
 ): Promise<Idea | Error> => {
   return await axios
-    .post(`${IDEAS_URL}/initiator/add`, idea, {
+    .post(`${IDEAS_URL}/add`, idea, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
