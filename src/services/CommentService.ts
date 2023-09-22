@@ -36,11 +36,10 @@ const postComment = async (
 
 const deleteComment = async (
   commentId: string,
-  ideaId: string,
   token: string,
 ): Promise<undefined | Error> => {
   return await axios
-    .delete(`${COMMENT_URL}/delete/${ideaId}/${commentId}`, {
+    .delete(`${COMMENT_URL}/delete/${commentId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
