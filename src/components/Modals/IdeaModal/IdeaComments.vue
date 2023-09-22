@@ -36,9 +36,13 @@ const {
 } = useNotification()
 
 onMounted(async () => {
-  if (props.idea) {
+  const currentUser = user.value
+
+  if (currentUser?.token && props.idea) {
+    const { token } = currentUser
     const { id } = props.idea
 
+    await commentsStore.fetchComments(id, token)
     await commentsStore.connectRsocket(id)
   }
 })
@@ -80,10 +84,9 @@ const handleSendComment = handleSubmit(async (values) => {
 const handleDeleteComment = async (commentId: string) => {
   const currentUser = user.value
 
-  if (currentUser?.token && props.idea) {
+  if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = props.idea
-    await commentsStore.deleteComment(commentId, id, token)
+    await commentsStore.deleteComment(commentId, token)
   }
 }
 
@@ -118,9 +121,8 @@ const onIntersectionObserver = async (
       <Typography class-name="fs-6 px-3">Комментарии</Typography>
     </div>
 
-    <IdeaCommentsPlaceholder v-if="!rsocketIsConnected" />
     <div
-      v-else
+      v-if="rsocketIsConnected"
       class="d-grid gap-3 pt-3 px-3 w-100"
     >
       <CommentVue
@@ -132,6 +134,7 @@ const onIntersectionObserver = async (
         @delete-comment="handleDeleteComment(comment.id)"
       />
     </div>
+    <IdeaCommentsPlaceholder v-else />
 
     <form class="comment-form p-3">
       <Input

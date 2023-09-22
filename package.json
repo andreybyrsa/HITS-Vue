@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@types/rsocket-core": "^0.0.7",
+    "@types/rsocket-flowable": "^0.0.5",
     "@types/rsocket-websocket-client": "^0.0.4",
     "@vee-validate/yup": "^4.11.1",
     "@vueuse/components": "^10.3.0",
@@ -19,6 +20,7 @@
     "core-js": "^3.8.3",
     "pinia": "^2.1.6",
     "rsocket-core": "^0.0.27",
+    "rsocket-flowable": "^0.0.27",
     "rsocket-websocket-client": "^0.0.27",
     "vee-validate": "^4.11.1",
     "vue": "^3.3.0",
