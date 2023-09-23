@@ -47,6 +47,12 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Группы пользователей',
         iconName: 'bi bi-people',
       },
+      {
+        id: 3,
+        to: '/admin/skills',
+        text: 'Справочник компетенций',
+        iconName: 'bi bi-person-badge',
+      },
     ],
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],

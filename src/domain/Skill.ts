@@ -3,7 +3,8 @@ type SkillType = 'LANGUAGE' | 'FRAMEWORK' | 'DATABASE' | 'DEVOPS'
 interface Skill {
   id: string
   name: string
-  role: SkillType
+  type: SkillType
+  status: string
 }
 
 export { Skill, SkillType }

@@ -60,6 +60,12 @@ function checkMark(row: Idea) {
         Активные
       </div>
       <div
+        v-if="$slots.status"
+        class="table__header-cell col-1"
+      >
+        Статус
+      </div>
+      <div
         v-for="column in columns"
         :key="column.key"
         :class="`table__header-cell col ${column.className ?? ''}`"
@@ -94,6 +100,15 @@ function checkMark(row: Idea) {
         />
       </div>
       <div
+        v-if="$slots.status"
+        class="table__row-cell col-1"
+      >
+        <slot
+          :item="row"
+          name="status"
+        />
+      </div>
+      <div
         v-for="column in columns"
         :key="column.key"
         :class="`${getCellStyle(column.getStyle, row[column.key])} ${
@@ -108,12 +123,12 @@ function checkMark(row: Idea) {
       </div>
       <div
         v-if="$slots.actions"
-        class="table__row-cell col-1"
+        class="table__row-cell bg-light col-1"
       >
         <slot
           :item="row"
           name="actions"
-          class="table__action-cell"
+          class="table__action-cell bg-light"
         >
         </slot>
       </div>
@@ -135,7 +150,6 @@ function checkMark(row: Idea) {
 
   &__row-cell {
     max-height: 100px;
-
     overflow: auto;
 
     @include flexible(center, center);
@@ -143,7 +157,7 @@ function checkMark(row: Idea) {
 
   &__row-cell:last-child {
     max-height: 100px;
-
+    display: flex;
     overflow: hidden;
 
     @include flexible(center, center);
