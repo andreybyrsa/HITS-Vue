@@ -1,12 +1,8 @@
 interface Notification {
   id: string
-  notification: string
-  read: boolean
-  closed: boolean
+  title: string
+  message: string
+  readed: boolean
 }
 
-interface newNotification {
-  id: string
-}
-
-export { Notification, newNotification }
+export default Notification

@@ -15,6 +15,7 @@ import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 const searchValue = ref('')
 

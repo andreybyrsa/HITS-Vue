@@ -1,37 +1,33 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
-import { Notification } from '@Domain/Notification'
 
 const useNotificationsStore = defineStore('notification', {
   state: (): InitialState => ({
-    currentNotification: null,
-    notifications: [] as Notification[],
+    notifications: [],
+    newNotifications: [],
   }),
   actions: {
-    async createNotification(notification: string): Promise<void> {
+    createNotification(title: string, message: string) {
       const id = String(Math.random())
-      const newNotification: Notification = {
+      const notification = {
         id,
-        notification,
-        read: false,
-        closed: false,
+        title,
+        message,
+        readed: false,
       }
-      this.notifications.push(newNotification)
+      this.newNotifications.push(notification)
+      this.notifications.unshift(notification)
     },
 
-    markNotificationAsRead(id: string): void {
+    readNotification(id: string) {
       const notification = this.notifications.find((n) => n.id === id)
       if (notification) {
-        notification.read = true
+        notification.readed = true
       }
     },
 
-    closeNotification(id: string): void {
-      const notification = this.notifications.find((n) => n.id === id)
-      if (notification) {
-        notification.closed = true
-        notification.read = true
-      }
+    closeNotification(id: string) {
+      this.newNotifications = this.newNotifications.filter((n) => n.id !== id)
     },
   },
 })

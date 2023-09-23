@@ -1,7 +1,7 @@
-import { Notification } from '@Domain/Notification'
+import Notification from '@Domain/Notification'
 
 interface InitialState {
-  currentNotification: Notification | null
+  newNotifications: Notification[]
   notifications: Notification[]
 }
 
