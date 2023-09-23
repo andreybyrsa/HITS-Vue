@@ -1,13 +1,15 @@
 import { User } from './User'
 
 interface UserGroup {
-  id: number
+  id: string
   name: string
   users: User[]
+  isExperts?: boolean
+  isProjectOffice?: boolean
 }
 
 interface UpdateUserGroup {
-  id: number
+  id: string
   newName: string
   newUsers: User[]
 }

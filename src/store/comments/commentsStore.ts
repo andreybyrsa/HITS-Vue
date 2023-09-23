@@ -1,39 +1,51 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
+import useWebSocket from '@Hooks/useWebSocket'
+
 import Comment from '@Domain/Comment'
 
 import CommentService from '@Services/CommentService'
 
 const useCommentsStore = defineStore('comments', {
-  state: (): InitialState => ({ comments: [], commentsError: '' }),
+  state: (): InitialState => ({
+    comments: [],
+    rsocketIsConnected: false,
+    closeRsocket: () => null,
+    commentsError: '',
+  }),
   actions: {
-    async fetchIdeaComments(ideaId: number, token: string) {
-      const response = await CommentService.fetchIdeaComments(ideaId, token)
+    async connectRsocket(ideaId: string) {
+      const { data, isConnected, closeConnection } = await useWebSocket<Comment>(
+        `comment.${ideaId}.receive`,
+      )
+
+      if (isConnected.value === true) {
+        this.comments = data.value
+        this.rsocketIsConnected = isConnected.value
+        this.closeRsocket = closeConnection
+      }
+    },
+
+    async fetchComments(ideaId: string, token: string) {
+      const response = await CommentService.fetchComments(ideaId, token)
 
       if (response instanceof Error) {
         return (this.commentsError = response.message)
       }
 
-      this.comments = response.comments.sort((prevComment, comment) => {
-        const prevDate = new Date(prevComment.dateCreated).getTime()
-        const date = new Date(comment.dateCreated).getTime()
-
-        return prevDate - date
-      })
+      this.comments = response
     },
 
-    async postComment(comment: Comment, ideaId: number, token: string) {
-      const response = await CommentService.addComment(comment, ideaId, token)
+    async postComment(comment: Comment, ideaId: string, token: string) {
+      const response = await CommentService.postComment(comment, ideaId, token)
 
       if (response instanceof Error) {
         return (this.commentsError = response.message)
       }
-
-      this.comments.push(response)
     },
 
-    async deleteComment(commentId: number, token: string) {
+    async deleteComment(commentId: string, token: string) {
       const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
@@ -43,7 +55,7 @@ const useCommentsStore = defineStore('comments', {
       this.comments = this.comments.filter((comment) => comment.id !== commentId)
     },
 
-    async checkComment(email: string, commentId: number, token: string) {
+    async checkComment(email: string, commentId: string, token: string) {
       const response = await CommentService.checkComment(commentId, token)
 
       if (response instanceof Error) {

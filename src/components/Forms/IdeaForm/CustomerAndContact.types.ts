@@ -1,6 +1,16 @@
+import { Idea } from '@Domain/Idea'
+
 interface CustomerAndContact {
-  customer: string
-  contactPerson: string
+  idea: Idea
 }
 
-export default CustomerAndContact
+interface CustomerAndContactEmits {
+  (
+    event: 'set-value',
+    field: keyof Idea,
+    value: string | number,
+    shouldValidate?: boolean,
+  ): void
+}
+
+export { CustomerAndContact, CustomerAndContactEmits }

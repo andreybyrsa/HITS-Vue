@@ -9,12 +9,12 @@ import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import Table from '@Components/Table/Table.vue'
+import Select from '@Components/Inputs/Select/Select.vue'
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
-
-import Select from '@Components/Inputs/Select/Select.vue'
 
 const searchValue = ref('')
 
@@ -62,11 +62,16 @@ const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
 
+const selectedOption = ref()
+
 userStore.checkLastActivity()
 
-const { handleSubmit } = useForm({
+const { values, handleSubmit } = useForm({
   validationSchema: {
     component: (value: string) => value?.length || 'Обязательно к заполнению',
+  },
+  initialValues: {
+    combobox: [],
   },
 })
 
@@ -101,6 +106,21 @@ function handleCloseModal() {
       >
         Submit
       </Button>
+
+      {{ values }}
+
+      <Combobox
+        name="combobox"
+        :options="[
+          { lang: 'Java', name: 'Джава' },
+          { lang: 'React', name: 'Реакт' },
+          { lang: 'Vue', name: 'Вью' },
+          { lang: 'Mongo DB', name: 'Монго ДБ' },
+        ]"
+        :display-by="['lang']"
+        label="Стек"
+        placeholder="Выберите стек технологий"
+      />
 
       <Button
         class-name="btn-primary"

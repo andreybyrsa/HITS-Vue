@@ -1,34 +1,36 @@
 import { defineStore } from 'pinia'
+import InitialState from './initialState'
+import { Notification } from '@Domain/Notification'
 
-import NotificationStore from './initialState'
-
-const useNotificationsStore = defineStore('notifications', {
-  state: (): NotificationStore => ({
-    notifications: [],
-    unreadedNotifications: [],
-    readedNotifications: [],
+const useNotificationsStore = defineStore('notification', {
+  state: (): InitialState => ({
+    currentNotification: null,
+    notifications: [] as Notification[],
   }),
   actions: {
-    createNotification(message: string, type?: 'success' | 'error') {
-      const notificationId = this.notifications.length
-        ? Math.max(...this.notifications.map((notification) => notification.id)) + 1
-        : 0
-
-      const notification = { id: notificationId, type, message }
-
-      this.unreadedNotifications.push(notification)
-      this.notifications.push(notification)
+    async createNotification(notification: string): Promise<void> {
+      const id = String(Math.random())
+      const newNotification: Notification = {
+        id,
+        notification,
+        read: false,
+        closed: false,
+      }
+      this.notifications.push(newNotification)
     },
 
-    readNotification(id: number) {
-      const notificationIndex = this.unreadedNotifications.findIndex(
-        (notification) => notification.id === id,
-      )
-      const currentNotification = this.unreadedNotifications[notificationIndex]
+    markNotificationAsRead(id: string): void {
+      const notification = this.notifications.find((n) => n.id === id)
+      if (notification) {
+        notification.read = true
+      }
+    },
 
-      if (currentNotification) {
-        this.readedNotifications.push(currentNotification)
-        this.unreadedNotifications.splice(notificationIndex, 1)
+    closeNotification(id: string): void {
+      const notification = this.notifications.find((n) => n.id === id)
+      if (notification) {
+        notification.closed = true
+        notification.read = true
       }
     },
   },

@@ -7,7 +7,7 @@ import {
   TextareaEmits,
 } from '@Components/Inputs/Textarea/Textarea.types'
 
-import HTMLInputEvent from '@Domain/HTMLInputEvent'
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 const props = defineProps<TextareaProps>()
 
@@ -56,7 +56,7 @@ const LabelClassName = computed(() => [
         :class="TextareaClassName"
         :name="name"
         v-model="value"
-        @change="(event) => emit('change', event as HTMLInputEvent)"
+        @change="(event) => emit('change', event as HTMLTargetEvent)"
         @focus="emit('focus')"
         @blur="emit('blur')"
         :placeholder="placeholder"
@@ -76,3 +76,9 @@ const LabelClassName = computed(() => [
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.form-control::placeholder {
+  color: $black-color;
+}
+</style>

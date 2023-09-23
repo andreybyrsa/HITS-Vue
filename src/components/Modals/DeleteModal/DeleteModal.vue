@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { watch } from 'vue'
-import { storeToRefs } from 'pinia'
 import { useMagicKeys } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
@@ -9,18 +8,11 @@ import Typography from '@Components/Typography/Typography.vue'
 import {
   DeleteModalEmits,
   DeleteModalProps,
-} from '@Components/Modals/DeleteIdeaModal/DeleteModal.types'
+} from '@Components/Modals/DeleteModal/DeleteModal.types'
 
-import useUserStore from '@Store/user/userStore'
-
-import IdeasService from '@Services/IdeasService'
-
-const props = defineProps<DeleteModalProps>()
+defineProps<DeleteModalProps>()
 
 const emit = defineEmits<DeleteModalEmits>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const { enter } = useMagicKeys()
 
@@ -28,14 +20,9 @@ watch(enter, () => {
   emit('close-modal')
 })
 
-async function handleDeleteIdea() {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    await IdeasService.deleteInitiatorIdea(props.ideaId, token)
-    emit('close-modal')
-    window.location.reload()
-  }
+async function handleDelete() {
+  emit('delete')
+  emit('close-modal')
 }
 </script>
 
@@ -49,9 +36,9 @@ async function handleDeleteIdea() {
         Вы действительно хотите удалить?
       </Typography>
       <Button
-        @click="handleDeleteIdea"
+        @click="handleDelete"
         class-name="btn-danger w-100"
-        >Удалить идею
+        >Удалить
       </Button>
     </div>
   </ModalLayout>

@@ -15,6 +15,7 @@ const { value, errorMessage } = useField(() => props.name, undefined, {
   checkedValue: props.value,
   validateOnValueUpdate: props.validateOnUpdate ?? false,
   validateOnMount: false,
+  controlled: props.noFormControlled ? false : true,
   syncVModel: true,
 })
 

@@ -1,9 +1,8 @@
-import { Notification } from '@Components/Modals/NotificationModal/NotificationModal.types'
+import { Notification } from '@Domain/Notification'
 
-interface NotificationStore {
+interface InitialState {
+  currentNotification: Notification | null
   notifications: Notification[]
-  unreadedNotifications: Notification[]
-  readedNotifications: Notification[]
 }
 
-export default NotificationStore
+export default InitialState

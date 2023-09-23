@@ -1,9 +1,11 @@
 import StatusTypes from '@Domain/IdeaStatus'
-import Comment from '@Domain/Comment'
+import { UserGroup } from '@Domain/Group'
+import { Skill } from '@Domain/Skill'
 
 interface Idea {
-  id: number
-  initiator: string
+  id: string
+  createdAt: Date
+  modifiedAt: Date
 
   name: string
   problem: string
@@ -12,21 +14,22 @@ interface Idea {
   result: string
   projectType: 'INSIDE' | 'OUTSIDE'
   status: StatusTypes
+  stack?: Skill[]
 
-  preAssessment: number
-  realizability: number
-  suitability: number
-  budget: number
-  rating: number
-
-  dateCreated: Date
-  dateModified: Date
-
-  experts?: string[]
+  initiator: string
+  projectOffice: UserGroup[]
+  experts: UserGroup[]
+  confirmedBy: string[]
   customer: string
   contactPerson: string
 
-  comments: Comment[]
+  preAssessment: number
+  rating: number
+  technicalRealizability: number
+  suitability: number
+  budget: number
+  marketValue: number
+  originality: number
 }
 
 interface Change {
