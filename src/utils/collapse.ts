@@ -22,7 +22,6 @@ function rotateIcon(icon: HTMLElement | null, degree: number) {
 
 function clickHandler(event: Event) {
   const element = event.currentTarget as HTMLElement
-  console.log(element)
   const currentCollapse = collapseDirective.collapses?.find(
     (collapse) => collapse.element == element,
   )

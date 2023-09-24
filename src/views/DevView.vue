@@ -72,6 +72,7 @@ const { values, handleSubmit } = useForm({
   },
   initialValues: {
     combobox: [],
+    component: '',
   },
 })
 
