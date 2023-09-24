@@ -1,12 +1,16 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useDateFormat, useToggle } from '@vueuse/core'
-import { Change } from '@Domain/Idea'
+
 import { TableColumn } from '@Components/Table/Table.types'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Table from '@Components/Table/Table.vue'
-import LastActivityNoteProps from '@Views/LastActivityNote/LastActivityNote.types'
+
+import {
+  LastActivityNoteProps,
+  Change,
+} from '@Views/LastActivityNote/LastActivityNote.types'
 
 const props = defineProps<LastActivityNoteProps>()
 

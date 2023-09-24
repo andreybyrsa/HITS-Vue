@@ -19,34 +19,28 @@ interface Idea {
   initiator: string
   projectOffice: UsersGroup[]
   experts: UsersGroup[]
-  confirmedBy: string[]
   customer: string
   contactPerson: string
 
-  preAssessment: number
-  rating: number
   technicalRealizability: number
   suitability: number
   budget: number
+  preAssessment: number
+  rating: number
+}
+
+interface Rating {
+  id: string
+  ideaId: string
+  expert: string
+
   marketValue: number
   originality: number
+  technicalRealizability: number
+  suitability: number
+  budget: number
+  rating: number
+  confirmed: boolean
 }
 
-interface Change {
-  name: string
-  date: Date
-  who: string
-  number: number
-  doing: string
-}
-
-interface Risk {
-  status: StatusTypes
-  risk: number
-  marketValue: string
-  originality: string
-  techniclFeasibility: string
-  understanding: string
-}
-
-export { Idea, Risk, Change }
+export { Idea, Rating }
