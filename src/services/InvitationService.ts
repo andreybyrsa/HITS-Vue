@@ -10,8 +10,7 @@ import {
 
 import Success from '@Domain/ResponseMessage'
 
-const INVITATION_URL =
-  process.env.VUE_APP_INVITATION_API_URL || 'http://localhost:3000'
+const INVITATION_URL = 'http://localhost:3000/api/v1/profile'
 
 const getInvitationInfo = async (
   slug: string | string[],

@@ -25,6 +25,17 @@ const LabelClassName = computed(() => [
   'form-label text-primary',
   props.labelClassName,
 ])
+
+// const SelectBind = computed(() => {
+//   if (props.tooltip) {
+//     return {
+//       'data-bs-toggle': 'tooltip',
+//       'data-bs-placement': 'top',
+//       'data-bs-title': props.tooltip,
+//     }
+//   }
+//   return null
+// })
 </script>
 
 <template>

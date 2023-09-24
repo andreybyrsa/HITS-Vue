@@ -4,8 +4,7 @@ import { UserGroupData } from '@Domain/ManageUsers'
 import Success from '@Domain/ResponseMessage'
 import { UserGroup } from '@Domain/Group'
 
-const MANAGE_GROUPS_URL =
-  process.env.VUE_APP_MANAGE_GROUPS_API_URL || 'http://localhost:3000'
+const MANAGE_GROUPS_URL = 'http://localhost:3000/api/v1/group'
 
 const createUsersGroup = async (
   usersData: UserGroupData,
