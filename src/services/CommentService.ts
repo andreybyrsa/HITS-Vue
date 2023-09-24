@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import Comment from '@Domain/Comment'
 
-const COMMENT_URL = process.env.VUE_APP_COMMENT_API_URL || 'http://localhost:3000'
+const COMMENT_URL = 'http://localhost:3000/api/v1/comment'
 
 const fetchComments = async (
   ideaId: string,
@@ -22,7 +22,7 @@ const postComment = async (
   comment: Comment,
   ideaId: string,
   token: string,
-): Promise<undefined | Error> => {
+): Promise<Comment | Error> => {
   return await axios
     .post(`${COMMENT_URL}/send/${ideaId}`, comment, {
       headers: { Authorization: `Bearer ${token}` },
@@ -36,11 +36,10 @@ const postComment = async (
 
 const deleteComment = async (
   commentId: string,
-  ideaId: string,
   token: string,
 ): Promise<undefined | Error> => {
   return await axios
-    .delete(`${COMMENT_URL}/delete/${ideaId}/${commentId}`, {
+    .delete(`${COMMENT_URL}/delete/${commentId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

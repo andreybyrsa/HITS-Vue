@@ -14,8 +14,6 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
-// import IdeasService from '@Services/IdeasService'
-
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 

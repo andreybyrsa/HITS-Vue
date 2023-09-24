@@ -16,15 +16,27 @@ const useCommentsStore = defineStore('comments', {
   }),
   actions: {
     async connectRsocket(ideaId: string) {
-      const { data, isConnected, closeConnection } = await useWebSocket<Comment>(
+      const { isConnected, closeConnection } = await useWebSocket<Comment[]>(
         `comment.${ideaId}.receive`,
+        this.comments,
       )
 
       if (isConnected.value === true) {
-        this.comments = data.value
-        this.rsocketIsConnected = isConnected.value
+        this.rsocketIsConnected = true
         this.closeRsocket = closeConnection
       }
+    },
+
+    async fetchComments(ideaId: string, token: string) {
+      const response = await CommentService.fetchComments(ideaId, token)
+
+      if (response instanceof Error) {
+        this.commentsError = response.message
+        return response
+      }
+
+      this.comments = response
+      return response
     },
 
     async postComment(comment: Comment, ideaId: string, token: string) {
@@ -33,10 +45,14 @@ const useCommentsStore = defineStore('comments', {
       if (response instanceof Error) {
         return (this.commentsError = response.message)
       }
+
+      if (!this.rsocketIsConnected) {
+        this.comments.push(response)
+      }
     },
 
-    async deleteComment(commentId: string, ideaId: string, token: string) {
-      const response = await CommentService.deleteComment(commentId, ideaId, token)
+    async deleteComment(commentId: string, token: string) {
+      const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
         return (this.commentsError = response.message)
