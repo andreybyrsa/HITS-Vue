@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { SkillType, Skill } from '@Domain/Skill'
 import { storeToRefs } from 'pinia'
 import SkillsService from '@Services/SkillService'
@@ -18,51 +18,81 @@ import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 
+import useNotification from '@Hooks/useNotification'
+import { useForm } from 'vee-validate'
+
+import AddSkillModal from './AddSkillModal.vue'
+
 const { user } = storeToRefs(userStore)
 
-const currentSkillId = ref('')
 const isOpenedDeleteModal = ref(false)
 
+const isOpenAddSkillModal = ref(false)
+
+const isOpenUpdateSkillModal = ref(false)
 const searchValue = ref('')
+
+const currentSkillId = ref('')
+
+const {
+  notificationOptions,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 const columns = [
   { key: 'name', label: 'Название' },
   { key: 'type', label: 'Тип' },
 ]
 
+const skills = ref<Skill[]>([])
+
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.getAllSkills(token)
+    const responseSkill = await SkillsService.getAllSkills(token)
 
-    const skillsArray = response
+    if (responseSkill instanceof Error) {
+      return handleOpenNotification('error', responseSkill.message)
+    }
+    skills.value = responseSkill
   }
 })
 
-const data = [
-  {
-    status: 'Утверждено',
-    name: 'JavaScript',
-    type: 'Language',
-  },
-  {
-    status: 'На рассмотрении',
-    name: 'Vue',
-    type: 'Framework',
-  },
-  {
-    status: 'Утверждено',
-    name: 'SQL',
-    type: 'Database',
-  },
-  {
-    status: 'Утверждено',
-    name: 'Shototam',
-    type: 'Devops',
-  },
-]
+const handleDeleteSkill = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await SkillsService.deleteSkill(currentSkillId.value, token)
+
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
+    skills.value = skills.value.filter((skill) => skill.id !== currentSkillId.value)
+  }
+}
+
+const handleConfirmSkill = async (id: string) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await SkillsService.confirmSkill(id, token)
+
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
+
+    const currentSkill = skills.value.find((skill) => skill.id === id)
+    if (currentSkill) {
+      currentSkill.confirmed = true
+    }
+  }
+}
 
 const availableTypes = ['Language', 'Framework', 'Database', 'Devops']
 const availableStatuses = ['Утверждено', 'На рассмотрении']
@@ -78,13 +108,30 @@ const filteredStatuses = defineModel<Skill[]>('filteredStatuses', {
   required: true,
 })
 
-function openDeleteSkillModal(id?: string) {
+function openDeleteSkillModal(id: string) {
   isOpenedDeleteModal.value = true
   currentSkillId.value = id
 }
 
 function handleCloseDeleteModal() {
   isOpenedDeleteModal.value = false
+}
+
+function openAddSkillModal() {
+  isOpenAddSkillModal.value = true
+}
+
+function handleCloseAddSkillModal() {
+  isOpenAddSkillModal.value = false
+}
+
+function openUpdateSkillModal(id: string) {
+  isOpenUpdateSkillModal.value = true
+  currentSkillId.value = id
+}
+
+function handleCloseUpdateSkillModal() {
+  isOpenUpdateSkillModal.value = false
 }
 </script>
 
@@ -95,7 +142,7 @@ function handleCloseDeleteModal() {
     </Typography>
     <div class="competencies-menu-form__content w-100">
       <div class="competencies-menu-form__search">
-        <div class="main p-2 mb-4 rounded bg-primary">
+        <div class="search-bar p-2 mb-4 rounded bg-primary d-flex">
           <Input
             name="search"
             v-model="searchValue"
@@ -161,23 +208,30 @@ function handleCloseDeleteModal() {
               </DropDown>
             </template>
           </Input>
+          <Button
+            class-name="px-2 py-2 border shadow h-100 bg-white ms-2"
+            @click="openAddSkillModal"
+            prepend-icon-name="bi bi-plus-lg"
+          >
+            Добавить
+          </Button>
         </div>
       </div>
       <Table
         :columns="columns"
-        :data="skillsArray"
+        :data="skills"
         :search-value="searchValue"
         :filter-value="columns[0].key"
       >
         <template #status="{ item }">
           <Icon
-            v-if="item.status == 'Утверждено'"
+            v-if="item.confirmed == true"
             class-name="icons bi bi-circle-fill text-success bg-light fs-6"
             title="Утверждено"
           />
 
           <Icon
-            v-if="item.status == 'На рассмотрении'"
+            v-if="item.confirmed == false"
             class-name="icons bi bi-circle-fill text-danger bg-light fs-6"
             title="На рассмотрении"
           />
@@ -192,34 +246,37 @@ function handleCloseDeleteModal() {
             <DropDown>
               <ul class="list-group list-group-flush">
                 <li
-                  v-if="item.status == 'Утверждено'"
+                  v-if="item.confirmed == true"
                   class="list-group-item list-group-item-action p-1"
+                  @click="openUpdateSkillModal(item.id)"
                 >
                   <Button prepend-icon-name="bi bi-pencil-square text-primary"
                     >Редактировать</Button
                   >
                 </li>
                 <li
-                  v-if="item.status == 'Утверждено'"
+                  v-if="item.confirmed == true"
                   class="list-group-item list-group-item-action p-1"
                 >
                   <Button
                     prepend-icon-name="bi bi-trash text-danger"
-                    @click="openDeleteSkillModal"
+                    @click="openDeleteSkillModal(item.id)"
                     >Удалить</Button
                   >
                 </li>
                 <li
-                  v-if="item.status == 'На рассмотрении'"
+                  v-if="item.confirmed == false"
                   class="list-group-item list-group-item-action p-1"
+                  @click="handleConfirmSkill(item.id)"
                 >
                   <Button prepend-icon-name="bi bi-check-lg text-success fs-4"
                     >Одобрить</Button
                   >
                 </li>
                 <li
-                  v-if="item.status == 'На рассмотрении'"
+                  v-if="item.confirmed == false"
                   class="list-group-item list-group-item-action p-1"
+                  @click="openDeleteSkillModal(item.id)"
                 >
                   <Button prepend-icon-name="bi bi-x-lg text-danger "
                     >Отклонить</Button
@@ -234,6 +291,20 @@ function handleCloseDeleteModal() {
     <DeleteModal
       :is-opened="isOpenedDeleteModal"
       @close-modal="handleCloseDeleteModal"
+      @delete="handleDeleteSkill"
+    />
+    <AddSkillModal
+      :is-opened="isOpenAddSkillModal"
+      @close-modal="handleCloseAddSkillModal"
+      :status="'ADD'"
+      v-model="skills"
+    />
+    <AddSkillModal
+      :is-opened="isOpenUpdateSkillModal"
+      @close-modal="handleCloseUpdateSkillModal"
+      :currentId="currentSkillId"
+      :status="'EDIT'"
+      v-model="skills"
     />
   </form>
 </template>
@@ -279,6 +350,10 @@ function handleCloseDeleteModal() {
   width: 80%;
 }
 
+.search-bar {
+  width: 80%;
+  @include flexible(center, stretch, $gap: 3);
+}
 .icons {
   background-color: black;
 }

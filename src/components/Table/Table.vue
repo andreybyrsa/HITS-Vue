@@ -13,11 +13,11 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const searchedValue = computed(() => {
-  return props.data.filter((element) => {
-    const elementData = element.name.toLowerCase().trim()
+  return props.data?.filter((element) => {
+    const elementData = element?.name?.toLowerCase().trim()
     const currentSearchedValue = props.searchValue?.toLowerCase().trim()
 
-    const isIncludesSearcheValue = elementData.includes(currentSearchedValue)
+    const isIncludesSearcheValue = elementData?.includes(currentSearchedValue)
 
     return isIncludesSearcheValue
   })

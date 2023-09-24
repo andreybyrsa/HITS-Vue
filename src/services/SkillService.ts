@@ -75,12 +75,28 @@ const confirmSkill = async (
     })
 }
 
+const updateSkill = async (
+  skill: Skill,
+  skillId: string,
+  token: string,
+): Promise<Skill | Error> => {
+  return await axios
+    .put(`${SKILLS_URL}/update/${skillId}`, skill, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка редактирования компетенции'
+      return new Error(error)
+    })
+}
+
 const deleteSkill = async (
   skillId: string,
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .delete(`${SKILLS_URL}/admin/delete/${skillId}`, {
+    .delete(`${SKILLS_URL}/delete/${skillId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -99,6 +115,7 @@ const SkillsService = {
 
   confirmSkill,
   deleteSkill,
+  updateSkill,
 }
 
 export default SkillsService

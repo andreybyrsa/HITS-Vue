@@ -4,7 +4,7 @@ interface Skill {
   id: string
   name: string
   type: SkillType
-  status: string
+  confirmed: boolean
 }
 
 export { Skill, SkillType }

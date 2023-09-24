@@ -6,7 +6,7 @@ import {
 import { Skill, SkillType } from '@Domain/Skill'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
-
+import { ref, watch } from 'vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
@@ -17,6 +17,8 @@ import Validation from '@Utils/Validation'
 import useUserStore from '@Store/user/userStore'
 import SkillsService from '@Services/SkillService'
 import useNotification from '@Hooks/useNotification'
+
+const currentSkillId = ref('')
 
 const SkillTypeOptions = [
   {
@@ -42,12 +44,12 @@ const emit = defineEmits<AddSkillModalEmits>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const { handleSubmit } = useForm<Skill>({
+const { handleSubmit, setValues } = useForm<Skill>({
   validationSchema: {
-    SkillName: (value: string) =>
-      Validation.checkName(value) || 'Неверно введена почта',
-    SkillType: (value: SkillType) =>
-      Validation.checkName(value) || 'Неверно введено имя',
+    name: (value: string) =>
+      Validation.checkName(value) || 'Неверно введено название компетенции',
+    type: (value: SkillType) =>
+      Validation.checkName(value) || 'Неверно выбран тип компетенции',
   },
 })
 
@@ -58,37 +60,54 @@ const {
   handleCloseNotification,
 } = useNotification()
 
-// const handleAddSkill = handleSubmit(async (values) => {
-//   const currentUser = user.value
+const skills = defineModel<Skill[]>({ required: true })
 
-//   if (currentUser?.token) {
-//     const { token } = currentUser
-//     const response = await SkillsService.addSkill(values, token)
+const handleAddSkill = handleSubmit(async (values) => {
+  const currentUser = user.value
 
-//     if (response instanceof Error) {
-//       return handleOpenNotification('error', response.message)
-//     }
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await SkillsService.addSkill(values, token)
 
-//     emit('save-user', values, response.success)
-//     emit('close-modal')
-//   }
-// })
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
 
-// const handleAddSkill = handleSubmit(async (values) => {
-//   const currentUser = user.value
+    skills.value.push(response)
+    emit('close-modal')
+  }
+})
 
-//   if (currentUser?.token) {
-//     const { token } = currentUser
-//     const response = await ManageUsersService.updateUserInfo(values, token)
+watch(
+  () => props.currentId,
+  (id) => {
+    if (id && props.status == 'EDIT') {
+      const currentSkill = skills.value.find((skill) => skill.id === id)
+      if (currentSkill) {
+        setValues({ ...currentSkill })
+      }
+    }
+  },
+)
+const handleUpdateSkill = handleSubmit(async (values) => {
+  const currentUser = user.value
 
-//     if (response instanceof Error) {
-//       return handleOpenNotification('error', response.message)
-//     }
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await SkillsService.updateSkill(values, props.currentId, token)
+    console.log(props.currentId)
+    if (response instanceof Error) {
+      return handleOpenNotification('error', response.message)
+    }
 
-//     emit('save-user', values, response.success)
-//     emit('close-modal')
-//   }
-// })
+    const skillIndex = skills.value.findIndex((skill) => skill.id === values.id)
+    if (skillIndex !== -1) {
+      skills.value.splice(skillIndex, 1, response)
+    }
+
+    emit('close-modal')
+  }
+})
 </script>
 
 <template>
@@ -109,7 +128,7 @@ const {
 
         <Typography
           v-if="props.status === 'EDIT'"
-          class-name="fs-3 text-primary "
+          class-name="fs-4 text-primary "
           >Редактировать компетенцию</Typography
         >
 
@@ -121,15 +140,15 @@ const {
 
       <div class="add-skill-modal__inputs w-100">
         <Input
-          name="SkillName"
+          name="name"
           validate-on-update
           class-name="rounded-end"
-          placeholder="введите название компетенции"
+          placeholder="Введите название компетенции"
           label="Название компетенции"
         ></Input>
 
         <Select
-          name="SkillType"
+          name="type"
           validate-on-update
           :options="SkillTypeOptions"
           label="Тип компетенции*"
@@ -137,9 +156,18 @@ const {
         ></Select>
 
         <Button
+          v-if="props.status == 'ADD'"
           type="submit"
           class-name="btn-primary w-100"
           @click="handleAddSkill"
+        >
+          Сохранить
+        </Button>
+        <Button
+          v-if="props.status == 'EDIT'"
+          type="submit"
+          class-name="btn-primary w-100"
+          @click="handleUpdateSkill"
         >
           Сохранить
         </Button>
