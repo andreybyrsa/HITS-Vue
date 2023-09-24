@@ -13,16 +13,17 @@ import Button from '@Components/Button/Button.vue'
 import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
 import { storeToRefs } from 'pinia'
 import useUserStore from '@Store/user/userStore'
-import useIdeasStore from '@Store/ideas/ideasStore'
-import IdeasService from '@Services/IdeasService'
 import { Rating } from '@Domain/Idea'
 import RatingService from '@Services/RatingService'
 import { watchImmediate } from '@vueuse/core'
-const ideasStore = useIdeasStore()
+
 const props = defineProps<ExperCalculatorProps>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const initialOverallRating = ref('вычисление')
+const rating = ref<Rating>()
+
+const isLoading = ref(false)
 const { values, handleSubmit, setFieldValue, setValues } = useForm<Rating>({
   validationSchema: {
     rating: (value: number) => value >= 0 || 'Поля не заполнены',
@@ -55,7 +56,15 @@ const handleConfirmRating = handleSubmit(async (values) => {
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
-    await RatingService.confirmExpertRating(values, id, token)
+    const response = await RatingService.confirmExpertRating(values, id, token)
+
+    if (response instanceof Error) {
+      return
+    }
+
+    if (rating.value) {
+      rating.value.confirmed = true
+    }
   }
 })
 const handleSaveRating = handleSubmit(async (values) => {
@@ -75,38 +84,26 @@ const intervalId = setInterval(() => {
   }
   return (initialOverallRating.value += '.')
 }, 200)
-const rating = ref<Rating>()
-const ideaId = ref('')
-function fetchExpertData(ideaId: string) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const responseData = {
-        ideaId: '123',
-        expert: 'changeemail970@gmail.com',
-        rating: 5,
-        technicalRealizability: 3,
-        suitability: 5,
-        budget: 4,
-        marketValue: null,
-        originality: 3,
-        confirmed: false,
-      }
-      resolve(responseData)
-    }, 1000)
-  })
-}
-const isLoading = ref(false)
 
 watchImmediate(
   () => props.idea,
   async (newIdea) => {
     if (newIdea) {
-      const expertRating = (await fetchExpertData(newIdea.id)) as Rating
-      rating.value = expertRating
-      setValues({
-        ...expertRating,
-      })
-      isLoading.value = true
+      const currentUser = user.value
+      if (currentUser?.token) {
+        const { token } = currentUser
+        const expertRating = await RatingService.getExpertRating(newIdea.id, token)
+
+        if (expertRating instanceof Error) {
+          return
+        }
+
+        rating.value = expertRating
+        setValues({
+          ...expertRating,
+        })
+        isLoading.value = true
+      }
     }
   },
 )

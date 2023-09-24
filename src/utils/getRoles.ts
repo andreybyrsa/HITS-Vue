@@ -5,6 +5,9 @@ interface GetRolesType {
   translatedRoles: {
     [key in RolesTypes]: string
   }
+  translatedGroups: {
+    [key in RolesTypes]: string
+  }
 }
 
 function getRoles(): GetRolesType {
@@ -15,6 +18,12 @@ function getRoles(): GetRolesType {
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперт',
       ADMIN: 'Админ',
+    },
+    translatedGroups: {
+      INITIATOR: 'Инициаторы',
+      PROJECT_OFFICE: 'Проектный офис',
+      EXPERT: 'Эксперты',
+      ADMIN: 'Админы',
     },
   }
 }

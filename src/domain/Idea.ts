@@ -1,6 +1,5 @@
 import StatusTypes from '@Domain/IdeaStatus'
 import UsersGroup from '@Domain/UsersGroup'
-import { Skill } from '@Domain/Skill'
 
 interface Idea {
   id: string
@@ -15,7 +14,7 @@ interface Idea {
   status: StatusTypes
   initiator: string
   projectOffice: UsersGroup[]
-  experts: UsersGroup[]
+  experts: UsersGroup
   customer: string
   contactPerson: string
 

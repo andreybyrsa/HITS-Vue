@@ -72,6 +72,7 @@ const gridColumns: TableColumn[] = [
     key: 'rating',
     label: 'Рейтинг',
     getStyle: getRatingColor,
+    getFormat: getFloorRating,
     click: () => sortRating(props.ideas),
   },
 ]
@@ -114,6 +115,10 @@ function getFormattedDate(date: string) {
     const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
     return formattedDate.value
   }
+}
+
+function getFloorRating(rating: number) {
+  return rating.toFixed(1)
 }
 
 function getRatingColor(rating: number) {

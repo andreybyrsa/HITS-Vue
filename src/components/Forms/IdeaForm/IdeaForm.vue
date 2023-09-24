@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, Ref, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
@@ -39,8 +39,8 @@ const {
   handleCloseNotification,
 } = useNotification()
 
-const experts = ref<Record<'experts', UsersGroup[]>>({
-  experts: [],
+const experts = ref<Record<'experts', UsersGroup | undefined>>({
+  experts: undefined,
 })
 
 onMounted(async () => {
@@ -54,20 +54,19 @@ onMounted(async () => {
       return
     }
 
-    experts.value.experts = response.filter((group) =>
-      group.roles.includes('EXPERT'),
-    )
+    const currentExperts = response.filter((group) => group.roles.includes('EXPERT'))
+    experts.value.experts = currentExperts[0]
   }
 })
 
 const stackTechnologies = ref({
-  stack: props.idea?.stack ?? [],
+  stack: [],
 })
 const preAssessment = ref({
   preAssessment: props.idea?.preAssessment ?? 1,
 })
 
-const { values, setFieldValue, handleSubmit } = useForm<Idea>({
+const { values, setFieldValue, setValues, handleSubmit } = useForm<Idea>({
   validationSchema: {
     name: (value: string) => value?.length > 0 || 'Поле не заполнено',
     projectType: (value: string) => value?.length > 0 || 'Поле не заполнено',
@@ -91,19 +90,44 @@ const { values, setFieldValue, handleSubmit } = useForm<Idea>({
   },
 })
 
-const currentIdea = computed(() => ({
-  ...values,
-  ...experts.value,
-  ...stackTechnologies.value,
-  ...preAssessment.value,
-}))
+watch(
+  () => props.idea,
+  (idea) => {
+    if (idea) {
+      setValues({ ...idea })
+    }
+  },
+)
+
+const currentIdea = computed(
+  () => ({
+    ...values,
+    ...experts.value,
+    ...preAssessment.value,
+  }),
+  // if (experts.value) {
+  //   return {
+  //     ...values,
+  //     ...experts.value,
+  //     ...preAssessment.value,
+  //   }
+  // } else {
+  //   return {
+  //     ...values,
+  //     ...preAssessment.value,
+  //   }
+  //
+)
 
 const handlePostIdea = handleSubmit(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await IdeasService.postInitiatorIdea(currentIdea.value, token)
+    const response = await IdeasService.postInitiatorIdea(
+      currentIdea.value as Idea,
+      token,
+    )
 
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)
@@ -120,7 +144,7 @@ const handleUpdateIdea = handleSubmit(async () => {
     const { token } = currentUser
     const { id } = props.idea
     const response = await IdeasService.putInitiatorIdea(
-      currentIdea.value,
+      currentIdea.value as Idea,
       id,
       token,
     )

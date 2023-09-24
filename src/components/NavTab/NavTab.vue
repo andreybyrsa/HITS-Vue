@@ -11,13 +11,13 @@ const WrapperClassName = computed(() => ['nav-item', props.wrapperClassName])
 const route = useRoute()
 
 const NavTabClassName = computed(() => [
-  'nav-link d-flex',
+  'nav-link d-flex w-100',
   { active: props.isActive },
   props.className,
 ])
 
 function checkIsActiveRoute(to: string) {
-  return route.fullPath.includes(to) && 'bg-primary w-100 text-white'
+  return route.fullPath.includes(to) && 'bg-primary text-white'
 }
 </script>
 

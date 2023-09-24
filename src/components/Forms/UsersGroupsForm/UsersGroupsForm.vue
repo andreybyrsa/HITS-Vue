@@ -12,6 +12,7 @@ import NotificationModal from '@Components/Modals/NotificationModal/Notification
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import UsersGroup from '@Domain/UsersGroup'
+import RolesTypes from '@Domain/Roles'
 
 import useNotification from '@Hooks/useNotification'
 
@@ -66,6 +67,13 @@ const searchedUsersGroups = computed(() => {
     return groupName.includes(currentSearchedValue)
   })
 })
+
+function getCurrentRoleColor(role: RolesTypes) {
+  if (role === 'ADMIN') {
+    return 'text-danger'
+  }
+  return 'text-secondary'
+}
 
 function openCreateGroupModal() {
   openedGroup.value = { id: '', name: '', users: [], roles: [] }
@@ -146,19 +154,18 @@ const handleDeleteGroup = async () => {
           <Typography class-name="text-primary fs-4 ">
             {{ group.name }}
           </Typography>
-          <div class="d-flex gap-3">
+          <div class="d-flex gap-2">
             <Typography
               v-for="role in group.roles"
               :key="role"
-              class-name="fs-6"
+              :class-name="`${getCurrentRoleColor(role)} fs-6`"
             >
-              {{ roles.translatedRoles[role] }}
+              {{ roles.translatedGroups[role] }}
             </Typography>
           </div>
         </div>
 
         <Button
-          class-name="users-group-form__edit-btn"
           prepend-icon-name="bi bi-pencil-square text-primary"
           @click="openEditGroupModal(group)"
         ></Button>
@@ -206,11 +213,10 @@ const handleDeleteGroup = async () => {
 
   &__group {
     @include flexible(space-between, center);
-    --bs-gutter-x: 0;
   }
 
   &__edit-btn {
-    @include flexible(flex-start, end);
+    @include flexible(center, center);
   }
 }
 
@@ -222,20 +228,5 @@ const handleDeleteGroup = async () => {
   margin-top: calc(-1 * var(--bs-gutter-y));
   margin-right: calc(-0.5 * var(--bs-gutter-x));
   margin-left: calc(-0.5 * var(--bs-gutter-x));
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgb(209, 209, 209);
-  border-radius: 20px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #0d6efd;
-  border-radius: 20px;
-  border: 3px solid #0d6efd;
 }
 </style>

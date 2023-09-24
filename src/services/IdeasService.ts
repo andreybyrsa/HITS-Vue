@@ -68,7 +68,7 @@ const sendInitiatorIdeaOnApproval = async (
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .put(`${IDEAS_URL}/initiator/send/${id}`, {
+    .put(`${IDEAS_URL}/initiator/send/${id}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -83,7 +83,7 @@ const deleteInitiatorIdea = async (
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .delete(`${IDEAS_URL}/initiator/delete/${id}`, {
+    .delete(`${IDEAS_URL}/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

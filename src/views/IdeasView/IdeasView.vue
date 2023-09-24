@@ -16,7 +16,6 @@ import { Idea } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
-import getMockIdeas from '@Utils/getMockIdeas'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -106,7 +105,7 @@ function filterIdeas(ideasData: Idea[]) {
       </template>
       <IdeasTable
         v-else
-        :ideas="getMockIdeas()"
+        :ideas="filterIdeas(ideasData) || ideasData"
         :searched-value="searchedValue"
       />
     </template>
