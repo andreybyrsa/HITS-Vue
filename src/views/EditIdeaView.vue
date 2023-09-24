@@ -25,7 +25,7 @@ const { user } = storeToRefs(userStore)
 const router = useRoute()
 
 const currentIdea = ref<Idea>()
-const isLoading = ref(true)
+const isLoading = ref(false)
 
 const {
   isOpenedNotification,

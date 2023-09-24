@@ -43,7 +43,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
       {
         id: 2,
-        to: '/admin/users-group',
+        to: '/admin/users-groups',
         text: 'Группы пользователей',
         iconName: 'bi bi-people',
       },

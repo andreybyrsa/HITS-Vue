@@ -62,10 +62,10 @@ const handleInvite = handleSubmit(async (values) => {
     const response = await InvitationService.inviteUsers(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return handleOpenNotification('error', 'Ошибка приглашения групп')
     }
 
-    handleOpenNotification('success', response.success)
+    handleOpenNotification('success', 'Успешное приглашение пользователей')
     resetForm()
   }
 })
@@ -95,7 +95,7 @@ const handleInvite = handleSubmit(async (values) => {
     </div>
 
     <Collapse
-      id="checkboxRoles"
+      id="addUsersFromCollapse"
       class-name="w-100"
     >
       <Checkbox

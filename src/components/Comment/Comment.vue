@@ -65,9 +65,9 @@ const getCurrentCommentDate = (dateCreated: Date) => {
           v-if="sender === user?.email"
           class-name="btn-primary p-1"
           prepend-icon-name="bi bi-list fs-5"
-          is-drop-down-controller
+          v-dropdown="'commentVue'"
         ></Button>
-        <DropDown>
+        <DropDown id="commentVue">
           <button
             class="w-100"
             @click="emit('delete-comment')"

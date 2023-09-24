@@ -14,10 +14,9 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
-// import IdeasService from '@Services/IdeasService'
-
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import getMockIdeas from '@Utils/getMockIdeas'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -107,7 +106,7 @@ function filterIdeas(ideasData: Idea[]) {
       </template>
       <IdeasTable
         v-else
-        :ideas="filterIdeas(ideasData) || ideasData"
+        :ideas="getMockIdeas()"
         :searched-value="searchedValue"
       />
     </template>

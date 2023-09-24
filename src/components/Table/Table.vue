@@ -1,16 +1,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { storeToRefs } from 'pinia'
 
 import { TableProps } from '@Components/Table/Table.types'
 
-import useUserStore from '@Store/user/userStore'
-import { Idea } from '@Domain/Idea'
-
 const props = defineProps<TableProps>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const searchedValue = computed(() => {
   return props.data?.filter((element) => {
@@ -23,28 +16,12 @@ const searchedValue = computed(() => {
   })
 })
 
-function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
+function getCellStyle(styleFunction?: (value: string) => string, value?: string) {
   let CellClass = 'table__row-cell col '
   if (styleFunction) {
-    CellClass += styleFunction(value)
+    CellClass += styleFunction(value as string)
   }
   return CellClass
-}
-
-function checkMark(row: Idea) {
-  const currentRole = user.value?.role
-  const currentStatusIdea = row.status
-  const currentInitiatorIdea = row.initiator
-  const currentEmail = user.value?.email
-  return currentRole == 'INITIATOR' &&
-    (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING') &&
-    currentInitiatorIdea == currentEmail
-    ? true
-    : currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL'
-    ? true
-    : currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
-    ? true
-    : false
 }
 </script>
 

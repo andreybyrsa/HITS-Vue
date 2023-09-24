@@ -1,10 +1,9 @@
 import axios from 'axios'
-
 import { Idea } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 
-const IDEAS_URL = process.env.VUE_APP_IDEAS_API_URL || 'http://localhost:3000'
+const IDEAS_URL = 'http://localhost:3000/api/v1/idea'
 
 const fetchIdeas = async (token: string): Promise<Idea[] | Error> => {
   return await axios
@@ -114,22 +113,6 @@ const changeStatusIdeaByProjectOffice = async (
     })
 }
 
-const putExpertIdea = async (
-  idea: Idea,
-  id: string,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .put(`${IDEAS_URL}/admin/update/${id}`, idea, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка редактирования идеи'
-      return new Error(error)
-    })
-}
-
 const putAdminIdea = async (
   idea: Idea,
   id: string,
@@ -163,15 +146,12 @@ const deleteAdminIdea = async (
 
 const IdeasService = {
   fetchIdeas,
-
   getInitiatorIdea,
   postInitiatorIdea,
   putInitiatorIdea,
   sendInitiatorIdeaOnApproval,
   deleteInitiatorIdea,
-
   changeStatusIdeaByProjectOffice,
-  putExpertIdea,
   putAdminIdea,
   deleteAdminIdea,
 }

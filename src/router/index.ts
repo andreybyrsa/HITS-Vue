@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
 import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
-import UserGroupForm from '@Components/Forms/UsersGroupForm/UsersGroupForm.vue'
+import UsersGroupsForm from '@Components/Forms/UsersGroupsForm/UsersGroupsForm.vue'
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 import SkillsForm from '@Components/Forms/CompetenciesMenuForm/Skills.vue'
 
@@ -20,7 +20,7 @@ import ErrorView from '@Views/ErrorView.vue'
 
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: RoleMiddleware,
@@ -69,7 +69,7 @@ const routes: Array<RouteRecordRaw> = [
           },
           {
             path: 'users-groups',
-            component: UserGroupForm,
+            component: UsersGroupsForm,
             meta: { roles: ['ADMIN'] },
           },
           {
@@ -99,18 +99,18 @@ const routes: Array<RouteRecordRaw> = [
         ],
       },
       {
-        path: 'dev',
-        name: 'dev',
-        meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
-        component: DevView,
-      },
-      {
         path: 'error',
         name: 'error',
         meta: {
           roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         },
         component: ErrorView,
+      },
+      {
+        path: 'dev',
+        name: 'dev',
+        meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+        component: DevView,
       },
     ],
   },
@@ -136,4 +136,5 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 })
+
 export default router

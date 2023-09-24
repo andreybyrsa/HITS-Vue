@@ -1,36 +1,33 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
+import { useRoute } from 'vue-router'
 import { NavTabProps } from '@Components/NavTab/NavTab.types'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
 const props = defineProps<NavTabProps>()
-
-const collapseProps = {
-  role: 'button',
-  'data-bs-toggle': 'collapse',
-  'data-bs-target': `#${props.to}`,
-  'aria-expanded': false,
-}
-
 const WrapperClassName = computed(() => ['nav-item', props.wrapperClassName])
+const route = useRoute()
 
 const NavTabClassName = computed(() => [
   'nav-link d-flex',
   { active: props.isActive },
   props.className,
 ])
+
+function checkIsActiveRoute(to: string) {
+  return route.fullPath.includes(to) && 'bg-primary w-100 text-white'
+}
 </script>
 
 <template>
   <div :class="WrapperClassName">
     <router-link
+      v-if="!routes"
       :class="NavTabClassName"
       :to="to"
       active-class="active"
-      v-bind="routes && collapseProps"
     >
       <Icon
         v-if="iconName"
@@ -44,6 +41,24 @@ const NavTabClassName = computed(() => [
         {{ label }}</Typography
       >
     </router-link>
+
+    <button
+      v-else
+      :class="[...NavTabClassName, checkIsActiveRoute(to)]"
+      v-collapse="to"
+    >
+      <Icon
+        v-if="iconName"
+        :class-name="`${iconName} fs-5`"
+      />
+
+      <Typography
+        v-if="label"
+        class-name="ms-2"
+      >
+        {{ label }}</Typography
+      >
+    </button>
 
     <Collapse
       v-if="routes"

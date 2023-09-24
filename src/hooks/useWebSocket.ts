@@ -1,9 +1,9 @@
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import { RSocketClient, JsonSerializer, IdentitySerializer } from 'rsocket-core'
 import RSocketWebsocketClient from 'rsocket-websocket-client'
 
-async function useWebSocket<Type>(subscribeUrl: string) {
-  const data = ref<Type[]>([])
+async function useWebSocket<Type>(subscribeUrl: string, socketData?: Type) {
+  const data = ref<Type>() as Ref<Type>
   const isConnected = ref(false)
 
   const client = new RSocketClient({
@@ -38,7 +38,18 @@ async function useWebSocket<Type>(subscribeUrl: string) {
           .subscribe({
             onError: (error) => reject(error),
             onNext: (payload) => {
-              data.value.push(payload.data)
+              console.log(payload.data)
+              if (socketData instanceof Array) {
+                socketData.push(payload.data)
+              } else {
+                socketData = payload.data
+              }
+
+              if (data.value instanceof Array) {
+                data.value.push(payload.data)
+              } else {
+                data.value = payload.data
+              }
             },
             onSubscribe: (subscirbe) => subscirbe.request(1000),
           })

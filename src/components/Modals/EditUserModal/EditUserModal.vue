@@ -74,10 +74,10 @@ const handleEditUser = handleSubmit(async (values) => {
     const response = await ManageUsersService.updateUserInfo(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return handleOpenNotification('error', 'Ошибка изменения пользователя')
     }
 
-    emit('save-user', values, response.success)
+    emit('save-user', values, 'Успешное изменения пользователя')
     emit('close-modal')
   }
 })
@@ -119,17 +119,16 @@ const handleEditUser = handleSubmit(async (values) => {
           </Input>
 
           <Button
-            id="checkbox-roles"
             :class-name="
               errors.newRoles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'
             "
             append-icon-name="bi bi-chevron-down"
-            is-collapse-controller
+            v-collapse="'editUserModalCollapse'"
           >
             Роли
           </Button>
           <Collapse
-            id="checkbox-roles"
+            id="editUserModalCollapse"
             class-name="w-100"
           >
             <template

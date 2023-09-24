@@ -37,9 +37,8 @@ const emit = defineEmits<IdeaDescriptionEmits>()
       class="list-group-item p-0 overflow-hidden"
     >
       <Button
-        :id="collapse.id"
         class-name="collapse-controller btn-light w-100"
-        is-collapse-controller
+        v-collapse="collapse.id"
       >
         {{ collapse.text }}
       </Button>

@@ -123,8 +123,7 @@ function checkViewMode() {
     <div v-if="idea?.experts">
       <div
         class="idea-info__experts border-bottom pointers"
-        data-bs-toggle="collapse"
-        data-bs-target="#experts"
+        v-collapse="'experts'"
         aria-expanded="false"
       >
         <Typography class-name="text-secondary">Эксперты</Typography>
