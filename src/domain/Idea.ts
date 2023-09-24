@@ -1,5 +1,5 @@
 import StatusTypes from '@Domain/IdeaStatus'
-import { UserGroup } from '@Domain/Group'
+import UsersGroup from '@Domain/UsersGroup'
 import { Skill } from '@Domain/Skill'
 
 interface Idea {
@@ -17,8 +17,8 @@ interface Idea {
   stack?: Skill[]
 
   initiator: string
-  projectOffice: UserGroup[]
-  experts: UserGroup[]
+  projectOffice: UsersGroup[]
+  experts: UsersGroup[]
   confirmedBy: string[]
   customer: string
   contactPerson: string
