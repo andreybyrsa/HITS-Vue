@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -9,54 +10,51 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
 
 import { Skill, SkillType } from '@Domain/Skill'
 
+import SkillsService from '@Services/SkillService'
+
+import useUserStore from '@Store/user/userStore'
+
 const stackValue = defineModel<Skill[]>({
   required: true,
 })
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const skills = ref<Record<SkillType, Skill[]>>()
 
 const choosenSkills = reactive<Record<SkillType, Skill[]>>({
   LANGUAGE: stackValue.value.filter(
-    (selectedValue) => selectedValue.role === 'LANGUAGE',
+    (selectedValue) => selectedValue.type === 'LANGUAGE',
   ),
   FRAMEWORK: stackValue.value.filter(
-    (selectedValue) => selectedValue.role === 'FRAMEWORK',
+    (selectedValue) => selectedValue.type === 'FRAMEWORK',
   ),
   DATABASE: stackValue.value.filter(
-    (selectedValue) => selectedValue.role === 'DATABASE',
+    (selectedValue) => selectedValue.type === 'DATABASE',
   ),
   DEVOPS: stackValue.value.filter(
-    (selectedValue) => selectedValue.role === 'DEVOPS',
+    (selectedValue) => selectedValue.type === 'DEVOPS',
   ),
 })
 
 onMounted(async () => {
-  const response = await new Promise<Record<SkillType, Skill[]>>((reslove) => {
-    setTimeout(
-      () =>
-        reslove({
-          LANGUAGE: [
-            { id: '0', name: 'JavaScript', role: 'LANGUAGE' },
-            { id: '1', name: 'TypeScript', role: 'LANGUAGE' },
-          ],
-          FRAMEWORK: [
-            { id: '2', name: 'React', role: 'FRAMEWORK' },
-            { id: '3', name: 'Vue', role: 'FRAMEWORK' },
-          ],
-          DATABASE: [
-            { id: '4', name: 'Mongo DB', role: 'DATABASE' },
-            { id: '5', name: 'SQLite', role: 'DATABASE' },
-          ],
-          DEVOPS: [
-            { id: '6', name: 'Docker', role: 'DEVOPS' },
-            { id: '7', name: 'Maven', role: 'DEVOPS' },
-          ],
-        }),
-      1000,
-    )
-  }).then((response) => response)
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await SkillsService.getAllSkills(token)
 
-  skills.value = response
+    if (response instanceof Error) {
+      return
+    }
+
+    skills.value = {
+      LANGUAGE: response.filter((skill) => skill.type === 'LANGUAGE'),
+      FRAMEWORK: response.filter((skill) => skill.type === 'FRAMEWORK'),
+      DATABASE: response.filter((skill) => skill.type === 'DATABASE'),
+      DEVOPS: response.filter((skill) => skill.type === 'DEVOPS'),
+    }
+  }
 })
 
 watch(choosenSkills, (currentSills) => {

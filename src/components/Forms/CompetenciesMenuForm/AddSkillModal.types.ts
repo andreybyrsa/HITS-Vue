@@ -3,7 +3,7 @@ import { Skill } from '@Domain/Skill'
 interface AddSkillModalProps {
   isOpened: boolean
   status: 'EDIT' | 'ADD'
-  currentId: string
+  currentId?: string
 }
 
 interface AddSkillModalEmits {

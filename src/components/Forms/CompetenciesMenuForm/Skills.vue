@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { SkillType, Skill } from '@Domain/Skill'
 import { storeToRefs } from 'pinia'
 import SkillsService from '@Services/SkillService'
@@ -19,7 +19,6 @@ import useUserStore from '@Store/user/userStore'
 const userStore = useUserStore()
 
 import useNotification from '@Hooks/useNotification'
-import { useForm } from 'vee-validate'
 
 import AddSkillModal from './AddSkillModal.vue'
 
@@ -136,13 +135,13 @@ function handleCloseUpdateSkillModal() {
 </script>
 
 <template>
-  <form class="competencies-menu-form p-3 px-5">
+  <form class="competencies-menu-form p-3 px-3">
     <Typography class-name="fs-2 text-primary text-center w-100">
       Справочник компетенций
     </Typography>
     <div class="competencies-menu-form__content w-100">
       <div class="competencies-menu-form__search">
-        <div class="search-bar p-2 mb-4 rounded bg-primary d-flex">
+        <div class="search-bar p-2 mb-3 rounded bg-primary d-flex">
           <Input
             name="search"
             v-model="searchValue"
@@ -209,7 +208,7 @@ function handleCloseUpdateSkillModal() {
             </template>
           </Input>
           <Button
-            class-name="px-2 py-2 border shadow h-100 bg-white ms-2"
+            class-name="btn-light px-2 py-2 border shadow h-100 ms-2"
             @click="openAddSkillModal"
             prepend-icon-name="bi bi-plus-lg"
           >
@@ -236,55 +235,53 @@ function handleCloseUpdateSkillModal() {
             title="На рассмотрении"
           />
         </template>
-        <template #actions="{ item }">
-          <div>
-            <Button
-              class-name=" btn-primary fs-3 "
-              prepend-icon-name="bi bi-list"
-              is-drop-down-controller
-            ></Button>
-            <DropDown>
-              <ul class="list-group list-group-flush">
-                <li
-                  v-if="item.confirmed == true"
-                  class="list-group-item list-group-item-action p-1"
-                  @click="openUpdateSkillModal(item.id)"
+        <template #actions="{ item }: { item: Skill }">
+          <Button
+            class-name="btn-primary fs-3 "
+            prepend-icon-name="bi bi-list"
+            v-dropdown="`skill-controller-${item.id}`"
+          ></Button>
+          <DropDown>
+            <ul class="list-group list-group-flush">
+              <li
+                v-if="item.confirmed == true"
+                class="list-group-item list-group-item-action p-1"
+                @click="openUpdateSkillModal(item.id)"
+              >
+                <Button prepend-icon-name="bi bi-pencil-square text-primary"
+                  >Редактировать</Button
                 >
-                  <Button prepend-icon-name="bi bi-pencil-square text-primary"
-                    >Редактировать</Button
-                  >
-                </li>
-                <li
-                  v-if="item.confirmed == true"
-                  class="list-group-item list-group-item-action p-1"
-                >
-                  <Button
-                    prepend-icon-name="bi bi-trash text-danger"
-                    @click="openDeleteSkillModal(item.id)"
-                    >Удалить</Button
-                  >
-                </li>
-                <li
-                  v-if="item.confirmed == false"
-                  class="list-group-item list-group-item-action p-1"
-                  @click="handleConfirmSkill(item.id)"
-                >
-                  <Button prepend-icon-name="bi bi-check-lg text-success fs-4"
-                    >Одобрить</Button
-                  >
-                </li>
-                <li
-                  v-if="item.confirmed == false"
-                  class="list-group-item list-group-item-action p-1"
+              </li>
+              <li
+                v-if="item.confirmed == true"
+                class="list-group-item list-group-item-action p-1"
+              >
+                <Button
+                  prepend-icon-name="bi bi-trash text-danger"
                   @click="openDeleteSkillModal(item.id)"
+                  >Удалить</Button
                 >
-                  <Button prepend-icon-name="bi bi-x-lg text-danger "
-                    >Отклонить</Button
-                  >
-                </li>
-              </ul>
-            </DropDown>
-          </div>
+              </li>
+              <li
+                v-if="item.confirmed == false"
+                class="list-group-item list-group-item-action p-1"
+                @click="handleConfirmSkill(item.id)"
+              >
+                <Button prepend-icon-name="bi bi-check-lg text-success fs-4"
+                  >Одобрить</Button
+                >
+              </li>
+              <li
+                v-if="item.confirmed == false"
+                class="list-group-item list-group-item-action p-1"
+                @click="openDeleteSkillModal(item.id)"
+              >
+                <Button prepend-icon-name="bi bi-x-lg text-danger "
+                  >Отклонить</Button
+                >
+              </li>
+            </ul>
+          </DropDown>
         </template>
       </Table>
     </div>
@@ -314,7 +311,7 @@ function handleCloseUpdateSkillModal() {
   width: 100%;
   height: 100%;
 
-  @include flexible(center, flex-start, column, $gap: 18px);
+  @include flexible(center, flex-start, column, $gap: 16px);
 
   &__content {
     height: 100vh;

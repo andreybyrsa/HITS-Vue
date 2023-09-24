@@ -92,10 +92,9 @@ watch(
 const handleUpdateSkill = handleSubmit(async (values) => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && props.currentId) {
     const { token } = currentUser
     const response = await SkillsService.updateSkill(values, props.currentId, token)
-    console.log(props.currentId)
     if (response instanceof Error) {
       return handleOpenNotification('error', response.message)
     }
@@ -141,15 +140,13 @@ const handleUpdateSkill = handleSubmit(async (values) => {
       <div class="add-skill-modal__inputs w-100">
         <Input
           name="name"
-          validate-on-update
           class-name="rounded-end"
           placeholder="Введите название компетенции"
           label="Название компетенции"
-        ></Input>
+        />
 
         <Select
           name="type"
-          validate-on-update
           :options="SkillTypeOptions"
           label="Тип компетенции*"
           placeholder="Выберите тип компетенции"
