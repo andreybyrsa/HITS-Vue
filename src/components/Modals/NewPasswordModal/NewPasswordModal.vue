@@ -51,7 +51,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
   const response = await ManageUsersService.updateUserPassword(values)
 
   if (response instanceof Error) {
-    return handleOpenNotification('error', response.message)
+    return handleOpenNotification('error', 'Ошибка изменения пароля')
   }
 
   router.push('/login')

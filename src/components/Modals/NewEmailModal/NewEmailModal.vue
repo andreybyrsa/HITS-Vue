@@ -78,7 +78,7 @@ const handleChangeEmail = handleSubmit(async (values) => {
     const response = await ManageUsersService.updateUserEmail(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return handleOpenNotification('error', 'Ошибка изменения почты')
     }
 
     userStore.removeUser()
