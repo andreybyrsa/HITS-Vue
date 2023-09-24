@@ -5,18 +5,19 @@ import { storeToRefs } from 'pinia'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import AddUsersGroup from '@Components/Modals/AddUsersGroupModal/AddUsersGroupModal.vue'
+import UsersGroupModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import UserGroup from '@Domain/Group'
+import UsersGroup from '@Domain/UsersGroup'
 
 import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
-import GroupService from '@Services/GroupsService'
+import UsersGroupsService from '@Services/UsersGroupsService'
 
 import getRoles from '@Utils/getRoles'
 
@@ -27,33 +28,38 @@ const searchedValue = ref('')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const groups = ref<UserGroup[]>([])
+const usersGroups = ref<UsersGroup[]>([])
 const groupModalTitle = ref('Добавить группу')
-const openedGroup = ref<UserGroup>()
+const openedGroup = ref<UsersGroup>()
 const isOpenedGroupModal = ref(false)
 
 const currentGroupId = ref('')
 const isOpenedDeleteModal = ref(false)
 
-const { handleOpenNotification } = useNotification()
+const {
+  notificationOptions,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const responseGroups = await GroupService.getUsersGroups(token)
+    const responseGroups = await UsersGroupsService.getUsersGroups(token)
 
     if (responseGroups instanceof Error) {
-      return handleOpenNotification('error', responseGroups.message)
+      return handleOpenNotification('error', 'Ошибка получения групп')
     }
 
-    groups.value = responseGroups
+    usersGroups.value = responseGroups
   }
 })
 
-const searchedGroup = computed(() => {
-  return groups.value.filter((group) => {
+const searchedUsersGroups = computed(() => {
+  return usersGroups.value.filter((group) => {
     const groupName = group.name.trim().toLowerCase()
     const currentSearchedValue = searchedValue.value.trim().toLowerCase()
 
@@ -67,7 +73,7 @@ function openCreateGroupModal() {
   isOpenedGroupModal.value = true
 }
 
-function openEditGroupModal(group: UserGroup) {
+function openEditGroupModal(group: UsersGroup) {
   openedGroup.value = { ...group }
   groupModalTitle.value = 'Редактировать группу'
   isOpenedGroupModal.value = true
@@ -86,18 +92,23 @@ function handleCloseDeleteModal() {
   isOpenedDeleteModal.value = false
 }
 
-const handleDelete = async () => {
+const handleDeleteGroup = async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await GroupService.deleteUsersGroup(currentGroupId.value, token)
+    const response = await UsersGroupsService.deleteUsersGroup(
+      currentGroupId.value,
+      token,
+    )
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return handleOpenNotification('error', 'Ошибка удаления группы')
     }
 
-    groups.value = groups.value.filter((group) => group.id !== currentGroupId.value)
+    usersGroups.value = usersGroups.value.filter(
+      (group) => group.id !== currentGroupId.value,
+    )
   }
 }
 </script>
@@ -127,7 +138,7 @@ const handleDelete = async () => {
 
     <div class="users-group-form__content w-100">
       <div
-        v-for="(group, index) in searchedGroup"
+        v-for="(group, index) in searchedUsersGroups"
         :key="index"
         class="edit-users-form__group px-3 py-2 border rounded-3 mb-2 w-100 row_group"
       >
@@ -135,9 +146,15 @@ const handleDelete = async () => {
           <Typography class-name="text-primary fs-4 ">
             {{ group.name }}
           </Typography>
-          <Typography class-name="fs-6">
-            {{ roles.translatedRoles[group.roles] }}
-          </Typography>
+          <div class="d-flex gap-3">
+            <Typography
+              v-for="role in group.roles"
+              :key="role"
+              class-name="fs-6"
+            >
+              {{ roles.translatedRoles[role] }}
+            </Typography>
+          </div>
         </div>
 
         <Button
@@ -152,18 +169,26 @@ const handleDelete = async () => {
       </div>
       <DeleteModal
         :is-opened="isOpenedDeleteModal"
-        @delete="handleDelete"
+        @delete="handleDeleteGroup"
         @close-modal="handleCloseDeleteModal"
       />
-      <AddUsersGroup
+      <UsersGroupModal
         :isOpened="isOpenedGroupModal"
         :group-modal-title="groupModalTitle"
         :opened-group="openedGroup"
-        v-model="groups"
+        v-model="usersGroups"
         @close-modal="closeGroupModal"
-      >
-      </AddUsersGroup>
+      />
     </div>
+
+    <NotificationModal
+      :is-opened="isOpenedNotification"
+      :type="notificationOptions.type"
+      :time-expired="5000"
+      @close-modal="handleCloseNotification"
+    >
+      {{ notificationOptions.message }}
+    </NotificationModal>
   </FormLayout>
 </template>
 

@@ -1,5 +1,5 @@
 import StatusTypes from '@Domain/IdeaStatus'
-import UserGroup from '@Domain/Group'
+import UserGroup from '@Domain/UsersGroup'
 
 interface Idea {
   id: string

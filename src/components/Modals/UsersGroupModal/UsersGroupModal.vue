@@ -4,30 +4,34 @@ import { storeToRefs } from 'pinia'
 import { useForm, useFieldArray } from 'vee-validate'
 
 import {
-  AddUsersGroupModalProps,
-  AddUsersGroupModalEmits,
-} from '@Components/Modals/AddUsersGroupModal/AddUsersGroupModal.types'
+  UsersGroupModalProps,
+  UsersGroupModalEmits,
+} from '@Components/Modals/UsersGroupModal/UsersGroupModal.types'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import GroupTypesFilterModal from '@Components/Modals/GroupTypesFilterModal/GroupTypesFilterModal.vue'
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
 import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
 import { User } from '@Domain/User'
-import UserGroup from '@Domain/Group'
+import UsersGroup from '@Domain/UsersGroup'
 import RolesTypes from '@Domain/Roles'
 
-import GroupService from '@Services/GroupsService'
+import UsersGroupsService from '@Services/UsersGroupsService'
 import ManageUsersService from '@Services/ManageUsersService'
+import NotificationModal from '../NotificationModal/NotificationModal.vue'
 
-import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+const props = defineProps<UsersGroupModalProps>()
+const emit = defineEmits<UsersGroupModalEmits>()
 
-const props = defineProps<AddUsersGroupModalProps>()
-const emit = defineEmits<AddUsersGroupModalEmits>()
+const groups = defineModel<UsersGroup[]>({
+  required: true,
+})
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -35,16 +39,24 @@ const users = ref<User[]>([])
 
 const unselectedUsers = ref<User[]>([])
 
-const editGroup = ref<UserGroup>()
+const openedGroup = ref<UsersGroup>()
 
 const selectedFilters = ref<RolesTypes[]>([])
 const isOpenedFilterModal = ref(false)
 
-const groups = defineModel<UserGroup[]>({
-  required: true,
-})
+const groupRoles = [
+  { id: 0, name: 'Группа инициаторов', roles: 'INITIATOR' },
+  { id: 1, name: 'Группа админов', roles: 'ADMIN' },
+  { id: 2, name: 'Группа проектного офиса', roles: 'PROJECT_OFFICE' },
+  { id: 3, name: 'Группа экспертов', roles: 'EXPERT' },
+]
 
-const { handleOpenNotification } = useNotification()
+const {
+  notificationOptions,
+  isOpenedNotification,
+  handleOpenNotification,
+  handleCloseNotification,
+} = useNotification()
 
 onMounted(async () => {
   const currentUser = user.value
@@ -54,14 +66,14 @@ onMounted(async () => {
     const responseUsers = await ManageUsersService.getUsers(token)
 
     if (responseUsers instanceof Error) {
-      return handleOpenNotification('error', responseUsers.message)
+      return handleOpenNotification('error', 'Ошибка загрузки пользователей')
     }
 
     users.value = responseUsers
   }
 })
 
-const { setValues, handleSubmit } = useForm<UserGroup>({
+const { setValues, handleSubmit } = useForm<UsersGroup>({
   validationSchema: {
     name: (value: string) => value?.length > 0 || 'Поле не заполнено',
     users: (value: User[]) => value?.length > 0 || 'Выберите пользователя',
@@ -72,23 +84,16 @@ const { setValues, handleSubmit } = useForm<UserGroup>({
 
 const { fields, push, remove } = useFieldArray<User>('users')
 
-const groupTypes = [
-  { id: 1, name: 'Группа инициаторов', roles: 'INITIATOR' },
-  { id: 2, name: 'Группа админов', roles: 'ADMIN' },
-  { id: 3, name: 'Группа проектного офиса', roles: 'PROJECT_OFFICE' },
-  { id: 3, name: 'Группа экспертов', roles: 'EXPERT' },
-]
-
 watch(
   () => props.openedGroup,
-  (openedGroup) => {
-    if (openedGroup) {
-      const { name, users: groupUsers, roles } = openedGroup
+  (currentGroup) => {
+    if (currentGroup) {
+      const { name, users: groupUsers, roles } = currentGroup
       setValues({ name, users: groupUsers, roles })
 
-      editGroup.value = openedGroup
+      openedGroup.value = currentGroup
       unselectedUsers.value = users.value.filter((user) =>
-        openedGroup.users.every((groupUser) => groupUser.email !== user.email),
+        currentGroup.users.every((groupUser) => groupUser.email !== user.email),
       )
     }
   },
@@ -132,34 +137,36 @@ function usersRolesFilter(usersData: User[]) {
   return usersData
 }
 
-const handleCreate = handleSubmit(async (values) => {
+const handleCreateGroup = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await GroupService.createUsersGroup(values, token)
+    const response = await UsersGroupsService.createUsersGroup(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return handleOpenNotification('error', 'Ошибка создания группы')
     }
 
+    handleOpenNotification('success', 'Успешное создание группы')
     emit('close-modal')
     groups.value.push(response)
   }
 })
 
-const handleEdit = handleSubmit(async (values) => {
+const handleEditGroup = handleSubmit(async (values) => {
   const currentUser = user.value
 
-  if (currentUser?.token && editGroup.value) {
+  if (currentUser?.token && openedGroup.value) {
     const { token } = currentUser
-    const { id } = editGroup.value
-    const response = await GroupService.editUsersGroup(values, token, id)
+    const { id } = openedGroup.value
+    const response = await UsersGroupsService.editUsersGroup(values, token, id)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return handleOpenNotification('error', 'Ошибка редактирования группы')
     }
 
+    handleOpenNotification('success', 'Успешное редактирование группы')
     emit('close-modal')
     const editingGroupIndex = groups.value.findIndex(
       (group) => group.id === values.id,
@@ -224,9 +231,9 @@ const handleEdit = handleSubmit(async (values) => {
         </div>
 
         <div class="selectors">
-          <Typography class-name="fs-6 text-primary"
-            >Пользователи в группе</Typography
-          >
+          <Typography class-name="fs-6 text-primary">
+            Пользователи в группе
+          </Typography>
           <div class="select-block border">
             <div
               class="unselected-selected-usesrs shadow-sm rounded border"
@@ -248,7 +255,7 @@ const handleEdit = handleSubmit(async (values) => {
         <div class="mt-2 w-100">
           <Combobox
             name="roles"
-            :options="groupTypes"
+            :options="groupRoles"
             :display-by="['name']"
             no-form-controlled
             placeholder="Выберите тип группы"
@@ -259,7 +266,7 @@ const handleEdit = handleSubmit(async (values) => {
       <div v-if="groupModalTitle === 'Добавить группу'">
         <Button
           class-name="btn-primary w-100"
-          @click="handleCreate"
+          @click="handleCreateGroup"
         >
           Добавить
         </Button>
@@ -267,11 +274,19 @@ const handleEdit = handleSubmit(async (values) => {
       <Button
         v-else
         class-name="btn-primary"
-        @click="handleEdit"
+        @click="handleEditGroup"
       >
         Редактировать
       </Button>
     </div>
+    <NotificationModal
+      :is-opened="isOpenedNotification"
+      :type="notificationOptions.type"
+      :time-expired="5000"
+      @close-modal="handleCloseNotification"
+    >
+      {{ notificationOptions.message }}
+    </NotificationModal>
   </ModalLayout>
 </template>
 

@@ -1,11 +1,8 @@
 <script lang="ts" setup>
-import { computed, ref, onMounted, reactive } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-import GroupService from '@Services/GroupsService'
-import { UserGroup } from '@Domain/Group'
-import { UserGroupData } from '@Domain/ManageUsers'
 
 import Typography from '@Components/Typography/Typography.vue'
 import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.vue'
@@ -19,12 +16,14 @@ import IdeaFormSubmit from '@Components/Forms/IdeaForm/IdeaFormSubmit.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { Idea } from '@Domain/Idea'
+import UsersGroup from '@Domain/UsersGroup'
 
 import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
 import IdeasService from '@Services/IdeasService'
+import UsersGroupsService from '@Services/UsersGroupsService'
 
 const props = defineProps<IdeaForm>()
 
@@ -33,12 +32,33 @@ const { user } = storeToRefs(userStore)
 
 const router = useRouter()
 
+const expertsGroup = ref<Record<'experts', UsersGroup[]>>({
+  experts: [],
+})
+
 const {
   isOpenedNotification,
   notificationOptions,
   handleOpenNotification,
   handleCloseNotification,
 } = useNotification()
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const responseGroups = await UsersGroupsService.getUsersGroups(token)
+
+    if (responseGroups instanceof Error) {
+      return
+    }
+
+    expertsGroup.value.experts = responseGroups.filter((group) =>
+      group.roles.includes('EXPERT'),
+    )
+  }
+})
 
 const customerAndContact = ref<CustomerAndContactType>({
   customer: props.idea?.customer ?? 'ВШЦТ',
@@ -70,32 +90,9 @@ const { values, handleSubmit } = useForm<Idea>({
 const currentIdea = computed(() => ({
   ...values,
   ...customerAndContact.value,
-  //...preAssessmentData.value,
-  ...expertGroups.value,
-  ...projectOfficeGroups.value,
+  ...expertsGroup.value,
   ...preAssessment.value,
 }))
-
-const expertGroups = ref<UserGroup[]>([])
-const projectOfficeGroups = ref<UserGroup[]>([])
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const responseGroups = await GroupService.getUsersGroups(token)
-
-    if (responseGroups instanceof Error) {
-      return 1
-    }
-
-    expertGroups.value = responseGroups.filter((group) => group.isExperts)
-    projectOfficeGroups.value = responseGroups.filter(
-      (group) => group.isProjectOffice,
-    )
-  }
-})
 
 const handlePostIdea = handleSubmit(async () => {
   const currentUser = user.value

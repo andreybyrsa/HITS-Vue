@@ -1,9 +1,23 @@
 import axios from 'axios'
 
 import Success from '@Domain/ResponseMessage'
-import UserGroup from '@Domain/Group'
+import UserGroup from '@Domain/UsersGroup'
 
 const MANAGE_GROUPS_URL = 'http://localhost:3000/api/v1/group'
+
+const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
+  return await axios
+    .get(`${MANAGE_GROUPS_URL}/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка групп пользователей'
+      return new Error(error)
+    })
+}
 
 const createUsersGroup = async (
   usersData: UserGroup,
@@ -18,21 +32,6 @@ const createUsersGroup = async (
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка создания группы пользователей'
-      return new Error(error)
-    })
-}
-
-const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
-  return await axios
-    .get(`${MANAGE_GROUPS_URL}/all`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка групп пользователей'
-      console.log(MANAGE_GROUPS_URL)
       return new Error(error)
     })
 }
@@ -73,11 +72,11 @@ const deleteUsersGroup = async (
     })
 }
 
-const GroupService = {
+const UsersGroupsService = {
   createUsersGroup,
   getUsersGroups,
   editUsersGroup,
   deleteUsersGroup,
 }
 
-export default GroupService
+export default UsersGroupsService

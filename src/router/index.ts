@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
 import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
-import UserGroupForm from '@Components/Forms/UsersGroupForm/UsersGroupForm.vue'
+import UsersGroupsForm from '@Components/Forms/UsersGroupsForm/UsersGroupsForm.vue'
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 
 import AdminView from '@Views/AdminView.vue'
@@ -68,7 +68,7 @@ const routes: Array<RouteRecordRaw> = [
           },
           {
             path: 'users-groups',
-            component: UserGroupForm,
+            component: UsersGroupsForm,
             meta: { roles: ['ADMIN'] },
           },
         ],
@@ -92,18 +92,18 @@ const routes: Array<RouteRecordRaw> = [
         ],
       },
       {
-        path: 'dev',
-        name: 'dev',
-        meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
-        component: DevView,
-      },
-      {
         path: 'error',
         name: 'error',
         meta: {
           roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         },
         component: ErrorView,
+      },
+      {
+        path: 'dev',
+        name: 'dev',
+        meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+        component: DevView,
       },
     ],
   },
@@ -124,35 +124,9 @@ const routes: Array<RouteRecordRaw> = [
   },
 ]
 
-// declare module 'vue-router' {
-//   interface RouteMeta {
-//     // is optional
-//     isAdmin?: boolean
-//     isInitiator?: boolean
-//     isProjectOffice?: boolean
-//     isExpert?: boolean
-//     // must be declared by every route
-//     requiresAuth?: boolean
-//   }
-// }
-
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 })
-
-// router.beforeEach((to, from) => {
-//   // instead of having to check every route record with
-//   // to.matched.some(record => record.meta.requiresAuth)
-//   if (to.meta.requiresAuth) {
-//     // this route requires auth, check if logged in
-//     // if not, redirect to login page.
-//     return {
-//       path: '/login',
-//       // save the location we were at to come back later
-//       // query: { redirect: to.fullPath },
-//     }
-//   }
-// })
 
 export default router

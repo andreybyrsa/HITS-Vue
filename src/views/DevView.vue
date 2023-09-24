@@ -64,7 +64,7 @@ const isOpenedModal = ref(false)
 
 userStore.checkLastActivity()
 
-const { handleSubmit } = useForm({
+const { values, handleSubmit } = useForm({
   validationSchema: {
     component: (value: string) => value?.length || 'Обязательно к заполнению',
   },
