@@ -6,11 +6,11 @@ import { TableProps } from '@Components/Table/Table.types'
 const props = defineProps<TableProps>()
 
 const searchedValue = computed(() => {
-  return props.data.filter((element) => {
-    const elementData = element.name.toLowerCase().trim()
+  return props.data?.filter((element) => {
+    const elementData = element?.name?.toLowerCase().trim()
     const currentSearchedValue = props.searchValue?.toLowerCase().trim()
 
-    const isIncludesSearcheValue = elementData.includes(currentSearchedValue)
+    const isIncludesSearcheValue = elementData?.includes(currentSearchedValue)
 
     return isIncludesSearcheValue
   })
@@ -35,6 +35,12 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
         class="table__header-cell col-1"
       >
         Активные
+      </div>
+      <div
+        v-if="$slots.status"
+        class="table__header-cell col-1"
+      >
+        Статус
       </div>
       <div
         v-for="column in columns"
@@ -71,6 +77,15 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
         />
       </div>
       <div
+        v-if="$slots.status"
+        class="table__row-cell col-1"
+      >
+        <slot
+          :item="row"
+          name="status"
+        />
+      </div>
+      <div
         v-for="column in columns"
         :key="column.key"
         :class="`${getCellStyle(column.getStyle, row[column.key])} ${
@@ -85,12 +100,12 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
       </div>
       <div
         v-if="$slots.actions"
-        class="table__row-cell col-1"
+        class="table__row-cell bg-light col-1"
       >
         <slot
           :item="row"
           name="actions"
-          class="table__action-cell"
+          class="table__action-cell bg-light"
         >
         </slot>
       </div>
@@ -112,7 +127,6 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
 
   &__row-cell {
     max-height: 100px;
-
     overflow: auto;
 
     @include flexible(center, center);
@@ -120,7 +134,7 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
 
   &__row-cell:last-child {
     max-height: 100px;
-
+    display: flex;
     overflow: hidden;
 
     @include flexible(center, center);

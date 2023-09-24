@@ -4,6 +4,7 @@ import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
 import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
 import UsersGroupsForm from '@Components/Forms/UsersGroupsForm/UsersGroupsForm.vue'
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
+import SkillsForm from '@Components/Forms/CompetenciesMenuForm/Skills.vue'
 
 import AdminView from '@Views/AdminView.vue'
 import DevView from '@Views/DevView.vue'
@@ -69,6 +70,11 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'users-groups',
             component: UsersGroupsForm,
+            meta: { roles: ['ADMIN'] },
+          },
+          {
+            path: 'skills',
+            component: SkillsForm,
             meta: { roles: ['ADMIN'] },
           },
         ],
