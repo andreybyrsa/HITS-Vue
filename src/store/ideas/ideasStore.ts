@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { Idea } from '@Domain/Idea'
-import { ExpertConfirmation } from '@Components/Modals/IdeaModal/ExpertRatingCalculator.types'
 import InitialState from './initialState'
 import IdeasService from '@Services/IdeasService'
 import getMockIdeas from '@Utils/getMockIdeas'
@@ -26,16 +25,6 @@ const useIdeasStore = defineStore('ideas', {
         idea.id == id ? (idea.status = 'ON_APPROVAL') : idea,
       )
     },
-    // async confirmInitatorIdea(
-    //   rating: ExpertConfirmation,
-    //   id: string,
-    //   token: string,
-    // ) {
-    //   const response = await IdeasService.putExpertIdea(rating, id, token)
-    //   if (response instanceof Error) {
-    //     return
-    //   }
-    // },
   },
 })
 export default useIdeasStore

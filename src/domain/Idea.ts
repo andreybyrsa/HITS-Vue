@@ -1,5 +1,7 @@
 import StatusTypes from '@Domain/IdeaStatus'
-import { UserGroup } from '@Domain/Group'
+import UsersGroup from '@Domain/UsersGroup'
+import { Skill } from '@Domain/Skill'
+
 interface Idea {
   id: string
   createdAt: Date
@@ -12,29 +14,30 @@ interface Idea {
   projectType: 'INSIDE' | 'OUTSIDE'
   status: StatusTypes
   initiator: string
-  projectOffice: UserGroup[]
-  experts: UserGroup[]
+  projectOffice: UsersGroup[]
+  experts: UsersGroup[]
   customer: string
   contactPerson: string
-  preAssessment: number
-  rating: number
+
   technicalRealizability: number
   suitability: number
   budget: number
+  preAssessment: number
+  rating: number
 }
-interface Change {
-  name: string
-  date: Date
-  who: string
-  number: number
-  doing: string
+
+interface Rating {
+  id: string
+  ideaId: string
+  expert: string
+
+  marketValue: number
+  originality: number
+  technicalRealizability: number
+  suitability: number
+  budget: number
+  rating: number
+  confirmed: boolean
 }
-interface Risk {
-  status: StatusTypes
-  risk: number
-  marketValue: string
-  originality: string
-  techniclFeasibility: string
-  understanding: string
-}
-export { Idea, Risk, Change }
+
+export { Idea, Rating }

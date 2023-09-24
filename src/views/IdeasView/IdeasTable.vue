@@ -198,9 +198,9 @@ function checkMark(row: Idea) {
         type="button"
         class-name="btn-primary"
         prepend-icon-name="bi bi-list"
-        is-drop-down-controller
+        v-dropdown="'ideasTable'"
       ></Button>
-      <DropDown>
+      <DropDown id="ideasTable">
         <ul class="list-group list-group-flush">
           <li class="list-group-item list-group-item-action p-1">
             <button

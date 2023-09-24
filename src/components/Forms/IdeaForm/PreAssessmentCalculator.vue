@@ -4,6 +4,7 @@ import { watchImmediate } from '@vueuse/core'
 
 import {
   PreAssessmentProps,
+  PreAssessmentSelect,
   preAssessmentSelects,
 } from '@Components/Forms/IdeaForm/PreAssessmentCalculator.types'
 import Typography from '@Components/Typography/Typography.vue'
@@ -45,6 +46,13 @@ const intervalId = setInterval(() => {
     preAssessmentPlaceholder.value += '.'
   }
 }, 200)
+
+function getCurrentTooltip(select: PreAssessmentSelect) {
+  const selectValue = props.idea[select.name]
+  if (selectValue) {
+    return select.options.find((option) => option.value === selectValue)?.label
+  }
+}
 </script>
 
 <template>
@@ -59,6 +67,7 @@ const intervalId = setInterval(() => {
         validate-on-update
         :label="select.label"
         :options="select.options"
+        v-tooltip="getCurrentTooltip(select)"
         placeholder="Выберите значение"
       ></Select>
     </div>

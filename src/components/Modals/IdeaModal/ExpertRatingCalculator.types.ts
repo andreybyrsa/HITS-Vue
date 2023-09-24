@@ -1,13 +1,5 @@
 import { OptionType } from '@Components/Inputs/Select/Select.types'
 import { Idea } from '@Domain/Idea'
-interface ExpertRatingData {
-  marketValue: number
-  originality: number
-  technicalRealizability: number
-  suitability: number
-  budget: number
-  rating: number
-}
 interface RatingSelect {
   name:
     | 'marketValue'
@@ -17,34 +9,15 @@ interface RatingSelect {
     | 'budget'
   label: string
   options: OptionType[]
-  value: any
-}
-interface ExpertConfirmation {
-  rating: number
-  marketValue: number
-  originality: number
-  technicalRealizability: number
-  suitability: number
-  budget: number
-}
-interface ExpertData {
-  ideaId: string
-  expert: string
-  rating: number | null
-  technicalRealizability: number | null
-  suitability: number | null
-  budget: number | null
-  marketValue: number | null
-  originality: number | null
 }
 interface ExperCalculatorProps {
   idea: Idea
 }
 const marketValueOptions = [
-  { label: 'В идеи полостью описана рыночная ценность', value: 5 },
+  { label: 'В идеи полностью описана рыночная ценность', value: 5 },
   { label: 'Инициатор плохо описал рыночную ценность', value: 4 },
   { label: 'Эксперт не увидел рыночной ценности идеи', value: 3 },
-  { label: 'Экспер не видит, что рыночная ценность етсь', value: 2 },
+  { label: 'Экспер не видит, что рыночная ценность есть', value: 2 },
   { label: 'Эксперт понимает, что рыночной ценности нет', value: 1 },
 ]
 const originalityOptions = [
@@ -52,14 +25,14 @@ const originalityOptions = [
     label: 'Подобное решение не встречалось, эксперт полностью понимает инициатора',
     value: 5,
   },
-  { label: 'Встречалось похожее решение, инициатор расскрыл идею', value: 4 },
-  { label: 'Встречалось похожее решение, инициатор не расскрыл идею', value: 3 },
+  { label: 'Встречалось похожее решение, инициатор раскрыл идею', value: 4 },
+  { label: 'Встречалось похожее решение, инициатор не раскрыл идею', value: 3 },
   { label: 'Решение есть на рынке - ниша занята', value: 2 },
   { label: 'Эксперт не понял инициатора', value: 1 },
 ]
 const technicalRealizabilityOptions = [
   { label: 'Команда уже делала такие проекты', value: 5 },
-  { label: 'Есть занания реализации, но нет практического опыта', value: 4 },
+  { label: 'Есть знания реализации, но нет практического опыта', value: 4 },
   { label: 'Команда делала проекты на альтернативных стеках', value: 3 },
   { label: 'Есть знания в другом стеке, но нет практического опыта', value: 2 },
   { label: 'Нет знаний и опыта', value: 1 },
@@ -83,38 +56,26 @@ const ratingSelects: RatingSelect[] = [
     name: 'marketValue',
     label: 'Рыночная ценность*',
     options: marketValueOptions,
-    value: null,
   },
   {
     name: 'originality',
     label: 'Уникальность*',
     options: originalityOptions,
-    value: null,
   },
   {
     name: 'technicalRealizability',
     label: 'Реализуемость*',
     options: technicalRealizabilityOptions,
-    value: null,
   },
   {
     name: 'suitability',
     label: 'Пригодность*',
     options: suitabilityOptions,
-    value: null,
   },
   {
     name: 'budget',
     label: 'Бюджет*',
     options: budgetOptions,
-    value: null,
   },
 ]
-export {
-  ExpertRatingData,
-  RatingSelect,
-  ratingSelects,
-  ExpertConfirmation,
-  ExperCalculatorProps,
-  ExpertData,
-}
+export { RatingSelect, ratingSelects, ExperCalculatorProps }

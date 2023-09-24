@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
@@ -16,12 +16,14 @@ import StackCategories from '@Components/Forms/IdeaForm/StackCategories.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { Idea } from '@Domain/Idea'
+import UsersGroup from '@Domain/UsersGroup'
 
 import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
 import IdeasService from '@Services/IdeasService'
+import UsersGroupsService from '@Services/UsersGroupsService'
 
 const props = defineProps<IdeaForm>()
 
@@ -36,6 +38,27 @@ const {
   handleOpenNotification,
   handleCloseNotification,
 } = useNotification()
+
+const experts = ref<Record<'experts', UsersGroup[]>>({
+  experts: [],
+})
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await UsersGroupsService.getUsersGroups(token)
+
+    if (response instanceof Error) {
+      return
+    }
+
+    experts.value.experts = response.filter((group) =>
+      group.roles.includes('EXPERT'),
+    )
+  }
+})
 
 const stackTechnologies = ref({
   stack: props.idea?.stack ?? [],
@@ -70,6 +93,7 @@ const { values, setFieldValue, handleSubmit } = useForm<Idea>({
 
 const currentIdea = computed(() => ({
   ...values,
+  ...experts.value,
   ...stackTechnologies.value,
   ...preAssessment.value,
 }))

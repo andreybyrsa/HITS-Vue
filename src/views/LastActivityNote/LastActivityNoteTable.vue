@@ -1,12 +1,16 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useDateFormat, useToggle } from '@vueuse/core'
-import { Change } from '@Domain/Idea'
+
 import { TableColumn } from '@Components/Table/Table.types'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Table from '@Components/Table/Table.vue'
-import LastActivityNoteProps from '@Views/LastActivityNote/LastActivityNote.types'
+
+import {
+  LastActivityNoteProps,
+  Change,
+} from '@Views/LastActivityNote/LastActivityNote.types'
 
 const props = defineProps<LastActivityNoteProps>()
 
@@ -80,10 +84,10 @@ function sortName(changes: Change[]) {
         <Button
           class-name=" btn-primary text-white"
           prepend-icon-name="bi bi-list fs-4"
-          is-drop-down-controller
+          v-dropdown="'lastActivityNoteTable'"
         ></Button>
 
-        <DropDown>
+        <DropDown id="lastActivityNoteTable">
           <ul class="list-group list-group-flush">
             <li class="list-group-item list-group-item-action p-1">
               <button class="w-100 text-start">Перейти к идее</button>

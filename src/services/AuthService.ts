@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { User, LoginUser, RegisterUser } from '@Domain/User'
 
-const AUTH_URL = process.env.VUE_APP_AUTH_API_URL || 'http://localhost:3000'
+const AUTH_URL = 'http://localhost:3000/api/v1/auth'
 
 const loginUser = async (user: LoginUser): Promise<User | Error> => {
   return await axios
