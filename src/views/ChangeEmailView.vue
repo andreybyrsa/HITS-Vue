@@ -48,10 +48,13 @@ const sendChangingUrl = handleSubmit(async (values) => {
     const response = await InvitationService.sendUrlToChangeEmail(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return handleOpenNotification('error', 'Ошибка изменения почты')
     }
 
-    return handleOpenNotification('success', response.success)
+    return handleOpenNotification(
+      'success',
+      'Ссылка на изменение почты находится в новой почте',
+    )
   }
 })
 </script>

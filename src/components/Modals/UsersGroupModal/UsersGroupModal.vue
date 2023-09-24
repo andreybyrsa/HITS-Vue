@@ -13,6 +13,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
+import GroupTypesFilterModal from '@Components/Modals/GroupTypesFilterModal/GroupTypesFilterModal.vue'
 
 import useNotification from '@Hooks/useNotification'
 
@@ -125,13 +126,13 @@ function handleOpenFilterModal() {
   isOpenedFilterModal.value = true
 }
 
-// function handleCloseFilterModal() {
-//   isOpenedFilterModal.value = false
-// }
+function handleCloseFilterModal() {
+  isOpenedFilterModal.value = false
+}
 
-// function handleSetFilters(filters: RolesTypes[]) {
-//   selectedFilters.value = filters
-// }
+function handleSetFilters(filters: RolesTypes[]) {
+  selectedFilters.value = filters
+}
 
 function usersRolesFilter(usersData: User[]) {
   if (selectedFilters.value.length) {
@@ -287,6 +288,13 @@ const handleEditGroup = handleSubmit(async (values) => {
       >
         Редактировать
       </Button>
+
+      <GroupTypesFilterModal
+        :is-opened="isOpenedFilterModal"
+        :current-filters="selectedFilters"
+        @set-filters="handleSetFilters"
+        @close-modal="handleCloseFilterModal"
+      />
     </div>
     <NotificationModal
       :is-opened="isOpenedNotification"
