@@ -31,6 +31,7 @@
     "yup": "^1.2.0"
   },
   "devDependencies": {
+    "@types/bootstrap": "^5.2.7",
     "@types/rsocket-core": "^0.0.7",
     "@types/rsocket-websocket-client": "^0.0.4",
     "@typescript-eslint/eslint-plugin": "^5.4.0",

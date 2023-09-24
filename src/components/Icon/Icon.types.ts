@@ -1,10 +1,6 @@
 interface IconProps {
   id?: string
   className?: string
-
-  isCollapseController?: boolean
-  isDropDownController?: boolean
-  dropDownClickableInside?: boolean
 }
 
 interface IconEmits {

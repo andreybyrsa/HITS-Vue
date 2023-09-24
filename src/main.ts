@@ -3,14 +3,18 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+import RolesTypes from '@Domain/Roles'
+
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
+import tooltipDirective from '@Utils/tooltip'
+import dropdownDirective from '@Utils/dropdown'
+import collapseDirective from '@Utils/collapse'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
-import RolesTypes from '@Domain/Roles'
 
 const app = createApp(App)
 
@@ -59,5 +63,9 @@ router.beforeEach((to) => {
 })
 
 app.use(router)
+
+app.directive('tooltip', tooltipDirective)
+app.directive('dropdown', dropdownDirective)
+app.directive('collapse', collapseDirective)
 
 app.mount('#app')

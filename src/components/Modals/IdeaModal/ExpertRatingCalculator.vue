@@ -7,6 +7,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import {
   ExpertConfirmation,
+  RatingSelect,
   ratingSelects,
 } from '@Components/Modals/IdeaModal/ExpertRatingCalculator.types'
 import Select from '@Components/Inputs/Select/Select.vue'
@@ -55,6 +56,13 @@ const intervalId = setInterval(() => {
   }
   return (initialOverallRating.value += '.')
 }, 200)
+
+function getCurrentTooltip(select: RatingSelect) {
+  const selectValue = values[select.name]
+  if (selectValue) {
+    return select.options.find((option) => option.value === selectValue)?.label
+  }
+}
 </script>
 
 <template>
@@ -70,6 +78,7 @@ const intervalId = setInterval(() => {
           validate-on-update
           :label="select.label"
           :options="select.options"
+          v-tooltip="getCurrentTooltip(select)"
           placeholder="Выберите значение"
         ></Select>
       </div>
