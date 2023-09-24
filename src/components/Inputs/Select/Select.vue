@@ -25,17 +25,6 @@ const LabelClassName = computed(() => [
   'form-label text-primary',
   props.labelClassName,
 ])
-
-// const SelectBind = computed(() => {
-//   if (props.tooltip) {
-//     return {
-//       'data-bs-toggle': 'tooltip',
-//       'data-bs-placement': 'top',
-//       'data-bs-title': props.tooltip,
-//     }
-//   }
-//   return null
-// })
 </script>
 
 <template>
@@ -53,8 +42,16 @@ const LabelClassName = computed(() => [
       :disabled="disabled"
     >
       <option
-        v-if="placeholder"
+        v-if="placeholder && selectValue === undefined"
         :value="undefined"
+        selected
+        disabled
+      >
+        {{ placeholder }}
+      </option>
+      <option
+        v-if="placeholder && selectValue === null"
+        :value="null"
         selected
         disabled
       >

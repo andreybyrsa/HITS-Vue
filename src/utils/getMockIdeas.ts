@@ -1,5 +1,4 @@
 import { Idea } from '@Domain/Idea'
-
 function getMockIdeas(): Idea[] {
   return [
     {
@@ -56,5 +55,4 @@ function getMockIdeas(): Idea[] {
     },
   ]
 }
-
 export default getMockIdeas

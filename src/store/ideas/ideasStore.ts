@@ -1,30 +1,18 @@
 import { defineStore } from 'pinia'
 import { Idea } from '@Domain/Idea'
-
 import InitialState from './initialState'
 import IdeasService from '@Services/IdeasService'
-
+import getMockIdeas from '@Utils/getMockIdeas'
 const useIdeasStore = defineStore('ideas', {
   state: (): InitialState => ({
     ideas: [],
   }),
   actions: {
     async fetchIdeas(token: string) {
-      const response = await IdeasService.fetchIdeas(token)
-
-      if (response instanceof Error) {
-        return
-      }
-
-      this.ideas = response
+      this.ideas = getMockIdeas()
     },
     async deleteInitiatorIdea(id: string, token: string) {
-      const response = await IdeasService.deleteInitiatorIdea(id, token)
-
-      if (response instanceof Error) {
-        return
-      }
-
+      await IdeasService.deleteInitiatorIdea(id, token)
       const deleteIdea = this.ideas.find((idea) => idea.id == id)
       if (deleteIdea) {
         const index = this.ideas.indexOf(deleteIdea)
@@ -39,5 +27,4 @@ const useIdeasStore = defineStore('ideas', {
     },
   },
 })
-
 export default useIdeasStore

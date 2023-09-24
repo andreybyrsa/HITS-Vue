@@ -1,5 +1,4 @@
 import axios from 'axios'
-
 import { Idea } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
@@ -114,22 +113,6 @@ const changeStatusIdeaByProjectOffice = async (
     })
 }
 
-const putExpertIdea = async (
-  idea: Idea,
-  id: string,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .put(`${IDEAS_URL}/admin/update/${id}`, idea, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка редактирования идеи'
-      return new Error(error)
-    })
-}
-
 const putAdminIdea = async (
   idea: Idea,
   id: string,
@@ -163,15 +146,12 @@ const deleteAdminIdea = async (
 
 const IdeasService = {
   fetchIdeas,
-
   getInitiatorIdea,
   postInitiatorIdea,
   putInitiatorIdea,
   sendInitiatorIdeaOnApproval,
   deleteInitiatorIdea,
-
   changeStatusIdeaByProjectOffice,
-  putExpertIdea,
   putAdminIdea,
   deleteAdminIdea,
 }

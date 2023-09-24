@@ -74,10 +74,10 @@ const handleEditUser = handleSubmit(async (values) => {
     const response = await ManageUsersService.updateUserInfo(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return handleOpenNotification('error', 'Ошибка изменения пользователя')
     }
 
-    emit('save-user', values, response.success)
+    emit('save-user', values, 'Успешное изменения пользователя')
     emit('close-modal')
   }
 })

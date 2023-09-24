@@ -35,11 +35,12 @@ const getExpertRating = async (
 }
 
 const saveExpertRating = async (
+  rating: Rating,
   ideaId: string,
   token: string,
 ): Promise<void | Error> => {
   return await axios
-    .put(`${RATING_URL}/save/${ideaId}`, {
+    .put(`${RATING_URL}/save/${ideaId}`, rating, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -50,11 +51,12 @@ const saveExpertRating = async (
 }
 
 const confirmExpertRating = async (
+  rating: Rating,
   ideaId: string,
   token: string,
 ): Promise<void | Error> => {
   return await axios
-    .put(`${RATING_URL}/confirm/${ideaId}`, {
+    .put(`${RATING_URL}/confirm/${ideaId}`, rating, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

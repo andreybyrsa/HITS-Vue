@@ -6,7 +6,6 @@ interface Idea {
   id: string
   createdAt: Date
   modifiedAt: Date
-
   name: string
   problem: string
   description: string
@@ -14,8 +13,6 @@ interface Idea {
   result: string
   projectType: 'INSIDE' | 'OUTSIDE'
   status: StatusTypes
-  stack?: Skill[]
-
   initiator: string
   projectOffice: UsersGroup[]
   experts: UsersGroup[]
