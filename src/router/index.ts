@@ -15,6 +15,7 @@ import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import IdeasView from '@Views/IdeasView/IdeasView.vue'
+import IdeaView from '@Views/IdeaView.vue'
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 import ErrorView from '@Views/ErrorView.vue'
 
@@ -26,12 +27,23 @@ const routes: RouteRecordRaw[] = [
     component: RoleMiddleware,
     children: [
       {
-        path: 'ideas',
+        path: '/ideas',
         name: 'ideas',
         meta: {
           roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         },
         component: IdeasView,
+        children: [
+          {
+            path: 'idea/:id',
+            name: 'idea',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+              isPageIdea: true,
+            },
+            component: IdeaView,
+          },
+        ],
       },
       {
         path: 'add-idea',
@@ -80,7 +92,7 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: '/change-email',
+        path: 'change-email',
         name: 'change-email',
         component: ChangeEmailView,
         meta: {

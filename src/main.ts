@@ -55,6 +55,8 @@ router.beforeEach((to) => {
       ? currentRoutePath != '/change-email/' + to.params.slug
       : to.meta.isPageRegister
       ? currentRoutePath != '/register/' + to.params.slug
+      : to.meta.isPageIdea
+      ? currentRoutePath != '/ideas/idea/' + to.params.id
       : !path.includes(currentRoutePath))
   ) {
     router.push('error')

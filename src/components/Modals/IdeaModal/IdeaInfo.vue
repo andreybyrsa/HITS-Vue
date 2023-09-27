@@ -1,10 +1,12 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import { IdeaInfoProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
+import Button from '@Components/Button/Button.vue'
 
 import useUserStore from '@Store/user/userStore'
 import modeButtons from './IdeaInfo.types'
@@ -51,6 +53,13 @@ function checkViewMode() {
     : currentRole == 'ADMIN'
     ? false
     : true
+}
+
+const disabled = ref<boolean>(false)
+
+function button(id: string) {
+  navigator.clipboard.writeText('http://localhost:8080/ideas/idea/' + id)
+  disabled.value = true
 }
 </script>
 
@@ -119,6 +128,13 @@ function checkViewMode() {
         <Typography class-name="text-primary"> Просмотр </Typography>
       </div>
     </div>
+
+    <Button
+      class-name="btn-primary w-100"
+      @click="button(idea?.id as string)"
+      :disabled="disabled"
+      >{{ disabled ? 'Ссылка скопирована!' : 'Поделиться идеей' }}</Button
+    >
 
     <div v-if="idea?.experts">
       <div

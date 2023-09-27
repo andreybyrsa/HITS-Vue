@@ -89,6 +89,8 @@ function filterIdeas(ideasData: Idea[]) {
     </template>
 
     <template #content>
+      <router-view></router-view>
+
       <Typography class-name="fs-2 text-primary w-75">Список идей</Typography>
 
       <SearchAndFilters
