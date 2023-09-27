@@ -1,5 +1,5 @@
 interface Notification {
-  id: number
+  id: string
   type?: 'success' | 'error'
   message: string
 }

@@ -9,13 +9,13 @@ import Typography from '@Components/Typography/Typography.vue'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const notificationStore = useNotificationsStore()
-const { unreadedNotifications } = storeToRefs(notificationStore)
+const { newNotifications } = storeToRefs(notificationStore)
 
 const props = defineProps<NotificationModalProps>()
 const { id, type, message } = toRefs(props.notification)
 
 const isUnreadedNotification = ref(
-  !!unreadedNotifications.value.find((notification) => notification.id === id.value),
+  !!newNotifications.value.find((notification) => notification.id === id.value),
 )
 
 onMounted(() => {
