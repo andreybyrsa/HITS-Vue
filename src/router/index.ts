@@ -28,22 +28,24 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'ideas',
         name: 'ideas',
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        },
-        component: IdeasView,
-      },
-      {
-        path: 'add-idea',
-        name: 'addIdeas',
-        meta: { roles: ['INITIATOR', 'ADMIN'] },
-        component: NewIdeaView,
-      },
-      {
-        path: 'edit-idea/:id',
-        name: 'editIdeas',
-        meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
-        component: EditIdeaView,
+        children: [
+          {
+            path: 'list',
+            name: 'ideas-list',
+            meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+            component: IdeasView,
+          },
+          {
+            path: 'create',
+            meta: { roles: ['INITIATOR', 'ADMIN'] },
+            component: NewIdeaView,
+          },
+          {
+            path: 'edit/:id',
+            meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
+            component: EditIdeaView,
+          },
+        ],
       },
       {
         path: 'last-activity-note',
