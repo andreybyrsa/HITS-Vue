@@ -11,6 +11,8 @@ import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import Table from '@Components/Table/Table.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import { User } from '@Domain/User'
+import ProfileView from './Profile/ProfileView.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -64,6 +66,9 @@ const isOpenedModal = ref(false)
 
 const selectedOption = ref()
 
+const isOpenedProfile = ref(false)
+const currentOpenedProfile = ref<User>()
+
 userStore.checkLastActivity()
 
 const { values, handleSubmit } = useForm({
@@ -84,6 +89,15 @@ function handleLogin() {
 
 function handleCloseModal() {
   isOpenedModal.value = false
+}
+
+function handleOpenProfile(user?: User) {
+  currentOpenedProfile.value = user
+  isOpenedProfile.value = true
+}
+
+function handleCloseProfile() {
+  isOpenedProfile.value = false
 }
 </script>
 
@@ -176,6 +190,16 @@ function handleCloseModal() {
           </div>
         </template>
       </Table>
+      <Button
+        class="w-100 fs-3 p-4 text-white bg-primary"
+        @click="handleOpenProfile"
+      >
+        Профиль
+      </Button>
+      <ProfileView
+        :isOpened="isOpenedProfile"
+        @close-modal="handleCloseProfile"
+      />
     </template>
   </PageLayout>
 </template>

@@ -17,6 +17,7 @@ import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import IdeasView from '@Views/IdeasView/IdeasView.vue'
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 import ErrorView from '@Views/ErrorView.vue'
+import ProfileView from '@Views/Profile/ProfileView.vue'
 
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
 
@@ -52,6 +53,14 @@ const routes: RouteRecordRaw[] = [
           roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         },
         component: LastActivityNote,
+      },
+      {
+        path: 'profile/:id',
+        name: 'profile',
+        meta: {
+          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
+        component: ProfileView,
       },
       {
         path: 'admin',

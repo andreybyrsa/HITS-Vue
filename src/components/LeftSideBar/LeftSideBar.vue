@@ -16,6 +16,8 @@ import RolesTypes from '@Domain/Roles'
 import useUserStore from '@Store/user/userStore'
 
 import getRoles from '@Utils/getRoles'
+import ProfileView from '@Views/Profile/ProfileView.vue'
+import { User } from '@Domain/User'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -31,6 +33,9 @@ const LeftSideBarClassName = ref<string[]>()
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
 })
+
+const isOpenedProfile = ref(false)
+const currentOpenedProfile = ref<User>()
 
 watchImmediate(isHovered, (value, prevValue) => {
   const opendAnimationClass = value ? 'left-side-bar--opened' : ''
@@ -64,6 +69,15 @@ function handleOpenModal() {
 function handleCloseModal() {
   isOpenedModal.value = false
 }
+
+function handleOpenProfile(user?: User) {
+  currentOpenedProfile.value = user
+  isOpenedProfile.value = true
+}
+
+function handleCloseProfile() {
+  isOpenedProfile.value = false
+}
 </script>
 
 <template>
@@ -91,6 +105,15 @@ function handleCloseModal() {
 
     <div class="d-flex flex-column gap-2">
       <Button
+        class-name="left-side-bar__role-button btn-light w-100 text-black"
+        prepend-icon-name="bi bi-person-circle fs-5"
+        @click="handleOpenProfile"
+        :disabled="user?.roles.length === 1"
+      >
+        {{ isHovered ? 'Профиль' : '' }}
+      </Button>
+
+      <Button
         class-name="left-side-bar__role-button btn-light w-100 text-success"
         prepend-icon-name="bi bi-circle-fill fs-6"
         @click="handleOpenModal"
@@ -111,6 +134,10 @@ function handleCloseModal() {
     <RoleModal
       :is-opened="isOpenedModal"
       @close-modal="handleCloseModal"
+    />
+    <ProfileView
+      :isOpened="isOpenedProfile"
+      @close-modal="handleCloseProfile"
     />
   </div>
 
