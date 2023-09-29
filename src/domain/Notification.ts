@@ -3,6 +3,8 @@ interface Notification {
   title: string
   message: string
   readed: boolean
+  time?: string
+  data?: string
 }
 
 export default Notification
