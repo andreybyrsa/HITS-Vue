@@ -1,6 +1,7 @@
 import RolesTypes from './Roles'
 
 interface User {
+  id: string
   token?: string
   username?: string
   email: string

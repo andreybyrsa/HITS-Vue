@@ -16,4 +16,7 @@ interface SearchedOptionType<OptionType> {
   option: OptionType
 }
 
-export { ComboboxProps, SearchedOptionType }
+interface ComboboxEmits {
+  (event: 'addNewOption', optionName: string): void
+}
+export { ComboboxProps, SearchedOptionType, ComboboxEmits }
