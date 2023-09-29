@@ -16,7 +16,8 @@ import useUserStore from '@Store/user/userStore'
 import { Rating } from '@Domain/Idea'
 import RatingService from '@Services/RatingService'
 import { watchImmediate } from '@vueuse/core'
-
+import useRatingStore from '@Store/rating/ratingStore'
+const ratingStore = useRatingStore()
 const props = defineProps<ExperCalculatorProps>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -56,11 +57,7 @@ const handleConfirmRating = handleSubmit(async (values) => {
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
-    const response = await RatingService.confirmExpertRating(values, id, token)
-
-    if (response instanceof Error) {
-      return
-    }
+    const response = await ratingStore.confirmRating(values, id, token)
 
     if (rating.value) {
       rating.value.confirmed = true
