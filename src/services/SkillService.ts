@@ -18,11 +18,10 @@ const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
 }
 
 const getAllConfirmedOrCreatorSkills = async (
-  userId: string,
   token: string,
 ): Promise<Record<SkillType, Skill[]> | Error> => {
   return await axios
-    .get(`${SKILLS_URL}/all-confirmed-or-creator/${userId}`, {
+    .get(`${SKILLS_URL}/all-confirmed-or-creator`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

@@ -41,15 +41,14 @@ const choosenSkills = reactive<Record<SkillType, Skill[]>>({
 onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
-    const { id, token } = currentUser
-    const response = await SkillsService.getAllConfirmedOrCreatorSkills(id, token)
+    const { token } = currentUser
+    const response = await SkillsService.getAllConfirmedOrCreatorSkills(token)
 
     if (response instanceof Error) {
       return
     }
 
     skills.value = response
-    console.log(skills.value)
   }
 })
 
