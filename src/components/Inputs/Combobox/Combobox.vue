@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="OptionType">
 import { Ref, ref, computed, watch, VueElement } from 'vue'
-import { onClickOutside } from '@vueuse/core'
 import { useField } from 'vee-validate'
+import { onClickOutside } from '@vueuse/core'
 
 import {
   ComboboxProps,
@@ -26,14 +26,25 @@ const searchedValue = ref('')
 const choicesRef = ref<VueElement | null>(null)
 const isOpenedChoices = ref(false)
 
-const { value: selectedValue, errorMessage } = useField<OptionType | OptionType[]>(
-  props.name,
-  undefined,
-  {
-    controlled: props.noFormControlled ? false : true,
-    syncVModel: true,
-  },
-)
+const {
+  value: selectedValue,
+  meta,
+  errorMessage,
+} = useField<OptionType | OptionType[]>(props.name, undefined, {
+  validateOnMount: false,
+  validateOnValueUpdate: true,
+  controlled: props.noFormControlled ? false : true,
+  syncVModel: true,
+})
+
+function getFiledError() {
+  if (meta.touched || meta.dirty) {
+    if (isMultiselect(selectedValue.value)) {
+      return selectedValue.value.length > 0 ? undefined : errorMessage.value
+    }
+    return selectedValue.value !== undefined ? undefined : errorMessage.value
+  }
+}
 
 watch(
   () => props.options,
@@ -152,10 +163,10 @@ onClickOutside(choicesRef, (event) => {
 
     <div class="combobox">
       <Input
-        :name="`search-${Math.random() * 100}`"
+        :name="`search-${props.name}`"
         class-name="combobox__search rounded-end"
         v-model="searchedValue"
-        :error="errorMessage"
+        :error="getFiledError()"
         no-form-controlled
         :placeholder="getComboboxPlaceholder()"
         @focus="focusCombobox"
