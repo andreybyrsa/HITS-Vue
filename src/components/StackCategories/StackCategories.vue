@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import comboboxStackCategories from '@Components/Forms/IdeaForm/StackCategories'
+import comboboxStackCategories from '@Components/StackCategories/StackCategories'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
 import { Skill, SkillType } from '@Domain/Skill'
@@ -17,7 +17,6 @@ import useUserStore from '@Store/user/userStore'
 const stackValue = defineModel<Skill[]>({
   required: true,
 })
-
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
