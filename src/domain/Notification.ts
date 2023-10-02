@@ -3,6 +3,7 @@ interface Notification {
   title: string
   message: string
   readed: boolean
+  isFavorite: boolean
   time?: string
   data?: string
 }

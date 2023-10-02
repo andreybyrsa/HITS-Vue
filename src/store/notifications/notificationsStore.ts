@@ -15,6 +15,7 @@ const useNotificationsStore = defineStore('notification', {
         title,
         message,
         readed: false,
+        isFavorite: false,
       }
       this.newNotifications.push(notification)
       this.systemNotifications.push(notification)
