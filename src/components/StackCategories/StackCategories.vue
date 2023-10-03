@@ -17,6 +17,7 @@ import useUserStore from '@Store/user/userStore'
 const stackValue = defineModel<Skill[]>({
   required: true,
 })
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -101,6 +102,7 @@ function getTechnologyClassName(key: SkillType) {
           :options="skills[category.key]"
           :display-by="['name']"
           v-model="choosenSkills[category.key]"
+          v-model:all="stackValue"
           no-form-controlled
           :placeholder="category.placeholder"
           :multiselect-placeholder="category.multiselectPlaceholder"

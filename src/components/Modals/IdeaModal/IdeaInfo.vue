@@ -164,7 +164,7 @@ console.log('ratingsStore:', ratingStore.$state)
         v-collapse="'experts'"
         aria-expanded="false"
       >
-        <Typography class-name="text-secondary">Эксперты</Typography>
+        <Typography class-name="text-secondary">Прогресс утверждения</Typography>
 
         <Icon class-name="bi bi-chevron-down me-2 fs-5 text-secondary" />
       </div>
