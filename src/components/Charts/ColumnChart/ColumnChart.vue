@@ -5,7 +5,7 @@ import { watchImmediate } from '@vueuse/core'
 import {
   ColumnChartProps,
   ColumnChartBar,
-} from '@Components/ColumnChart/ColumnChart.types'
+} from '@Components/Charts/ColumnChart/ColumnChart.types'
 
 const props = defineProps<ColumnChartProps<OptionType>>()
 
