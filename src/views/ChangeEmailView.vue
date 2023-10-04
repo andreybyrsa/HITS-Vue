@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
+import useCommentsStore from '@Store/comments/commentsStore'
+
+import { ChangeEmailProps, ChangeEmailEmits } from '@Views/ChangeEmailView.types'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -20,6 +23,13 @@ import useUserStore from '@Store/user/userStore'
 import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
+defineProps<ChangeEmailProps>()
+const emit = defineEmits<ChangeEmailEmits>()
+
+const commentStore = useCommentsStore()
+const { rsocketIsConnected, closeRsocket } = storeToRefs(commentStore)
 
 const {
   notificationOptions,
@@ -57,17 +67,22 @@ const sendChangingUrl = handleSubmit(async (values) => {
     )
   }
 })
+
+function closeChangeEmail() {
+  emit('close-modal')
+  if (rsocketIsConnected.value) {
+    closeRsocket.value()
+  }
+}
 </script>
 
 <template>
-  <PageLayout content-class-name="change-email-page__content">
-    <template #leftSideBar>
-      <LeftSideBar />
-    </template>
-
-    <template #content>
-      <router-view></router-view>
-
+  <ModalLayout
+    :is-opened="isOpened"
+    @on-outside-close="emit('close-modal')"
+    class="change-email-page"
+  >
+    <div class="change-email-page__content">
       <FormLayout>
         <Typography class-name="fs-3 text-primary">Изменение почты</Typography>
         <Input
@@ -93,8 +108,8 @@ const sendChangingUrl = handleSubmit(async (values) => {
           {{ notificationOptions.message }}
         </NotificationModal>
       </FormLayout>
-    </template>
-  </PageLayout>
+    </div>
+  </ModalLayout>
 </template>
 <style lang="scss">
 .change-email-page {
