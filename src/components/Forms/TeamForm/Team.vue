@@ -21,7 +21,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const users = ref<User[]>()
-const owner = ref<User>(useFieldValue<User>('owner').value)
+const owner = ref<User | undefined>(useFieldValue<User>('owner').value)
 const leader = ref<User | undefined>(useFieldValue<User>('leader').value)
 const members = ref<User[]>(useFieldValue<User[]>('members').value ?? [])
 
@@ -112,7 +112,7 @@ onMounted(async () => {
 })
 
 const teamUsers = computed(() => {
-  const currentUsers = [...members.value, leader.value]
+  const currentUsers = [...members.value, leader.value, owner.value]
   const uniqueUsers = new Map<string, User>()
   currentUsers.forEach((user) => user && uniqueUsers.set(user.id, user))
 
@@ -131,6 +131,33 @@ watchImmediate(teamUsers, (currentTeam) => {
 })
 
 watch(
+  owner,
+  (currenOwner, prevOwner) => {
+    if (currenOwner) {
+      const isExistOwner = members.value.find(
+        (member) => member.id === currenOwner.id,
+      )
+
+      if (!isExistOwner) {
+        const prevOwnerIndex = members.value.findIndex(
+          (member) => member.id === prevOwner?.id,
+        )
+        if (prevOwnerIndex !== -1) {
+          members.value.splice(prevOwnerIndex, 1)
+        }
+
+        if (prevOwner?.id == leader.value?.id) {
+          leader.value = undefined
+        }
+
+        members.value.push(currenOwner)
+      }
+    }
+  },
+  { immediate: true },
+)
+
+watch(
   leader,
   (currentLeader, prevLeader) => {
     if (currentLeader) {
@@ -145,6 +172,9 @@ watch(
         if (prevLeaderIndex !== -1) {
           members.value.splice(prevLeaderIndex, 1)
         }
+        if (prevLeader?.id === owner.value?.id) {
+          owner.value = undefined
+        }
 
         members.value.push(currentLeader)
       }
@@ -152,6 +182,15 @@ watch(
   },
   { immediate: true },
 )
+
+function onUnselectMember(unselectedMember: User) {
+  if (unselectedMember.id === leader.value?.id) {
+    leader.value = undefined
+  }
+  if (unselectedMember.id === owner.value?.id) {
+    owner.value = undefined
+  }
+}
 
 function unselectMember(unselectedMember: User) {
   const currentMemberIndex = members.value.findIndex(
@@ -161,15 +200,7 @@ function unselectMember(unselectedMember: User) {
   if (currentMemberIndex !== -1) {
     members.value.splice(currentMemberIndex, 1)
 
-    if (unselectedMember.id === leader.value?.id) {
-      leader.value = undefined
-    }
-  }
-}
-
-function unselectLeader(unselectedMember: User) {
-  if (unselectedMember.id === leader.value?.id) {
-    leader.value = undefined
+    onUnselectMember(unselectedMember)
   }
 }
 
@@ -214,7 +245,7 @@ function getMemberColor(member: User) {
           v-model="members"
           placeholder="Выберите участников"
           multiselect-placeholder="В команде"
-          @on-unselect="unselectLeader"
+          @on-unselect="onUnselectMember"
         />
 
         <div class="team__members mt-2">
