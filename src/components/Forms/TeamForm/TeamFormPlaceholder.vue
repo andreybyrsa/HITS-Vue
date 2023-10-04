@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
 </script>
 
 <template>
@@ -23,27 +24,7 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
         />
       </div>
 
-      <LoadingPlaceholder
-        v-for="index in 2"
-        :key="index"
-        height="small"
-      />
-
-      <div class="w-100 d-flex gap-3">
-        <div class="w-50">
-          <LoadingPlaceholder height="small" />
-          <div class="mt-1 d-flex gap-3">
-            <LoadingPlaceholder
-              v-for="index in 3"
-              :key="index"
-            />
-          </div>
-        </div>
-
-        <div class="w-50">
-          <LoadingPlaceholder height="medium" />
-        </div>
-      </div>
+      <TeamPlaceholder />
     </div>
   </div>
 </template>
@@ -54,6 +35,10 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
 
   &__content {
     @include flexible(center, flex-start, column, $gap: 16px);
+  }
+
+  &__member {
+    width: 100px;
   }
 }
 </style>

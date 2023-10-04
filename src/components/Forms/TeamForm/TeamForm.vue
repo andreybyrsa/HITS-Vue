@@ -9,7 +9,7 @@ import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import TeamType from '@Components/Forms/TeamForm/TeamType.vue'
 import TeamVue from '@Components/Forms/TeamForm/Team.vue'
 import Button from '@Components/Button/Button.vue'
-import TeamFormProps from '@Components/Forms/TeamForm/TeamForm.types'
+import { TeamFormProps } from '@Components/Forms/TeamForm/TeamForm.types'
 
 import { User } from '@Domain/User'
 import Team from '@Domain/Team'

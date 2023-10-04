@@ -1,7 +1,12 @@
+import { Skill } from '@Domain/Skill'
 import Team from '@Domain/Team'
 
 interface TeamFormProps {
   team?: Team
 }
 
-export default TeamFormProps
+interface SkillsRadarChartsProps {
+  skills: Skill[]
+}
+
+export { TeamFormProps, SkillsRadarChartsProps }
