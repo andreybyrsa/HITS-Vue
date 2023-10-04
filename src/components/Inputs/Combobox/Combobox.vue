@@ -5,6 +5,7 @@ import { onClickOutside } from '@vueuse/core'
 
 import {
   ComboboxProps,
+  ComboboxEmits,
   SearchedOptionType,
 } from '@Components/Inputs/Combobox/Combobox.types'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -19,6 +20,7 @@ defineModel<OptionType | OptionType[]>({
 })
 
 const props = defineProps<ComboboxProps<OptionType>>()
+const emit = defineEmits<ComboboxEmits<OptionType>>()
 const options = ref(props.options) as Ref<OptionType[]>
 
 const searchedValue = ref('')
@@ -101,11 +103,15 @@ function selectOption(currentOption: OptionType) {
     )
 
     if (selectedOptionIndex !== -1) {
+      emit('onUnselect', currentOption)
       return selectedValue.value.splice(selectedOptionIndex, 1)
     }
+
+    emit('onSelect', currentOption)
     return selectedValue.value.push(currentOption)
   }
 
+  emit('onSelect', currentOption)
   selectedValue.value = currentOption
 }
 
