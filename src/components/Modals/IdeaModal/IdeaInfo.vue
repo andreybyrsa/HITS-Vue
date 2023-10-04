@@ -82,6 +82,10 @@ watchImmediate(
     }
   },
 )
+
+const numberOfExperts = computed(() => {
+  return expertRatings.value.filter((rating) => rating.expert).length
+})
 console.log('ratingsStore:', ratingStore.$state)
 </script>
 
@@ -177,6 +181,9 @@ console.log('ratingsStore:', ratingStore.$state)
             class="idea-info__user"
           >
             <!-- <Icon class-name="bi bi-chevron-down me-2 fs-5 text-secondary" /> -->
+            <Typography class-name="text-secondary">
+              Всего экспертов: {{ numberOfExperts }}
+            </Typography>
             <Typography class-name="text-primary">
               {{ value.expert ? 'Неизвестный эксперт' : '' }} -
               {{ value.confirmed ? 'Утвердил' : 'На утверждении' }}
