@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useField, useFieldValue } from 'vee-validate'
 import { watchImmediate } from '@vueuse/core'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
-import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import ColumnChart from '@Components/ColumnChart/ColumnChart.vue'
+import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
+import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
 
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
@@ -22,12 +22,12 @@ const { user } = storeToRefs(userStore)
 
 const users = ref<User[]>()
 const owner = ref<User>(useFieldValue<User>('owner').value)
-const leader = ref<User>(useFieldValue<User>('leader').value)
+const leader = ref<User | undefined>(useFieldValue<User>('leader').value)
 const members = ref<User[]>(useFieldValue<User[]>('members').value ?? [])
 
-const columnChartSkills = ref<Skill[]>([])
+const radarChartsSkills = ref<Skill[]>([])
 
-const { value: teamSkills } = useField('skills', undefined, {
+const { value: teamSkills } = useField<Skill[]>('skills', undefined, {
   validateOnMount: false,
   validateOnValueUpdate: true,
 })
@@ -48,11 +48,9 @@ onMounted(async () => {
             { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
             { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
             { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
-            { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
-            { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
-            { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
-            { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
-            { id: '2', name: 'React', type: 'FRAMEWORK' },
+            { id: '2', name: 'TypeScript', type: 'LANGUAGE' },
+            { id: '2', name: 'TypeScript', type: 'LANGUAGE' },
+            { id: '3', name: 'React', type: 'FRAMEWORK' },
           ],
         },
         {
@@ -60,10 +58,12 @@ onMounted(async () => {
           firstName: 'Тимур',
           lastName: 'Минязев',
           skills: [
-            { id: '3', name: 'Docker', type: 'DEVOPS' },
-            { id: '2', name: 'React', type: 'FRAMEWORK' },
-            { id: '2', name: 'React', type: 'FRAMEWORK' },
-            { id: '2', name: 'React', type: 'FRAMEWORK' },
+            { id: '4', name: 'Docker', type: 'DEVOPS' },
+            { id: '4', name: 'Docker', type: 'DEVOPS' },
+            { id: '4', name: 'Docker', type: 'DEVOPS' },
+            { id: '3', name: 'React', type: 'FRAMEWORK' },
+            { id: '3', name: 'React', type: 'FRAMEWORK' },
+            { id: '5', name: 'Django', type: 'FRAMEWORK' },
           ],
         },
         {
@@ -71,11 +71,17 @@ onMounted(async () => {
           firstName: 'Кирилл',
           lastName: 'Власов',
           skills: [
-            { id: '4', name: 'Java', type: 'Language' },
-            { id: '5', name: 'Vue', type: 'FRAMEWORK' },
-            { id: '5', name: 'Vue', type: 'FRAMEWORK' },
-            { id: '5', name: 'Vue', type: 'FRAMEWORK' },
-            { id: '6', name: 'SQL', type: 'DATABASE' },
+            { id: '6', name: 'Java', type: 'LANGUAGE' },
+            { id: '7', name: 'Vue', type: 'FRAMEWORK' },
+            { id: '7', name: 'Vue', type: 'FRAMEWORK' },
+            { id: '7', name: 'Vue', type: 'FRAMEWORK' },
+            { id: '8', name: 'Angular', type: 'FRAMEWORK' },
+            { id: '8', name: 'Angular', type: 'FRAMEWORK' },
+            { id: '9', name: 'Git', type: 'DEVOPS' },
+            { id: '10', name: 'SQL', type: 'DATABASE' },
+            { id: '11', name: 'PostgreSQL', type: 'DATABASE' },
+            { id: '12', name: 'Mongo', type: 'DATABASE' },
+            { id: '12', name: 'Mongo', type: 'DATABASE' },
           ],
         },
         {
@@ -83,11 +89,11 @@ onMounted(async () => {
           firstName: 'Мамед',
           lastName: 'Байрамов',
           skills: [
-            { id: '1', name: 'JavaScript', type: 'Language' },
-            { id: '6', name: 'SQL', type: 'DATABASE' },
-            { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
-            { id: '5', name: 'Vue', type: 'FRAMEWORK' },
-            { id: '2', name: 'React', type: 'FRAMEWORK' },
+            { id: '13', name: 'C++', type: 'LANGUAGE' },
+            { id: '13', name: 'C++', type: 'LANGUAGE' },
+            { id: '14', name: 'Maven', type: 'DEVOPS' },
+            { id: '14', name: 'Maven', type: 'DEVOPS' },
+            { id: '3', name: 'React', type: 'FRAMEWORK' },
           ],
         },
       ],
@@ -106,7 +112,7 @@ onMounted(async () => {
 })
 
 const teamUsers = computed(() => {
-  const currentUsers = [...members.value, owner.value, leader.value]
+  const currentUsers = [...members.value, leader.value]
   const uniqueUsers = new Map<string, User>()
   currentUsers.forEach((user) => user && uniqueUsers.set(user.id, user))
 
@@ -121,11 +127,57 @@ watchImmediate(teamUsers, (currentTeam) => {
   teamSkills.value = [
     ...new Map(membersSkills.map((skill) => [skill.id, skill])).values(),
   ]
-  columnChartSkills.value = membersSkills
+  radarChartsSkills.value = membersSkills
 })
 
-function unselectMember(index: number) {
-  members.value.splice(index, 1)
+watch(
+  leader,
+  (currentLeader, prevLeader) => {
+    if (currentLeader) {
+      const isExistLeader = members.value.find(
+        (member) => member.id === currentLeader.id,
+      )
+
+      if (!isExistLeader) {
+        const prevLeaderIndex = members.value.findIndex(
+          (member) => member.id === prevLeader?.id,
+        )
+        if (prevLeaderIndex !== -1) {
+          members.value.splice(prevLeaderIndex, 1)
+        }
+
+        members.value.push(currentLeader)
+      }
+    }
+  },
+  { immediate: true },
+)
+
+function unselectMember(unselectedMember: User) {
+  const currentMemberIndex = members.value.findIndex(
+    (member) => member.id === unselectedMember.id,
+  )
+
+  if (currentMemberIndex !== -1) {
+    members.value.splice(currentMemberIndex, 1)
+
+    if (unselectedMember.id === leader.value?.id) {
+      leader.value = undefined
+    }
+  }
+}
+
+function unselectLeader(unselectedMember: User) {
+  if (unselectedMember.id === leader.value?.id) {
+    leader.value = undefined
+  }
+}
+
+function getMemberColor(member: User) {
+  const memberClassName = 'team__member p-1 rounded-3 bg-opacity-25 '
+  return member.id !== leader.value?.id
+    ? memberClassName + 'bg-primary'
+    : memberClassName + 'bg-danger'
 }
 </script>
 
@@ -153,7 +205,7 @@ function unselectMember(index: number) {
     />
 
     <div class="w-100 d-flex gap-3">
-      <div class="w-50">
+      <div class="w-50 d-flex flex-column">
         <Combobox
           name="members"
           label="Участники команды*"
@@ -162,60 +214,31 @@ function unselectMember(index: number) {
           v-model="members"
           placeholder="Выберите участников"
           multiselect-placeholder="В команде"
+          @on-unselect="unselectLeader"
         />
 
-        <div
-          v-if="members.length"
-          class="team__members mt-2"
-        >
+        <div class="team__members mt-2">
           <div
-            v-for="(member, index) in members"
+            v-for="(member, index) in members.sort((member) =>
+              member.id === leader?.id ? -1 : 1,
+            )"
             :key="index"
-            class="team__member p-1 rounded-3 bg-primary bg-opacity-25"
+            :class="getMemberColor(member)"
           >
             <Typography>{{ member.firstName }} {{ member.lastName }}</Typography>
             <Icon
               class-name="team__member-delete-icon bi bi-x-lg"
-              @click="unselectMember(index)"
+              @click="unselectMember(member)"
             />
           </div>
         </div>
       </div>
 
-      <ColumnChart
-        class-name="w-50"
-        :options="columnChartSkills"
-        display-by="name"
-      />
+      <SkillsRadarCharts :skills="radarChartsSkills" />
     </div>
   </div>
 
-  <div
-    v-else
-    class="w-100 d-flex flex-column gap-3"
-  >
-    <LoadingPlaceholder
-      v-for="index in 2"
-      :key="index"
-      height="small"
-    />
-
-    <div class="w-100 d-flex gap-3">
-      <div class="w-50">
-        <LoadingPlaceholder height="small" />
-        <div class="mt-1 d-flex gap-3">
-          <LoadingPlaceholder
-            v-for="index in 3"
-            :key="index"
-          />
-        </div>
-      </div>
-
-      <div class="w-50">
-        <LoadingPlaceholder height="medium" />
-      </div>
-    </div>
-  </div>
+  <TeamPlaceholder v-else />
 </template>
 
 <style lang="scss" scoped>
@@ -231,6 +254,10 @@ function unselectMember(index: number) {
 
     &-delete-icon {
       cursor: pointer;
+    }
+
+    &-placeholder {
+      width: 100px;
     }
   }
 }
