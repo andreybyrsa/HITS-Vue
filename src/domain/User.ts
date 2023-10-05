@@ -1,4 +1,5 @@
 import RolesTypes from './Roles'
+import { Skill } from './Skill'
 
 interface User {
   id: string
@@ -10,6 +11,7 @@ interface User {
   roles: RolesTypes[]
   role?: RolesTypes
   lastActivity?: Date
+  skills?: Skill[]
 }
 
 interface LoginUser {
