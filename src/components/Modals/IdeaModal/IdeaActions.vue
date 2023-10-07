@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router'
 
 import Button from '@Components/Button/Button.vue'
 import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
-import actionsButton from '@Components/Modals/IdeaModal/IdeaActionsButton'
 import ButtonSendIdeaOnApproval from '@Components/Modals/IdeaModal/ButtonSendIdeaOnApproval.vue'
 
 import { Idea } from '@Domain/Idea'
@@ -56,29 +55,6 @@ function getAccessToConfirmation() {
     }
   }
   return false
-}
-
-function checkStatusAndRole() {
-  const currentRole = user.value?.role
-  const currentStatusIdea = props.idea?.status
-  const currentInitiatorIdea = props.idea.initiator
-  if (currentRole == 'ADMIN') {
-    return true
-  } else
-    return (
-      currentRole &&
-      currentStatusIdea &&
-      actionsButton.find((button) =>
-        currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
-          ? true
-          : currentRole == 'INITIATOR'
-          ? currentInitiatorIdea == user.value?.email &&
-            button.roles.includes(currentRole) &&
-            button.status.includes(currentStatusIdea)
-          : button.roles.includes(currentRole) &&
-            button.status.includes(currentStatusIdea),
-      )
-    )
 }
 </script>
 

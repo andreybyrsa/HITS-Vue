@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, VueElement } from 'vue'
+import { onMounted, ref, VueElement } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import {
@@ -12,6 +12,9 @@ import IdeaActions from '@Components/Modals/IdeaModal/IdeaActions.vue'
 import IdeaInfo from '@Components/Modals/IdeaModal/IdeaInfo.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
+import useUserStore from '@Store/user/userStore'
+import useIdeasStore from '@Store/ideas/ideasStore'
 
 import { Idea } from '@Domain/Idea'
 
@@ -33,6 +36,21 @@ function closeIdeaModal() {
     closeRsocket.value()
   }
 }
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const ideaStore = useIdeasStore()
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    await ideaStore.fetchIdeas(token)
+  }
+})
 </script>
 
 <template>

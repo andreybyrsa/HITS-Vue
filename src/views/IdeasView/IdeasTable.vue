@@ -8,7 +8,6 @@ import Table from '@Components/Table/Table.vue'
 import { TableColumn } from '@Components/Table/Table.types'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
-import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
@@ -23,10 +22,6 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 import getStatus from '@Utils/getStatus'
 
 const props = defineProps<IdeasTableProps>()
-
-const isOpenedIdeaModal = ref(false)
-
-const currentOpenedIdea = ref<Idea>()
 
 const availableStatus = getStatus()
 
@@ -131,15 +126,6 @@ function getRatingColor(rating: number) {
   return 'text-danger'
 }
 
-function handleOpenIdeaModal(idea: Idea) {
-  currentOpenedIdea.value = idea
-  isOpenedIdeaModal.value = true
-}
-
-function handleCloseIdeaModal() {
-  isOpenedIdeaModal.value = false
-}
-
 const ideaId = ref<string>('')
 const isOpenedIdeaDeleteModal = ref(false)
 
@@ -210,7 +196,7 @@ function checkMark(row: Idea) {
           <li class="list-group-item list-group-item-action p-1">
             <button
               class="w-100 text-start"
-              @click="handleOpenIdeaModal(item)"
+              @click="router.push(`/ideas/idea/${item.id}`)"
             >
               Просмотреть идею
             </button>
@@ -255,11 +241,6 @@ function checkMark(row: Idea) {
     </template>
   </Table>
 
-  <IdeaModal
-    :is-opened="isOpenedIdeaModal"
-    :idea="currentOpenedIdea"
-    @close-modal="handleCloseIdeaModal"
-  />
   <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
     @close-modal="handleCloseDeleteModal"

@@ -10,7 +10,6 @@ import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
-
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import AdminView from '@Views/AdminView.vue'
@@ -107,7 +106,7 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: '/change-email',
+        path: 'change-email',
         name: 'change-email',
         component: ChangeEmailView,
         meta: {
