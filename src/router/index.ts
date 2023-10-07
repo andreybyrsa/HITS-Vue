@@ -22,6 +22,7 @@ import NewTeamView from '@Views/NewTeamView.vue'
 import EditTeamView from '@Views/EditTeamView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
+import CommandView from '@Views/CommandView/CommandView.vue'
 
 import DevView from '@Views/DevView.vue'
 
@@ -78,6 +79,14 @@ const routes: RouteRecordRaw[] = [
           roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         },
         component: LastActivityNote,
+      },
+      {
+        path: 'command',
+        name: 'command',
+        meta: {
+          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
+        component: CommandView,
       },
       {
         path: 'admin',

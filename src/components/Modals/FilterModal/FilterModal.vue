@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
+import DropDown from '@Components/DropDown/DropDown.vue'
 import {
   FilterModalProps,
   FilterModalEmits,
@@ -17,20 +18,6 @@ import useUserStore from '@Store/user/userStore'
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const filters = [
-  {
-    label: 'Мои идеи',
-    value: user.value?.email,
-  },
-  {
-    label: 'На согласованнии',
-    value: 'ON_APPROVAL',
-  },
-  {
-    label: ' На утверждении',
-    value: 'ON_CONFIRMATION',
-  },
-]
 const selectedFilters = ref<string[]>([])
 
 const props = defineProps<FilterModalProps>()
@@ -74,17 +61,47 @@ function handleAddFilters(filter: string) {
 
       <ul class="list-group">
         <div
-          v-for="(filter, index) in filters"
+          v-for="(filter, index) in props.filters"
           :key="index"
           class="list-group-item list-group-item-action"
-          @click="handleAddFilters(filter.value as string)"
         >
-          <Checkbox
-            name="checkbox"
-            :label="filter.label"
-            v-model="selectedFilters"
-            :value="filter.value"
-          />
+          <div
+            v-if="filter.label !== 'Компетенции'"
+            @click="handleAddFilters(filter.value as string)"
+          >
+            <Checkbox
+              name="checkbox"
+              :label="filter.label"
+              v-model="selectedFilters"
+              :value="filter.value"
+            />
+          </div>
+
+          <div v-else>
+            <Button
+              type="button"
+              class-name="btn-primary text-center w-100"
+              v-dropdown="'FilterModal'"
+              >Компетенции
+            </Button>
+            <DropDown
+              class-name="w-75"
+              id="FilterModal"
+            >
+              <div
+                v-for="(drop, index) in filter.valueDrop"
+                class="list-group-item list-group-item-action"
+                :key="index"
+              >
+                <Checkbox
+                  name="checkbox"
+                  :label="drop"
+                  v-model="selectedFilters"
+                  :value="filter.value"
+                />
+              </div>
+            </DropDown>
+          </div>
         </div>
       </ul>
 
