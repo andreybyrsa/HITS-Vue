@@ -18,7 +18,6 @@ import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 defineModel<OptionType | OptionType[]>({
   required: false,
 })
-
 const props = defineProps<ComboboxProps<OptionType>>()
 const emit = defineEmits<ComboboxEmits<OptionType>>()
 const options = ref(props.options) as Ref<OptionType[]>
@@ -148,10 +147,17 @@ function focusCombobox() {
   isOpenedChoices.value = true
 }
 
+async function handleAddNewOption() {
+  emit('addNewOption', searchedValue.value)
+}
+
 onClickOutside(choicesRef, (event) => {
   const elementeClassName = (event as PointerEvent & HTMLTargetEvent).target
     .className
-  if (!elementeClassName.includes('combobox__search')) {
+  if (
+    !elementeClassName.includes('combobox__search') &&
+    !elementeClassName.includes('combobox__icon')
+  ) {
     isOpenedChoices.value = false
     searchedValue.value = ''
   }
@@ -178,7 +184,15 @@ onClickOutside(choicesRef, (event) => {
         @focus="focusCombobox"
       />
 
-      <Icon class-name="combobox__icon bi bi-chevron-down" />
+      <Icon
+        v-if="searchedOptions.length && !isOpenedChoices"
+        class-name="combobox__icon bi bi-chevron-down"
+      />
+      <Icon
+        v-if="!searchedOptions.length && isOpenedChoices"
+        class-name="combobox__icon bi bi-plus"
+        @click="handleAddNewOption"
+      />
 
       <div
         v-if="isOpenedChoices"
@@ -218,7 +232,9 @@ onClickOutside(choicesRef, (event) => {
   position: relative;
 
   &__icon {
-    @include position(absolute, $top: 11px, $right: 12px);
+    @include position(absolute, $top: 11px, $right: 12px, $z-index: 5);
+
+    cursor: pointer;
   }
 
   &__choices {

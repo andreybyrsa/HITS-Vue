@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, reactive, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
@@ -42,18 +42,13 @@ onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.getAllSkills(token)
+    const response = await SkillsService.getAllConfirmedOrCreatorSkills(token)
 
     if (response instanceof Error) {
       return
     }
 
-    skills.value = {
-      LANGUAGE: response.filter((skill) => skill.type === 'LANGUAGE'),
-      FRAMEWORK: response.filter((skill) => skill.type === 'FRAMEWORK'),
-      DATABASE: response.filter((skill) => skill.type === 'DATABASE'),
-      DEVOPS: response.filter((skill) => skill.type === 'DEVOPS'),
-    }
+    skills.value = response
   }
 })
 
@@ -82,6 +77,21 @@ function getTechnologyClassName(key: SkillType) {
       return clasName + ' bg-danger'
   }
 }
+
+const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const newSkill: Skill = { id: '', name, type, confirmed: false }
+    const { token } = currentUser
+    const response = await SkillsService.addNoConfirmedSkill(newSkill, token)
+    if (response instanceof Error) {
+      return
+    }
+    if (skills.value) {
+      skills.value[type].push(response)
+    }
+  }
+}
 </script>
 
 <template>
@@ -105,6 +115,7 @@ function getTechnologyClassName(key: SkillType) {
           no-form-controlled
           :placeholder="category.placeholder"
           :multiselect-placeholder="category.multiselectPlaceholder"
+          @add-new-option="(name) => handleAddNoConfirmedStack(name, category.key)"
         />
         <div
           v-if="stackValue.length"
