@@ -18,11 +18,12 @@ import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 import ErrorView from '@Views/ErrorView.vue'
 
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    component: RoleMiddleware,
+    component: NotificationMiddleware && RoleMiddleware,
     children: [
       {
         path: 'ideas',

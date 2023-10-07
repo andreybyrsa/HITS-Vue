@@ -15,10 +15,7 @@ const useNotificationsStore = defineStore('notification', {
         title,
         message,
         readed: false,
-        isFavorite: false,
       }
-      this.newNotifications.push(notification)
-      this.systemNotifications.push(notification)
       this.notifications.unshift(notification)
     },
 
@@ -32,6 +29,18 @@ const useNotificationsStore = defineStore('notification', {
     closeNotification(id: string) {
       this.newNotifications = this.newNotifications.filter((n) => n.id !== id)
       this.systemNotifications = this.systemNotifications.filter((n) => n.id !== id)
+    },
+
+    createSystemNotification(title: string, message: string) {
+      const id = String(Math.random())
+      const systemNotification = {
+        id,
+        title,
+        message,
+        readed: true,
+        type: 'SYSTEM' as const,
+      }
+      this.systemNotifications.push(systemNotification)
     },
   },
 })

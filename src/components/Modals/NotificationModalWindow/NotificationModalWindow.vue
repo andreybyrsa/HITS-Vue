@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, reactive } from 'vue'
-import { vIntersectionObserver } from '@vueuse/components'
+import { ref } from 'vue'
 
 import {
   NotificatonModalWindowEmits,
@@ -26,6 +25,7 @@ const Notifications = ref<Notification[]>([
     isFavorite: false,
     time: '20:15',
     data: '28.09.23',
+    type: 'USER',
   },
   {
     id: '1',
@@ -35,6 +35,7 @@ const Notifications = ref<Notification[]>([
     isFavorite: false,
     time: '12:34',
     data: '28.09.23',
+    type: 'USER',
   },
   {
     id: '2',
@@ -44,6 +45,7 @@ const Notifications = ref<Notification[]>([
     isFavorite: false,
     time: '14:40',
     data: '27.09.23',
+    type: 'USER',
   },
   {
     id: '3',
@@ -53,6 +55,7 @@ const Notifications = ref<Notification[]>([
     isFavorite: false,
     time: '12:34',
     data: '26.09.23',
+    type: 'USER',
   },
 ])
 

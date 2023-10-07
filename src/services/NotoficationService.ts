@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { Notification } from '@Components/Modals/NotificationModal/NotificationModal.types'
+import Notification from '@Domain/Notification'
 
 const NOTIFICATION_URL =
   'http://localhost:3000/api/v1/notification' || 'http://localhost:3000'
