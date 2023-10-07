@@ -81,104 +81,85 @@ validationSchema: {
 
 #### После выполнения этой строки кода, у нас появятся четыре переменные: errors, setValues, handleSubmit и values. errors содержит текущие ошибки валидации формы, setValues - функция для установки значений полей формы, handleSubmit - функция, которая будет вызываться при отправке формы, и values - объект, содержащий текущие значения полей формы
 
+### useField и useFields
+
+#### useField и useFields — это две кастомные React хуки, которые помогают управлять формами и их валидацией. Они представляют собой полезные инструменты для обработки входных данных пользователей и предоставления обратной связи относительно правильности заполнения формы
+
+#### Для использования их нужно испортировать
+
+```
+import { useField, useFields } from 'react-hook-form'
+```
+
+### Использование useField
+
+#### Функция useField позволяет управлять отдельным полем ввода в форме. Она предоставляет значения поля, а также сообщение об ошибке, если поле не прошло валидацию
+
+#### Пример:
+
+```
+const { value, errorMessage } = useField(props.name, props.validation, {
+  validateOnValueUpdate: props.validateOnUpdate ?? false,
+  validateOnMount: false,
+  syncVModel: true,
+})
+```
+
+#### Параметры name и validation являются обязательными. name представляет собой имя поля ввода, а validation — функцию валидации для данного поля
+
+### Использование useFields
+
+#### Функция useFields позволяет управлять несколькими полями ввода одновременно. Она возвращает объект, содержащий значения и сообщения об ошибках для каждого поля
+
+#### Пример
+
+```
+const fields = useFields(fieldsArray, formOptions)
+```
+
+#### Первым аргументом функции useFields является массив объектов полей ввода fieldsArray, а вторым аргументом — объект настроек formOptions
+
+#### В fieldsArray вы должны предоставить массив объектов с информацией о каждом поле ввода. Каждый объект должен содержать следующие свойства:
+
+#### -name (тип данных: string): имя поля ввода.
+
+#### -validation (тип данных: function): функция валидации для данного поля.
+
+#### formOptions является опциональным объектом, который позволяет настроить поведение хука useFields
+
+#### Дополненная версия будет выглядеть так:
+
+```
+const fieldsArray = [
+  { name: 'firstName', validation: (value) => value !== '' },
+  { name: 'lastName', validation: (value) => value.length >= 5 },
+  { name: 'email', validation: (value) => /^\S+@\S+\.\S+$/.test(value) },
+];
+
+const formOptions = {
+  validateOnValueUpdate: true,
+  validateOnMount: true,
+};
+
+const fields = useFields(fieldsArray, formOptions)
+```
+
 ### Директивы
-
-### v-if
-
-#### Используется в template, зачастую удобно использовать в div, но так же и в других объектах(button, input и т.д.)
-
-#### В v-if прописывается условие, при истинном значении которого отрисовываются элементы, описанные внутри div, в случае ложного значения элементы показываться не будут
-
-#### Рассмотрим пример использования v-if для открытия модального окна:
-
-```
-<ModalLayout :is-opened="true">
-    <div
-      v-if="true" //если значение true, то на экране показывается модальное окно с описанным в нем содержимым
-      class="new-email-modal p-3 rounded"
-    />
-</ModalLayout>
-```
-
-#### если условие ложно, но есть объекты, которые нужно вывести на экран, можно использовать v-else или v-else-if(если помимо самого первого условия и иного в случае ошибки предыдущего, присутвует еще одно, но здесь предтся указать какое-нибудь условие проверки, чтобы получилось выести именно то, что нужно в блоке с v-else-if, а не перейти сраху к v-else)
-
-### v-for
-
-#### Используется в template, чтобы не использовать, множество одинаковых div, а описать всего один и вывести с помощью цикла все нужное
-
-#### Например:
-
-```
-<div
-  class="notification-window-modal__new-notification p-2 mb-2 bg-primary rounded-3"
-  style="--bs-bg-opacity: 0.55"
-  v-for="notification in newNotifications" //выводим notification(объект) из newNotifications(массив объектов)
-  :key="notification.id" //каждое уведомление имеет свой индивидуальный id, который является ключом
-  :notification="notification" //в данном случае для объекта заданы опредленные параметры, которые заложены в notification
->
-```
-
-#### Атрибут :key используется для уникальной идентификации каждого созданного элемента в цикле v-for. Использование уникального ключа помогает Vue эффективно обновлять список, когда данные изменяются
-
-#### Таким образом мы выводим все уведомления, которые содержатся в массиве, используя описанный ранее стиль
-
-#### К тому же, если данные в массиве изменятся, прописывать какой-то иной код не будет нужно, так как данный код зависиь только от того, что массив не является пустым
-
-#### Еще один пример:
-
-```
-<div
-  @click="selectUser(user)"
-  v-for="(user, index) in unselectedUsers"
-  :key="index"
->
-```
-
-#### Для каждого объекта user в массиве unselectedUsers, будет создаваться отдельный элемент <div>. Переменная index предоставляет индекс текущего элемента для использования в атрибуте :key
-
-### v-on или @
-
-#### Данная директива позволяет привязать обработчики событий к опредленным элементам(предполагается, что событыие должно быть ранее описано в script)
-
-#### Например:
-
-```
-<div
-  @click="selectUser(user)" //при клике вызывет указанный внутри элемент(в данном случае вызывается описанный в script метод selectUser, в качестве аргумента передается user, который представляет данные пользователя из массива unselectedUsers)
-  v-for="(user, index) in unselectedUsers"
-  :key="index"
->
-```
-
-#### Еще пример:
-
-```
-<AddUsersGroup
-  :isOpened="isOpenedAddGroup"
-  :currentAddUsersGroup="currentAddUsersGroup"
-  @close-modal="closeAddGroupModal" //в данном случае используется кастомный event close-modal, который описан в ts файле AddUsersGroup; при вызове этого события вызывается описанная ранее функция closeAddGroupModal, которая закрывает модальное окно
-  :usersarray="usersarray"
-  v-model="usersGroup"
->
-```
-
-### v-bind или :
-
-#### Данная директива связывает значения свойств элемента с выражением в шаблоне Vue.
-
-#### Например:
-
-```
-<div
-  @click="selectUser(user)"
-  v-for="(user, index) in unselectedUsers"
-  :key="index" //используем для привязки индекса каждого элемента в качестве уникального ключа для списка
->
-```
 
 ### v-model
 
-#### Используется для создания двусторонней привязки данных между элементом формы и вашим экземпляром Vue. Она имеет сокращенную запись с использованием директивы :value (для чтения значения) и @input (для обработки изменений)
+#### Используется для создания двусторонней привязки данных между дочерним и родительским компонентами. Для его использования необходимо в дочернем компоненте проинициализировать данное реактивное значение:
+
+```
+const myValue = defineModel<ValueType>('valueName', { ...options })
+```
+
+#### Также возможно использование несколько v-model в одном компоненте:
+
+```
+v-model:name1=""
+v-model:name2=""
+```
 
 #### Пример:
 
@@ -188,10 +169,136 @@ validationSchema: {
   :currentAddUsersGroup="currentAddUsersGroup"
   @close-modal="closeAddGroupModal"
   :usersarray="usersarray"
-  v-model="usersGroup" //
+  v-model="usersGroup"
 >
 ```
 
 #### В этом примере компонент AddUsersGroup содержит элементы формы для добавления пользователей. Директива v-model связывает свойство usersGroup с соответствующим элементом формы внутри компонента. В результате, значения, введенные пользователем в форму, автоматически синхронизируются с переменной usersGroup
 
-#### При изменении значений элементов формы, будет генерироваться событие input, которое вы можете слушать, как показано в примере с @input
+### v-tooltip
+
+### v-dropdown
+
+### Компонент таблицы
+
+#### Как и все компоненты, он имеет два файла: Table.ts и Table.vue
+
+### Table.ts
+
+### Файл Table.ts содержит интерфейсы и типы TypeScript, связанные с компонентом таблицы
+
+#### Интерфейс TableColumn:
+
+```
+interface TableColumn {
+  key: string
+  label: string
+  icon?: string
+  className?: string
+  click?: () => void
+  getStyle?: (value: any) => string
+  getFormat?: (value: any) => string | number | undefined
+}
+```
+
+#### Интерфейс TableColumn представляет столбец в таблице. Он имеет следующие свойства:
+
+#### - key: строка, представляющая ключ или идентификатор столбца
+
+#### - label: строка, представляющая название или заголовок столбца
+
+#### - icon (необязательно): строка, представляющая иконку столбца
+
+#### - className (необязательно): строка, представляющая CSS-класс столбца
+
+#### - click (необязательно): функция, которая вызывается при клике на столбец
+
+#### - getStyle (необязательно): функция, которая получает значение и возвращает строку, представляющую CSS-стиль для ячейки в столбце
+
+#### - getFormat (необязательно): функция, которая получает значение и возвращает форматированное значение для ячейки в столбце
+
+### Интерфейс TableProps:
+
+```
+interface TableProps {
+  columns: TableColumn[]
+  data: any[]
+  searchValue?: string
+}
+```
+
+#### Интерфейс TableProps представляет свойства или входные данные для компонента таблицы. Он имеет следующие свойства:
+
+#### - columns: массив объектов типа TableColumn, представляющих столбцы в таблице
+
+#### - data: массив любого типа, представляющий строки данных для таблицы
+
+#### - searchValue (необязательно): строка, представляющая значение поиска для фильтрации строк данных
+
+#### Инструкция export в конце файла экспортирует типы TableProps и TableColumn для использования в других модулях
+
+### Table.vue
+
+#### Файл Table.vue содержит шаблон и логику реализации компонента таблицы
+
+#### Свойства и данные:
+
+```
+const props = defineProps<TableProps>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const searchedValue = computed(() => {
+  return props.data.filter((element) => {
+    const elementData = element.name.toLowerCase().trim()
+    const currentSearchedValue = props.searchValue?.toLowerCase().trim()
+
+    const isIncludesSearcheValue = elementData.includes(currentSearchedValue)
+
+    return isIncludesSearcheValue
+  })
+})
+```
+
+#### - props определяется как свойства компонента с использованием defineProps<TableProps>()
+
+#### - userStore определяется с использованием функции useUserStore()
+
+#### - user получается из storeToRefs(userStore)
+
+#### - searchedValue - это вычисляемое свойство, которое фильтрует массив props.data на основе props.searchValue и возвращает отфильтрованный результат
+
+#### Компонент также определяет две вспомогательные функции: getCellStyle(styleFunction?, value?) и checkMark(row: Idea)
+
+```
+function getCellStyle(styleFunction?: (value: any) => string, value?: any) {
+  let CellClass = 'table__row-cell col '
+  if (styleFunction) {
+    CellClass += styleFunction(value)
+  }
+  return CellClass
+}
+
+function checkMark(row: Idea) {
+  const currentRole = user.value?.role
+  const currentStatusIdea = row.status
+  const currentInitiatorIdea = row.initiator
+  const currentEmail = user.value?.email
+  return currentRole == 'INITIATOR' &&
+    (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING') &&
+    currentInitiatorIdea == currentEmail
+    ? true
+    : currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL'
+    ? true
+    : currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
+    ? true
+    : false
+}
+```
+
+#### Функция getCellStyle принимает необязательные параметры styleFunction и value и возвращает строку, представляющую CSS-класс для ячейки таблицы. Если указана функция styleFunction, то она добавляется к классу
+
+#### Функция checkMark принимает аргумент row типа Idea и проверяет различные условия для определения, должна ли быть отображена отметка. Она использует объект user, полученный из хранилища пользователей, и сравнивает роль пользователя, статус инициативы, инициатора идеи и электронную почту пользователя, чтобы определить возвращаемое значение
+
+#### Секция template компонента определяет HTML-структуру таблицы с использованием директив и интерполяций Vue. Она выполняет итерацию по столбцам и строкам данных для динамического создания ячеек таблицы
