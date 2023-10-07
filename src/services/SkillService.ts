@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-import { Skill } from '@Domain/Skill'
-import { SkillType } from '@Domain/Skill'
+import { Skill, SkillType } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
 
 const SKILLS_URL = 'http://localhost:3000/api/v1/skill'
@@ -9,6 +8,20 @@ const SKILLS_URL = 'http://localhost:3000/api/v1/skill'
 const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
   return await axios
     .get(`${SKILLS_URL}/all`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения компетенций'
+      return new Error(error)
+    })
+}
+
+const getAllConfirmedOrCreatorSkills = async (
+  token: string,
+): Promise<Record<SkillType, Skill[]> | Error> => {
+  return await axios
+    .get(`${SKILLS_URL}/all-confirmed-or-creator`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -109,6 +122,7 @@ const deleteSkill = async (
 const SkillsService = {
   getAllSkills,
   getSkillsByType,
+  getAllConfirmedOrCreatorSkills,
 
   addSkill,
   addNoConfirmedSkill,

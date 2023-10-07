@@ -1,10 +1,11 @@
 <script setup lang="ts" generic="OptionType">
 import { Ref, ref, computed, watch, VueElement } from 'vue'
-import { onClickOutside } from '@vueuse/core'
 import { useField } from 'vee-validate'
+import { onClickOutside } from '@vueuse/core'
 
 import {
   ComboboxProps,
+  ComboboxEmits,
   SearchedOptionType,
 } from '@Components/Inputs/Combobox/Combobox.types'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -17,8 +18,8 @@ import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 defineModel<OptionType | OptionType[]>({
   required: false,
 })
-
 const props = defineProps<ComboboxProps<OptionType>>()
+const emit = defineEmits<ComboboxEmits<OptionType>>()
 const options = ref(props.options) as Ref<OptionType[]>
 
 const searchedValue = ref('')
@@ -26,14 +27,25 @@ const searchedValue = ref('')
 const choicesRef = ref<VueElement | null>(null)
 const isOpenedChoices = ref(false)
 
-const { value: selectedValue, errorMessage } = useField<OptionType | OptionType[]>(
-  props.name,
-  undefined,
-  {
-    controlled: props.noFormControlled ? false : true,
-    syncVModel: true,
-  },
-)
+const {
+  value: selectedValue,
+  meta,
+  errorMessage,
+} = useField<OptionType | OptionType[]>(props.name, undefined, {
+  validateOnMount: false,
+  validateOnValueUpdate: true,
+  controlled: props.noFormControlled ? false : true,
+  syncVModel: true,
+})
+
+function getFiledError() {
+  if (meta.touched || meta.dirty) {
+    if (isMultiselect(selectedValue.value)) {
+      return selectedValue.value.length > 0 ? undefined : errorMessage.value
+    }
+    return selectedValue.value !== undefined ? undefined : errorMessage.value
+  }
+}
 
 watch(
   () => props.options,
@@ -90,11 +102,15 @@ function selectOption(currentOption: OptionType) {
     )
 
     if (selectedOptionIndex !== -1) {
+      emit('onUnselect', currentOption)
       return selectedValue.value.splice(selectedOptionIndex, 1)
     }
+
+    emit('onSelect', currentOption)
     return selectedValue.value.push(currentOption)
   }
 
+  emit('onSelect', currentOption)
   selectedValue.value = currentOption
 }
 
@@ -131,10 +147,17 @@ function focusCombobox() {
   isOpenedChoices.value = true
 }
 
+async function handleAddNewOption() {
+  emit('addNewOption', searchedValue.value)
+}
+
 onClickOutside(choicesRef, (event) => {
   const elementeClassName = (event as PointerEvent & HTMLTargetEvent).target
     .className
-  if (!elementeClassName.includes('combobox__search')) {
+  if (
+    !elementeClassName.includes('combobox__search') &&
+    !elementeClassName.includes('combobox__icon')
+  ) {
     isOpenedChoices.value = false
     searchedValue.value = ''
   }
@@ -152,16 +175,24 @@ onClickOutside(choicesRef, (event) => {
 
     <div class="combobox">
       <Input
-        :name="`search-${Math.random() * 100}`"
+        :name="`search-${props.name}`"
         class-name="combobox__search rounded-end"
         v-model="searchedValue"
-        :error="errorMessage"
+        :error="getFiledError()"
         no-form-controlled
         :placeholder="getComboboxPlaceholder()"
         @focus="focusCombobox"
       />
 
-      <Icon class-name="combobox__icon bi bi-chevron-down" />
+      <Icon
+        v-if="searchedOptions.length && !isOpenedChoices"
+        class-name="combobox__icon bi bi-chevron-down"
+      />
+      <Icon
+        v-if="!searchedOptions.length && isOpenedChoices"
+        class-name="combobox__icon bi bi-plus"
+        @click="handleAddNewOption"
+      />
 
       <div
         v-if="isOpenedChoices"
@@ -201,7 +232,9 @@ onClickOutside(choicesRef, (event) => {
   position: relative;
 
   &__icon {
-    @include position(absolute, $top: 11px, $right: 12px);
+    @include position(absolute, $top: 11px, $right: 12px, $z-index: 5);
+
+    cursor: pointer;
   }
 
   &__choices {
