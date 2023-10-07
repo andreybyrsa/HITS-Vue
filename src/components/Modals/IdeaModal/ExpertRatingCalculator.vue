@@ -52,6 +52,7 @@ const overallRating = computed(() => {
 watch(overallRating, () => {
   setFieldValue('rating', overallRating.value)
 })
+
 const handleConfirmRating = handleSubmit(async (values) => {
   const currentUser = user.value
   if (currentUser?.token && props.idea) {

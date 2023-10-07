@@ -72,7 +72,6 @@ watchImmediate(
       const { token } = currentUser
       const { id } = props.idea
       await ratingStore.fetchRatingsByIdeaId(id, token)
-      console.log(ratings)
       const currentRatings = ratings.value.find(
         (item) => item.ideaId === id,
       )?.ratings
@@ -86,7 +85,6 @@ watchImmediate(
 const numberOfExperts = computed(() => {
   return expertRatings.value.filter((rating) => rating.expert).length
 })
-console.log('ratingsStore:', ratingStore.$state)
 </script>
 
 <template>
@@ -180,7 +178,6 @@ console.log('ratingsStore:', ratingStore.$state)
             :key="index"
             class="idea-info__user"
           >
-            <!-- <Icon class-name="bi bi-chevron-down me-2 fs-5 text-secondary" /> -->
             <Typography class-name="text-secondary">
               Всего экспертов: {{ numberOfExperts }}
             </Typography>
