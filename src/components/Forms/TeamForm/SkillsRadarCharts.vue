@@ -122,7 +122,7 @@ const intervalId = setInterval(() => {
         class="radar-charts__placeholder-wrapper"
       >
         <div class="radar-charts__placeholder placeholder-glow">
-          <div class="placeholder col-12 h-100"></div>
+          <div class="placeholder col-12 h-100 rounded-3"></div>
         </div>
       </div>
     </div>
@@ -145,17 +145,13 @@ const intervalId = setInterval(() => {
   }
 
   &__placeholder {
-    margin-top: 26px;
+    margin-bottom: 16px;
 
-    width: 100px;
-    height: 100px;
-
-    transform: rotate(45deg);
+    width: 130px;
+    height: 130px;
 
     &-wrapper {
-      height: 150px;
-
-      @include flexible(center, center, column, $gap: 20px);
+      @include flexible(center, center);
     }
   }
 }
