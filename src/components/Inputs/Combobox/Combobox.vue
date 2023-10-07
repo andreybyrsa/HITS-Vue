@@ -1,12 +1,12 @@
 <script setup lang="ts" generic="OptionType">
 import { Ref, ref, computed, watch, VueElement } from 'vue'
-import { onClickOutside } from '@vueuse/core'
 import { useField } from 'vee-validate'
+import { onClickOutside } from '@vueuse/core'
 
 import {
   ComboboxProps,
-  SearchedOptionType,
   ComboboxEmits,
+  SearchedOptionType,
 } from '@Components/Inputs/Combobox/Combobox.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
@@ -15,12 +15,11 @@ import Icon from '@Components/Icon/Icon.vue'
 
 import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
-const emit = defineEmits<ComboboxEmits>()
-
 defineModel<OptionType | OptionType[]>({
   required: false,
 })
 const props = defineProps<ComboboxProps<OptionType>>()
+const emit = defineEmits<ComboboxEmits<OptionType>>()
 const options = ref(props.options) as Ref<OptionType[]>
 
 const searchedValue = ref('')
@@ -28,14 +27,25 @@ const searchedValue = ref('')
 const choicesRef = ref<VueElement | null>(null)
 const isOpenedChoices = ref(false)
 
-const { value: selectedValue, errorMessage } = useField<OptionType | OptionType[]>(
-  props.name,
-  undefined,
-  {
-    controlled: props.noFormControlled ? false : true,
-    syncVModel: true,
-  },
-)
+const {
+  value: selectedValue,
+  meta,
+  errorMessage,
+} = useField<OptionType | OptionType[]>(props.name, undefined, {
+  validateOnMount: false,
+  validateOnValueUpdate: true,
+  controlled: props.noFormControlled ? false : true,
+  syncVModel: true,
+})
+
+function getFiledError() {
+  if (meta.touched || meta.dirty) {
+    if (isMultiselect(selectedValue.value)) {
+      return selectedValue.value.length > 0 ? undefined : errorMessage.value
+    }
+    return selectedValue.value !== undefined ? undefined : errorMessage.value
+  }
+}
 
 watch(
   () => props.options,
@@ -92,11 +102,15 @@ function selectOption(currentOption: OptionType) {
     )
 
     if (selectedOptionIndex !== -1) {
+      emit('onUnselect', currentOption)
       return selectedValue.value.splice(selectedOptionIndex, 1)
     }
+
+    emit('onSelect', currentOption)
     return selectedValue.value.push(currentOption)
   }
 
+  emit('onSelect', currentOption)
   selectedValue.value = currentOption
 }
 
@@ -161,10 +175,10 @@ onClickOutside(choicesRef, (event) => {
 
     <div class="combobox">
       <Input
-        :name="`search-${Math.random() * 100}`"
+        :name="`search-${props.name}`"
         class-name="combobox__search rounded-end"
         v-model="searchedValue"
-        :error="errorMessage"
+        :error="getFiledError()"
         no-form-controlled
         :placeholder="getComboboxPlaceholder()"
         @focus="focusCombobox"
