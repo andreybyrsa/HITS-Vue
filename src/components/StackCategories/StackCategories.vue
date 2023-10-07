@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import comboboxStackCategories from '@Components/Forms/IdeaForm/StackCategories'
+import comboboxStackCategories from '@Components/StackCategories/StackCategories'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
 import { Skill, SkillType } from '@Domain/Skill'
@@ -112,6 +112,7 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
           :options="skills[category.key]"
           :display-by="['name']"
           v-model="choosenSkills[category.key]"
+          v-model:all="stackValue"
           no-form-controlled
           :placeholder="category.placeholder"
           :multiselect-placeholder="category.multiselectPlaceholder"
