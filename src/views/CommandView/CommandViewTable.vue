@@ -40,7 +40,7 @@ function sortDate(date: Team[]) {
   date.sort((a, b) => {
     const A = new Date(a.createdAt).getTime()
     const B = new Date(b.createdAt).getTime()
-    return isSorted.value ? A - B : B - A
+    return isSorted.value ? B - A : A - B
   })
 
   setIsSorted()
