@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -10,68 +11,32 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Command from '@Domain/Command'
 
 import CommandViewTable from './CommandViewTable.vue'
+import TeamService from '@Services/TeamService'
+import useUserStore from '@Store/user/userStore'
+import Team from '@Domain/Team'
 
 const searchedValue = ref('')
 const selectedFilters = ref<string[]>([])
 
-const commandData = ref<Command[]>([])
+const commandData = ref<Team[]>([])
 
-onMounted(() => {
-  const data = [
-    {
-      id: '0',
-      name: 'А',
-      dateCreation: new Date('2021-02-02'),
-      members: ['Victor', 'Oleg', 'Sergey'],
-      typeGroup: 'OPEN_TEAM',
-      competencies: ['Java', 'JavaScript'],
-    },
-    {
-      id: '1',
-      name: 'Г',
-      dateCreation: new Date('2021-02-01'),
-      members: ['Victor', 'Oleg'],
-      typeGroup: 'CLOSE_TEAM',
-      competencies: ['SQL'],
-    },
-    {
-      id: '2',
-      name: 'Б',
-      dateCreation: new Date('2021-02-05'),
-      members: ['Victor'],
-      typeGroup: 'CLOSE_TEAM',
-      competencies: ['React', 'React Native'],
-    },
-    {
-      id: '3',
-      name: 'В',
-      dateCreation: new Date('2021-02-07'),
-      members: ['Victor', 'Sergey'],
-      typeGroup: 'OPEN_TEAM',
-      competencies: ['Django', 'Python'],
-    },
-  ]
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+onMounted(async () => {
+  const data = await TeamService.getTeams(user.value?.token as string)
   commandData.value = data
 })
 
-function filterCommand(team: Command[]) {
+function filterCommand(team: Team[]) {
   if (selectedFilters.value.length) {
-    const dataFilter: Command[] = []
-    if (selectedFilters.value.includes('React')) {
-      team?.forEach(
-        (elem) =>
-          selectedFilters.value?.every((filter) =>
-            Object.values(elem.competencies).includes(filter),
-          ) && dataFilter.push(elem),
-      )
-    } else {
-      team?.forEach(
-        (elem) =>
-          selectedFilters.value?.every((filter) =>
-            Object.values(elem).includes(filter),
-          ) && dataFilter.push(elem),
-      )
-    }
+    const dataFilter: Team[] = []
+    team?.forEach(
+      (elem) =>
+        selectedFilters.value?.every((filter) =>
+          Object.values(elem).includes(filter),
+        ) && dataFilter.push(elem),
+    )
     return dataFilter
   } else false
 }
@@ -104,7 +69,6 @@ const filters = [
     <template #content>
       <Typography class-name="fs-2 text-primary w-75">Список команд</Typography>
 
-      {{ selectedFilters }}
       <SearchAndFilters
         :filtersData="filters"
         v-model:searchedValue="searchedValue"

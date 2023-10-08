@@ -5,7 +5,7 @@ import Success from '@Domain/ResponseMessage'
 
 const TEAM_URL = 'http://localhost:3000/api/v1/team'
 
-const getTeams = async (token: string): Promise<Team[] | Error> => {
+const getTeams = async (token: string): Promise<Team[]> => {
   return await axios
     .get(`${TEAM_URL}/all`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -34,7 +34,7 @@ const getTeam = async (
 
 const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
   return await axios
-    .post(`${TEAM_URL}/create`, team, {
+    .post(`${TEAM_URL}/add`, team, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

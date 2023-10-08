@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useDateFormat, useToggle } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 
 import Command from '@Domain/Command'
 import CommandViewTableProps from '@Views/CommandView/CommandViewTable.types'
@@ -10,24 +11,22 @@ import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Table from '@Components/Table/Table.vue'
 import Icon from '@Components/Icon/Icon.vue'
+import Team from '@Domain/Team'
 
 const props = defineProps<CommandViewTableProps>()
+
+const router = useRouter()
 
 const [isSorted, setIsSorted] = useToggle(true)
 
 const columns: TableColumn[] = [
   { key: 'name', label: 'Название', click: () => sortName(props.command) },
   {
-    key: 'dateCreation',
+    key: 'createdAt',
     label: 'Дата создания',
     click: () => sortDate(props.command),
     getFormat: getFormattedDate,
   },
-  //   {
-  //     key: 'competencies',
-  //     label: 'Компетенции',
-  //     getFormat: getFormattedCompetencies,
-  //   },
 ]
 
 function getFormattedDate(date: string) {
@@ -37,28 +36,17 @@ function getFormattedDate(date: string) {
   }
 }
 
-function getFormattedCompetencies(competencies: string[]) {
-  if (competencies) {
-    const formattedCompetencies = competencies
-      .map((item: string) => ` ${item}`)
-      .join()
-    return formattedCompetencies
-  }
-}
-
-//  Можно сделать еще один слот, как с действием или активными
-
-function sortDate(date: Command[]) {
+function sortDate(date: Team[]) {
   date.sort((a, b) => {
-    const A = new Date(a.dateCreation).getTime()
-    const B = new Date(b.dateCreation).getTime()
+    const A = new Date(a.createdAt).getTime()
+    const B = new Date(b.createdAt).getTime()
     return isSorted.value ? A - B : B - A
   })
 
   setIsSorted()
 }
 
-function sortName(changes: Command[]) {
+function sortName(changes: Team[]) {
   changes.sort((a, b) => {
     return isSorted.value
       ? a.name.localeCompare(b.name)
@@ -75,7 +63,7 @@ function sortName(changes: Command[]) {
     :data="props.command"
     :search-value="props.searchedValue"
   >
-    <template #actions>
+    <template #actions="{ item }: { item: Team }">
       <div class="bg-light">
         <Button
           class-name=" btn-primary text-white"
@@ -89,21 +77,26 @@ function sortName(changes: Command[]) {
               <button class="w-100 text-start">Просмотреть</button>
             </li>
             <li class="list-group-item list-group-item-action p-1">
-              <button class="w-100 text-start">Редактировать</button>
+              <button
+                @click="router.push(`edit/${item.id}`)"
+                class="w-100 text-start"
+              >
+                Редактировать
+              </button>
             </li>
-            <li class="list-group-item list-group-item-action p-1">
+            <!-- <li class="list-group-item list-group-item-action p-1">
               <button class="w-100 text-start text-danger">Удалить</button>
             </li>
             <li class="list-group-item list-group-item-action p-1">
               <button class="w-100 text-start text-success">Вступить</button>
-            </li>
+            </li> -->
           </ul>
         </DropDown>
       </div>
     </template>
-    <template #icon="{ item }: { item: Command }">
+    <template #icon="{ item }: { item: Team }">
       <Icon
-        v-if="item.typeGroup == 'OPEN_TEAM'"
+        v-if="!item.closed"
         class-name="bi bi-circle-fill text-success bg-transparent fs-6"
       />
       <Icon
@@ -111,7 +104,7 @@ function sortName(changes: Command[]) {
         class-name="bi bi-circle-fill text-danger bg-transparent fs-6"
       />
     </template>
-    <template #competencies="{ item }: { item: Command }">
+    <template #competencies="{ item }: { item: Team }">
       <div class="bg-light">
         <Button
           type="button"
@@ -121,8 +114,8 @@ function sortName(changes: Command[]) {
         </Button>
         <DropDown id="CommandViewTable">
           <ul
-            v-for="competencies in item.competencies"
-            :key="competencies"
+            v-for="(competencies, index) in item.skills"
+            :key="index"
             class="list-group list-group-flush"
           >
             <li class="list-group-item p-1">

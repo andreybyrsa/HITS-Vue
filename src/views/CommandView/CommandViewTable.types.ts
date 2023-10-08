@@ -1,7 +1,7 @@
-import Command from '@Domain/Command'
+import Team from '@Domain/Team'
 
 interface CommandViewTableProps {
-  command: Command[]
+  command: Team[]
   searchedValue: string
 }
 

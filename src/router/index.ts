@@ -63,6 +63,14 @@ const routes: RouteRecordRaw[] = [
             component: NewTeamView,
           },
           {
+            path: 'list',
+            name: 'teams-list',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: CommandView,
+          },
+          {
             path: 'edit/:id',
             meta: {
               roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
