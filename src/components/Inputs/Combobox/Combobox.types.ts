@@ -12,6 +12,7 @@ interface ComboboxProps<OptionType> {
 }
 
 interface ComboboxEmits<OptionType> {
+  (event: 'addNewOption', optionName: string): void
   (event: 'onSelect', value: OptionType): void
   (event: 'onUnselect', value: OptionType): void
 }

@@ -11,7 +11,7 @@ import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCal
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
 import IdeaFormSubmit from '@Components/Forms/IdeaForm/IdeaFormSubmit.vue'
-import StackCategories from '@Components/Forms/IdeaForm/StackCategories.vue'
+import StackCategories from '@Components/StackCategories/StackCategories.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
