@@ -6,18 +6,25 @@ import UsersGroupsForm from '@Components/Forms/UsersGroupsForm/UsersGroupsForm.v
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 import SkillsForm from '@Components/Forms/CompetenciesMenuForm/Skills.vue'
 
-import AdminView from '@Views/AdminView.vue'
-import DevView from '@Views/DevView.vue'
 import LoginView from '@Views/LoginView.vue'
-import NewIdeaView from '@Views/NewIdeaView.vue'
-import EditIdeaView from '@Views/EditIdeaView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
-import IdeasView from '@Views/IdeasView/IdeasView.vue'
-import IdeaView from '@Views/IdeaView.vue'
+
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
+
+import AdminView from '@Views/AdminView.vue'
+
+import IdeasView from '@Views/IdeasView/IdeasView.vue'
+import NewIdeaView from '@Views/NewIdeaView.vue'
+import EditIdeaView from '@Views/EditIdeaView.vue'
+
+import NewTeamView from '@Views/NewTeamView.vue'
+import EditTeamView from '@Views/EditTeamView.vue'
+
 import ErrorView from '@Views/ErrorView.vue'
+
+import DevView from '@Views/DevView.vue'
 
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
 
@@ -27,35 +34,43 @@ const routes: RouteRecordRaw[] = [
     component: RoleMiddleware,
     children: [
       {
-        path: '/ideas',
-        name: 'ideas',
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        },
-        component: IdeasView,
+        path: 'ideas',
         children: [
           {
-            path: 'idea/:id',
-            name: 'idea',
-            meta: {
-              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-              isPageIdea: true,
-            },
-            component: IdeaView,
+            path: 'list',
+            name: 'ideas-list',
+            meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+            component: IdeasView,
+          },
+          {
+            path: 'create',
+            meta: { roles: ['INITIATOR', 'ADMIN'] },
+            component: NewIdeaView,
+          },
+          {
+            path: 'edit/:id',
+            meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
+            component: EditIdeaView,
           },
         ],
       },
       {
-        path: 'add-idea',
-        name: 'addIdeas',
-        meta: { roles: ['INITIATOR', 'ADMIN'] },
-        component: NewIdeaView,
-      },
-      {
-        path: 'edit-idea/:id',
-        name: 'editIdeas',
-        meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
-        component: EditIdeaView,
+        path: 'teams',
+        children: [
+          {
+            path: 'create',
+            meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+            component: NewTeamView,
+          },
+          {
+            path: 'edit/:id',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+              isPageEdit: true,
+            },
+            component: EditTeamView,
+          },
+        ],
       },
       {
         path: 'last-activity-note',

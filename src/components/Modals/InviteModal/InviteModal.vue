@@ -1,40 +1,50 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useMagicKeys } from '@vueuse/core'
 
-import Button from '@Components/Button/Button.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
 import {
   InviteModalEmits,
   InviteModalProps,
 } from '@Components/Modals/InviteModal/InviteModal.types'
-import Validation from '@Utils/Validation'
-import { useForm } from 'vee-validate'
 
+import { User } from '@Domain/User'
+
+import useUserStore from '@Store/user/userStore'
+
+import ManageUsersService from '@Services/ManageUsersService'
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 defineProps<InviteModalProps>()
 
 const emit = defineEmits<InviteModalEmits>()
 
+const userStore = useUserStore()
+
+const { user } = storeToRefs(userStore)
+
 const { enter } = useMagicKeys()
-
-interface InvitationForm {
-  email: string
-}
-
-const { handleSubmit } = useForm<InvitationForm>({
-  validationSchema: {
-    email: (value: string) => Validation.checkEmail(value) || 'Ошика',
-  },
-})
 
 watch(enter, () => {
   emit('close-modal')
 })
-const email = ref<string>('')
-const handleInvite = handleSubmit(() => {
-  emit('invite', email.value)
-  emit('close-modal')
+
+const allUsers = ref<User[]>([])
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await ManageUsersService.getUsers(token)
+
+    if (response instanceof Error) {
+      return
+    }
+    allUsers.value = response
+  }
 })
 </script>
 
@@ -44,21 +54,23 @@ const handleInvite = handleSubmit(() => {
     @on-outside-close="emit('close-modal')"
   >
     <div class="invite-modal p-3 rounded bg-white">
-      <Input
-        :name="'email'"
-        placeholder="Введите почту"
-        v-model="email"
-      />
-      <Button
-        @click="handleInvite"
-        class-name="btn-primary w-100"
-        >Пригласить
-      </Button>
+      <div v-if="allUsers">
+        <Combobox
+          name="inviteUser"
+          :options="allUsers"
+          :display-by="['email', 'firstName', 'lastName']"
+          no-form-controlled
+          placeholder="Выберите пользователя"
+        ></Combobox>
+      </div>
+      <div v-else>
+        <LoadingPlaceholder height="small"></LoadingPlaceholder>
+      </div>
     </div>
   </ModalLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .invite-modal {
   @include flexible(
     center,

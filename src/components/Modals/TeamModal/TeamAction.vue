@@ -12,10 +12,13 @@ import DeleteModal from '../DeleteModal/DeleteModal.vue'
 import Team from '@Domain/Team'
 import { useRouter } from 'vue-router'
 import InviteModal from '../InviteModal/InviteModal.vue'
+import TeamService from '@Services/TeamService'
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const { deleteTeam } = TeamService
 const props = defineProps<TeamActionProps>()
-const route = useRouter()
+const router = useRouter()
 
 const disabled = ref<boolean>(false)
 
@@ -45,8 +48,12 @@ function shareButton(id: string) {
 }
 
 async function handleDeleteTeam() {
-  console.log(teamId.value)
-  route.push('/teams')
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await deleteTeam(teamId.value, token)
+    router.push('/teams/list')
+  }
 }
 async function handleInvitePerson(email: string) {
   console.log(email, teamId)
@@ -62,10 +69,14 @@ function checkButton(button: TeamButtonAction) {
       (button.name == 'Подать заявку на вступление' &&
         !props.team?.members.find((member) => member.id == user.value?.id) &&
         user.value?.id != props.team?.owner.id &&
-        user.value?.id != props.team?.leader.id) ||
-      (button.name == 'Выйти из команды' &&
-        props.team?.leader.id != user.value?.id &&
-        props.team?.members.find((member) => member.id == user.value?.id))
+        user.value?.id != props.team?.leader.id &&
+        !props.team?.isClosed) ||
+      (button.name == 'Подать заявку на выход' &&
+        props.team?.owner.id != user.value?.id &&
+        props.team?.members.find((member) => member.id == user.value?.id)) ||
+      (button.name == 'Расмотреть заявки' &&
+        (user.value.id == props.team?.owner.id ||
+          user.value.id == props.team?.leader.id))
     )
   }
 }
@@ -76,11 +87,13 @@ function handleClick(button: TeamButtonAction, team: Team) {
     : button.name == 'Пригласить в команду'
     ? handleOpenInviteModal(team.id)
     : button.name == 'Редактировать'
+    ? router.push(`/teams/edit/${team.id}`)
+    : button.name == 'df'
 }
 </script>
 <template>
   <div
-    class="team-action px-2 py-3"
+    class="team-action"
     v-if="team"
   >
     <template
@@ -94,7 +107,7 @@ function handleClick(button: TeamButtonAction, team: Team) {
         >{{ button.name }}</Button
       >
       <Button
-        v-if="button.name == 'Поделиться'"
+        v-if="button.name == 'Скопировать ссылку'"
         :class-name="button.buttonClass + ' w-100'"
         @click="shareButton(team?.id)"
         :disabled="disabled"

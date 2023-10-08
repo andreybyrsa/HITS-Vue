@@ -1,6 +1,6 @@
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
-import { Portfolio } from '@Components/Modals/TeamModal/TeamAction.types'
+import { Project } from '@Components/Modals/TeamModal/TeamAction.types'
 
 interface Team {
   id: string
@@ -10,8 +10,8 @@ interface Team {
   leader: User
   members: User[]
   skills: Skill[]
-  isAvailable: boolean
-  portfolio: Portfolio[]
+  isClosed: boolean
+  projects?: Project[]
 }
 
 export default Team

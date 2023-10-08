@@ -11,12 +11,14 @@ interface ComboboxProps<OptionType> {
   multiselectPlaceholder?: string
 }
 
+interface ComboboxEmits<OptionType> {
+  (event: 'onSelect', value: OptionType): void
+  (event: 'onUnselect', value: OptionType): void
+}
+
 interface SearchedOptionType<OptionType> {
   label: string
   option: OptionType
 }
 
-interface ComboboxEmits {
-  (event: 'addNewOption', optionName: string): void
-}
-export { ComboboxProps, SearchedOptionType, ComboboxEmits }
+export { ComboboxProps, ComboboxEmits, SearchedOptionType }

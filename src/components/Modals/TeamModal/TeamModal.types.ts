@@ -1,3 +1,4 @@
+import { Skill } from '@Domain/Skill'
 import Team from '@Domain/Team'
 
 interface TeamModalProps {
@@ -9,5 +10,16 @@ interface TeamModalProps {
 interface TeamModalEmits {
   (event: 'close-modal'): void
 }
+interface ProfileSkillChartsProps {
+  team: Team
+}
 
-export { TeamModalProps, TeamModalEmits }
+interface ProfileSkillChartsEmits {
+  (event: 'filter', skill: Skill): void
+}
+export {
+  TeamModalProps,
+  TeamModalEmits,
+  ProfileSkillChartsProps,
+  ProfileSkillChartsEmits,
+}

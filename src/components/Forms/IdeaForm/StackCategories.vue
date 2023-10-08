@@ -115,7 +115,7 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
           no-form-controlled
           :placeholder="category.placeholder"
           :multiselect-placeholder="category.multiselectPlaceholder"
-          @add-new-option="(name) => handleAddNoConfirmedStack(name, category.key)"
+          @add-new-option="(name: string) => handleAddNoConfirmedStack(name, category.key)"
         />
         <div
           v-if="stackValue.length"

@@ -20,89 +20,160 @@ import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import Team from '@Domain/Team'
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
-import { Portfolio } from '@Components/Modals/TeamModal/TeamAction.types'
+import { Project } from '@Components/Modals/TeamModal/TeamAction.types'
 
-const portfolio1: Portfolio = {
+const portfolio1: Project = {
   id: '1',
   name: 'Сервис позволяющий примерять одежду онлайн',
   description:
     'Данное решение имплементрует обученные нейросети для того, чтобы любой пользователь, который выбрал одежду из общего каталога, взятого с каталогов популярных магазинов одежды, и смог примерить ее по фото, подобрав свой размер, не выходя из дома',
 }
 
-const portfolio2: Portfolio = {
+const portfolio2: Project = {
   id: '2',
   name: 'Сайт управления идеями и проектами',
   description:
     'Данное решение поможет легче реализовывать идеи, решать проекты, подобрав для них команду',
 }
 
-const skillFron: Skill = {
-  id: '1236',
+const skillFron1: Skill = {
+  id: '123wrg6eret5',
   name: 'React',
   type: 'FRAMEWORK',
   confirmed: true,
 }
 
+const skillFron2: Skill = {
+  id: '123wrg6er5',
+  name: 'Vue',
+  type: 'FRAMEWORK',
+  confirmed: true,
+}
+
 const skillBack: Skill = {
-  id: '1236',
+  id: '12363wrgwr46',
   name: 'Django',
   type: 'FRAMEWORK',
   confirmed: true,
 }
 
-const skillDB: Skill = {
-  id: '1236',
+const skillDB1: Skill = {
+  id: '12336sgwrgwr56',
   name: 'PostgreSQL',
   type: 'DATABASE',
   confirmed: true,
 }
+const skillDB2: Skill = {
+  id: '12336sgwrgwr5rgr6',
+  name: 'SQLite',
+  type: 'DATABASE',
+  confirmed: true,
+}
+const skillDB3: Skill = {
+  id: '12336sgwrrtgwr5rgr6',
+  name: 'MongoDB',
+  type: 'DATABASE',
+  confirmed: true,
+}
 
-const skillDEV: Skill = {
-  id: '1236',
+const skillDEV1: Skill = {
+  id: '1233563twetw5636',
   name: 'Docker',
   type: 'DEVOPS',
   confirmed: true,
 }
 
+const skillDEV2: Skill = {
+  id: '1233563twetw5fgf636',
+  name: 'Git',
+  type: 'DEVOPS',
+  confirmed: true,
+}
+
+const skillDEV3: Skill = {
+  id: '1233563twrgetw5636',
+  name: 'VSCode',
+  type: 'DEVOPS',
+  confirmed: true,
+}
+
 const skillLang1: Skill = {
-  id: '1236',
+  id: '12365635wetwetwe632436',
   name: 'Python',
   type: 'LANGUAGE',
   confirmed: true,
 }
 
 const skillLang2: Skill = {
-  id: '1236',
+  id: '12262462462grgrwegrtw36',
   name: 'JavaScript',
   type: 'LANGUAGE',
   confirmed: true,
 }
 
+const skillLang3: Skill = {
+  id: '12262462462wetw36',
+  name: 'Java',
+  type: 'LANGUAGE',
+  confirmed: true,
+}
+
 const userOwner: User = {
-  id: '651d796443862a3293d5e872',
+  id: '651e9fc43c500f3c780772e8',
   email: 'test1@gmail.com',
   firstName: 'Timur',
   lastName: 'Minyazeff',
   roles: ['ADMIN', 'EXPERT', 'INITIATOR', 'PROJECT_OFFICE'],
-  skills: [skillBack, skillDEV, skillLang1, skillDB],
+  skills: [
+    skillFron1,
+    skillBack,
+    skillDEV1,
+    skillDEV2,
+    skillDEV3,
+    skillLang2,
+    skillLang1,
+    skillLang3,
+    skillDB1,
+    skillDB2,
+  ],
 }
 
 const userLeader: User = {
-  id: '1234',
+  id: '651ecac93c500f3c780772e9',
   email: 'test2@gmail.com',
   firstName: 'Andrey',
   lastName: 'Byrsa',
   roles: ['ADMIN', 'EXPERT', 'INITIATOR', 'PROJECT_OFFICE'],
-  skills: [skillFron, skillDEV, skillLang2, skillLang1, skillDB],
+  skills: [
+    skillFron1,
+    skillFron2,
+    skillDEV1,
+    skillDEV2,
+    skillDEV3,
+    skillLang2,
+    skillLang1,
+    skillLang3,
+    skillDB1,
+    skillDB2,
+    skillDB3,
+  ],
 }
 
 const user1: User = {
-  id: '1235',
+  id: '651ecaee3c500f3c780772ea',
   email: 'test3@gmail.com',
   firstName: 'Mamed',
   lastName: 'Bairamov',
   roles: ['ADMIN', 'EXPERT', 'INITIATOR', 'PROJECT_OFFICE'],
-  skills: [skillFron, skillLang1, skillDEV],
+  skills: [
+    skillFron1,
+    skillFron2,
+    skillLang1,
+    skillDEV1,
+    skillDEV2,
+    skillDEV3,
+    skillDB3,
+  ],
 }
 
 const user2: User = {
@@ -111,7 +182,7 @@ const user2: User = {
   firstName: 'Kirill',
   lastName: 'Vlasiv',
   roles: ['ADMIN', 'EXPERT', 'INITIATOR', 'PROJECT_OFFICE'],
-  skills: [skillFron, skillLang2, skillDEV],
+  skills: [skillFron2, skillLang2, skillDEV1, skillDEV2, skillDEV3, skillFron1],
 }
 
 const team: Team = {
@@ -121,9 +192,22 @@ const team: Team = {
   owner: userOwner,
   leader: userLeader,
   members: [user1, user2, userLeader, userOwner],
-  skills: [skillBack, skillFron, skillDEV, skillDB, skillLang1, skillLang2],
-  isAvailable: true,
-  portfolio: [portfolio1, portfolio2],
+  skills: [
+    skillBack,
+    skillFron1,
+    skillFron2,
+    skillDEV1,
+    skillDEV2,
+    skillDEV3,
+    skillDB1,
+    skillDB2,
+    skillDB3,
+    skillLang1,
+    skillLang2,
+    skillLang3,
+  ],
+  isClosed: false,
+  projects: [portfolio1, portfolio2],
 }
 
 const openModal = ref(false)

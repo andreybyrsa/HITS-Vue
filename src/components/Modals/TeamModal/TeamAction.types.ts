@@ -4,7 +4,7 @@ interface TeamActionProps {
   team?: Team
 }
 
-interface Portfolio {
+interface Project {
   id: string
   name: string
   description: string
@@ -34,19 +34,24 @@ const teamButtons: TeamButtonAction[] = [
   },
   {
     id: 3,
-    name: 'Поделиться',
-    buttonClass: 'bi bi-share-fill btn-primary',
+    name: 'Расмотреть заявки',
+    buttonClass: 'bi bi-card-checklist btn-primary',
   },
   {
     id: 4,
+    name: 'Скопировать ссылку',
+    buttonClass: 'bi bi-share-fill btn-primary',
+  },
+  {
+    id: 5,
     name: 'Удалить команду',
     buttonClass: 'bi bi-trash3-fill btn-danger',
   },
   {
-    id: 5,
+    id: 6,
     name: 'Подать заявку на выход',
     buttonClass: 'bi bi-box-arrow-left btn-danger',
   },
 ]
 
-export { TeamButtonAction, TeamActionProps, teamButtons, Portfolio }
+export { TeamButtonAction, TeamActionProps, teamButtons, Project }

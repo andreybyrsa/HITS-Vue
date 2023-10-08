@@ -9,12 +9,30 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import TeamAction from '@Components/Modals/TeamModal/TeamAction.vue'
+import ProfileSkillCharts from './ProfileSkillCharts.vue'
+import { ref } from 'vue'
+import { User } from '@Domain/User'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+import TeamModalPlaceholder from './TeamModalPlaceholder.vue'
 
 const props = defineProps<TeamModalProps>()
 const emit = defineEmits<TeamModalEmits>()
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const teamMembers = ref<User[]>()
+function getAllMembers() {
+  teamMembers.value = props.team?.members
+}
+
 function closeTeamModal() {
   emit('close-modal')
+}
+
+function handleDeleteMember(id: string) {
+  console.log(id)
 }
 </script>
 
@@ -61,6 +79,7 @@ function closeTeamModal() {
             <Button
               class-name="fs-4 collapse-controller btn-light w-100"
               v-collapse="'teamMembers'"
+              @click="getAllMembers"
             >
               Участники команды
             </Button>
@@ -69,7 +88,7 @@ function closeTeamModal() {
               id="teamMembers"
             >
               <router-link
-                v-for="member in team.members"
+                v-for="member in teamMembers"
                 :key="member.id"
                 class="team-modal__single-field nav-route list-group-item list-group-item-light"
                 active-class="active"
@@ -79,34 +98,49 @@ function closeTeamModal() {
                 <Typography class="text-dark">{{
                   member.firstName + ' ' + member.lastName
                 }}</Typography>
+                <Icon
+                  v-if="user?.id == team?.owner.id"
+                  class-name="bi bi-person-dash text-danger"
+                  @click="handleDeleteMember(member.id)"
+                />
               </router-link>
             </Collapse>
-          </li>
-          <div class="bg-white rounded-3">
-            <Typography class-name="p-3 w-100 fs-4 text-primary">
-              Наше портфолио
-            </Typography>
             <div
-              v-for="portfolio in team.portfolio"
-              :key="portfolio.id"
+              v-if="team.projects"
+              class="py-2 bg-white rounded-3"
             >
-              <Button
-                ><Typography
-                  class-name="p-3 w-100 fs-6 text-dark text-nowrap overflow-x-scroll"
-                  >{{ portfolio.name }}</Typography
-                >
-                <Typography
-                  class-name="team-modal__description p-3 w-100 fs-6 text-secondary"
-                  >{{ portfolio.description }}</Typography
-                >
-              </Button>
+              <Typography class-name="p-3 w-100 fs-4 text-primary">
+                Наши проекты
+              </Typography>
+              <div
+                class="team-modal__single-field"
+                v-for="project in team.projects"
+                :key="project.id"
+              >
+                <Button class-name="team-modal__project w-100">
+                  <Typography class-name="w-100 fs-6 text-dark text-start"
+                    >Проект: {{ project.name }}</Typography
+                  >
+                  <Typography
+                    class-name="team-modal__project__description fs-6 text-secondary"
+                    >Описание: {{ project.description }}</Typography
+                  >
+                </Button>
+              </div>
             </div>
-          </div>
+          </li>
         </ul>
+        <div
+          class="p-3 w-100 bg-white rounded-3 text-primary text-nowrap overflow-x-scroll"
+        >
+          <Typography class="fs-4 py-2 d-flex justify-content-center"
+            >Наши компетенции</Typography
+          >
+          <ProfileSkillCharts :team="team"></ProfileSkillCharts>
+        </div>
       </div>
-      <div class="team-modal__right-side rounded w-25 bg-white">
-        <Typography
-          class-name="px-2 text-primary text-nowrap team-modal__single-field"
+      <div class="p-3 team-modal__right-side rounded w-25 bg-white">
+        <Typography class-name="text-primary text-nowrap team-modal__single-field"
           >Владелец команды:
           <router-link
             class="nav-route list-group-item list-group-item-light"
@@ -119,8 +153,7 @@ function closeTeamModal() {
           </router-link>
         </Typography>
 
-        <Typography
-          class-name="px-2 text-primary text-nowrap team-modal__single-field"
+        <Typography class-name="text-primary text-nowrap team-modal__single-field"
           >Лидер команды:
           <router-link
             class="nav-route list-group-item list-group-item-light"
@@ -134,6 +167,9 @@ function closeTeamModal() {
         </Typography>
         <TeamAction :team="team"></TeamAction>
       </div>
+    </div>
+    <div v-else>
+      <TeamModalPlaceholder></TeamModalPlaceholder>
     </div>
   </ModalLayout>
 </template>
@@ -179,8 +215,16 @@ function closeTeamModal() {
 
     @include flexible(stretch, flex-start, column, $gap: 16px);
   }
-  &__description {
-    max-width: fit-content;
+  &__project {
+    @include flexible(flex-start, flex-end, column, $gap: 16px);
+    &__description {
+      width: 70%;
+
+      overflow: hidden;
+      white-space: nowrap;
+
+      text-overflow: ellipsis;
+    }
   }
 }
 
