@@ -13,6 +13,7 @@ import Team from '@Domain/Team'
 import { useRouter } from 'vue-router'
 import InviteModal from '../InviteModal/InviteModal.vue'
 import TeamService from '@Services/TeamService'
+import { User } from '@Domain/User'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -55,9 +56,17 @@ async function handleDeleteTeam() {
     router.push('/teams/list')
   }
 }
-async function handleInvitePerson(email: string) {
-  console.log(email, teamId)
+async function handleInvitePerson(user: User) {
+  if (user.token) {
+    const { token } = user
+    const response = await TeamService.inviteMember(user, teamId.value, token)
+    if (response instanceof Error) {
+      return
+    }
+  }
+  isOpenedInviteModal.value = false
 }
+
 function checkButton(button: TeamButtonAction) {
   if (user.value) {
     return (
@@ -88,7 +97,9 @@ function handleClick(button: TeamButtonAction, team: Team) {
     ? handleOpenInviteModal(team.id)
     : button.name == 'Редактировать'
     ? router.push(`/teams/edit/${team.id}`)
-    : button.name == 'df'
+    : button.name == 'Рассмотреть заявки'
+    ? router.push(`/teams/requests/${team.id}`)
+    : button.name == 'Подать заявку на вступление'
 }
 </script>
 <template>

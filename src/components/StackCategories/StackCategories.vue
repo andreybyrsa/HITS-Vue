@@ -114,7 +114,6 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
           v-model="choosenSkills[category.key]"
           v-model:all="stackValue"
           no-form-controlled
-          :placeholder="category.placeholder"
           :multiselect-placeholder="category.multiselectPlaceholder"
           @add-new-option="(name: string) => handleAddNoConfirmedStack(name, category.key)"
         />

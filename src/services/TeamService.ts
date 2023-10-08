@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import Team from '@Domain/Team'
 import Success from '@Domain/ResponseMessage'
+import { User } from '@Domain/User'
 
 const TEAM_URL = 'http://localhost:3000/api/v1/team'
 
@@ -72,10 +73,44 @@ const deleteTeam = async (id: string, token: string): Promise<Success | Error> =
     })
 }
 
+const inviteMember = async (
+  user: User,
+  teamId: string,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .post(`${TEAM_URL}/send-invite/${teamId}`, user, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
+      return new Error(error)
+    })
+}
+
+const kickMember = async (
+  user: User,
+  teamId: string,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .put(`${TEAM_URL}/kick/${teamId}`, user, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка кика пользователя'
+      return new Error(error)
+    })
+}
+
 const TeamService = {
   getTeams,
   getTeam,
   createTeam,
+  inviteMember,
+  kickMember,
   updateTeam,
   deleteTeam,
 }

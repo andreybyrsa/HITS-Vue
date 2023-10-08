@@ -16,7 +16,7 @@ import { Skill, SkillType } from '@Domain/Skill'
 Chart.register(...registerables)
 
 const props = defineProps<ProfileSkillChartsProps>()
-const emit = defineEmits<ProfileSkillChartsEmits>()
+defineEmits<ProfileSkillChartsEmits>()
 const route = useRoute()
 
 type SkillsRadarChartType = ChartData<'radar', (number | null)[], string>

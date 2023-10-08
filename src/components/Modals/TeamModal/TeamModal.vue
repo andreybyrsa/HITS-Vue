@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
 import {
   TeamModalEmits,
   TeamModalProps,
@@ -9,14 +12,16 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import TeamAction from '@Components/Modals/TeamModal/TeamAction.vue'
-import ProfileSkillCharts from './ProfileSkillCharts.vue'
-import { ref } from 'vue'
-import { User } from '@Domain/User'
-import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
-import TeamModalPlaceholder from './TeamModalPlaceholder.vue'
+import ProfileSkillCharts from '@Components/Modals/TeamModal/ProfileSkillCharts.vue'
+import TeamModalPlaceholder from '@Components/Modals/TeamModal/TeamModalPlaceholder.vue'
 
-const props = defineProps<TeamModalProps>()
+import { User } from '@Domain/User'
+
+import useUserStore from '@Store/user/userStore'
+
+import TeamService from '@Services/TeamService'
+
+defineProps<TeamModalProps>()
 const emit = defineEmits<TeamModalEmits>()
 
 const userStore = useUserStore()
@@ -26,8 +31,15 @@ function closeTeamModal() {
   emit('close-modal')
 }
 
-function handleDeleteMember(id: string) {
-  console.log(id)
+const handleKick = async (user: User, teamId: string) => {
+  if (user.token) {
+    const { token } = user
+    const response = await TeamService.kickMember(user, teamId, token)
+
+    if (response instanceof Error) {
+      return
+    }
+  }
 }
 </script>
 
@@ -95,7 +107,7 @@ function handleDeleteMember(id: string) {
                 <Icon
                   v-if="user?.email == team?.owner.email"
                   class-name="bi bi-person-dash text-danger"
-                  @click="handleDeleteMember(member.email)"
+                  @click="handleKick(member, team?.id)"
                 />
               </router-link>
             </Collapse>
