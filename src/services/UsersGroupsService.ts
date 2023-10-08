@@ -14,7 +14,24 @@ const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
     })
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка групп пользователей'
+      const error = response?.data?.error ?? 'Ошибка получения групп пользователей'
+      return new Error(error)
+    })
+}
+
+const getUsersGroup = async (
+  groupId: string,
+  token: string,
+): Promise<UserGroup | Error> => {
+  return await axios
+    .get(`${MANAGE_GROUPS_URL}/${groupId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения группы пользователей'
       return new Error(error)
     })
 }
@@ -36,7 +53,7 @@ const createUsersGroup = async (
     })
 }
 
-const editUsersGroup = async (
+const updateUsersGroup = async (
   usersData: UserGroup,
   token: string,
   id: string,
@@ -73,9 +90,10 @@ const deleteUsersGroup = async (
 }
 
 const UsersGroupsService = {
-  createUsersGroup,
   getUsersGroups,
-  editUsersGroup,
+  getUsersGroup,
+  createUsersGroup,
+  updateUsersGroup,
   deleteUsersGroup,
 }
 
