@@ -11,12 +11,10 @@ import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import Table from '@Components/Table/Table.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 const searchValue = ref('')
 
@@ -63,8 +61,6 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
-
-const selectedOption = ref()
 
 userStore.checkLastActivity()
 

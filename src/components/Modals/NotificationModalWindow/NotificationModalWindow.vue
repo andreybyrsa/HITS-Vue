@@ -12,7 +12,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import Notification from '@Domain/Notification'
 import Button from '@Components/Button/Button.vue'
 
-const props = defineProps<NotificatonModalWindowProps>()
+defineProps<NotificatonModalWindowProps>()
 
 const emit = defineEmits<NotificatonModalWindowEmits>()
 
