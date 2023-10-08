@@ -26,11 +26,12 @@ import ErrorView from '@Views/ErrorView.vue'
 import DevView from '@Views/DevView.vue'
 
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: RoleMiddleware,
+    component: NotificationMiddleware && RoleMiddleware,
     children: [
       {
         path: 'ideas',

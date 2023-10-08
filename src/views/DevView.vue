@@ -16,6 +16,7 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
+import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 const searchValue = ref('')
 

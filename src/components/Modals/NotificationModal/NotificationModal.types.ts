@@ -1,11 +1,13 @@
+// interface Notification {
+//   id: string
+//   type?: 'success' | 'error'
+//   message: string
+// }
+
 interface NotificationModalProps {
-  isOpened: boolean
-  type?: 'success' | 'error'
+  notification: Notification
   timeExpired?: number
 }
 
-interface NotificationModalEmits {
-  (event: 'close-modal'): void
-}
-
-export { NotificationModalProps, NotificationModalEmits }
+// export { Notification, NotificationModalProps }
+export default NotificationModalProps
