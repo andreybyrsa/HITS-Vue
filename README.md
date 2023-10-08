@@ -177,7 +177,85 @@ v-model:name2=""
 
 ### v-tooltip
 
+#### Директива v-tooltip используется для добавления всплывающей подсказки к элементу. При наведении курсора на элемент появляется всплывающее окно с заданным текстом
+
+#### Пример:
+
+```
+<script>
+function getCurrentTooltip(select: PreAssessmentSelect) {
+  const selectValue = props.idea[select.name]
+  if (selectValue) {
+    return select.options.find((option) => option.value === selectValue)?.label
+  }
+}
+</script>
+
+<template>
+<Select
+  :name="select.name"
+  validate-on-update
+  :label="select.label"
+  :options="select.options"
+  v-tooltip="getCurrentTooltip(select)"
+  placeholder="Выберите значение"
+></Select>
+</template>
+```
+
+#### Здесь использована директива v-tooltip с функцией getCurrentTooltip, чтобы отобразить подсказку в компоненте Select. Функция getCurrentTooltip принимает объект select и возвращает текст подсказки для выбранного значения из списка опций
+
+#### Директива v-tooltip может быть настроена с помощью передачи дополнительных параметров. Например, можно изменить позицию всплывающей подсказки, использовать другие стили или настроить время задержки перед отображением
+
+### v-collapse
+
+#### Директива v-collapse используется для сворачивания и раскрытия содержимого компонента или элемента. Когда элемент активируется (например, по клику), содержимое сворачивается или разворачивается с использованием анимации
+
+#### Пример:
+
+```
+<Button
+  :class-name="errors.newRoles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'"
+  append-icon-name="bi bi-chevron-down"
+  v-collapse="'editUserModalCollapse'"
+>
+  Роли
+</Button>
+
+<Collapse id="editUserModalCollapse" class-name="w-100">
+  <template v-for="role in availableRoles.roles" :key="role">
+    <Checkbox
+      name="newRoles"
+      class-name="drop-down-item"
+      validate-on-update
+      :label="availableRoles.translatedRoles[role]"
+      :value="role"
+    />
+  </template>
+</Collapse>
+```
+
+#### В примере используется директива v-collapse для сворачивания и разворачивания содержимого компонента Collapse. Кнопка Button с иконкой bi-chevron-down вызывает сворачивание или разворачивание содержимого Collapse с помощью директивы v-collapse с идентификатором editUserModalCollapse
+
+#### Директива v-collapse может быть настроена с помощью передачи дополнительных параметров. Например, можно настроить время анимации или указать дополнительные классы стилей
+
 ### v-dropdown
+
+#### Директива v-dropdown используется для создания выпадающего меню или списка с помощью кнопки или другого элемента. При активации элемента, связанного с директивой v-dropdown, отображается выпадающий список с опциями или содержимым
+
+#### Пример:
+
+```
+<Button
+  class-name="btn-primary fs-3"
+  prepend-icon-name="bi bi-list"
+  v-dropdown="skill-controller-${item.id}"
+></Button>
+```
+
+#### Здесь использована директива v-dropdown на кнопке Button. Кнопка будет связана с выпадающим списком или меню, и при активации кнопки будет отображаться выпадающий список или содержимое
+
+#### Директива v-dropdown может быть настроена с помощью передачи дополнительных параметров. Например, можно указать, какое содержимое должно быть отображено внутри выпадающего списка, настроить позицию меню или задать свои стили
 
 ### Компонент таблицы
 
