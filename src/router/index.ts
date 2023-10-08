@@ -14,12 +14,12 @@ import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import AdminView from '@Views/AdminView.vue'
 
-import IdeasView from '@Views/IdeasView/IdeasView.vue'
-import NewIdeaView from '@Views/NewIdeaView.vue'
-import EditIdeaView from '@Views/EditIdeaView.vue'
+import IdeasView from '@Views/Ideas/IdeasView.vue'
+import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
+import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
-import NewTeamView from '@Views/NewTeamView.vue'
-import EditTeamView from '@Views/EditTeamView.vue'
+import NewTeamView from '@Views/Teams/NewTeamView.vue'
+import EditTeamView from '@Views/Teams/EditTeamView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
 

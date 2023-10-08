@@ -11,6 +11,7 @@ import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import Table from '@Components/Table/Table.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -72,7 +73,7 @@ const { values, handleSubmit } = useForm({
   },
   initialValues: {
     combobox: [],
-    component: '',
+    component: undefined,
   },
 })
 
