@@ -1,7 +1,13 @@
-import { Change } from '@Domain/Idea'
+interface Change {
+  name: string
+  date: Date
+  who: string
+  number: number
+  doing: string
+}
 
-interface ChangesTableProps {
+interface LastActivityNoteProps {
   changes: Change[]
 }
 
-export default ChangesTableProps
+export { LastActivityNoteProps, Change }

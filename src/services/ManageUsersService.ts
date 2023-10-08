@@ -5,8 +5,7 @@ import { UpdateUserData, UpdateUserPassword } from '@Domain/ManageUsers'
 import { NewEmailForm } from '@Domain/Invitation'
 import Success from '@Domain/ResponseMessage'
 
-const MANAGE_USERS_URL =
-  process.env.VUE_APP_MANAGE_USERS_API_URL || 'http://localhost:3000'
+const MANAGE_USERS_URL = 'http://localhost:3000/api/v1/profile'
 
 const getUsers = async (token: string): Promise<User[] | Error> => {
   return await axios
@@ -35,7 +34,7 @@ const getUsersEmails = async (token: string): Promise<string[] | Error> => {
 const updateUserInfo = async (
   newUserData: UpdateUserData,
   token: string,
-): Promise<Success | Error> => {
+): Promise<User | Error> => {
   return await axios
     .put(`${MANAGE_USERS_URL}/change/info`, newUserData, {
       headers: { Authorization: `Bearer ${token}` },

@@ -42,8 +42,16 @@ const LabelClassName = computed(() => [
       :disabled="disabled"
     >
       <option
-        v-if="placeholder"
+        v-if="placeholder && selectValue === undefined"
         :value="undefined"
+        selected
+        disabled
+      >
+        {{ placeholder }}
+      </option>
+      <option
+        v-if="placeholder && selectValue === null"
+        :value="null"
         selected
         disabled
       >

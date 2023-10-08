@@ -1,5 +1,4 @@
 import { Idea } from '@Domain/Idea'
-
 function getMockIdeas(): Idea[] {
   return [
     {
@@ -17,18 +16,15 @@ function getMockIdeas(): Idea[] {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       createdAt: new Date(),
       modifiedAt: new Date(),
-      status: 'NEW',
+      status: 'ON_CONFIRMATION',
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
-      experts: [],
+      experts: { id: '', name: '', users: [], roles: [] },
       projectOffice: [],
-      confirmedBy: [],
       rating: 5,
       budget: 1,
       suitability: 1,
       technicalRealizability: 1,
-      marketValue: 1,
-      originality: 1,
       preAssessment: 0,
     },
     {
@@ -49,18 +45,14 @@ function getMockIdeas(): Idea[] {
       status: 'NEW',
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
-      experts: [],
+      experts: { id: '', name: '', users: [], roles: [] },
       projectOffice: [],
-      confirmedBy: [],
       rating: 5,
       budget: 1,
       suitability: 1,
       technicalRealizability: 1,
-      marketValue: 1,
-      originality: 1,
       preAssessment: 0,
     },
   ]
 }
-
 export default getMockIdeas

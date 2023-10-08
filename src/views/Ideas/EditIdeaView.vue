@@ -25,7 +25,7 @@ const { user } = storeToRefs(userStore)
 const router = useRoute()
 
 const currentIdea = ref<Idea>()
-const isLoading = ref(true)
+const isLoading = ref(false)
 
 const {
   isOpenedNotification,
@@ -61,7 +61,7 @@ onMounted(async () => {
 
     <template #content>
       <FormLayout
-        v-if="isLoading"
+        v-if="!currentIdea"
         class-name="w-100 h-100"
       >
         <IdeaFormPlaceholder />

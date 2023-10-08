@@ -7,24 +7,33 @@ import {
   IdeaDescriptionProps,
   IdeaDescriptionEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
+import { useRouter } from 'vue-router'
 
 defineProps<IdeaDescriptionProps>()
 
 const emit = defineEmits<IdeaDescriptionEmits>()
+
+const router = useRouter()
+
+function closeModal() {
+  emit('close-modal')
+  router.push('/ideas')
+}
 </script>
 
 <template>
   <div class="idea-description-header">
     <Button
+      v-if="!buttonBack"
       class-name="btn-primary"
       prepend-icon-name="bi bi-backspace-fill"
-      @click="emit('close-modal')"
+      @click="closeModal"
     >
       Назад
     </Button>
 
     <Typography
-      class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-scroll"
+      class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-x-scroll"
     >
       {{ idea?.name }}
     </Typography>
@@ -37,9 +46,8 @@ const emit = defineEmits<IdeaDescriptionEmits>()
       class="list-group-item p-0 overflow-hidden"
     >
       <Button
-        :id="collapse.id"
         class-name="collapse-controller btn-light w-100"
-        is-collapse-controller
+        v-collapse="collapse.id"
       >
         {{ collapse.text }}
       </Button>

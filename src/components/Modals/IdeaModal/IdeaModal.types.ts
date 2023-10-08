@@ -10,6 +10,7 @@ interface IdeaModalProps {
 
 interface IdeaDescriptionProps {
   idea?: Idea
+  buttonBack?: boolean
 }
 
 interface IdeaActionsProps {

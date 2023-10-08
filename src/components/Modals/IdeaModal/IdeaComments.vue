@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
 import { storeToRefs } from 'pinia'
@@ -26,7 +26,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const commentsStore = useCommentsStore()
-const { comments, rsocketIsConnected, commentsError } = storeToRefs(commentsStore)
+const { comments, commentsError } = storeToRefs(commentsStore)
+const commentsIsLoading = ref(true)
 
 const {
   notificationOptions,
@@ -42,7 +43,11 @@ onMounted(async () => {
     const { token } = currentUser
     const { id } = props.idea
 
-    await commentsStore.fetchComments(id, token)
+    const response = await commentsStore.fetchComments(id, token)
+    if (response instanceof Array) {
+      commentsIsLoading.value = false
+    }
+
     await commentsStore.connectRsocket(id)
   }
 })
@@ -121,8 +126,9 @@ const onIntersectionObserver = async (
       <Typography class-name="fs-6 px-3">Комментарии</Typography>
     </div>
 
+    <IdeaCommentsPlaceholder v-if="commentsIsLoading" />
     <div
-      v-if="rsocketIsConnected"
+      v-else
       class="d-grid gap-3 pt-3 px-3 w-100"
     >
       <CommentVue
@@ -134,7 +140,6 @@ const onIntersectionObserver = async (
         @delete-comment="handleDeleteComment(comment.id)"
       />
     </div>
-    <IdeaCommentsPlaceholder v-else />
 
     <form class="comment-form p-3">
       <Input

@@ -1,62 +1,55 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, reactive, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import comboboxStackCategories from '@Components/Forms/IdeaForm/StackCategories'
+import comboboxStackCategories from '@Components/StackCategories/StackCategories'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
 import { Skill, SkillType } from '@Domain/Skill'
+
+import SkillsService from '@Services/SkillService'
+
+import useUserStore from '@Store/user/userStore'
 
 const stackValue = defineModel<Skill[]>({
   required: true,
 })
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
 const skills = ref<Record<SkillType, Skill[]>>()
 
 const choosenSkills = reactive<Record<SkillType, Skill[]>>({
   LANGUAGE: stackValue.value.filter(
-    (selectedValue) => selectedValue.role === 'LANGUAGE',
+    (selectedValue) => selectedValue.type === 'LANGUAGE',
   ),
   FRAMEWORK: stackValue.value.filter(
-    (selectedValue) => selectedValue.role === 'FRAMEWORK',
+    (selectedValue) => selectedValue.type === 'FRAMEWORK',
   ),
   DATABASE: stackValue.value.filter(
-    (selectedValue) => selectedValue.role === 'DATABASE',
+    (selectedValue) => selectedValue.type === 'DATABASE',
   ),
   DEVOPS: stackValue.value.filter(
-    (selectedValue) => selectedValue.role === 'DEVOPS',
+    (selectedValue) => selectedValue.type === 'DEVOPS',
   ),
 })
 
 onMounted(async () => {
-  const response = await new Promise<Record<SkillType, Skill[]>>((reslove) => {
-    setTimeout(
-      () =>
-        reslove({
-          LANGUAGE: [
-            { id: '0', name: 'JavaScript', role: 'LANGUAGE' },
-            { id: '1', name: 'TypeScript', role: 'LANGUAGE' },
-          ],
-          FRAMEWORK: [
-            { id: '2', name: 'React', role: 'FRAMEWORK' },
-            { id: '3', name: 'Vue', role: 'FRAMEWORK' },
-          ],
-          DATABASE: [
-            { id: '4', name: 'Mongo DB', role: 'DATABASE' },
-            { id: '5', name: 'SQLite', role: 'DATABASE' },
-          ],
-          DEVOPS: [
-            { id: '6', name: 'Docker', role: 'DEVOPS' },
-            { id: '7', name: 'Maven', role: 'DEVOPS' },
-          ],
-        }),
-      1000,
-    )
-  }).then((response) => response)
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await SkillsService.getAllConfirmedOrCreatorSkills(token)
 
-  skills.value = response
+    if (response instanceof Error) {
+      return
+    }
+
+    skills.value = response
+  }
 })
 
 watch(choosenSkills, (currentSills) => {
@@ -84,6 +77,21 @@ function getTechnologyClassName(key: SkillType) {
       return clasName + ' bg-danger'
   }
 }
+
+const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const newSkill: Skill = { id: '', name, type, confirmed: false }
+    const { token } = currentUser
+    const response = await SkillsService.addNoConfirmedSkill(newSkill, token)
+    if (response instanceof Error) {
+      return
+    }
+    if (skills.value) {
+      skills.value[type].push(response)
+    }
+  }
+}
 </script>
 
 <template>
@@ -104,9 +112,11 @@ function getTechnologyClassName(key: SkillType) {
           :options="skills[category.key]"
           :display-by="['name']"
           v-model="choosenSkills[category.key]"
+          v-model:all="stackValue"
           no-form-controlled
           :placeholder="category.placeholder"
           :multiselect-placeholder="category.multiselectPlaceholder"
+          @add-new-option="(name) => handleAddNoConfirmedStack(name, category.key)"
         />
         <div
           v-if="stackValue.length"

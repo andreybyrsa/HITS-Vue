@@ -1,24 +1,28 @@
 <script lang="ts" setup>
+import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import { IdeaInfoProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
-
+import Button from '@Components/Button/Button.vue'
+import useRatingStore from '@Store/rating/ratingStore'
 import useUserStore from '@Store/user/userStore'
 import modeButtons from './IdeaInfo.types'
 import ModeButtonsType from './modeButtons.types'
-
+import UsersGroup from '@Domain/UsersGroup'
 import getStatus from '@Utils/getStatus'
-
+import { Rating } from '@Domain/Idea'
+import { watchImmediate } from '@vueuse/core'
+import InitialState from '@Store/rating/initialState'
 const props = defineProps<IdeaInfoProps>()
-
 const status = getStatus()
-
+const ratingStore = useRatingStore()
+const { ratings } = storeToRefs(ratingStore)
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-
+const expertRatings = ref<Rating[]>([])
 function checkMode(mode: ModeButtonsType) {
   const currentRole = user.value?.role
   const currentStatusIdea = props.idea?.status
@@ -52,6 +56,35 @@ function checkViewMode() {
     ? false
     : true
 }
+
+const disabled = ref<boolean>(false)
+
+function button(id: string) {
+  navigator.clipboard.writeText('http://localhost:8080/ideas/idea/' + id)
+  disabled.value = true
+}
+
+watchImmediate(
+  () => props.idea,
+  async () => {
+    const currentUser = user.value
+    if (currentUser?.token && props.idea) {
+      const { token } = currentUser
+      const { id } = props.idea
+      await ratingStore.fetchRatingsByIdeaId(id, token)
+      const currentRatings = ratings.value.find(
+        (item) => item.ideaId === id,
+      )?.ratings
+      if (currentRatings) {
+        expertRatings.value = currentRatings
+      }
+    }
+  },
+)
+
+const numberOfExperts = computed(() => {
+  return expertRatings.value.filter((rating) => rating.expert).length
+})
 </script>
 
 <template>
@@ -120,14 +153,20 @@ function checkViewMode() {
       </div>
     </div>
 
-    <div v-if="idea?.experts">
+    <Button
+      class-name="btn-primary w-100"
+      @click="button(idea?.id as string)"
+      :disabled="disabled"
+      >{{ disabled ? 'Ссылка скопирована!' : 'Поделиться идеей' }}</Button
+    >
+
+    <div v-if="expertRatings">
       <div
         class="idea-info__experts border-bottom pointers"
-        data-bs-toggle="collapse"
-        data-bs-target="#experts"
+        v-collapse="'experts'"
         aria-expanded="false"
       >
-        <Typography class-name="text-secondary">Эксперты</Typography>
+        <Typography class-name="text-secondary">Прогресс утверждения</Typography>
 
         <Icon class-name="bi bi-chevron-down me-2 fs-5 text-secondary" />
       </div>
@@ -135,14 +174,16 @@ function checkViewMode() {
       <Collapse id="experts">
         <div class="idea-modal__info-users py-2">
           <div
-            v-for="(value, index) in idea.experts"
+            v-for="(value, index) in expertRatings"
             :key="index"
             class="idea-info__user"
           >
-            <Icon class-name="bi bi-chevron-down me-2 fs-5 text-secondary" />
-
+            <Typography class-name="text-secondary">
+              Всего экспертов: {{ numberOfExperts }}
+            </Typography>
             <Typography class-name="text-primary">
-              {{ value }}
+              {{ value.expert ? 'Неизвестный эксперт' : '' }} -
+              {{ value.confirmed ? 'Утвердил' : 'На утверждении' }}
             </Typography>
           </div>
         </div>

@@ -11,6 +11,7 @@ import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import Table from '@Components/Table/Table.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -73,6 +74,7 @@ const { values, handleSubmit } = useForm({
   },
   initialValues: {
     combobox: [],
+    component: undefined,
   },
 })
 
@@ -95,9 +97,14 @@ function handleCloseModal() {
 
     <template #content>
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
+
       <Select
         name="component"
-        :options="[{ value: '123', label: '1' }]"
+        :options="[
+          { value: '123', label: '1' },
+          { value: '231', label: '1' },
+        ]"
+        v-tooltip="values.component"
         placeholder="Выберите значение"
       ></Select>
       <Button

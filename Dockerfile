@@ -1,15 +1,11 @@
-FROM node:18.17
-
-ENV PORT 8080
-
-WORKDIR /main
-
-COPY package.json /main
-
+FROM node:latest as build-stage
+WORKDIR /app
+COPY package*.json /app
 RUN npm install
-
 COPY . .
+RUN npm run build
 
-EXPOSE $PORT
-
-CMD ["npm", "run", "serve"]
+FROM nginx as production-stage
+RUN mkdir /app
+COPY --from=build-stage /app/dist /app
+COPY nginx.conf /etc/nginx/nginx.conf

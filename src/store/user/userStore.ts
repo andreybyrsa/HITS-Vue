@@ -28,7 +28,7 @@ const useUserStore = defineStore('user', {
 
       this.loginError = ''
 
-      this.router.push({ name: 'ideas' })
+      this.router.push({ name: 'ideas-list' })
     },
 
     async registerUser(user: RegisterUser) {

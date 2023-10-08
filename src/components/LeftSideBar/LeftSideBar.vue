@@ -146,9 +146,10 @@ function handleCloseNotificationModal() {
 .left-side-bar {
   @include position(relative, $z-index: 5);
 
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scroll;
 
-  @include flexible(stretch, space-between, column);
+  @include flexible(stretch, space-between, column, $gap: 8px);
 
   &__content {
     @include fixedWidth(280px);

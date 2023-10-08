@@ -30,11 +30,10 @@ const emit = defineEmits<FormControllersEmits>()
     </Button>
 
     <Button
-      id="checkboxRoles"
       type="button"
       :class-name="rolesError ? 'btn-danger fs-6' : 'btn-primary fs-6'"
       prepend-icon-name="bi bi-plus-lg"
-      is-collapse-controller
+      v-collapse="'addUsersFromCollapse'"
     >
       Выбрать роли
     </Button>

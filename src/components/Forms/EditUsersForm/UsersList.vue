@@ -49,7 +49,7 @@ function getCurrentRoleColor(role: RolesTypes) {
 
     <Button
       prepend-icon-name="bi bi-pencil-square text-primary"
-      @click="emit('open-edit-modal', user.email)"
+      @click="emit('open-edit-modal', user.id)"
     ></Button>
   </div>
 </template>

@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
+import InitialState from './initialState'
+
 import { Idea } from '@Domain/Idea'
 
-import InitialState from './initialState'
 import IdeasService from '@Services/IdeasService'
 
 const useIdeasStore = defineStore('ideas', {
@@ -37,7 +38,12 @@ const useIdeasStore = defineStore('ideas', {
         idea.id == id ? (idea.status = 'ON_APPROVAL') : idea,
       )
     },
+    async updateIdeaByAdmin(idea: Idea, id: string, token: string) {
+      await IdeasService.putAdminIdea(idea, id, token)
+      this.ideas.forEach((idea: Idea) =>
+        idea.id == id ? (idea.status = 'ON_APPROVAL') : idea,
+      )
+    },
   },
 })
-
 export default useIdeasStore
