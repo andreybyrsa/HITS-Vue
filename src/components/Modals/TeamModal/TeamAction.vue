@@ -62,21 +62,21 @@ function checkButton(button: TeamButtonAction) {
   if (user.value) {
     return (
       ((button.name == 'Редактировать' || button.name == 'Удалить команду') &&
-        user.value?.id == props.team?.owner.id) ||
+        user.value?.email == props.team?.owner.email) ||
       (button.name == 'Пригласить в команду' &&
-        (user.value?.id == props.team?.owner.id ||
-          user.value?.id == props.team?.leader.id)) ||
+        (user.value?.email == props.team?.owner.email ||
+          user.value?.email == props.team?.leader.email)) ||
       (button.name == 'Подать заявку на вступление' &&
-        !props.team?.members.find((member) => member.id == user.value?.id) &&
-        user.value?.id != props.team?.owner.id &&
-        user.value?.id != props.team?.leader.id &&
+        !props.team?.members.find((member) => member.email == user.value?.email) &&
+        user.value?.email != props.team?.owner.email &&
+        user.value?.email != props.team?.leader.email &&
         !props.team?.isClosed) ||
       (button.name == 'Подать заявку на выход' &&
-        props.team?.owner.id != user.value?.id &&
-        props.team?.members.find((member) => member.id == user.value?.id)) ||
+        props.team?.owner.email != user.value?.email &&
+        props.team?.members.find((member) => member.email == user.value?.email)) ||
       (button.name == 'Расмотреть заявки' &&
-        (user.value.id == props.team?.owner.id ||
-          user.value.id == props.team?.leader.id))
+        (user.value.email == props.team?.owner.email ||
+          user.value.email == props.team?.leader.email))
     )
   }
 }

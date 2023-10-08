@@ -22,11 +22,6 @@ const emit = defineEmits<TeamModalEmits>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const teamMembers = ref<User[]>()
-function getAllMembers() {
-  teamMembers.value = props.team?.members
-}
-
 function closeTeamModal() {
   emit('close-modal')
 }
@@ -79,7 +74,6 @@ function handleDeleteMember(id: string) {
             <Button
               class-name="fs-4 collapse-controller btn-light w-100"
               v-collapse="'teamMembers'"
-              @click="getAllMembers"
             >
               Участники команды
             </Button>
@@ -88,20 +82,20 @@ function handleDeleteMember(id: string) {
               id="teamMembers"
             >
               <router-link
-                v-for="member in teamMembers"
-                :key="member.id"
+                v-for="member in team.members"
+                :key="member.email"
                 class="team-modal__single-field nav-route list-group-item list-group-item-light"
                 active-class="active"
-                :to="'profile/' + member.id"
+                :to="'profile/' + member.email"
               >
                 <Icon class-name="bi bi-person" />
                 <Typography class="text-dark">{{
                   member.firstName + ' ' + member.lastName
                 }}</Typography>
                 <Icon
-                  v-if="user?.id == team?.owner.id"
+                  v-if="user?.email == team?.owner.email"
                   class-name="bi bi-person-dash text-danger"
-                  @click="handleDeleteMember(member.id)"
+                  @click="handleDeleteMember(member.email)"
                 />
               </router-link>
             </Collapse>
@@ -145,7 +139,7 @@ function handleDeleteMember(id: string) {
           <router-link
             class="nav-route list-group-item list-group-item-light"
             active-class="active"
-            :to="'profile/' + team?.owner.id"
+            :to="'profile/' + team?.owner.email"
           >
             <Typography class="text-primary">{{
               team.owner.firstName + ' ' + team.owner.lastName
@@ -158,7 +152,7 @@ function handleDeleteMember(id: string) {
           <router-link
             class="nav-route list-group-item list-group-item-light"
             active-class="active"
-            :to="'profile/' + team.leader.id"
+            :to="'profile/' + team.leader.email"
           >
             <Typography class="text-primary">{{
               team.leader.firstName + ' ' + team.leader.lastName
