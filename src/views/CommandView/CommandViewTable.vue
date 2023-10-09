@@ -104,7 +104,7 @@ function sortName(changes: Team[]) {
         class-name="bi bi-circle-fill text-danger bg-transparent fs-6"
       />
     </template>
-    <template #competencies="{ item }: { item: Team }">
+    <!-- <template #competencies="{ item }: { item: Team }">
       <div class="bg-light">
         <Button
           type="button"
@@ -124,7 +124,7 @@ function sortName(changes: Team[]) {
           </ul>
         </DropDown>
       </div>
-    </template>
+    </template> -->
   </Table>
 </template>
 

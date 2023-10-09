@@ -43,7 +43,7 @@ onMounted(async () => {
     users.value = response
 
     if (!owner.value) {
-      const currentOwner = response.find((user) => user.id === currentUser.id)
+      const currentOwner = response.find((user) => user.email === currentUser.email)
 
       if (currentOwner) {
         owner.value = currentOwner
@@ -55,7 +55,7 @@ onMounted(async () => {
 const teamUsers = computed(() => {
   const currentUsers = [...members.value, leader.value, owner.value]
   const uniqueUsers = new Map<string, User>()
-  currentUsers.forEach((user) => user && uniqueUsers.set(user.id, user))
+  currentUsers.forEach((user) => user && uniqueUsers.set(user.email, user))
 
   return [...uniqueUsers.values()]
 })
@@ -66,7 +66,7 @@ watchImmediate(teamUsers, (currentTeam) => {
   currentTeam.forEach((member) => membersSkills.push(...member.skills))
 
   teamSkills.value = [
-    ...new Map(membersSkills.map((skill) => [skill.id, skill])).values(),
+    ...new Map(membersSkills.map((skill) => [skill.skillId, skill])).values(),
   ]
   radarChartsSkills.value = membersSkills
 })
@@ -76,18 +76,18 @@ watch(
   (currenOwner, prevOwner) => {
     if (currenOwner) {
       const isExistOwner = members.value.find(
-        (member) => member.id === currenOwner.id,
+        (member) => member.email === currenOwner.email,
       )
 
       if (!isExistOwner) {
         const prevOwnerIndex = members.value.findIndex(
-          (member) => member.id === prevOwner?.id,
+          (member) => member.email === prevOwner?.email,
         )
         if (prevOwnerIndex !== -1) {
           members.value.splice(prevOwnerIndex, 1)
         }
 
-        if (prevOwner?.id == leader.value?.id) {
+        if (prevOwner?.email == leader.value?.email) {
           leader.value = undefined
         }
 
@@ -103,17 +103,17 @@ watch(
   (currentLeader, prevLeader) => {
     if (currentLeader) {
       const isExistLeader = members.value.find(
-        (member) => member.id === currentLeader.id,
+        (member) => member.email === currentLeader.email,
       )
 
       if (!isExistLeader) {
         const prevLeaderIndex = members.value.findIndex(
-          (member) => member.id === prevLeader?.id,
+          (member) => member.email === prevLeader?.email,
         )
         if (prevLeaderIndex !== -1) {
           members.value.splice(prevLeaderIndex, 1)
         }
-        if (prevLeader?.id === owner.value?.id) {
+        if (prevLeader?.email === owner.value?.email) {
           owner.value = undefined
         }
 
@@ -125,17 +125,17 @@ watch(
 )
 
 function onUnselectMember(unselectedMember: User) {
-  if (unselectedMember.id === leader.value?.id) {
+  if (unselectedMember.email === leader.value?.email) {
     leader.value = undefined
   }
-  if (unselectedMember.id === owner.value?.id) {
+  if (unselectedMember.email === owner.value?.email) {
     owner.value = undefined
   }
 }
 
 function unselectMember(unselectedMember: User) {
   const currentMemberIndex = members.value.findIndex(
-    (member) => member.id === unselectedMember.id,
+    (member) => member.email === unselectedMember.email,
   )
 
   if (currentMemberIndex !== -1) {
@@ -147,7 +147,7 @@ function unselectMember(unselectedMember: User) {
 
 function getMemberColor(member: User) {
   const memberClassName = 'team__member p-1 rounded-3 bg-opacity-25 '
-  return member.id !== leader.value?.id
+  return member.email !== leader.value?.email
     ? memberClassName + 'bg-primary'
     : memberClassName + 'bg-danger'
 }
@@ -158,6 +158,7 @@ function getMemberColor(member: User) {
     v-if="users"
     class="team w-100"
   >
+    {{ users }}
     <Combobox
       name="owner"
       label="Владелец команды*"
@@ -192,7 +193,7 @@ function getMemberColor(member: User) {
         <div class="team__members mt-2">
           <div
             v-for="(member, index) in members.sort((member) =>
-              member.id === leader?.id ? -1 : 1,
+              member.email === leader?.email ? -1 : 1,
             )"
             :key="index"
             :class="getMemberColor(member)"
