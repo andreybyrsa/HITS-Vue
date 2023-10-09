@@ -1,6 +1,9 @@
+import Filter from '@Components/Modals/FilterModal/Filter.types'
+
 interface FilterModalProps {
   isOpened: boolean
   currentFilters: string[]
+  filters?: Filter[]
 }
 
 interface FilterModalEmits {
