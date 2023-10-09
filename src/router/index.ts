@@ -14,12 +14,12 @@ import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import AdminView from '@Views/AdminView.vue'
 
-import IdeasView from '@Views/IdeasView/IdeasView.vue'
-import NewIdeaView from '@Views/NewIdeaView.vue'
-import EditIdeaView from '@Views/EditIdeaView.vue'
+import IdeasView from '@Views/Ideas/IdeasView.vue'
+import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
+import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
-import NewTeamView from '@Views/NewTeamView.vue'
-import EditTeamView from '@Views/EditTeamView.vue'
+import NewTeamView from '@Views/Teams/NewTeamView.vue'
+import EditTeamView from '@Views/Teams/EditTeamView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
 import CommandView from '@Views/CommandView/CommandView.vue'
@@ -27,11 +27,12 @@ import CommandView from '@Views/CommandView/CommandView.vue'
 import DevView from '@Views/DevView.vue'
 
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: RoleMiddleware,
+    component: NotificationMiddleware && RoleMiddleware,
     children: [
       {
         path: 'ideas',
@@ -87,14 +88,6 @@ const routes: RouteRecordRaw[] = [
           roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         },
         component: LastActivityNote,
-      },
-      {
-        path: 'command',
-        name: 'command',
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        },
-        component: CommandView,
       },
       {
         path: 'admin',

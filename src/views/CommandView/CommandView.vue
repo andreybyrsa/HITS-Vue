@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import SearchAndFilters from '@Views/IdeasView/SearchAndFilters.vue'
+import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 

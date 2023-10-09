@@ -17,10 +17,7 @@ const getTeams = async (token: string): Promise<Team[]> => {
     })
 }
 
-const getTeam = async (
-  id: string | string[],
-  token: string,
-): Promise<Team | Error> => {
+const getTeam = async (id: string | string[], token: string): Promise<Team> => {
   return await axios
     .get(`${TEAM_URL}/${id}`, {
       headers: { Authorization: `Bearer ${token}` },

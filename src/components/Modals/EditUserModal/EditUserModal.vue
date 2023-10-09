@@ -19,6 +19,7 @@ import Icon from '@Components/Icon/Icon.vue'
 
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
+import { User } from '@Domain/User'
 
 import useNotification from '@Hooks/useNotification'
 
@@ -29,8 +30,10 @@ import ManageUsersService from '@Services/ManageUsersService'
 import getRoles from '@Utils/getRoles'
 import Validation from '@Utils/Validation'
 
+const users = defineModel<User[]>({
+  required: true,
+})
 const props = defineProps<EditUserModalProps>()
-
 const emit = defineEmits<EditUserModalEmits>()
 
 const userStore = useUserStore()
@@ -77,7 +80,12 @@ const handleEditUser = handleSubmit(async (values) => {
       return handleOpenNotification('error', 'Ошибка изменения пользователя')
     }
 
-    emit('save-user', values, 'Успешное изменения пользователя')
+    const currentUserIndex = users.value.findIndex((user) => user.id === response.id)
+    if (currentUserIndex !== -1) {
+      users.value.splice(currentUserIndex, 1, response)
+    }
+
+    handleOpenNotification('success', 'Успешное изменение пользователя')
     emit('close-modal')
   }
 })

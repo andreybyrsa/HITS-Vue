@@ -7,7 +7,6 @@ interface EditUserModalProps {
 
 interface EditUserModalEmits {
   (event: 'close-modal'): void
-  (event: 'save-user', newUser: UpdateUserData, success: string): void
 }
 
 interface EditUserInputType {

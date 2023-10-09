@@ -17,6 +17,8 @@ import useUserStore from '@Store/user/userStore'
 
 import getRoles from '@Utils/getRoles'
 
+import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -64,6 +66,16 @@ function handleOpenModal() {
 function handleCloseModal() {
   isOpenedModal.value = false
 }
+
+const isOpenedNotificationModal = ref(false)
+
+function handleOpenNotificationModal() {
+  isOpenedNotificationModal.value = true
+}
+
+function handleCloseNotificationModal() {
+  isOpenedNotificationModal.value = false
+}
 </script>
 
 <template>
@@ -106,12 +118,25 @@ function handleCloseModal() {
       >
         {{ isHovered ? 'Выйти' : '' }}
       </Button>
+
+      <Button
+        class-name="left-side-bar__notifications-button btn-light w-100"
+        @click="handleOpenNotificationModal"
+        prepend-icon-name="bi bi-bell"
+      >
+        {{ isHovered ? 'Уведомления' : '' }}</Button
+      >
     </div>
 
     <RoleModal
       :is-opened="isOpenedModal"
       @close-modal="handleCloseModal"
     />
+
+    <NotificationModalWindow
+      :is-opened="isOpenedNotificationModal"
+      @close-modal="handleCloseNotificationModal"
+    ></NotificationModalWindow>
   </div>
 
   <LeftSideBarPlaceholder v-else />
@@ -121,9 +146,10 @@ function handleCloseModal() {
 .left-side-bar {
   @include position(relative, $z-index: 5);
 
-  overflow: hidden;
+  overflow-x: hidden;
+  // overflow-y: scroll;
 
-  @include flexible(stretch, space-between, column);
+  @include flexible(stretch, space-between, column, $gap: 8px);
 
   &__content {
     @include fixedWidth(280px);

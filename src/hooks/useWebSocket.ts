@@ -38,7 +38,6 @@ async function useWebSocket<Type>(subscribeUrl: string, socketData?: Type) {
           .subscribe({
             onError: (error) => reject(error),
             onNext: (payload) => {
-              console.log(payload.data)
               if (socketData instanceof Array) {
                 socketData.push(payload.data)
               } else {

@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import FilterModal from '@Components/Modals/FilterModal/FilterModal.vue'
-import SearchAndFiltersProps from '@Views/IdeasView/SearchAndFilters.types'
+import SearchAndFiltersProps from '@Views/Ideas/SearchAndFilters.types'
 
 import useUserStore from '@Store/user/userStore'
 
