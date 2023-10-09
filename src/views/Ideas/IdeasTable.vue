@@ -11,7 +11,7 @@ import DropDown from '@Components/DropDown/DropDown.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
-import IdeasTableProps from '@Views/IdeasView/IdeasView.types'
+import IdeasTableProps from '@Views/Ideas/IdeasView.types'
 
 import { Idea } from '@Domain/Idea'
 import IdeaStatusTypes from '@Domain/IdeaStatus'

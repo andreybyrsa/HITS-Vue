@@ -1,43 +1,41 @@
 <script lang="ts" setup>
-import { computed, watch } from 'vue'
+import { ref, toRefs, computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
-import {
-  NotificationModalProps,
-  NotificationModalEmits,
-} from '@Components/Modals/NotificationModal/NotificationModal.types'
+import NotificationModalProps from '@Components/Modals/NotificationModal/NotificationModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationStore = useNotificationsStore()
+const { newNotifications } = storeToRefs(notificationStore)
+
 const props = defineProps<NotificationModalProps>()
+const { id, message } = toRefs(props.notification)
 
-const emit = defineEmits<NotificationModalEmits>()
+const isUnreadedNotification = ref(
+  !!newNotifications.value.find((notification) => notification.id === id.value),
+)
 
-const NotificationClassName = computed(() => {
-  switch (props.type) {
-    case 'success':
-      return ['card text-success shadow']
-    case 'error':
-      return ['card text-danger shadow']
-    default:
-      return ['card text-primary shadow']
+onMounted(() => {
+  if (isUnreadedNotification.value && props.timeExpired) {
+    setTimeout(() => closeNotification(), props.timeExpired)
   }
 })
 
-watch(
-  () => props.isOpened,
-  () => {
-    if (props.isOpened && props.timeExpired) {
-      setTimeout(() => emit('close-modal'), props.timeExpired)
-    }
-  },
-)
+const NotificationClassName = computed(() => ['card text-primary shadow'])
+
+function closeNotification() {
+  notificationStore.readNotification(id.value)
+}
 </script>
 
 <template>
   <Teleport to="#notifications">
     <Transition name="notification-modal">
       <div
-        v-if="isOpened"
+        v-if="isUnreadedNotification"
         :class="NotificationClassName"
       >
         <div class="card-header">
@@ -45,12 +43,12 @@ watch(
 
           <Button
             class-name="btn-close"
-            @click="emit('close-modal')"
+            @click="closeNotification"
           ></Button>
         </div>
 
         <div class="card-body">
-          <slot></slot>
+          {{ message }}
         </div>
       </div>
     </Transition>

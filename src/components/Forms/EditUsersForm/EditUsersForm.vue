@@ -72,8 +72,8 @@ const searchedUsers = computed(() => {
   })
 })
 
-function handleOpenModal(email: string) {
-  const selectedUser = currentUsers.value.find((user) => user.email === email)
+function handleOpenModal(id: string) {
+  const selectedUser = currentUsers.value.find((user) => user.id === id)
 
   if (selectedUser) {
     const { email, firstName, lastName, roles } = selectedUser
@@ -91,28 +91,6 @@ function handleOpenModal(email: string) {
 
 function handleCloseModal() {
   isOpenUserModal.value = false
-}
-
-function handleSaveUser(newUser: UpdateUserData, success: string) {
-  isOpenUserModal.value = false
-
-  if (newUser) {
-    const { email, newEmail, newFirstName, newLastName, newRoles } = newUser
-    const newUserData: User = {
-      email: newEmail,
-      firstName: newFirstName,
-      lastName: newLastName,
-      roles: newRoles,
-    }
-
-    currentUsers.value.forEach((user, index) => {
-      if (email === user.email) {
-        currentUsers.value.splice(index, 1, newUserData)
-      }
-    })
-
-    handleOpenNotification('success', success)
-  }
 }
 </script>
 
@@ -154,7 +132,7 @@ function handleSaveUser(newUser: UpdateUserData, success: string) {
     <EditUserModal
       :is-opened="isOpenUserModal"
       :user="editingUser"
-      @save-user="handleSaveUser"
+      v-model="currentUsers"
       @close-modal="handleCloseModal"
     />
   </form>

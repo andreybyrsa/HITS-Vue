@@ -7,8 +7,8 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
-import SearchAndFilters from '@Views/IdeasView/SearchAndFilters.vue'
-import IdeasTable from '@Views/IdeasView/IdeasTable.vue'
+import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
+import IdeasTable from '@Views/Ideas/IdeasTable.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 

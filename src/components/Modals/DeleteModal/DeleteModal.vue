@@ -38,7 +38,8 @@ async function handleDelete() {
       <Button
         @click="handleDelete"
         class-name="btn-danger w-100"
-        >Удалить
+      >
+        Удалить
       </Button>
     </div>
   </ModalLayout>

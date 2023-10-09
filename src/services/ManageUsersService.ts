@@ -34,7 +34,7 @@ const getUsersEmails = async (token: string): Promise<string[] | Error> => {
 const updateUserInfo = async (
   newUserData: UpdateUserData,
   token: string,
-): Promise<Success | Error> => {
+): Promise<User | Error> => {
   return await axios
     .put(`${MANAGE_USERS_URL}/change/info`, newUserData, {
       headers: { Authorization: `Bearer ${token}` },
