@@ -7,14 +7,11 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import UsersGroupModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import UsersGroupsList from '@Components/Forms/UsersGroupsForm/UsersGroupsList.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import UsersGroup from '@Domain/UsersGroup'
-
-import useNotification from '@Hooks/useNotification'
 
 import UsersGroupsService from '@Services/UsersGroupsService'
 
@@ -32,13 +29,6 @@ const isOpenedDeletingGroupModal = ref(false)
 
 const searchedValue = ref('')
 
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
-
 onMounted(async () => {
   const currentUser = user.value
 
@@ -47,7 +37,7 @@ onMounted(async () => {
     const responseGroups = await UsersGroupsService.getUsersGroups(token)
 
     if (responseGroups instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка получения групп')
+      return // notification
     }
 
     usersGroups.value = responseGroups
@@ -94,7 +84,7 @@ const handleDeleteGroup = async () => {
     )
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка удаления группы')
+      return // notification
     }
 
     usersGroups.value = usersGroups.value?.filter(
@@ -145,15 +135,6 @@ const handleDeleteGroup = async () => {
       @delete="handleDeleteGroup"
       @close-modal="closeDeletingGroupModal"
     />
-
-    <NotificationModal
-      :is-opened="isOpenedNotification"
-      :type="notificationOptions.type"
-      :time-expired="5000"
-      @close-modal="handleCloseNotification"
-    >
-      {{ notificationOptions.message }}
-    </NotificationModal>
   </FormLayout>
 </template>
 

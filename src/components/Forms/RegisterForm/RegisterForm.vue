@@ -8,18 +8,15 @@ import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import registerInputs from '@Components/Forms/RegisterForm/RegisterFormInputs'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { RegisterUser } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
-import useNotification from '@Hooks/useNotification'
+import InvitationService from '@Services/InvitationService'
 
 import useUserStore from '@Store/user/userStore'
-
-import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
 
@@ -28,16 +25,12 @@ const { registerError } = storeToRefs(userStore)
 
 const route = useRoute()
 
-const { isOpenedNotification, handleOpenNotification, handleCloseNotification } =
-  useNotification()
-
 onMounted(async () => {
   const { slug } = route.params
   const response = await InvitationService.getInvitationInfo(slug)
 
   if (response instanceof Error) {
-    userStore.registerError = response.message
-    return handleOpenNotification()
+    return // notification
   }
 
   const { email, roles } = response
@@ -45,8 +38,7 @@ onMounted(async () => {
     setFieldValue('email', email)
     setFieldValue('roles', roles)
   } else {
-    userStore.registerError = 'Ошибка приглашения'
-    handleOpenNotification()
+    // notification
   }
 })
 
@@ -69,7 +61,7 @@ const handleRegister = handleSubmit(async (values) => {
   await userStore.registerUser(values)
 
   if (registerError?.value) {
-    handleOpenNotification()
+    // notification
   } else {
     await InvitationService.deleteInvitationInfo(slug)
   }
@@ -102,14 +94,5 @@ const handleRegister = handleSubmit(async (values) => {
     >
       Зарегистрироваться
     </Button>
-
-    <NotificationModal
-      type="error"
-      :is-opened="isOpenedNotification"
-      @close-modal="handleCloseNotification"
-      :time-expired="5000"
-    >
-      {{ registerError }}
-    </NotificationModal>
   </FormLayout>
 </template>

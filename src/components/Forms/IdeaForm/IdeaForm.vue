@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, Ref, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
@@ -18,12 +18,10 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import { Idea } from '@Domain/Idea'
 import UsersGroup from '@Domain/UsersGroup'
 
-import useNotification from '@Hooks/useNotification'
-
-import useUserStore from '@Store/user/userStore'
-
 import IdeasService from '@Services/IdeasService'
 import UsersGroupsService from '@Services/UsersGroupsService'
+
+import useUserStore from '@Store/user/userStore'
 
 const props = defineProps<IdeaForm>()
 
@@ -31,13 +29,6 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const router = useRouter()
-
-const {
-  isOpenedNotification,
-  notificationOptions,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 const experts = ref<Record<'experts', UsersGroup | undefined>>({
   experts: undefined,
@@ -130,7 +121,7 @@ const handlePostIdea = handleSubmit(async () => {
     )
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return // notification
     }
 
     router.push('/ideas')
@@ -150,7 +141,7 @@ const handleUpdateIdea = handleSubmit(async () => {
     )
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return // notification
     }
 
     router.push('/ideas')
@@ -185,13 +176,5 @@ const handleUpdateIdea = handleSubmit(async () => {
         @on-update="handleUpdateIdea"
       />
     </div>
-
-    <NotificationModal
-      :type="notificationOptions.type"
-      :is-opened="isOpenedNotification"
-      @close-modal="handleCloseNotification"
-    >
-      {{ notificationOptions.message }}
-    </NotificationModal>
   </FormLayout>
 </template>

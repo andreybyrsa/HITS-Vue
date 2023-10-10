@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { SkillType, Skill } from '@Domain/Skill'
 import { storeToRefs } from 'pinia'
-import SkillsService from '@Services/SkillService'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -14,11 +12,13 @@ import Radio from '@Components/Inputs/Radio/Radio.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
+import { SkillType, Skill } from '@Domain/Skill'
+
+import SkillsService from '@Services/SkillService'
+
 import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
-
-import useNotification from '@Hooks/useNotification'
 
 import AddSkillModal from './AddSkillModal.vue'
 
@@ -32,13 +32,6 @@ const isOpenUpdateSkillModal = ref(false)
 const searchValue = ref('')
 
 const currentSkillId = ref('')
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 const columns = [
   { key: 'name', label: 'Название' },
@@ -55,7 +48,7 @@ onMounted(async () => {
     const responseSkill = await SkillsService.getAllSkills(token)
 
     if (responseSkill instanceof Error) {
-      return handleOpenNotification('error', responseSkill.message)
+      return // notification
     }
     skills.value = responseSkill
   }
@@ -69,7 +62,7 @@ const handleDeleteSkill = async () => {
     const response = await SkillsService.deleteSkill(currentSkillId.value, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return // notification
     }
     skills.value = skills.value.filter((skill) => skill.id !== currentSkillId.value)
   }
@@ -83,7 +76,7 @@ const handleConfirmSkill = async (id: string) => {
     const response = await SkillsService.confirmSkill(id, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return // notification
     }
 
     const currentSkill = skills.value.find((skill) => skill.id === id)

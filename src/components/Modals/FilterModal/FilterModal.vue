@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import { storeToRefs } from 'pinia'
+
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
@@ -11,10 +11,7 @@ import {
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import useUserStore from '@Store/user/userStore'
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 const selectedFilters = ref<string[]>([])
 const props = defineProps<FilterModalProps>()
 const emit = defineEmits<FilterModalEmits>()

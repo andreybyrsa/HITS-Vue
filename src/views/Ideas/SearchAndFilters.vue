@@ -1,16 +1,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
 
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import FilterModal from '@Components/Modals/FilterModal/FilterModal.vue'
 import SearchAndFiltersProps from '@Views/Ideas/SearchAndFilters.types'
-
-import useUserStore from '@Store/user/userStore'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const props = defineProps<SearchAndFiltersProps>()
 
