@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
@@ -7,9 +7,6 @@ import Typography from '@Components/Typography/Typography.vue'
 import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
-import Command from '@Domain/Command'
-
 import CommandViewTable from './CommandViewTable.vue'
 import TeamService from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
@@ -28,15 +25,34 @@ onMounted(async () => {
   commandData.value = data
 })
 
+watch(
+  () => searchedValue.value,
+  (newVal) => {
+    if (newVal) {
+      selectedFilters.value.push(newVal)
+    }
+  },
+)
+
 function filterCommand(team: Team[]) {
-  if (selectedFilters.value.length) {
+  if (selectedFilters.value.length || searchedValue.value) {
     const dataFilter: Team[] = []
-    team?.forEach(
-      (elem) =>
-        selectedFilters.value?.every((filter) =>
-          Object.values(elem).includes(filter),
-        ) && dataFilter.push(elem),
-    )
+    team?.forEach((elem) => {
+      const filters = [...selectedFilters.value]
+      if (searchedValue.value) filters.push(searchedValue.value)
+      const matchesAllFilters = filters.every(
+        (filter) =>
+          Object.values(elem)
+            .map(String)
+            .some((value) => value.toLowerCase() === filter.toLowerCase()) ||
+          elem.skills
+            .map((competence) => competence.toLowerCase())
+            .includes(filter.toLowerCase()),
+      )
+      if (matchesAllFilters) {
+        dataFilter.push(elem)
+      }
+    })
     return dataFilter
   } else false
 }
@@ -51,12 +67,8 @@ const filters = [
     value: 'CLOSE_TEAM',
   },
   {
-    label: 'React',
-    value: 'React',
-  },
-  {
     label: 'Компетенции',
-    valueDrop: ['React', 'React Native'],
+    valueDrop: [],
   },
 ]
 </script>
@@ -65,10 +77,8 @@ const filters = [
     <template #leftSideBar>
       <LeftSideBar />
     </template>
-
     <template #content>
       <Typography class-name="fs-2 text-primary w-75">Список команд</Typography>
-
       <SearchAndFilters
         :filtersData="filters"
         v-model:searchedValue="searchedValue"

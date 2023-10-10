@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { useDateFormat, useToggle } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
-import Command from '@Domain/Command'
 import CommandViewTableProps from '@Views/CommandView/CommandViewTable.types'
 
 import { TableColumn } from '@Components/Table/Table.types'
@@ -84,47 +82,20 @@ function sortName(changes: Team[]) {
                 Редактировать
               </button>
             </li>
-            <!-- <li class="list-group-item list-group-item-action p-1">
-              <button class="w-100 text-start text-danger">Удалить</button>
-            </li>
-            <li class="list-group-item list-group-item-action p-1">
-              <button class="w-100 text-start text-success">Вступить</button>
-            </li> -->
           </ul>
         </DropDown>
       </div>
     </template>
-    <template #icon="{ item }: { item: Team }">
+    <template #type="{ item }: { item: Team }">
       <Icon
         v-if="!item.closed"
-        class-name="bi bi-circle-fill text-success bg-transparent fs-6"
+        class-name="bi bi-unlock-fill text-success bg-transparent fs-5"
       />
       <Icon
         v-else
-        class-name="bi bi-circle-fill text-danger bg-transparent fs-6"
+        class-name="bi bi-lock-fill text-danger bg-transparent fs-5"
       />
     </template>
-    <!-- <template #competencies="{ item }: { item: Team }">
-      <div class="bg-light">
-        <Button
-          type="button"
-          class-name=" btn-primary"
-          v-dropdown="'CommandViewTable'"
-          >Просмотреть
-        </Button>
-        <DropDown id="CommandViewTable">
-          <ul
-            v-for="(competencies, index) in item.skills"
-            :key="index"
-            class="list-group list-group-flush"
-          >
-            <li class="list-group-item p-1">
-              {{ competencies }}
-            </li>
-          </ul>
-        </DropDown>
-      </div>
-    </template> -->
   </Table>
 </template>
 

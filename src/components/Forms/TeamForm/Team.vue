@@ -13,8 +13,6 @@ import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 
-import ManageUsersService from '@Services/ManageUsersService'
-
 import useUserStore from '@Store/user/userStore'
 import SkillsService from '@Services/SkillService'
 
@@ -39,6 +37,10 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
     const response = await SkillsService.getAllSkillsUsers(token)
+
+    if (response instanceof Error) {
+      return
+    }
 
     users.value = response
 
@@ -158,7 +160,6 @@ function getMemberColor(member: User) {
     v-if="users"
     class="team w-100"
   >
-    {{ users }}
     <Combobox
       name="owner"
       label="Владелец команды*"

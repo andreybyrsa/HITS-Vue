@@ -6,7 +6,7 @@ import { User } from '@Domain/User'
 
 const SKILLS_URL = 'http://localhost:3000/api/v1/skill'
 
-const getAllSkillsUsers = async (token: string): Promise<User[]> => {
+const getAllSkillsUsers = async (token: string): Promise<User[] | Error> => {
   return await axios
     .get(`${SKILLS_URL}/users/all`, {
       headers: { Authorization: `Bearer ${token}` },
