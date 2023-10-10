@@ -5,11 +5,11 @@ import {
   GroupsListProps,
   GroupListEmits,
 } from '@Components/Forms/UsersGroupsForm/UsersGroupsForm.types'
+import Icon from '@Components/Icon/Icon.vue'
 
 import RolesTypes from '@Domain/Roles'
 
 import getRoles from '@Utils/getRoles'
-import Icon from '@Components/Icon/Icon.vue'
 
 defineProps<GroupsListProps>()
 const emit = defineEmits<GroupListEmits>()

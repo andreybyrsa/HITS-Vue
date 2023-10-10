@@ -24,7 +24,8 @@ const usersGroups = ref<UsersGroup[]>()
 const currentGroupId = ref('')
 const currentDeleteGroupId = ref('')
 
-const isOpenedUsersGroupModal = ref(false)
+const isOpenedCreatingGroupModal = ref(false)
+const isOpenedUpdatingGroupModal = ref(false)
 const isOpenedDeletingGroupModal = ref(false)
 
 const searchedValue = ref('')
@@ -54,15 +55,18 @@ const searchedUsersGroups = computed(() => {
 })
 
 function openCreatingGroupModal() {
-  currentGroupId.value = ''
-  isOpenedUsersGroupModal.value = true
+  isOpenedCreatingGroupModal.value = true
 }
+function closeCreatingGroupModal() {
+  isOpenedCreatingGroupModal.value = false
+}
+
 function openUpdatingGroupModal(groupId: string) {
   currentGroupId.value = groupId
-  isOpenedUsersGroupModal.value = true
+  isOpenedUpdatingGroupModal.value = true
 }
-function closeUsersGroupModal() {
-  isOpenedUsersGroupModal.value = false
+function closeUpdatingGroupModal() {
+  isOpenedUpdatingGroupModal.value = false
 }
 
 function openDeletingGroupModal(groupId: string) {
@@ -125,10 +129,15 @@ const handleDeleteGroup = async () => {
     />
 
     <UsersGroupModal
-      :isOpened="isOpenedUsersGroupModal"
+      :isOpened="isOpenedCreatingGroupModal"
+      v-model="usersGroups"
+      @close-modal="closeCreatingGroupModal"
+    />
+    <UsersGroupModal
+      :isOpened="isOpenedUpdatingGroupModal"
       :users-group-id="currentGroupId"
       v-model="usersGroups"
-      @close-modal="closeUsersGroupModal"
+      @close-modal="closeUpdatingGroupModal"
     />
     <DeleteModal
       :is-opened="isOpenedDeletingGroupModal"

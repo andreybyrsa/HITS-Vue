@@ -324,7 +324,7 @@ const removeAllFromFavorites = () => {
   </ModalLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .notification-window-modal {
   width: 50%;
   justify-self: end;

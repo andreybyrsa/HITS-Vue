@@ -24,4 +24,6 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
   </div>
 
   <LoadingPlaceholder height="small" />
+
+  <LoadingPlaceholder height="small" />
 </template>
