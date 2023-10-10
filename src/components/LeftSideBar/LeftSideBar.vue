@@ -10,14 +10,13 @@ import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import LeftSideBarPlaceholder from '@Components/LeftSideBar/LeftSideBarPlaceholder.vue'
+import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
 
 import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
 
 import getRoles from '@Utils/getRoles'
-
-import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -124,8 +123,8 @@ function handleCloseNotificationModal() {
         @click="handleOpenNotificationModal"
         prepend-icon-name="bi bi-bell"
       >
-        {{ isHovered ? 'Уведомления' : '' }}</Button
-      >
+        {{ isHovered ? 'Уведомления' : '' }}
+      </Button>
     </div>
 
     <RoleModal
@@ -136,7 +135,7 @@ function handleCloseNotificationModal() {
     <NotificationModalWindow
       :is-opened="isOpenedNotificationModal"
       @close-modal="handleCloseNotificationModal"
-    ></NotificationModalWindow>
+    />
   </div>
 
   <LeftSideBarPlaceholder v-else />

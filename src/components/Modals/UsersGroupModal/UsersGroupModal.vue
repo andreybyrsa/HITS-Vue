@@ -96,7 +96,7 @@ onUpdated(async () => {
     }
   } else {
     setValues({ name: '', users: [], roles: [] })
-    unselectedUsers.value = users.value
+    unselectedUsers.value = [...users.value]
     usersGroupModalMode.value = 'CREATE'
 
     isLoadingGroup.value = false
