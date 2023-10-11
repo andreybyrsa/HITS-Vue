@@ -34,7 +34,7 @@ const teamButtons: TeamButtonAction[] = [
   },
   {
     id: 3,
-    name: 'Расмотреть заявки',
+    name: 'Раcсмотреть заявки',
     buttonClass: 'bi bi-card-checklist btn-primary',
   },
   {

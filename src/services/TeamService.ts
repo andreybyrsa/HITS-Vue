@@ -73,13 +73,29 @@ const deleteTeam = async (id: string, token: string): Promise<Success | Error> =
     })
 }
 
-const inviteMember = async (
-  user: User,
+const invitePortalUsers = async (
+  users: User[],
   teamId: string,
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .post(`${TEAM_URL}/send-invite/${teamId}`, user, {
+    .post(`${TEAM_URL}/send-invite/${teamId}`, users, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
+      return new Error(error)
+    })
+}
+
+const inviteOutsideUsers = async (
+  emails: string[],
+  teamId: string,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .post(`${TEAM_URL}/send-invite-unregistered/${teamId}`, emails, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -109,7 +125,8 @@ const TeamService = {
   getTeams,
   getTeam,
   createTeam,
-  inviteMember,
+  invitePortalUsers,
+  inviteOutsideUsers,
   kickMember,
   updateTeam,
   deleteTeam,

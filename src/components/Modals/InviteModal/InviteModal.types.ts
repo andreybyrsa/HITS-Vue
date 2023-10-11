@@ -6,7 +6,12 @@ interface InviteModalProps {
 
 interface InviteModalEmits {
   (event: 'close-modal'): void
-  (event: 'invite', user: User): void
+  (event: 'inviteFromPortal', user: User[]): void
+  (event: 'inviteFromOutside', emails: string[]): void
 }
 
-export { InviteModalProps, InviteModalEmits }
+interface InviteFromOutsideForm {
+  emails: string[]
+}
+
+export { InviteModalProps, InviteModalEmits, InviteFromOutsideForm }

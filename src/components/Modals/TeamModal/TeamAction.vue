@@ -56,10 +56,27 @@ async function handleDeleteTeam() {
     router.push('/teams/list')
   }
 }
-async function handleInvitePerson(user: User) {
-  if (user.token) {
-    const { token } = user
-    const response = await TeamService.inviteMember(user, teamId.value, token)
+const handleInviteFromPortal = async (users: User[]) => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await TeamService.invitePortalUsers(users, teamId.value, token)
+    if (response instanceof Error) {
+      return
+    }
+  }
+  isOpenedInviteModal.value = false
+}
+
+const handleInviteFromOutside = async (emails: string[]) => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await TeamService.inviteOutsideUsers(
+      emails,
+      teamId.value,
+      token,
+    )
     if (response instanceof Error) {
       return
     }
@@ -68,24 +85,26 @@ async function handleInvitePerson(user: User) {
 }
 
 function checkButton(button: TeamButtonAction) {
-  if (user.value) {
+  const currentUser = user.value
+  const currentTeam = props.team
+  if (currentUser && currentTeam) {
     return (
       ((button.name == 'Редактировать' || button.name == 'Удалить команду') &&
-        user.value?.email == props.team?.owner.email) ||
+        currentUser.email == currentTeam.owner.email) ||
       (button.name == 'Пригласить в команду' &&
-        (user.value?.email == props.team?.owner.email ||
-          user.value?.email == props.team?.leader.email)) ||
+        (currentUser.email == currentTeam.owner.email ||
+          currentUser.email == currentTeam.leader.email)) ||
       (button.name == 'Подать заявку на вступление' &&
-        !props.team?.members.find((member) => member.email == user.value?.email) &&
-        user.value?.email != props.team?.owner.email &&
-        user.value?.email != props.team?.leader.email &&
-        !props.team?.isClosed) ||
+        !currentTeam.members.find((member) => member.email == currentUser.email) &&
+        currentUser.email != currentTeam.owner.email &&
+        currentUser.email != currentTeam.leader.email &&
+        !currentTeam.isClosed) ||
       (button.name == 'Подать заявку на выход' &&
-        props.team?.owner.email != user.value?.email &&
-        props.team?.members.find((member) => member.email == user.value?.email)) ||
-      (button.name == 'Расмотреть заявки' &&
-        (user.value.email == props.team?.owner.email ||
-          user.value.email == props.team?.leader.email))
+        currentTeam.owner.email != currentUser.email &&
+        currentTeam.members.find((member) => member.email == currentUser.email)) ||
+      (button.name == 'Раcсмотреть заявки' &&
+        (currentUser.email == currentTeam.owner.email ||
+          currentUser.email == currentTeam.leader.email))
     )
   }
 }
@@ -97,7 +116,7 @@ function handleClick(button: TeamButtonAction, team: Team) {
     ? handleOpenInviteModal(team.id)
     : button.name == 'Редактировать'
     ? router.push(`/teams/edit/${team.id}`)
-    : button.name == 'Рассмотреть заявки'
+    : button.name == 'Раcсмотреть заявки'
     ? router.push(`/teams/requests/${team.id}`)
     : button.name == 'Подать заявку на вступление'
 }
@@ -136,7 +155,8 @@ function handleClick(button: TeamButtonAction, team: Team) {
       v-if="user"
       :is-opened="isOpenedInviteModal"
       @close-modal="handleCloseInviteModal"
-      @invite="handleInvitePerson"
+      @invite-from-portal="handleInviteFromPortal"
+      @invite-from-outside="handleInviteFromOutside"
     />
   </div>
 </template>
