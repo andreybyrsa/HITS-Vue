@@ -9,11 +9,8 @@ import newPasswordModalInputs from '@Components/Modals/NewPasswordModal/NewPassw
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import { UpdateUserPassword } from '@Domain/ManageUsers'
-
-import useNotification from '@Hooks/useNotification'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
@@ -22,13 +19,6 @@ import Validation from '@Utils/Validation'
 const props = defineProps<NewPasswordModalProps>()
 
 const router = useRouter()
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 const { setValues, handleSubmit } = useForm<UpdateUserPassword>({
   validationSchema: {
@@ -51,7 +41,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
   const response = await ManageUsersService.updateUserPassword(values)
 
   if (response instanceof Error) {
-    return handleOpenNotification('error', 'Ошибка изменения пароля')
+    return // notification
   }
 
   router.push('/login')
@@ -85,15 +75,6 @@ const handleUpdatePassword = handleSubmit(async (values) => {
       >
         Изменить пароль
       </Button>
-
-      <NotificationModal
-        :type="notificationOptions.type"
-        :is-opened="isOpenedNotification"
-        @close-modal="handleCloseNotification"
-        :time-expired="5000"
-      >
-        {{ notificationOptions.message }}
-      </NotificationModal>
     </div>
   </ModalLayout>
 </template>

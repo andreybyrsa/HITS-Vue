@@ -1,11 +1,8 @@
+import Notification from '@Domain/Notification'
+
 interface NotificationModalProps {
-  isOpened: boolean
-  type?: 'success' | 'error'
+  notification: Notification
   timeExpired?: number
 }
 
-interface NotificationModalEmits {
-  (event: 'close-modal'): void
-}
-
-export { NotificationModalProps, NotificationModalEmits }
+export default NotificationModalProps

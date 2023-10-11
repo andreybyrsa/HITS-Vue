@@ -7,7 +7,6 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import FormControllers from '@Components/Forms/AddUsersForm/FormControllers.vue'
 import FormInputs from '@Components/Forms/AddUsersForm/FormInputs.vue'
 
@@ -15,8 +14,6 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { InviteUsersForm } from '@Domain/Invitation'
 import RolesTypes from '@Domain/Roles'
-
-import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -31,13 +28,6 @@ const { user } = storeToRefs(userStore)
 
 const currentRoles = getRoles()
 const fileInputRef = ref<VueElement | null>(null)
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 const { errors, resetForm, submitCount, handleSubmit } = useForm<InviteUsersForm>({
   validationSchema: {
@@ -62,10 +52,10 @@ const handleInvite = handleSubmit(async (values) => {
     const response = await InvitationService.inviteUsers(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка приглашения групп')
+      return // notification
     }
 
-    handleOpenNotification('success', 'Успешное приглашение пользователей')
+    // notification
     resetForm()
   }
 })
@@ -114,15 +104,6 @@ const handleInvite = handleSubmit(async (values) => {
     >
       Добавить
     </Button>
-
-    <NotificationModal
-      :type="notificationOptions.type"
-      :is-opened="isOpenedNotification"
-      @close-modal="handleCloseNotification"
-      :time-expired="5000"
-    >
-      {{ notificationOptions.message }}
-    </NotificationModal>
   </FormLayout>
 </template>
 

@@ -7,8 +7,8 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
-import SearchAndFilters from '@Views/IdeasView/SearchAndFilters.vue'
-import IdeasTable from '@Views/IdeasView/IdeasTable.vue'
+import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
+import IdeasTable from '@Views/Ideas/IdeasTable.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -80,6 +80,21 @@ function filterIdeas(ideasData: Idea[]) {
     return dataFilter
   } else false
 }
+
+const filters = [
+  {
+    label: 'Мои идеи',
+    value: user.value?.email,
+  },
+  {
+    label: 'На согласованнии',
+    value: 'ON_APPROVAL',
+  },
+  {
+    label: 'На утверждении',
+    value: 'ON_CONFIRMATION',
+  },
+]
 </script>
 
 <template>
@@ -94,6 +109,7 @@ function filterIdeas(ideasData: Idea[]) {
       <Typography class-name="fs-2 text-primary w-75">Список идей</Typography>
 
       <SearchAndFilters
+        :filtersData="filters"
         v-model:searchedValue="searchedValue"
         v-model:selectedFilters="selectedFilters"
       />

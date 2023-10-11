@@ -14,34 +14,27 @@ import {
 import editUserInputs from '@Components/Modals/EditUserModal/EditUserInputs'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
-
-import useNotification from '@Hooks/useNotification'
-
-import useUserStore from '@Store/user/userStore'
+import { User } from '@Domain/User'
 
 import ManageUsersService from '@Services/ManageUsersService'
+
+import useUserStore from '@Store/user/userStore'
 
 import getRoles from '@Utils/getRoles'
 import Validation from '@Utils/Validation'
 
+const users = defineModel<User[]>({
+  required: true,
+})
 const props = defineProps<EditUserModalProps>()
-
 const emit = defineEmits<EditUserModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 const availableRoles = getRoles()
 
@@ -74,10 +67,15 @@ const handleEditUser = handleSubmit(async (values) => {
     const response = await ManageUsersService.updateUserInfo(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка изменения пользователя')
+      return // notification
     }
 
-    emit('save-user', values, 'Успешное изменения пользователя')
+    const currentUserIndex = users.value.findIndex((user) => user.id === response.id)
+    if (currentUserIndex !== -1) {
+      users.value.splice(currentUserIndex, 1, response)
+    }
+
+    // notification
     emit('close-modal')
   }
 })
@@ -154,15 +152,6 @@ const handleEditUser = handleSubmit(async (values) => {
           Сохранить изменения
         </Button>
       </template>
-
-      <NotificationModal
-        :type="notificationOptions.type"
-        :is-opened="isOpenedNotification"
-        @close-modal="handleCloseNotification"
-        :time-expired="5000"
-      >
-        {{ notificationOptions.message }}
-      </NotificationModal>
     </div>
   </ModalLayout>
 </template>

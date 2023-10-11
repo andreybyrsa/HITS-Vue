@@ -262,8 +262,6 @@ const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
 
-const selectedOption = ref()
-
 userStore.checkLastActivity()
 
 const { values, handleSubmit } = useForm({
@@ -272,7 +270,7 @@ const { values, handleSubmit } = useForm({
   },
   initialValues: {
     combobox: [],
-    component: '',
+    component: undefined,
   },
 })
 

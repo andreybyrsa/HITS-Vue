@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia'
 
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import SearchUsers from '@Components/Forms/EditUsersForm/SearchUsers.vue'
 import UsersList from '@Components/Forms/EditUsersForm/UsersList.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
@@ -12,8 +11,6 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
 import { User } from '@Domain/User'
 import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
-
-import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -31,13 +28,6 @@ const editingUser = ref<UpdateUserData>()
 const searchedValue = ref('')
 const filteredRoles = ref<RolesTypes[]>([])
 
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
-
 onMounted(async () => {
   const currentUser = user.value
 
@@ -46,7 +36,7 @@ onMounted(async () => {
     const response = await ManageUsersService.getUsers(token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return // notification
     }
 
     currentUsers.value = response
@@ -72,8 +62,8 @@ const searchedUsers = computed(() => {
   })
 })
 
-function handleOpenModal(email: string) {
-  const selectedUser = currentUsers.value.find((user) => user.email === email)
+function handleOpenModal(id: string) {
+  const selectedUser = currentUsers.value.find((user) => user.id === id)
 
   if (selectedUser) {
     const { email, firstName, lastName, roles } = selectedUser
@@ -91,28 +81,6 @@ function handleOpenModal(email: string) {
 
 function handleCloseModal() {
   isOpenUserModal.value = false
-}
-
-function handleSaveUser(newUser: UpdateUserData, success: string) {
-  isOpenUserModal.value = false
-
-  if (newUser) {
-    const { email, newEmail, newFirstName, newLastName, newRoles } = newUser
-    const newUserData: User = {
-      email: newEmail,
-      firstName: newFirstName,
-      lastName: newLastName,
-      roles: newRoles,
-    }
-
-    currentUsers.value.forEach((user, index) => {
-      if (email === user.email) {
-        currentUsers.value.splice(index, 1, newUserData)
-      }
-    })
-
-    handleOpenNotification('success', success)
-  }
 }
 </script>
 
@@ -140,21 +108,12 @@ function handleSaveUser(newUser: UpdateUserData, success: string) {
         :searched-users="searchedUsers"
         @open-edit-modal="handleOpenModal"
       />
-
-      <NotificationModal
-        :type="notificationOptions.type"
-        :is-opened="isOpenedNotification"
-        @close-modal="handleCloseNotification"
-        :time-expired="5000"
-      >
-        {{ notificationOptions.message }}
-      </NotificationModal>
     </div>
 
     <EditUserModal
       :is-opened="isOpenUserModal"
       :user="editingUser"
-      @save-user="handleSaveUser"
+      v-model="currentUsers"
       @close-modal="handleCloseModal"
     />
   </form>

@@ -52,8 +52,8 @@ function checkIsActiveRoute(to: string) {
         v-if="label"
         class-name="ms-2"
       >
-        {{ label }}</Typography
-      >
+        {{ label }}
+      </Typography>
     </router-link>
 
     <button

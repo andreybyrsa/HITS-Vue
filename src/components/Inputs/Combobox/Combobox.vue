@@ -13,8 +13,6 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
-import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
-
 defineModel<OptionType | OptionType[]>({
   required: false,
 })
@@ -24,7 +22,7 @@ const options = ref(props.options) as Ref<OptionType[]>
 
 const searchedValue = ref('')
 
-const choicesRef = ref<VueElement | null>(null)
+const comboboxRef = ref<VueElement | null>(null)
 const isOpenedChoices = ref(false)
 
 const {
@@ -151,21 +149,17 @@ async function handleAddNewOption() {
   emit('addNewOption', searchedValue.value)
 }
 
-onClickOutside(choicesRef, (event) => {
-  const elementeClassName = (event as PointerEvent & HTMLTargetEvent).target
-    .className
-  if (
-    !elementeClassName.includes('combobox__search') &&
-    !elementeClassName.includes('combobox__icon')
-  ) {
-    isOpenedChoices.value = false
-    searchedValue.value = ''
-  }
+onClickOutside(comboboxRef, () => {
+  isOpenedChoices.value = false
+  searchedValue.value = ''
 })
 </script>
 
 <template>
-  <div class="w-100">
+  <div
+    class="w-100"
+    ref="comboboxRef"
+  >
     <label
       v-if="props.label"
       class="form-label mb-2 text-primary"
@@ -190,13 +184,12 @@ onClickOutside(choicesRef, (event) => {
       />
       <Icon
         v-if="!searchedOptions.length && isOpenedChoices"
-        class-name="combobox__icon bi bi-plus"
+        class-name="combobox__icon bi bi-plus-lg"
         @click="handleAddNewOption"
       />
 
       <div
         v-if="isOpenedChoices"
-        ref="choicesRef"
         class="combobox__choices list-group w-100"
       >
         <div
