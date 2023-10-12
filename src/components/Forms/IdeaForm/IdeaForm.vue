@@ -124,7 +124,7 @@ const handlePostIdea = handleSubmit(async () => {
       return // notification
     }
 
-    router.push('/ideas')
+    router.push({ name: 'ideas-list' })
   }
 })
 
@@ -144,7 +144,7 @@ const handleUpdateIdea = handleSubmit(async () => {
       return // notification
     }
 
-    router.push('/ideas')
+    router.push({ name: 'ideas-list' })
   }
 })
 </script>

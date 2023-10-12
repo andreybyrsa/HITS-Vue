@@ -68,12 +68,12 @@ const handleDeleteSkill = async () => {
   }
 }
 
-const handleConfirmSkill = async (id: string) => {
+const handleConfirmSkill = async (skill: Skill, id: string) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.confirmSkill(id, token)
+    const response = await SkillsService.confirmSkill(skill, id, token)
 
     if (response instanceof Error) {
       return // notification
@@ -258,7 +258,7 @@ function handleCloseUpdateSkillModal() {
               <li
                 v-if="item.confirmed == false"
                 class="list-group-item list-group-item-action p-1"
-                @click="handleConfirmSkill(item.id)"
+                @click="handleConfirmSkill(item, item.id)"
               >
                 <Button prepend-icon-name="bi bi-check-lg text-success fs-4"
                   >Одобрить</Button

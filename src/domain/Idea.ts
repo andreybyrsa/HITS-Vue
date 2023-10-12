@@ -14,7 +14,7 @@ interface Idea {
   status: StatusTypes
   initiator: string
   projectOffice: UsersGroup[]
-  experts: UsersGroup
+  experts: UsersGroup[]
   customer: string
   contactPerson: string
 

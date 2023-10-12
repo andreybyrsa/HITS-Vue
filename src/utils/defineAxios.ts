@@ -7,6 +7,7 @@ import Success from '@Domain/ResponseMessage'
 
 interface AxiosMockConfig<MocksType> {
   params: Partial<Record<keyof MocksType, MocksType[keyof MocksType]>>
+  data?: Partial<Record<keyof MocksType, MocksType[keyof MocksType]>>
 }
 
 function getMockConfigParams<MocksType>(mockConfig: AxiosMockConfig<MocksType>) {
@@ -26,12 +27,12 @@ function createMockResponse<MockResponseType>(
   } as AxiosResponse<MockResponseType>
 }
 
-function createAxios<MocksType>(name: string, mocks: MocksType[]) {
+function defineAxios<MocksType>(mocks: MocksType[]) {
   const mockArray = ref(mocks) as Ref<MocksType[]>
 
   async function get(
     endPoint: string,
-    config: AxiosRequestConfig<MocksType>,
+    config?: AxiosRequestConfig<MocksType>,
   ): Promise<AxiosResponse<MocksType[]>>
   async function get(
     endPoint: string,
@@ -40,7 +41,7 @@ function createAxios<MocksType>(name: string, mocks: MocksType[]) {
   ): Promise<AxiosResponse<MocksType>>
   async function get(
     endPoint: string,
-    config: AxiosRequestConfig<MocksType>,
+    config?: AxiosRequestConfig<MocksType>,
     mockConfig?: AxiosMockConfig<MocksType>,
   ): Promise<AxiosResponse<MocksType | MocksType[]>> {
     if (MODE === 'PRODUCTION') {
@@ -71,7 +72,7 @@ function createAxios<MocksType>(name: string, mocks: MocksType[]) {
   async function post(
     endPoint: string,
     mockData: MocksType,
-    config: AxiosRequestConfig<MocksType>,
+    config?: AxiosRequestConfig<MocksType>,
   ): Promise<AxiosResponse<MocksType>> {
     if (MODE === 'PRODUCTION') {
       return axios.post(`${API_URL}${endPoint}`, mockData, config)
@@ -120,6 +121,38 @@ function createAxios<MocksType>(name: string, mocks: MocksType[]) {
     })
   }
 
+  async function putNoRequestBody(
+    endPoint: string,
+    config: AxiosRequestConfig<MocksType>,
+    mockConfig: AxiosMockConfig<MocksType>,
+  ): Promise<AxiosResponse<Success>> {
+    if (MODE === 'PRODUCTION') {
+      return axios.put(`${API_URL}${endPoint}`, null, config)
+    }
+
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const { key, value } = getMockConfigParams(mockConfig)
+        const { data } = mockConfig
+        const currentMockDataIndex = mockArray.value.findIndex(
+          (mock) => mock[key] === value,
+        )
+
+        if (currentMockDataIndex !== -1 && data) {
+          const currentMockData = mockArray.value[currentMockDataIndex]
+          mockArray.value[currentMockDataIndex] = {
+            ...currentMockData,
+            ...data,
+          }
+
+          resolve(createMockResponse({ success: 'Успешное обновление данных' }))
+        } else {
+          reject(createMockResponse('Искомые данные не найдены'))
+        }
+      }, 500)
+    })
+  }
+
   async function deleteData(
     endPoint: string,
     config: AxiosRequestConfig<MocksType>,
@@ -146,7 +179,7 @@ function createAxios<MocksType>(name: string, mocks: MocksType[]) {
     })
   }
 
-  return { get, post, put, delete: deleteData }
+  return { get, post, put, putNoRequestBody, delete: deleteData }
 }
 
-export default createAxios
+export default defineAxios
