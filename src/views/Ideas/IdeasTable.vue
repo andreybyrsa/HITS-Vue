@@ -207,7 +207,7 @@ function checkMark(row: Idea) {
           >
             <button
               class="w-100 text-start"
-              @click="router.push(`edit-idea/${item.id}`)"
+              @click="router.push(`/ideas/edit/${item.id}`)"
             >
               Редактировать
             </button>
