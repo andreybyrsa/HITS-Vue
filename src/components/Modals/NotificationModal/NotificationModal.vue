@@ -3,7 +3,7 @@ import { ref, toRefs, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
-import { NotificationModalProps } from '@Components/Modals/NotificationModal/NotificationModal.types'
+import NotificationModalProps from '@Components/Modals/NotificationModal/NotificationModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -12,7 +12,7 @@ const notificationStore = useNotificationsStore()
 const { newNotifications } = storeToRefs(notificationStore)
 
 const props = defineProps<NotificationModalProps>()
-const { id, type, message } = toRefs(props.notification)
+const { id, message } = toRefs(props.notification)
 
 const isUnreadedNotification = ref(
   !!newNotifications.value.find((notification) => notification.id === id.value),
@@ -24,16 +24,7 @@ onMounted(() => {
   }
 })
 
-const NotificationClassName = computed(() => {
-  switch (type?.value) {
-    case 'success':
-      return ['card text-success shadow']
-    case 'error':
-      return ['card text-danger shadow']
-    default:
-      return ['card text-primary shadow']
-  }
-})
+const NotificationClassName = computed(() => ['card text-primary shadow'])
 
 function closeNotification() {
   notificationStore.readNotification(id.value)

@@ -51,7 +51,7 @@ function getAccessToConfirmation() {
     if (status === 'ON_CONFIRMATION') {
       if (role === 'ADMIN') return true
 
-      return role === 'EXPERT' && !props.idea.confirmedBy?.includes(email)
+      return role === 'EXPERT'
     }
   }
   return false

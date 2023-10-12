@@ -6,27 +6,17 @@ import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { NewEmailForm } from '@Domain/Invitation'
 
-import useNotification from '@Hooks/useNotification'
-
 import useUserStore from '@Store/user/userStore'
 
 import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -48,13 +38,10 @@ const sendChangingUrl = handleSubmit(async (values) => {
     const response = await InvitationService.sendUrlToChangeEmail(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка изменения почты')
+      return // notification
     }
 
-    return handleOpenNotification(
-      'success',
-      'Ссылка на изменение почты находится в новой почте',
-    )
+    return // notification
   }
 })
 </script>
@@ -84,14 +71,6 @@ const sendChangingUrl = handleSubmit(async (values) => {
         >
           Отправить
         </Button>
-
-        <NotificationModal
-          :type="notificationOptions.type"
-          :is-opened="isOpenedNotification"
-          @close-modal="handleCloseNotification"
-        >
-          {{ notificationOptions.message }}
-        </NotificationModal>
       </FormLayout>
     </template>
   </PageLayout>

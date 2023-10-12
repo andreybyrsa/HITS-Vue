@@ -9,11 +9,8 @@ import {
   FormInputsProps,
   FormInputsEmits,
 } from '@Components/Forms/AddUsersForm/AddUsersForm.types'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
-
-import useNotification from '@Hooks/useNotification'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
@@ -34,13 +31,6 @@ const DBUsersEmails = ref<string[]>([])
 const inputsWrapperRef = ref<VueElement | null>(null)
 const { focused } = useFocusWithin(inputsWrapperRef)
 
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
-
 onMounted(async () => {
   const currentUser = user.value
 
@@ -49,7 +39,7 @@ onMounted(async () => {
     const response = await ManageUsersService.getUsersEmails(token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return // notification
     }
 
     DBUsersEmails.value = response
@@ -73,14 +63,11 @@ const handleFileLoad = async (event: HTMLTargetEvent) => {
           formattedEmails.forEach((email) => emit('push-email', email))
         }
 
-        handleOpenNotification(
-          'success',
-          `Загружено ${formattedEmails.length} из ${emails.length}`,
-        )
+        // notification
       })
       .catch(({ response }) => {
         const error = response?.data?.error ?? 'Ошибка загрузки файла'
-        handleOpenNotification('error', error)
+        // notification
       })
   }
 }
@@ -144,15 +131,6 @@ function getError(email: string, index: number) {
     @change="(event) => handleFileLoad(event as HTMLTargetEvent)"
     hidden
   />
-
-  <NotificationModal
-    :type="notificationOptions.type"
-    :is-opened="isOpenedNotification"
-    :time-expired="5000"
-    @close-modal="handleCloseNotification"
-  >
-    {{ notificationOptions.message }}
-  </NotificationModal>
 </template>
 
 <style lang="scss" scoped>

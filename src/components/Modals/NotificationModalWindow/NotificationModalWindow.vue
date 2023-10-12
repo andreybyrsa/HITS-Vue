@@ -12,7 +12,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import Notification from '@Domain/Notification'
 import Button from '@Components/Button/Button.vue'
 
-const props = defineProps<NotificatonModalWindowProps>()
+defineProps<NotificatonModalWindowProps>()
 
 const emit = defineEmits<NotificatonModalWindowEmits>()
 
@@ -331,7 +331,7 @@ const removeAllFromFavorites = () => {
   </ModalLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .notification-window-modal {
   width: 50%;
   justify-self: end;

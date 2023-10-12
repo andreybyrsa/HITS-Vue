@@ -10,12 +10,9 @@ import { IdeaCommentsProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
 import CommentVue from '@Components/Comment/Comment.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPlaceholder.vue'
 
 import Comment from '@Domain/Comment'
-
-import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 import useCommentsStore from '@Store/comments/commentsStore'
@@ -28,13 +25,6 @@ const { user } = storeToRefs(userStore)
 const commentsStore = useCommentsStore()
 const { comments, commentsError } = storeToRefs(commentsStore)
 const commentsIsLoading = ref(true)
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 onMounted(async () => {
   const currentUser = user.value
@@ -52,7 +42,9 @@ onMounted(async () => {
   }
 })
 
-watch(commentsError, (error) => handleOpenNotification('error', error))
+watch(commentsError, (error) => {
+  // notification
+})
 
 const { handleSubmit, resetForm } = useForm<Comment>({
   validationSchema: {
@@ -161,15 +153,6 @@ const onIntersectionObserver = async (
       </Button>
     </form>
   </div>
-
-  <NotificationModal
-    :type="notificationOptions.type"
-    :is-opened="isOpenedNotification"
-    @close-modal="handleCloseNotification"
-    :time-expired="5000"
-  >
-    {{ commentsError }}
-  </NotificationModal>
 </template>
 
 <style lang="scss" scoped>

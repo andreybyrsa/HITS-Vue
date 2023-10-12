@@ -1,40 +1,19 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import { storeToRefs } from 'pinia'
 
+import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
+import DropDown from '@Components/DropDown/DropDown.vue'
 import {
   FilterModalProps,
   FilterModalEmits,
 } from '@Components/Modals/FilterModal/FilterModal.types'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
-
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import useUserStore from '@Store/user/userStore'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
-const filters = [
-  {
-    label: 'Мои идеи',
-    value: user.value?.email,
-  },
-  {
-    label: 'На согласованнии',
-    value: 'ON_APPROVAL',
-  },
-  {
-    label: ' На утверждении',
-    value: 'ON_CONFIRMATION',
-  },
-]
 const selectedFilters = ref<string[]>([])
-
 const props = defineProps<FilterModalProps>()
-
 const emit = defineEmits<FilterModalEmits>()
 
 watch(
@@ -44,11 +23,6 @@ watch(
   },
 )
 
-function handleSetFilters() {
-  emit('set-filters', selectedFilters.value)
-  emit('close-modal')
-}
-
 function handleAddFilters(filter: string) {
   const repeatFilter = selectedFilters.value.find((e) => e == filter)
   if (repeatFilter) {
@@ -56,8 +30,23 @@ function handleAddFilters(filter: string) {
     selectedFilters.value.splice(index, 1)
   } else selectedFilters.value.push(filter)
 }
-</script>
+const searchedCompetence = ref('')
 
+function filterCompetencies(competencies: string[]) {
+  if (searchedCompetence.value) {
+    return competencies.filter((competence) =>
+      competence.includes(searchedCompetence.value),
+    )
+  } else {
+    return competencies
+  }
+}
+
+function handleSetFilters() {
+  emit('set-filters', [...selectedFilters.value, searchedCompetence.value])
+  emit('close-modal')
+}
+</script>
 <template>
   <ModalLayout
     :is-opened="isOpened"
@@ -71,23 +60,50 @@ function handleAddFilters(filter: string) {
           @click="emit('close-modal')"
         ></Button>
       </div>
-
       <ul class="list-group">
         <div
-          v-for="(filter, index) in filters"
+          v-for="(filter, index) in props.filters"
           :key="index"
           class="list-group-item list-group-item-action"
-          @click="handleAddFilters(filter.value as string)"
         >
-          <Checkbox
-            name="checkbox"
-            :label="filter.label"
-            v-model="selectedFilters"
-            :value="filter.value"
-          />
+          <div
+            v-if="filter.label !== 'Компетенции'"
+            @click="handleAddFilters(filter.value as string)"
+          >
+            <Checkbox
+              name="checkbox"
+              :label="filter.label"
+              v-model="selectedFilters"
+              :value="filter.value"
+            />
+          </div>
+          <div v-else>
+            <Input
+              name="text"
+              type="text"
+              v-model="searchedCompetence"
+              placeholder="Поиск по компетенциям"
+            />
+            <DropDown
+              class-name="w-75"
+              id="FilterModal"
+            >
+              <div
+                v-for="(drop, index) in filterCompetencies(filter.valueDrop || [])"
+                class="list-group-item list-group-item-action"
+                :key="index"
+              >
+                <Checkbox
+                  name="checkbox"
+                  :label="drop"
+                  v-model="selectedFilters"
+                  :value="filter.value"
+                />
+              </div>
+            </DropDown>
+          </div>
         </div>
       </ul>
-
       <Button
         class-name="btn-primary w-100"
         @click="handleSetFilters"
@@ -101,7 +117,6 @@ function handleAddFilters(filter: string) {
 <style lang="scss">
 .filter-modal {
   width: 400px;
-
   @include flexible(
     stretch,
     flex-start,
@@ -110,14 +125,11 @@ function handleAddFilters(filter: string) {
     $justify-self: center,
     $gap: 12px
   );
-
   &__header {
     @include flexible(center, space-between);
   }
-
   transition: all $default-transition-settings;
 }
-
 .modal-layout-enter-from .filter-modal,
 .modal-layout-leave-to .filter-modal {
   transform: scale(0.9);
