@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 import {
   NotificatonModalWindowEmits,
@@ -64,21 +64,6 @@ const readedNotifications = ref<Notification[]>([])
 
 const favoriteNotifications = ref<Notification[]>([])
 
-const showAll = ref(true)
-const showFavorites = ref(false)
-
-const switchToAllTab = () => {
-  showAll.value = true
-  showFavorites.value = false
-  console.log(showFavorites)
-}
-
-const switchToFavoritesTab = () => {
-  showAll.value = false
-  showFavorites.value = true
-  console.log(showFavorites)
-}
-
 for (const notification of Notifications.value) {
   if (notification.readed === false) {
     newNotifications.value.push(notification)
@@ -87,12 +72,22 @@ for (const notification of Notifications.value) {
   }
 }
 
+const showAllTab = ref(true)
+
+const hasNewNotifications = computed(() => newNotifications.value.length > 0)
+
+const hasFavoriteNotifications = computed(
+  () => favoriteNotifications.value.length > 0,
+)
+const switchTabToShow = (tab: any) => {
+  showAllTab.value = tab === 'all'
+}
+
 const markAllAsRead = () => {
   newNotifications.value.forEach((notification) => {
     notification.readed = true
-    readedNotifications.value.push(notification)
+    readedNotifications.value.unshift(notification)
   })
-
   newNotifications.value = []
 }
 
@@ -101,22 +96,19 @@ const markAsRead = (notification: Notification) => {
   newNotifications.value = newNotifications.value.filter(
     (n) => n.id !== notification.id,
   )
-  readedNotifications.value.push(notification)
+  readedNotifications.value.unshift(notification)
 }
 
 const addToFavorites = (notification: Notification) => {
   notification.isFavorite = true
-
-  if (notification.readed === false) {
+  if (!notification.readed) {
     notification.readed = true
     readedNotifications.value.unshift(notification)
   }
-
   const index = newNotifications.value.findIndex((n) => n.id === notification.id)
   if (index !== -1) {
     newNotifications.value.splice(index, 1)
   }
-
   favoriteNotifications.value.push(notification)
 }
 
@@ -128,9 +120,9 @@ const removeFromFavorites = (notification: Notification) => {
 }
 
 const removeAllFromFavorites = () => {
-  for (const notification of favoriteNotifications.value) {
+  favoriteNotifications.value.forEach((notification) => {
     notification.isFavorite = false
-  }
+  })
   favoriteNotifications.value = []
 }
 </script>
@@ -146,166 +138,150 @@ const removeAllFromFavorites = () => {
         <Button
           class-name="btn-primary mb-3"
           prepend-icon-name="bi bi-backspace-fill"
-          @click="emit('close-modal')"
         >
           Назад
         </Button>
         <Typography class-name="fs-3 text-primary">Уведомления</Typography>
-        <div v-if="showAll === true">
-          <Button
-            class="notification-window-modal__all-check-btn btn-primary mb-3"
-            prepend-icon-name="bi bi-check-all fs-3"
-            @click="markAllAsRead()"
-          >
-            Прочитать все
-          </Button>
-        </div>
-        <div v-if="showFavorites === true">
-          <Button
-            class="notification-window-modal__all-check-btn btn-primary mb-3"
-            prepend-icon-name="bi bi-check-all fs-3"
-            @click="removeAllFromFavorites()"
-          >
-            Открепить все
-          </Button>
-        </div>
+        <Button
+          v-if="showAllTab && hasNewNotifications"
+          class="notification-window-modal__all-check-btn btn-primary mb-3"
+          prepend-icon-name="bi bi-check-all fs-3"
+          @click="markAllAsRead"
+        >
+          Прочитать все
+        </Button>
+        <Button
+          v-if="showAllTab && !hasNewNotifications"
+          class="notification-window-modal__all-check-btn btn-mute mb-3"
+          prepend-icon-name="bi bi-check-all fs-3"
+          @click="markAllAsRead"
+        >
+          Прочитать все
+        </Button>
+        <Button
+          v-if="!showAllTab && hasFavoriteNotifications"
+          class="notification-window-modal__all-check-btn btn-primary mb-3"
+          prepend-icon-name="bi bi-check-all fs-3"
+          @click="removeAllFromFavorites"
+        >
+          Открепить все
+        </Button>
+        <Button
+          v-if="!showAllTab && !hasFavoriteNotifications"
+          class="notification-window-modal__all-check-btn btn-mute mb-3"
+          prepend-icon-name="bi bi-check-all fs-3"
+          @click="removeAllFromFavorites"
+        >
+          Открепить все
+        </Button>
       </div>
-      <div v-if="showAll === true">
-        <div class="notification-window-modal__pages-headers">
-          <Button @click="switchToAllTab">
-            <Typography
-              class-name="fs-5 text-primary border-bottom border-primary border-3"
-              >Все</Typography
-            >
-          </Button>
-          <Button @click="switchToFavoritesTab">
-            <Typography class-name="fs-5 text-secondary px-2">Избранное</Typography>
-          </Button>
-        </div>
 
-        <div class="notification-window-modal__header">
-          <div v-if="newNotifications.length > 0">
-            <Typography class-name="fs-5 text-primary text-wrap"
-              >Не прочитано</Typography
-            >
-            <div
-              class="notification-window-modal__new-notification p-2 mb-2 bg-primary rounded-3"
-              style="--bs-bg-opacity: 0.55"
-              v-for="notification in newNotifications"
-              :key="notification.id"
-              :notification="notification"
-            >
-              <div class="notification-window-modal__title text-wrap row">
-                <div class-name="row">
-                  <Typography class-name="fs-6 text-white col">{{
-                    notification.time
-                  }}</Typography>
-                  <Typography class-name="fs-6 text-white px-3 col-1 ">{{
-                    notification.data
-                  }}</Typography>
-                  <Button
-                    class="notification-window-modal__favorite-btn text-white col float-end"
-                    prepend-icon-name="bi bi-check fa-2x"
-                    @click="markAsRead(notification)"
-                  ></Button>
-                  <Button
-                    class="notification-window-modal__check-btn text-white col float-end btn-xs"
-                    prepend-icon-name="bi bi-star"
-                    @click="addToFavorites(notification)"
-                  ></Button>
-                </div>
-                <Typography class-name="fs-6 text-white fw-bold col-2 ">{{
-                  notification.title
-                }}</Typography>
-              </div>
-              <Typography class-name="fs-6 text-white">{{
-                notification.message
-              }}</Typography>
-            </div>
-            <hr class="hr hr-blurry" />
-          </div>
-          <div class="notification-window-modal bg-white rounded-3 w-100">
-            <div class="notification-window-modal__header">
+      <div class="notification-window-modal__pages-headers">
+        <Button
+          class-name="border-0"
+          @click="switchTabToShow('all')"
+          :class="[showAllTab ? 'active' : '']"
+        >
+          <Typography
+            class-name="fs-5 "
+            :class="{
+              'text-primary border-bottom border-primary border-3': showAllTab,
+              'text-secondary': !showAllTab,
+            }"
+          >
+            Все
+          </Typography>
+        </Button>
+        <Button
+          class-name="border-0"
+          @click="switchTabToShow('favorites')"
+          :class="[!showAllTab ? 'active' : '']"
+        >
+          <Typography
+            class-name="fs-5 "
+            :class="{
+              'text-primary border-bottom border-primary border-3': !showAllTab,
+              'text-secondary': showAllTab,
+            }"
+          >
+            Избранное
+          </Typography>
+        </Button>
+      </div>
+
+      <div class="notification-window-modal__header">
+        <div v-if="showAllTab">
+          <div v-if="hasNewNotifications">
+            <div>
               <Typography class-name="fs-5 text-primary text-wrap"
-                >Прочитано</Typography
+                >Не прочитано</Typography
               >
               <div
-                class="notification-window-modal__notification p-2 mb-2 bg-white border border-primary rounded-3"
-                v-for="notification in readedNotifications"
+                class="notification-window-modal__new-notification p-2 mb-2 bg-primary rounded-3"
+                style="--bs-bg-opacity: 0.55"
+                v-for="notification in newNotifications"
                 :key="notification.id"
-                :notification="notification"
               >
                 <div class="notification-window-modal__title text-wrap row">
                   <div class-name="row">
-                    <Typography class-name="fs-6 text-black col">{{
+                    <Typography class-name="fs-6 text-white col">{{
                       notification.time
                     }}</Typography>
-                    <Typography class-name="fs-6 text-black px-3 col-1 ">{{
-                      notification.data
-                    }}</Typography>
+                    <Typography class-name="fs-6 text-white px-3 col-1 ">
+                      {{ notification.data }}
+                    </Typography>
                     <Button
-                      class="notification-window-modal__favorite-btn text-primary col float-end"
-                      v-if="!notification.isFavorite"
+                      class="notification-window-modal__favorite-btn text-white col float-end"
+                      prepend-icon-name="bi bi-check fa-2x"
+                      @click="markAsRead(notification)"
+                    ></Button>
+                    <Button
+                      class="notification-window-modal__check-btn text-white col float-end btn-xs"
                       prepend-icon-name="bi bi-star"
                       @click="addToFavorites(notification)"
                     ></Button>
-                    <Button
-                      class="notification-window-modal__favorite-btn text-primary col float-end"
-                      v-else
-                      prepend-icon-name="bi bi-star-fill"
-                      @click="removeFromFavorites(notification)"
-                    ></Button>
                   </div>
-                  <Typography class-name="fs-6 text-black fw-bold col-2 ">{{
-                    notification.title
-                  }}</Typography>
+                  <Typography class-name="fs-6 text-white fw-bold col-2">
+                    {{ notification.title }}
+                  </Typography>
                 </div>
-                <Typography class-name="fs-6 text-black">{{
+                <Typography class-name="fs-6 text-white">{{
                   notification.message
                 }}</Typography>
               </div>
+              <hr class="hr hr-blurry" />
             </div>
           </div>
-        </div>
-      </div>
-      <div v-if="showFavorites === true">
-        <div class="notification-window-modal__pages-headers">
-          <Button @click="switchToAllTab">
-            <Typography class-name="fs-5 text-secondary px-2">Все</Typography>
-          </Button>
-
-          <Button @click="switchToFavoritesTab">
-            <Typography
-              class-name="fs-5 text-primary border-bottom border-primary border-3"
-            >
-              Избранное
-            </Typography>
-          </Button>
-        </div>
-        <div v-if="favoriteNotifications.length > 0">
+          <Typography class-name="fs-5 text-primary text-wrap">Прочитано</Typography>
           <div
-            class="notification-window-modal__notification p-2 mb-2 bg-white border border-primary rounded-3"
-            v-for="notification in favoriteNotifications"
+            v-for="notification in readedNotifications"
             :key="notification.id"
-            :notification="notification"
+            class="notification-window-modal__notification p-2 mb-2 bg-white border border-primary rounded-3"
           >
             <div class="notification-window-modal__title text-wrap row">
               <div class-name="row">
-                <Typography class-name="fs-6 text-black col">{{
-                  notification.time
-                }}</Typography>
-                <Typography class-name="fs-6 text-black px-3 col-1 ">{{
-                  notification.data
-                }}</Typography>
+                <Typography class-name="fs-6 text-black col">
+                  {{ notification.time }}
+                </Typography>
+                <Typography class-name="fs-6 text-black px-3 col-1">
+                  {{ notification.data }}
+                </Typography>
                 <Button
-                  class="notification-window-modal__check-btn text-white col-1 float-end"
-                  prepend-icon-name="bi bi-star-fill text-primary"
+                  class="notification-window-modal__favorite-btn text-primary col float-end"
+                  v-if="!notification.isFavorite"
+                  prepend-icon-name="bi bi-star"
+                  @click="addToFavorites(notification)"
+                ></Button>
+                <Button
+                  class="notification-window-modal__favorite-btn text-primary col float-end"
+                  v-else
+                  prepend-icon-name="bi bi-star-fill"
                   @click="removeFromFavorites(notification)"
                 ></Button>
               </div>
-              <Typography class-name="fs-6 text-black fw-bold col-2 ">{{
-                notification.title
-              }}</Typography>
+              <Typography class-name="fs-6 text-black fw-bold col-2">
+                {{ notification.title }}
+              </Typography>
             </div>
             <Typography class-name="fs-6 text-black">{{
               notification.message
@@ -313,11 +289,42 @@ const removeAllFromFavorites = () => {
           </div>
         </div>
         <div v-else>
-          <Typography
-            class="notification-window-modal__empty-favorites p-5 text-secondary fs-4 text-wrap"
-            >Добавляйте в закладки важные уведомления — нажмите на знак
-            звёздочки</Typography
-          >
+          <div v-if="hasFavoriteNotifications">
+            <div
+              class="notification-window-modal__notification p-2 mb-2 bg-white border border-primary rounded-3"
+              v-for="notification in favoriteNotifications"
+              :key="notification.id"
+            >
+              <div class="notification-window-modal__title text-wrap row">
+                <div class-name="row">
+                  <Typography class-name="fs-6 text-black col">{{
+                    notification.time
+                  }}</Typography>
+                  <Typography class-name="fs-6 text-black px-3 col-1 ">
+                    {{ notification.data }}
+                  </Typography>
+                  <Button
+                    class="notification-window-modal__check-btn text-white col-1 float-end"
+                    prepend-icon-name="bi bi-star-fill text-primary"
+                    @click="removeFromFavorites(notification)"
+                  ></Button>
+                </div>
+                <Typography class-name="fs-6 text-black fw-bold col-2">
+                  {{ notification.title }}
+                </Typography>
+              </div>
+              <Typography class-name="fs-6 text-black">{{
+                notification.message
+              }}</Typography>
+            </div>
+          </div>
+          <div v-else>
+            <Typography
+              class="notification-window-modal__empty-favorites p-5 text-secondary fs-4 text-wrap"
+            >
+              Добавляйте в закладки важные уведомления — нажмите на знак звёздочки
+            </Typography>
+          </div>
         </div>
       </div>
     </div>
