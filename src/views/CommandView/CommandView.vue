@@ -21,8 +21,18 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 onMounted(async () => {
-  const data = await TeamService.getTeams(user.value?.token as string)
-  commandData.value = data
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await TeamService.getTeams(token)
+
+    if (response instanceof Error) {
+      return
+    }
+
+    commandData.value = response
+  }
 })
 
 watch(
