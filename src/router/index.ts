@@ -15,6 +15,7 @@ import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 import AdminView from '@Views/AdminView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
+import IdeaView from '@Views/Ideas/IdeaView.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
@@ -42,12 +43,20 @@ const routes: RouteRecordRaw[] = [
             name: 'ideas-list',
             meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
             component: IdeasView,
+            children: [
+              {
+                path: 'idea/:id',
+                meta: { roles: ['INITIATOR', 'ADMIN'] },
+                component: IdeaView,
+              },
+            ],
           },
           {
             path: 'create',
             meta: { roles: ['INITIATOR', 'ADMIN'] },
             component: NewIdeaView,
           },
+
           {
             path: 'edit/:id',
             meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },

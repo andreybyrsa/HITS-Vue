@@ -196,7 +196,7 @@ function checkMark(row: Idea) {
           <li class="list-group-item list-group-item-action p-1">
             <button
               class="w-100 text-start"
-              @click="router.push(`/ideas/idea/${item.id}`)"
+              @click="router.push(`/ideas/list/idea/${item.id}`)"
             >
               Просмотреть идею
             </button>

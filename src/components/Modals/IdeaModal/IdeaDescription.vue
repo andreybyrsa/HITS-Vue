@@ -17,7 +17,7 @@ const router = useRouter()
 
 function closeModal() {
   emit('close-modal')
-  router.push('/ideas')
+  router.push('/ideas/list')
 }
 </script>
 

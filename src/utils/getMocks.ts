@@ -64,18 +64,21 @@ function getMocks(): Mocks {
   const skills: Skill[] = [
     {
       id: '0',
+      skillId: '0',
       name: 'JavaScript',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
       id: '1',
+      skillId: '1',
       name: 'React JS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
       id: '2',
+      skillId: '2',
       name: 'C++',
       type: 'LANGUAGE',
       confirmed: false,
@@ -210,6 +213,8 @@ function getMocks(): Mocks {
     {
       id: '0',
       name: 'Команда новая',
+      closed: false,
+      createdAt: new Date(13, 10, 2023),
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[0],
@@ -220,6 +225,8 @@ function getMocks(): Mocks {
     {
       id: '0',
       name: 'Команда новая',
+      closed: false,
+      createdAt: new Date(13, 10, 2023),
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
