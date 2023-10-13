@@ -3,6 +3,7 @@ import axios from 'axios'
 import Team from '@Domain/Team'
 import Success from '@Domain/ResponseMessage'
 import { User } from '@Domain/User'
+import { Letter } from '@Components/Modals/TeamModal/RequestModal.types'
 
 const TEAM_URL = 'http://localhost:3000/api/v1/team'
 
@@ -121,6 +122,22 @@ const kickMember = async (
     })
 }
 
+const requestToTheTeam = async (
+  teamId: string,
+  letter: Letter,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .post(`${TEAM_URL}/request/${teamId}`, letter, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка отправки заявления'
+      return new Error(error)
+    })
+}
+
 const TeamService = {
   getTeams,
   getTeam,
@@ -130,6 +147,7 @@ const TeamService = {
   kickMember,
   updateTeam,
   deleteTeam,
+  requestToTheTeam,
 }
 
 export default TeamService

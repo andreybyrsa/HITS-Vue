@@ -21,6 +21,7 @@ import Team from '@Domain/Team'
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 import { Project } from '@Components/Modals/TeamModal/TeamAction.types'
+import Input from '@Components/Inputs/Input/Input.vue'
 
 const portfolio1: Project = {
   id: '1',
@@ -262,6 +263,12 @@ const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
 
+const switchButton = ref<boolean>(false)
+
+function switchContent() {
+  switchButton.value ? (switchButton.value = false) : (switchButton.value = true)
+}
+
 userStore.checkLastActivity()
 
 const { values, handleSubmit } = useForm({
@@ -292,6 +299,20 @@ function handleCloseModal() {
     </template>
 
     <template #content>
+      <Button @click="switchContent"> Проверка KeepAlive </Button>
+      <KeepAlive>
+        <Input
+          v-if="switchButton"
+          name="первый"
+        >
+        </Input>
+      </KeepAlive>
+      <Input
+        v-if="!switchButton"
+        name="второй"
+      >
+      </Input>
+
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
 
       <Select

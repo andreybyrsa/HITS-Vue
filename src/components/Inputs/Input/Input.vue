@@ -49,7 +49,6 @@ const LabelClassName = computed(() => [
         {{ prepend }}
         <slot name="prepend"></slot>
       </span>
-
       <input
         :class="InputClassName"
         :type="type ?? 'text'"
