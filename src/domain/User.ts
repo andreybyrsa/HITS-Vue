@@ -8,7 +8,6 @@ interface User {
   email: string
   firstName: string
   lastName: string
-  skills: Skill[]
 
   roles: RolesTypes[]
   role?: RolesTypes

@@ -3,8 +3,22 @@ import Success from '@Domain/ResponseMessage'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
+import TeamMember from '@Domain/TeamMember'
 
 const teamsAxios = defineAxios(getMocks().teams)
+const teamMemberAxios = defineAxios(getMocks().teamMember)
+
+const getTeamMembers = async (token: string): Promise<TeamMember[] | Error> => {
+  return await teamMemberAxios
+    .get('/users/all', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения компетенций'
+      return new Error(error)
+    })
+}
 
 const getTeams = async (token: string): Promise<Team[] | Error> => {
   return await teamsAxios
@@ -81,6 +95,7 @@ const deleteTeam = async (id: string, token: string): Promise<Success | Error> =
 }
 
 const TeamService = {
+  getTeamMembers,
   getTeams,
   getTeam,
   createTeam,

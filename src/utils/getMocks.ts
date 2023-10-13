@@ -4,12 +4,14 @@ import UsersGroup from '@Domain/UsersGroup'
 import Comment from '@Domain/Comment'
 import { Idea, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
+import TeamMember from '@Domain/TeamMember'
 
 interface Mocks {
   users: User[]
   usersEmails: string[]
   skills: Skill[]
   usersGroups: UsersGroup[]
+  teamMember: TeamMember[]
   comments: Comment[]
   ratings: Rating[]
   ideas: Idea[]
@@ -25,7 +27,6 @@ function getMocks(): Mocks {
       firstName: 'Админ',
       lastName: 'Админ',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      skills: [],
     },
 
     {
@@ -35,7 +36,6 @@ function getMocks(): Mocks {
       firstName: 'Пользователь',
       lastName: 'Пользователь',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      skills: [],
     },
 
     {
@@ -45,7 +45,6 @@ function getMocks(): Mocks {
       firstName: 'Менеджер',
       lastName: 'Менеджер',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      skills: [],
     },
 
     {
@@ -55,7 +54,6 @@ function getMocks(): Mocks {
       firstName: 'Владелец',
       lastName: 'Владелец',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      skills: [],
     },
   ]
 
@@ -97,6 +95,60 @@ function getMocks(): Mocks {
       name: 'Группа экспертов',
       users: [],
       roles: ['ADMIN', 'EXPERT'],
+    },
+  ]
+
+  const teamMember: TeamMember[] = [
+    {
+      email: 'admin@mail.com',
+      firstName: 'Админ',
+      lastName: 'Адмиг',
+
+      skills: [...skills],
+    },
+    {
+      email: '1@mail.com',
+      firstName: 'Пользователь',
+      lastName: 'Пользователь',
+
+      skills: [
+        {
+          id: '2',
+          skillId: '2',
+          name: 'C++',
+          type: 'LANGUAGE',
+          confirmed: false,
+        },
+      ],
+    },
+    {
+      email: '2@mail.com',
+      firstName: 'Менеджер',
+      lastName: 'Менеджер',
+
+      skills: [
+        {
+          id: '0',
+          skillId: '0',
+          name: 'JavaScript',
+          type: 'LANGUAGE',
+          confirmed: true,
+        },
+        {
+          id: '1',
+          skillId: '1',
+          name: 'React JS',
+          type: 'FRAMEWORK',
+          confirmed: true,
+        },
+      ],
+    },
+    {
+      email: '3@mail.com',
+      firstName: 'Владелец',
+      lastName: 'Владелец',
+
+      skills: [...skills],
     },
   ]
 
@@ -236,7 +288,17 @@ function getMocks(): Mocks {
     },
   ]
 
-  return { users, usersEmails, skills, usersGroups, comments, ratings, ideas, teams }
+  return {
+    users,
+    usersEmails,
+    teamMember,
+    skills,
+    usersGroups,
+    comments,
+    ratings,
+    ideas,
+    teams,
+  }
 }
 
 export default getMocks

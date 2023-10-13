@@ -1,6 +1,5 @@
 import { Skill, SkillType } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
-import { User } from '@Domain/User'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
@@ -18,18 +17,6 @@ function mockSkillsMatcher(skills: Skill[]) {
 function mockSkillsByTypeMather(skills: Skill[], type: SkillType) {
   return skills.filter((skill) => skill.type === type)
 }
-
-// const getAllSkillsUsers = async (token: string): Promise<User[] | Error> => {
-//   return await skillsAxios
-//     .get('/users/all', {
-//       headers: { Authorization: `Bearer ${token}` },
-//     })
-//     .then((response) => response.data)
-//     .catch(({ response }) => {
-//       const error = response?.data?.error ?? 'Ошибка получения компетенций'
-//       return new Error(error)
-//     })
-// }
 
 const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
   return await skillsAxios
@@ -156,7 +143,6 @@ const deleteSkill = async (id: string, token: string): Promise<Success | Error> 
 }
 
 const SkillsService = {
-  // getAllSkillsUsers,
   getAllSkills,
   getSkillsByType,
   getAllConfirmedOrCreatorSkills,

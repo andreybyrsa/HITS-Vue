@@ -10,7 +10,6 @@ import { Idea } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
-import IdeasView from './IdeasView.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -61,7 +60,6 @@ function handleCloseIdeaModal() {
 </script>
 
 <template>
-  <!-- <IdeasView /> -->
   <IdeaModal
     :is-opened="openModal"
     :idea="currentIdea"

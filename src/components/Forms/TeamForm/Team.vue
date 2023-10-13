@@ -15,14 +15,16 @@ import { Skill } from '@Domain/Skill'
 
 import useUserStore from '@Store/user/userStore'
 import SkillsService from '@Services/SkillService'
+import TeamService from '@Services/TeamService'
+import TeamMember from '@Domain/TeamMember'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const users = ref<User[]>()
-const owner = ref<User | undefined>(useFieldValue<User>('owner').value)
-const leader = ref<User | undefined>(useFieldValue<User>('leader').value)
-const members = ref<User[]>(useFieldValue<User[]>('members').value ?? [])
+const users = ref<TeamMember[]>()
+const owner = ref<TeamMember | undefined>(useFieldValue<TeamMember>('owner').value)
+const leader = ref<TeamMember | undefined>(useFieldValue<TeamMember>('leader').value)
+const members = ref<TeamMember[]>(useFieldValue<TeamMember[]>('members').value ?? [])
 
 const radarChartsSkills = ref<Skill[]>([])
 
@@ -36,7 +38,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.getAllSkillsUsers(token)
+    const response = await TeamService.getTeamMembers(token)
 
     if (response instanceof Error) {
       return
@@ -56,7 +58,7 @@ onMounted(async () => {
 
 const teamUsers = computed(() => {
   const currentUsers = [...members.value, leader.value, owner.value]
-  const uniqueUsers = new Map<string, User>()
+  const uniqueUsers = new Map<string, TeamMember>()
   currentUsers.forEach((user) => user && uniqueUsers.set(user.email, user))
 
   return [...uniqueUsers.values()]
@@ -126,7 +128,7 @@ watch(
   { immediate: true },
 )
 
-function onUnselectMember(unselectedMember: User) {
+function onUnselectMember(unselectedMember: TeamMember) {
   if (unselectedMember.email === leader.value?.email) {
     leader.value = undefined
   }
@@ -135,7 +137,7 @@ function onUnselectMember(unselectedMember: User) {
   }
 }
 
-function unselectMember(unselectedMember: User) {
+function unselectMember(unselectedMember: TeamMember) {
   const currentMemberIndex = members.value.findIndex(
     (member) => member.email === unselectedMember.email,
   )
@@ -147,7 +149,7 @@ function unselectMember(unselectedMember: User) {
   }
 }
 
-function getMemberColor(member: User) {
+function getMemberColor(member: TeamMember) {
   const memberClassName = 'team__member p-1 rounded-3 bg-opacity-25 '
   return member.email !== leader.value?.email
     ? memberClassName + 'bg-primary'
