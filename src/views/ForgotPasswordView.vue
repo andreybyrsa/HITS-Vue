@@ -7,13 +7,11 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NewPasswordModal from '@Components/Modals/NewPasswordModal/NewPasswordModal.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { RecoveryData } from '@Domain/Invitation'
 
-import useNotification from '@Hooks/useNotification'
 import useTimer from '@Hooks/useTimer'
 
 import InvitationService from '@Services/InvitationService'
@@ -24,13 +22,6 @@ const isOpenedModal = ref(false)
 
 const authKey = ref('')
 let expiredTime: Ref<string>
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 const { values, handleSubmit } = useForm<RecoveryData>({
   validationSchema: {
@@ -43,7 +34,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
   const response = await InvitationService.sendRecoveryEmail(values)
 
   if (response instanceof Error) {
-    return handleOpenNotification('error', response.message)
+    return // notification
   }
 
   authKey.value = response
@@ -51,7 +42,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
 
   expiredTime = useTimer(300)
 
-  handleOpenNotification('success')
+  // notification
 })
 </script>
 
@@ -78,18 +69,6 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
         >
           Отправить
         </Button>
-
-        <NotificationModal
-          :type="notificationOptions.type"
-          :is-opened="isOpenedNotification"
-          @close-modal="handleCloseNotification"
-        >
-          {{
-            notificationOptions.type === 'success'
-              ? `Код отправлен на почту ${values.email}. Время действия кода ${expiredTime}`
-              : notificationOptions.message
-          }}
-        </NotificationModal>
 
         <NewPasswordModal
           :is-opened="isOpenedModal"

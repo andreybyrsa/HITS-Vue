@@ -12,11 +12,8 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import UsersColumns from '@Components/Modals/UsersGroupModal/UsersColumns.vue'
 import UsersGroupModalPlaceholder from '@Components/Modals/UsersGroupModal/UsersGroupModalPlaceholder.vue'
-
-import useNotification from '@Hooks/useNotification'
 
 import { User } from '@Domain/User'
 import UsersGroup from '@Domain/UsersGroup'
@@ -48,13 +45,6 @@ const groupRoles = getRoles().roles
 
 const usersGroupModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
-
 onMounted(async () => {
   const currentUser = user.value
 
@@ -63,7 +53,7 @@ onMounted(async () => {
     const responseUsers = await ManageUsersService.getUsers(token)
 
     if (responseUsers instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка загрузки пользователей')
+      return // notification
     }
 
     users.value = responseUsers
@@ -106,7 +96,7 @@ onUpdated(async () => {
     }
   } else {
     setValues({ name: '', users: [], roles: [] })
-    unselectedUsers.value = users.value
+    unselectedUsers.value = [...users.value]
     usersGroupModalMode.value = 'CREATE'
 
     isLoadingGroup.value = false
@@ -131,12 +121,12 @@ const handleCreateGroup = handleSubmit(async (values) => {
     const response = await UsersGroupsService.createUsersGroup(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка создания группы')
+      return // notification
     }
 
     usersGroups.value?.push(response)
 
-    handleOpenNotification('success', 'Успешное создание группы')
+    // notification
     emit('close-modal')
   }
 })
@@ -150,7 +140,7 @@ const handleUpdateGroup = handleSubmit(async (values) => {
     const response = await UsersGroupsService.updateUsersGroup(values, token, id)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка редактирования группы')
+      return // notification
     }
 
     const editingGroupIndex = usersGroups.value?.findIndex(
@@ -161,7 +151,7 @@ const handleUpdateGroup = handleSubmit(async (values) => {
       usersGroups.value?.splice(editingGroupIndex, 1, values)
     }
 
-    handleOpenNotification('success', 'Успешное редактирование группы')
+    // notification
     emit('close-modal')
   }
 })
@@ -234,15 +224,6 @@ const handleUpdateGroup = handleSubmit(async (values) => {
         </Button>
       </template>
     </div>
-
-    <NotificationModal
-      :is-opened="isOpenedNotification"
-      :type="notificationOptions.type"
-      :time-expired="5000"
-      @close-modal="handleCloseNotification"
-    >
-      {{ notificationOptions.message }}
-    </NotificationModal>
   </ModalLayout>
 </template>
 

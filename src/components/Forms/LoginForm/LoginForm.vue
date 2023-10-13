@@ -1,28 +1,20 @@
 <script lang="ts" setup>
 import { useForm } from 'vee-validate'
-import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import loginInputs from '@Components/Forms/LoginForm/LoginFormInputs'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { LoginUser } from '@Domain/User'
-
-import useNotification from '@Hooks/useNotification'
 
 import useUserStore from '@Store/user/userStore'
 
 import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
-const { loginError } = storeToRefs(userStore)
-
-const { isOpenedNotification, handleOpenNotification, handleCloseNotification } =
-  useNotification()
 
 const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {
@@ -34,10 +26,6 @@ const { handleSubmit } = useForm<LoginUser>({
 
 const handleLogin = handleSubmit(async (values) => {
   await userStore.loginUser(values)
-
-  if (loginError?.value) {
-    handleOpenNotification()
-  }
 })
 </script>
 
@@ -68,14 +56,5 @@ const handleLogin = handleSubmit(async (values) => {
     >
       Войти
     </Button>
-
-    <NotificationModal
-      type="error"
-      :is-opened="isOpenedNotification"
-      @close-modal="handleCloseNotification"
-      :time-expired="5000"
-    >
-      {{ loginError }}
-    </NotificationModal>
   </FormLayout>
 </template>

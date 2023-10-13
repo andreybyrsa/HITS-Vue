@@ -1,13 +1,15 @@
-import axios from 'axios'
 import { Idea } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 
-const IDEAS_URL = 'http://localhost:3000/api/v1/idea'
+import defineAxios from '@Utils/defineAxios'
+import getMocks from '@Utils/getMocks'
+
+const ideasAxios = defineAxios(getMocks().ideas)
 
 const fetchIdeas = async (token: string): Promise<Idea[] | Error> => {
-  return await axios
-    .get(`${IDEAS_URL}/all`, {
+  return await ideasAxios
+    .get('/idea/all', {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -21,10 +23,12 @@ const getInitiatorIdea = async (
   id: string,
   token: string,
 ): Promise<Idea | Error> => {
-  return await axios
-    .get(`${IDEAS_URL}/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await ideasAxios
+    .get(
+      `/idea/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки идеи'
@@ -35,11 +39,14 @@ const getInitiatorIdea = async (
 const postInitiatorIdea = async (
   idea: Idea,
   token: string,
-): Promise<Idea | Error> => {
-  return await axios
-    .post(`${IDEAS_URL}/add`, idea, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+): Promise<Success | Error> => {
+  return await ideasAxios
+    .post<Success>(
+      '/idea/add',
+      idea,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { responseData: { success: 'Успешное добавление идеи' } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка добавления идеи'
@@ -52,10 +59,13 @@ const putInitiatorIdea = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await axios
-    .put(`${IDEAS_URL}/initiator/update/${id}`, idea, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await ideasAxios
+    .put<Success>(
+      `/idea/initiator/update/${id}`,
+      idea,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id }, responseData: { success: 'Успешное обновление идеи' } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка редактирования идеи'
@@ -67,10 +77,16 @@ const sendInitiatorIdeaOnApproval = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await axios
-    .put(`${IDEAS_URL}/initiator/send/${id}`, null, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await ideasAxios
+    .putNoRequestBody<Success>(
+      `/idea/initiator/send/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        params: { id },
+        requestData: { status: 'ON_APPROVAL' },
+        responseData: { success: 'Успешная отправка идеи' },
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка отправки идеи на согласование'
@@ -82,10 +98,12 @@ const deleteInitiatorIdea = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await axios
-    .delete(`${IDEAS_URL}/delete/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await ideasAxios
+    .delete(
+      `/idea/delete/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка удаления идеи'
@@ -98,13 +116,12 @@ const changeStatusIdeaByProjectOffice = async (
   status: IdeaStatusTypes,
   token: string,
 ): Promise<Success | Error> => {
-  return await axios
-    .put(
-      `${IDEAS_URL}/project-office/update/${id}`,
+  return await ideasAxios
+    .put<Success>(
+      `/idea/project-office/update/${id}`,
       { status: status },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id }, responseData: { success: 'Статус идеи изменен' } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -117,11 +134,14 @@ const putAdminIdea = async (
   idea: Idea,
   id: string,
   token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .put(`${IDEAS_URL}/admin/update/${id}`, idea, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+): Promise<Idea | Error> => {
+  return await ideasAxios
+    .put(
+      `/idea/admin/update/${id}`,
+      idea,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка редактирования идеи'
@@ -133,10 +153,12 @@ const deleteAdminIdea = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await axios
-    .delete(`${IDEAS_URL}/admin/delete/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await ideasAxios
+    .delete(
+      `/idea/admin/delete/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка удаления идеи'

@@ -18,6 +18,10 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const app = createApp(App)
 
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
+const API_URL: 'http://localhost:3000/api/v1' | 'http://hits.tyuiu.ru/api/v1' =
+  'http://localhost:3000/api/v1'
+
 const pinia = createPinia()
 pinia.use(({ store }) => {
   store.router = markRaw(router)
@@ -77,3 +81,5 @@ app.directive('dropdown', dropdownDirective)
 app.directive('collapse', collapseDirective)
 
 app.mount('#app')
+
+export { MODE, API_URL }

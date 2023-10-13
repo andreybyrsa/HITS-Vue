@@ -7,14 +7,11 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import UsersGroupModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import UsersGroupsList from '@Components/Forms/UsersGroupsForm/UsersGroupsList.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import UsersGroup from '@Domain/UsersGroup'
-
-import useNotification from '@Hooks/useNotification'
 
 import UsersGroupsService from '@Services/UsersGroupsService'
 
@@ -27,17 +24,11 @@ const usersGroups = ref<UsersGroup[]>()
 const currentGroupId = ref('')
 const currentDeleteGroupId = ref('')
 
-const isOpenedUsersGroupModal = ref(false)
+const isOpenedCreatingGroupModal = ref(false)
+const isOpenedUpdatingGroupModal = ref(false)
 const isOpenedDeletingGroupModal = ref(false)
 
 const searchedValue = ref('')
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 onMounted(async () => {
   const currentUser = user.value
@@ -47,7 +38,7 @@ onMounted(async () => {
     const responseGroups = await UsersGroupsService.getUsersGroups(token)
 
     if (responseGroups instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка получения групп')
+      return // notification
     }
 
     usersGroups.value = responseGroups
@@ -64,15 +55,18 @@ const searchedUsersGroups = computed(() => {
 })
 
 function openCreatingGroupModal() {
-  currentGroupId.value = ''
-  isOpenedUsersGroupModal.value = true
+  isOpenedCreatingGroupModal.value = true
 }
+function closeCreatingGroupModal() {
+  isOpenedCreatingGroupModal.value = false
+}
+
 function openUpdatingGroupModal(groupId: string) {
   currentGroupId.value = groupId
-  isOpenedUsersGroupModal.value = true
+  isOpenedUpdatingGroupModal.value = true
 }
-function closeUsersGroupModal() {
-  isOpenedUsersGroupModal.value = false
+function closeUpdatingGroupModal() {
+  isOpenedUpdatingGroupModal.value = false
 }
 
 function openDeletingGroupModal(groupId: string) {
@@ -94,7 +88,7 @@ const handleDeleteGroup = async () => {
     )
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка удаления группы')
+      return // notification
     }
 
     usersGroups.value = usersGroups.value?.filter(
@@ -135,25 +129,21 @@ const handleDeleteGroup = async () => {
     />
 
     <UsersGroupModal
-      :isOpened="isOpenedUsersGroupModal"
+      :isOpened="isOpenedCreatingGroupModal"
+      v-model="usersGroups"
+      @close-modal="closeCreatingGroupModal"
+    />
+    <UsersGroupModal
+      :isOpened="isOpenedUpdatingGroupModal"
       :users-group-id="currentGroupId"
       v-model="usersGroups"
-      @close-modal="closeUsersGroupModal"
+      @close-modal="closeUpdatingGroupModal"
     />
     <DeleteModal
       :is-opened="isOpenedDeletingGroupModal"
       @delete="handleDeleteGroup"
       @close-modal="closeDeletingGroupModal"
     />
-
-    <NotificationModal
-      :is-opened="isOpenedNotification"
-      :type="notificationOptions.type"
-      :time-expired="5000"
-      @close-modal="handleCloseNotification"
-    >
-      {{ notificationOptions.message }}
-    </NotificationModal>
   </FormLayout>
 </template>
 

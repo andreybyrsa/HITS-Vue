@@ -2,11 +2,11 @@
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import DropDown from '@Components/DropDown/DropDown.vue'
 
 import RolesTypes from '@Domain/Roles'
 
 import getRoles from '@Utils/getRoles'
-import DropDown from '@Components/DropDown/DropDown.vue'
 
 const availableRoles = getRoles()
 

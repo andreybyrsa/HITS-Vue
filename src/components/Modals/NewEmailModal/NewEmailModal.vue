@@ -7,13 +7,11 @@ import { storeToRefs } from 'pinia'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { NewEmailForm } from '@Domain/Invitation'
 
-import useNotification from '@Hooks/useNotification'
 import useTimer from '@Hooks/useTimer'
 
 import useUserStore from '@Store/user/userStore'
@@ -31,13 +29,6 @@ const isOpenedCodeModal = ref(false)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 const { setFieldValue, handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
@@ -58,7 +49,7 @@ onMounted(async () => {
     const response = await InvitationService.getInfoToChangeEmail(slug, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return // notification
     }
 
     const { newEmail, oldEmail } = response
@@ -78,7 +69,7 @@ const handleChangeEmail = handleSubmit(async (values) => {
     const response = await ManageUsersService.updateUserEmail(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', 'Ошибка изменения почты')
+      return // notification
     }
 
     userStore.removeUser()
@@ -123,15 +114,6 @@ function handleCloseCodeModal() {
       @close-modal="handleCloseCodeModal"
     >
       Код отправлен на старую почту, время действия кода: {{ expiredTime }}
-    </NotificationModal>
-
-    <NotificationModal
-      :type="notificationOptions.type"
-      :is-opened="isOpenedNotification"
-      @close-modal="handleCloseNotification"
-      :time-expired="5000"
-    >
-      {{ notificationOptions.message }}
     </NotificationModal>
   </ModalLayout>
 </template>
