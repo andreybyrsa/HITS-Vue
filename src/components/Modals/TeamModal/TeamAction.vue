@@ -140,7 +140,7 @@ function checkButton(button: TeamButtonAction) {
         !currentTeam.members.find((member) => member.email == currentUser.email) &&
         currentUser.email != currentTeam.owner.email &&
         currentUser.email != currentTeam.leader.email &&
-        !currentTeam.isClosed) ||
+        !currentTeam.closed) ||
       (button.name == 'Подать заявку на выход' &&
         currentTeam.owner.email != currentUser.email &&
         currentTeam.members.find((member) => member.email == currentUser.email)) ||

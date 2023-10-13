@@ -13,17 +13,18 @@ import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 
-import ManageUsersService from '@Services/ManageUsersService'
-
 import useUserStore from '@Store/user/userStore'
+import SkillsService from '@Services/SkillService'
+import TeamService from '@Services/TeamService'
+import TeamMember from '@Domain/TeamMember'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const users = ref<User[]>()
-const owner = ref<User | undefined>(useFieldValue<User>('owner').value)
-const leader = ref<User | undefined>(useFieldValue<User>('leader').value)
-const members = ref<User[]>(useFieldValue<User[]>('members').value ?? [])
+const users = ref<TeamMember[]>()
+const owner = ref<TeamMember | undefined>(useFieldValue<TeamMember>('owner').value)
+const leader = ref<TeamMember | undefined>(useFieldValue<TeamMember>('leader').value)
+const members = ref<TeamMember[]>(useFieldValue<TeamMember[]>('members').value ?? [])
 
 const radarChartsSkills = ref<Skill[]>([])
 
@@ -37,72 +38,16 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+    const response = await TeamService.getTeamMembers(token)
 
-    const response = (await new Promise((resolve) => setTimeout(resolve, 1000)).then(
-      () => [
-        {
-          id: '1',
-          firstName: 'Андрей',
-          lastName: 'Бырса',
-          skills: [
-            { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
-            { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
-            { id: '1', name: 'JavaScript', type: 'LANGUAGE' },
-            { id: '2', name: 'TypeScript', type: 'LANGUAGE' },
-            { id: '2', name: 'TypeScript', type: 'LANGUAGE' },
-            { id: '3', name: 'React', type: 'FRAMEWORK' },
-          ],
-        },
-        {
-          id: '2',
-          firstName: 'Тимур',
-          lastName: 'Минязев',
-          skills: [
-            { id: '4', name: 'Docker', type: 'DEVOPS' },
-            { id: '4', name: 'Docker', type: 'DEVOPS' },
-            { id: '4', name: 'Docker', type: 'DEVOPS' },
-            { id: '3', name: 'React', type: 'FRAMEWORK' },
-            { id: '3', name: 'React', type: 'FRAMEWORK' },
-            { id: '5', name: 'Django', type: 'FRAMEWORK' },
-          ],
-        },
-        {
-          id: '3',
-          firstName: 'Кирилл',
-          lastName: 'Власов',
-          skills: [
-            { id: '6', name: 'Java', type: 'LANGUAGE' },
-            { id: '7', name: 'Vue', type: 'FRAMEWORK' },
-            { id: '7', name: 'Vue', type: 'FRAMEWORK' },
-            { id: '7', name: 'Vue', type: 'FRAMEWORK' },
-            { id: '8', name: 'Angular', type: 'FRAMEWORK' },
-            { id: '8', name: 'Angular', type: 'FRAMEWORK' },
-            { id: '9', name: 'Git', type: 'DEVOPS' },
-            { id: '10', name: 'SQL', type: 'DATABASE' },
-            { id: '11', name: 'PostgreSQL', type: 'DATABASE' },
-            { id: '12', name: 'Mongo', type: 'DATABASE' },
-            { id: '12', name: 'Mongo', type: 'DATABASE' },
-          ],
-        },
-        {
-          id: '4',
-          firstName: 'Мамед',
-          lastName: 'Байрамов',
-          skills: [
-            { id: '13', name: 'C++', type: 'LANGUAGE' },
-            { id: '13', name: 'C++', type: 'LANGUAGE' },
-            { id: '14', name: 'Maven', type: 'DEVOPS' },
-            { id: '14', name: 'Maven', type: 'DEVOPS' },
-            { id: '3', name: 'React', type: 'FRAMEWORK' },
-          ],
-        },
-      ],
-    )) as User[]
+    if (response instanceof Error) {
+      return
+    }
 
     users.value = response
 
     if (!owner.value) {
-      const currentOwner = response.find((user) => user.id === currentUser.id)
+      const currentOwner = response.find((user) => user.email === currentUser.email)
 
       if (currentOwner) {
         owner.value = currentOwner
@@ -113,8 +58,8 @@ onMounted(async () => {
 
 const teamUsers = computed(() => {
   const currentUsers = [...members.value, leader.value, owner.value]
-  const uniqueUsers = new Map<string, User>()
-  currentUsers.forEach((user) => user && uniqueUsers.set(user.id, user))
+  const uniqueUsers = new Map<string, TeamMember>()
+  currentUsers.forEach((user) => user && uniqueUsers.set(user.email, user))
 
   return [...uniqueUsers.values()]
 })
@@ -125,7 +70,7 @@ watchImmediate(teamUsers, (currentTeam) => {
   currentTeam.forEach((member) => membersSkills.push(...member.skills))
 
   teamSkills.value = [
-    ...new Map(membersSkills.map((skill) => [skill.id, skill])).values(),
+    ...new Map(membersSkills.map((skill) => [skill.skillId, skill])).values(),
   ]
   radarChartsSkills.value = membersSkills
 })
@@ -135,18 +80,18 @@ watch(
   (currenOwner, prevOwner) => {
     if (currenOwner) {
       const isExistOwner = members.value.find(
-        (member) => member.id === currenOwner.id,
+        (member) => member.email === currenOwner.email,
       )
 
       if (!isExistOwner) {
         const prevOwnerIndex = members.value.findIndex(
-          (member) => member.id === prevOwner?.id,
+          (member) => member.email === prevOwner?.email,
         )
         if (prevOwnerIndex !== -1) {
           members.value.splice(prevOwnerIndex, 1)
         }
 
-        if (prevOwner?.id == leader.value?.id) {
+        if (prevOwner?.email == leader.value?.email) {
           leader.value = undefined
         }
 
@@ -162,17 +107,17 @@ watch(
   (currentLeader, prevLeader) => {
     if (currentLeader) {
       const isExistLeader = members.value.find(
-        (member) => member.id === currentLeader.id,
+        (member) => member.email === currentLeader.email,
       )
 
       if (!isExistLeader) {
         const prevLeaderIndex = members.value.findIndex(
-          (member) => member.id === prevLeader?.id,
+          (member) => member.email === prevLeader?.email,
         )
         if (prevLeaderIndex !== -1) {
           members.value.splice(prevLeaderIndex, 1)
         }
-        if (prevLeader?.id === owner.value?.id) {
+        if (prevLeader?.email === owner.value?.email) {
           owner.value = undefined
         }
 
@@ -183,18 +128,18 @@ watch(
   { immediate: true },
 )
 
-function onUnselectMember(unselectedMember: User) {
-  if (unselectedMember.id === leader.value?.id) {
+function onUnselectMember(unselectedMember: TeamMember) {
+  if (unselectedMember.email === leader.value?.email) {
     leader.value = undefined
   }
-  if (unselectedMember.id === owner.value?.id) {
+  if (unselectedMember.email === owner.value?.email) {
     owner.value = undefined
   }
 }
 
-function unselectMember(unselectedMember: User) {
+function unselectMember(unselectedMember: TeamMember) {
   const currentMemberIndex = members.value.findIndex(
-    (member) => member.id === unselectedMember.id,
+    (member) => member.email === unselectedMember.email,
   )
 
   if (currentMemberIndex !== -1) {
@@ -204,9 +149,9 @@ function unselectMember(unselectedMember: User) {
   }
 }
 
-function getMemberColor(member: User) {
+function getMemberColor(member: TeamMember) {
   const memberClassName = 'team__member p-1 rounded-3 bg-opacity-25 '
-  return member.id !== leader.value?.id
+  return member.email !== leader.value?.email
     ? memberClassName + 'bg-primary'
     : memberClassName + 'bg-danger'
 }
@@ -251,7 +196,7 @@ function getMemberColor(member: User) {
         <div class="team__members mt-2">
           <div
             v-for="(member, index) in members.sort((member) =>
-              member.id === leader?.id ? -1 : 1,
+              member.email === leader?.email ? -1 : 1,
             )"
             :key="index"
             :class="getMemberColor(member)"

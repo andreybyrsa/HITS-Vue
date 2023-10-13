@@ -7,17 +7,14 @@ import {
   IdeaDescriptionProps,
   IdeaDescriptionEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
-import { useRouter } from 'vue-router'
 
 defineProps<IdeaDescriptionProps>()
 
 const emit = defineEmits<IdeaDescriptionEmits>()
 
-const router = useRouter()
-
 function closeModal() {
   emit('close-modal')
-  router.push('/ideas/list')
+  //   router.push('/ideas')
 }
 </script>
 

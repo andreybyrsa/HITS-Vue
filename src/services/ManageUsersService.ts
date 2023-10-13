@@ -1,15 +1,23 @@
 import axios from 'axios'
 
+import { API_URL } from '@Main'
+
 import { User } from '@Domain/User'
-import { UpdateUserData, UpdateUserPassword } from '@Domain/ManageUsers'
+import { UpdateUserPassword } from '@Domain/ManageUsers'
 import { NewEmailForm } from '@Domain/Invitation'
 import Success from '@Domain/ResponseMessage'
 
-const MANAGE_USERS_URL = 'http://localhost:3000/api/v1/profile'
+import defineAxios from '@Utils/defineAxios'
+import getMocks from '@Utils/getMocks'
+
+const usersAxios = defineAxios(getMocks().users)
+const usersEmailsAxios = defineAxios(getMocks().usersEmails)
+
+const axiosInstance = axios.create({ baseURL: API_URL })
 
 const getUsers = async (token: string): Promise<User[] | Error> => {
-  return await axios
-    .get(`${MANAGE_USERS_URL}/get/users`, {
+  return await usersAxios
+    .get('/profile/get/users', {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -20,8 +28,8 @@ const getUsers = async (token: string): Promise<User[] | Error> => {
 }
 
 const getUsersEmails = async (token: string): Promise<string[] | Error> => {
-  return await axios
-    .get(`${MANAGE_USERS_URL}/get/emails`, {
+  return await usersEmailsAxios
+    .get(`/profile/get/emails`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -32,13 +40,16 @@ const getUsersEmails = async (token: string): Promise<string[] | Error> => {
 }
 
 const updateUserInfo = async (
-  newUserData: UpdateUserData,
+  newUserData: User,
   token: string,
 ): Promise<User | Error> => {
-  return await axios
-    .put(`${MANAGE_USERS_URL}/change/info`, newUserData, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await usersAxios
+    .put(
+      '/profile/change/info',
+      newUserData,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id: newUserData.id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка обновления пользователя'
@@ -49,8 +60,8 @@ const updateUserInfo = async (
 const updateUserPassword = async (
   newPasswordData: UpdateUserPassword,
 ): Promise<Success | Error> => {
-  return await axios
-    .put(`${MANAGE_USERS_URL}/change/password`, newPasswordData)
+  return await axiosInstance
+    .put('change/password', newPasswordData)
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка обновления пароля'
@@ -62,8 +73,8 @@ const updateUserEmail = async (
   newEmailData: NewEmailForm,
   token: string,
 ): Promise<Success | Error> => {
-  return axios
-    .put(`${MANAGE_USERS_URL}/change/email`, newEmailData, {
+  return axiosInstance
+    .put('/change/email', newEmailData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
