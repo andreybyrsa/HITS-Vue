@@ -15,8 +15,6 @@ import TeamAction from '@Components/Modals/TeamModal/TeamAction.vue'
 import ProfileSkillCharts from '@Components/Modals/TeamModal/ProfileSkillCharts.vue'
 import TeamModalPlaceholder from '@Components/Modals/TeamModal/TeamModalPlaceholder.vue'
 
-import { User } from '@Domain/User'
-
 import useUserStore from '@Store/user/userStore'
 
 import TeamService from '@Services/TeamService'

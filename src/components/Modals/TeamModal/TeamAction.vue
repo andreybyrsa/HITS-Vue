@@ -65,8 +65,8 @@ const handleInviteFromOutside = async (emails: string[]) => {
   if (currentUser?.token) {
     const { token } = currentUser
     const response = await TeamService.inviteOutsideUsers(
-      emails,
       teamId.value,
+      emails,
       token,
     )
     if (response instanceof Error) {
