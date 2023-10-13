@@ -1,7 +1,3 @@
-import axios from 'axios'
-
-import { API_URL } from '@Main'
-
 import { Skill, SkillType } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
 
@@ -9,7 +5,18 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 
 const skillsAxios = defineAxios(getMocks().skills)
-const axiosInstance = axios.create({ baseURL: API_URL })
+
+function mockSkillsMatcher(skills: Skill[]) {
+  const LANGUAGE = skills.filter((skill) => skill.type === 'LANGUAGE')
+  const FRAMEWORK = skills.filter((skill) => skill.type === 'FRAMEWORK')
+  const DATABASE = skills.filter((skill) => skill.type === 'DATABASE')
+  const DEVOPS = skills.filter((skill) => skill.type === 'DEVOPS')
+  return { LANGUAGE, FRAMEWORK, DATABASE, DEVOPS }
+}
+
+function mockSkillsByTypeMather(skills: Skill[], type: SkillType) {
+  return skills.filter((skill) => skill.type === type)
+}
 
 const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
   return await skillsAxios
@@ -26,10 +33,12 @@ const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
 const getAllConfirmedOrCreatorSkills = async (
   token: string,
 ): Promise<Record<SkillType, Skill[]> | Error> => {
-  return await axiosInstance
-    .get('/skill/all-confirmed-or-creator', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await skillsAxios
+    .get<Record<SkillType, Skill[]>>(
+      '/skill/all-confirmed-or-creator',
+      { headers: { Authorization: `Bearer ${token}` } },
+      { mather: mockSkillsMatcher },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения компетенций'
@@ -38,13 +47,15 @@ const getAllConfirmedOrCreatorSkills = async (
 }
 
 const getSkillsByType = async (
-  skillType: string,
+  skillType: SkillType,
   token: string,
 ): Promise<Skill[] | Error> => {
   return await skillsAxios
-    .get(`/skill/${skillType}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .get<Skill[]>(
+      `/skill/${skillType}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { mather: (data) => mockSkillsByTypeMather(data, skillType) },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения компетенций'
