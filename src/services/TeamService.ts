@@ -5,9 +5,13 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import TeamMember from '@Domain/TeamMember'
 import { Letter } from '@Components/Modals/TeamModal/RequestModal.types'
+import { User } from '@Domain/User'
 
 const teamsAxios = defineAxios(getMocks().teams)
 const teamMemberAxios = defineAxios(getMocks().teamMember)
+const usersAxios = defineAxios(getMocks().users)
+const usersEmailsAxios = defineAxios(getMocks().usersEmails)
+const lettersAxios = defineAxios(getMocks().letters)
 
 const getTeamMembers = async (token: string): Promise<TeamMember[] | Error> => {
   return await teamMemberAxios
@@ -100,10 +104,13 @@ const invitePortalUsers = async (
   teamId: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await axios
-    .post(`${TEAM_URL}/send-invite/${teamId}`, users, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await usersAxios
+    .put<Success>(
+      `/team/send-invite/${teamId}`,
+      users[0],
+      { headers: { Authorization: `Bearer ${token}` } },
+      { responseData: { success: 'Успешное приглашение новых пользователей' } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
@@ -112,14 +119,19 @@ const invitePortalUsers = async (
 }
 
 const inviteOutsideUsers = async (
-  emails: string[],
   teamId: string,
+  emails: string[],
   token: string,
 ): Promise<Success | Error> => {
-  return await axios
-    .post(`${TEAM_URL}/send-invite-unregistered/${teamId}`, emails, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await usersEmailsAxios
+    .put<Success>(
+      `/team/send-invite-unregistered/${teamId}`,
+      emails[0],
+      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        responseData: { success: 'Успешное приглашение новых пользователей' },
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
@@ -128,12 +140,12 @@ const inviteOutsideUsers = async (
 }
 
 const kickMember = async (
-  user: User,
+  member: TeamMember,
   teamId: string,
   token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .put(`${TEAM_URL}/kick/${teamId}`, user, {
+): Promise<TeamMember | Error> => {
+  return await teamMemberAxios
+    .post(`/team/kick/${teamId}`, member, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -148,10 +160,13 @@ const requestToTheTeam = async (
   letter: Letter,
   token: string,
 ): Promise<Success | Error> => {
-  return await axios
-    .post(`${TEAM_URL}/request/${teamId}`, letter, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await lettersAxios
+    .put<Success>(
+      `/team/request/${teamId}`,
+      letter,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { responseData: { success: 'Успешная отправка заявки' } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка отправки заявления'

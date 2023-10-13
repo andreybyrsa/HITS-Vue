@@ -5,6 +5,7 @@ import Comment from '@Domain/Comment'
 import { Idea, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
+import { Letter } from '@Components/Modals/TeamModal/RequestModal.types'
 
 interface Mocks {
   users: User[]
@@ -16,49 +17,20 @@ interface Mocks {
   ratings: Rating[]
   ideas: Idea[]
   teams: Team[]
+  letters: Letter[]
 }
 
 function getMocks(): Mocks {
-  const users: User[] = [
+  const letters: Letter[] = [
     {
-      id: '0',
-      token: '10296538',
-      email: 'admin@mail.com',
-      firstName: 'Админ',
-      lastName: 'Админ',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      text: 'Выпустите',
+      type: 'leave',
     },
-
     {
-      id: '1',
-      token: '613098',
-      email: '1@mail.com',
-      firstName: 'Пользователь',
-      lastName: 'Пользователь',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '2',
-      token: '059182',
-      email: '2@mail.com',
-      firstName: 'Менеджер',
-      lastName: 'Менеджер',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '3',
-      token: '163097',
-      email: '3@mail.com',
-      firstName: 'Владелец',
-      lastName: 'Владелец',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      text: 'Впустите',
+      type: 'enter',
     },
   ]
-
-  const usersEmails: string[] = users.map((user) => user.email)
-
   const skills: Skill[] = [
     {
       id: '0',
@@ -82,6 +54,49 @@ function getMocks(): Mocks {
       confirmed: false,
     },
   ]
+  const users: User[] = [
+    {
+      id: '0',
+      token: '10296538',
+      email: 'admin@mail.com',
+      firstName: 'Админ',
+      lastName: 'Админ',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      skills: [...skills],
+    },
+
+    {
+      id: '1',
+      token: '613098',
+      email: '1@mail.com',
+      firstName: 'Пользователь',
+      lastName: 'Пользователь',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      skills: [...skills],
+    },
+
+    {
+      id: '2',
+      token: '059182',
+      email: '2@mail.com',
+      firstName: 'Менеджер',
+      lastName: 'Менеджер',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      skills: [...skills],
+    },
+
+    {
+      id: '3',
+      token: '163097',
+      email: '3@mail.com',
+      firstName: 'Владелец',
+      lastName: 'Владелец',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      skills: [...skills],
+    },
+  ]
+
+  const usersEmails: string[] = users.map((user) => user.email)
 
   const usersGroups: UsersGroup[] = [
     {
@@ -298,6 +313,7 @@ function getMocks(): Mocks {
     ratings,
     ideas,
     teams,
+    letters,
   }
 }
 

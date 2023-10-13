@@ -20,6 +20,7 @@ import { User } from '@Domain/User'
 import useUserStore from '@Store/user/userStore'
 
 import TeamService from '@Services/TeamService'
+import TeamMember from '@Domain/TeamMember'
 
 defineProps<TeamModalProps>()
 const emit = defineEmits<TeamModalEmits>()
@@ -31,10 +32,11 @@ function closeTeamModal() {
   emit('close-modal')
 }
 
-const handleKick = async (user: User, teamId: string) => {
-  if (user.token) {
-    const { token } = user
-    const response = await TeamService.kickMember(user, teamId, token)
+const handleKick = async (member: TeamMember, teamId: string) => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await TeamService.kickMember(member, teamId, token)
 
     if (response instanceof Error) {
       return
