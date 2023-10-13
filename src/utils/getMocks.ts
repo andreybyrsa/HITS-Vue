@@ -1,13 +1,17 @@
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 import UsersGroup from '@Domain/UsersGroup'
-import { Idea } from '@Domain/Idea'
+import Comment from '@Domain/Comment'
+import { Idea, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 
 interface Mocks {
   users: User[]
+  usersEmails: string[]
   skills: Skill[]
   usersGroups: UsersGroup[]
+  comments: Comment[]
+  ratings: Rating[]
   ideas: Idea[]
   teams: Team[]
 }
@@ -55,6 +59,8 @@ function getMocks(): Mocks {
     },
   ]
 
+  const usersEmails: string[] = users.map((user) => user.email)
+
   const skills: Skill[] = [
     {
       id: '0',
@@ -88,6 +94,60 @@ function getMocks(): Mocks {
       name: 'Группа экспертов',
       users: [],
       roles: ['ADMIN', 'EXPERT'],
+    },
+  ]
+
+  const comments: Comment[] = [
+    {
+      id: '0',
+      ideaId: '0',
+      sender: 'admin@mail.com',
+      comment: 'Комментарий 1',
+      checkedBy: [],
+      createdAt: new Date(),
+    },
+    {
+      id: '1',
+      ideaId: '0',
+      sender: '1@mail.com',
+      comment: 'Комментарий 2',
+      checkedBy: [],
+      createdAt: new Date(),
+    },
+    {
+      id: '2',
+      ideaId: '1',
+      sender: '2@mail.com',
+      comment: 'Комментарий 3',
+      checkedBy: ['1@mail.com', '2@mail.com'],
+      createdAt: new Date(),
+    },
+  ]
+
+  const ratings: Rating[] = [
+    {
+      id: '0',
+      ideaId: '0',
+      expert: 'admin@mail.com',
+      budget: 1,
+      technicalRealizability: 1,
+      suitability: 2,
+      rating: 8 / 5,
+      originality: 3,
+      marketValue: 1,
+      confirmed: true,
+    },
+    {
+      id: '1',
+      ideaId: '1',
+      expert: '1@mail.com',
+      budget: 1,
+      technicalRealizability: 1,
+      suitability: 5,
+      rating: 17 / 5,
+      originality: 5,
+      marketValue: 5,
+      confirmed: true,
     },
   ]
 
@@ -169,7 +229,7 @@ function getMocks(): Mocks {
     },
   ]
 
-  return { users, skills, usersGroups, ideas, teams }
+  return { users, usersEmails, skills, usersGroups, comments, ratings, ideas, teams }
 }
 
 export default getMocks
