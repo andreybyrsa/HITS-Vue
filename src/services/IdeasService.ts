@@ -1,7 +1,3 @@
-import axios from 'axios'
-
-import { API_URL } from '@Main'
-
 import { Idea } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
@@ -10,7 +6,6 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 
 const ideasAxios = defineAxios(getMocks().ideas)
-const axiosInstance = axios.create({ baseURL: API_URL })
 
 const fetchIdeas = async (token: string): Promise<Idea[] | Error> => {
   return await ideasAxios
@@ -44,11 +39,14 @@ const getInitiatorIdea = async (
 const postInitiatorIdea = async (
   idea: Idea,
   token: string,
-): Promise<Idea | Error> => {
+): Promise<Success | Error> => {
   return await ideasAxios
-    .post('/idea/add', idea, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .post<Success>(
+      '/idea/add',
+      idea,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { responseData: { success: 'Успешное добавление идеи' } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка добавления идеи'
@@ -60,13 +58,13 @@ const putInitiatorIdea = async (
   idea: Idea,
   id: string,
   token: string,
-): Promise<Idea | Error> => {
+): Promise<Success | Error> => {
   return await ideasAxios
-    .put(
+    .put<Success>(
       `/idea/initiator/update/${id}`,
       idea,
       { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id } },
+      { params: { id }, responseData: { success: 'Успешное обновление идеи' } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -80,10 +78,14 @@ const sendInitiatorIdeaOnApproval = async (
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios
-    .putNoRequestBody(
+    .putNoRequestBody<Success>(
       `/idea/initiator/send/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id }, data: { status: 'ON_APPROVAL' } },
+      {
+        params: { id },
+        requestData: { status: 'ON_APPROVAL' },
+        responseData: { success: 'Успешная отправка идеи' },
+      },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -114,13 +116,12 @@ const changeStatusIdeaByProjectOffice = async (
   status: IdeaStatusTypes,
   token: string,
 ): Promise<Success | Error> => {
-  return await axiosInstance
-    .put(
+  return await ideasAxios
+    .put<Success>(
       `/idea/project-office/update/${id}`,
       { status: status },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id }, responseData: { success: 'Статус идеи изменен' } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

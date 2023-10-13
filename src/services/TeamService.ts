@@ -51,13 +51,13 @@ const updateTeam = async (
   team: Team,
   id: string,
   token: string,
-): Promise<Team | Error> => {
+): Promise<Success | Error> => {
   return await teamsAxios
-    .put(
+    .put<Success>(
       `/team/update/${id}`,
       team,
       { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id } },
+      { params: { id }, responseData: { success: 'Успешное обновление команды' } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
