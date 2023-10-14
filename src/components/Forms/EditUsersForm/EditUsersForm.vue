@@ -9,7 +9,6 @@ import UsersList from '@Components/Forms/EditUsersForm/UsersList.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
 import { User } from '@Domain/User'
-import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
@@ -23,7 +22,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const currentUsers = ref<User[]>([])
-const editingUser = ref<UpdateUserData>()
+const editingUser = ref<User>()
 
 const searchedValue = ref('')
 const filteredRoles = ref<RolesTypes[]>([])
@@ -66,14 +65,7 @@ function handleOpenModal(id: string) {
   const selectedUser = currentUsers.value.find((user) => user.id === id)
 
   if (selectedUser) {
-    const { email, firstName, lastName, roles } = selectedUser
-    editingUser.value = {
-      email: email,
-      newEmail: email,
-      newFirstName: firstName,
-      newLastName: lastName,
-      newRoles: roles,
-    }
+    editingUser.value = { ...selectedUser }
 
     isOpenUserModal.value = true
   }

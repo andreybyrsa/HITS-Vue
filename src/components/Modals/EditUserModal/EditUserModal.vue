@@ -16,7 +16,6 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
-import { UpdateUserData } from '@Domain/ManageUsers'
 import RolesTypes from '@Domain/Roles'
 import { User } from '@Domain/User'
 
@@ -38,15 +37,15 @@ const { user } = storeToRefs(userStore)
 
 const availableRoles = getRoles()
 
-const { errors, setValues, handleSubmit } = useForm<UpdateUserData>({
+const { errors, setValues, handleSubmit } = useForm<User>({
   validationSchema: {
-    newEmail: (value: string) =>
+    email: (value: string) =>
       Validation.checkEmail(value) || 'Неверно введена почта',
-    newFirstName: (value: string) =>
+    firstName: (value: string) =>
       Validation.checkName(value) || 'Неверно введено имя',
-    newLastName: (value: string) =>
+    lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
-    newRoles: (value: RolesTypes[]) => value?.length,
+    roles: (value: RolesTypes[]) => value?.length,
   },
 })
 
@@ -117,9 +116,7 @@ const handleEditUser = handleSubmit(async (values) => {
           </Input>
 
           <Button
-            :class-name="
-              errors.newRoles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'
-            "
+            :class-name="errors.roles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'"
             append-icon-name="bi bi-chevron-down"
             v-collapse="'editUserModalCollapse'"
           >
@@ -134,7 +131,7 @@ const handleEditUser = handleSubmit(async (values) => {
               :key="role"
             >
               <Checkbox
-                name="newRoles"
+                name="roles"
                 class-name="drop-down-item"
                 validate-on-update
                 :label="availableRoles.translatedRoles[role]"
