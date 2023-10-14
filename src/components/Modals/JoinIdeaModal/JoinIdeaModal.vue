@@ -253,7 +253,8 @@ function getBorderColor(option: string) {
   overflow-y: auto;
 
   &__me {
-    @include flexible(center, flex-start);
+    width: 90%;
+    @include flexible(center, space-between);
   }
 
   &__teams {
