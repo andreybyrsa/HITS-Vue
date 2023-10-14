@@ -39,14 +39,9 @@ const getInitiatorIdea = async (
 const postInitiatorIdea = async (
   idea: Idea,
   token: string,
-): Promise<Success | Error> => {
+): Promise<Idea | Error> => {
   return await ideasAxios
-    .post<Success>(
-      '/idea/add',
-      idea,
-      { headers: { Authorization: `Bearer ${token}` } },
-      { responseData: { success: 'Успешное добавление идеи' } },
-    )
+    .post('/idea/add', idea, { headers: { Authorization: `Bearer ${token}` } })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка добавления идеи'

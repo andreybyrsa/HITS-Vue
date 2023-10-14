@@ -6,7 +6,7 @@ import getMocks from '@Utils/getMocks'
 
 const skillsAxios = defineAxios(getMocks().skills)
 
-function mockSkillsMatcher(skills: Skill[]) {
+function mockSkillsFormatter(skills: Skill[]) {
   const LANGUAGE = skills.filter((skill) => skill.type === 'LANGUAGE')
   const FRAMEWORK = skills.filter((skill) => skill.type === 'FRAMEWORK')
   const DATABASE = skills.filter((skill) => skill.type === 'DATABASE')
@@ -37,7 +37,7 @@ const getAllConfirmedOrCreatorSkills = async (
     .get<Record<SkillType, Skill[]>>(
       '/skill/all-confirmed-or-creator',
       { headers: { Authorization: `Bearer ${token}` } },
-      { mather: mockSkillsMatcher },
+      { formatter: mockSkillsFormatter },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -54,7 +54,7 @@ const getSkillsByType = async (
     .get<Skill[]>(
       `/skill/${skillType}`,
       { headers: { Authorization: `Bearer ${token}` } },
-      { mather: (data) => mockSkillsByTypeMather(data, skillType) },
+      { formatter: (data) => mockSkillsByTypeMather(data, skillType) },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

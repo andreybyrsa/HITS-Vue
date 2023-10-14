@@ -1,5 +1,6 @@
 import StatusTypes from '@Domain/IdeaStatus'
 import UsersGroup from '@Domain/UsersGroup'
+import { Skill } from '@Domain/Skill'
 
 interface Idea {
   id: string
@@ -39,4 +40,9 @@ interface Rating {
   confirmed: boolean
 }
 
-export { Idea, Rating }
+interface IdeaSkills {
+  ideaId: string
+  skills: Skill[]
+}
+
+export { Idea, Rating, IdeaSkills }

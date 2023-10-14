@@ -2,7 +2,7 @@ import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 import UsersGroup from '@Domain/UsersGroup'
 import Comment from '@Domain/Comment'
-import { Idea, Rating } from '@Domain/Idea'
+import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 
@@ -13,8 +13,9 @@ interface Mocks {
   usersGroups: UsersGroup[]
   teamMember: TeamMember[]
   comments: Comment[]
-  ratings: Rating[]
   ideas: Idea[]
+  ratings: Rating[]
+  ideasSkills: IdeaSkills[]
   teams: Team[]
 }
 
@@ -62,21 +63,18 @@ function getMocks(): Mocks {
   const skills: Skill[] = [
     {
       id: '0',
-      skillId: '0',
       name: 'JavaScript',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
       id: '1',
-      skillId: '1',
       name: 'React JS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
       id: '2',
-      skillId: '2',
       name: 'C++',
       type: 'LANGUAGE',
       confirmed: false,
@@ -114,7 +112,6 @@ function getMocks(): Mocks {
       skills: [
         {
           id: '2',
-          skillId: '2',
           name: 'C++',
           type: 'LANGUAGE',
           confirmed: false,
@@ -129,14 +126,12 @@ function getMocks(): Mocks {
       skills: [
         {
           id: '0',
-          skillId: '0',
           name: 'JavaScript',
           type: 'LANGUAGE',
           confirmed: true,
         },
         {
           id: '1',
-          skillId: '1',
           name: 'React JS',
           type: 'FRAMEWORK',
           confirmed: true,
@@ -261,6 +256,14 @@ function getMocks(): Mocks {
     },
   ]
 
+  const ideasSkills: IdeaSkills[] = [
+    { ideaId: '0', skills: [...skills] },
+    {
+      ideaId: '1',
+      skills: [skills[0], skills[2]],
+    },
+  ]
+
   const teams: Team[] = [
     {
       id: '0',
@@ -297,6 +300,7 @@ function getMocks(): Mocks {
     comments,
     ratings,
     ideas,
+    ideasSkills,
     teams,
   }
 }

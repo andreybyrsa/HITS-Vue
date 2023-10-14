@@ -13,7 +13,7 @@ interface AxiosMockConfig<RequestMocksType, ResponseMocksType = unknown> {
   params?: OptionalMocksDataType<RequestMocksType>
   requestData?: OptionalMocksDataType<RequestMocksType>
   responseData?: ResponseMocksType
-  mather?: (data: RequestMocksType[]) => ResponseMocksType
+  formatter?: (data: RequestMocksType[]) => ResponseMocksType
 }
 
 function getMockConfigParams<MocksType>(mockConfig: AxiosMockConfig<MocksType>) {
@@ -66,17 +66,15 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
           const currentMockData = mockArray.value.find((mock) => mock[key] === value)
 
           if (currentMockData) {
-            resolve(createMockResponse(currentMockData))
+            resolve(createMockResponse(structuredClone(currentMockData)))
           } else {
             reject(createMockResponse('Искомые данные не найдены'))
           }
         } else {
-          const copiedMockArray = mockArray.value.map((mock) =>
-            structuredClone(mock),
-          )
+          const copiedMockArray = structuredClone(mockArray.value)
 
-          if (mockConfig?.mather) {
-            resolve(createMockResponse(mockConfig.mather(copiedMockArray)))
+          if (mockConfig?.formatter) {
+            resolve(createMockResponse(mockConfig.formatter(copiedMockArray)))
           } else {
             resolve(createMockResponse(copiedMockArray))
           }
@@ -168,7 +166,11 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
             if (responseData) {
               resolve(createMockResponse(responseData))
             } else {
-              resolve(createMockResponse(structuredClone(currentMockData)))
+              resolve(
+                createMockResponse(
+                  structuredClone(mockArray.value[currentMockDataIndex]),
+                ),
+              )
             }
           } else {
             reject(createMockResponse('Искомые данные не найдены'))
