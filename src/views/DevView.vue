@@ -12,6 +12,7 @@ import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+import JoinIdeaModal from '@Components/Modals/JoinIdeaModal/JoinIdeaModal.vue'
 
 import useUserStore from '@Store/user/userStore'
 import ExchangeModal from '@Components/Modals/ExchangeModal/ExchangeModal.vue'
@@ -61,6 +62,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
+const isOpenedJoinModal = ref(false)
 
 userStore.checkLastActivity()
 
@@ -82,6 +84,10 @@ function handleLogin() {
 
 function handleCloseModal() {
   isOpenedModal.value = false
+}
+
+function handleCloseJoinModal() {
+  isOpenedJoinModal.value = false
 }
 </script>
 
@@ -149,6 +155,11 @@ function handleCloseModal() {
         @close-modal="handleCloseModal"
       />
 
+      <JoinIdeaModal
+        :is-opened="isOpenedJoinModal"
+        @close-modal="handleCloseJoinModal"
+      />
+
       <Button
         class-name="btn-primary"
         @click="isOpenedModal = true"
@@ -174,6 +185,12 @@ function handleCloseModal() {
           </div>
         </template>
       </Table>
+      <Button
+        class-name="w-100 bg-primary text-light rounded-pill"
+        @click="isOpenedJoinModal = true"
+      >
+        Подать заявку
+      </Button>
     </template>
   </PageLayout>
 </template>
