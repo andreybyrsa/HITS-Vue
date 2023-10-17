@@ -21,7 +21,7 @@ const comments = ref<Comment[]>([
     ideaId: '1',
     createdAt: new Date(12, 10, 2023),
 
-    comment: 'Первый комментарий, который ща удалю',
+    comment: 'Через месяц заканчивается прием заявок!',
     sender: 'kirill.vlasov.05@inbox.ru',
     checkedBy: ['1'],
   },
@@ -52,7 +52,7 @@ function handleDeleteComment(commentId: string) {
 <template>
   <div class="bg-white rounded-3">
     <div class="py-2 w-100 border-bottom">
-      <Typography class-name="fs-6 px-3">Комментарии</Typography>
+      <Typography class-name="fs-6 px-3">Комментарии инициатора</Typography>
     </div>
 
     <!-- <IdeaCommentsPlaceholder v-if="commentsIsLoading" /> -->

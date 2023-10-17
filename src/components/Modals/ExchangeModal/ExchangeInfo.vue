@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import ExchangeInfoProps from '@Components/Modals/ExchangeModal/ExchangeInfo.types'
@@ -9,62 +10,70 @@ import Button from '@Components/Button/Button.vue'
 
 import useUserStore from '@Store/user/userStore'
 
-defineProps<ExchangeInfoProps>()
+import ExhangeInfoTabs from '@Components/Modals/ExchangeModal/ExchangeInfoIdea'
+
+const props = defineProps<ExchangeInfoProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const dateStart = ref('12.12.2023')
+const dateFinish = ref('16.05.2023')
+const value = ref()
+
+function valueTab(name: string) {
+  if (name == 'Заказчик') {
+    return (value.value = props.idea.customer)
+  }
+  if (name == 'Инициатор') {
+    return (value.value = props.idea.initiator)
+  }
+  if (name == 'Дата старта') {
+    return (value.value = dateStart.value)
+  }
+  if (name == 'Дата окончания') {
+    return (value.value = dateFinish.value)
+  }
+}
 </script>
 
 <template>
-  <Typography class-name="p-2 bg-primary rounded-top fs-4 text-center text-white">
-    <div>Дата старта</div>
-    <div>12.12.2023</div>
-  </Typography>
-
-  <div class="exchange-info w-100 pb-3 px-3">
-    <div v-if="idea?.customer">
-      <Typography class-name="border-bottom text-secondary d-block">
-        Заказчик
-      </Typography>
-
-      <div class="exchange-info__user pt-2">
-        <Icon class-name="bi bi-person-circle text-secondary fs-2 opacity-25" />
-
-        <Typography class-name="text-primary">
-          {{ idea.customer }}
-        </Typography>
-      </div>
+  <div class="bg-white rounded">
+    <div class="exchange-header w-100 bg-primary rounded-top fs-5 text-white p-2">
+      Информация
     </div>
 
-    <div v-if="idea?.initiator">
-      <Typography class-name="border-bottom text-secondary d-block">
-        Инициатор
-      </Typography>
-
-      <div class="exchange-info__user pt-2">
-        <Icon class-name="bi bi-envelope text-secondary fs-2 opacity-25" />
-
-        <Typography class-name="text-primary">
-          {{ idea.initiator }}
+    <div class="exchange-info w-100 p-3">
+      <div
+        v-for="tab in ExhangeInfoTabs"
+        :key="tab.id"
+      >
+        <Typography class-name="border-bottom text-secondary d-block">
+          {{ tab.name }}
         </Typography>
+
+        <div class="exchange-info__user pt-2">
+          <Icon :class-name="`${tab.icon} text-secondary fs-2 opacity-25`" />
+
+          <Typography class-name="text-primary">
+            {{ valueTab(tab.name) }}
+          </Typography>
+        </div>
       </div>
+
+      <Button
+        v-if="user?.email == 'kirill.vlasov.05@inbox.ru'"
+        class-name="btn-danger"
+        >Закрыть набор
+      </Button>
     </div>
-
-    <Button
-      v-if="user?.email == 'kirill.vlasov.05@inbox.ru'"
-      class-name="btn-primary"
-      >Просмотреть заявки</Button
-    >
-
-    <Button
-      v-else
-      class-name="btn-primary"
-      >Подать заявку</Button
-    >
   </div>
 </template>
 
 <style lang="scss" scoped>
+.exchange-header {
+  @include flexible(center, center);
+}
 .exchange-info {
   @include flexible(stretch, flex-start, column, $gap: 16px);
 

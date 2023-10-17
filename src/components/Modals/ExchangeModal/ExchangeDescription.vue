@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
+
 import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
@@ -8,9 +10,14 @@ import {
   IdeaDescriptionEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
 
+import useUserStore from '@Store/user/userStore'
+
 defineProps<IdeaDescriptionProps>()
 
 const emit = defineEmits<IdeaDescriptionEmits>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 function closeModal() {
   emit('close-modal')
@@ -21,7 +28,6 @@ function closeModal() {
 <template>
   <div class="idea-description-header">
     <Button
-      v-if="!buttonBack"
       class-name="btn-primary"
       prepend-icon-name="bi bi-backspace-fill"
       @click="closeModal"
@@ -36,7 +42,10 @@ function closeModal() {
     </Typography>
   </div>
 
-  <ul class="list-group rounded-3">
+  <ul
+    v-if="user?.email != 'kirill.vlasov.05@inbox.ru'"
+    class="list-group rounded-3"
+  >
     <li
       v-for="collapse in ideaModalCollapses"
       :key="collapse.key"

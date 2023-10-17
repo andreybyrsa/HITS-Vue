@@ -20,22 +20,16 @@ const { value, errorMessage } = useField(() => props.name, undefined, {
 })
 
 const BoxInputClassName = computed(() => [
-  'form-check-input',
+  'form-check-input m-1',
   { 'is-invalid': errorMessage.value || props.error },
   props.className,
 ])
 
-const BoxLabelClassName = computed(() => ['form-check-label', props.className])
+const BoxLabelClassName = computed(() => ['form-check-label ms-1', props.className])
 </script>
 
 <template>
-  <div class="form-check">
-    <label
-      :class="BoxLabelClassName"
-      :for="name"
-    >
-      {{ label }}
-    </label>
+  <div :class="wrapperClassName">
     <input
       type="checkbox"
       :name="name"
@@ -43,5 +37,18 @@ const BoxLabelClassName = computed(() => ['form-check-label', props.className])
       v-model="value"
       :value="props.value"
     />
+    <label
+      v-if="label"
+      :class="BoxLabelClassName"
+      :for="name"
+    >
+      {{ label }}
+    </label>
   </div>
 </template>
+
+<!-- <style lang="scss" scoped>
+.form-check-input:checked {
+  background-color: black;
+}
+</style> -->

@@ -209,7 +209,7 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
-      initiator: 'admin@mail.com',
+      initiator: 'kirill.vlasov.05@inbox.ru',
       name: 'Идея по созданию идеи',
       projectType: 'INSIDE',
       problem:
@@ -275,7 +275,7 @@ function getMocks(): Mocks {
       skills: [],
     },
     {
-      id: '0',
+      id: '1',
       name: 'Команда новая',
       closed: false,
       createdAt: new Date(13, 10, 2023),

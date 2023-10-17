@@ -1,19 +1,22 @@
-<script lang="ts" setup>
-import { computed } from 'vue'
+<script lang="ts" setup generic="DataType">
+import { computed, ref, watch, Ref } from 'vue'
 
 import { TableProps } from '@Components/Table/Table.types'
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import TableModal from '@Components/Modals/TableModal/TableModal.vue'
 
-const props = defineProps<TableProps>()
+const props = defineProps<TableProps<DataType>>()
 
 const searchedValue = computed(() => {
-  return props.data?.filter((element) => {
-    const elementData = element?.name?.toLowerCase().trim()
-    const currentSearchedValue = props.searchValue?.toLowerCase().trim()
+  return props.data
+  // ?.filter((element) => {
+  //   const elementData = element?.name?.toLowerCase().trim()
+  //   const currentSearchedValue = props.searchValue?.toLowerCase().trim()
 
-    const isIncludesSearcheValue = elementData?.includes(currentSearchedValue)
+  //   const isIncludesSearcheValue = elementData?.includes(currentSearchedValue)
 
-    return isIncludesSearcheValue
-  })
+  //   return isIncludesSearcheValue
+  // })
 })
 
 function getCellStyle(styleFunction?: (value: string) => string, value?: string) {
@@ -23,6 +26,42 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
   }
   return CellClass
 }
+
+const isCheckedAll = ref(false)
+// const valueCheckboxCollumn = ref(false)
+const checkedData = ref<DataType[]>([]) as Ref<DataType[]>
+
+watch(isCheckedAll, (value) => {
+  if (value) {
+    checkedData.value = props.data
+  } else {
+    if (checkedData.value.length == props.data.length) {
+      checkedData.value = []
+    }
+  }
+})
+
+watch(
+  checkedData,
+  (value) => {
+    if (value.length != props.data.length) {
+      isCheckedAll.value = false
+    } else isCheckedAll.value = true
+  },
+  { deep: true },
+)
+
+function checkedDataValue(row: DataType) {
+  if (checkedData.value.find((elem) => elem == row)) {
+    return true
+  } else return false
+}
+
+// function checkedDataClick(row: DataType[]) {
+//   if (row) {
+//     checkedData.value = row
+//   }
+// }
 </script>
 
 <template>
@@ -30,18 +69,25 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
     <div
       class="row w-100 text-center bg-primary text-light p-3 rounded-3 fs-6 fw-semibold"
     >
+      <div class="table__header-cell col-1">
+        <Checkbox
+          name="checkboxAll"
+          wrapper-class-name="rounded-3 bg-primary"
+          v-model="isCheckedAll"
+        />
+      </div>
       <div
         v-if="$slots.type"
         class="table__header-cell col-1"
       >
         Тип
       </div>
-      <div
+      <!-- <div
         v-if="$slots.icon"
         class="table__header-cell col-1"
       >
         Активные
-      </div>
+      </div> -->
       <div
         v-if="$slots.status"
         class="table__header-cell col-1"
@@ -73,19 +119,28 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
         Действия
       </div>
     </div>
-
     <div
       class="row w-100 bg-light p-3 rounded-4 border text-center fs-6"
       v-for="(row, index) in searchedValue"
+      :class="`${checkedDataValue(row) ? 'border-success' : ''}`"
       :key="index"
+      @click="console.log(row)"
     >
-      <div
+      <!-- <div
         v-if="$slots.icon"
         class="table__row-cell col-1"
       >
         <slot
           :item="row"
           name="icon"
+        />
+      </div> -->
+      <div class="table__header-cell col-1">
+        <Checkbox
+          name="checkbox"
+          wrapper-class-name="checkbox rounded-3 bg-light"
+          v-model="checkedData"
+          :value="row"
         />
       </div>
       <div
@@ -143,6 +198,10 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
       </div>
     </div>
   </div>
+  <TableModal
+    :is-opened="checkedData.length"
+    :data="checkedData"
+  />
 </template>
 
 <style lang="scss" scoped>

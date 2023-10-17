@@ -1,186 +1,83 @@
 <script lang="ts" setup>
+import { onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+
 import {
   IdeaModalProps,
   IdeaModalEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
 
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import ExchangeDescription from '@Components/Modals/ExchangeModal/ExchangeDescription.vue'
-import ExchangeTeams from '@Components/Modals/ExchangeModal/ExchangeTeams.vue'
 import ExchangeInfo from '@Components/Modals/ExchangeModal/ExchangeInfo.vue'
 import ExchangeComments from '@Components/Modals/ExchangeModal/ExchangeComments.vue'
+import ExchangeDescription from '@Components/Modals/ExchangeModal/ExchangeDescription.vue'
+import ExchangeAcceptTeam from './ExchangeAcceptTeam.vue'
+import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
+import useUserStore from '@Store/user/userStore'
+
+import IdeasService from '@Services/IdeasService'
+import TeamService from '@Services/TeamService'
 
 import Team from '@Domain/Team'
-import { User } from '@Domain/User'
-import { Skill } from '@Domain/Skill'
 
 defineProps<IdeaModalProps>()
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
 const emit = defineEmits<IdeaModalEmits>()
-
-const Andrey: User = {
-  id: 'Andrey',
-  token: 'Andrey',
-  email: 'Andrey@mail.com',
-  firstName: 'Андрей',
-  lastName: 'Бырса',
-  skills: [
-    {
-      id: 'skillId1',
-      skillId: 'skillId1',
-      name: 'JavaScript',
-      type: 'LANGUAGE',
-      confirmed: false,
-    },
-  ],
-  roles: ['INITIATOR'],
-  role: 'INITIATOR',
-  lastActivity: new Date(2023, 10, 10),
-}
-
-const Kirill: User = {
-  id: 'Kirill',
-  token: 'Kirill',
-  email: 'Kirill@mail.com',
-  firstName: 'Кирилл',
-  lastName: 'Власов',
-  skills: [
-    {
-      id: 'skillId2',
-      skillId: 'skillId2',
-      name: 'React',
-      type: 'FRAMEWORK',
-      confirmed: false,
-    },
-  ],
-  roles: ['INITIATOR'],
-  role: 'INITIATOR',
-  lastActivity: new Date(2023, 10, 10),
-}
-
-const Timyr: User = {
-  id: 'Timyr',
-  token: 'Timyr',
-  email: 'Timyr@mail.com',
-  firstName: 'Тимур',
-  lastName: 'Минязев',
-  skills: [
-    {
-      id: 'skillId3',
-      skillId: 'skillId3',
-      name: 'Django',
-      type: 'FRAMEWORK',
-      confirmed: false,
-    },
-  ],
-  roles: ['INITIATOR'],
-  role: 'INITIATOR',
-  lastActivity: new Date(2023, 10, 10),
-}
-
-const Mamed: User = {
-  id: 'Mamed',
-  token: 'Mamed',
-  email: 'Mamed@mail.com',
-  firstName: 'Мамедага',
-  lastName: 'Байрамов',
-  skills: [
-    {
-      id: 'skillId4',
-      skillId: 'skillId4',
-      name: 'MongoDB',
-      type: 'DATABASE',
-      confirmed: false,
-    },
-  ],
-  roles: ['INITIATOR'],
-  role: 'INITIATOR',
-  lastActivity: new Date(2023, 10, 10),
-}
-
-const members: User[] = [
-  Andrey,
-  Kirill,
-  Timyr,
-  Timyr,
-  Timyr,
-  Timyr,
-  Timyr,
-  Timyr,
-  Timyr,
-  Timyr,
-  Mamed,
-]
-
-const skills: Skill[] = [
-  {
-    id: 'skillId1',
-    skillId: 'skillId1',
-    name: 'JavaScript',
-    type: 'LANGUAGE',
-    confirmed: false,
-  },
-  {
-    id: 'skillId2',
-    skillId: 'skillId2',
-    name: 'React',
-    type: 'FRAMEWORK',
-    confirmed: false,
-  },
-  {
-    id: 'skillId4',
-    skillId: 'skillId4',
-    name: 'MongoDB',
-    type: 'DATABASE',
-    confirmed: false,
-  },
-]
-
-const teams: Team[] = [
-  {
-    id: '1',
-    name: 'Команда 1',
-    description: 'Описание',
-    closed: false,
-    createdAt: new Date(2023, 10, 10),
-    owner: Andrey,
-    leader: Kirill,
-    members: members,
-    skills: skills,
-  },
-  {
-    id: '2',
-    name: 'Команда 2',
-    description: 'Описание',
-    closed: false,
-    createdAt: new Date(2023, 10, 10),
-    owner: Timyr,
-    leader: Mamed,
-    members: members,
-    skills: skills,
-  },
-]
-
-const idea = {
-  id: '111',
-  createdAt: new Date(2023, 10, 10),
-  modifiedAt: new Date(2023, 10, 10),
-  name: 'Название идеи',
-  problem: 'Проблема идеи',
-  description: 'Описание',
-  solution: 'Решение',
-  result: 'Результат',
-  projectType: 'INSIDE',
-  status: 'CONFIRMED',
-  initiator: 'kirill.vlasov.05@inbox.ru',
-  customer: 'ВШЦТ',
-
-  technicalRealizability: 4,
-}
 
 function closeExchangeModal() {
   emit('close-modal')
 }
+
+const ideas = ref()
+const teams = ref<Team[]>([])
+const isLoadingIdeas = ref(true)
+const isLoadingTeams = ref(true)
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const id = '0'
+
+    const responseIdea = await IdeasService.getInitiatorIdea(id, token)
+    const responseTeams = await TeamService.getTeams(token)
+
+    // const responseTeams = ref()
+    // const responseIdea = ref()
+
+    // await Promise.allSettled([
+    //   await IdeasService.getInitiatorIdea(id, token),
+    //   await TeamService.getTeams(token),
+    // ]).then(
+    //   (response) => (
+    //     (responseIdea.value = response[0]), (responseTeams.value = response[1])
+    //   ),
+    // )
+
+    if (responseIdea instanceof Error) {
+      return
+    }
+    if (responseTeams instanceof Error) {
+      return
+    }
+
+    ideas.value = responseIdea
+    teams.value = responseTeams
+
+    if (ideas.value) {
+      isLoadingIdeas.value = false
+    }
+    if (teams.value) {
+      isLoadingTeams.value = false
+    }
+  }
+})
 </script>
 
 <template>
@@ -188,32 +85,66 @@ function closeExchangeModal() {
     :is-opened="isOpened"
     @on-outside-close="closeExchangeModal"
   >
-    <div
-      class="exchange-modal p-3 h-100 overflow-y-scroll"
-      ref="ideaModalRef"
-    >
+    <div class="exchange-modal p-3 h-100 overflow-y-scroll">
       <div class="exchange-modal__left-side w-75">
+        <LoadingPlaceholder
+          v-if="isLoadingIdeas"
+          height="small"
+        />
         <ExchangeDescription
-          :idea="idea"
+          v-else
+          :idea="ideas"
           @close-modal="closeExchangeModal"
         />
 
-        <ExchangeTeams
-          :teams="teams"
-          @close-modal="closeExchangeModal"
-        />
+        <div class="exchange-modal__left-side-block bg-white rounded">
+          Форма просмотра заявок
+        </div>
 
         <ExchangeComments />
       </div>
 
-      <div class="exchange-modal__right-side w-25 bg-white rounded">
-        <ExchangeInfo :idea="idea" />
+      <div class="exchange-modal__right-side w-25 rounded">
+        <LoadingPlaceholder
+          v-if="isLoadingIdeas"
+          height="medium"
+        />
+        <ExchangeInfo
+          v-else
+          :idea="ideas"
+        />
+
+        <LoadingPlaceholder
+          v-if="isLoadingTeams"
+          height="medium"
+        />
+        <ExchangeAcceptTeam
+          v-else
+          :teams="teams"
+        />
+
+        <div class="exchange-slills bg-white rounded w-100 p-3">
+          <div class="exchange-slills-skill bg-secondary rounded text-white">a</div>
+          <div class="exchange-slills-skill bg-secondary rounded text-white">b</div>
+          <div class="exchange-slills-skill bg-secondary rounded text-white">c</div>
+          <div class="exchange-slills-skill bg-secondary rounded text-white">d</div>
+        </div>
       </div>
     </div>
   </ModalLayout>
 </template>
 
 <style lang="scss" scoped>
+.exchange-slills {
+  @include flexible(stretch, center, $gap: 16px);
+  flex-wrap: wrap;
+
+  &-skill {
+    @include flexible(center, center);
+    width: 100px;
+    height: 100px;
+  }
+}
 .exchange-modal {
   position: relative;
 
@@ -235,6 +166,12 @@ function closeExchangeModal() {
     height: fit-content;
 
     @include flexible(stretch, flex-start, column, $gap: 16px);
+
+    &-block {
+      @include flexible(center, center);
+      width: 100%;
+      height: 500px;
+    }
   }
 
   &__right-side {
