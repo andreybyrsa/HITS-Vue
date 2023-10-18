@@ -6,6 +6,7 @@ import { watchImmediate } from '@vueuse/core'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+import FilterBar from '@Components/FilterBar/FilterBar.vue'
 
 import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
 import IdeasTable from '@Views/Ideas/IdeasTable.vue'
@@ -16,6 +17,7 @@ import { Idea } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import Button from '@Components/Button/Button.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -29,6 +31,23 @@ const searchedValue = ref('')
 const selectedFilters = ref<string[]>([])
 
 const isLoading = ref(true)
+
+const isOpenedfilter = ref(false)
+
+const currrentFilters = [
+  {
+    category: 'Идеи',
+    choices: ['Мои идеи', 'Идеи конкурентов', 'Идеи организации'],
+
+    isUniqueChoice: false,
+  },
+  {
+    category: 'Статус',
+    choices: ['На рассмотрении', 'На согласовании', 'На утверждении'],
+
+    isUniqueChoice: true,
+  },
+]
 
 onMounted(async () => {
   const currentUser = user.value
@@ -104,28 +123,51 @@ const filters = [
     </template>
 
     <template #content>
-      <router-view></router-view>
+      <div class="ideas-page__table-and-filter w-100">
+        <router-view></router-view>
 
-      <Typography class-name="fs-2 text-primary w-75">Список идей</Typography>
+        <Typography class-name="fs-2 text-primary w-75">Список идей</Typography>
 
-      <SearchAndFilters
-        :filtersData="filters"
-        v-model:searchedValue="searchedValue"
-        v-model:selectedFilters="selectedFilters"
-      />
+        <div class="w-100 d-flex justify-content-center">
+          <SearchAndFilters
+            :filtersData="filters"
+            v-model:searchedValue="searchedValue"
+            v-model:selectedFilters="selectedFilters"
+          />
+          <!-- <div class="bg-primary rounded-3 d-flex p-2">
+            <Button
+              v-if="isOpenedfilter === false"
+              class-name="bg-white "
+              @click="isOpenedfilter = true"
+              prepend-icon-name="bi bi-funnel"
+              >фильтр</Button
+            >
 
-      <template v-if="isLoading">
-        <LoadingPlaceholder
-          v-for="value in 3"
-          :key="value"
-          height="medium"
+            <Button
+              v-if="isOpenedfilter === true"
+              class-name="bg-white"
+              @click="isOpenedfilter = false"
+              prepend-icon-name="bi bi-funnel"
+              >фильтр</Button
+            >
+          </div> -->
+        </div>
+
+        <template v-if="isLoading">
+          <LoadingPlaceholder
+            v-for="value in 3"
+            :key="value"
+            height="medium"
+          />
+        </template>
+
+        <IdeasTable
+          v-else
+          :ideas="filterIdeas(ideasData) || ideasData"
+          :searched-value="searchedValue"
         />
-      </template>
-      <IdeasTable
-        v-else
-        :ideas="filterIdeas(ideasData) || ideasData"
-        :searched-value="searchedValue"
-      />
+      </div>
+      <FilterBar :filters="currrentFilters" />
     </template>
   </PageLayout>
 </template>
@@ -133,6 +175,9 @@ const filters = [
 <style lang="scss">
 .ideas-page {
   &__content {
+    @include flexible(start, start);
+  }
+  &__table-and-filter {
     @include flexible(center, start, column, $gap: 12px);
   }
 }
