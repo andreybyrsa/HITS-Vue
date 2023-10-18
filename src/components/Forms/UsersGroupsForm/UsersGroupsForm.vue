@@ -17,6 +17,11 @@ import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+
+const notificationsStore = useNotificationsStore()
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -38,7 +43,7 @@ onMounted(async () => {
     const responseGroups = await UsersGroupsService.getUsersGroups(token)
 
     if (responseGroups instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', 'Ошибка')
     }
 
     usersGroups.value = responseGroups
@@ -88,7 +93,10 @@ const handleDeleteGroup = async () => {
     )
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        'Ошибка удаления группы',
+      )
     }
 
     usersGroups.value = usersGroups.value?.filter(

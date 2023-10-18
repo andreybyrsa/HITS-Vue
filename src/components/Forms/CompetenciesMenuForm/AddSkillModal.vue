@@ -22,6 +22,11 @@ import useUserStore from '@Store/user/userStore'
 
 import Validation from '@Utils/Validation'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+
+const notificationsStore = useNotificationsStore()
+
 const currentSkillId = ref('')
 
 const SkillTypeOptions = [
@@ -67,7 +72,10 @@ const handleAddSkill = handleSubmit(async (values) => {
     const response = await SkillsService.addSkill(values, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        'Ошибка добавления скилла',
+      )
     }
 
     skills.value.push(response)
@@ -93,7 +101,10 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     const { token } = currentUser
     const response = await SkillsService.updateSkill(values, props.currentId, token)
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        'Ошибка редактирования скилла',
+      )
     }
 
     const skillIndex = skills.value.findIndex((skill) => skill.id === values.id)

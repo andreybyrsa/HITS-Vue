@@ -26,13 +26,15 @@ import CommandView from '@Views/CommandView/CommandView.vue'
 
 import DevView from '@Views/DevView.vue'
 
-import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
-import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+// import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
+// import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+
+import RoleAndNotificationMiddleware from '@Middlewares/RoleAndNotificationMiddleware.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: NotificationMiddleware && RoleMiddleware,
+    component: RoleAndNotificationMiddleware,
     children: [
       {
         path: 'ideas',

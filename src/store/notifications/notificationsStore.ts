@@ -9,7 +9,7 @@ const useNotificationsStore = defineStore('notification', {
   }),
   actions: {
     createNotification(title: string, message: string) {
-      const id = String(Math.random())
+      const id = String(Math.random() * 1000000)
       const notification = {
         id,
         title,
@@ -32,7 +32,7 @@ const useNotificationsStore = defineStore('notification', {
     },
 
     createSystemNotification(title: string, message: string) {
-      const id = String(Math.random())
+      const id = String(Math.random() * 1000000)
       const systemNotification = {
         id,
         title,

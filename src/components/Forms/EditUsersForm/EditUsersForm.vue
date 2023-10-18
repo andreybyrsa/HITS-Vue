@@ -16,6 +16,11 @@ import useUserStore from '@Store/user/userStore'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+
+const notificationsStore = useNotificationsStore()
+
 const isOpenUserModal = ref(false)
 const isLoading = ref(true)
 
@@ -36,7 +41,7 @@ onMounted(async () => {
     const response = await ManageUsersService.getUsers(token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', 'Ошибка')
     }
 
     currentUsers.value = response

@@ -20,6 +20,11 @@ import useUserStore from '@Store/user/userStore'
 
 import Validation from '@Utils/Validation'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+
+const notificationsStore = useNotificationsStore()
+
 const userStore = useUserStore()
 const { registerError } = storeToRefs(userStore)
 
@@ -30,7 +35,7 @@ onMounted(async () => {
   const response = await InvitationService.getInvitationInfo(slug)
 
   if (response instanceof Error) {
-    return // notification
+    return notificationsStore.createSystemNotification('Система', 'Ошибка')
   }
 
   const { email, roles } = response
@@ -38,7 +43,7 @@ onMounted(async () => {
     setFieldValue('email', email)
     setFieldValue('roles', roles)
   } else {
-    // notification
+    notificationsStore.createSystemNotification('Система', 'Успех')
   }
 })
 
@@ -61,7 +66,7 @@ const handleRegister = handleSubmit(async (values) => {
   await userStore.registerUser(values)
 
   if (registerError?.value) {
-    // notification
+    notificationsStore.createSystemNotification('Система', 'Ошибка регистрации')
   } else {
     await InvitationService.deleteInvitationInfo(slug)
   }

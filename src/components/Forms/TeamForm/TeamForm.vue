@@ -38,6 +38,9 @@ const { handleSubmit } = useForm<Team>({
     ...props.team,
   },
 })
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+const notificationsStore = useNotificationsStore()
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
 
 const handleCreateTeam = handleSubmit(async (values) => {
   const currentUser = user.value
@@ -49,7 +52,8 @@ const handleCreateTeam = handleSubmit(async (values) => {
     if (response instanceof Error) {
       return
     }
-
+    notificationsStore.createSystemNotification('Система', 'Группа успешно создана')
+    console.log(NotificationMiddleware)
     router.push({ name: 'teams-list' })
   }
 })

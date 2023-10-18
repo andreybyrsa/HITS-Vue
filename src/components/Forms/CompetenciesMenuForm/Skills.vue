@@ -22,6 +22,11 @@ const userStore = useUserStore()
 
 import AddSkillModal from './AddSkillModal.vue'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+
+const notificationsStore = useNotificationsStore()
+
 const { user } = storeToRefs(userStore)
 
 const isOpenedDeleteModal = ref(false)
@@ -48,7 +53,7 @@ onMounted(async () => {
     const responseSkill = await SkillsService.getAllSkills(token)
 
     if (responseSkill instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', 'Ошибка')
     }
     skills.value = responseSkill
   }
@@ -62,7 +67,10 @@ const handleDeleteSkill = async () => {
     const response = await SkillsService.deleteSkill(currentSkillId.value, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        'Ошибка удаления скилла',
+      )
     }
     skills.value = skills.value.filter((skill) => skill.id !== currentSkillId.value)
   }
@@ -76,7 +84,10 @@ const handleConfirmSkill = async (skill: Skill, id: string) => {
     const response = await SkillsService.confirmSkill(skill, id, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        'Ошибка утверждения скилла',
+      )
     }
 
     const currentSkill = skills.value.find((skill) => skill.id === id)

@@ -138,6 +138,7 @@ const removeAllFromFavorites = () => {
         <Button
           class-name="btn-primary mb-3"
           prepend-icon-name="bi bi-backspace-fill"
+          @click="emit('close-modal')"
         >
           Назад
         </Button>

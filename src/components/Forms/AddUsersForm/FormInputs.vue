@@ -18,6 +18,11 @@ import useUserStore from '@Store/user/userStore'
 
 import Validation from '@Utils/Validation'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+
+const notificationsStore = useNotificationsStore()
+
 const fileInputRef = defineModel<VueElement | null>({
   required: true,
 })
@@ -39,7 +44,7 @@ onMounted(async () => {
     const response = await ManageUsersService.getUsersEmails(token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', 'Ошибка')
     }
 
     DBUsersEmails.value = response
@@ -63,11 +68,17 @@ const handleFileLoad = async (event: HTMLTargetEvent) => {
           formattedEmails.forEach((email) => emit('push-email', email))
         }
 
-        // notification
+        notificationsStore.createSystemNotification(
+          'Система',
+          'Ошибка загрузки файла',
+        )
       })
       .catch(({ response }) => {
         const error = response?.data?.error ?? 'Ошибка загрузки файла'
-        // notification
+        notificationsStore.createSystemNotification(
+          'Система',
+          'Файл успешно загружен',
+        )
       })
   }
 }
