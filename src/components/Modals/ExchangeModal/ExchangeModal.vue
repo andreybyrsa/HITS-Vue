@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import {
-  IdeaModalProps,
-  IdeaModalEmits,
-} from '@Components/Modals/IdeaModal/IdeaModal.types'
+  ExchangeModalProps,
+  ExchangeModalEmits,
+} from '@Components/Modals/ExchangeModal/ExchangeModal.types'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import ExchangeDescription from '@Components/Modals/ExchangeModal/ExchangeDescription.vue'
@@ -14,9 +14,9 @@ import Team from '@Domain/Team'
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 
-defineProps<IdeaModalProps>()
+defineProps<ExchangeModalProps>()
 
-const emit = defineEmits<IdeaModalEmits>()
+const emit = defineEmits<ExchangeModalEmits>()
 
 const Andrey: User = {
   id: 'Andrey',

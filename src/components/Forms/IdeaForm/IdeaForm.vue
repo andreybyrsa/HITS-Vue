@@ -107,7 +107,7 @@ const handlePostIdea = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const ideaResponse = await IdeasService.postInitiatorIdea(values, token)
+    const ideaResponse = await IdeasService.createIdea(values, token)
 
     if (ideaResponse instanceof Error) {
       return // notification
@@ -138,7 +138,7 @@ const handleUpdateIdea = handleSubmit(async (values) => {
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
-    const ideaResponse = await IdeasService.putInitiatorIdea(values, id, token)
+    const ideaResponse = await IdeasService.updateIdea(values, id, token)
 
     if (ideaResponse instanceof Error) {
       return // notification

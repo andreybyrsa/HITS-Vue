@@ -11,7 +11,7 @@ const useIdeasStore = defineStore('ideas', {
   }),
   actions: {
     async fetchIdeas(token: string) {
-      const response = await IdeasService.fetchIdeas(token)
+      const response = await IdeasService.getIdeas(token)
 
       if (response instanceof Error) {
         return
@@ -20,7 +20,7 @@ const useIdeasStore = defineStore('ideas', {
       this.ideas = response
     },
     async deleteInitiatorIdea(id: string, token: string) {
-      const response = await IdeasService.deleteInitiatorIdea(id, token)
+      const response = await IdeasService.deleteIdea(id, token)
 
       if (response instanceof Error) {
         return
@@ -33,13 +33,13 @@ const useIdeasStore = defineStore('ideas', {
       }
     },
     async sendInitiatorIdeaOnApproval(id: string, token: string) {
-      await IdeasService.sendInitiatorIdeaOnApproval(id, token)
+      await IdeasService.sendIdeaOnApproval(id, token)
       this.ideas.forEach((idea: Idea) =>
         idea.id == id ? (idea.status = 'ON_APPROVAL') : idea,
       )
     },
     async updateIdeaByAdmin(idea: Idea, id: string, token: string) {
-      await IdeasService.putAdminIdea(idea, id, token)
+      await IdeasService.updateIdea(idea, id, token)
       this.ideas.forEach((idea: Idea) =>
         idea.id == id ? (idea.status = 'ON_APPROVAL') : idea,
       )

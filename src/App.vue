@@ -107,8 +107,6 @@ p {
 }
 
 input[type='checkbox'] {
-  accent-color: $primary-color;
-
   cursor: pointer;
 
   -ms-transform: scale(1.2);

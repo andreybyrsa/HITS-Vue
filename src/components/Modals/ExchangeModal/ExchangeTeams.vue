@@ -4,10 +4,10 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 
-import ExchandeTeamsProps from '@Components/Modals/ExchangeModal/ExchangeModal.types'
+import { ExchangeTeamsProps } from '@Components/Modals/ExchangeModal/ExchangeModal.types'
 import { Skill } from '@Domain/Skill'
 
-defineProps<ExchandeTeamsProps>()
+defineProps<ExchangeTeamsProps>()
 
 const skills: Skill[] = [
   {

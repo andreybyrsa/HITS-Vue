@@ -73,7 +73,11 @@ const handleConfirmSkill = async (skill: Skill, id: string) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.confirmSkill(skill, id, token)
+    const response = await SkillsService.confirmSkill(
+      { ...skill, confirmed: true },
+      id,
+      token,
+    )
 
     if (response instanceof Error) {
       return // notification

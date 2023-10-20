@@ -1,7 +1,15 @@
 import Team from '@Domain/Team'
 
-interface ExchandeTeamsProps {
+interface ExchangeModalProps {
+  isOpened: boolean
+}
+
+interface ExchangeModalEmits {
+  (event: 'close-modal'): void
+}
+
+interface ExchangeTeamsProps {
   teams: Team[]
 }
 
-export default ExchandeTeamsProps
+export { ExchangeModalProps, ExchangeModalEmits, ExchangeTeamsProps }

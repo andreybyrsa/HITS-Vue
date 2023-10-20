@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
 import { storeToRefs } from 'pinia'
@@ -23,7 +23,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const commentsStore = useCommentsStore()
-const { comments, commentsError } = storeToRefs(commentsStore)
+const { comments } = storeToRefs(commentsStore)
 const commentsIsLoading = ref(true)
 
 onMounted(async () => {
@@ -38,12 +38,8 @@ onMounted(async () => {
       commentsIsLoading.value = false
     }
 
-    await commentsStore.connectRsocket(id)
+    // await commentsStore.connectRsocket(id)
   }
-})
-
-watch(commentsError, (error) => {
-  // notification
 })
 
 const { handleSubmit, resetForm } = useForm<Comment>({

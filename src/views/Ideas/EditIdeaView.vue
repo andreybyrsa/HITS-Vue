@@ -28,10 +28,10 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { id } = router.params
+    const id = router.params.id.toString()
     const { token } = currentUser
 
-    const response = await IdeasService.getInitiatorIdea(`${id}`, token)
+    const response = await IdeasService.getIdea(id, token)
 
     if (response instanceof Error) {
       return // notification
