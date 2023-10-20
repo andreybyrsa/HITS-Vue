@@ -13,6 +13,7 @@ import ExchangeComments from '@Components/Modals/ExchangeModal/ExchangeComments.
 import Team from '@Domain/Team'
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
+import { Idea } from '@Domain/Idea'
 
 defineProps<ExchangeModalProps>()
 
@@ -24,15 +25,6 @@ const Andrey: User = {
   email: 'Andrey@mail.com',
   firstName: 'Андрей',
   lastName: 'Бырса',
-  skills: [
-    {
-      id: 'skillId1',
-      skillId: 'skillId1',
-      name: 'JavaScript',
-      type: 'LANGUAGE',
-      confirmed: false,
-    },
-  ],
   roles: ['INITIATOR'],
   role: 'INITIATOR',
   lastActivity: new Date(2023, 10, 10),
@@ -44,15 +36,6 @@ const Kirill: User = {
   email: 'Kirill@mail.com',
   firstName: 'Кирилл',
   lastName: 'Власов',
-  skills: [
-    {
-      id: 'skillId2',
-      skillId: 'skillId2',
-      name: 'React',
-      type: 'FRAMEWORK',
-      confirmed: false,
-    },
-  ],
   roles: ['INITIATOR'],
   role: 'INITIATOR',
   lastActivity: new Date(2023, 10, 10),
@@ -64,15 +47,6 @@ const Timyr: User = {
   email: 'Timyr@mail.com',
   firstName: 'Тимур',
   lastName: 'Минязев',
-  skills: [
-    {
-      id: 'skillId3',
-      skillId: 'skillId3',
-      name: 'Django',
-      type: 'FRAMEWORK',
-      confirmed: false,
-    },
-  ],
   roles: ['INITIATOR'],
   role: 'INITIATOR',
   lastActivity: new Date(2023, 10, 10),
@@ -84,15 +58,6 @@ const Mamed: User = {
   email: 'Mamed@mail.com',
   firstName: 'Мамедага',
   lastName: 'Байрамов',
-  skills: [
-    {
-      id: 'skillId4',
-      skillId: 'skillId4',
-      name: 'MongoDB',
-      type: 'DATABASE',
-      confirmed: false,
-    },
-  ],
   roles: ['INITIATOR'],
   role: 'INITIATOR',
   lastActivity: new Date(2023, 10, 10),
@@ -115,21 +80,18 @@ const members: User[] = [
 const skills: Skill[] = [
   {
     id: 'skillId1',
-    skillId: 'skillId1',
     name: 'JavaScript',
     type: 'LANGUAGE',
     confirmed: false,
   },
   {
     id: 'skillId2',
-    skillId: 'skillId2',
     name: 'React',
     type: 'FRAMEWORK',
     confirmed: false,
   },
   {
     id: 'skillId4',
-    skillId: 'skillId4',
     name: 'MongoDB',
     type: 'DATABASE',
     confirmed: false,
@@ -176,7 +138,7 @@ const idea = {
   customer: 'ВШЦТ',
 
   technicalRealizability: 4,
-}
+} as Idea
 
 function closeExchangeModal() {
   emit('close-modal')

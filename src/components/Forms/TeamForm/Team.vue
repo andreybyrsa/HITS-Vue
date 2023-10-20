@@ -70,7 +70,7 @@ watchImmediate(teamUsers, (currentTeam) => {
   currentTeam.forEach((member) => membersSkills.push(...member.skills))
 
   teamSkills.value = [
-    ...new Map(membersSkills.map((skill) => [skill.skillId, skill])).values(),
+    ...new Map(membersSkills.map((skill) => [skill.id, skill])).values(),
   ]
   radarChartsSkills.value = membersSkills
 })

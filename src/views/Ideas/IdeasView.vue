@@ -43,7 +43,10 @@ onMounted(async () => {
         const A = new Date(a.createdAt).getTime()
         const B = new Date(b.createdAt).getTime()
         return A - B
-      } else return b.rating - a.rating
+      } else if (a.rating && b.rating) {
+        return b.rating - a.rating
+      }
+      return 0
     })
 
     ideasData.value = ideas.value

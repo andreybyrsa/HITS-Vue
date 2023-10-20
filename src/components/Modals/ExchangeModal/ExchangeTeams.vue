@@ -12,14 +12,12 @@ defineProps<ExchangeTeamsProps>()
 const skills: Skill[] = [
   {
     id: 'skillId1',
-    skillId: 'skillId1',
     name: 'JavaScript',
     type: 'LANGUAGE',
     confirmed: false,
   },
   {
     id: 'skillId2',
-    skillId: 'skillId2',
     name: 'React',
     type: 'FRAMEWORK',
     confirmed: false,

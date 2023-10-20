@@ -78,7 +78,10 @@ function sortRating(ideas: Idea[]) {
       const A = new Date(a.createdAt).getTime()
       const B = new Date(b.createdAt).getTime()
       return A - B
-    } else return isSorted.value ? a.rating - b.rating : b.rating - a.rating
+    } else if (a.rating && b.rating) {
+      return isSorted.value ? a.rating - b.rating : b.rating - a.rating
+    }
+    return 0
   })
   setIsSorted()
 }
