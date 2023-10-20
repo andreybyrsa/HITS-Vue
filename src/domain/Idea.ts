@@ -23,7 +23,7 @@ interface Idea {
   suitability: number
   budget: number
   preAssessment: number
-  rating: number
+  rating: number | null
 }
 
 interface Rating {
@@ -31,12 +31,12 @@ interface Rating {
   ideaId: string
   expert: string
 
-  marketValue: number
-  originality: number
-  technicalRealizability: number
-  suitability: number
-  budget: number
-  rating: number
+  marketValue: number | null
+  originality: number | null
+  technicalRealizability: number | null
+  suitability: number | null
+  budget: number | null
+  rating: number | null
   confirmed: boolean
 }
 

@@ -15,7 +15,7 @@ import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 import AdminView from '@Views/AdminView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
-import IdeaView from '@Views/Ideas/IdeaView.vue'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
@@ -47,7 +47,7 @@ const routes: RouteRecordRaw[] = [
               {
                 path: 'idea/:id',
                 meta: { roles: ['INITIATOR', 'ADMIN'] },
-                component: IdeaView,
+                component: IdeaModal,
               },
             ],
           },
