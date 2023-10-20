@@ -1,33 +1,23 @@
 <script lang="ts" setup>
-import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
-import Button from '@Components/Button/Button.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import {
   IdeaDescriptionProps,
   IdeaDescriptionEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
-import { useRouter } from 'vue-router'
+import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
+import Button from '@Components/Button/Button.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 defineProps<IdeaDescriptionProps>()
-
 const emit = defineEmits<IdeaDescriptionEmits>()
-
-const router = useRouter()
-
-function closeModal() {
-  emit('close-modal')
-  router.push('/ideas/list')
-}
 </script>
 
 <template>
   <div class="idea-description-header">
     <Button
-      v-if="!buttonBack"
       class-name="btn-primary"
       prepend-icon-name="bi bi-backspace-fill"
-      @click="closeModal"
+      @click="emit('close-modal')"
     >
       Назад
     </Button>
@@ -35,7 +25,7 @@ function closeModal() {
     <Typography
       class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-x-scroll"
     >
-      {{ idea?.name }}
+      {{ idea.name }}
     </Typography>
   </div>
 
@@ -53,7 +43,7 @@ function closeModal() {
       </Button>
       <Collapse :id="collapse.id">
         <div class="p-2">
-          {{ idea?.[collapse.ideaKey] }}
+          {{ idea[collapse.ideaKey] }}
         </div>
       </Collapse>
     </li>
