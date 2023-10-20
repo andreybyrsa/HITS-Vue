@@ -157,9 +157,12 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
 
           if (currentMockDataIndex !== -1) {
             const currentMockData = mockArray.value[currentMockDataIndex]
+            const { requestData } = mockConfig
+
             mockArray.value[currentMockDataIndex] = {
               ...currentMockData,
               ...newMockData,
+              ...(requestData ?? {}),
             }
 
             const { responseData } = mockConfig

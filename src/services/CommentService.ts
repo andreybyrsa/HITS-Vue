@@ -6,14 +6,20 @@ import getMocks from '@Utils/getMocks'
 
 const commentAxios = defineAxios(getMocks().comments)
 
+function filterCommentsById(ideaId: string, comments: Comment[]) {
+  return comments.filter((comment) => comment.ideaId === ideaId)
+}
+
 const fetchComments = async (
   ideaId: string,
   token: string,
 ): Promise<Comment[] | Error> => {
   return await commentAxios
-    .get(`/comment/all/${ideaId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .get<Comment[]>(
+      `/comment/all/${ideaId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { formatter: (comments) => filterCommentsById(ideaId, comments) },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения комментариев'

@@ -3,6 +3,10 @@ import { Rating } from '@Domain/Idea'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 
+function filterRatingsById(ideaId: string, ratings: Rating[]) {
+  return ratings.filter((rating) => rating.ideaId === ideaId)
+}
+
 const ratingsAxios = defineAxios(getMocks().ratings)
 
 const getAllIdeaRatings = async (
@@ -10,9 +14,11 @@ const getAllIdeaRatings = async (
   token: string,
 ): Promise<Rating[] | Error> => {
   return await ratingsAxios
-    .get(`/rating/all/${ideaId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .get<Rating[]>(
+      `/rating/all/${ideaId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { formatter: (ratings) => filterRatingsById(ideaId, ratings) },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения оценок'

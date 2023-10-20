@@ -7,7 +7,7 @@ import getMocks from '@Utils/getMocks'
 
 const ideasAxios = defineAxios(getMocks().ideas)
 
-const fetchIdeas = async (token: string): Promise<Idea[] | Error> => {
+const getIdeas = async (token: string): Promise<Idea[] | Error> => {
   return await ideasAxios
     .get('/idea/all', {
       headers: { Authorization: `Bearer ${token}` },
@@ -19,10 +19,7 @@ const fetchIdeas = async (token: string): Promise<Idea[] | Error> => {
     })
 }
 
-const getInitiatorIdea = async (
-  id: string,
-  token: string,
-): Promise<Idea | Error> => {
+const getIdea = async (id: string, token: string): Promise<Idea | Error> => {
   return await ideasAxios
     .get(
       `/idea/${id}`,
@@ -36,10 +33,7 @@ const getInitiatorIdea = async (
     })
 }
 
-const postInitiatorIdea = async (
-  idea: Idea,
-  token: string,
-): Promise<Idea | Error> => {
+const createIdea = async (idea: Idea, token: string): Promise<Idea | Error> => {
   return await ideasAxios
     .post('/idea/add', idea, { headers: { Authorization: `Bearer ${token}` } })
     .then((response) => response.data)
@@ -49,7 +43,7 @@ const postInitiatorIdea = async (
     })
 }
 
-const putInitiatorIdea = async (
+const updateIdea = async (
   idea: Idea,
   id: string,
   token: string,
@@ -68,7 +62,7 @@ const putInitiatorIdea = async (
     })
 }
 
-const sendInitiatorIdeaOnApproval = async (
+const sendIdeaOnApproval = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
@@ -89,10 +83,7 @@ const sendInitiatorIdeaOnApproval = async (
     })
 }
 
-const deleteInitiatorIdea = async (
-  id: string,
-  token: string,
-): Promise<Success | Error> => {
+const deleteIdea = async (id: string, token: string): Promise<Success | Error> => {
   return await ideasAxios
     .delete(
       `/idea/delete/${id}`,
@@ -106,7 +97,7 @@ const deleteInitiatorIdea = async (
     })
 }
 
-const changeStatusIdeaByProjectOffice = async (
+const updateIdeaStatusByProjectOffice = async (
   id: string,
   status: IdeaStatusTypes,
   token: string,
@@ -125,7 +116,7 @@ const changeStatusIdeaByProjectOffice = async (
     })
 }
 
-const putAdminIdea = async (
+const updateIdeaByAdmin = async (
   idea: Idea,
   id: string,
   token: string,
@@ -144,7 +135,7 @@ const putAdminIdea = async (
     })
 }
 
-const deleteAdminIdea = async (
+const deleteIdeaByAdmin = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
@@ -162,15 +153,18 @@ const deleteAdminIdea = async (
 }
 
 const IdeasService = {
-  fetchIdeas,
-  getInitiatorIdea,
-  postInitiatorIdea,
-  putInitiatorIdea,
-  sendInitiatorIdeaOnApproval,
-  deleteInitiatorIdea,
-  changeStatusIdeaByProjectOffice,
-  putAdminIdea,
-  deleteAdminIdea,
+  getIdeas,
+  getIdea,
+
+  createIdea,
+
+  updateIdea,
+  sendIdeaOnApproval,
+  updateIdeaStatusByProjectOffice,
+  updateIdeaByAdmin,
+
+  deleteIdea,
+  deleteIdeaByAdmin,
 }
 
 export default IdeasService
