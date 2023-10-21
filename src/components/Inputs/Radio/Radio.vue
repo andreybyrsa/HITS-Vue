@@ -29,13 +29,7 @@ const RadioLabelClassName = computed(() => ['form-check-label', props.className]
 </script>
 
 <template>
-  <div class="form-check">
-    <label
-      :class="RadioLabelClassName"
-      :for="name"
-    >
-      {{ label }}
-    </label>
+  <div class="d-flex gap-2">
     <input
       :name="name"
       type="radio"
@@ -43,5 +37,8 @@ const RadioLabelClassName = computed(() => ['form-check-label', props.className]
       v-model="value"
       :value="props.value"
     />
+    <span :class="RadioLabelClassName">
+      {{ label }}
+    </span>
   </div>
 </template>
