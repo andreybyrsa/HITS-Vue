@@ -1,13 +1,26 @@
-import axios from 'axios'
-
 import { Skill, SkillType } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
 
-const SKILLS_URL = 'http://localhost:3000/api/v1/skill'
+import defineAxios from '@Utils/defineAxios'
+import getMocks from '@Utils/getMocks'
+
+const skillsAxios = defineAxios(getMocks().skills)
+
+function mockSkillsFormatter(skills: Skill[]) {
+  const LANGUAGE = skills.filter((skill) => skill.type === 'LANGUAGE')
+  const FRAMEWORK = skills.filter((skill) => skill.type === 'FRAMEWORK')
+  const DATABASE = skills.filter((skill) => skill.type === 'DATABASE')
+  const DEVOPS = skills.filter((skill) => skill.type === 'DEVOPS')
+  return { LANGUAGE, FRAMEWORK, DATABASE, DEVOPS }
+}
+
+function mockSkillsByTypeMather(skills: Skill[], type: SkillType) {
+  return skills.filter((skill) => skill.type === type)
+}
 
 const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
-  return await axios
-    .get(`${SKILLS_URL}/all`, {
+  return await skillsAxios
+    .get('/skill/all', {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -20,10 +33,12 @@ const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
 const getAllConfirmedOrCreatorSkills = async (
   token: string,
 ): Promise<Record<SkillType, Skill[]> | Error> => {
-  return await axios
-    .get(`${SKILLS_URL}/all-confirmed-or-creator`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await skillsAxios
+    .get<Record<SkillType, Skill[]>>(
+      '/skill/all-confirmed-or-creator',
+      { headers: { Authorization: `Bearer ${token}` } },
+      { formatter: mockSkillsFormatter },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения компетенций'
@@ -32,13 +47,15 @@ const getAllConfirmedOrCreatorSkills = async (
 }
 
 const getSkillsByType = async (
-  skillType: string,
+  skillType: SkillType,
   token: string,
 ): Promise<Skill[] | Error> => {
-  return await axios
-    .get(`${SKILLS_URL}/${skillType}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await skillsAxios
+    .get<Skill[]>(
+      `/skill/${skillType}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { formatter: (data) => mockSkillsByTypeMather(data, skillType) },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения компетенций'
@@ -47,8 +64,8 @@ const getSkillsByType = async (
 }
 
 const addSkill = async (skill: Skill, token: string): Promise<Skill | Error> => {
-  return await axios
-    .post(`${SKILLS_URL}/add`, skill, {
+  return await skillsAxios
+    .post('/skill/add', skill, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -62,8 +79,8 @@ const addNoConfirmedSkill = async (
   skill: Skill,
   token: string,
 ): Promise<Skill | Error> => {
-  return await axios
-    .post(`${SKILLS_URL}/add/no-confirmed`, skill, {
+  return await skillsAxios
+    .post('/skill/add/no-confirmed', skill, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -74,13 +91,17 @@ const addNoConfirmedSkill = async (
 }
 
 const confirmSkill = async (
-  skillId: string,
+  skill: Skill,
+  id: string,
   token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .put(`${SKILLS_URL}/confirm/${skillId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+): Promise<Skill | Error> => {
+  return await skillsAxios
+    .put(
+      `/skill/confirm/${id}`,
+      skill,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка подтверждения компетенции'
@@ -90,13 +111,16 @@ const confirmSkill = async (
 
 const updateSkill = async (
   skill: Skill,
-  skillId: string,
+  id: string,
   token: string,
 ): Promise<Skill | Error> => {
-  return await axios
-    .put(`${SKILLS_URL}/update/${skillId}`, skill, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await skillsAxios
+    .put(
+      `/skill/update/${id}`,
+      skill,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка редактирования компетенции'
@@ -104,14 +128,13 @@ const updateSkill = async (
     })
 }
 
-const deleteSkill = async (
-  skillId: string,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .delete(`${SKILLS_URL}/delete/${skillId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+const deleteSkill = async (id: string, token: string): Promise<Success | Error> => {
+  return await skillsAxios
+    .delete(
+      `/skill/delete/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка удаления компетенции'

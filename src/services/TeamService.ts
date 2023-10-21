@@ -1,13 +1,28 @@
-import axios from 'axios'
-
 import Team from '@Domain/Team'
 import Success from '@Domain/ResponseMessage'
 
-const TEAM_URL = 'http://localhost:3000/api/v1/team'
+import defineAxios from '@Utils/defineAxios'
+import getMocks from '@Utils/getMocks'
+import TeamMember from '@Domain/TeamMember'
+
+const teamsAxios = defineAxios(getMocks().teams)
+const teamMemberAxios = defineAxios(getMocks().teamMember)
+
+const getTeamMembers = async (token: string): Promise<TeamMember[] | Error> => {
+  return await teamMemberAxios
+    .get('/users/all', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения компетенций'
+      return new Error(error)
+    })
+}
 
 const getTeams = async (token: string): Promise<Team[] | Error> => {
-  return await axios
-    .get(`${TEAM_URL}/all`, {
+  return await teamsAxios
+    .get('/team/all', {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -21,10 +36,12 @@ const getTeam = async (
   id: string | string[],
   token: string,
 ): Promise<Team | Error> => {
-  return await axios
-    .get(`${TEAM_URL}/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await teamsAxios
+    .get(
+      `/team/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id: `${id}` } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения команды'
@@ -33,8 +50,8 @@ const getTeam = async (
 }
 
 const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
-  return await axios
-    .post(`${TEAM_URL}/create`, team, {
+  return await teamsAxios
+    .post('/team/create', team, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -48,11 +65,14 @@ const updateTeam = async (
   team: Team,
   id: string,
   token: string,
-): Promise<Team | Error> => {
-  return await axios
-    .put(`${TEAM_URL}/update/${id}`, team, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+): Promise<Success | Error> => {
+  return await teamsAxios
+    .put<Success>(
+      `/team/update/${id}`,
+      team,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id }, responseData: { success: 'Успешное обновление команды' } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка обновления команды'
@@ -61,10 +81,12 @@ const updateTeam = async (
 }
 
 const deleteTeam = async (id: string, token: string): Promise<Success | Error> => {
-  return await axios
-    .delete(`${TEAM_URL}/delete/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await teamsAxios
+    .delete(
+      `/team/delete/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка удаления команды'
@@ -73,6 +95,7 @@ const deleteTeam = async (id: string, token: string): Promise<Success | Error> =
 }
 
 const TeamService = {
+  getTeamMembers,
   getTeams,
   getTeam,
   createTeam,

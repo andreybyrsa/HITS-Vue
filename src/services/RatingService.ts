@@ -1,17 +1,24 @@
-import axios from 'axios'
-
 import { Rating } from '@Domain/Idea'
 
-const RATING_URL = 'http://localhost:3000/api/v1/rating'
+import defineAxios from '@Utils/defineAxios'
+import getMocks from '@Utils/getMocks'
+
+function filterRatingsById(ideaId: string, ratings: Rating[]) {
+  return ratings.filter((rating) => rating.ideaId === ideaId)
+}
+
+const ratingsAxios = defineAxios(getMocks().ratings)
 
 const getAllIdeaRatings = async (
   ideaId: string,
   token: string,
 ): Promise<Rating[] | Error> => {
-  return await axios
-    .get(`${RATING_URL}/all/${ideaId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await ratingsAxios
+    .get<Rating[]>(
+      `/rating/all/${ideaId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { formatter: (ratings) => filterRatingsById(ideaId, ratings) },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения оценок'
@@ -23,10 +30,12 @@ const getExpertRating = async (
   ideaId: string,
   token: string,
 ): Promise<Rating | Error> => {
-  return await axios
-    .get(`${RATING_URL}/${ideaId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await ratingsAxios
+    .get(
+      `/rating/${ideaId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { ideaId } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения оценки'
@@ -39,10 +48,13 @@ const saveExpertRating = async (
   ideaId: string,
   token: string,
 ): Promise<void | Error> => {
-  return await axios
-    .put(`${RATING_URL}/save/${ideaId}`, rating, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await ratingsAxios
+    .put<void>(
+      `/rating/save/${ideaId}`,
+      rating,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { ideaId } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка сохранения оценки'
@@ -55,10 +67,13 @@ const confirmExpertRating = async (
   ideaId: string,
   token: string,
 ): Promise<void | Error> => {
-  return await axios
-    .put(`${RATING_URL}/confirm/${ideaId}`, rating, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await ratingsAxios
+    .put<void>(
+      `/rating/confirm/${ideaId}`,
+      rating,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { ideaId }, requestData: { ...rating, confirmed: true } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка утверждения оценки'

@@ -4,6 +4,8 @@ import { Skill } from '@Domain/Skill'
 interface Team {
   id: string
   name: string
+  closed: boolean
+  createdAt: Date
   description: string
   owner: User
   leader: User

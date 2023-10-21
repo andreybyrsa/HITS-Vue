@@ -20,7 +20,6 @@ const useCommentsStore = defineStore('comments', {
         `comment.${ideaId}.receive`,
         this.comments,
       )
-
       if (isConnected.value === true) {
         this.rsocketIsConnected = true
         this.closeRsocket = closeConnection

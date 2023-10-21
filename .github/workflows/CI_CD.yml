@@ -3,12 +3,18 @@ name: CI/CD
 on:
   push:
     branches:
-      - production
+      - main
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
+    env:
+      VUE_APP_AUTH_API_URL: ${{ secrets.VUE_APP_AUTH_API_URL }}
+      VUE_APP_INVITATION_API_URL: ${{ secrets.VUE_APP_INVITATION_API_URL }}
+      VUE_APP_MANAGE_USERS_API_URL: ${{ secrets.VUE_APP_MANAGE_USERS_API_URL }}
+      VUE_APP_IDEAS_API_URL: ${{ secrets.VUE_APP_IDEAS_API_URL }}
+      VUE_APP_COMMENT_API_URL: ${{ secrets.VUE_APP_COMMENT_API_URL }}
+      VUE_APP_MANAGE_GROUPS_API_URL: ${{ secrets.VUE_APP_MANAGE_GROUPS_API_URL }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

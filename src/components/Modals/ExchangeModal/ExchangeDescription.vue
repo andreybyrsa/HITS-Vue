@@ -1,15 +1,21 @@
 <script lang="ts" setup>
-import {
-  IdeaDescriptionProps,
-  IdeaDescriptionEmits,
-} from '@Components/Modals/IdeaModal/IdeaModal.types'
 import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import {
+  IdeaDescriptionProps,
+  IdeaDescriptionEmits,
+} from '@Components/Modals/IdeaModal/IdeaModal.types'
 
 defineProps<IdeaDescriptionProps>()
+
 const emit = defineEmits<IdeaDescriptionEmits>()
+
+function closeModal() {
+  emit('close-modal')
+  //   router.push('/ideas')
+}
 </script>
 
 <template>
@@ -17,7 +23,7 @@ const emit = defineEmits<IdeaDescriptionEmits>()
     <Button
       class-name="btn-primary"
       prepend-icon-name="bi bi-backspace-fill"
-      @click="emit('close-modal')"
+      @click="closeModal"
     >
       Назад
     </Button>
@@ -25,7 +31,7 @@ const emit = defineEmits<IdeaDescriptionEmits>()
     <Typography
       class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-x-scroll"
     >
-      {{ idea.name }}
+      {{ idea?.name }}
     </Typography>
   </div>
 
@@ -43,7 +49,7 @@ const emit = defineEmits<IdeaDescriptionEmits>()
       </Button>
       <Collapse :id="collapse.id">
         <div class="p-2">
-          {{ idea[collapse.ideaKey] }}
+          {{ idea?.[collapse.ideaKey] }}
         </div>
       </Collapse>
     </li>

@@ -1,5 +1,6 @@
 import StatusTypes from '@Domain/IdeaStatus'
 import UsersGroup from '@Domain/UsersGroup'
+import { Skill } from '@Domain/Skill'
 
 interface Idea {
   id: string
@@ -14,7 +15,7 @@ interface Idea {
   status: StatusTypes
   initiator: string
   projectOffice: UsersGroup[]
-  experts: UsersGroup
+  experts: UsersGroup[]
   customer: string
   contactPerson: string
 
@@ -22,7 +23,7 @@ interface Idea {
   suitability: number
   budget: number
   preAssessment: number
-  rating: number
+  rating: number | null
 }
 
 interface Rating {
@@ -30,13 +31,18 @@ interface Rating {
   ideaId: string
   expert: string
 
-  marketValue: number
-  originality: number
-  technicalRealizability: number
-  suitability: number
-  budget: number
-  rating: number
+  marketValue: number | null
+  originality: number | null
+  technicalRealizability: number | null
+  suitability: number | null
+  budget: number | null
+  rating: number | null
   confirmed: boolean
 }
 
-export { Idea, Rating }
+interface IdeaSkills {
+  ideaId: string
+  skills: Skill[]
+}
+
+export { Idea, Rating, IdeaSkills }
