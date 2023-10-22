@@ -28,7 +28,7 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const id = router.params.id.toString()
+    const id = +router.params.id
     const { token } = currentUser
 
     const response = await IdeasService.getIdea(id, token)

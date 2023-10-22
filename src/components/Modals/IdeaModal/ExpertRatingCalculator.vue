@@ -91,8 +91,6 @@ const handleConfirmRating = handleSubmit(async (values) => {
       return // notification
     }
 
-    setFieldValue('confirmed', true)
-
     ratings.value?.forEach((rating) => {
       if (rating.id === values.id) {
         rating.confirmed = true
@@ -153,7 +151,7 @@ function getCurrentTooltip(select: RatingSelect) {
           :options="select.options"
           v-tooltip="getCurrentTooltip(select)"
           placeholder="Выберите значение"
-          :disabled="values.confirmed"
+          :disabled="rating.confirmed"
         ></Select>
       </div>
     </div>
@@ -170,7 +168,7 @@ function getCurrentTooltip(select: RatingSelect) {
 
     <div
       class="d-flex gap-3"
-      v-if="!values.confirmed"
+      v-if="!rating.confirmed"
     >
       <Button
         type="submit"

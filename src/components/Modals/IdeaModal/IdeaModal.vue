@@ -16,11 +16,12 @@ import { Idea, Rating } from '@Domain/Idea'
 import Comment from '@Domain/Comment'
 
 import IdeasService from '@Services/IdeasService'
-import CommentService from '@Services/CommentService'
 import RatingService from '@Services/RatingService'
 
 import useCommentsStore from '@Store/comments/commentsStore'
 import useUserStore from '@Store/user/userStore'
+
+import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -35,13 +36,12 @@ const rating = ref<Rating>()
 
 const isOpenedIdeaModal = ref(true)
 
-const commentStore = useCommentsStore()
-const { rsocketIsConnected, closeRsocket } = storeToRefs(commentStore)
+const commentsStore = useCommentsStore()
 
 const ideaModalRef = ref<VueElement | null>(null)
 
 function checkResponseStatus<T>(
-  data: PromiseSettledResult<T>,
+  data: RequestResult<T>,
   refValue: Ref<T | undefined>,
 ) {
   if (data.status === 'fulfilled') {
@@ -55,52 +55,45 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token, role } = currentUser
-    const id = route.params.id.toString()
+    const { token } = currentUser
+    const id = +route.params.id
 
-    const ideaParallelRequests: (
-      | Promise<Error | Comment[]>
-      | Promise<Error | Idea>
-      | Promise<Error | Rating[]>
-      | Promise<Error | Rating>
-    )[] = [
-      IdeasService.getIdea(id, token),
-      CommentService.fetchComments(id, token),
-      RatingService.getAllIdeaRatings(id, token),
+    const ideaParallelRequests = [
+      () => IdeasService.getIdea(id, token),
+      () => RatingService.getAllIdeaRatings(id, token),
+      () => commentsStore.getComments(id, token),
     ]
 
-    if (role && ['EXPERT', 'ADMIN'].includes(role)) {
-      ideaParallelRequests.push(RatingService.getExpertRating(id, token))
-    }
-
-    await Promise.allSettled(ideaParallelRequests).then((responses) => {
-      responses.forEach((response, index) => {
-        if (index === 0) {
+    await makeParallelRequests<Idea | Rating[] | Comment[] | Error>(
+      ideaParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
           checkResponseStatus(response, idea)
-        } else if (index === 1) {
-          checkResponseStatus(response, comments)
-        } else if (index === 2) {
+        } else if (response.id === 1) {
           checkResponseStatus(response, ratings)
-        } else if (index === 3) {
-          checkResponseStatus(response, rating)
         }
       })
     })
+
+    // await commentsStore.connectRsocket(id)
   }
 })
 
 function getAccessToConfirmation() {
   if (user.value && idea.value) {
-    const { email, role } = user.value
+    const { id, role } = user.value
     const { status } = idea.value
 
     if (status === 'ON_CONFIRMATION') {
       if (role && ['EXPERT', 'ADMIN'].includes(role)) {
-        const isExistRating = ratings.value?.find(
-          (rating) => rating.expert === email,
-        )
+        const currentRating = ratings.value?.find((rating) => rating.expertId === id)
 
-        return isExistRating
+        if (currentRating) {
+          rating.value = currentRating
+
+          return currentRating
+        }
       }
     }
   }
@@ -108,11 +101,9 @@ function getAccessToConfirmation() {
 
 function handleCloseIdeaModal() {
   isOpenedIdeaModal.value = false
-  router.go(-1)
+  router.push('/ideas/list')
 
-  if (rsocketIsConnected.value) {
-    closeRsocket.value()
-  }
+  commentsStore.disconnectRsocket()
 }
 </script>
 
