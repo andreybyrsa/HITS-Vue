@@ -1,7 +1,7 @@
-import { Idea } from '@Domain/Idea'
+import Market from '@Domain/Market'
 
 interface MarketCommentsProps {
-  idea: Idea
+  idea: Market
 }
 
 export default MarketCommentsProps

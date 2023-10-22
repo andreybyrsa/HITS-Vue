@@ -68,6 +68,18 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: 'market',
+        name: 'market',
+        component: IdeasMarket,
+        children: [
+          {
+            path: ':id',
+            name: 'ideaMarket',
+            component: IdeaMarket,
+          },
+        ],
+      },
+      {
         path: 'teams',
         children: [
           {
@@ -159,13 +171,6 @@ const routes: RouteRecordRaw[] = [
         name: 'dev',
         meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
         component: DevView,
-        children: [
-          {
-            path: ':id',
-            name: 'ideaMarket',
-            component: IdeaMarket,
-          },
-        ],
       },
     ],
   },
@@ -184,11 +189,6 @@ const routes: RouteRecordRaw[] = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
-  },
-  {
-    path: '/market',
-    name: 'market',
-    component: IdeasMarket,
   },
 ]
 

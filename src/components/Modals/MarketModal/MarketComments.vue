@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
 
 import MarketCommentsProps from '@Components/Modals/MarketModal/MarketComments.types'
 
@@ -11,6 +12,7 @@ import Comment from '@Domain/Comment'
 import CommentVue from '@Components/Comment/Comment.vue'
 
 import useUserStore from '@Store/user/userStore'
+import CommentService from '@Services/CommentService'
 
 defineProps<MarketCommentsProps>()
 
@@ -19,39 +21,26 @@ const value = ref('')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const comments = ref<Comment[]>([
-  {
-    id: 1,
-    ideaId: 1,
-    createdAt: '',
+const route = useRoute()
 
-    text: 'Первый комментарий, который ща удалю',
-    senderEmail: 'kirill.vlasov.05@inbox.ru',
-    checkedBy: [1],
-  },
-])
+const comments = ref<Comment[]>()
 
-function send(messange: string) {
-  const mess = {
-    id: 2,
-    ideaId: 2,
-    createdAt: 'new Date(12, 10, 2023)',
+onMounted(async () => {
+  const currentUser = user.value
 
-    text: messange,
-    senderEmail: 'kirill.vlasov.05@inbox.ru',
-    checkedBy: [2],
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const id = +route.params.id
+
+    const response = await CommentService.getComments(id, token)
+
+    if (response instanceof Error) {
+      return
+    }
+
+    comments.value = response
   }
-
-  if (messange) {
-    comments.value.push(mess)
-  }
-  value.value = ''
-}
-
-function handleDeleteComment(commentId: number) {
-  const newArrat = comments.value.filter((comment) => comment.id !== commentId)
-  comments.value = newArrat
-}
+})
 </script>
 
 <template>
@@ -60,14 +49,13 @@ function handleDeleteComment(commentId: number) {
       <Typography class-name="fs-6 px-3">Комментарии инициатора</Typography>
     </div>
 
-    <!-- <IdeaCommentsPlaceholder v-if="commentsIsLoading" /> -->
     <div class="d-grid gap-3 pt-3 px-3 w-100">
       <CommentVue
         v-for="comment in comments"
         :key="comment.id"
         :comment="comment"
         class-name="current-user-comment"
-        @delete-comment="handleDeleteComment(comment.id)"
+        @delete-comment="CommentService.deleteComment(comment.id, user?.token)"
       />
     </div>
 

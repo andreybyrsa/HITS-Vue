@@ -1,7 +1,6 @@
 import { VueElement } from 'vue'
 
 import { Idea, Rating } from '@Domain/Idea'
-import Comment from '@Domain/Comment'
 
 interface IdeaDescriptionProps {
   idea: Idea
@@ -13,7 +12,6 @@ interface IdeaActionsProps {
 
 interface IdeaCommentsProps {
   idea: Idea
-  comments?: Comment[]
 
   ideaModalRef: VueElement | null
 }

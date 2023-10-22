@@ -7,15 +7,15 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import {
-  IdeaDescriptionProps,
-  IdeaDescriptionEmits,
-} from '@Components/Modals/IdeaModal/IdeaModal.types'
+  MarketDescriptionProps,
+  MarketModalEmits,
+} from '@Components/Modals/MarketModal/MarketModal.types'
 
 import useUserStore from '@Store/user/userStore'
 
-defineProps<IdeaDescriptionProps>()
+defineProps<MarketDescriptionProps>()
 
-const emit = defineEmits<IdeaDescriptionEmits>()
+const emit = defineEmits<MarketModalEmits>()
 
 const router = useRouter()
 
@@ -24,7 +24,7 @@ const { user } = storeToRefs(userStore)
 
 function closeModal() {
   emit('close-modal')
-  router.push('/dev')
+  router.push('/market')
 }
 </script>
 

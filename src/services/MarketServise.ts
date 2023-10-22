@@ -2,11 +2,11 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import Success from '@Domain/ResponseMessage'
 
-import { Idea } from '@Domain/Idea'
+import Market from '@Domain/Market'
 
 const ideasMarketAxios = defineAxios(getMocks().ideasMarket)
 
-const fetchIdeasMarket = async (token: string): Promise<Idea[] | Error> => {
+const fetchIdeasMarket = async (token: string): Promise<Market[] | Error> => {
   return await ideasMarketAxios
     .get('/ideas/market/all', {
       headers: { Authorization: `Bearer ${token}` },
@@ -18,8 +18,24 @@ const fetchIdeasMarket = async (token: string): Promise<Idea[] | Error> => {
     })
 }
 
+const getIdeaMarket = async (token: string, id: number): Promise<Market | Error> => {
+  return await ideasMarketAxios
+    .get(
+      `/ideas/market/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки идеи'
+      return new Error(error)
+    })
+}
+
 const postIdeaOnMarket = async (
-  ideas: Idea[],
+  ideas: Market,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasMarketAxios
@@ -38,6 +54,8 @@ const postIdeaOnMarket = async (
 
 const IdeasMarketService = {
   fetchIdeasMarket,
+  getIdeaMarket,
+
   postIdeaOnMarket,
 }
 

@@ -164,14 +164,11 @@ const filters = [
         />
       </div>
 
-      {{ c1 }}
-      {{ c2 }}
-
-      <FilterBar
+      <!-- <FilterBar
         title="Фильтрация по идеям"
         :filters="currrentFilters"
         v-model="sideBarFilters"
-      />
+      /> -->
     </template>
   </PageLayout>
 </template>

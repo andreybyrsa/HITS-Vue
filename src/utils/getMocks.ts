@@ -5,6 +5,7 @@ import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
+import Market from '@Domain/Market'
 
 interface Mocks {
   users: User[]
@@ -14,7 +15,7 @@ interface Mocks {
   teamMember: TeamMember[]
   comments: Comment[]
   ideas: Idea[]
-  ideasMarket: Idea[]
+  ideasMarket: Market[]
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
@@ -280,38 +281,12 @@ function getMocks(): Mocks {
     },
   ]
 
-  const ideasMarket: Idea[] = [
-    {
-      id: 0,
-      initiator: 'kirill.vlasov.05@inbox.ru',
-      name: 'Школа',
-      projectType: 'INSIDE',
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      createdAt: new Date(),
-      modifiedAt: new Date(),
-      status: 'CONFIRMED',
-      customer: 'ВШЦТ',
-      contactPerson: 'ВШЦТ',
-      experts: null,
-      projectOffice: null,
-      rating: 5,
-      budget: 1,
-      suitability: 1,
-      technicalRealizability: 1,
-      preAssessment: 0,
-    },
+  const ideasMarket: Market[] = [
     {
       id: 1,
-      initiator: 'admin@mail.com',
-      name: 'Университет',
-      projectType: 'INSIDE',
+      position: '1',
+      name: 'BaccaratHelper',
+      initiator: 'kirill.vlasov.05@inbox.ru',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -320,18 +295,58 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      createdAt: new Date(),
-      modifiedAt: new Date(),
-      status: 'CONFIRMED',
+      stack: 'ReactJS',
+      creationDate: '2023-10-20T11:02:17Z',
+      members: 4,
       customer: 'ВШЦТ',
-      contactPerson: 'ВШЦТ',
-      experts: null,
-      projectOffice: null,
-      rating: 5,
-      budget: 1,
-      suitability: 1,
-      technicalRealizability: 1,
-      preAssessment: 0,
+      teamSize: 10,
+      status: 'открыта',
+      numberofRequests: 111,
+      isFavorite: false,
+    },
+    {
+      id: 2,
+      position: '2',
+      name: 'Vaccarat',
+      initiator: 'Кирилл Власов',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      stack: 'ReactJS',
+      creationDate: '2023-10-20T11:02:17Z',
+      members: 10,
+      customer: 'ВШЦТ',
+      teamSize: 10,
+      status: 'набор закрыт',
+      numberofRequests: 222,
+      isFavorite: false,
+    },
+    {
+      id: 3,
+      position: '3',
+      name: 'Insensible',
+      initiator: 'Тимур Минязев',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      stack: 'Django',
+      creationDate: '2023-10-20T11:02:17Z',
+      members: 10,
+      customer: 'ВШЦТ',
+      teamSize: 10,
+      status: 'утверждена',
+      numberofRequests: 0,
+      isFavorite: false,
     },
   ]
 

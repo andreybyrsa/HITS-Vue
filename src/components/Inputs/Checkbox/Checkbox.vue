@@ -26,10 +26,11 @@ const BoxInputClassName = computed(() => [
 ])
 
 const BoxLabelClassName = computed(() => ['form-check-label ms-1', props.className])
+const WrapperClassName = computed(() => ['d-flex gap-2', props.wrapperClassName])
 </script>
 
 <template>
-  <div class="d-flex gap-2">
+  <div :class="WrapperClassName">
     <input
       type="checkbox"
       :name="name"

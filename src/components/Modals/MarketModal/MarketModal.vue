@@ -1,15 +1,16 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, VueElement } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import {
-  IdeaModalProps,
-  IdeaModalEmits,
-} from '@Components/Modals/IdeaModal/IdeaModal.types'
+  MarketModalProps,
+  MarketModalEmits,
+} from '@Components/Modals/MarketModal/MarketModal.types'
 
 import MarketInfo from '@Components/Modals/MarketModal/MarketInfo.vue'
 import MarketComments from '@Components/Modals/MarketModal/MarketComments.vue'
+import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.vue'
 import MarketAcceptTeam from './MarketAcceptTeam.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
@@ -19,18 +20,21 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
 
-import IdeasService from '@Services/IdeasService'
 import TeamService from '@Services/TeamService'
 
 import Team from '@Domain/Team'
-import { Idea } from '@Domain/Idea'
+import IdeasMarketService from '@Services/MarketServise'
+import Market from '@Domain/Market'
+import useCommentsStore from '@Store/comments/commentsStore'
 
-defineProps<IdeaModalProps>()
+defineProps<MarketModalProps>()
+
+const MarketModalRef = ref<VueElement | null>(null)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const emit = defineEmits<IdeaModalEmits>()
+const emit = defineEmits<MarketModalEmits>()
 
 const route = useRoute()
 
@@ -38,8 +42,7 @@ function closeMarketModal() {
   emit('close-modal')
 }
 
-const ideas = ref<Idea[]>([])
-const currentIdea = ref()
+const idea = ref<Market>()
 const teams = ref<Team[]>([])
 
 const isLoadingIdea = ref(true)
@@ -50,22 +53,11 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = route.params
+    const id = +route.params.id
 
-    const responseIdea = await IdeasService.fetchIdeas(token)
+    const responseIdea = await IdeasMarketService.getIdeaMarket(token, id)
     const responseTeams = await TeamService.getTeams(token)
-
-    // const responseTeams = ref()
-    // const responseIdea = ref()
-
-    // await Promise.allSettled([
-    //   await IdeasService.getInitiatorIdea(id, token),
-    //   await TeamService.getTeams(token),
-    // ]).then(
-    //   (response) => (
-    //     (responseIdea.value = response[0]), (responseTeams.value = response[1])
-    //   ),
-    // )
+    await useCommentsStore().getComments(id, token)
 
     if (responseIdea instanceof Error) {
       return
@@ -74,12 +66,11 @@ onMounted(async () => {
       return
     }
 
-    ideas.value = responseIdea
-    currentIdea.value = ideas.value.find((idea) => idea.id == id)
+    idea.value = responseIdea
 
     teams.value = responseTeams
 
-    if (currentIdea.value) {
+    if (idea.value) {
       isLoadingIdea.value = false
     }
     if (teams.value) {
@@ -94,54 +85,66 @@ onMounted(async () => {
     :is-opened="isOpened"
     @on-outside-close="closeMarketModal"
   >
-    <div class="exchange-modal p-3 h-100 overflow-y-scroll">
+    <div
+      ref="MarketModalRef"
+      class="exchange-modal p-3 h-100 overflow-y-scroll"
+    >
       <div class="exchange-modal__left-side w-75">
-        <LoadingPlaceholder
-          v-if="isLoadingIdea"
-          height="small"
-        />
         <MarketDescription
-          v-else
-          :idea="currentIdea"
+          v-if="idea"
+          :idea="idea"
           @close-modal="closeMarketModal"
         />
-
         <LoadingPlaceholder
-          v-if="isLoadingIdea"
-          height="medium-200"
+          v-else
+          height="small"
         />
+
         <JoinIdeaForm
-          v-else
-          :idea="currentIdea"
+          v-if="idea"
+          :idea="idea"
         />
-
         <LoadingPlaceholder
-          v-if="isLoadingIdea"
+          v-else
           height="medium-200"
         />
-        <MarketComments
-          v-else
-          :idea="currentIdea"
+
+        <IdeaComments
+          v-if="idea"
+          :idea="idea"
+          :idea-modal-ref="MarketModalRef"
         />
+        <!-- <MarketComments
+          v-if="idea"
+          :idea="idea"
+        /> -->
+        <!-- Компонент Комментарии -->
+        <!-- Собрать все типы один файл -->
+        <!-- Параллельный запрос -->
+        <!-- Заглушку засунуть в компонент -->
+        <!-- <LoadingPlaceholder
+          v-else
+          height="medium-200"
+        /> -->
       </div>
 
       <div class="exchange-modal__right-side w-25 rounded">
-        <LoadingPlaceholder
-          v-if="isLoadingIdea"
-          height="medium"
-        />
         <MarketInfo
+          v-if="idea"
+          :idea="idea"
+        />
+        <LoadingPlaceholder
           v-else
-          :idea="currentIdea"
+          height="medium"
         />
 
-        <LoadingPlaceholder
-          v-if="isLoadingTeams"
-          height="medium"
-        />
         <MarketAcceptTeam
-          v-else
+          v-if="teams"
           :teams="teams"
+        />
+        <LoadingPlaceholder
+          v-else
+          height="medium"
         />
 
         <div class="exchange-slills bg-white rounded w-100 p-3">

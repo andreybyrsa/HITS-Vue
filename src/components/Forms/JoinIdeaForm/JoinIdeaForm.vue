@@ -78,7 +78,7 @@ function getBorderColor(option: string) {
 
 <template>
   <div
-    v-if="user?.email == idea?.initiator"
+    v-if="user?.email != idea?.initiator"
     class="join-modal p-3 rounded bg-white w-100"
   >
     <Typography class-name="fs-4 text-primary">Подать заявку</Typography>

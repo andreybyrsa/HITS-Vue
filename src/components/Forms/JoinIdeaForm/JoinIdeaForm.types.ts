@@ -1,7 +1,7 @@
-import { Idea } from '@Domain/Idea'
+import Market from '@Domain/Market'
 
 interface JoinIdeaFormProps {
-  idea: Idea
+  idea: Market
 }
 
 export default JoinIdeaFormProps

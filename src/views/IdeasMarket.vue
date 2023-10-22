@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useDateFormat } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
@@ -7,59 +9,37 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import SearchAndFilters from './Ideas/SearchAndFilters.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Market from '@Domain/Market'
+import JoinIdeaModal from '@Components/Modals/JoinIdeaModal/JoinIdeaModal.vue'
 
-const Ideas = ref<Market[]>([
-  {
-    id: '1',
-    position: '1',
-    name: 'BaccaratHelper',
-    initiator: 'Андрей Бырса',
-    description:
-      'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-    stack: 'ReactJS',
-    creationDate: new Date('10.01.2023'),
-    members: 4,
-    teamSize: 10,
-    status: 'открыта',
-    numberofRequests: 111,
-    isFavorite: false,
-  },
-  {
-    id: '2',
-    position: '2',
-    name: 'Vaccarat',
-    initiator: 'Кирилл Власов',
-    description:
-      'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...........................',
-    stack: 'ReactJS',
-    creationDate: new Date('10.01.2023'),
-    members: 10,
-    teamSize: 10,
-    status: 'набор закрыт',
-    numberofRequests: 222,
-    isFavorite: false,
-  },
-  {
-    id: '3',
-    position: '3',
-    name: 'Insensible',
-    initiator: 'Тимур Минязев',
-    description:
-      'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-    stack: 'Django',
-    creationDate: new Date('10.01.2023'),
-    members: 10,
-    teamSize: 10,
-    status: 'утверждена',
-    numberofRequests: 0,
-    isFavorite: false,
-  },
-])
+import useUserStore from '@Store/user/userStore'
+import IdeasMarketService from '@Services/MarketServise'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const ideas = ref<Market[]>()
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await IdeasMarketService.fetchIdeasMarket(token)
+
+    if (response instanceof Error) {
+      return
+    }
+
+    ideas.value = response
+  }
+})
+
 const searchedValue = ref('')
 const filters = [{}]
 const selectedFilters = ref<string[]>([])
 
-const favoriteIdeas = computed(() => Ideas.value.filter((idea) => idea.isFavorite))
+const favoriteIdeas = computed(() => ideas.value?.filter((idea) => idea.isFavorite))
 
 const activeView = ref<'all' | 'favorites'>('all')
 
@@ -71,26 +51,25 @@ const toggleFavorite = (idea: Market) => {
   idea.isFavorite = !idea.isFavorite
 }
 
-function getFormattedDate(date: Date | string) {
+function getFormattedDate(date: string) {
   if (date) {
-    if (date instanceof Date) {
-      const formattedDate = date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      })
-      return formattedDate.replace(/\//g, '.')
-    } else {
-      return date
-    }
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
   }
-  return ''
 }
 
 const filteredIdeas = computed(() => {
   const searchTerm = searchedValue.value.toLowerCase()
-  return Ideas.value.filter((idea) => idea.name.toLowerCase().includes(searchTerm))
+  return ideas.value?.filter((idea) => idea.name.toLowerCase().includes(searchTerm))
 })
+
+const isOpenedJoinModal = ref(false)
+function handleOpenJoinModal() {
+  isOpenedJoinModal.value = true
+}
+function handleCloseJoinModal() {
+  isOpenedJoinModal.value = false
+}
 </script>
 
 <template>
@@ -99,6 +78,7 @@ const filteredIdeas = computed(() => {
       <LeftSideBar />
     </template>
     <template #content>
+      <router-view />
       <Typography class-name="fs-2 text-primary w-75">Биржа идей</Typography>
       <SearchAndFilters
         :filtersData="filters"
@@ -116,8 +96,8 @@ const filteredIdeas = computed(() => {
         <Button @click="toggleView('favorites')">
           <Typography
             class-name="fs-5 text-primary border-bottom border-primary border-3"
-            >Избранное</Typography
-          >
+            >Избранное
+          </Typography>
         </Button>
       </div>
       <div class="ideas-container">
@@ -132,7 +112,7 @@ const filteredIdeas = computed(() => {
                 <Typography>#{{ idea.position }}</Typography>
               </div>
               <div class="idea-title">
-                <router-link :to="'/idea/' + idea.id">{{ idea.name }}</router-link>
+                <router-link :to="'market/' + idea.id">{{ idea.name }}</router-link>
               </div>
               <div class="idea-description">
                 {{ idea.description }}
@@ -187,6 +167,7 @@ const filteredIdeas = computed(() => {
                 <Button
                   class="apply-button"
                   prepend-icon-name="bi bi-send-fill"
+                  @click="handleOpenJoinModal"
                 >
                   Подать заявку
                 </Button>
@@ -294,6 +275,10 @@ const filteredIdeas = computed(() => {
       </div>
     </template>
   </PageLayout>
+  <JoinIdeaModal
+    :is-opened="isOpenedJoinModal"
+    @close-modal="handleCloseJoinModal"
+  />
 </template>
 
 <style lang="scss">
