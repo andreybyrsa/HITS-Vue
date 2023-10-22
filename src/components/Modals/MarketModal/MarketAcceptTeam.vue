@@ -1,17 +1,17 @@
 <script lang="ts" setup>
-import ExchangeAcceptTeamProps from '@Components/Modals/ExchangeModal/ExchangeAcceptTeams.types'
+import MarketAcceptTeamProps from '@Components/Modals/MarketModal/MarketAcceptTeams.types'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
-defineProps<ExchangeAcceptTeamProps>()
+defineProps<MarketAcceptTeamProps>()
 </script>
 
 <template>
   <div class="exchange-info bg-white rounded w-100 p-3">
     <Typography class-name="border-bottom text-secondary d-block"
-      >Принятые заявки</Typography
-    >
+      >Принятые заявки
+    </Typography>
     <Button
       v-for="team in teams"
       :key="team.id"

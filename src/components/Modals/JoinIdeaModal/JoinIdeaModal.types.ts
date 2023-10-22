@@ -1,3 +1,5 @@
+import { Idea } from '@Domain/Idea'
+
 interface JoinIdeaModalProps {
   isOpened: boolean
 }

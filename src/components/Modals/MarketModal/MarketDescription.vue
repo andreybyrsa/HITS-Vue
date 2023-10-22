@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
 import Button from '@Components/Button/Button.vue'
@@ -16,12 +17,14 @@ defineProps<IdeaDescriptionProps>()
 
 const emit = defineEmits<IdeaDescriptionEmits>()
 
+const router = useRouter()
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 function closeModal() {
   emit('close-modal')
-  //   router.push('/ideas')
+  router.push('/dev')
 }
 </script>
 
@@ -43,7 +46,7 @@ function closeModal() {
   </div>
 
   <ul
-    v-if="user?.email != 'kirill.vlasov.05@inbox.ru'"
+    v-if="user?.email != idea?.initiator"
     class="list-group rounded-3"
   >
     <li

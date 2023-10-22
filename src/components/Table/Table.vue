@@ -1,11 +1,20 @@
 <script lang="ts" setup generic="DataType">
 import { computed, ref, watch, Ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 import { TableProps } from '@Components/Table/Table.types'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
-import TableModal from '@Components/Modals/TableModal/TableModal.vue'
+import SendDataModal from '@Components/Modals/SendDataModal/SendDataModal.vue'
+
+import useUserStore from '@Store/user/userStore'
 
 const props = defineProps<TableProps<DataType>>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const router = useRouter()
 
 const searchedValue = computed(() => {
   return props.data
@@ -28,7 +37,6 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
 }
 
 const isCheckedAll = ref(false)
-// const valueCheckboxCollumn = ref(false)
 const checkedData = ref<DataType[]>([]) as Ref<DataType[]>
 
 watch(isCheckedAll, (value) => {
@@ -51,17 +59,18 @@ watch(
   { deep: true },
 )
 
+watch(
+  () => user.value?.role,
+  () => {
+    checkedData.value = []
+  },
+)
+
 function checkedDataValue(row: DataType) {
   if (checkedData.value.find((elem) => elem == row)) {
     return true
   } else return false
 }
-
-// function checkedDataClick(row: DataType[]) {
-//   if (row) {
-//     checkedData.value = row
-//   }
-// }
 </script>
 
 <template>
@@ -126,6 +135,14 @@ function checkedDataValue(row: DataType) {
       :key="index"
       @click="console.log(row)"
     >
+      <div class="table__header-cell col-1">
+        <Checkbox
+          name="checkbox"
+          wrapper-class-name="checkbox rounded-3 bg-light"
+          v-model="checkedData"
+          :value="row"
+        />
+      </div>
       <!-- <div
         v-if="$slots.icon"
         class="table__row-cell col-1"
@@ -135,14 +152,7 @@ function checkedDataValue(row: DataType) {
           name="icon"
         />
       </div> -->
-      <div class="table__header-cell col-1">
-        <Checkbox
-          name="checkbox"
-          wrapper-class-name="checkbox rounded-3 bg-light"
-          v-model="checkedData"
-          :value="row"
-        />
-      </div>
+
       <div
         v-if="$slots.type"
         class="table__row-cell col-1"
@@ -198,9 +208,10 @@ function checkedDataValue(row: DataType) {
       </div>
     </div>
   </div>
-  <TableModal
-    :is-opened="checkedData.length"
+  <SendDataModal
+    v-if="buttons"
     :data="checkedData"
+    :buttons="buttons"
   />
 </template>
 

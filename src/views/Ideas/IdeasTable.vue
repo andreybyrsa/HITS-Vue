@@ -9,7 +9,8 @@ import { TableColumn } from '@Components/Table/Table.types'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import Icon from '@Components/Icon/Icon.vue'
+// import Icon from '@Components/Icon/Icon.vue'
+import IdeasMarketServise from '@Services/MarketServise'
 
 import IdeasTableProps from '@Views/Ideas/IdeasView.types'
 
@@ -34,7 +35,7 @@ const [isSorted, setIsSorted] = useToggle(true)
 
 const ideaStore = useIdeasStore()
 
-const gridColumns: TableColumn[] = [
+const gridColumns: TableColumn<Idea>[] = [
   {
     key: 'name',
     label: 'Название',
@@ -116,7 +117,7 @@ function getFloorRating(rating: number) {
   return rating.toFixed(1)
 }
 
-function getRatingColor(rating: number) {
+function getRatingColor(rating: number): string {
   if (rating >= 4.0) {
     return 'text-success'
   }
@@ -161,25 +162,44 @@ function checkButtonEdit(initiator: string, status: IdeaStatusTypes) {
     : false
 }
 
-function checkMark(row: Idea) {
-  const currentRole = user.value?.role
-  const currentStatusIdea = row.status
-  const currentInitiatorIdea = row.initiator
-  const currentEmail = user.value?.email
-  return currentRole == 'INITIATOR' &&
-    (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING') &&
-    currentInitiatorIdea == currentEmail
-    ? true
-    : currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL'
-    ? true
-    : currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
-    ? true
-    : false
+// function checkMark(row: Idea) {
+//   const currentRole = user.value?.role
+//   const currentStatusIdea = row.status
+//   const currentInitiatorIdea = row.initiator
+//   const currentEmail = user.value?.email
+//   return currentRole == 'INITIATOR' &&
+//     (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING') &&
+//     currentInitiatorIdea == currentEmail
+//     ? true
+//     : currentRole == 'PROJECT_OFFICE' &&
+//       (currentStatusIdea == 'ON_APPROVAL' || currentStatusIdea == 'CONFIRMED')
+//     ? true
+//     : currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
+//     ? true
+//     : false
+// }
+
+async function sendData(data: Idea[]) {
+  const currentUser = user.value
+  console.log(data)
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await IdeasMarketServise.postIdeaOnMarket(data, token)
+  }
 }
+
+const buttons = ref([
+  {
+    label: 'Отправить на биржу идей',
+    click: (value: Idea[]) => sendData(value),
+    statement: true,
+  },
+])
 </script>
 
 <template>
   <Table
+    :buttons="buttons"
     :columns="gridColumns"
     :data="ideas"
     :search-value="searchedValue"
@@ -226,7 +246,7 @@ function checkMark(row: Idea) {
         </ul>
       </DropDown>
     </template>
-    <template
+    <!-- <template
       v-if="user?.role != 'ADMIN'"
       #icon="{ item }: { item: Idea }"
     >
@@ -238,7 +258,7 @@ function checkMark(row: Idea) {
         v-else
         class-name="bi bi-circle-fill text-secondary bg-transparent fs-6 opacity-25"
       />
-    </template>
+    </template> -->
   </Table>
 
   <DeleteModal

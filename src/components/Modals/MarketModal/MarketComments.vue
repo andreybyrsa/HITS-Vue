@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
+import MarketCommentsProps from '@Components/Modals/MarketModal/MarketComments.types'
+
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -9,6 +11,8 @@ import Comment from '@Domain/Comment'
 import CommentVue from '@Components/Comment/Comment.vue'
 
 import useUserStore from '@Store/user/userStore'
+
+defineProps<MarketCommentsProps>()
 
 const value = ref('')
 
@@ -68,7 +72,7 @@ function handleDeleteComment(commentId: string) {
 
     <form class="comment-form p-3">
       <Input
-        v-if="user?.email == 'kirill.vlasov.05@inbox.ru'"
+        v-if="user?.email == idea.initiator"
         v-model="value"
         name="exchangeInput"
         class-name="rounded-end"
@@ -80,7 +84,7 @@ function handleDeleteComment(commentId: string) {
       </Input>
 
       <Button
-        v-if="user?.email == 'kirill.vlasov.05@inbox.ru'"
+        v-if="user?.email == idea.initiator"
         class="btn-primary"
         @click="send(value)"
         >Отправить

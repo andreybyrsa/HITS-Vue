@@ -15,7 +15,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import JoinIdeaModal from '@Components/Modals/JoinIdeaModal/JoinIdeaModal.vue'
 
 import useUserStore from '@Store/user/userStore'
-import ExchangeModal from '@Components/Modals/ExchangeModal/ExchangeModal.vue'
+import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 
 const searchValue = ref('')
 
@@ -98,6 +98,8 @@ function handleCloseJoinModal() {
     </template>
 
     <template #content>
+      <router-view></router-view>
+
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
 
       <Select
@@ -150,7 +152,7 @@ function handleCloseJoinModal() {
         </NavTab>
       </div>
 
-      <ExchangeModal
+      <MarketModal
         :is-opened="isOpenedModal"
         @close-modal="handleCloseModal"
       />
@@ -162,7 +164,7 @@ function handleCloseJoinModal() {
 
       <Button
         class-name="btn-primary"
-        @click="isOpenedModal = true"
+        @click="$router.push(`/dev/0`)"
       >
         Открыть окно
       </Button>

@@ -1,4 +1,4 @@
-const ExhangeInfoTabs = [
+const MarketInfoTabs = [
   {
     id: 0,
     name: 'Заказчик',
@@ -21,4 +21,4 @@ const ExhangeInfoTabs = [
   },
 ]
 
-export default ExhangeInfoTabs
+export default MarketInfoTabs

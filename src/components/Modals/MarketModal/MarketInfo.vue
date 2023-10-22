@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import ExchangeInfoProps from '@Components/Modals/ExchangeModal/ExchangeInfo.types'
+import MarketInfoProps from '@Components/Modals/MarketModal/MarketInfo.types'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
@@ -10,9 +10,9 @@ import Button from '@Components/Button/Button.vue'
 
 import useUserStore from '@Store/user/userStore'
 
-import ExhangeInfoTabs from '@Components/Modals/ExchangeModal/ExchangeInfoIdea'
+import MarketInfoTabs from '@Components/Modals/MarketModal/MarketInfoIdea'
 
-const props = defineProps<ExchangeInfoProps>()
+const props = defineProps<MarketInfoProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -45,7 +45,7 @@ function valueTab(name: string) {
 
     <div class="exchange-info w-100 p-3">
       <div
-        v-for="tab in ExhangeInfoTabs"
+        v-for="tab in MarketInfoTabs"
         :key="tab.id"
       >
         <Typography class-name="border-bottom text-secondary d-block">
@@ -62,9 +62,10 @@ function valueTab(name: string) {
       </div>
 
       <Button
-        v-if="user?.email == 'kirill.vlasov.05@inbox.ru'"
+        v-if="user?.email == idea.initiator"
         class-name="btn-danger"
-        >Закрыть набор
+      >
+        Закрыть набор
       </Button>
     </div>
   </div>

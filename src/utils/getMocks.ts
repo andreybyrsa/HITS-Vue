@@ -15,6 +15,7 @@ interface Mocks {
   comments: Comment[]
   ratings: Rating[]
   ideas: Idea[]
+  ideasMarket: Idea[]
   teams: Team[]
 }
 
@@ -235,8 +236,8 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      initiator: 'admin@mail.com',
-      name: 'Идея 1',
+      initiator: 'kirill.vlasov.05@inbox.ru',
+      name: 'Коробка',
       projectType: 'INSIDE',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -249,6 +250,139 @@ function getMocks(): Mocks {
       createdAt: new Date(),
       modifiedAt: new Date(),
       status: 'NEW',
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: [],
+      projectOffice: [],
+      rating: 5,
+      budget: 1,
+      suitability: 1,
+      technicalRealizability: 1,
+      preAssessment: 0,
+    },
+    {
+      id: '2',
+      initiator: 'admin@mail.com',
+      name: 'Ящик',
+      projectType: 'INSIDE',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: new Date(),
+      modifiedAt: new Date(),
+      status: 'ON_APPROVAL',
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: [],
+      projectOffice: [],
+      rating: 5,
+      budget: 1,
+      suitability: 1,
+      technicalRealizability: 1,
+      preAssessment: 0,
+    },
+    {
+      id: '3',
+      initiator: 'kirill.vlasov.05@inbox.ru',
+      name: 'Сумка',
+      projectType: 'INSIDE',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: new Date(),
+      modifiedAt: new Date(),
+      status: 'CONFIRMED',
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: [],
+      projectOffice: [],
+      rating: 5,
+      budget: 1,
+      suitability: 1,
+      technicalRealizability: 1,
+      preAssessment: 0,
+    },
+    {
+      id: '4',
+      initiator: 'kirill.vlasov.05@inbox.ru',
+      name: 'Сумка',
+      projectType: 'INSIDE',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: new Date(),
+      modifiedAt: new Date(),
+      status: 'CONFIRMED',
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: [],
+      projectOffice: [],
+      rating: 5,
+      budget: 1,
+      suitability: 1,
+      technicalRealizability: 1,
+      preAssessment: 0,
+    },
+  ]
+
+  const ideasMarket: Idea[] = [
+    {
+      id: '0',
+      initiator: 'kirill.vlasov.05@inbox.ru',
+      name: 'Школа',
+      projectType: 'INSIDE',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: new Date(),
+      modifiedAt: new Date(),
+      status: 'CONFIRMED',
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: [],
+      projectOffice: [],
+      rating: 5,
+      budget: 1,
+      suitability: 1,
+      technicalRealizability: 1,
+      preAssessment: 0,
+    },
+    {
+      id: '1',
+      initiator: 'admin@mail.com',
+      name: 'Университет',
+      projectType: 'INSIDE',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: new Date(),
+      modifiedAt: new Date(),
+      status: 'CONFIRMED',
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
       experts: [],
@@ -297,6 +431,7 @@ function getMocks(): Mocks {
     comments,
     ratings,
     ideas,
+    ideasMarket,
     teams,
   }
 }

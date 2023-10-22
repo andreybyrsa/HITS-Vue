@@ -52,21 +52,21 @@ onMounted(async () => {
   }
 })
 
-watchImmediate(
-  () => user.value?.role,
-  () => {
-    switch (user.value?.role) {
-      case 'EXPERT':
-        return (selectedFilters.value = ['ON_CONFIRMATION'])
-      case 'PROJECT_OFFICE':
-        return (selectedFilters.value = ['ON_APPROVAL'])
-      case 'INITIATOR':
-        return (selectedFilters.value = [user.value.email])
-      default:
-        selectedFilters.value = []
-    }
-  },
-)
+// watchImmediate(
+//   () => user.value?.role,
+//   () => {
+//     switch (user.value?.role) {
+//       case 'EXPERT':
+//         return (selectedFilters.value = ['ON_CONFIRMATION'])
+//       case 'PROJECT_OFFICE':
+//         return (selectedFilters.value = ['ON_APPROVAL'])
+//       case 'INITIATOR':
+//         return (selectedFilters.value = [user.value.email])
+//       default:
+//         selectedFilters.value = []
+//     }
+//   },
+// )
 
 function filterIdeas(ideasData: Idea[]) {
   if (selectedFilters.value.length) {

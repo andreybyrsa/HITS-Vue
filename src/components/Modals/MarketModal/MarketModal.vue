@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import {
@@ -7,11 +8,12 @@ import {
   IdeaModalEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
 
-import ExchangeInfo from '@Components/Modals/ExchangeModal/ExchangeInfo.vue'
-import ExchangeComments from '@Components/Modals/ExchangeModal/ExchangeComments.vue'
-import ExchangeDescription from '@Components/Modals/ExchangeModal/ExchangeDescription.vue'
-import ExchangeAcceptTeam from './ExchangeAcceptTeam.vue'
+import MarketInfo from '@Components/Modals/MarketModal/MarketInfo.vue'
+import MarketComments from '@Components/Modals/MarketModal/MarketComments.vue'
+import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.vue'
+import MarketAcceptTeam from './MarketAcceptTeam.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+import JoinIdeaForm from '@Components/Forms/JoinIdeaForm/JoinIdeaForm.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
@@ -21,6 +23,7 @@ import IdeasService from '@Services/IdeasService'
 import TeamService from '@Services/TeamService'
 
 import Team from '@Domain/Team'
+import { Idea } from '@Domain/Idea'
 
 defineProps<IdeaModalProps>()
 
@@ -29,13 +32,17 @@ const { user } = storeToRefs(userStore)
 
 const emit = defineEmits<IdeaModalEmits>()
 
-function closeExchangeModal() {
+const route = useRoute()
+
+function closeMarketModal() {
   emit('close-modal')
 }
 
-const ideas = ref()
+const ideas = ref<Idea[]>([])
+const currentIdea = ref()
 const teams = ref<Team[]>([])
-const isLoadingIdeas = ref(true)
+
+const isLoadingIdea = ref(true)
 const isLoadingTeams = ref(true)
 
 onMounted(async () => {
@@ -43,9 +50,9 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const id = '0'
+    const { id } = route.params
 
-    const responseIdea = await IdeasService.getInitiatorIdea(id, token)
+    const responseIdea = await IdeasService.fetchIdeas(token)
     const responseTeams = await TeamService.getTeams(token)
 
     // const responseTeams = ref()
@@ -68,10 +75,12 @@ onMounted(async () => {
     }
 
     ideas.value = responseIdea
+    currentIdea.value = ideas.value.find((idea) => idea.id == id)
+
     teams.value = responseTeams
 
-    if (ideas.value) {
-      isLoadingIdeas.value = false
+    if (currentIdea.value) {
+      isLoadingIdea.value = false
     }
     if (teams.value) {
       isLoadingTeams.value = false
@@ -83,51 +92,71 @@ onMounted(async () => {
 <template>
   <ModalLayout
     :is-opened="isOpened"
-    @on-outside-close="closeExchangeModal"
+    @on-outside-close="closeMarketModal"
   >
     <div class="exchange-modal p-3 h-100 overflow-y-scroll">
       <div class="exchange-modal__left-side w-75">
         <LoadingPlaceholder
-          v-if="isLoadingIdeas"
+          v-if="isLoadingIdea"
           height="small"
         />
-        <ExchangeDescription
+        <MarketDescription
           v-else
-          :idea="ideas"
-          @close-modal="closeExchangeModal"
+          :idea="currentIdea"
+          @close-modal="closeMarketModal"
         />
 
-        <div class="exchange-modal__left-side-block bg-white rounded">
-          Форма просмотра заявок
-        </div>
+        <LoadingPlaceholder
+          v-if="isLoadingIdea"
+          height="medium-200"
+        />
+        <JoinIdeaForm
+          v-else
+          :idea="currentIdea"
+        />
 
-        <ExchangeComments />
+        <LoadingPlaceholder
+          v-if="isLoadingIdea"
+          height="medium-200"
+        />
+        <MarketComments
+          v-else
+          :idea="currentIdea"
+        />
       </div>
 
       <div class="exchange-modal__right-side w-25 rounded">
         <LoadingPlaceholder
-          v-if="isLoadingIdeas"
+          v-if="isLoadingIdea"
           height="medium"
         />
-        <ExchangeInfo
+        <MarketInfo
           v-else
-          :idea="ideas"
+          :idea="currentIdea"
         />
 
         <LoadingPlaceholder
           v-if="isLoadingTeams"
           height="medium"
         />
-        <ExchangeAcceptTeam
+        <MarketAcceptTeam
           v-else
           :teams="teams"
         />
 
         <div class="exchange-slills bg-white rounded w-100 p-3">
-          <div class="exchange-slills-skill bg-secondary rounded text-white">a</div>
-          <div class="exchange-slills-skill bg-secondary rounded text-white">b</div>
-          <div class="exchange-slills-skill bg-secondary rounded text-white">c</div>
-          <div class="exchange-slills-skill bg-secondary rounded text-white">d</div>
+          <div class="exchange-slills-skill bg-secondary rounded text-white">
+            Языки
+          </div>
+          <div class="exchange-slills-skill bg-secondary rounded text-white">
+            Фреймворки
+          </div>
+          <div class="exchange-slills-skill bg-secondary rounded text-white">
+            Devops
+          </div>
+          <div class="exchange-slills-skill bg-secondary rounded text-white">
+            База данных
+          </div>
         </div>
       </div>
     </div>
