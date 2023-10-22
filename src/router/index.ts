@@ -26,6 +26,8 @@ import CommandView from '@Views/CommandView/CommandView.vue'
 
 import DevView from '@Views/DevView.vue'
 
+import IdeasMarket from '@Views/IdeasMarket.vue'
+
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
 import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
 
@@ -165,6 +167,11 @@ const routes: RouteRecordRaw[] = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
+  },
+  {
+    path: '/market',
+    name: 'market',
+    component: IdeasMarket,
   },
 ]
 
