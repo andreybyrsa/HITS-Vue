@@ -45,7 +45,7 @@ const routes: RouteRecordRaw[] = [
             component: IdeasView,
             children: [
               {
-                path: 'idea/:id',
+                path: ':id',
                 meta: { roles: ['INITIATOR', 'ADMIN'] },
                 component: IdeaModal,
               },

@@ -2,7 +2,7 @@ import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 
 interface Team {
-  id: string
+  id: number
   name: string
   closed: boolean
   createdAt: Date

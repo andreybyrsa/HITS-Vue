@@ -1,4 +1,4 @@
-import { Idea } from '@Domain/Idea'
+import { Idea, IdeaSkills } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 
@@ -6,6 +6,7 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 
 const ideasAxios = defineAxios(getMocks().ideas)
+const ideaSkillsAxios = defineAxios(getMocks().ideasSkills)
 
 const getIdeas = async (token: string): Promise<Idea[] | Error> => {
   return await ideasAxios
@@ -19,7 +20,7 @@ const getIdeas = async (token: string): Promise<Idea[] | Error> => {
     })
 }
 
-const getIdea = async (id: string, token: string): Promise<Idea | Error> => {
+const getIdea = async (id: number, token: string): Promise<Idea | Error> => {
   return await ideasAxios
     .get(
       `/idea/${id}`,
@@ -29,6 +30,38 @@ const getIdea = async (id: string, token: string): Promise<Idea | Error> => {
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки идеи'
+      return new Error(error)
+    })
+}
+
+const getIdeaSkills = async (
+  ideaId: number,
+  token: string,
+): Promise<IdeaSkills | Error> => {
+  return await ideaSkillsAxios
+    .get(
+      `/idea/skills/${ideaId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { ideaId } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки компетенций идеи'
+      return new Error(error)
+    })
+}
+
+const createIdeaSkills = async (
+  ideaSkills: IdeaSkills,
+  token: string,
+): Promise<IdeaSkills | Error> => {
+  return await ideaSkillsAxios
+    .post('/idea/skills/add', ideaSkills, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки компетенций идеи'
       return new Error(error)
     })
 }
@@ -45,7 +78,7 @@ const createIdea = async (idea: Idea, token: string): Promise<Idea | Error> => {
 
 const updateIdea = async (
   idea: Idea,
-  id: string,
+  id: number,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios
@@ -62,8 +95,27 @@ const updateIdea = async (
     })
 }
 
+const updateIdeaSkills = async (
+  ideaId: number,
+  ideaSkills: IdeaSkills,
+  token: string,
+): Promise<IdeaSkills | Error> => {
+  return await ideaSkillsAxios
+    .put(
+      '/idea/skills/update',
+      ideaSkills,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { ideaId } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки компетенций идеи'
+      return new Error(error)
+    })
+}
+
 const sendIdeaOnApproval = async (
-  id: string,
+  id: number,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios
@@ -83,7 +135,7 @@ const sendIdeaOnApproval = async (
     })
 }
 
-const deleteIdea = async (id: string, token: string): Promise<Success | Error> => {
+const deleteIdea = async (id: number, token: string): Promise<Success | Error> => {
   return await ideasAxios
     .delete(
       `/idea/delete/${id}`,
@@ -98,7 +150,7 @@ const deleteIdea = async (id: string, token: string): Promise<Success | Error> =
 }
 
 const updateIdeaStatusByProjectOffice = async (
-  id: string,
+  id: number,
   status: IdeaStatusTypes,
   token: string,
 ): Promise<Success | Error> => {
@@ -118,7 +170,7 @@ const updateIdeaStatusByProjectOffice = async (
 
 const updateIdeaByAdmin = async (
   idea: Idea,
-  id: string,
+  id: number,
   token: string,
 ): Promise<Idea | Error> => {
   return await ideasAxios
@@ -136,7 +188,7 @@ const updateIdeaByAdmin = async (
 }
 
 const deleteIdeaByAdmin = async (
-  id: string,
+  id: number,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios
@@ -155,10 +207,13 @@ const deleteIdeaByAdmin = async (
 const IdeasService = {
   getIdeas,
   getIdea,
+  getIdeaSkills,
 
   createIdea,
+  createIdeaSkills,
 
   updateIdea,
+  updateIdeaSkills,
   sendIdeaOnApproval,
   updateIdeaStatusByProjectOffice,
   updateIdeaByAdmin,

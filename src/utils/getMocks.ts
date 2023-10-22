@@ -22,7 +22,7 @@ interface Mocks {
 function getMocks(): Mocks {
   const users: User[] = [
     {
-      id: '0',
+      id: 0,
       token: '10296538',
       email: 'admin@mail.com',
       firstName: 'Админ',
@@ -31,7 +31,7 @@ function getMocks(): Mocks {
     },
 
     {
-      id: '1',
+      id: 1,
       token: '613098',
       email: '1@mail.com',
       firstName: 'Пользователь',
@@ -40,7 +40,7 @@ function getMocks(): Mocks {
     },
 
     {
-      id: '2',
+      id: 2,
       token: '059182',
       email: '2@mail.com',
       firstName: 'Менеджер',
@@ -49,7 +49,7 @@ function getMocks(): Mocks {
     },
 
     {
-      id: '3',
+      id: 3,
       token: '163097',
       email: '3@mail.com',
       firstName: 'Владелец',
@@ -62,19 +62,19 @@ function getMocks(): Mocks {
 
   const skills: Skill[] = [
     {
-      id: '0',
+      id: 0,
       name: 'JavaScript',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
-      id: '1',
+      id: 1,
       name: 'React JS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
-      id: '2',
+      id: 2,
       name: 'C++',
       type: 'LANGUAGE',
       confirmed: false,
@@ -83,13 +83,13 @@ function getMocks(): Mocks {
 
   const usersGroups: UsersGroup[] = [
     {
-      id: '0',
+      id: 0,
       name: 'Группа разработчиков',
       users: [...users],
       roles: ['INITIATOR'],
     },
     {
-      id: '1',
+      id: 1,
       name: 'Группа экспертов',
       users: [],
       roles: ['ADMIN', 'EXPERT'],
@@ -111,7 +111,7 @@ function getMocks(): Mocks {
 
       skills: [
         {
-          id: '2',
+          id: 2,
           name: 'C++',
           type: 'LANGUAGE',
           confirmed: false,
@@ -125,13 +125,13 @@ function getMocks(): Mocks {
 
       skills: [
         {
-          id: '0',
+          id: 0,
           name: 'JavaScript',
           type: 'LANGUAGE',
           confirmed: true,
         },
         {
-          id: '1',
+          id: 1,
           name: 'React JS',
           type: 'FRAMEWORK',
           confirmed: true,
@@ -149,36 +149,39 @@ function getMocks(): Mocks {
 
   const comments: Comment[] = [
     {
-      id: '0',
-      ideaId: '0',
-      sender: 'admin@mail.com',
-      comment: 'Комментарий 1',
+      id: 0,
+      ideaId: 0,
+      createdAt: '2023-10-20T11:02:17Z',
+
+      senderEmail: 'admin@mail.com',
+      text: 'Комментарий 1',
       checkedBy: [],
-      createdAt: new Date(),
     },
     {
-      id: '1',
-      ideaId: '0',
-      sender: '1@mail.com',
-      comment: 'Комментарий 2',
-      checkedBy: [],
-      createdAt: new Date(),
+      id: 1,
+      ideaId: 0,
+      createdAt: '2023-10-21T11:02:17Z',
+
+      senderEmail: '1@mail.com',
+      text: 'Комментарий 2',
+      checkedBy: [0, 1],
     },
     {
-      id: '2',
-      ideaId: '1',
-      sender: '2@mail.com',
-      comment: 'Комментарий 3',
+      id: 2,
+      ideaId: 1,
+      createdAt: '2023-10-21T11:02:17Z',
+
+      senderEmail: '2@mail.com',
+      text: 'Комментарий 3',
       checkedBy: [],
-      createdAt: new Date(),
     },
   ]
 
   const ratings: Rating[] = [
     {
-      id: '0',
-      ideaId: '0',
-      expert: '1@mail.com',
+      id: 0,
+      ideaId: 0,
+      expertId: 0,
       budget: 1,
       technicalRealizability: 1,
       suitability: 2,
@@ -188,9 +191,9 @@ function getMocks(): Mocks {
       confirmed: false,
     },
     {
-      id: '1',
-      ideaId: '0',
-      expert: 'admin@mail.com',
+      id: 1,
+      ideaId: 0,
+      expertId: 1,
       budget: 2,
       technicalRealizability: 4,
       suitability: 5,
@@ -200,9 +203,9 @@ function getMocks(): Mocks {
       confirmed: false,
     },
     {
-      id: '2',
-      ideaId: '1',
-      expert: '1@mail.com',
+      id: 2,
+      ideaId: 1,
+      expertId: 2,
       budget: 1,
       technicalRealizability: 1,
       suitability: 5,
@@ -215,7 +218,7 @@ function getMocks(): Mocks {
 
   const ideas: Idea[] = [
     {
-      id: '0',
+      id: 0,
       initiator: 'admin@mail.com',
       name: 'Идея по созданию идеи',
       projectType: 'INSIDE',
@@ -232,8 +235,8 @@ function getMocks(): Mocks {
       status: 'ON_CONFIRMATION',
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
-      experts: [],
-      projectOffice: [],
+      experts: null,
+      projectOffice: null,
       budget: 1,
       suitability: 1,
       technicalRealizability: 1,
@@ -241,7 +244,7 @@ function getMocks(): Mocks {
       rating: 8 / 5,
     },
     {
-      id: '1',
+      id: 1,
       initiator: 'admin@mail.com',
       name: 'Идея 1',
       projectType: 'INSIDE',
@@ -258,8 +261,8 @@ function getMocks(): Mocks {
       status: 'NEW',
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
-      experts: [],
-      projectOffice: [],
+      experts: null,
+      projectOffice: null,
       budget: 4,
       suitability: 3,
       technicalRealizability: 5,
@@ -269,16 +272,16 @@ function getMocks(): Mocks {
   ]
 
   const ideasSkills: IdeaSkills[] = [
-    { ideaId: '0', skills: [...skills] },
+    { ideaId: 0, skills: [...skills] },
     {
-      ideaId: '1',
+      ideaId: 1,
       skills: [skills[0], skills[2]],
     },
   ]
 
   const teams: Team[] = [
     {
-      id: '0',
+      id: 0,
       name: 'Команда новая',
       closed: false,
       createdAt: new Date(13, 10, 2023),
@@ -290,7 +293,7 @@ function getMocks(): Mocks {
       skills: [],
     },
     {
-      id: '0',
+      id: 1,
       name: 'Команда новая',
       closed: false,
       createdAt: new Date(13, 10, 2023),

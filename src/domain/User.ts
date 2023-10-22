@@ -1,7 +1,7 @@
 import RolesTypes from '@Domain/Roles'
 
 interface User {
-  id: string
+  id: number
   token?: string
 
   email: string

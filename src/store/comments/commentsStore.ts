@@ -9,69 +9,83 @@ import CommentService from '@Services/CommentService'
 
 const useCommentsStore = defineStore('comments', {
   state: (): InitialState => ({
-    comments: [],
+    comments: null,
     rsocketIsConnected: false,
     closeRsocket: () => null,
-    commentsError: '',
   }),
+  getters: {
+    getComments() {
+      return async (ideaId: number, token: string) => {
+        const response = await CommentService.getComments(ideaId, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        this.comments = response
+        return this.comments
+      }
+    },
+  },
   actions: {
-    async connectRsocket(ideaId: string) {
-      const { isConnected, closeConnection } = await useWebSocket<Comment[]>(
-        `comment.${ideaId}.receive`,
-        this.comments,
-      )
-      if (isConnected.value === true) {
-        this.rsocketIsConnected = true
-        this.closeRsocket = closeConnection
+    async connectRsocket(ideaId: number) {
+      if (this.comments) {
+        const { isConnected, closeConnection } = await useWebSocket<Comment[]>(
+          `comment.${ideaId}.receive`,
+          this.comments,
+        )
+
+        if (isConnected.value === true) {
+          this.rsocketIsConnected = true
+          this.closeRsocket = closeConnection
+        }
+      }
+    },
+    async disconnectRsocket() {
+      if (this.rsocketIsConnected) {
+        this.rsocketIsConnected = false
+        this.closeRsocket()
       }
     },
 
-    async fetchComments(ideaId: string, token: string) {
-      const response = await CommentService.fetchComments(ideaId, token)
+    async createComment(comment: Comment, token: string) {
+      const response = await CommentService.createComment(comment, token)
 
       if (response instanceof Error) {
-        this.commentsError = response.message
-        return response
-      }
-
-      this.comments = response
-      return response
-    },
-
-    async postComment(comment: Comment, ideaId: string, token: string) {
-      const response = await CommentService.postComment(comment, ideaId, token)
-
-      if (response instanceof Error) {
-        return (this.commentsError = response.message)
-      }
-
-      if (!this.rsocketIsConnected) {
-        this.comments.push(response)
+        // notification
+      } else {
+        if (!this.rsocketIsConnected) {
+          this.comments?.push(response)
+        }
       }
     },
 
-    async deleteComment(commentId: string, token: string) {
+    async deleteComment(commentId: number, token: string) {
       const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
-        return (this.commentsError = response.message)
+        // notification
+      } else {
+        const currentCommentIndex = this.comments?.findIndex(
+          (comment) => comment.id === commentId,
+        )
+        if (currentCommentIndex !== undefined && currentCommentIndex !== -1) {
+          this.comments?.splice(currentCommentIndex, 1)
+        }
       }
-
-      this.comments = this.comments.filter((comment) => comment.id !== commentId)
     },
 
-    async checkComment(email: string, commentId: string, token: string) {
-      const response = await CommentService.checkComment(commentId, token)
+    async checkComment(userId: number, commentId: number, token: string) {
+      const response = await CommentService.checkComment(userId, commentId, token)
 
       if (response instanceof Error) {
-        return (this.commentsError = response.message)
+        // notification
+      } else {
+        const currentComment = this.comments?.find(
+          (comment) => comment.id === commentId,
+        )
+        currentComment?.checkedBy.push(userId)
       }
-
-      const currentComment = this.comments.find(
-        (comment) => comment.id === commentId,
-      )
-
-      currentComment?.checkedBy.push(email)
     },
   },
 })

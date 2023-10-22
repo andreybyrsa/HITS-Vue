@@ -20,7 +20,7 @@ defineProps<ExchangeModalProps>()
 const emit = defineEmits<ExchangeModalEmits>()
 
 const Andrey: User = {
-  id: 'Andrey',
+  id: 0,
   token: 'Andrey',
   email: 'Andrey@mail.com',
   firstName: 'Андрей',
@@ -31,7 +31,7 @@ const Andrey: User = {
 }
 
 const Kirill: User = {
-  id: 'Kirill',
+  id: 1,
   token: 'Kirill',
   email: 'Kirill@mail.com',
   firstName: 'Кирилл',
@@ -42,7 +42,7 @@ const Kirill: User = {
 }
 
 const Timyr: User = {
-  id: 'Timyr',
+  id: 2,
   token: 'Timyr',
   email: 'Timyr@mail.com',
   firstName: 'Тимур',
@@ -53,7 +53,7 @@ const Timyr: User = {
 }
 
 const Mamed: User = {
-  id: 'Mamed',
+  id: 3,
   token: 'Mamed',
   email: 'Mamed@mail.com',
   firstName: 'Мамедага',
@@ -79,19 +79,19 @@ const members: User[] = [
 
 const skills: Skill[] = [
   {
-    id: 'skillId1',
+    id: 0,
     name: 'JavaScript',
     type: 'LANGUAGE',
     confirmed: false,
   },
   {
-    id: 'skillId2',
+    id: 1,
     name: 'React',
     type: 'FRAMEWORK',
     confirmed: false,
   },
   {
-    id: 'skillId4',
+    id: 2,
     name: 'MongoDB',
     type: 'DATABASE',
     confirmed: false,
@@ -100,7 +100,7 @@ const skills: Skill[] = [
 
 const teams: Team[] = [
   {
-    id: '1',
+    id: 1,
     name: 'Команда 1',
     description: 'Описание',
     closed: false,
@@ -111,7 +111,7 @@ const teams: Team[] = [
     skills: skills,
   },
   {
-    id: '2',
+    id: 2,
     name: 'Команда 2',
     description: 'Описание',
     closed: false,
@@ -124,20 +124,30 @@ const teams: Team[] = [
 ]
 
 const idea = {
-  id: '111',
-  createdAt: new Date(2023, 10, 10),
-  modifiedAt: new Date(2023, 10, 10),
-  name: 'Название идеи',
-  problem: 'Проблема идеи',
-  description: 'Описание',
-  solution: 'Решение',
-  result: 'Результат',
+  id: 0,
+  initiator: 'admin@mail.com',
+  name: 'Идея по созданию идеи',
   projectType: 'INSIDE',
-  status: 'CONFIRMED',
-  initiator: 'kirill.vlasov.05@inbox.ru',
+  problem:
+    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  solution:
+    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  result:
+    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  description:
+    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  createdAt: new Date(),
+  modifiedAt: new Date(),
+  status: 'ON_CONFIRMATION',
   customer: 'ВШЦТ',
-
-  technicalRealizability: 4,
+  contactPerson: 'ВШЦТ',
+  experts: null,
+  projectOffice: null,
+  budget: 1,
+  suitability: 1,
+  technicalRealizability: 1,
+  preAssessment: 1,
+  rating: 8 / 5,
 } as Idea
 
 function closeExchangeModal() {

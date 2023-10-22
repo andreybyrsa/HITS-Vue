@@ -20,7 +20,6 @@ import { Skill } from '@Domain/Skill'
 
 import IdeasService from '@Services/IdeasService'
 import UsersGroupsService from '@Services/UsersGroupsService'
-import IdeaSkillsService from '@Services/IdeaSkills'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -70,7 +69,7 @@ watchImmediate(
       if (currentUser?.token) {
         const { token } = currentUser
         const { id } = idea
-        const response = await IdeaSkillsService.getIdeaSkills(id, token)
+        const response = await IdeasService.getIdeaSkills(id, token)
 
         if (response instanceof Error) {
           return // notification
@@ -89,14 +88,18 @@ watchImmediate(
           return // notification
         }
 
-        const experts = response.filter((userGroup) =>
+        const experts = response.find((userGroup) =>
           userGroup.roles.includes('EXPERT'),
         )
-        const projectOffice = response.filter((userGroup) =>
+        const projectOffice = response.find((userGroup) =>
           userGroup.roles.includes('PROJECT_OFFICE'),
         )
-        setFieldValue('experts', experts)
-        setFieldValue('projectOffice', projectOffice)
+        if (experts && projectOffice) {
+          setFieldValue('experts', experts)
+          setFieldValue('projectOffice', projectOffice)
+        } else {
+          // notification
+        }
       }
     }
   },
@@ -118,11 +121,7 @@ const handlePostIdea = handleSubmit(async (values) => {
       skills: stackTechnologies.value,
     } as IdeaSkills
 
-    const ideaSkillsResponse = await IdeaSkillsService.createIdeaSkills(
-      ideaResponse.id,
-      ideaSkills,
-      token,
-    )
+    const ideaSkillsResponse = await IdeasService.createIdeaSkills(ideaSkills, token)
 
     if (ideaSkillsResponse instanceof Error) {
       // notification
@@ -149,7 +148,7 @@ const handleUpdateIdea = handleSubmit(async (values) => {
       skills: stackTechnologies.value,
     } as IdeaSkills
 
-    const ideaSkillsResponse = await IdeaSkillsService.updateIdeaSkills(
+    const ideaSkillsResponse = await IdeasService.updateIdeaSkills(
       id,
       ideaSkills,
       token,

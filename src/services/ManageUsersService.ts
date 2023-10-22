@@ -13,8 +13,6 @@ import getMocks from '@Utils/getMocks'
 const usersAxios = defineAxios(getMocks().users)
 const usersEmailsAxios = defineAxios(getMocks().usersEmails)
 
-const axiosInstance = axios.create({ baseURL: API_URL })
-
 const getUsers = async (token: string): Promise<User[] | Error> => {
   return await usersAxios
     .get('/profile/get/users', {
@@ -60,8 +58,8 @@ const updateUserInfo = async (
 const updateUserPassword = async (
   newPasswordData: UpdateUserPassword,
 ): Promise<Success | Error> => {
-  return await axiosInstance
-    .put('change/password', newPasswordData)
+  return await axios
+    .put(`${API_URL}/profile/change/password`, newPasswordData)
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка обновления пароля'
@@ -73,8 +71,8 @@ const updateUserEmail = async (
   newEmailData: NewEmailForm,
   token: string,
 ): Promise<Success | Error> => {
-  return axiosInstance
-    .put('/change/email', newEmailData, {
+  return axios
+    .put(`${API_URL}/profile/change/email`, newEmailData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
