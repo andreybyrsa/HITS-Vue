@@ -36,20 +36,20 @@ function handleSetFilters(filters: string[]) {
       name="search-input"
       class-name="rounded-end"
       v-model="searchedValue"
-      placeholder="Поиск идей по названию"
+      placeholder="Поиск по названию"
     >
       <template #prepend>
         <i class="bi bi-search"></i>
       </template>
     </Input>
 
-    <Button
+    <!-- <Button
       class-name="btn-light"
       prepend-icon-name="bi bi-funnel"
       @click="handleOpenFilterModal"
     >
       Фильтр
-    </Button>
+    </Button> -->
     <FilterModal
       :filters="props.filtersData"
       :is-opened="isOpenedFilterModal"
