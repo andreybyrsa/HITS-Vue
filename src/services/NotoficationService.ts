@@ -1,13 +1,12 @@
 import axios from 'axios'
 
-import Notification from '@Domain/Notification'
+import { API_URL } from '@Main'
 
-const NOTIFICATION_URL =
-  'http://localhost:3000/api/v1/notification' || 'http://localhost:3000'
+import Notification from '@Domain/Notification'
 
 const getNotifications = async (token: string): Promise<Notification[] | Error> => {
   return await axios
-    .get(`${NOTIFICATION_URL}/all`, {
+    .get(`${API_URL}/notification/all`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -23,7 +22,7 @@ const getNewNotifications = async (
   token: string,
 ): Promise<Notification[] | Error> => {
   return await axios
-    .get(`${NOTIFICATION_URL}/new`, {
+    .get(`${API_URL}/notification/new`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -36,11 +35,11 @@ const getNewNotifications = async (
 }
 
 const deleteNotification = async (
-  notificationId: string,
+  notificationId: number,
   token: string,
 ): Promise<undefined | Error> => {
   return await axios
-    .delete(`${NOTIFICATION_URL}/delete/${notificationId}`, {
+    .delete(`${API_URL}/notification/delete/${notificationId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -50,9 +49,9 @@ const deleteNotification = async (
     })
 }
 
-const checkNotification = async (notificationId: string, token: string) => {
+const checkNotification = async (notificationId: number, token: string) => {
   return await axios
-    .put(`${NOTIFICATION_URL}/check/${notificationId}`, {
+    .put(`${API_URL}/notification/check/${notificationId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

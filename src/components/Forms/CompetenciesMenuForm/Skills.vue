@@ -31,7 +31,7 @@ const isOpenAddSkillModal = ref(false)
 const isOpenUpdateSkillModal = ref(false)
 const searchValue = ref('')
 
-const currentSkillId = ref('')
+const currentSkillId = ref()
 
 const columns = [
   { key: 'name', label: 'Название' },
@@ -68,12 +68,16 @@ const handleDeleteSkill = async () => {
   }
 }
 
-const handleConfirmSkill = async (id: string) => {
+const handleConfirmSkill = async (skill: Skill, id: number) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.confirmSkill(id, token)
+    const response = await SkillsService.confirmSkill(
+      { ...skill, confirmed: true },
+      id,
+      token,
+    )
 
     if (response instanceof Error) {
       return // notification
@@ -100,7 +104,7 @@ const filteredStatuses = defineModel<Skill[]>('filteredStatuses', {
   required: true,
 })
 
-function openDeleteSkillModal(id: string) {
+function openDeleteSkillModal(id: number) {
   isOpenedDeleteModal.value = true
   currentSkillId.value = id
 }
@@ -117,7 +121,7 @@ function handleCloseAddSkillModal() {
   isOpenAddSkillModal.value = false
 }
 
-function openUpdateSkillModal(id: string) {
+function openUpdateSkillModal(id: number) {
   isOpenUpdateSkillModal.value = true
   currentSkillId.value = id
 }
@@ -258,7 +262,7 @@ function handleCloseUpdateSkillModal() {
               <li
                 v-if="item.confirmed == false"
                 class="list-group-item list-group-item-action p-1"
-                @click="handleConfirmSkill(item.id)"
+                @click="handleConfirmSkill(item, item.id)"
               >
                 <Button prepend-icon-name="bi bi-check-lg text-success fs-4"
                   >Одобрить</Button

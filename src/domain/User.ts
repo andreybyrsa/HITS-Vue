@@ -1,14 +1,12 @@
 import RolesTypes from '@Domain/Roles'
-import { Skill } from '@Domain/Skill'
 
 interface User {
-  id: string
+  id: number
   token?: string
 
   email: string
   firstName: string
   lastName: string
-  skills: Skill[]
 
   roles: RolesTypes[]
   role?: RolesTypes

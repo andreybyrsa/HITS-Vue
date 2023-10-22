@@ -15,6 +15,7 @@ import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 import AdminView from '@Views/AdminView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
@@ -44,12 +45,20 @@ const routes: RouteRecordRaw[] = [
             name: 'ideas-list',
             meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
             component: IdeasView,
+            children: [
+              {
+                path: ':id',
+                meta: { roles: ['INITIATOR', 'ADMIN'] },
+                component: IdeaModal,
+              },
+            ],
           },
           {
             path: 'create',
             meta: { roles: ['INITIATOR', 'ADMIN'] },
             component: NewIdeaView,
           },
+
           {
             path: 'edit/:id',
             meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
@@ -64,6 +73,14 @@ const routes: RouteRecordRaw[] = [
             path: 'create',
             meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
             component: NewTeamView,
+          },
+          {
+            path: 'list',
+            name: 'teams-list',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: CommandView,
           },
           {
             path: 'edit/:id',
@@ -82,14 +99,6 @@ const routes: RouteRecordRaw[] = [
           roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         },
         component: LastActivityNote,
-      },
-      {
-        path: 'command',
-        name: 'command',
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        },
-        component: CommandView,
       },
       {
         path: 'admin',

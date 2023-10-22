@@ -61,6 +61,7 @@ const gridColumns: TableColumn[] = [
   {
     key: 'preAssessment',
     label: 'Оценка',
+    getFormat: (value) => value.toFixed(1),
     getStyle: getRatingColor,
   },
   {
@@ -196,7 +197,7 @@ function checkMark(row: Idea) {
           <li class="list-group-item list-group-item-action p-1">
             <button
               class="w-100 text-start"
-              @click="router.push(`/ideas/idea/${item.id}`)"
+              @click="router.push(`/ideas/list/${item.id}`)"
             >
               Просмотреть идею
             </button>
@@ -207,7 +208,7 @@ function checkMark(row: Idea) {
           >
             <button
               class="w-100 text-start"
-              @click="router.push(`edit-idea/${item.id}`)"
+              @click="router.push(`/ideas/edit/${item.id}`)"
             >
               Редактировать
             </button>

@@ -1,16 +1,25 @@
-import axios from 'axios'
-
 import Comment from '@Domain/Comment'
+import Success from '@Domain/ResponseMessage'
 
-const COMMENT_URL = 'http://localhost:3000/api/v1/comment'
+import defineAxios from '@Utils/defineAxios'
+import getMocks from '@Utils/getMocks'
 
-const fetchComments = async (
-  ideaId: string,
+const commentAxios = defineAxios(getMocks().comments)
+
+function filterCommentsById(ideaId: number, comments: Comment[]) {
+  return comments.filter((comment) => comment.ideaId === ideaId)
+}
+
+const getComments = async (
+  ideaId: number,
   token: string,
 ): Promise<Comment[] | Error> => {
-  return await axios(`${COMMENT_URL}/all/${ideaId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+  return await commentAxios
+    .get<Comment[]>(
+      `/comment/all/${ideaId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { formatter: (comments) => filterCommentsById(ideaId, comments) },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения комментариев'
@@ -18,13 +27,12 @@ const fetchComments = async (
     })
 }
 
-const postComment = async (
+const createComment = async (
   comment: Comment,
-  ideaId: string,
   token: string,
 ): Promise<Comment | Error> => {
-  return await axios
-    .post(`${COMMENT_URL}/send/${ideaId}`, comment, {
+  return await commentAxios
+    .post('/comment/send', comment, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -35,13 +43,15 @@ const postComment = async (
 }
 
 const deleteComment = async (
-  commentId: string,
+  id: number,
   token: string,
-): Promise<undefined | Error> => {
-  return await axios
-    .delete(`${COMMENT_URL}/delete/${commentId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+): Promise<Success | Error> => {
+  return await commentAxios
+    .delete(
+      `/comment/delete/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка удаления комментария'
@@ -49,11 +59,17 @@ const deleteComment = async (
     })
 }
 
-const checkComment = async (commentId: string, token: string) => {
-  return await axios
-    .put(`${COMMENT_URL}/check/${commentId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+const checkComment = async (
+  userId: number,
+  id: number,
+  token: string,
+): Promise<void | Error> => {
+  return await commentAxios
+    .putNoRequestBody<void>(
+      `/comment/check/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id }, requestData: { checkedBy: [userId] } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка просмотра комментария'
@@ -62,8 +78,8 @@ const checkComment = async (commentId: string, token: string) => {
 }
 
 const CommentService = {
-  fetchComments,
-  postComment,
+  getComments,
+  createComment,
   deleteComment,
   checkComment,
 }

@@ -1,51 +1,38 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
+
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import Command from '@Domain/Command'
 import CommandViewTable from './CommandViewTable.vue'
+import TeamService from '@Services/TeamService'
+import useUserStore from '@Store/user/userStore'
+import Team from '@Domain/Team'
+
 const searchedValue = ref('')
 const selectedFilters = ref<string[]>([])
-const commandData = ref<Command[]>([])
 
-onMounted(() => {
-  const data = [
-    {
-      id: '0',
-      name: 'А',
-      dateCreation: new Date('2021-02-02'),
-      members: ['Victor', 'Oleg', 'Sergey'],
-      typeGroup: 'OPEN_TEAM',
-      competencies: ['Java', 'JavaScript'],
-    },
-    {
-      id: '1',
-      name: 'Г',
-      dateCreation: new Date('2021-02-01'),
-      members: ['Victor', 'Oleg'],
-      typeGroup: 'CLOSE_TEAM',
-      competencies: ['SQL'],
-    },
-    {
-      id: '2',
-      name: 'Б',
-      dateCreation: new Date('2021-02-05'),
-      members: ['Victor'],
-      typeGroup: 'CLOSE_TEAM',
-      competencies: ['React', 'React Native'],
-    },
-    {
-      id: '3',
-      name: 'В',
-      dateCreation: new Date('2021-02-07'),
-      members: ['Victor', 'Sergey'],
-      typeGroup: 'OPEN_TEAM',
-      competencies: ['Django', 'Python'],
-    },
-  ]
-  commandData.value = data
+const commandData = ref<Team[]>([])
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await TeamService.getTeams(token)
+
+    if (response instanceof Error) {
+      return
+    }
+
+    commandData.value = response
+  }
 })
 
 watch(
@@ -57,9 +44,9 @@ watch(
   },
 )
 
-function filterCommand(team: Command[]) {
+function filterCommand(team: Team[]) {
   if (selectedFilters.value.length || searchedValue.value) {
-    const dataFilter: Command[] = []
+    const dataFilter: Team[] = []
     team?.forEach((elem) => {
       const filters = [...selectedFilters.value]
       if (searchedValue.value) filters.push(searchedValue.value)
@@ -68,7 +55,7 @@ function filterCommand(team: Command[]) {
           Object.values(elem)
             .map(String)
             .some((value) => value.toLowerCase() === filter.toLowerCase()) ||
-          elem.competencies
+          elem.skills
             .map((competence) => competence.toLowerCase())
             .includes(filter.toLowerCase()),
       )
@@ -102,7 +89,6 @@ const filters = [
     </template>
     <template #content>
       <Typography class-name="fs-2 text-primary w-75">Список команд</Typography>
-      {{ selectedFilters }}
       <SearchAndFilters
         :filtersData="filters"
         v-model:searchedValue="searchedValue"

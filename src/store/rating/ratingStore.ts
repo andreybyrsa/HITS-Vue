@@ -7,7 +7,7 @@ const useRatingStore = defineStore('rating', {
     ratings: [],
   }),
   actions: {
-    async fetchRatingsByIdeaId(ideaId: string, token: string) {
+    async fetchRatingsByIdeaId(ideaId: number, token: string) {
       const index = this.ratings.findIndex((item) => item.ideaId === ideaId)
       if (index === -1) {
         const response = await RatingService.getAllIdeaRatings(ideaId, token)
@@ -20,7 +20,7 @@ const useRatingStore = defineStore('rating', {
         })
       }
     },
-    async fetchRatings(ideaId: string, token: string) {
+    async fetchRatings(ideaId: number, token: string) {
       const response = await RatingService.getAllIdeaRatings(ideaId, token)
       if (response instanceof Error) {
         return
@@ -32,7 +32,7 @@ const useRatingStore = defineStore('rating', {
         this.ratings.push({ ideaId, ratings: response })
       }
     },
-    async saveRating(rating: Rating, ideaId: string, token: string) {
+    async saveRating(rating: Rating, ideaId: number, token: string) {
       const response = await RatingService.saveExpertRating(rating, ideaId, token)
       if (response instanceof Error) {
         return
@@ -51,7 +51,7 @@ const useRatingStore = defineStore('rating', {
         this.ratings.push({ ideaId, ratings: [rating] })
       }
     },
-    async confirmRating(rating: Rating, ideaId: string, token: string) {
+    async confirmRating(rating: Rating, ideaId: number, token: string) {
       const response = await RatingService.confirmExpertRating(rating, ideaId, token)
       if (response instanceof Error) {
         return
@@ -76,11 +76,11 @@ const useRatingStore = defineStore('rating', {
   },
   getters: {
     getRatingByIdeaIdAndExpert:
-      (state) => async (ideaId: string, expert: string, token: string) => {
+      (state) => async (ideaId: number, expertId: number, token: string) => {
         const index = state.ratings.findIndex((item) => item.ideaId === ideaId)
         if (index !== -1) {
           const rating = state.ratings[index].ratings.find(
-            (rating) => rating.expert === expert,
+            (rating) => rating.expertId === expertId,
           )
           if (rating) {
             return rating

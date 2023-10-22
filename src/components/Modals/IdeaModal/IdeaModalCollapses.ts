@@ -1,4 +1,4 @@
-import { IdeaModalCollapseType } from './IdeaModal.types'
+import { IdeaModalCollapseType } from '@Components/Modals/IdeaModal/IdeaModal.types'
 
 const ideaModalCollapses: IdeaModalCollapseType[] = [
   { key: 0, id: 'problem', ideaKey: 'problem', text: 'Проблема' },

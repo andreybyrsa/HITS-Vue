@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
+import { useField } from 'vee-validate'
 
 import {
   PreAssessmentProps,
@@ -12,8 +13,9 @@ import Select from '@Components/Inputs/Select/Select.vue'
 import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
-const preAssessmentValue = defineModel<{ preAssessment: number }>({
-  required: true,
+const { value: preAssessmentValue } = useField<number>('preAssessment', undefined, {
+  validateOnMount: false,
+  validateOnValueUpdate: true,
 })
 
 const props = defineProps<PreAssessmentProps>()
@@ -31,7 +33,7 @@ const currentPreAssessment = computed(() => {
 
 watchImmediate(currentPreAssessment, (currentValue) => {
   if (currentValue) {
-    preAssessmentValue.value.preAssessment = currentValue
+    preAssessmentValue.value = currentValue
   }
 })
 

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
+import { watchImmediate } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
@@ -8,15 +9,14 @@ import Typography from '@Components/Typography/Typography.vue'
 import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.vue'
 import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.types'
 import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCalculator.vue'
-import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
 import IdeaFormSubmit from '@Components/Forms/IdeaForm/IdeaFormSubmit.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import { Idea } from '@Domain/Idea'
-import UsersGroup from '@Domain/UsersGroup'
+import { Idea, IdeaSkills } from '@Domain/Idea'
+import { Skill } from '@Domain/Skill'
 
 import IdeasService from '@Services/IdeasService'
 import UsersGroupsService from '@Services/UsersGroupsService'
@@ -30,32 +30,7 @@ const { user } = storeToRefs(userStore)
 
 const router = useRouter()
 
-const experts = ref<Record<'experts', UsersGroup | undefined>>({
-  experts: undefined,
-})
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await UsersGroupsService.getUsersGroups(token)
-
-    if (response instanceof Error) {
-      return
-    }
-
-    const currentExperts = response.filter((group) => group.roles.includes('EXPERT'))
-    experts.value.experts = currentExperts[0]
-  }
-})
-
-const stackTechnologies = ref({
-  stack: [],
-})
-const preAssessment = ref({
-  preAssessment: props.idea?.preAssessment ?? 1,
-})
+const stackTechnologies = ref<Skill[]>([])
 
 const { values, setFieldValue, setValues, handleSubmit } = useForm<Idea>({
   validationSchema: {
@@ -77,74 +52,113 @@ const { values, setFieldValue, setValues, handleSubmit } = useForm<Idea>({
   initialValues: {
     customer: 'ВШЦТ',
     contactPerson: 'ВШЦТ',
-    ...props.idea,
+    createdAt: new Date(),
+    modifiedAt: new Date(),
+    status: 'NEW',
   },
 })
 
-watch(
+watchImmediate(
   () => props.idea,
-  (idea) => {
+  async (idea) => {
     if (idea) {
       setValues({ ...idea })
+
+      const currentUser = user.value
+
+      if (currentUser?.token) {
+        const { token } = currentUser
+        const { id } = idea
+        const response = await IdeasService.getIdeaSkills(id, token)
+
+        if (response instanceof Error) {
+          return // notification
+        }
+
+        stackTechnologies.value = response.skills
+      }
+    } else {
+      const currentUser = user.value
+
+      if (currentUser?.token) {
+        const { token } = currentUser
+        const response = await UsersGroupsService.getUsersGroups(token)
+
+        if (response instanceof Error) {
+          return // notification
+        }
+
+        const experts = response.find((userGroup) =>
+          userGroup.roles.includes('EXPERT'),
+        )
+        const projectOffice = response.find((userGroup) =>
+          userGroup.roles.includes('PROJECT_OFFICE'),
+        )
+        if (experts && projectOffice) {
+          setFieldValue('experts', experts)
+          setFieldValue('projectOffice', projectOffice)
+        } else {
+          // notification
+        }
+      }
     }
   },
 )
 
-const currentIdea = computed(
-  () => ({
-    ...values,
-    ...experts.value,
-    ...preAssessment.value,
-  }),
-  // if (experts.value) {
-  //   return {
-  //     ...values,
-  //     ...experts.value,
-  //     ...preAssessment.value,
-  //   }
-  // } else {
-  //   return {
-  //     ...values,
-  //     ...preAssessment.value,
-  //   }
-  //
-)
-
-const handlePostIdea = handleSubmit(async () => {
+const handlePostIdea = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await IdeasService.postInitiatorIdea(
-      currentIdea.value as Idea,
-      token,
-    )
+    const ideaResponse = await IdeasService.createIdea(values, token)
 
-    if (response instanceof Error) {
+    if (ideaResponse instanceof Error) {
       return // notification
     }
 
-    router.push('/ideas')
+    const ideaSkills = {
+      ideaId: ideaResponse.id,
+      skills: stackTechnologies.value,
+    } as IdeaSkills
+
+    const ideaSkillsResponse = await IdeasService.createIdeaSkills(ideaSkills, token)
+
+    if (ideaSkillsResponse instanceof Error) {
+      // notification
+    }
+
+    router.push({ name: 'ideas-list' })
   }
 })
 
-const handleUpdateIdea = handleSubmit(async () => {
+const handleUpdateIdea = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
-    const response = await IdeasService.putInitiatorIdea(
-      currentIdea.value as Idea,
-      id,
-      token,
-    )
+    const ideaResponse = await IdeasService.updateIdea(values, id, token)
 
-    if (response instanceof Error) {
+    if (ideaResponse instanceof Error) {
       return // notification
     }
 
-    router.push('/ideas')
+    const ideaSkills = {
+      ideaId: id,
+      skills: stackTechnologies.value,
+    } as IdeaSkills
+
+    const ideaSkillsResponse = await IdeasService.updateIdeaSkills(
+      id,
+      ideaSkills,
+      token,
+    )
+
+    if (ideaSkillsResponse instanceof Error) {
+      // notification
+    }
+
+    router.push({ name: 'ideas-list' })
   }
 })
 </script>
@@ -158,17 +172,14 @@ const handleUpdateIdea = handleSubmit(async () => {
     <div class="w-75 d-flex flex-column gap-3">
       <IdeaFormInputs />
 
-      <StackCategories v-model="stackTechnologies.stack" />
+      <StackCategories v-model:stack="stackTechnologies" />
 
       <CustomerAndContact
         :idea="values"
         @set-value="setFieldValue"
       />
 
-      <PreAssessmentCalculator
-        :idea="values"
-        v-model="preAssessment"
-      />
+      <PreAssessmentCalculator :idea="values" />
 
       <IdeaFormSubmit
         :is-editing="!!idea"
