@@ -1,7 +1,7 @@
 import { Rating } from '@Domain/Idea'
 
 interface InitialState {
-  ratings: { ideaId: string; ratings: Rating[] }[]
+  ratings: { ideaId: number; ratings: Rating[] }[]
 }
 
 export default InitialState

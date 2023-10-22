@@ -29,7 +29,7 @@ const BoxLabelClassName = computed(() => ['form-check-label ms-1', props.classNa
 </script>
 
 <template>
-  <div :class="wrapperClassName">
+  <div class="d-flex gap-2">
     <input
       type="checkbox"
       :name="name"
@@ -37,18 +37,11 @@ const BoxLabelClassName = computed(() => ['form-check-label ms-1', props.classNa
       v-model="value"
       :value="props.value"
     />
-    <label
+    <span
       v-if="label"
       :class="BoxLabelClassName"
-      :for="name"
     >
       {{ label }}
-    </label>
+    </span>
   </div>
 </template>
-
-<!-- <style lang="scss" scoped>
-.form-check-input:checked {
-  background-color: black;
-}
-</style> -->

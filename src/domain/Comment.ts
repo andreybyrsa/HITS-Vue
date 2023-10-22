@@ -1,11 +1,11 @@
 interface Comment {
-  id: string
-  ideaId: string
-  createdAt: Date
+  id: number
+  ideaId: number
+  createdAt: string
 
-  comment: string
-  sender: string
-  checkedBy: string[]
+  text: string
+  senderEmail: string
+  checkedBy: number[]
 }
 
 export default Comment

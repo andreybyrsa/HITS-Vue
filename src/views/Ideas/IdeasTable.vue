@@ -62,6 +62,7 @@ const gridColumns: TableColumn<Idea>[] = [
   {
     key: 'preAssessment',
     label: 'Оценка',
+    getFormat: (value) => value.toFixed(1),
     getStyle: getRatingColor,
   },
   {
@@ -216,7 +217,7 @@ const buttons = ref([
           <li class="list-group-item list-group-item-action p-1">
             <button
               class="w-100 text-start"
-              @click="router.push(`/ideas/list/idea/${item.id}`)"
+              @click="router.push(`/ideas/list/${item.id}`)"
             >
               Просмотреть идею
             </button>

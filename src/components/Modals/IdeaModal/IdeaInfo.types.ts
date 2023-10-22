@@ -1,35 +1,34 @@
-import ModeButtonsType from './modeButtons.types'
+import RolesTypes from '@Domain/Roles'
+import IdeaStatusTypes from '@Domain/IdeaStatus'
+
+import getStatus from '@Utils/getStatus'
+
+const status = getStatus().status
+
+interface ModeButtonsType {
+  id: number
+  text: string
+
+  roles: RolesTypes[]
+  status: IdeaStatusTypes[]
+}
 
 const modeButtons: ModeButtonsType[] = [
   {
     id: 1,
-    text: 'Редактирования',
-    iconClass: 'bi bi-pencil-square text-secondary fs-2 opacity-25',
-
-    roles: ['INITIATOR'],
-    status: ['NEW', 'ON_EDITING'],
+    text: 'Админ',
+    roles: ['ADMIN'],
+    status: status,
   },
   {
     id: 2,
-    text: 'Админ',
-    iconClass: 'bi bi-exclamation-square text-secondary fs-2 opacity-25',
-
-    roles: ['ADMIN'],
-    status: ['NEW', 'ON_EDITING', 'ON_APPROVAL', 'ON_CONFIRMATION', 'CONFIRMED'],
-  },
-  {
-    id: 3,
     text: 'Согласование идеи',
-    iconClass: 'bi bi-check2-square text-secondary fs-2 opacity-25',
-
     roles: ['PROJECT_OFFICE'],
     status: ['ON_APPROVAL'],
   },
   {
-    id: 4,
+    id: 3,
     text: 'Утверждение идеи',
-    iconClass: 'bi bi-check2-square text-secondary fs-2 opacity-25',
-
     roles: ['EXPERT'],
     status: ['ON_CONFIRMATION'],
   },

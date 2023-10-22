@@ -18,7 +18,7 @@ const emit = defineEmits<NotificatonModalWindowEmits>()
 
 const Notifications = ref<Notification[]>([
   {
-    id: '0',
+    id: 0,
     title: 'Чат 1',
     message: 'Попов(менеджер, проект 1): дедлайн завтра',
     readed: false,
@@ -28,7 +28,7 @@ const Notifications = ref<Notification[]>([
     type: 'USER',
   },
   {
-    id: '1',
+    id: 1,
     title: 'Чат 2',
     message: 'Петров(менеджер, проект 2): завтра',
     readed: false,
@@ -38,7 +38,7 @@ const Notifications = ref<Notification[]>([
     type: 'USER',
   },
   {
-    id: '2',
+    id: 2,
     title: 'Чат 1',
     message: 'Попов(менеджер, проект 1): дедлайн завтра',
     readed: true,
@@ -48,7 +48,7 @@ const Notifications = ref<Notification[]>([
     type: 'USER',
   },
   {
-    id: '3',
+    id: 3,
     title: 'Чат 2',
     message: 'Петров(менеджер, проект 2): дедлайн завтра',
     readed: true,

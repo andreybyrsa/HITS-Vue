@@ -21,33 +21,34 @@ const { user } = storeToRefs(userStore)
 
 const comments = ref<Comment[]>([
   {
-    id: '1',
-    ideaId: '1',
-    createdAt: new Date(12, 10, 2023),
+    id: 1,
+    ideaId: 1,
+    createdAt: '',
 
-    comment: 'Через месяц заканчивается прием заявок!',
-    sender: 'kirill.vlasov.05@inbox.ru',
-    checkedBy: ['1'],
+    text: 'Первый комментарий, который ща удалю',
+    senderEmail: 'kirill.vlasov.05@inbox.ru',
+    checkedBy: [1],
   },
 ])
 
 function send(messange: string) {
   const mess = {
-    id: '2',
-    ideaId: '2',
-    createdAt: new Date(12, 10, 2023),
+    id: 2,
+    ideaId: 2,
+    createdAt: 'new Date(12, 10, 2023)',
 
-    comment: messange,
-    sender: 'kirill.vlasov.05@inbox.ru',
-    checkedBy: ['2'],
+    text: messange,
+    senderEmail: 'kirill.vlasov.05@inbox.ru',
+    checkedBy: [2],
   }
+
   if (messange) {
     comments.value.push(mess)
   }
   value.value = ''
 }
 
-function handleDeleteComment(commentId: string) {
+function handleDeleteComment(commentId: number) {
   const newArrat = comments.value.filter((comment) => comment.id !== commentId)
   comments.value = newArrat
 }
