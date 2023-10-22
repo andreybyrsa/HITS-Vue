@@ -44,7 +44,7 @@ const useUserStore = defineStore('user', {
 
       this.registerError = ''
 
-      this.router.push({ name: 'ideas' })
+      this.router.push({ name: 'ideas-list' })
     },
 
     setUserFromLocalStorage(localStorageUser: User) {

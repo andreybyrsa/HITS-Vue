@@ -1,85 +1,154 @@
 <script lang="ts" setup>
-import { onMounted, ref, VueElement } from 'vue'
+import { onMounted, Ref, ref, VueElement } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRoute, useRouter } from 'vue-router'
 
-import {
-  IdeaModalProps,
-  IdeaModalEmits,
-} from '@Components/Modals/IdeaModal/IdeaModal.types'
 import IdeaDescription from '@Components/Modals/IdeaModal/IdeaDescription.vue'
 import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import IdeaActions from '@Components/Modals/IdeaModal/IdeaActions.vue'
 import IdeaInfo from '@Components/Modals/IdeaModal/IdeaInfo.vue'
+import IdeaModalPlaceholder from '@Components/Modals/IdeaModal/IdeaModalPlaceholder.vue'
+import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import useUserStore from '@Store/user/userStore'
-import useIdeasStore from '@Store/ideas/ideasStore'
+import { Idea, Rating } from '@Domain/Idea'
+import Comment from '@Domain/Comment'
 
-import { Idea } from '@Domain/Idea'
+import IdeasService from '@Services/IdeasService'
+import RatingService from '@Services/RatingService'
 
 import useCommentsStore from '@Store/comments/commentsStore'
+import useUserStore from '@Store/user/userStore'
 
-defineProps<IdeaModalProps>()
-
-const emit = defineEmits<IdeaModalEmits>()
-
-const commentStore = useCommentsStore()
-const { rsocketIsConnected, closeRsocket } = storeToRefs(commentStore)
-
-const ideaModalRef = ref<VueElement | null>(null)
-
-function closeIdeaModal() {
-  emit('close-modal')
-
-  if (rsocketIsConnected.value) {
-    closeRsocket.value()
-  }
-}
+import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const ideaStore = useIdeasStore()
+const router = useRouter()
+const route = useRoute()
+
+const idea = ref<Idea>()
+const comments = ref<Comment[]>()
+const ratings = ref<Rating[]>()
+const rating = ref<Rating>()
+
+const isOpenedIdeaModal = ref(true)
+
+const commentsStore = useCommentsStore()
+
+const ideaModalRef = ref<VueElement | null>(null)
+
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    // notification
+  }
+}
 
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
+    const id = +route.params.id
 
-    await ideaStore.fetchIdeas(token)
+    const ideaParallelRequests = [
+      () => IdeasService.getIdea(id, token),
+      () => RatingService.getAllIdeaRatings(id, token),
+      () => commentsStore.getComments(id, token),
+    ]
+
+    await makeParallelRequests<Idea | Rating[] | Comment[] | Error>(
+      ideaParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, idea)
+        } else if (response.id === 1) {
+          checkResponseStatus(response, ratings)
+        }
+      })
+    })
+
+    // await commentsStore.connectRsocket(id)
   }
 })
+
+function getAccessToConfirmation() {
+  if (user.value && idea.value) {
+    const { id, role } = user.value
+    const { status } = idea.value
+
+    if (status === 'ON_CONFIRMATION') {
+      if (role && ['EXPERT', 'ADMIN'].includes(role)) {
+        const currentRating = ratings.value?.find((rating) => rating.expertId === id)
+
+        if (currentRating) {
+          rating.value = currentRating
+
+          return currentRating
+        }
+      }
+    }
+  }
+}
+
+function handleCloseIdeaModal() {
+  isOpenedIdeaModal.value = false
+  router.push('/ideas/list')
+
+  commentsStore.disconnectRsocket()
+}
 </script>
 
 <template>
   <ModalLayout
-    :is-opened="isOpened"
-    @on-outside-close="closeIdeaModal"
+    :is-opened="isOpenedIdeaModal"
+    appear-on-render
+    @on-outside-close="handleCloseIdeaModal"
   >
     <div
+      v-if="idea"
       class="idea-modal p-3 h-100 overflow-y-scroll"
       ref="ideaModalRef"
     >
       <div class="idea-modal__left-side w-75">
         <IdeaDescription
           :idea="idea"
-          @close-modal="closeIdeaModal"
+          @close-modal="handleCloseIdeaModal"
         />
 
-        <IdeaActions :idea="(idea as Idea)" />
+        <ExpertRatingCalculator
+          v-if="getAccessToConfirmation()"
+          :idea="idea"
+          :rating="rating"
+          v-model="ratings"
+        />
+
+        <IdeaActions v-model="idea" />
 
         <IdeaComments
           :idea="idea"
+          :comments="comments"
           :idea-modal-ref="ideaModalRef"
         />
       </div>
 
       <div class="idea-modal__right-side w-25 bg-white rounded">
-        <IdeaInfo :idea="idea" />
+        <IdeaInfo
+          :idea="idea"
+          :expert-ratings="ratings"
+        />
       </div>
     </div>
+
+    <IdeaModalPlaceholder v-else />
   </ModalLayout>
 </template>
 

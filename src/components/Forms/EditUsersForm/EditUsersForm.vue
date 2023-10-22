@@ -61,7 +61,7 @@ const searchedUsers = computed(() => {
   })
 })
 
-function handleOpenModal(id: string) {
+function handleOpenModal(id: number) {
   const selectedUser = currentUsers.value.find((user) => user.id === id)
 
   if (selectedUser) {

@@ -106,7 +106,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
 
     return new Promise((resolve, reject) =>
       setTimeout(() => {
-        const id = (Math.random() * 100000000).toString()
+        const id = Math.random() * 100000000
         const data = { ...mockData, id } as MocksType
         mockArray.value.push(data)
 
@@ -157,9 +157,12 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
 
           if (currentMockDataIndex !== -1) {
             const currentMockData = mockArray.value[currentMockDataIndex]
+            const { requestData } = mockConfig
+
             mockArray.value[currentMockDataIndex] = {
               ...currentMockData,
               ...newMockData,
+              ...(requestData ?? {}),
             }
 
             const { responseData } = mockConfig
@@ -186,7 +189,12 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     endPoint: string,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
-  ): Promise<AxiosResponse<ResponseType>> {
+  ): Promise<AxiosResponse<ResponseType>>
+  async function putNoRequestBody<ResponseType>(
+    endPoint: string,
+    config: AxiosRequestConfig<MocksType>,
+    mockConfig: AxiosMockConfig<MocksType, ResponseType>,
+  ): Promise<AxiosResponse<ResponseType | void>> {
     if (MODE === 'PRODUCTION') {
       return axios.put(`${API_URL}${endPoint}`, null, config)
     }
@@ -208,9 +216,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
             }
 
             const { responseData } = mockConfig
-            if (responseData) {
-              resolve(createMockResponse(responseData))
-            }
+            resolve(createMockResponse(responseData))
           } else {
             reject(createMockResponse('Искомые данные не найдены'))
           }

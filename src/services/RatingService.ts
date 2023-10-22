@@ -3,16 +3,22 @@ import { Rating } from '@Domain/Idea'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 
+function filterRatingsById(ideaId: number, ratings: Rating[]) {
+  return ratings.filter((rating) => rating.ideaId === ideaId)
+}
+
 const ratingsAxios = defineAxios(getMocks().ratings)
 
 const getAllIdeaRatings = async (
-  ideaId: string,
+  ideaId: number,
   token: string,
 ): Promise<Rating[] | Error> => {
   return await ratingsAxios
-    .get(`/rating/all/${ideaId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .get<Rating[]>(
+      `/rating/all/${ideaId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { formatter: (ratings) => filterRatingsById(ideaId, ratings) },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения оценок'
@@ -21,7 +27,7 @@ const getAllIdeaRatings = async (
 }
 
 const getExpertRating = async (
-  ideaId: string,
+  ideaId: number,
   token: string,
 ): Promise<Rating | Error> => {
   return await ratingsAxios
@@ -39,12 +45,12 @@ const getExpertRating = async (
 
 const saveExpertRating = async (
   rating: Rating,
-  ideaId: string,
+  ideaId: number,
   token: string,
 ): Promise<void | Error> => {
   return await ratingsAxios
     .put<void>(
-      `/rating/save/${ideaId}`,
+      '/rating/save',
       rating,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { ideaId } },
@@ -58,12 +64,12 @@ const saveExpertRating = async (
 
 const confirmExpertRating = async (
   rating: Rating,
-  ideaId: string,
+  ideaId: number,
   token: string,
 ): Promise<void | Error> => {
   return await ratingsAxios
     .put<void>(
-      `/rating/confirm/${ideaId}`,
+      '/rating/confirm',
       rating,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { ideaId }, requestData: { ...rating, confirmed: true } },

@@ -1,111 +1,124 @@
 <script lang="ts" setup generic="FilterType">
+import { Ref } from 'vue'
+
+import { FilterBarProps } from '@Components/FilterBar/FilterBar.types'
 import Button from '@Components/Button/Button.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import { computed, ref, Ref } from 'vue'
-
-import { FilterBarProps } from '@Components/FilterBar/FilterBar.types'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
-
-defineModel<FilterType | FilterType[]>({ required: true })
 
 const props = defineProps<FilterBarProps<FilterType>>()
 
-const value = ref(false)
+function chooseFilter(
+  filter: FilterType,
+  refValue: Ref<FilterType | FilterType[] | undefined>,
+) {
+  if (refValue.value instanceof Array) {
+    const existingRefFilterIndex = refValue.value.findIndex(
+      (selectedFilter) =>
+        selectedFilter === filter ||
+        JSON.stringify(selectedFilter) === JSON.stringify(filter),
+    )
 
-const selectedChoiceRadio = ref([])
-const selectedChoiceCheckbox = ref([])
+    if (existingRefFilterIndex !== -1) {
+      refValue.value.splice(existingRefFilterIndex, 1)
+    } else {
+      refValue.value.push(filter)
+    }
+  } else {
+    if (
+      refValue.value === filter ||
+      JSON.stringify(refValue.value) === JSON.stringify(filter)
+    ) {
+      refValue.value = undefined
+    } else {
+      refValue.value = filter
+    }
+  }
+}
 
 function resetFilters() {
-  selectedChoiceRadio.value = []
-  selectedChoiceCheckbox.value = []
+  props.filters.forEach(({ refValue }) => {
+    if (refValue.value instanceof Array) {
+      refValue.value = []
+    } else {
+      refValue.value = undefined
+    }
+  })
 }
 </script>
 
 <template>
-  <div class="filter border rounded-3 p-2 ms-3 bg-white bg-opacity-50">
-    <div class="filter__header border-bottom pb-2">
-      <Typography class-name="text-primary fs-4">Фильтр</Typography>
+  <div class="filter w-25 bg-white p-2">
+    <div class="text-center border-bottom pb-2">
+      <Typography class-name="text-secondary fw-medium">{{ title }}</Typography>
     </div>
 
     <div
-      class="filter__container w-100 rounded-3 p-2"
-      v-for="(filter, index) in props.filters"
+      class="w-100"
+      v-for="(filter, index) in filters"
       :key="index"
     >
-      <Typography class-name="fs-5 fw-bold">{{ filter.category }}</Typography>
-      <div
-        class="filter__elemet rounded-pill p-2 ps-3"
-        v-for="(choice, index) in filter.choices"
-        :key="index"
-      >
-        <Radio
-          name="choice"
-          :value="choice"
-          v-model="selectedChoiceRadio"
-          v-if="filter.isUniqueChoice === true"
-        ></Radio>
-        <Checkbox
-          name="choice"
-          :value="choice"
-          v-model="selectedChoiceCheckbox"
-          v-if="filter.isUniqueChoice === false"
-        ></Checkbox>
+      <Typography class-name="fw-semibold">{{ filter.category }}</Typography>
 
-        <Typography class-name=" ms-1">{{ choice }}</Typography>
+      <div class="filter__choices">
+        <div
+          v-for="(choice, index) in filter.choices"
+          :key="index"
+          class="filter__choice ps-2 py-1 rounded-1"
+          @click="chooseFilter(choice.value, filter.refValue)"
+        >
+          <Radio
+            v-if="filter.isUniqueChoice"
+            :name="filter.category"
+            no-form-cotrolled
+            :label="choice.label"
+            :value="choice.value"
+            v-model="filter.refValue.value"
+          />
+          <Checkbox
+            v-else
+            :name="filter.category"
+            no-form-controlled
+            :label="choice.label"
+            :value="choice.value"
+            v-model="filter.refValue.value"
+          />
+        </div>
       </div>
     </div>
 
     <div class="w-100 d-flex justify-content-center">
       <Button
+        class-name="btn-danger"
         @click="resetFilters"
-        class-name="bg-primary text-light "
-        >Сбросить фильтры</Button
       >
+        Сбросить фильтры
+      </Button>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .filter {
-  padding: 16px;
-  padding-top: 0;
-  height: 100%;
-  overflow-y: auto;
-  @include flexible(start, start, column, $gap: 10px);
+  @include flexible(stretch, flex-start, column, $gap: 8px);
 
-  &__header {
-    width: 100%;
-    @include flexible(center, center);
+  &__choices {
+    max-height: 150px;
+
+    overflow-y: scroll;
   }
 
-  &__elemet {
-    width: 100%;
-    @include flexible(center, start);
+  &__choice {
+    cursor: pointer;
+
+    @include flexible(center, flex-start);
+
+    transition: background-color $default-transition-settings;
+
+    &:hover {
+      background-color: rgb(108, 117, 125, 0.1);
+    }
   }
-
-  &__elemet:hover {
-    background-color: rgb(228, 228, 228);
-  }
-
-  &__container {
-    overflow-y: auto;
-    min-height: 200px;
-  }
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgb(209, 209, 209);
-  border-radius: 20px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #0d6efd;
-  border-radius: 20px;
-  border: 3px solid #0d6efd;
 }
 </style>

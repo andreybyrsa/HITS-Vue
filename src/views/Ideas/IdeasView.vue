@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
@@ -17,7 +17,6 @@ import { Idea } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
-import Button from '@Components/Button/Button.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -32,22 +31,36 @@ const selectedFilters = ref<string[]>([])
 
 const isLoading = ref(true)
 
-const isOpenedfilter = ref(false)
+const c1 = ref([])
+const c2 = ref()
 
 const currrentFilters = [
   {
     category: 'Идеи',
-    choices: ['Мои идеи', 'Идеи конкурентов', 'Идеи организации'],
+    choices: [
+      { label: 'Мои идеи', value: { name: 1, value: 2 } },
+      { label: 'Идеи конкурентов', value: 2 },
+      { label: 'Идеи организации', value: '3' },
+    ],
+    refValue: c1,
 
     isUniqueChoice: false,
   },
   {
     category: 'Статус',
-    choices: ['На рассмотрении', 'На согласовании', 'На утверждении'],
+    choices: [
+      { label: 'На рассмотрении', value: { name: 1, value: 2 } },
+      { label: 'На согласовании', value: '5' },
+      { label: 'На утверждении', value: '6' },
+    ],
+
+    refValue: c2,
 
     isUniqueChoice: true,
   },
 ]
+
+const sideBarFilters = ref([])
 
 onMounted(async () => {
   const currentUser = user.value
@@ -134,23 +147,6 @@ const filters = [
             v-model:searchedValue="searchedValue"
             v-model:selectedFilters="selectedFilters"
           />
-          <!-- <div class="bg-primary rounded-3 d-flex p-2">
-            <Button
-              v-if="isOpenedfilter === false"
-              class-name="bg-white "
-              @click="isOpenedfilter = true"
-              prepend-icon-name="bi bi-funnel"
-              >фильтр</Button
-            >
-
-            <Button
-              v-if="isOpenedfilter === true"
-              class-name="bg-white"
-              @click="isOpenedfilter = false"
-              prepend-icon-name="bi bi-funnel"
-              >фильтр</Button
-            >
-          </div> -->
         </div>
 
         <template v-if="isLoading">
@@ -167,7 +163,15 @@ const filters = [
           :searched-value="searchedValue"
         />
       </div>
-      <FilterBar :filters="currrentFilters" />
+
+      {{ c1 }}
+      {{ c2 }}
+
+      <FilterBar
+        title="Фильтрация по идеям"
+        :filters="currrentFilters"
+        v-model="sideBarFilters"
+      />
     </template>
   </PageLayout>
 </template>

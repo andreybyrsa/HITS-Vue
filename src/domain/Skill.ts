@@ -1,8 +1,7 @@
 type SkillType = 'LANGUAGE' | 'FRAMEWORK' | 'DATABASE' | 'DEVOPS'
 
 interface Skill {
-  id: string
-  skillId: string
+  id: number
   name: string
   type: SkillType
   confirmed: boolean

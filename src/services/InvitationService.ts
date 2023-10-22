@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+import { API_URL } from '@Main'
+
 import {
   InviteUserForm,
   InviteUsersForm,
@@ -10,13 +12,11 @@ import {
 
 import Success from '@Domain/ResponseMessage'
 
-const INVITATION_URL = 'http://localhost:3000/api/v1/profile'
-
 const getInvitationInfo = async (
   slug: string | string[],
 ): Promise<InvitationInfo | Error> => {
   return await axios
-    .get(`${INVITATION_URL}/get/invitation/${slug}`)
+    .get(`${API_URL}/profile/get/invitation/${slug}`)
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка приглашения'
@@ -26,7 +26,7 @@ const getInvitationInfo = async (
 
 const deleteInvitationInfo = async (slug: string | string[]) => {
   return await axios
-    .delete(`${INVITATION_URL}/delete/invitation/${slug}`)
+    .delete(`${API_URL}/profile/delete/invitation/${slug}`)
     .catch<Error>(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка удаления приглашения'
       return new Error(error)
@@ -38,7 +38,7 @@ const inviteUserByEmail = async (
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .post(`${INVITATION_URL}/send/email`, userData, {
+    .post(`${API_URL}/profile/send/email`, userData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -53,7 +53,7 @@ const inviteUsers = async (
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .post(`${INVITATION_URL}/send/emails`, usersData, {
+    .post(`${API_URL}/profile/send/emails`, usersData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -67,7 +67,7 @@ const sendRecoveryEmail = async (
   recoveryData: RecoveryData,
 ): Promise<string | Error> => {
   return await axios
-    .post(`${INVITATION_URL}/send/change/password`, recoveryData)
+    .post(`${API_URL}/profile/send/change/password`, recoveryData)
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка отпрваки почты'
@@ -80,7 +80,7 @@ const sendUrlToChangeEmail = async (
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .post(`${INVITATION_URL}/send/change/email`, userData, {
+    .post(`${API_URL}/profile/send/change/email`, userData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -95,7 +95,7 @@ const getInfoToChangeEmail = async (
   token: string,
 ): Promise<NewEmailForm | Error> => {
   return await axios
-    .get(`${INVITATION_URL}/change/email/${slug}`, {
+    .get(`${API_URL}/profile/change/email/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
