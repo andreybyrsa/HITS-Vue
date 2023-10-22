@@ -2,7 +2,7 @@ import RolesTypes from '@Domain/Roles'
 import { User } from '@Domain/User'
 
 interface UsersGroup {
-  id: string
+  id: number
   name: string
   users: User[]
   roles: RolesTypes[]

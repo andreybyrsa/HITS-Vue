@@ -9,7 +9,7 @@ const useNotificationsStore = defineStore('notification', {
   }),
   actions: {
     createNotification(title: string, message: string) {
-      const id = String(Math.random())
+      const id = Math.random()
       const notification = {
         id,
         title,
@@ -19,20 +19,20 @@ const useNotificationsStore = defineStore('notification', {
       this.notifications.unshift(notification)
     },
 
-    readNotification(id: string) {
+    readNotification(id: number) {
       const notification = this.notifications.find((n) => n.id === id)
       if (notification) {
         notification.readed = true
       }
     },
 
-    closeNotification(id: string) {
+    closeNotification(id: number) {
       this.newNotifications = this.newNotifications.filter((n) => n.id !== id)
       this.systemNotifications = this.systemNotifications.filter((n) => n.id !== id)
     },
 
     createSystemNotification(title: string, message: string) {
-      const id = String(Math.random())
+      const id = Math.random()
       const systemNotification = {
         id,
         title,
