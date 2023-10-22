@@ -32,6 +32,7 @@ import IdeasMarket from '@Views/IdeasMarket.vue'
 
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
 import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+import ReviewIdeaFormVue from '@Components/Forms/ReviewIdeaForm/ReviewIdeaForm.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -189,6 +190,11 @@ const routes: RouteRecordRaw[] = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
+  },
+  {
+    path: '/review-idea',
+    name: 'review-idea',
+    component: ReviewIdeaFormVue,
   },
 ]
 
