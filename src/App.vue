@@ -17,6 +17,22 @@ window.addEventListener('click', () => {
   padding: 0;
   margin: 0;
   border: 0;
+
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: #888;
 }
 
 *,
