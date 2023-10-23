@@ -12,12 +12,40 @@ const props = defineProps<CustomerAndContact>()
 const emit = defineEmits<CustomerAndContactEmits>()
 
 const customers = ref([
+  { contacts: ['Красильников Сергей Владимирович'], company: 'ГК АВТОГРАД' },
   { contacts: ['ВШЦТ'], company: 'ВШЦТ' },
-  { contacts: ['Человек 1', 'Человек 2'], company: 'Роснефть' },
-  { contacts: ['Человек 3', 'Человек 4', 'Человек 5'], company: 'Газпром' },
   {
-    contacts: ['Человек 6', 'Человек 7', 'Человек 8', 'Человек 9'],
-    company: 'Лукойл',
+    contacts: ['Томилов Алексей Александрович'],
+    company: 'ООО "Ребренди Консалтинг"',
+  },
+  { contacts: ['Громов Игорь Сергеевич'], company: 'ЗапСибНИИГГ' },
+  {
+    contacts: ['Беляков Дмитрий Константинович'],
+    company: 'Базис-моторс',
+  },
+  {
+    contacts: ['Беляков Дмитрий Константинович'],
+    company: 'ООО "Бизнес-Аудит"',
+  },
+  {
+    contacts: ['Букреев Павел Александрович'],
+    company: '1C-Медицина-Регион',
+  },
+  {
+    contacts: ['Золотов Анатолий Леонидович'],
+    company: 'Tip-Top Studio',
+  },
+  {
+    contacts: ['Николаев Алексей Андреевич', 'Исаев Сергей Викторович'],
+    company: 'ООО "Зуммер"',
+  },
+  {
+    contacts: ['Галагуш Артем Василич'],
+    company: 'ООО Бизнес Технологии',
+  },
+  {
+    contacts: ['Калашников Вячеслав Сергеевич'],
+    company: 'ООО "ВОК"',
   },
 ])
 const currentCompanies = ref(customers.value.map((option) => option.company))

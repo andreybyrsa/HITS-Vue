@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import DropDown from '@Components/DropDown/DropDown.vue'
 import {
   FilterModalProps,
   FilterModalEmits,
@@ -29,20 +27,20 @@ function handleAddFilters(filter: string) {
     selectedFilters.value.splice(index, 1)
   } else selectedFilters.value.push(filter)
 }
-const searchedCompetence = ref('')
+// const searchedCompetence = ref('')
 
-function filterCompetencies(competencies: string[]) {
-  if (searchedCompetence.value) {
-    return competencies.filter((competence) =>
-      competence.includes(searchedCompetence.value),
-    )
-  } else {
-    return competencies
-  }
-}
+// function filterCompetencies(competencies: string[]) {
+//   if (searchedCompetence.value) {
+//     return competencies.filter((competence) =>
+//       competence.includes(searchedCompetence.value),
+//     )
+//   } else {
+//     return competencies
+//   }
+// }
 
 function handleSetFilters() {
-  emit('set-filters', [...selectedFilters.value, searchedCompetence.value])
+  emit('set-filters', [...selectedFilters.value])
   emit('close-modal')
 }
 </script>
@@ -65,10 +63,7 @@ function handleSetFilters() {
           :key="index"
           class="list-group-item list-group-item-action"
         >
-          <div
-            v-if="filter.label !== 'Компетенции'"
-            @click="handleAddFilters(filter.value as string)"
-          >
+          <div @click="handleAddFilters(filter.value as string)">
             <Checkbox
               name="checkbox"
               :label="filter.label"
@@ -76,7 +71,7 @@ function handleSetFilters() {
               :value="filter.value"
             />
           </div>
-          <div v-else>
+          <!-- <div v-else>
             <Input
               name="text"
               type="text"
@@ -100,7 +95,7 @@ function handleSetFilters() {
                 />
               </div>
             </DropDown>
-          </div>
+          </div> -->
         </div>
       </ul>
       <Button

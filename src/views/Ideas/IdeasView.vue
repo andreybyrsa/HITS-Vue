@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
-import FilterBar from '@Components/FilterBar/FilterBar.vue'
 
 import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
 import IdeasTable from '@Views/Ideas/IdeasTable.vue'
@@ -15,52 +14,17 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
+import IdeasService from '@Services/IdeasService'
+
 import useUserStore from '@Store/user/userStore'
-import useIdeasStore from '@Store/ideas/ideasStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const ideaStore = useIdeasStore()
-const { ideas } = storeToRefs(ideaStore)
-
-const ideasData = ref<Idea[]>([])
+const ideas = ref<Idea[]>()
 
 const searchedValue = ref('')
 const selectedFilters = ref<string[]>([])
-
-const isLoading = ref(true)
-
-const c1 = ref([])
-const c2 = ref()
-
-const currrentFilters = [
-  {
-    category: 'Идеи',
-    choices: [
-      { label: 'Мои идеи', value: { name: 1, value: 2 } },
-      { label: 'Идеи конкурентов', value: 2 },
-      { label: 'Идеи организации', value: '3' },
-    ],
-    refValue: c1,
-
-    isUniqueChoice: false,
-  },
-  {
-    category: 'Статус',
-    choices: [
-      { label: 'На рассмотрении', value: { name: 1, value: 2 } },
-      { label: 'На согласовании', value: '5' },
-      { label: 'На утверждении', value: '6' },
-    ],
-
-    refValue: c2,
-
-    isUniqueChoice: true,
-  },
-]
-
-const sideBarFilters = ref([])
 
 onMounted(async () => {
   const currentUser = user.value
@@ -68,9 +32,13 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    await ideaStore.fetchIdeas(token)
+    const response = await IdeasService.getIdeas(token)
 
-    ideas.value.sort((a, b) => {
+    if (response instanceof Error) {
+      return // notification
+    }
+
+    response.sort((a, b) => {
       if (a.rating == b.rating) {
         const A = new Date(a.createdAt).getTime()
         const B = new Date(b.createdAt).getTime()
@@ -81,9 +49,7 @@ onMounted(async () => {
       return 0
     })
 
-    ideasData.value = ideas.value
-
-    isLoading.value = false
+    ideas.value = response
   }
 })
 
@@ -103,18 +69,20 @@ watchImmediate(
   },
 )
 
-function filterIdeas(ideasData: Idea[]) {
+const filteredIdeas = computed(() => {
   if (selectedFilters.value.length) {
-    const dataFilter: Idea[] = []
-    ideasData?.forEach(
-      (elem) =>
-        selectedFilters.value?.every((filter) =>
-          Object.values(elem).includes(filter),
-        ) && dataFilter.push(elem),
-    )
-    return dataFilter
-  } else false
-}
+    return ideas.value?.filter((idea) => {
+      const ideaValues = Object.values(idea)
+      const isMathedFilters = selectedFilters.value.every((filter) =>
+        ideaValues.includes(filter),
+      )
+
+      return isMathedFilters
+    })
+  }
+
+  return ideas.value
+})
 
 const filters = [
   {
@@ -152,18 +120,16 @@ const filters = [
           />
         </div>
 
-        <template v-if="isLoading">
-          <LoadingPlaceholder
-            v-for="value in 3"
-            :key="value"
-            height="medium"
-          />
-        </template>
-
         <IdeasTable
-          v-else
-          :ideas="filterIdeas(ideasData) || ideasData"
+          v-if="filteredIdeas"
+          :ideas="filteredIdeas"
           :searched-value="searchedValue"
+        />
+        <LoadingPlaceholder
+          v-else
+          v-for="value in 3"
+          :key="value"
+          height="medium"
         />
       </div>
     </template>
