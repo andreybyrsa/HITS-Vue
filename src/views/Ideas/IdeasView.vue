@@ -166,15 +166,6 @@ const filters = [
           :searched-value="searchedValue"
         />
       </div>
-
-      {{ c1 }}
-      {{ c2 }}
-
-      <FilterBar
-        title="Фильтрация по идеям"
-        :filters="currrentFilters"
-        v-model="sideBarFilters"
-      />
     </template>
   </PageLayout>
 </template>
