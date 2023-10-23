@@ -1,14 +1,14 @@
 import Filter from '@Components/Modals/FilterModal/Filter.types'
 
-interface FilterModalProps {
+interface FilterModalProps<FilterType> {
   isOpened: boolean
-  currentFilters: string[]
-  filters?: Filter[]
+  currentFilters: Filter<FilterType>[]
+  filters?: Filter<FilterType>[]
 }
 
-interface FilterModalEmits {
+interface FilterModalEmits<FilterType> {
   (event: 'close-modal'): void
-  (event: 'set-filters', filters: string[]): void
+  (event: 'set-filters', filters: Filter<FilterType>[]): void
 }
 
 export { FilterModalProps, FilterModalEmits }

@@ -1,12 +1,13 @@
-<script lang="ts" setup>
+<script lang="ts" setup generic="FilterType">
 import { ref } from 'vue'
 
+import Filter from '@Components/Modals/FilterModal/Filter.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import FilterModal from '@Components/Modals/FilterModal/FilterModal.vue'
 import SearchAndFiltersProps from '@Views/Ideas/SearchAndFilters.types'
 
-const props = defineProps<SearchAndFiltersProps>()
+const props = defineProps<SearchAndFiltersProps<FilterType>>()
 
 const searchedValue = defineModel<string>('searchedValue', {
   required: true,
@@ -25,7 +26,7 @@ function handleCloseFilterModal() {
   isOpenedFilterModal.value = false
 }
 
-function handleSetFilters(filters: string[]) {
+function handleSetFilters(filters: Filter<FilterType>[]) {
   selectedFilters.value = filters
 }
 </script>

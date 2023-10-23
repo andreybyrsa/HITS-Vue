@@ -1,7 +1,7 @@
 import Filter from '@Components/Modals/FilterModal/Filter.types'
 
-interface SearchAndFiltersProps {
-  filtersData?: Filter[]
+interface SearchAndFiltersProps<FilterType> {
+  filtersData?: Filter<FilterType>[]
 }
 
 export default SearchAndFiltersProps

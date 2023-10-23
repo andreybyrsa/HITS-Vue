@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
+import Filter from '@Components/Modals/FilterModal/Filter.types'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
@@ -24,7 +25,7 @@ const { user } = storeToRefs(userStore)
 const ideas = ref<Idea[]>()
 
 const searchedValue = ref('')
-const selectedFilters = ref<string[]>([])
+const selectedFilters = ref<Filter<Idea>[]>([])
 
 onMounted(async () => {
   const currentUser = user.value
@@ -58,11 +59,32 @@ watchImmediate(
   () => {
     switch (user.value?.role) {
       case 'EXPERT':
-        return (selectedFilters.value = ['ON_CONFIRMATION'])
+        return (selectedFilters.value = [
+          {
+            id: 2,
+            key: 'status',
+            label: 'На утверждении',
+            value: 'ON_CONFIRMATION',
+          },
+        ])
       case 'PROJECT_OFFICE':
-        return (selectedFilters.value = ['ON_APPROVAL'])
+        return (selectedFilters.value = [
+          {
+            id: 1,
+            key: 'status',
+            label: 'На согласованнии',
+            value: 'ON_APPROVAL',
+          },
+        ])
       case 'INITIATOR':
-        return (selectedFilters.value = [user.value.email])
+        return (selectedFilters.value = [
+          {
+            id: 0,
+            key: 'initiator',
+            label: 'Мои идеи',
+            value: `${user.value?.id}`,
+          },
+        ])
       default:
         selectedFilters.value = []
     }
@@ -72,9 +94,8 @@ watchImmediate(
 const filteredIdeas = computed(() => {
   if (selectedFilters.value.length) {
     return ideas.value?.filter((idea) => {
-      const ideaValues = Object.values(idea)
-      const isMathedFilters = selectedFilters.value.every((filter) =>
-        ideaValues.includes(filter),
+      const isMathedFilters = selectedFilters.value.every(
+        (filter) => idea[filter.key] === filter.value,
       )
 
       return isMathedFilters
@@ -86,14 +107,20 @@ const filteredIdeas = computed(() => {
 
 const filters = [
   {
+    id: 0,
+    key: 'initiator',
     label: 'Мои идеи',
-    value: user.value?.email,
+    value: `${user.value?.id}`,
   },
   {
+    id: 1,
+    key: 'status',
     label: 'На согласованнии',
     value: 'ON_APPROVAL',
   },
   {
+    id: 2,
+    key: 'status',
     label: 'На утверждении',
     value: 'ON_CONFIRMATION',
   },

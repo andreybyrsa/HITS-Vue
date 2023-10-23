@@ -1,6 +1,8 @@
-interface FilterModalProps {
+interface FilterModalProps<FilterType> {
+  id: number
+  key: keyof FilterType
   label?: string
-  value?: string
+  value?: string | number
 
   valueDrop?: string[]
 }

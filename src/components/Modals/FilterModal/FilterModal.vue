@@ -1,17 +1,19 @@
-<script lang="ts" setup>
-import { ref, watch } from 'vue'
+<script lang="ts" setup generic="FilterType">
+import { ref, Ref, watch } from 'vue'
 import Button from '@Components/Button/Button.vue'
 import {
   FilterModalProps,
   FilterModalEmits,
 } from '@Components/Modals/FilterModal/FilterModal.types'
+import Filter from '@Components/Modals/FilterModal/Filter.types'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
+
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-const selectedFilters = ref<string[]>([])
-const props = defineProps<FilterModalProps>()
-const emit = defineEmits<FilterModalEmits>()
+const selectedFilters = ref<Filter<FilterType>[]>([]) as Ref<Filter<FilterType>[]>
+const props = defineProps<FilterModalProps<FilterType>>()
+const emit = defineEmits<FilterModalEmits<FilterType>>()
 
 watch(
   () => props.currentFilters,
@@ -20,8 +22,8 @@ watch(
   },
 )
 
-function handleAddFilters(filter: string) {
-  const repeatFilter = selectedFilters.value.find((e) => e == filter)
+function handleAddFilters(filter: Filter<FilterType>) {
+  const repeatFilter = selectedFilters.value.find((e) => e.id == filter.id)
   if (repeatFilter) {
     const index = selectedFilters.value.indexOf(repeatFilter)
     selectedFilters.value.splice(index, 1)
@@ -63,12 +65,13 @@ function handleSetFilters() {
           :key="index"
           class="list-group-item list-group-item-action"
         >
-          <div @click="handleAddFilters(filter.value as string)">
+          <div @click="handleAddFilters(filter)">
             <Checkbox
               name="checkbox"
+              no-form-controlled
               :label="filter.label"
+              :value="filter"
               v-model="selectedFilters"
-              :value="filter.value"
             />
           </div>
           <!-- <div v-else>
