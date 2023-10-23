@@ -20,7 +20,7 @@ const app = createApp(App)
 
 const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'PRODUCTION'
 const API_URL: 'http://localhost:3000/api/v1' | 'http://hits.tyuiu.ru/api/v1' =
-  'http://hits.tyuiu.ru/api/v1'
+  'https://hits.tyuiu.ru/api/v1'
 
 const pinia = createPinia()
 pinia.use(({ store }) => {
