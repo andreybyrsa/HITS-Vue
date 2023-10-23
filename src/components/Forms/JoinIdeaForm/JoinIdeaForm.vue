@@ -15,41 +15,31 @@ import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 import Icon from '@Components/Icon/Icon.vue'
+import ApplicationTeams from '@Domain/ApplicationTeams'
 
 import JoinIdea from '@Domain/JoinIdea'
+import Team from '@Domain/Team'
+import ApplicationTeamsServise from '@Services/ApplicationTeamsServise'
+import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
+import TeamPlaceholder from '../TeamForm/TeamPlaceholder.vue'
 
-defineProps<JoinIdeaFormProps>()
+const props = defineProps<JoinIdeaFormProps>()
 
 const emit = defineEmits<JoinIdeaModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const teams = [
-  {
-    id: '13342',
-    name: 'Утята',
-    members: ['Вадим', 'Саня', 'Никита', 'Стас', 'Вадим', 'Саня', 'Никита', 'Стас'],
-    skills: ['SQL 3/8', 'Jaba 3/8', 'Rust 6/8', 'Assebler 1/8'],
-    status: true,
-  },
-  {
-    id: '79332',
-    name: 'Бобрята',
-    members: ['Андрей', 'Саня', 'Дима', 'Стас', 'Вадим Вадимович', 'Коля'],
-    skills: ['Vue 1/6', 'Jaba 4/6', 'Mongo 2/6'],
-    status: true,
-  },
-  {
-    id: '743555',
-    name: 'Никитосики',
-    members: ['Никита', 'Никитос', 'Ника Минаш', 'Никитаз', 'Никадим', 'Никак'],
-    skills: ['React 2/6', 'Java 3/6', ' Dota 6/6'],
-    status: false,
-  },
-]
+const teams = defineModel<ApplicationTeams[]>({ required: true })
+const textArea = ref<string>('')
 
-const chosenOption = ref<string | null>(null)
+function filterTeams(teams: Team[]) {
+  return teams.filter((team) =>
+    team.members.find((member) => member.email == user.value?.email),
+  )
+}
+
+const chosenOption = ref<Team>(null)
 
 const isChecked = computed(() => {
   return chosenOption.value !== null
@@ -61,17 +51,69 @@ const { handleSubmit } = useForm<JoinIdea>({
   },
 })
 
-const handleSend = handleSubmit(async (values) => {
-  const response = values
+// const handleSend = handleSubmit(async (values) => {
+//   const response = values
 
-  if (response instanceof Error) {
-    return // notification
-  }
-})
+//   if (response instanceof Error) {
+//     return // notification
+//   }
+// })
 
 function getBorderColor(option: string) {
-  if (chosenOption.value === option) {
+  if (chosenOption.value?.id == option) {
     return 'border-primary'
+  }
+}
+
+// const applicationTeam = ref<ApplicationTeams>({
+//   id: 0,
+//   ideaId: 1,
+//   accepted: false,
+
+//   name: 'Команда 0',
+//   closed: false,
+//   description:
+//     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+//   owner: users[1],
+//   leader: users[2],
+//   members: [users[3]],
+//   skills: [...skills],
+//   status: 'Ждут принятия',
+//   changedDate: '2023-10-20T11:02:17Z',
+//   letter:
+//     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+// })
+
+async function sendApplicationTeam(team: Team) {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const applicationTeam: ApplicationTeams = {
+      id: team.id,
+      ideaId: props.idea.id,
+      accepted: false,
+      name: team.name,
+      closed: team.closed,
+      description: team.description,
+      owner: team.owner,
+      leader: team.leader,
+      members: team.members,
+      skills: team.skills,
+      status: 'Ждут принятия',
+      changedDate: '2023-10-20T11:02:17Z',
+      letter: textArea.value,
+    }
+
+    const response = await ApplicationTeamsServise.postApplication(
+      applicationTeam,
+      token,
+    )
+
+    if (response instanceof Error) {
+      return
+    }
+
+    teams.value.push(applicationTeam)
   }
 }
 </script>
@@ -107,14 +149,14 @@ function getBorderColor(option: string) {
       <div class="join-modal__teams-container">
         <div
           class="w-100"
-          v-for="team in teams"
+          v-for="team in filterTeams(props.teamsFree)"
           :key="team.id"
         >
           <div
             :class="`join-modal__teams-block border shadow rounded-3 p-2 px-3 ${getBorderColor(
               team.id,
             )}`"
-            v-if="team.status == true"
+            v-if="team.closed == false"
           >
             <div class="d-grid gap-1 w-100">
               <div>
@@ -131,9 +173,9 @@ function getBorderColor(option: string) {
                   <div
                     class="rounded-pill bg-light px-2 p-1 border"
                     v-for="member in team.members"
-                    :key="member"
+                    :key="member.id"
                   >
-                    {{ member }}
+                    {{ member.email }}
                   </div>
                 </div>
 
@@ -142,9 +184,9 @@ function getBorderColor(option: string) {
                   <div
                     class="rounded-pill bg-light px-2 p-1 border"
                     v-for="skill in team.skills"
-                    :key="skill"
+                    :key="skill.id"
                   >
-                    {{ skill }}
+                    {{ skill.name }}
                   </div>
                 </div>
               </Collapse>
@@ -153,7 +195,7 @@ function getBorderColor(option: string) {
             <Radio
               name="chose"
               title="Подать"
-              :value="team.id"
+              :value="team"
               v-model="chosenOption"
               class-name="fs-5"
             ></Radio>
@@ -161,7 +203,7 @@ function getBorderColor(option: string) {
 
           <div
             class="join-modal__teams-block border shadow rounded-3 p-2 px-3 bg-secondary bg-opacity-50"
-            v-if="team.status == false"
+            v-if="team.closed == true"
           >
             <div class="d-grid gap-1">
               <div>
@@ -177,9 +219,9 @@ function getBorderColor(option: string) {
                   <div
                     class="rounded-pill bg-light px-2 p-1 border"
                     v-for="member in team.members"
-                    :key="member"
+                    :key="member.id"
                   >
-                    {{ member }}
+                    {{ member.email }}
                   </div>
                 </div>
 
@@ -188,9 +230,9 @@ function getBorderColor(option: string) {
                   <div
                     class="rounded-pill bg-light px-2 p-1 border"
                     v-for="skill in team.skills"
-                    :key="skill"
+                    :key="skill.id"
                   >
-                    {{ skill }}
+                    {{ skill.name }}
                   </div>
                 </div>
               </Collapse>
@@ -217,6 +259,7 @@ function getBorderColor(option: string) {
         class-name="w-100 rounded-end mb-2"
         name="letter"
         validate-on-update
+        v-model="textArea"
       />
     </div>
 
@@ -226,7 +269,7 @@ function getBorderColor(option: string) {
     >
       <Button
         class-name="bg-success text-light shadow rounded-pill ms-4 fs-5 w-75"
-        @click="handleSend"
+        @click="sendApplicationTeam(chosenOption)"
         >Подать</Button
       >
     </div>

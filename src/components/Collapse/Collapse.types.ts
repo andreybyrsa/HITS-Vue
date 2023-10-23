@@ -1,5 +1,5 @@
 interface CollapseProps {
-  id: string
+  id: number
   className?: string
 }
 

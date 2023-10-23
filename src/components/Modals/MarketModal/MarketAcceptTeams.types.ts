@@ -1,7 +1,7 @@
-import Team from '@Domain/Team'
+import ApplicationTeams from '@Domain/ApplicationTeams'
 
 interface MarketAcceptTeamProps {
-  teams: Team[]
+  teams?: ApplicationTeams[]
 }
 
 export default MarketAcceptTeamProps

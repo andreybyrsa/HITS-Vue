@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import { ref, VueElement, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import useUserStore from '@Store/user/userStore'
+
+import ReviewIdeaFormProps from '@Components/Forms/ReviewIdeaForm/ReviewIdeaForm.types'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
@@ -11,6 +13,10 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
+import ApplicationTeamsServise from '@Services/ApplicationTeamsServise'
+import ApplicationTeams from '@Domain/ApplicationTeams'
+
+defineProps<ReviewIdeaFormProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -51,55 +57,44 @@ const filters = [
   },
 ]
 
-const teams = [
-  {
-    id: '344243234424',
-    name: 'Программисты',
-    status: 'Ждут принятия',
-    changedDate: '22.10.2023',
-    members: [
-      'Дима Золотин',
-      'Валерий Комета',
-      'Александр Крутых',
-      'Даниил Мельников',
-      'Вадим Шутников',
-    ],
-    skills: [
-      'JavaScript',
-      'SQL',
-      'Ruby',
-      'Java',
-      'TypeScript',
-      'Mongo',
-      'Rust',
-      'Git',
-    ],
-    letter:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-  },
-  {
-    id: '564945545435',
-    name: 'Мощные',
-    status: 'Приняты',
-    changedDate: '17.10.2023',
-    members: ['Андрей Макаронин', 'Виталий Сучков', 'Генадий Владиков'],
-    skills: ['Vue.js', 'JavaScripts', 'CSS'],
-    letter:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-  },
-]
+// const filteredIdeas = computed(() => {
+//   const searchTerm = searchedValue.value.toLowerCase()
+//   return teams.filter((team) => team.name.toLowerCase().includes(searchTerm))
+// })
 
-const filteredIdeas = computed(() => {
-  const searchTerm = searchedValue.value.toLowerCase()
-  return teams.filter((team) => team.name.toLowerCase().includes(searchTerm))
-})
+const teams = defineModel<ApplicationTeams[]>({ required: true })
+
+function filterTeams(teams: ApplicationTeams[]) {
+  return teams.filter((team) => team.accepted == false)
+}
+
+async function handleAddApplication(id: number) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await ApplicationTeamsServise.addApplicationTeams(id, token)
+
+    if (response instanceof Error) {
+      return // notification
+    }
+
+    teams.value = teams.value.filter((team) =>
+      team.id == id ? (team.accepted = true) : team,
+    )
+  }
+}
 </script>
 
 <template>
-  <FormLayout class-name="review-idea">
+  <FormLayout
+    v-if="user?.email == idea?.initiator"
+    class-name="review-idea"
+  >
     <div class="review-idea__content">
       <div
-        class="review-idea__content_toolbar border border-top-0 px-4"
+        class="review-idea__content-toolbar border border-top-0 px-4"
         v-if="selectedTeams.length > 0"
       >
         <Button class-name="btn-success">Принять</Button>
@@ -112,17 +107,17 @@ const filteredIdeas = computed(() => {
       />
 
       <div class="w-100 border-bottom text-secondary">
-        <Typography>Заявки в команду: {{ teams.length }}</Typography>
+        <Typography>Заявки в команду: {{ filterTeams(teams).length }}</Typography>
       </div>
 
       <div class="review-idea__teams">
         <div
           class="team rounded border"
-          v-for="(team, index) in filteredIdeas"
+          v-for="(team, index) in filterTeams(teams)"
           :key="index"
         >
           <div class="team__main">
-            <div class="team__main_checkbox">
+            <div class="team__main-checkbox">
               <Checkbox
                 name="teamCheckbox"
                 class-name="fs-4"
@@ -130,7 +125,7 @@ const filteredIdeas = computed(() => {
                 v-model="selectedTeams"
               ></Checkbox>
             </div>
-            <div class="team__main_name-skills">
+            <div class="team__main-name-skills">
               <div class="h-50">
                 <Button class-name="p-0 ">
                   <Typography class-name="fs-5 fw-bold ">{{ team.name }}</Typography>
@@ -143,7 +138,7 @@ const filteredIdeas = computed(() => {
                   v-for="(skill, index) in team.skills.slice(0, 4)"
                   :key="index"
                 >
-                  {{ skill }}
+                  {{ skill.name }}
                 </div>
                 <Button
                   v-if="team.skills.length > 3"
@@ -154,10 +149,10 @@ const filteredIdeas = computed(() => {
                 </Button>
               </div>
             </div>
-            <div class="team__main_info info">
+            <div class="team__main-info info">
               <div class="info__element">
                 <Icon class="bi bi-clock-history me-1"></Icon>
-                <Typography>изменено {{ team.changedDate }}</Typography>
+                <Typography>Изменено {{ team.changedDate }}</Typography>
               </div>
               <div class="info__element">
                 <Icon class="bi bi-people-fill me-1"></Icon>
@@ -168,7 +163,7 @@ const filteredIdeas = computed(() => {
                 <Typography>Статус: {{ team.status }}</Typography>
               </div>
               <div class="info__buttons">
-                <div class="info__buttons_more">
+                <div class="info__buttons-more">
                   <Button
                     class-name="text-secondary p-0 me-1"
                     v-collapse="team.id"
@@ -178,10 +173,14 @@ const filteredIdeas = computed(() => {
                   </Button>
                 </div>
                 <div
-                  class="info__buttons_accept"
+                  class="info__buttons-accept"
                   v-if="team.status === 'Ждут принятия'"
                 >
-                  <Button class-name="bg-primary text-light">Принять</Button>
+                  <Button
+                    @click="handleAddApplication(team.id)"
+                    class-name="bg-primary text-light"
+                    >Принять</Button
+                  >
                 </div>
               </div>
             </div>
@@ -189,18 +188,18 @@ const filteredIdeas = computed(() => {
 
           <Collapse :id="team.id">
             <div class="team__collapse">
-              <div class="team__collapse_header header">
+              <div class="team__collapse-header header">
                 <div class="header__skills-members p-2">
                   <div class="text-secondary border-bottom">
                     <Typography>Компетенции</Typography>
                   </div>
-                  <div class="header__skills-members_elements p-1">
+                  <div class="header__skills-members-elements p-1">
                     <div
-                      class="header__skills-members_elements_element border rounded p-1"
+                      class="header__skills-members-elements-element border rounded p-1"
                       v-for="(skill, index) in team.skills"
                       :key="index"
                     >
-                      {{ skill }}
+                      {{ skill.name }}
                     </div>
                   </div>
                 </div>
@@ -208,18 +207,18 @@ const filteredIdeas = computed(() => {
                   <div class="text-secondary border-bottom">
                     <Typography>Участники</Typography>
                   </div>
-                  <div class="header__skills-members_elements p-1">
+                  <div class="header__skills-members-elements p-1">
                     <div
-                      class="header__skills-members_elements_element border rounded p-1"
+                      class="header__skills-members-elements-element border rounded p-1"
                       v-for="(member, index) in team.members"
                       :key="index"
                     >
-                      {{ member }}
+                      {{ member.firstName }}{{ member.lastName }}
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="team__collapse_letter letter">
+              <div class="team__collapse-letter letter">
                 <div class="letter__header text-secondary border-bottom">
                   <Typography>Мотивационное письмо</Typography>
                 </div>
@@ -234,22 +233,21 @@ const filteredIdeas = computed(() => {
         </div>
       </div>
     </div>
-    <FilterBar :filters="currrentFilters" />
+    <!-- <FilterBar :filters="currrentFilters" /> -->
   </FormLayout>
 </template>
 
 <style lang="scss" scoped>
 .review-idea {
-  width: 800px;
-  height: 600px;
+  width: 100%;
   @include flexible(start, center, $gap: 8px);
 
   &__content {
-    width: 65%;
+    width: 100%;
     height: 100%;
     @include flexible(center, start, column, $gap: 8px);
 
-    &_toolbar {
+    &-toolbar {
       width: 100%;
       border-radius: 0 0 50px 50px;
       padding: 16px;
@@ -275,19 +273,19 @@ const filteredIdeas = computed(() => {
     height: 170px;
     @include flexible(start, start);
 
-    &_checkbox {
+    &-checkbox {
       width: 20%;
       height: 100%;
       @include flexible(center, center);
     }
 
-    &_name-skills {
+    &-name-skills {
       width: 40%;
       height: 100%;
       @include flexible(start, start, column);
     }
 
-    &_info {
+    &-info {
       width: 40%;
       height: 100%;
       @include flexible(end, start, column);
@@ -299,12 +297,12 @@ const filteredIdeas = computed(() => {
 
     @include flexible(start, start, column);
 
-    &_header {
+    &-header {
       width: 100%;
       @include flexible(start, start);
     }
 
-    &_letter {
+    &-letter {
       width: 100%;
       @include flexible(start, start, column);
     }
@@ -341,12 +339,12 @@ const filteredIdeas = computed(() => {
   &__skills-members {
     width: 50%;
 
-    &_elements {
+    &-elements {
       width: 100%;
       @include flexible(start, start, $gap: 4px);
       flex-wrap: wrap;
 
-      &_element {
+      &-element {
         height: min-content;
         width: min-content;
       }

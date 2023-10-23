@@ -15,6 +15,7 @@ import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.
 import MarketAcceptTeam from './MarketAcceptTeam.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import JoinIdeaForm from '@Components/Forms/JoinIdeaForm/JoinIdeaForm.vue'
+import ReviewIdeaForm from '@Components/Forms/ReviewIdeaForm/ReviewIdeaForm.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
@@ -26,6 +27,8 @@ import Team from '@Domain/Team'
 import IdeasMarketService from '@Services/MarketServise'
 import Market from '@Domain/Market'
 import useCommentsStore from '@Store/comments/commentsStore'
+import ApplicationTeamsServise from '@Services/ApplicationTeamsServise'
+import ApplicationTeams from '@Domain/ApplicationTeams'
 
 defineProps<MarketModalProps>()
 
@@ -43,10 +46,11 @@ function closeMarketModal() {
 }
 
 const idea = ref<Market>()
-const teams = ref<Team[]>([])
+const teams = ref<ApplicationTeams[]>()
+const teamsData = ref<Team[]>()
 
 const isLoadingIdea = ref(true)
-const isLoadingTeams = ref(true)
+const isLoadingTeams = ref(false)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -56,26 +60,34 @@ onMounted(async () => {
     const id = +route.params.id
 
     const responseIdea = await IdeasMarketService.getIdeaMarket(token, id)
-    const responseTeams = await TeamService.getTeams(token)
     await useCommentsStore().getComments(id, token)
 
     if (responseIdea instanceof Error) {
       return
     }
-    if (responseTeams instanceof Error) {
-      return
-    }
 
     idea.value = responseIdea
-
-    teams.value = responseTeams
 
     if (idea.value) {
       isLoadingIdea.value = false
     }
-    if (teams.value) {
-      isLoadingTeams.value = false
+
+    const responseApplication = await ApplicationTeamsServise.getApplicationsAll(
+      idea.value.id,
+      token,
+    )
+    const responseTeams = await TeamService.getTeams(token)
+
+    if (responseApplication instanceof Error) {
+      return
     }
+
+    if (responseTeams instanceof Error) {
+      return
+    }
+
+    teamsData.value = responseTeams
+    teams.value = responseApplication
   }
 })
 </script>
@@ -100,14 +112,22 @@ onMounted(async () => {
           height="small"
         />
 
-        <JoinIdeaForm
-          v-if="idea"
+        <ReviewIdeaForm
+          v-if="idea && teams"
           :idea="idea"
+          v-model="teams"
         />
-        <LoadingPlaceholder
+
+        <JoinIdeaForm
+          v-if="idea && teamsData && teams"
+          :idea="idea"
+          :teams-free="teamsData"
+          v-model="teams"
+        />
+        <!-- <LoadingPlaceholder
           v-else
           height="medium-200"
-        />
+        /> -->
 
         <IdeaComments
           v-if="idea"
@@ -140,7 +160,7 @@ onMounted(async () => {
 
         <MarketAcceptTeam
           v-if="teams"
-          :teams="teams"
+          v-model="teams"
         />
         <LoadingPlaceholder
           v-else

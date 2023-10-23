@@ -3,8 +3,15 @@ import MarketAcceptTeamProps from '@Components/Modals/MarketModal/MarketAcceptTe
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
+import ApplicationTeams from '@Domain/ApplicationTeams'
 
 defineProps<MarketAcceptTeamProps>()
+
+const teams = defineModel<ApplicationTeams[]>({ required: true })
+
+function filterTeams(teams: ApplicationTeams[]) {
+  return teams.filter((team) => team.accepted == true)
+}
 </script>
 
 <template>
@@ -13,7 +20,7 @@ defineProps<MarketAcceptTeamProps>()
       >Принятые заявки
     </Typography>
     <Button
-      v-for="team in teams"
+      v-for="team in filterTeams(teams)"
       :key="team.id"
       class="btn-outline-primary exchange-info__button w-100"
     >

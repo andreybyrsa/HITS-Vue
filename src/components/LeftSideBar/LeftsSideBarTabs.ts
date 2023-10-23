@@ -51,6 +51,13 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
   },
   {
     id: 6,
+    text: 'Биржа идей',
+    to: '/market',
+    iconName: 'bi bi-basket3',
+    roles: getRoles().roles,
+  },
+  {
+    id: 6,
     text: 'Журнал изменений',
     to: '/last-activity-note',
     iconName: 'bi bi-book',
