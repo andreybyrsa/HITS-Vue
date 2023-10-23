@@ -130,10 +130,10 @@ function getRatingColor(rating: number) {
   return 'text-danger'
 }
 
-const ideaId = ref<string>('')
+const ideaId = ref<number>()
 const isOpenedIdeaDeleteModal = ref(false)
 
-function handleOpenDeleteModal(id: string) {
+function handleOpenDeleteModal(id: number) {
   ideaId.value = id
   isOpenedIdeaDeleteModal.value = true
 }
@@ -143,22 +143,22 @@ function handleCloseDeleteModal() {
 
 async function handleDeleteIdea() {
   const currentUser = user.value
-  if (currentUser?.token) {
+  if (currentUser?.token && ideaId.value) {
     const { token } = currentUser
     await ideaStore.deleteInitiatorIdea(ideaId.value, token)
   }
 }
 
-function checkButtonDelete(initiator: string) {
-  return (user.value?.role == 'INITIATOR' && user.value.email == initiator) ||
+function checkButtonDelete(initiatorId: string) {
+  return (user.value?.role == 'INITIATOR' && `${user.value.id}` === initiatorId) ||
     user.value?.role == 'ADMIN'
     ? true
     : false
 }
 
-function checkButtonEdit(initiator: string, status: IdeaStatusTypes) {
+function checkButtonEdit(initiatorId: string, status: IdeaStatusTypes) {
   return (user.value?.role == 'INITIATOR' &&
-    user.value.email == initiator &&
+    `${user.value.id}` == initiatorId &&
     (status == 'NEW' || status == 'ON_EDITING')) ||
     user.value?.role == 'ADMIN'
     ? true
@@ -169,10 +169,10 @@ function checkMark(row: Idea) {
   const currentRole = user.value?.role
   const currentStatusIdea = row.status
   const currentInitiatorIdea = row.initiator
-  const currentEmail = user.value?.email
+  const currentEmail = `${user.value?.id}`
   return currentRole == 'INITIATOR' &&
     (currentStatusIdea == 'NEW' || currentStatusIdea == 'ON_EDITING') &&
-    currentInitiatorIdea == currentEmail
+    currentInitiatorIdea === currentEmail
     ? true
     : currentRole == 'PROJECT_OFFICE' && currentStatusIdea == 'ON_APPROVAL'
     ? true
