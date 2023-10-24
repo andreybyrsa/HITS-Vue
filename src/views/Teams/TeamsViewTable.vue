@@ -2,7 +2,7 @@
 import { useDateFormat, useToggle } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
-import CommandViewTableProps from '@Views/CommandView/CommandViewTable.types'
+import TeamsViewTableProps from '@Views/Teams/TeamsViewTable.types'
 
 import { TableColumn } from '@Components/Table/Table.types'
 import Button from '@Components/Button/Button.vue'
@@ -11,7 +11,7 @@ import Table from '@Components/Table/Table.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Team from '@Domain/Team'
 
-const props = defineProps<CommandViewTableProps>()
+const props = defineProps<TeamsViewTableProps>()
 
 const router = useRouter()
 
@@ -72,7 +72,12 @@ function sortName(changes: Team[]) {
         <DropDown id="lastActivityNoteTable">
           <ul class="list-group list-group-flush">
             <li class="list-group-item list-group-item-action p-1">
-              <button class="w-100 text-start">Просмотреть</button>
+              <button
+                class="w-100 text-start"
+                @click="router.push(`${item.id}`)"
+              >
+                Просмотреть
+              </button>
             </li>
             <li class="list-group-item list-group-item-action p-1">
               <button

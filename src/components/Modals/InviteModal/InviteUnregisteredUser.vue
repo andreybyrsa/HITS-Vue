@@ -2,24 +2,20 @@
 import Validation from '@Utils/Validation'
 import { useFieldArray, useForm } from 'vee-validate'
 import { VueElement, ref } from 'vue'
-import {
-  InviteUnregisteredUsersForm,
-  InviteUnregisteredUsersEmits,
-} from '@Components/Modals/InviteModal/InviteModal.types'
+import { InviteUnregisteredUsersEmits } from '@Components/Modals/InviteModal/InviteModal.types'
 import FormInputs from '@Components/Forms/AddUsersForm/FormInputs.vue'
 import Button from '@Components/Button/Button.vue'
 
 const emit = defineEmits<InviteUnregisteredUsersEmits>()
-const { resetForm, submitCount, handleSubmit } =
-  useForm<InviteUnregisteredUsersForm>({
-    validationSchema: {
-      emails: (value: string[]) =>
-        value?.every((email) => Validation.checkEmail(email)),
-    },
-    initialValues: {
-      emails: [''],
-    },
-  })
+const { resetForm, submitCount, handleSubmit } = useForm<any>({
+  validationSchema: {
+    emails: (value: string[]) =>
+      value?.every((email) => Validation.checkEmail(email)),
+  },
+  initialValues: {
+    emails: [''],
+  },
+})
 
 const { fields, push, move, remove } = useFieldArray<string>('emails')
 const fileInputRef = ref<VueElement | null>(null)

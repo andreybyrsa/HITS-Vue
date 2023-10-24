@@ -56,7 +56,7 @@ function filterCommand(team: Team[]) {
             .map(String)
             .some((value) => value.toLowerCase() === filter.toLowerCase()) ||
           elem.skills
-            .map((competence) => competence.toLowerCase())
+            .map((competence) => competence.name.toLowerCase())
             .includes(filter.toLowerCase()),
       )
       if (matchesAllFilters) {

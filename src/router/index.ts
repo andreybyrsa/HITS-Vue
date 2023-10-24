@@ -21,9 +21,11 @@ import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
+import TeamView from '@Views/Teams/TeamView.vue'
+import TeamRequestView from '@Views/Teams/TeamRequestView.vue'
+import TeamsView from '@Views/Teams/TeamsView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
-import CommandView from '@Views/CommandView/CommandView.vue'
 
 import DevView from '@Views/DevView.vue'
 
@@ -78,7 +80,25 @@ const routes: RouteRecordRaw[] = [
             meta: {
               roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
             },
-            component: CommandView,
+            component: TeamsView,
+            children: [
+              {
+                path: ':teamId',
+                meta: {
+                  roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+                },
+                component: TeamView,
+                children: [
+                  {
+                    path: 'request/:requestId',
+                    meta: {
+                      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+                    },
+                    component: TeamRequestView,
+                  },
+                ],
+              },
+            ],
           },
           {
             path: 'edit/:id',

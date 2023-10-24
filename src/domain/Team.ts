@@ -3,7 +3,7 @@ import { Project } from '@Components/Modals/TeamModal/TeamAction.types'
 import TeamMember from './TeamMember'
 
 interface Team {
-  id: string
+  id: number
   name: string
   closed: boolean
   createdAt: Date

@@ -1,49 +1,31 @@
-<script lang="ts" setup>
-import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref } from 'vue'
+<script lang="ts" setup generic="User">
+import { computed, ref } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
-
-import ManageUsersService from '@Services/ManageUsersService'
-import useUserStore from '@Store/user/userStore'
-import { User } from '@Domain/User'
 
 import UsersColumns from '@Components/UserColumns/UsersColumns.vue'
 import {
-  InviteRegisteredUsersForm,
   InviteRegisteredUsersProps,
   InviteRegisteredUsersEmits,
 } from '@Components/Modals/InviteModal/InviteModal.types'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import Icon from '@Components/Icon/Icon.vue'
 
-defineProps<InviteRegisteredUsersProps>()
+defineModel<User | User[]>({
+  required: false,
+})
 
-const emit = defineEmits<InviteRegisteredUsersEmits>()
+const props = defineProps<InviteRegisteredUsersProps<User>>()
 
-const userStore = useUserStore()
-
-const { user } = storeToRefs(userStore)
+const emit = defineEmits<InviteRegisteredUsersEmits<User>>()
 
 const searchedValue = ref('')
 
+const isSeachedByAdvancedField = ref<boolean>(false)
+
 const unselectedUsers = ref<User[]>()
 
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const response = await ManageUsersService.getUsers(token)
-
-    if (response instanceof Error) {
-      return
-    }
-    unselectedUsers.value = response
-  }
-})
-
-const { handleSubmit } = useForm<InviteRegisteredUsersForm>({
+const { handleSubmit } = useForm<any>({
   validationSchema: {
     users: (value: User[]) => value?.length > 0 || 'Выберите пользователей',
   },
@@ -51,29 +33,39 @@ const { handleSubmit } = useForm<InviteRegisteredUsersForm>({
 
 const { fields, push, remove } = useFieldArray<User>('users')
 
-const inviteUsers = handleSubmit(async (values) => {
-  emit('inviteRegisteredUsers', values.users)
+const inviteUsers = handleSubmit(async (values: User[]) => {
+  emit(
+    'inviteRegisteredUsers',
+    values.reduce<string[]>((emails, currentUser) => {
+      emails.push(`${currentUser[props.email]}`)
+      return emails
+    }, []),
+  )
 })
 
-const searchedUsers = computed(() => {
-  if (unselectedUsers.value) {
-    const currentSearchedValue = searchedValue.value.trim().toLocaleLowerCase()
+const searchedOptions = computed(() => {
+  const currentSearchedValue = searchedValue.value.trim().toLocaleLowerCase()
 
-    return unselectedUsers.value.reduce<User[]>((users, user) => {
-      const currentUserFields = `${user.firstName} ${user.lastName} ${user.email}`
-      const isIncludesSeachedValue = currentUserFields
-        .trim()
-        .toLocaleLowerCase()
-        .includes(currentSearchedValue)
+  return isSeachedByAdvancedField.value
+    ? emit('searchByAdvacnedField', props.users, searchedValue.value)
+    : props.users.reduce<User[]>((optionsArray, user) => {
+        const currentOptionSearchingFields =
+          props.displayBy.reduce(
+            (prevValue, value) => (prevValue += `${user[value]} `),
+            '',
+          ) + `${user[props.email]}`
 
-      if (isIncludesSeachedValue) {
-        users.push(user)
-      }
+        const isIncludesSeachedValue = currentOptionSearchingFields
+          .trim()
+          .toLocaleLowerCase()
+          .includes(currentSearchedValue)
 
-      return users
-    }, [])
-  }
-  return []
+        if (isIncludesSeachedValue) {
+          optionsArray.push(user)
+        }
+
+        return optionsArray
+      }, [])
 })
 
 function selectUser(user: User, index: number) {
@@ -85,8 +77,8 @@ function selectUser(user: User, index: number) {
 
 function unselectUser(user: User, index: number) {
   if (unselectedUsers.value) {
-    remove(index)
     unselectedUsers.value.push(user)
+    remove(index)
   }
 }
 </script>
@@ -102,12 +94,24 @@ function unselectUser(user: User, index: number) {
       no-form-controlled
       placeholder="Найти пользователя"
     />
+    <Icon
+      v-if="isSeachedByAdvancedField"
+      class-name="invite-registered__icon"
+      v-tooltip="'Вернуть обычный поиск'"
+      @click="isSeachedByAdvancedField = false"
+    />
+    <Button
+      v-if="isAdvancedSearch && !isSeachedByAdvancedField"
+      @click="isSeachedByAdvancedField = true"
+      >Рассширенный поиск</Button
+    >
     <UsersColumns
       :users="fields"
-      :unselected-users="searchedUsers"
-      :advanced-info="advancedInfo"
-      @select-user="selectUser"
-      @unselect-user="unselectUser"
+      :unselected-users="searchedOptions"
+      :display-by="displayBy"
+      :email="(email as keyof User)"
+      @on-select="selectUser"
+      @on-unselect="unselectUser"
     />
     <div class="invite-registered__form-controller">
       <Button
@@ -125,6 +129,12 @@ function unselectUser(user: User, index: number) {
 
   &__form-controller {
     @include flexible(stretch, center, $gap: 16px);
+  }
+
+  &__icon {
+    @include position(absolute, $top: 11px, $right: 12px, $z-index: 5);
+
+    cursor: pointer;
   }
 }
 </style>

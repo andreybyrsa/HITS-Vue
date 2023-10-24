@@ -30,7 +30,7 @@ function closeTeamModal() {
   emit('close-modal')
 }
 
-const handleKick = async (member: TeamMember, teamId: string) => {
+const handleKick = async (member: TeamMember, teamId: number) => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
@@ -142,7 +142,7 @@ const handleKick = async (member: TeamMember, teamId: string) => {
           <Typography class="fs-4 py-2 d-flex justify-content-center"
             >Наши компетенции</Typography
           >
-          <ProfileSkillCharts :team="team"></ProfileSkillCharts>
+          <ProfileSkillCharts :team="team" />
         </div>
       </div>
       <div class="p-3 team-modal__right-side rounded w-25 bg-white">
@@ -171,11 +171,11 @@ const handleKick = async (member: TeamMember, teamId: string) => {
             }}</Typography>
           </router-link>
         </Typography>
-        <TeamAction :team="team"></TeamAction>
+        <TeamAction :team="team" />
       </div>
     </div>
     <div v-else>
-      <TeamModalPlaceholder></TeamModalPlaceholder>
+      <TeamModalPlaceholder />
     </div>
   </ModalLayout>
 </template>
