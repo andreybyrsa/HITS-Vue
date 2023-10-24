@@ -7,7 +7,6 @@ import Button from '@Components/Button/Button.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
-import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import Table from '@Components/Table/Table.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
@@ -17,6 +16,7 @@ import ProfileView from './Profile/ProfileView.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
+import ExchangeModal from '@Components/Modals/ExchangeModal/ExchangeModal.vue'
 
 const searchValue = ref('')
 
@@ -64,11 +64,6 @@ const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
 
-const selectedOption = ref()
-
-const isOpenedProfile = ref(false)
-const currentOpenedProfile = ref<User>()
-
 userStore.checkLastActivity()
 
 const { values, handleSubmit } = useForm({
@@ -77,7 +72,7 @@ const { values, handleSubmit } = useForm({
   },
   initialValues: {
     combobox: [],
-    component: '',
+    component: undefined,
   },
 })
 
@@ -160,13 +155,13 @@ function handleCloseProfile() {
         </NavTab>
       </div>
 
-      <IdeaModal
+      <ExchangeModal
         :is-opened="isOpenedModal"
         @close-modal="handleCloseModal"
       />
 
       <Button
-        class-name="btn-warning"
+        class-name="btn-primary"
         @click="isOpenedModal = true"
       >
         Открыть окно

@@ -31,6 +31,12 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
       class="row w-100 text-center bg-primary text-light p-3 rounded-3 fs-6 fw-semibold"
     >
       <div
+        v-if="$slots.type"
+        class="table__header-cell col-1"
+      >
+        Тип
+      </div>
+      <div
         v-if="$slots.icon"
         class="table__header-cell col-1"
       >
@@ -55,6 +61,12 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
         ></i>
       </div>
       <div
+        v-if="$slots.competencies"
+        class="table__header-cell col-3"
+      >
+        Компетенции
+      </div>
+      <div
         v-if="$slots.actions"
         class="table__header-cell col-1"
       >
@@ -74,6 +86,15 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
         <slot
           :item="row"
           name="icon"
+        />
+      </div>
+      <div
+        v-if="$slots.type"
+        class="table__row-cell col-1"
+      >
+        <slot
+          :item="row"
+          name="type"
         />
       </div>
       <div
@@ -97,6 +118,17 @@ function getCellStyle(styleFunction?: (value: string) => string, value?: string)
             column.getFormat ? column.getFormat(row[column.key]) : row[column.key]
           }}
         </template>
+      </div>
+      <div
+        v-if="$slots.competencies"
+        class="table__row-cell bg-light col-3"
+      >
+        <slot
+          :item="row"
+          name="competencies"
+          class="table__action-cell bg-light"
+        >
+        </slot>
       </div>
       <div
         v-if="$slots.actions"

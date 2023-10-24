@@ -18,6 +18,10 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const app = createApp(App)
 
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
+const API_URL: 'http://localhost:3000/api/v1' | 'http://hits.tyuiu.ru/api/v1' =
+  'http://localhost:3000/api/v1'
+
 const pinia = createPinia()
 pinia.use(({ store }) => {
   store.router = markRaw(router)
@@ -41,24 +45,24 @@ router.beforeEach((to) => {
   const path: string[] = []
   router.getRoutes().forEach((e) => path.push(e.path))
 
-  if (
-    (metaRoles &&
-      userStore.user?.role &&
-      !metaRoles.includes(userStore.user?.role)) ||
-    (userStore.user &&
-      ['login', 'register', 'forgot-password', 'new-password'].includes(
-        currentRouteName,
-      )) ||
-    (to.meta.isPageEdit
-      ? currentRoutePath != '/edit-idea/' + to.params.id
-      : to.meta.isPageEmail
-      ? currentRoutePath != '/change-email/' + to.params.slug
-      : to.meta.isPageRegister
-      ? currentRoutePath != '/register/' + to.params.slug
-      : !path.includes(currentRoutePath))
-  ) {
-    router.push('error')
-  }
+  // if (
+  //   (metaRoles &&
+  //     userStore.user?.role &&
+  //     !metaRoles.includes(userStore.user?.role)) ||
+  //   (userStore.user &&
+  //     ['login', 'register', 'forgot-password', 'new-password'].includes(
+  //       currentRouteName,
+  //     )) ||
+  //   (to.meta.isPageEdit
+  //     ? currentRoutePath != '/edit-idea/' + to.params.id
+  //     : to.meta.isPageEmail
+  //     ? currentRoutePath != '/change-email/' + to.params.slug
+  //     : to.meta.isPageRegister
+  //     ? currentRoutePath != '/register/' + to.params.slug
+  //     : !path.includes(currentRoutePath))
+  // ) {
+  //   router.push('error')
+  // }
 
   if (
     !userStore.user &&
@@ -77,3 +81,5 @@ app.directive('dropdown', dropdownDirective)
 app.directive('collapse', collapseDirective)
 
 app.mount('#app')
+
+export { MODE, API_URL }

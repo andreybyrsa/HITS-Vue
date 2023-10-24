@@ -20,7 +20,7 @@ function rotateIcon(icon: HTMLElement | null, degree: number) {
   }
 }
 
-function clickHandler(event: Event) {
+function clickHandler(event: Event, iconIsRotate: boolean) {
   const element = event.currentTarget as HTMLElement
   const currentCollapse = collapseDirective.collapses?.find(
     (collapse) => collapse.element == element,
@@ -29,10 +29,14 @@ function clickHandler(event: Event) {
     currentCollapse.collapse.toggle()
     const icon = element.querySelector('i')
     if (!currentCollapse.isOpen) {
-      rotateIcon(icon, 180)
+      if (iconIsRotate) {
+        rotateIcon(icon, 180)
+      }
       currentCollapse.isOpen = true
     } else {
-      rotateIcon(icon, 0)
+      if (iconIsRotate) {
+        rotateIcon(icon, 180)
+      }
       currentCollapse.isOpen = false
     }
   }
@@ -46,7 +50,9 @@ const collapseDirective: CollapseDirective = {
       collapse: currentCollapse,
       isOpen: false,
     })
-    element.addEventListener('click', clickHandler)
+    element.addEventListener('click', (event) =>
+      clickHandler(event, binding.arg === 'rotate-icon'),
+    )
   },
 }
 

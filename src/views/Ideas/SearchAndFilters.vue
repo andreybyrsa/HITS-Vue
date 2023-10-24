@@ -4,6 +4,9 @@ import { ref } from 'vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import FilterModal from '@Components/Modals/FilterModal/FilterModal.vue'
+import SearchAndFiltersProps from '@Views/Ideas/SearchAndFilters.types'
+
+const props = defineProps<SearchAndFiltersProps>()
 
 const searchedValue = defineModel<string>('searchedValue', {
   required: true,
@@ -48,6 +51,7 @@ function handleSetFilters(filters: string[]) {
       Фильтр
     </Button>
     <FilterModal
+      :filters="props.filtersData"
       :is-opened="isOpenedFilterModal"
       @close-modal="handleCloseFilterModal"
       @set-filters="handleSetFilters"

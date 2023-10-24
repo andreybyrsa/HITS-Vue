@@ -17,6 +17,7 @@ const ButtonClassName = computed(() => ['btn d-flex', props.className])
       v-if="prependIconName"
       :class="`${prependIconName} fs-5`"
     ></i>
+
     <slot></slot>
 
     <i

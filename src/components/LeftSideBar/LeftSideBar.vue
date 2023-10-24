@@ -10,6 +10,7 @@ import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import LeftSideBarPlaceholder from '@Components/LeftSideBar/LeftSideBarPlaceholder.vue'
+import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
 
 import RolesTypes from '@Domain/Roles'
 
@@ -77,6 +78,15 @@ function handleOpenProfile(user?: User) {
 
 function handleCloseProfile() {
   isOpenedProfile.value = false
+  const isOpenedNotificationModal = ref(false)
+}
+
+function handleOpenNotificationModal() {
+  isOpenedNotificationModal.value = true
+}
+
+function handleCloseNotificationModal() {
+  isOpenedNotificationModal.value = false
 }
 </script>
 
@@ -129,6 +139,14 @@ function handleCloseProfile() {
       >
         {{ isHovered ? 'Выйти' : '' }}
       </Button>
+
+      <Button
+        class-name="left-side-bar__notifications-button btn-light w-100"
+        @click="handleOpenNotificationModal"
+        prepend-icon-name="bi bi-bell"
+      >
+        {{ isHovered ? 'Уведомления' : '' }}
+      </Button>
     </div>
 
     <RoleModal
@@ -139,6 +157,10 @@ function handleCloseProfile() {
       :isOpened="isOpenedProfile"
       @close-modal="handleCloseProfile"
     />
+    <NotificationModalWindow
+      :is-opened="isOpenedNotificationModal"
+      @close-modal="handleCloseNotificationModal"
+    />
   </div>
 
   <LeftSideBarPlaceholder v-else />
@@ -148,9 +170,10 @@ function handleCloseProfile() {
 .left-side-bar {
   @include position(relative, $z-index: 5);
 
-  overflow: hidden;
+  overflow-x: hidden;
+  // overflow-y: scroll;
 
-  @include flexible(stretch, space-between, column);
+  @include flexible(stretch, space-between, column, $gap: 8px);
 
   &__content {
     @include fixedWidth(280px);

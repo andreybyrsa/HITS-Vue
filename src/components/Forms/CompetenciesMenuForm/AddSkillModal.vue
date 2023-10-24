@@ -1,22 +1,26 @@
 <script lang="ts" setup>
+import { ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useForm } from 'vee-validate'
+
 import {
   AddSkillModalProps,
   AddSkillModalEmits,
 } from '@Components/Forms/CompetenciesMenuForm/AddSkillModal.types'
-import { Skill, SkillType } from '@Domain/Skill'
-import { useForm } from 'vee-validate'
-import { storeToRefs } from 'pinia'
-import { ref, watch } from 'vue'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
-import Validation from '@Utils/Validation'
+
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
+import { Skill, SkillType } from '@Domain/Skill'
+
+import SkillsService from '@Services/SkillService'
 
 import useUserStore from '@Store/user/userStore'
-import SkillsService from '@Services/SkillService'
-import useNotification from '@Hooks/useNotification'
+
+import Validation from '@Utils/Validation'
 
 const currentSkillId = ref('')
 
@@ -51,14 +55,10 @@ const { handleSubmit, setValues } = useForm<Skill>({
     type: (value: SkillType) =>
       Validation.checkName(value) || 'Неверно выбран тип компетенции',
   },
+  initialValues: {
+    confirmed: true,
+  },
 })
-
-const {
-  notificationOptions,
-  isOpenedNotification,
-  handleOpenNotification,
-  handleCloseNotification,
-} = useNotification()
 
 const skills = defineModel<Skill[]>({ required: true })
 
@@ -70,7 +70,7 @@ const handleAddSkill = handleSubmit(async (values) => {
     const response = await SkillsService.addSkill(values, token)
 
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return // notification
     }
 
     skills.value.push(response)
@@ -96,7 +96,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     const { token } = currentUser
     const response = await SkillsService.updateSkill(values, props.currentId, token)
     if (response instanceof Error) {
-      return handleOpenNotification('error', response.message)
+      return // notification
     }
 
     const skillIndex = skills.value.findIndex((skill) => skill.id === values.id)

@@ -1,11 +1,12 @@
-<script lang="ts" setup>
-import { ref, reactive, watch, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
+import { watchImmediate } from '@vueuse/core'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import comboboxStackCategories from '@Components/Forms/IdeaForm/StackCategories'
+import comboboxStackCategories from '@Components/StackCategories/StackCategories'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
 import { Skill, SkillType } from '@Domain/Skill'
@@ -14,8 +15,11 @@ import SkillsService from '@Services/SkillService'
 
 import useUserStore from '@Store/user/userStore'
 
-const stackValue = defineModel<Skill[]>({
-  required: true,
+const stackValue = defineModel<Skill[]>('stack', {
+  required: false,
+})
+const stackByTypes = defineModel<Record<SkillType, Skill[]>>('stackByTypes', {
+  required: false,
 })
 
 const userStore = useUserStore()
@@ -23,49 +27,53 @@ const { user } = storeToRefs(userStore)
 
 const skills = ref<Record<SkillType, Skill[]>>()
 
-const choosenSkills = reactive<Record<SkillType, Skill[]>>({
-  LANGUAGE: stackValue.value.filter(
-    (selectedValue) => selectedValue.type === 'LANGUAGE',
-  ),
-  FRAMEWORK: stackValue.value.filter(
-    (selectedValue) => selectedValue.type === 'FRAMEWORK',
-  ),
-  DATABASE: stackValue.value.filter(
-    (selectedValue) => selectedValue.type === 'DATABASE',
-  ),
-  DEVOPS: stackValue.value.filter(
-    (selectedValue) => selectedValue.type === 'DEVOPS',
-  ),
+const choosenSkills = ref<Record<SkillType, Skill[]>>({
+  LANGUAGE: [],
+  FRAMEWORK: [],
+  DATABASE: [],
+  DEVOPS: [],
 })
 
 onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.getAllSkills(token)
+    const response = await SkillsService.getAllConfirmedOrCreatorSkills(token)
 
     if (response instanceof Error) {
-      return
+      return // notification
     }
 
-    skills.value = {
-      LANGUAGE: response.filter((skill) => skill.type === 'LANGUAGE'),
-      FRAMEWORK: response.filter((skill) => skill.type === 'FRAMEWORK'),
-      DATABASE: response.filter((skill) => skill.type === 'DATABASE'),
-      DEVOPS: response.filter((skill) => skill.type === 'DEVOPS'),
+    skills.value = response
+
+    if (stackValue.value) {
+      Object.keys(choosenSkills.value).forEach((key) => {
+        if (stackValue.value) {
+          choosenSkills.value[key as SkillType] = stackValue.value.filter(
+            (skill) => skill.type === key,
+          )
+        }
+      })
+    } else if (stackByTypes.value) {
+      choosenSkills.value = stackByTypes.value
     }
   }
 })
 
-watch(choosenSkills, (currentSills) => {
-  let currentStack: Skill[] = []
-  Object.values(currentSills).forEach((skills) => currentStack.push(...skills))
+watchImmediate(
+  choosenSkills,
+  (currentSkills) => {
+    let currentStack: Skill[] = []
+    Object.values(currentSkills).forEach((skills) => currentStack.push(...skills))
 
-  stackValue.value = currentStack
-})
+    stackValue.value = currentStack
+    stackByTypes.value = currentSkills
+  },
+  { deep: true },
+)
 
 function unselectTechnology(key: SkillType, index: number) {
-  choosenSkills[key].splice(index, 1)
+  choosenSkills.value[key].splice(index, 1)
 }
 
 function getTechnologyClassName(key: SkillType) {
@@ -80,6 +88,34 @@ function getTechnologyClassName(key: SkillType) {
       return clasName + ' bg-warning'
     default:
       return clasName + ' bg-danger'
+  }
+}
+
+function checkIsChoosenSkills() {
+  const { LANGUAGE, FRAMEWORK, DATABASE, DEVOPS } = choosenSkills.value
+  return (
+    LANGUAGE.length > 0 ||
+    FRAMEWORK.length > 0 ||
+    DATABASE.length > 0 ||
+    DEVOPS.length > 0
+  )
+}
+
+const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const newSkill = { name, type, confirmed: false } as Skill
+    const { token } = currentUser
+    const response = await SkillsService.addNoConfirmedSkill(newSkill, token)
+
+    if (response instanceof Error) {
+      return // notification
+    }
+
+    if (skills.value) {
+      skills.value[type].push(response)
+    }
   }
 }
 </script>
@@ -105,9 +141,11 @@ function getTechnologyClassName(key: SkillType) {
           no-form-controlled
           :placeholder="category.placeholder"
           :multiselect-placeholder="category.multiselectPlaceholder"
+          @add-new-option="(name) => handleAddNoConfirmedStack(name, category.key)"
         />
+
         <div
-          v-if="stackValue.length"
+          v-if="checkIsChoosenSkills()"
           class="stack-categories__technologies mt-2"
         >
           <div

@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "types": ["webpack-env"],
     "paths": {
+      "@Main": ["src/main.ts"],
       "@Assets/*": ["src/assets/*"],
       "@Components/*": ["src/components/*"],
       "@Layouts/*": ["src/layouts/*"],

@@ -1,15 +1,14 @@
 <script lang="ts" setup>
-import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
-import Button from '@Components/Button/Button.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import {
   IdeaDescriptionProps,
   IdeaDescriptionEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
+import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
+import Button from '@Components/Button/Button.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 defineProps<IdeaDescriptionProps>()
-
 const emit = defineEmits<IdeaDescriptionEmits>()
 </script>
 
@@ -24,9 +23,9 @@ const emit = defineEmits<IdeaDescriptionEmits>()
     </Button>
 
     <Typography
-      class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-scroll"
+      class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-x-scroll"
     >
-      {{ idea?.name }}
+      {{ idea.name }}
     </Typography>
   </div>
 
@@ -44,7 +43,7 @@ const emit = defineEmits<IdeaDescriptionEmits>()
       </Button>
       <Collapse :id="collapse.id">
         <div class="p-2">
-          {{ idea?.[collapse.ideaKey] }}
+          {{ idea[collapse.ideaKey] }}
         </div>
       </Collapse>
     </li>

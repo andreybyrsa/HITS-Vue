@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import Typography from '@Components/Typography/Typography.vue'
-import Button from '@Components/Button/Button.vue'
 import {
   UsersListProps,
   UsersListEmits,
@@ -9,6 +8,7 @@ import {
 import RolesTypes from '@Domain/Roles'
 
 import getRoles from '@Utils/getRoles'
+import Icon from '@Components/Icon/Icon.vue'
 
 defineProps<UsersListProps>()
 
@@ -47,10 +47,10 @@ function getCurrentRoleColor(role: RolesTypes) {
       </div>
     </div>
 
-    <Button
-      prepend-icon-name="bi bi-pencil-square text-primary"
-      @click="emit('open-edit-modal', user.email)"
-    ></Button>
+    <Icon
+      class-name="user__edit-icon bi bi-pencil-square fs-5 text-primary"
+      @click="emit('open-edit-modal', user.id)"
+    />
   </div>
 </template>
 
@@ -60,6 +60,10 @@ function getCurrentRoleColor(role: RolesTypes) {
 
   &__roles {
     @include flexible(center, flex-start, $gap: 8px);
+  }
+
+  &__edit-icon {
+    cursor: pointer;
   }
 }
 </style>

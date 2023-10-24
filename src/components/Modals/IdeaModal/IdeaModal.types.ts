@@ -1,15 +1,10 @@
 import { VueElement } from 'vue'
 
-import { Idea } from '@Domain/Idea'
-
-interface IdeaModalProps {
-  isOpened: boolean
-
-  idea?: Idea
-}
+import { Idea, Rating } from '@Domain/Idea'
+import Comment from '@Domain/Comment'
 
 interface IdeaDescriptionProps {
-  idea?: Idea
+  idea: Idea
 }
 
 interface IdeaActionsProps {
@@ -17,17 +12,15 @@ interface IdeaActionsProps {
 }
 
 interface IdeaCommentsProps {
-  idea?: Idea
+  idea: Idea
+  comments?: Comment[]
 
   ideaModalRef: VueElement | null
 }
 
 interface IdeaInfoProps {
-  idea?: Idea
-}
-
-interface IdeaModalEmits {
-  (event: 'close-modal'): void
+  idea: Idea
+  expertRatings?: Rating[]
 }
 
 interface IdeaDescriptionEmits {
@@ -42,12 +35,10 @@ interface IdeaModalCollapseType {
 }
 
 export {
-  IdeaModalProps,
   IdeaDescriptionProps,
   IdeaActionsProps,
   IdeaCommentsProps,
   IdeaInfoProps,
-  IdeaModalEmits,
   IdeaDescriptionEmits,
   IdeaModalCollapseType,
 }

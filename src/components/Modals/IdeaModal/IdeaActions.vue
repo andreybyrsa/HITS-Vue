@@ -1,40 +1,51 @@
 <script lang="ts" setup>
+import { ref, VueElement, onMounted, onUpdated } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
 import Button from '@Components/Button/Button.vue'
-import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
-import actionsButton from '@Components/Modals/IdeaModal/IdeaActionsButton'
-import ButtonSendIdeaOnApproval from '@Components/Modals/IdeaModal/ButtonSendIdeaOnApproval.vue'
 
 import { Idea } from '@Domain/Idea'
 
+import IdeasService from '@Services/IdeasService'
+
 import useUserStore from '@Store/user/userStore'
+
+const idea = defineModel<Idea>({ required: true })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const props = defineProps<{ idea: Idea }>()
 const router = useRouter()
 
-function getAccessToEditing() {
-  if (user.value && props.idea) {
-    const { email, role } = user.value
-    const { status, initiator } = props.idea
+const ideaActionsButtons = ref<VueElement | null>()
 
-    if (role === 'ADMIN') return true
+onMounted(() => checkComponentContent())
+onUpdated(() => checkComponentContent())
+
+function checkComponentContent() {
+  if (ideaActionsButtons.value && ideaActionsButtons.value.childElementCount === 0) {
+    ideaActionsButtons.value.remove()
+  }
+}
+
+function getAccessToEditByInitiator() {
+  if (user.value) {
+    const { email, role } = user.value
+    const { status, initiator } = idea.value
 
     if (status === 'NEW' || status === 'ON_EDITING') {
-      return role === 'INITIATOR' && email === initiator
+      if (role === 'ADMIN') return true
+
+      return email === initiator
     }
   }
-  return false
 }
 
 function getAccessToApproval() {
-  if (user.value && props.idea) {
+  if (user.value) {
     const { role } = user.value
-    const { status } = props.idea
+    const { status } = idea.value
 
     if (status === 'ON_APPROVAL') {
       if (role === 'ADMIN') return true
@@ -44,67 +55,101 @@ function getAccessToApproval() {
   }
 }
 
-function getAccessToConfirmation() {
-  if (user.value && props.idea) {
-    const { email, role } = user.value
-    const { status } = props.idea
+const handleSendToApproval = async () => {
+  const currentUser = user.value
 
-    if (status === 'ON_CONFIRMATION') {
-      if (role === 'ADMIN') return true
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id } = idea.value
 
-      return role === 'EXPERT' && !props.idea.confirmedBy?.includes(email)
+    const response = await IdeasService.sendIdeaOnApproval(id, token)
+
+    if (response instanceof Error) {
+      return // notification
     }
+
+    idea.value.status = 'ON_APPROVAL'
   }
-  return false
 }
 
-function checkStatusAndRole() {
-  const currentRole = user.value?.role
-  const currentStatusIdea = props.idea?.status
-  const currentInitiatorIdea = props.idea.initiator
-  if (currentRole == 'ADMIN') {
-    return true
-  } else
-    return (
-      currentRole &&
-      currentStatusIdea &&
-      actionsButton.find((button) =>
-        currentRole == 'EXPERT' && currentStatusIdea == 'ON_CONFIRMATION'
-          ? true
-          : currentRole == 'INITIATOR'
-          ? currentInitiatorIdea == user.value?.email &&
-            button.roles.includes(currentRole) &&
-            button.status.includes(currentStatusIdea)
-          : button.roles.includes(currentRole) &&
-            button.status.includes(currentStatusIdea),
-      )
+const handleSendToEditing = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id } = idea.value
+
+    const response = await IdeasService.updateIdeaStatusByProjectOffice(
+      id,
+      'ON_EDITING',
+      token,
     )
+
+    if (response instanceof Error) {
+      return // notification
+    }
+
+    idea.value.status = 'ON_EDITING'
+  }
+}
+
+const handleSendToConfirmation = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id } = idea.value
+
+    const response = await IdeasService.updateIdeaStatusByProjectOffice(
+      id,
+      'ON_CONFIRMATION',
+      token,
+    )
+
+    if (response instanceof Error) {
+      return // notification
+    }
+
+    idea.value.status = 'ON_CONFIRMATION'
+  }
 }
 </script>
 
 <template>
-  <ExpertRatingCalculator
-    v-if="getAccessToConfirmation()"
-    :idea="idea"
-  />
-
   <div
-    v-if="getAccessToEditing() || getAccessToApproval()"
+    ref="ideaActionsButtons"
     class="rounded-3 bg-white p-3 d-flex gap-3"
   >
-    <ButtonSendIdeaOnApproval :idea="idea" />
     <Button
-      v-if="getAccessToEditing()"
+      v-if="getAccessToEditByInitiator()"
       class-name="btn-light"
-      @click="router.push(`edit-idea/${props.idea?.id}`)"
+      @click="router.push(`/ideas/edit/${idea.id}`)"
     >
       Редактировать
     </Button>
+
+    <Button
+      v-if="getAccessToEditByInitiator()"
+      class-name="btn-success"
+      @click="handleSendToApproval"
+    >
+      Отправить на согласование
+    </Button>
+
+    <Button
+      v-if="getAccessToApproval()"
+      class-name="btn-danger"
+      @click="handleSendToEditing"
+    >
+      Отправить на доработку
+    </Button>
+
+    <Button
+      v-if="getAccessToApproval()"
+      class-name="btn-success"
+      @click="handleSendToConfirmation"
+    >
+      Отправить на утверждение
+    </Button>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.idea-actions {
-  @include flexible(flex-start, flex-start, column, $gap: 16px);
-}
-</style>

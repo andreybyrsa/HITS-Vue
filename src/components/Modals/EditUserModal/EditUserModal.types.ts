@@ -1,19 +1,18 @@
-import { UpdateUserData } from '@Domain/ManageUsers'
+import { User } from '@Domain/User'
 
 interface EditUserModalProps {
   isOpened: boolean
-  user?: UpdateUserData
+  user?: User
 }
 
 interface EditUserModalEmits {
   (event: 'close-modal'): void
-  (event: 'save-user', newUser: UpdateUserData, success: string): void
 }
 
 interface EditUserInputType {
   id: number
   type?: string
-  name: 'newEmail' | 'newFirstName' | 'newLastName'
+  name: 'email' | 'firstName' | 'lastName'
   placeholder: string
   prepend?: string
   prependIconName?: string

@@ -15,6 +15,7 @@ module.exports = defineConfig({
   configureWebpack: {
     resolve: {
       alias: {
+        '@Main': resolvePath('src/main.ts'),
         '@Assets': resolvePath('src/assets/'),
         '@Components': resolvePath('src/components/'),
         '@Layouts': resolvePath('src/layouts/'),

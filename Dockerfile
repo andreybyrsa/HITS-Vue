@@ -1,22 +1,19 @@
-FROM node:18.17
+FROM node:18.16.0 as build-stage
 
-ENV VUE_APP_AUTH_API_URL 'http://localhost:3000/api/v1/auth'
-ENV VUE_APP_INVITATION_API_URL 'http://localhost:3000/api/v1/profile-action'
-ENV VUE_APP_MANAGE_USERS_API_URL 'http://localhost:3000/api/v1/profile-action'
-ENV VUE_APP_IDEAS_API_URL 'http://localhost:3000/api/v1/idea'
-ENV VUE_APP_COMMENT_API_URL 'http://localhost:3000/api/v1/comment'
-ENV VUE_APP_MANAGE_GROUPS_API_URL 'http://localhost:3000/api/v1/group'
+WORKDIR /app
 
-ENV PORT 8080
-
-WORKDIR /main
-
-COPY package.json /main
+COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY ./ .
 
-EXPOSE $PORT
+RUN npm run build
 
-CMD ["npm", "run", "serve"]
+FROM nginx as production-stage
+
+RUN mkdir /app
+
+COPY --from=build-stage /app/dist /app
+
+COPY nginx.conf /etc/nginx/nginx.conf
