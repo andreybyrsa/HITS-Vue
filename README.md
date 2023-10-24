@@ -28,6 +28,99 @@ npm run lint
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
+# defineAxios - параллельная разработка
+
+### Для чего нужна функция
+
+defineAxios - кастомная утилита над сервисами проекта Vue, которая обеспечивает
+параллельную разработку между фронтенд и бекенд офисами.
+
+При разработке интерфейса возвращаются подстановочные данные, которыми мы можем
+управлятя.
+
+### Использование
+
+В файле main.ts переменной MODE необходимо присвоить режим разработки:
+
+```ts
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
+```
+
+Засчет MODE переменной меняется режим разработки, и подстановочные данные меняются на
+API вашего сервера и наоборот.
+
+В файле getMocks.ts необходимо написать те подстановочные данные, которыми мы хотим
+управлять:
+
+```ts
+import YourType from '/path/to-your-type'
+
+interface Mocks {
+  data: YourType[]
+}
+
+function getMocks(): Mocks {
+  const data: YourType[] = [
+    {
+      id: '0',
+      number: 1,
+    },
+    {
+      id: '1',
+      number: 2,
+    },
+  ]
+
+  return { data }
+}
+```
+
+В сервисе, который Вы разрабатываете, необходимо проинициализировать утилиту
+defineAxios():
+
+```ts
+import defineAxios from '/path/to-utils'
+import getMocks from 'path/to-get-mocks'
+
+const yourServiceAxios = defineAxios(getMocks().yourMocks)
+```
+
+Утилита definAxios поддерживает все основные методы HTTP протокола - GET, POST, PUT,
+PUTNOREQUESTBODY, DELETE.
+
+Засчет перегрузок данных методов можно передавать разную параметризацию - типы данных
+и конфиги.
+
+### Пример использования:
+
+```ts
+interface AxiosMockConfig<YourTypeParams, ResponseMocksType> {
+  params?: YourTypeParams
+  requestData?: YourTypeParams
+  responseData?: ResponseMocksType
+  formatter?: (data: YourTypeParams[]) => ResponseMocksType
+}
+
+yourServiceAxios.get(endPoint: string, config?: AxiosRequestConfig, mockConfig: AxiosMockConfig)
+```
+
+Параметризацию запроса осуществляет mockConfig:
+
+- params: это атрибуты Вашего объекта, по которым осуществляется поиск объекта из
+  подстановочных данных. Если params не переданы, то возращаются все данные.
+
+- requestData: относится к PUT запросам, когда необходимо поменять отдельные атрибуты
+  объекта. Также можно передавать весь объект сразу, без параметра requestData.
+
+- responseData: в разных ситуациях мы ожидаем разные типы данных, поэтому
+  responseData отвечает за возвращаемые данные и их тип. Если параметр не передан, то
+  возвращаются отправленные данные.
+
+- formatter: относится к GET запросам, когда необходимо запрашиваемые данные
+  преобразовать перед принятем. Данный параметр - функция, которая принимает аргумент
+  в виде всего массива данных и возвращает их преобразованные данные. Возможно
+  использование замыкания.
+
 ### Валидация
 
 #### Валидация нужна для проверки условий, которые вы можете задать сами: пустое поле или нет, допустимое количество символов, сами символы и т.д.

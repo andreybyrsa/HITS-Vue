@@ -19,7 +19,7 @@ const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
 }
 
 const getUsersGroup = async (
-  id: string,
+  id: number,
   token: string,
 ): Promise<UserGroup | Error> => {
   return await usersGroupsAxios
@@ -40,7 +40,7 @@ const createUsersGroup = async (
   token: string,
 ): Promise<UserGroup | Error> => {
   return await usersGroupsAxios
-    .post('/group/add', usersData, {
+    .post('/group/create', usersData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -53,7 +53,7 @@ const createUsersGroup = async (
 const updateUsersGroup = async (
   usersGroup: UserGroup,
   token: string,
-  id: string,
+  id: number,
 ): Promise<UserGroup | Error> => {
   return await usersGroupsAxios
     .put(
@@ -71,12 +71,12 @@ const updateUsersGroup = async (
 }
 
 const deleteUsersGroup = async (
-  id: string,
+  id: number,
   token: string,
 ): Promise<Success | Error> => {
   return await usersGroupsAxios
     .delete(
-      `/delete/${id}`,
+      `/group/delete/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id } },
     )

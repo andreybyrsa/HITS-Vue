@@ -72,7 +72,7 @@ const { setValues, handleSubmit } = useForm<UsersGroup>({
 const { fields, push, remove } = useFieldArray<User>('users')
 
 onUpdated(async () => {
-  if (props.usersGroupId && props.isOpened) {
+  if (props.usersGroupId !== undefined && props.isOpened) {
     const currentUser = user.value
 
     if (currentUser?.token) {

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import {
-  IdeaModalProps,
-  IdeaModalEmits,
-} from '@Components/Modals/IdeaModal/IdeaModal.types'
+  ExchangeModalProps,
+  ExchangeModalEmits,
+} from '@Components/Modals/ExchangeModal/ExchangeModal.types'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import ExchangeDescription from '@Components/Modals/ExchangeModal/ExchangeDescription.vue'
@@ -13,86 +13,55 @@ import ExchangeComments from '@Components/Modals/ExchangeModal/ExchangeComments.
 import Team from '@Domain/Team'
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
+import { Idea } from '@Domain/Idea'
 
-defineProps<IdeaModalProps>()
+defineProps<ExchangeModalProps>()
 
-const emit = defineEmits<IdeaModalEmits>()
+const emit = defineEmits<ExchangeModalEmits>()
 
 const Andrey: User = {
-  id: 'Andrey',
+  id: 0,
   token: 'Andrey',
   email: 'Andrey@mail.com',
   firstName: 'Андрей',
   lastName: 'Бырса',
-  skills: [
-    {
-      id: 'skillId1',
-      skillId: 'skillId1',
-      name: 'JavaScript',
-      type: 'LANGUAGE',
-      confirmed: false,
-    },
-  ],
+
   roles: ['INITIATOR'],
   role: 'INITIATOR',
   lastActivity: new Date(2023, 10, 10),
 }
 
 const Kirill: User = {
-  id: 'Kirill',
+  id: 1,
   token: 'Kirill',
   email: 'Kirill@mail.com',
   firstName: 'Кирилл',
   lastName: 'Власов',
-  skills: [
-    {
-      id: 'skillId2',
-      skillId: 'skillId2',
-      name: 'React',
-      type: 'FRAMEWORK',
-      confirmed: false,
-    },
-  ],
+
   roles: ['INITIATOR'],
   role: 'INITIATOR',
   lastActivity: new Date(2023, 10, 10),
 }
 
 const Timyr: User = {
-  id: 'Timyr',
+  id: 2,
   token: 'Timyr',
   email: 'Timyr@mail.com',
   firstName: 'Тимур',
   lastName: 'Минязев',
-  skills: [
-    {
-      id: 'skillId3',
-      skillId: 'skillId3',
-      name: 'Django',
-      type: 'FRAMEWORK',
-      confirmed: false,
-    },
-  ],
+
   roles: ['INITIATOR'],
   role: 'INITIATOR',
   lastActivity: new Date(2023, 10, 10),
 }
 
 const Mamed: User = {
-  id: 'Mamed',
+  id: 3,
   token: 'Mamed',
   email: 'Mamed@mail.com',
   firstName: 'Мамедага',
   lastName: 'Байрамов',
-  skills: [
-    {
-      id: 'skillId4',
-      skillId: 'skillId4',
-      name: 'MongoDB',
-      type: 'DATABASE',
-      confirmed: false,
-    },
-  ],
+
   roles: ['INITIATOR'],
   role: 'INITIATOR',
   lastActivity: new Date(2023, 10, 10),
@@ -114,22 +83,19 @@ const members: User[] = [
 
 const skills: Skill[] = [
   {
-    id: 'skillId1',
-    skillId: 'skillId1',
+    id: 0,
     name: 'JavaScript',
     type: 'LANGUAGE',
     confirmed: false,
   },
   {
-    id: 'skillId2',
-    skillId: 'skillId2',
+    id: 1,
     name: 'React',
     type: 'FRAMEWORK',
     confirmed: false,
   },
   {
-    id: 'skillId4',
-    skillId: 'skillId4',
+    id: 2,
     name: 'MongoDB',
     type: 'DATABASE',
     confirmed: false,
@@ -138,7 +104,7 @@ const skills: Skill[] = [
 
 const teams: Team[] = [
   {
-    id: '1',
+    id: 1,
     name: 'Команда 1',
     description: 'Описание',
     closed: false,
@@ -149,7 +115,7 @@ const teams: Team[] = [
     skills: skills,
   },
   {
-    id: '2',
+    id: 2,
     name: 'Команда 2',
     description: 'Описание',
     closed: false,
@@ -162,21 +128,31 @@ const teams: Team[] = [
 ]
 
 const idea = {
-  id: '111',
-  createdAt: new Date(2023, 10, 10),
-  modifiedAt: new Date(2023, 10, 10),
-  name: 'Название идеи',
-  problem: 'Проблема идеи',
-  description: 'Описание',
-  solution: 'Решение',
-  result: 'Результат',
+  id: 0,
+  initiator: 'admin@mail.com',
+  name: 'Идея по созданию идеи',
   projectType: 'INSIDE',
-  status: 'CONFIRMED',
-  initiator: 'kirill.vlasov.05@inbox.ru',
+  problem:
+    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  solution:
+    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  result:
+    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  description:
+    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  createdAt: new Date(),
+  modifiedAt: new Date(),
+  status: 'ON_CONFIRMATION',
   customer: 'ВШЦТ',
-
-  technicalRealizability: 4,
-}
+  contactPerson: 'ВШЦТ',
+  experts: null,
+  projectOffice: null,
+  budget: 1,
+  suitability: 1,
+  technicalRealizability: 1,
+  preAssessment: 1,
+  rating: 8 / 5,
+} as Idea
 
 function closeExchangeModal() {
   emit('close-modal')

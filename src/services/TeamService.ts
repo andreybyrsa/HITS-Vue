@@ -42,14 +42,14 @@ const getTeams = async (token: string): Promise<Team[] | Error> => {
 }
 
 const getTeam = async (
-  id: number | number[],
+  id: string | string[],
   token: string,
 ): Promise<Team | Error> => {
   return await teamsAxios
     .get(
       `/team/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id: `${id}` } },
+      { params: { id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

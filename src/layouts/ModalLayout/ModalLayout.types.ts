@@ -2,6 +2,7 @@ interface ModalLayoutProps {
   className?: string
 
   isOpened: boolean
+  appearOnRender?: boolean
 }
 
 interface ModalLayoutEmits {

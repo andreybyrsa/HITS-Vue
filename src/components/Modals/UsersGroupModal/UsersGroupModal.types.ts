@@ -1,6 +1,6 @@
 interface UsersGroupModalProps {
   isOpened: boolean
-  usersGroupId?: string
+  usersGroupId?: number
 }
 
 interface UsersGroupModalEmits {

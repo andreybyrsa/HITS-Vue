@@ -21,8 +21,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const usersGroups = ref<UsersGroup[]>()
-const currentGroupId = ref('')
-const currentDeleteGroupId = ref('')
+const currentGroupId = ref()
+const currentDeleteGroupId = ref()
 
 const isOpenedCreatingGroupModal = ref(false)
 const isOpenedUpdatingGroupModal = ref(false)
@@ -61,7 +61,7 @@ function closeCreatingGroupModal() {
   isOpenedCreatingGroupModal.value = false
 }
 
-function openUpdatingGroupModal(groupId: string) {
+function openUpdatingGroupModal(groupId: number) {
   currentGroupId.value = groupId
   isOpenedUpdatingGroupModal.value = true
 }
@@ -69,7 +69,7 @@ function closeUpdatingGroupModal() {
   isOpenedUpdatingGroupModal.value = false
 }
 
-function openDeletingGroupModal(groupId: string) {
+function openDeletingGroupModal(groupId: number) {
   isOpenedDeletingGroupModal.value = true
   currentDeleteGroupId.value = groupId
 }

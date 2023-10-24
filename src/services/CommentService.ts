@@ -6,14 +6,20 @@ import getMocks from '@Utils/getMocks'
 
 const commentAxios = defineAxios(getMocks().comments)
 
-const fetchComments = async (
-  ideaId: string,
+function filterCommentsById(ideaId: number, comments: Comment[]) {
+  return comments.filter((comment) => comment.ideaId === ideaId)
+}
+
+const getComments = async (
+  ideaId: number,
   token: string,
 ): Promise<Comment[] | Error> => {
   return await commentAxios
-    .get(`/comment/all/${ideaId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .get<Comment[]>(
+      `/comment/all/${ideaId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { formatter: (comments) => filterCommentsById(ideaId, comments) },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения комментариев'
@@ -21,13 +27,12 @@ const fetchComments = async (
     })
 }
 
-const postComment = async (
+const createComment = async (
   comment: Comment,
-  ideaId: string,
   token: string,
 ): Promise<Comment | Error> => {
   return await commentAxios
-    .post(`/comment/send/${ideaId}`, comment, {
+    .post('/comment/send', comment, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -38,7 +43,7 @@ const postComment = async (
 }
 
 const deleteComment = async (
-  id: string,
+  id: number,
   token: string,
 ): Promise<Success | Error> => {
   return await commentAxios
@@ -54,12 +59,16 @@ const deleteComment = async (
     })
 }
 
-const checkComment = async (id: string, token: string) => {
+const checkComment = async (
+  userId: number,
+  id: number,
+  token: string,
+): Promise<void | Error> => {
   return await commentAxios
-    .putNoRequestBody(
+    .putNoRequestBody<void>(
       `/comment/check/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id }, requestData: { checkedBy: ['admin@mail.com'] } },
+      { params: { id }, requestData: { checkedBy: [userId] } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -69,8 +78,8 @@ const checkComment = async (id: string, token: string) => {
 }
 
 const CommentService = {
-  fetchComments,
-  postComment,
+  getComments,
+  createComment,
   deleteComment,
   checkComment,
 }

@@ -21,7 +21,6 @@ function closeModal() {
 <template>
   <div class="idea-description-header">
     <Button
-      v-if="!buttonBack"
       class-name="btn-primary"
       prepend-icon-name="bi bi-backspace-fill"
       @click="closeModal"
