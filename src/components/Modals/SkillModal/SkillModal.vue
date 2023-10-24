@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { onUpdated, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 
 import {
-  AddSkillModalProps,
-  AddSkillModalEmits,
-} from '@Components/Forms/CompetenciesMenuForm/AddSkillModal.types'
+  SkillModalProps,
+  SkillModalEmits,
+} from '@Components/Modals/SkillModal/SkillModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -22,31 +22,33 @@ import useUserStore from '@Store/user/userStore'
 
 import Validation from '@Utils/Validation'
 
-const currentSkillId = ref('')
+const skills = defineModel<Skill[]>({ required: true })
+const props = defineProps<SkillModalProps>()
+const emit = defineEmits<SkillModalEmits>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const skillModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
 const SkillTypeOptions = [
   {
     value: 'LANGUAGE',
-    label: 'Language',
+    label: 'Язык разработки',
   },
   {
     value: 'FRAMEWORK',
-    label: 'Framework',
+    label: 'Фреймворк',
   },
   {
     value: 'DATABASE',
-    label: 'Database',
+    label: 'База данных',
   },
   {
     value: 'DEVOPS',
-    label: 'Devops',
+    label: 'Девопс технология',
   },
 ]
-const props = defineProps<AddSkillModalProps>()
-const emit = defineEmits<AddSkillModalEmits>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const { handleSubmit, setValues } = useForm<Skill>({
   validationSchema: {
@@ -60,14 +62,21 @@ const { handleSubmit, setValues } = useForm<Skill>({
   },
 })
 
-const skills = defineModel<Skill[]>({ required: true })
+onUpdated(async () => {
+  if (props.isOpened && props.skill) {
+    skillModalMode.value = 'UPDATE'
+    setValues({ ...props.skill })
+  } else if (props.isOpened && !props.skill) {
+    skillModalMode.value = 'CREATE'
+  }
+})
 
-const handleAddSkill = handleSubmit(async (values) => {
+const handleCreateSkill = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.addSkill(values, token)
+    const response = await SkillsService.createSkill(values, token)
 
     if (response instanceof Error) {
       return // notification
@@ -78,30 +87,20 @@ const handleAddSkill = handleSubmit(async (values) => {
   }
 })
 
-watch(
-  () => props.currentId,
-  (id) => {
-    if (id && props.status == 'EDIT') {
-      const currentSkill = skills.value.find((skill) => skill.id === id)
-      if (currentSkill) {
-        setValues({ ...currentSkill })
-      }
-    }
-  },
-)
 const handleUpdateSkill = handleSubmit(async (values) => {
   const currentUser = user.value
 
-  if (currentUser?.token && props.currentId) {
+  if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.updateSkill(values, props.currentId, token)
+    const response = await SkillsService.updateSkill(values, values.id, token)
+
     if (response instanceof Error) {
       return // notification
     }
 
     const skillIndex = skills.value.findIndex((skill) => skill.id === values.id)
     if (skillIndex !== -1) {
-      skills.value.splice(skillIndex, 1, response)
+      skills.value.splice(skillIndex, 1, values)
     }
 
     emit('close-modal')
@@ -114,22 +113,15 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div
-      v-if="isOpened"
-      class="add-skill-modal p-3 rounded-3"
-    >
+    <div class="add-skill-modal p-3 rounded-3">
       <div class="add-skill-modal__header w-100">
-        <Typography
-          v-if="props.status === 'ADD'"
-          class-name="fs-3 text-primary "
-          >Создать компетенцию</Typography
-        >
-
-        <Typography
-          v-if="props.status === 'EDIT'"
-          class-name="fs-4 text-primary "
-          >Редактировать компетенцию</Typography
-        >
+        <Typography class-name="fs-4 text-primary">
+          {{
+            skillModalMode === 'CREATE'
+              ? 'Создать компетенцию'
+              : 'Редактировать компетенцию'
+          }}
+        </Typography>
 
         <Button
           class-name="btn-close"
@@ -141,8 +133,9 @@ const handleUpdateSkill = handleSubmit(async (values) => {
         <Input
           name="name"
           class-name="rounded-end"
-          placeholder="Введите название компетенции"
           label="Название компетенции"
+          placeholder="Введите название компетенции"
+          validate-on-update
         />
 
         <Select
@@ -150,18 +143,19 @@ const handleUpdateSkill = handleSubmit(async (values) => {
           :options="SkillTypeOptions"
           label="Тип компетенции*"
           placeholder="Выберите тип компетенции"
+          validate-on-update
         ></Select>
 
         <Button
-          v-if="props.status == 'ADD'"
+          v-if="skillModalMode === 'CREATE'"
           type="submit"
           class-name="btn-primary w-100"
-          @click="handleAddSkill"
+          @click="handleCreateSkill"
         >
-          Сохранить
+          Создать
         </Button>
         <Button
-          v-if="props.status == 'EDIT'"
+          v-if="skillModalMode === 'UPDATE'"
           type="submit"
           class-name="btn-primary w-100"
           @click="handleUpdateSkill"
