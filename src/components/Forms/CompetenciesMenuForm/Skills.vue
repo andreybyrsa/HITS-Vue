@@ -36,7 +36,7 @@ const isOpenAddSkillModal = ref(false)
 const isOpenUpdateSkillModal = ref(false)
 const searchValue = ref('')
 
-const currentSkillId = ref('')
+const currentSkillId = ref()
 
 const columns = [
   { key: 'name', label: 'Название' },
@@ -76,12 +76,16 @@ const handleDeleteSkill = async () => {
   }
 }
 
-const handleConfirmSkill = async (skill: Skill, id: string) => {
+const handleConfirmSkill = async (skill: Skill, id: number) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await SkillsService.confirmSkill(skill, id, token)
+    const response = await SkillsService.confirmSkill(
+      { ...skill, confirmed: true },
+      id,
+      token,
+    )
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification(
@@ -111,7 +115,7 @@ const filteredStatuses = defineModel<Skill[]>('filteredStatuses', {
   required: true,
 })
 
-function openDeleteSkillModal(id: string) {
+function openDeleteSkillModal(id: number) {
   isOpenedDeleteModal.value = true
   currentSkillId.value = id
 }
@@ -128,7 +132,7 @@ function handleCloseAddSkillModal() {
   isOpenAddSkillModal.value = false
 }
 
-function openUpdateSkillModal(id: string) {
+function openUpdateSkillModal(id: number) {
   isOpenUpdateSkillModal.value = true
   currentSkillId.value = id
 }

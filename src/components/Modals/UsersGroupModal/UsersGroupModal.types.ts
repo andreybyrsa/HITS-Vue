@@ -4,7 +4,7 @@ import { User } from '@Domain/User'
 
 interface UsersGroupModalProps {
   isOpened: boolean
-  usersGroupId?: string
+  usersGroupId?: number
 }
 
 interface UsersColumnsProps {

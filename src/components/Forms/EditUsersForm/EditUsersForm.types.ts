@@ -5,7 +5,7 @@ interface UsersListProps {
 }
 
 interface UsersListEmits {
-  (event: 'open-edit-modal', email: string): void
+  (event: 'open-edit-modal', id: number): void
 }
 
 export { UsersListProps, UsersListEmits }

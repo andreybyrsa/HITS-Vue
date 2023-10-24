@@ -12,7 +12,7 @@ import useUserStore from '@Store/user/userStore'
 
 const props = defineProps<CommentProps>()
 const { comment, className } = toRefs(props)
-const { sender, checkedBy, comment: commentMessage, createdAt } = toReactive(comment)
+const { senderEmail, checkedBy, text, createdAt } = toReactive(comment)
 
 const emit = defineEmits<CommentEmits>()
 
@@ -26,12 +26,15 @@ const CommentClassName = computed(() => [
 const CommentHeaderClassName = computed(() => [
   'comment__header card-header',
   {
-    'bg-primary bg-opacity-50': user.value && !checkedBy.includes(user.value.email),
+    'bg-primary bg-opacity-50': user.value && !checkedBy.includes(user.value.id),
   },
 ])
 
-const getCurrentCommentDate = (dateCreated: Date) => {
-  const currentDateCreated = new Date(dateCreated)
+const getCurrentCommentDate = (createdAt: string) => {
+  const currentDateCreated = new Date(
+    new Date(createdAt).getTime() -
+      new Date(createdAt).getTimezoneOffset() * 60 * 1000,
+  )
   const currentDate = new Date()
 
   const time = useDateFormat(currentDateCreated, 'HH:mm')
@@ -54,7 +57,7 @@ const getCurrentCommentDate = (dateCreated: Date) => {
 <template>
   <div :class="CommentClassName">
     <div :class="CommentHeaderClassName">
-      <Typography class-name="text-primary">{{ sender }}</Typography>
+      <Typography class-name="text-primary">{{ senderEmail }}</Typography>
 
       <div class="comment__info">
         <span class="text-primary">
@@ -62,7 +65,7 @@ const getCurrentCommentDate = (dateCreated: Date) => {
         </span>
 
         <Button
-          v-if="sender === user?.email"
+          v-if="senderEmail === user?.email"
           class-name="btn-primary p-1"
           prepend-icon-name="bi bi-list fs-5"
           v-dropdown="'commentVue'"
@@ -79,7 +82,7 @@ const getCurrentCommentDate = (dateCreated: Date) => {
     </div>
 
     <div class="card-body py-2">
-      {{ commentMessage }}
+      {{ text }}
     </div>
   </div>
 </template>

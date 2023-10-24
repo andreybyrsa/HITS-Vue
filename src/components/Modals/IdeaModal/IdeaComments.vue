@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
 import { storeToRefs } from 'pinia'
@@ -23,40 +22,22 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const commentsStore = useCommentsStore()
-const { comments, commentsError } = storeToRefs(commentsStore)
-const commentsIsLoading = ref(true)
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && props.idea) {
-    const { token } = currentUser
-    const { id } = props.idea
-
-    const response = await commentsStore.fetchComments(id, token)
-    if (response instanceof Array) {
-      commentsIsLoading.value = false
-    }
-
-    await commentsStore.connectRsocket(id)
-  }
-})
-
-watch(commentsError, (error) => {
-  // notification
-})
+const { comments } = storeToRefs(commentsStore)
 
 const { handleSubmit, resetForm } = useForm<Comment>({
   validationSchema: {
-    comment: string().required('Поле обязательно к заполнению'),
+    text: string().required('Поле обязательно к заполнению'),
   },
   initialValues: {
-    comment: '',
+    ideaId: props.idea.id,
+    text: '',
+    senderEmail: user.value?.email,
+    checkedBy: user.value ? [user.value.id] : [],
   },
 })
 
-function checkIsUserComment(sender: string) {
-  if (user.value?.email === sender) {
+function checkIsUserComment(senderEmail: string) {
+  if (user.value?.email === senderEmail) {
     return 'current-user-comment'
   }
 }
@@ -66,8 +47,7 @@ const handleSendComment = handleSubmit(async (values) => {
 
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
-    const { id } = props.idea
-    await commentsStore.postComment(values, id, token)
+    await commentsStore.createComment(values, token)
 
     resetForm()
 
@@ -78,7 +58,7 @@ const handleSendComment = handleSubmit(async (values) => {
   }
 })
 
-const handleDeleteComment = async (commentId: string) => {
+const handleDeleteComment = async (commentId: number) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -87,12 +67,12 @@ const handleDeleteComment = async (commentId: string) => {
   }
 }
 
-const handleCheckComment = async (commentId: string) => {
+const handleCheckComment = async (commentId: number) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token, email } = currentUser
-    await commentsStore.checkComment(email, commentId, token)
+    const { token, id } = currentUser
+    await commentsStore.checkComment(id, commentId, token)
   }
 }
 
@@ -100,14 +80,12 @@ const onIntersectionObserver = async (
   [{ isIntersecting }]: IntersectionObserverEntry[],
   comment: Comment,
 ) => {
-  const currentUser = user.value
+  if (user.value) {
+    const { id } = user.value
 
-  if (
-    currentUser &&
-    !comment.checkedBy.includes(currentUser.email) &&
-    isIntersecting
-  ) {
-    await handleCheckComment(comment.id)
+    if (!comment.checkedBy.includes(id) && isIntersecting) {
+      await handleCheckComment(comment.id)
+    }
   }
 }
 </script>
@@ -118,24 +96,24 @@ const onIntersectionObserver = async (
       <Typography class-name="fs-6 px-3">Комментарии</Typography>
     </div>
 
-    <IdeaCommentsPlaceholder v-if="commentsIsLoading" />
     <div
-      v-else
+      v-if="comments"
       class="d-grid gap-3 pt-3 px-3 w-100"
     >
       <CommentVue
         v-for="comment in comments"
         :key="comment.id"
-        :class-name="checkIsUserComment(comment.sender)"
+        :class-name="checkIsUserComment(comment.senderEmail)"
         :comment="comment"
         v-intersection-observer="(elem) => onIntersectionObserver(elem, comment)"
         @delete-comment="handleDeleteComment(comment.id)"
       />
     </div>
+    <IdeaCommentsPlaceholder v-else />
 
     <form class="comment-form p-3">
       <Input
-        name="comment"
+        name="text"
         class-name="rounded-end"
         placeholder="Добавить комментарий"
       >

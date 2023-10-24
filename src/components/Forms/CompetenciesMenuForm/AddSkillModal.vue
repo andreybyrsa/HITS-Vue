@@ -60,6 +60,9 @@ const { handleSubmit, setValues } = useForm<Skill>({
     type: (value: SkillType) =>
       Validation.checkName(value) || 'Неверно выбран тип компетенции',
   },
+  initialValues: {
+    confirmed: true,
+  },
 })
 
 const skills = defineModel<Skill[]>({ required: true })

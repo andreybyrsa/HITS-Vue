@@ -5,8 +5,8 @@ interface GroupsListProps {
 }
 
 interface GroupListEmits {
-  (event: 'openUpdatingGroupModal', usersGroupId: string): void
-  (event: 'openDeletingGroupModal', usersGroupId: string): void
+  (event: 'openUpdatingGroupModal', usersGroupId: number): void
+  (event: 'openDeletingGroupModal', usersGroupId: number): void
 }
 
 export { GroupsListProps, GroupListEmits }

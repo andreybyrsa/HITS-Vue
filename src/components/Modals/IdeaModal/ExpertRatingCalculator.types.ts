@@ -1,5 +1,7 @@
 import { OptionType } from '@Components/Inputs/Select/Select.types'
-import { Idea } from '@Domain/Idea'
+
+import { Idea, Rating } from '@Domain/Idea'
+
 interface RatingSelect {
   name:
     | 'marketValue'
@@ -10,9 +12,12 @@ interface RatingSelect {
   label: string
   options: OptionType[]
 }
+
 interface ExperCalculatorProps {
   idea: Idea
+  rating?: Rating
 }
+
 const marketValueOptions = [
   { label: 'В идеи полностью описана рыночная ценность', value: 5 },
   { label: 'Инициатор плохо описал рыночную ценность', value: 4 },
@@ -20,6 +25,7 @@ const marketValueOptions = [
   { label: 'Экспер не видит, что рыночная ценность есть', value: 2 },
   { label: 'Эксперт понимает, что рыночной ценности нет', value: 1 },
 ]
+
 const originalityOptions = [
   {
     label: 'Подобное решение не встречалось, эксперт полностью понимает инициатора',
@@ -30,6 +36,7 @@ const originalityOptions = [
   { label: 'Решение есть на рынке - ниша занята', value: 2 },
   { label: 'Эксперт не понял инициатора', value: 1 },
 ]
+
 const technicalRealizabilityOptions = [
   { label: 'Команда уже делала такие проекты', value: 5 },
   { label: 'Есть знания реализации, но нет практического опыта', value: 4 },
@@ -37,6 +44,7 @@ const technicalRealizabilityOptions = [
   { label: 'Есть знания в другом стеке, но нет практического опыта', value: 2 },
   { label: 'Нет знаний и опыта', value: 1 },
 ]
+
 const suitabilityOptions = [
   { label: 'Есть заказчик, инвестор и эксперт в предметной области', value: 5 },
   { label: 'Есть заказчик, инвестор, но нет эксперта', value: 4 },
@@ -44,6 +52,7 @@ const suitabilityOptions = [
   { label: 'Есть заказчик, но нет инвестора и эксперта', value: 2 },
   { label: 'Нет ни заказчика, ни инвестора, ни эксперта', value: 1 },
 ]
+
 const budgetOptions = [
   { label: 'Не требуется', value: 5 },
   { label: 'До 30.000 руб', value: 4 },
@@ -51,6 +60,7 @@ const budgetOptions = [
   { label: '50.000 - 100.000 руб', value: 2 },
   { label: 'Свыше 100.000 руб', value: 1 },
 ]
+
 const ratingSelects: RatingSelect[] = [
   {
     name: 'marketValue',
@@ -78,4 +88,5 @@ const ratingSelects: RatingSelect[] = [
     options: budgetOptions,
   },
 ]
-export { RatingSelect, ratingSelects, ExperCalculatorProps }
+
+export { ExperCalculatorProps, RatingSelect, ratingSelects }

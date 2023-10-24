@@ -31,7 +31,10 @@ useEventListener(modalLayoutRef, 'click', (event: HTMLTargetEvent) => {
 
 <template>
   <Teleport to="#modals">
-    <Transition name="modal-layout">
+    <Transition
+      name="modal-layout"
+      :appear="appearOnRender"
+    >
       <div
         v-if="isOpened"
         ref="modalLayoutRef"
