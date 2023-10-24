@@ -25,7 +25,7 @@ onMounted(async () => {
     const { token } = currentUser
     const { id } = route.params
 
-    const response = await TeamService.getTeamRequest(+id, token)
+    const response = await TeamService.getTeamRequest(id, token)
 
     if (response instanceof Error) {
       return
@@ -72,6 +72,7 @@ function handleCloseTeamModal() {
   <RequestModal
     mode="read"
     :request="currentTeamRequest"
+    :type="currentTeamRequest?.type"
     :is-opened="openModal"
     @close-modal="handleCloseTeamModal"
     @response="handleResponse"

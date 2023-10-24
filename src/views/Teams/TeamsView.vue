@@ -7,10 +7,10 @@ import Typography from '@Components/Typography/Typography.vue'
 import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import CommandViewTable from './CommandViewTable.vue'
 import TeamService from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import Team from '@Domain/Team'
+import TeamsViewTable from '@Views/Teams/TeamsViewTable.vue'
 
 const searchedValue = ref('')
 const selectedFilters = ref<string[]>([])
@@ -94,7 +94,7 @@ const filters = [
         v-model:searchedValue="searchedValue"
         v-model:selectedFilters="selectedFilters"
       />
-      <CommandViewTable
+      <TeamsViewTable
         :command="filterCommand(commandData) || commandData"
         :searched-value="searchedValue"
       />
