@@ -1,8 +1,8 @@
 import Team from '@Domain/Team'
 
-interface CommandViewTableProps {
+interface TeamsViewTableProps {
   command: Team[]
   searchedValue: string
 }
 
-export default CommandViewTableProps
+export default TeamsViewTableProps

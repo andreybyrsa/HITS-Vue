@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup generic="User">
 import { ref, watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
 
@@ -11,11 +11,14 @@ import {
 import Button from '@Components/Button/Button.vue'
 import InviteUnregisteredUser from '@Components/Modals/InviteModal/InviteUnregisteredUser.vue'
 import InviteRegisteredUser from '@Components/Modals/InviteModal/InviteRegisteredUser.vue'
-import { User } from '@Domain/User'
 
-defineProps<InviteModalProps>()
+defineModel<User | User[]>({
+  required: false,
+})
 
-const emit = defineEmits<InviteModalEmits>()
+defineProps<InviteModalProps<User>>()
+
+const emit = defineEmits<InviteModalEmits<User>>()
 
 const { enter } = useMagicKeys()
 
@@ -25,7 +28,7 @@ watch(enter, () => {
   emit('close-modal')
 })
 
-const inviteRegisteredUsers = async (users: User[]) => {
+const inviteRegisteredUsers = async (users: string[]) => {
   emit('inviteRegisteredUsers', users)
 }
 
@@ -65,8 +68,12 @@ const inviteUnRegisteredUsers = async (emails: string[]) => {
       <InviteRegisteredUser
         v-if="isFromPortal"
         :name="name"
-        :advanced-info="advancedInfo"
+        :users="users"
+        :display-by="displayBy"
+        :email="(email as keyof User)"
+        :is-advanced-search="true"
         @invite-registered-users="inviteRegisteredUsers"
+        @search-by-advacned-field="(users: User[], searchedValue: string) => emit('searchByAdvacnedField', users, searchedValue)"
       />
       <InviteUnregisteredUser
         v-else

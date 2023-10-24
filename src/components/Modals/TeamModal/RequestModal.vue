@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { useField, useForm } from 'vee-validate'
+import { computed } from 'vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
+import { TeamRequest } from '@Domain/TeamRequest'
 
 import {
   RequestModalEmits,
   RequestModalProps,
-  Letter,
 } from '@Components/Modals/TeamModal/RequestModal.types'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import { computed } from 'vue'
 
 const props = defineProps<RequestModalProps>()
 const emit = defineEmits<RequestModalEmits>()
@@ -21,7 +22,7 @@ const TextareaClassName = computed(() => [
   'request-modal__textarea rounded',
 ])
 
-const { values, resetForm, handleSubmit } = useForm<Letter>({
+const { values, resetForm, handleSubmit } = useForm<TeamRequest>({
   validationSchema: {
     text: (value: string) =>
       value?.length > 0 ||
@@ -30,7 +31,8 @@ const { values, resetForm, handleSubmit } = useForm<Letter>({
         : 'Вы не указали причину'),
   },
   initialValues: {
-    text: '',
+    sender: props.sender,
+    text: props.request ? props.request.text : '',
     type: props.type,
   },
 })
@@ -44,6 +46,24 @@ const handleSendRequest = handleSubmit(async () => {
   emit('request', values)
   resetForm()
 })
+
+const handleApprove = async () => {
+  const curreuntRequest = props.request
+  if (curreuntRequest) {
+    curreuntRequest.isApproved = true
+    emit('response', curreuntRequest)
+    closeRequestModal()
+  }
+}
+
+const handleReject = async () => {
+  const curreuntRequest = props.request
+  if (curreuntRequest) {
+    curreuntRequest.isApproved = false
+    emit('response', curreuntRequest)
+    closeRequestModal()
+  }
+}
 
 function closeRequestModal() {
   emit('close-modal')
@@ -65,6 +85,7 @@ function closeRequestModal() {
           v-model="value"
           placeholder="Опишите причину заявления"
           :class="TextareaClassName"
+          :disabled="request ? true : false"
         />
         <span class="invalid-feedback">
           {{ errorMessage }}
@@ -72,12 +93,31 @@ function closeRequestModal() {
       </div>
       <div></div>
 
-      <Button
-        class-name="rounded-end btn-primary"
-        @click="handleSendRequest"
+      <template v-if="request">
+        >
+        <div class="request-modal__buttons">
+          <Button
+            class-name="rounded-end btn-primary"
+            @click="handleApprove"
+          >
+            Одобрить
+          </Button>
+          <Button
+            class-name="rounded-end btn-primary"
+            @click="handleReject"
+          >
+            Отклонить
+          </Button>
+        </div></template
       >
-        Отправить заявку
-      </Button>
+      <template v-else>
+        ><Button
+          class-name="rounded-end btn-primary"
+          @click="handleSendRequest"
+        >
+          Отправить заявку
+        </Button></template
+      >
     </div>
   </ModalLayout>
 </template>
@@ -99,6 +139,9 @@ function closeRequestModal() {
     width: 100%;
     height: 100%;
     resize: none;
+  }
+  &__buttons {
+    @include flexible(stretch, center, $gap: 16px);
   }
 }
 

@@ -1,14 +1,23 @@
-<script lang="ts" setup>
+<script lang="ts" setup generic="User">
 import Typography from '@Components/Typography/Typography.vue'
 import {
   UsersColumnsProps,
   UsersColumnsEmits,
 } from '@Components/UserColumns/UsersColumns.types'
-import Icon from '@Components/Icon/Icon.vue'
-import DropDown from '@Components/DropDown/DropDown.vue'
 
-defineProps<UsersColumnsProps>()
-const emit = defineEmits<UsersColumnsEmits>()
+defineModel<User | User[]>({
+  required: false,
+})
+
+const props = defineProps<UsersColumnsProps<User>>()
+const emit = defineEmits<UsersColumnsEmits<User>>()
+
+function displayByUserField(user: User) {
+  return props.displayBy.reduce(
+    (prevValue, value) => (prevValue += `${user[value]} `),
+    '',
+  )
+}
 </script>
 
 <template>
@@ -24,21 +33,10 @@ const emit = defineEmits<UsersColumnsEmits>()
           :key="index"
           class="users-column__user px-1 rounded border"
         >
-          <DropDown
-            v-if="advancedInfo"
-            :id="user.id"
-          >
-            <div>{{ user[advancedInfo] }}</div></DropDown
-          >
-          <Icon
-            v-if="advancedInfo"
-            class-name="bi bi-chevron-down"
-            v-dropdown="user.id"
-          />
           <Typography
-            v-tooltip="user.email"
-            @click="emit('selectUser', user, index)"
-            >{{ user.lastName }} {{ user.firstName }}</Typography
+            class="w-100"
+            @click="emit('onSelect', user, index)"
+            >{{ displayByUserField(user) }}</Typography
           >
         </div>
       </div>
@@ -54,11 +52,9 @@ const emit = defineEmits<UsersColumnsEmits>()
           class="users-column__user px-1 rounded border"
           v-for="(user, index) in users"
           :key="index"
-          @click="emit('unselectUser', user.value, index)"
+          @click="emit('onUnselect', user.value, index)"
         >
-          <Typography v-tooltip="user.value.email">
-            {{ user.value.lastName }} {{ user.value.firstName }}
-          </Typography>
+          <Typography> {{ displayByUserField(user.value) }} </Typography>
         </div>
       </div>
     </div>

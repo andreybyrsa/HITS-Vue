@@ -1,15 +1,15 @@
-import { User } from '@Domain/User'
 import { FieldEntry } from 'vee-validate'
 
-interface UsersColumnsProps {
+interface UsersColumnsProps<User> {
   users: FieldEntry<User>[]
   unselectedUsers: User[]
-  advancedInfo?: keyof User
+  displayBy: (keyof User)[]
+  email: keyof User
 }
 
-interface UsersColumnsEmits {
-  (event: 'selectUser', user: User, index: number): void
-  (event: 'unselectUser', user: User, index: number): void
+interface UsersColumnsEmits<User> {
+  (event: 'onSelect', user: User, index: number): void
+  (event: 'onUnselect', user: User, index: number): void
 }
 
 export { UsersColumnsProps, UsersColumnsEmits }

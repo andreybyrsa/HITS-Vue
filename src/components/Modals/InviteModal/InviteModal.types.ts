@@ -1,43 +1,41 @@
-import { User } from '@Domain/User'
-
-interface InviteModalProps {
+interface InviteModalProps<User> {
   name: string
   isOpened: boolean
-  advancedInfo?: keyof User
+  users: User[]
+  isAdvancedSearch: boolean
+  displayBy: (keyof User)[]
+  email: keyof User
 }
 
-interface InviteModalEmits {
+interface InviteModalEmits<User> {
   (event: 'close-modal'): void
-  (event: 'inviteRegisteredUsers', user: User[]): void
+  (event: 'inviteRegisteredUsers', users: string[]): void
   (event: 'inviteUnregisteredUsers', emails: string[]): void
+  (event: 'searchByAdvacnedField', users: User[], searchedValue: string): User[]
 }
 
 interface InviteUnregisteredUsersEmits {
   (event: 'inviteUnregisteredUsers', emails: string[]): void
 }
 
-interface InviteRegisteredUsersProps {
+interface InviteRegisteredUsersProps<User> {
   name: string
-  advancedInfo?: keyof User
-}
-
-interface InviteRegisteredUsersEmits {
-  (event: 'inviteRegisteredUsers', users: User[]): void
-}
-
-interface InviteUnregisteredUsersForm {
-  emails: string[]
-}
-
-interface InviteRegisteredUsersForm {
   users: User[]
+  displayBy: (keyof User)[]
+  email: keyof User
+  isAdvancedSearch: boolean
+}
+
+interface InviteRegisteredUsersEmits<User> {
+  (event: 'inviteRegisteredUsers', users: string[]): void
+  (event: 'onSelect', value: User, index: number): void
+  (event: 'onUnselecte', value: User, index: number): void
+  (event: 'searchByAdvacnedField', users: User[], searchedValue: string): User[]
 }
 
 export {
   InviteModalProps,
   InviteModalEmits,
-  InviteUnregisteredUsersForm,
-  InviteRegisteredUsersForm,
   InviteUnregisteredUsersEmits,
   InviteRegisteredUsersProps,
   InviteRegisteredUsersEmits,

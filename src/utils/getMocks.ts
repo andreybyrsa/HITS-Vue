@@ -5,11 +5,18 @@ import Comment from '@Domain/Comment'
 import { Idea, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
-import { Letter } from '@Components/Modals/TeamModal/RequestModal.types'
+import { TeamRequest, TeamRequestsAndInvitations } from '@Domain/TeamRequest'
+import {
+  TeamInvitation,
+  TeamUnregisteredInvitations,
+  TeamRegisteredInvitations,
+} from '@Domain/TeamInvitation'
 
 interface Mocks {
   users: User[]
   usersEmails: string[]
+  unregisteredInvitations: TeamUnregisteredInvitations[]
+  registeredInvitations: TeamRegisteredInvitations[]
   skills: Skill[]
   usersGroups: UsersGroup[]
   teamMember: TeamMember[]
@@ -17,48 +24,143 @@ interface Mocks {
   ratings: Rating[]
   ideas: Idea[]
   teams: Team[]
-  letters: Letter[]
+  teamRequests: TeamRequest[]
+  teamInvitations: TeamInvitation[]
+  teamRequestsAndInvitations: TeamRequestsAndInvitations[]
 }
 
 function getMocks(): Mocks {
-  const letters: Letter[] = [
-    {
-      text: 'Выпустите',
-      type: 'leave',
-    },
-    {
-      text: 'Впустите',
-      type: 'enter',
-    },
-  ]
   const skills: Skill[] = [
     {
       id: '0',
-      skillId: '0',
       name: 'JavaScript',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
       id: '1',
-      skillId: '1',
       name: 'React JS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
       id: '2',
-      skillId: '2',
       name: 'C++',
       type: 'LANGUAGE',
       confirmed: false,
     },
   ]
+  const unregisteredInvitations: TeamUnregisteredInvitations[] = [
+    {
+      emails: ['first@mail.com', 'second@mail.com', 'third@mail.com'],
+    },
+  ]
+  const registeredInvitations: TeamRegisteredInvitations[] = [
+    {
+      users: ['fourth@mail.com', 'fifth@fg.dc'],
+    },
+  ]
+  const teamInvitations: TeamInvitation[] = [
+    {
+      id: 0,
+      userEmail: '1wgwrgw2@mail.com',
+      teamId: '0',
+      inviter: {
+        id: 0,
+        token: '10296538',
+        email: 'test1@gmail.com',
+        firstName: 'Админ',
+        lastName: 'Админ',
+        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        skills: [...skills],
+      },
+      createdAt: new Date(0, 0, 0),
+    },
+    {
+      id: 1,
+      user: {
+        id: 5,
+        token: '10296538',
+        email: 'test451@gmail.com',
+        firstName: 'Чел',
+        lastName: 'Чел',
+        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        skills: [...skills],
+      },
+      teamId: '0',
+      inviter: {
+        id: 0,
+        token: '10296538',
+        email: 'test1@gmail.com',
+        firstName: 'Админ',
+        lastName: 'Админ',
+        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        skills: [...skills],
+      },
+      createdAt: new Date(0, 0, 0),
+    },
+  ]
+  const teamRequests: TeamRequest[] = [
+    {
+      id: 0,
+      teamId: '0',
+      sender: {
+        id: 0,
+        token: '10296538',
+        email: 'admin@mail.com',
+        firstName: 'Админ',
+        lastName: 'Админ',
+        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        skills: [
+          {
+            id: '0',
+            name: 'Python',
+            type: 'LANGUAGE',
+            confirmed: true,
+          },
+        ],
+      },
+      text: 'Выпустите',
+      type: 'leave',
+      requestDate: new Date(10, 10, 23).toLocaleDateString(),
+    },
+    {
+      id: 1,
+      teamId: '0',
+      sender: {
+        id: 0,
+        token: '10296538',
+        email: 'admin@mail.com',
+        firstName: 'Админ',
+        lastName: 'Админ',
+        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        skills: [
+          {
+            id: '0',
+            name: 'Java',
+            type: 'LANGUAGE',
+            confirmed: true,
+          },
+        ],
+      },
+      text: 'Впустите',
+      type: 'enter',
+      requestDate: new Date(10, 10, 22).toLocaleDateString(),
+    },
+  ]
+  const teamRequestsAndInvitations: TeamRequestsAndInvitations[] = [
+    {
+      requests: teamRequests,
+      invitations: teamInvitations,
+      teamId: '0',
+    },
+  ]
+
   const users: User[] = [
     {
-      id: '0',
+      id: 0,
       token: '10296538',
-      email: 'admin@mail.com',
+      email: 'test1@gmail.com',
       firstName: 'Админ',
       lastName: 'Админ',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
@@ -66,7 +168,7 @@ function getMocks(): Mocks {
     },
 
     {
-      id: '1',
+      id: 1,
       token: '613098',
       email: '1@mail.com',
       firstName: 'Пользователь',
@@ -76,7 +178,7 @@ function getMocks(): Mocks {
     },
 
     {
-      id: '2',
+      id: 2,
       token: '059182',
       email: '2@mail.com',
       firstName: 'Менеджер',
@@ -86,7 +188,7 @@ function getMocks(): Mocks {
     },
 
     {
-      id: '3',
+      id: 3,
       token: '163097',
       email: '3@mail.com',
       firstName: 'Владелец',
@@ -129,7 +231,6 @@ function getMocks(): Mocks {
       skills: [
         {
           id: '2',
-          skillId: '2',
           name: 'C++',
           type: 'LANGUAGE',
           confirmed: false,
@@ -144,14 +245,12 @@ function getMocks(): Mocks {
       skills: [
         {
           id: '0',
-          skillId: '0',
           name: 'JavaScript',
           type: 'LANGUAGE',
           confirmed: true,
         },
         {
           id: '1',
-          skillId: '1',
           name: 'React JS',
           type: 'FRAMEWORK',
           confirmed: true,
@@ -278,7 +377,7 @@ function getMocks(): Mocks {
 
   const teams: Team[] = [
     {
-      id: '0',
+      id: 0,
       name: 'Команда новая',
       closed: false,
       createdAt: new Date(13, 10, 2023),
@@ -290,7 +389,7 @@ function getMocks(): Mocks {
       skills: [],
     },
     {
-      id: '0',
+      id: 0,
       name: 'Команда новая',
       closed: false,
       createdAt: new Date(13, 10, 2023),
@@ -313,7 +412,11 @@ function getMocks(): Mocks {
     ratings,
     ideas,
     teams,
-    letters,
+    teamRequests,
+    teamInvitations,
+    unregisteredInvitations,
+    registeredInvitations,
+    teamRequestsAndInvitations,
   }
 }
 
