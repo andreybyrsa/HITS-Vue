@@ -43,7 +43,10 @@ onMounted(async () => {
     const responseGroups = await UsersGroupsService.getUsersGroups(token)
 
     if (responseGroups instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', 'Ошибка')
+      return notificationsStore.createSystemNotification(
+        'Система',
+        responseGroups.message,
+      )
     }
 
     usersGroups.value = responseGroups
@@ -93,10 +96,7 @@ const handleDeleteGroup = async () => {
     )
 
     if (response instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        'Ошибка удаления группы',
-      )
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     usersGroups.value = usersGroups.value?.filter(

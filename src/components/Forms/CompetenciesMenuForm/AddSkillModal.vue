@@ -75,10 +75,7 @@ const handleAddSkill = handleSubmit(async (values) => {
     const response = await SkillsService.addSkill(values, token)
 
     if (response instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        'Ошибка добавления скилла',
-      )
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     skills.value.push(response)
@@ -104,10 +101,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     const { token } = currentUser
     const response = await SkillsService.updateSkill(values, props.currentId, token)
     if (response instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        'Ошибка редактирования скилла',
-      )
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const skillIndex = skills.value.findIndex((skill) => skill.id === values.id)

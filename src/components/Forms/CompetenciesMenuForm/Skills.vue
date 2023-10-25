@@ -67,10 +67,7 @@ const handleDeleteSkill = async () => {
     const response = await SkillsService.deleteSkill(currentSkillId.value, token)
 
     if (response instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        'Ошибка удаления скилла',
-      )
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
     skills.value = skills.value.filter((skill) => skill.id !== currentSkillId.value)
   }
@@ -88,10 +85,7 @@ const handleConfirmSkill = async (skill: Skill, id: number) => {
     )
 
     if (response instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        'Ошибка утверждения скилла',
-      )
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const currentSkill = skills.value.find((skill) => skill.id === id)

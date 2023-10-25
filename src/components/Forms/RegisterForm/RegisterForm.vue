@@ -35,7 +35,7 @@ onMounted(async () => {
   const response = await InvitationService.getInvitationInfo(slug)
 
   if (response instanceof Error) {
-    return notificationsStore.createSystemNotification('Система', 'Ошибка')
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
 
   const { email, roles } = response
@@ -66,7 +66,7 @@ const handleRegister = handleSubmit(async (values) => {
   await userStore.registerUser(values)
 
   if (registerError?.value) {
-    notificationsStore.createSystemNotification('Система', 'Ошибка регистрации')
+    notificationsStore.createSystemNotification('Система', 'Ошибка')
   } else {
     await InvitationService.deleteInvitationInfo(slug)
   }

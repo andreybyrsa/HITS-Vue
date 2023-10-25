@@ -40,7 +40,7 @@ onMounted(async () => {
     const response = await ManageUsersService.getUsers(token)
 
     if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', 'Ошибка')
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     currentUsers.value = response

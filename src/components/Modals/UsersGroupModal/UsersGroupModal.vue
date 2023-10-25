@@ -58,7 +58,10 @@ onMounted(async () => {
     const responseUsers = await ManageUsersService.getUsers(token)
 
     if (responseUsers instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', 'Ошибка')
+      return notificationsStore.createSystemNotification(
+        'Система',
+        responseUsers.message,
+      )
     }
 
     users.value = responseUsers
@@ -126,10 +129,7 @@ const handleCreateGroup = handleSubmit(async (values) => {
     const response = await UsersGroupsService.createUsersGroup(values, token)
 
     if (response instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        'Ошибка создания группы',
-      )
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     usersGroups.value?.push(response)
@@ -149,10 +149,7 @@ const handleUpdateGroup = handleSubmit(async (values) => {
     const response = await UsersGroupsService.updateUsersGroup(values, token, id)
 
     if (response instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        'Ошибка редактирования группы',
-      )
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const editingGroupIndex = usersGroups.value?.findIndex(

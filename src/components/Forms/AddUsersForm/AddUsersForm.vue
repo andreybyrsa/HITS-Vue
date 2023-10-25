@@ -54,7 +54,7 @@ const handleInvite = handleSubmit(async (values) => {
     const response = await InvitationService.inviteUsers(values, token)
 
     if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('', '')
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     resetForm()
