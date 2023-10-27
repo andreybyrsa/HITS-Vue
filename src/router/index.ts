@@ -4,7 +4,7 @@ import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
 import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
 import UsersGroupsForm from '@Components/Forms/UsersGroupsForm/UsersGroupsForm.vue'
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
-import IdeaMarket from '@Views/IdeaMarket.vue'
+import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 import SkillsForm from '@Components/Forms/CompetenciesMenuForm/Skills.vue'
 
 import LoginView from '@Views/LoginView.vue'
@@ -50,7 +50,7 @@ const routes: RouteRecordRaw[] = [
             children: [
               {
                 path: ':id',
-                meta: { roles: ['INITIATOR', 'ADMIN'] },
+                meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
                 component: IdeaModal,
               },
             ],
@@ -75,8 +75,8 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: ':id',
-            name: 'ideaMarket',
-            component: IdeaMarket,
+            name: 'MarketModal',
+            component: MarketModal,
           },
         ],
       },

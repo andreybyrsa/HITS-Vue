@@ -6,7 +6,7 @@ import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 import Market from '@Domain/Market'
-import ApplicationTeams from '@Domain/ApplicationTeams'
+import RequestTeams from '@Domain/RequestTeams'
 
 interface Mocks {
   users: User[]
@@ -20,7 +20,7 @@ interface Mocks {
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
-  applicationTeams: ApplicationTeams[]
+  applicationTeams: RequestTeams[]
 }
 
 function getMocks(): Mocks {
@@ -388,7 +388,7 @@ function getMocks(): Mocks {
     },
   ]
 
-  const applicationTeams: ApplicationTeams[] = [
+  const applicationTeams: RequestTeams[] = [
     {
       id: 0,
       ideaId: 1,

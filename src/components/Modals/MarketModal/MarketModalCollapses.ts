@@ -1,6 +1,6 @@
-import { IdeaModalCollapseType } from '@Components/Modals/IdeaModal/IdeaModal.types'
+import Market from '@Domain/Market'
 
-const ideaModalCollapses: IdeaModalCollapseType[] = [
+const marketModalCollapses: MarketModalCollapseType[] = [
   { key: 0, id: 0, ideaKey: 'problem', text: 'Проблема' },
   { key: 1, id: 1, ideaKey: 'solution', text: 'Предлагаемое решение' },
   { key: 2, id: 2, ideaKey: 'result', text: 'Ожидаемый результат' },
@@ -12,4 +12,11 @@ const ideaModalCollapses: IdeaModalCollapseType[] = [
   },
 ]
 
-export default ideaModalCollapses
+interface MarketModalCollapseType {
+  key: number
+  id: number
+  ideaKey: keyof Market
+  text: string
+}
+
+export default marketModalCollapses

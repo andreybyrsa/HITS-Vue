@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
+import marketModalCollapses from '@Components/Modals/MarketModal/MarketModalCollapses'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -12,6 +12,7 @@ import {
 } from '@Components/Modals/MarketModal/MarketModal.types'
 
 import useUserStore from '@Store/user/userStore'
+import Market from '@Domain/Market'
 
 defineProps<MarketDescriptionProps>()
 
@@ -29,49 +30,55 @@ function closeModal() {
 </script>
 
 <template>
-  <div class="idea-description-header">
-    <Button
-      class-name="btn-primary"
-      prepend-icon-name="bi bi-backspace-fill"
-      @click="closeModal"
-    >
-      Назад
-    </Button>
-
-    <Typography
-      class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-x-scroll"
-    >
-      {{ idea?.name }}
-    </Typography>
-  </div>
-
-  <ul
-    v-if="user?.email != idea?.initiator"
-    class="list-group rounded-3"
-  >
-    <li
-      v-for="collapse in ideaModalCollapses"
-      :key="collapse.key"
-      class="list-group-item p-0 overflow-hidden"
-    >
+  <div class="idea-description">
+    <div class="idea-description-header">
       <Button
-        class-name="collapse-controller btn-light w-100"
-        v-collapse="collapse.id"
+        class-name="btn-primary"
+        prepend-icon-name="bi bi-backspace-fill"
+        @click="closeModal"
       >
-        {{ collapse.text }}
+        Назад
       </Button>
-      <Collapse :id="collapse.id">
-        <div class="p-2">
-          {{ idea?.[collapse.ideaKey] }}
-        </div>
-      </Collapse>
-    </li>
-  </ul>
+
+      <Typography
+        class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap"
+      >
+        {{ idea?.name }}
+      </Typography>
+    </div>
+
+    <ul
+      v-if="user?.email != idea?.initiator"
+      class="list-group rounded-3"
+    >
+      <li
+        v-for="collapse in marketModalCollapses"
+        :key="collapse.key"
+        class="list-group-item p-0 overflow-hidden"
+      >
+        <Button
+          class-name="collapse-controller btn-light w-100"
+          v-collapse="collapse.id"
+        >
+          {{ collapse.text }}
+        </Button>
+        <Collapse :id="collapse.id">
+          <div class="p-2">
+            {{ idea?.[collapse.ideaKey as keyof Market] }}
+          </div>
+        </Collapse>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.idea-description-header {
-  @include flexible(stretch, flex-start, $gap: 16px);
+.idea-description {
+  @include flexible(stretch, flex-start, column, $gap: 16px);
+
+  &-header {
+    @include flexible(stretch, flex-start, $gap: 16px);
+  }
 }
 
 .collapse-controller {

@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import MarketInfoProps from '@Components/Modals/MarketModal/MarketInfo.types'
+import { MarketInfoProps } from '@Components/Modals/MarketModal/MarketModal.types'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
@@ -10,7 +10,7 @@ import Button from '@Components/Button/Button.vue'
 
 import useUserStore from '@Store/user/userStore'
 
-import MarketInfoTabs from '@Components/Modals/MarketModal/MarketInfoIdea'
+import MarketInfoTabs from '@Components/Modals/MarketModal/MarketInfoIdeaTabs'
 
 const props = defineProps<MarketInfoProps>()
 

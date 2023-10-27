@@ -1,7 +1,7 @@
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 
-interface ApplicationTeams {
+interface RequestTeams {
   id: number
   ideaId: number
   accepted: boolean
@@ -18,4 +18,4 @@ interface ApplicationTeams {
   letter: string
 }
 
-export default ApplicationTeams
+export default RequestTeams

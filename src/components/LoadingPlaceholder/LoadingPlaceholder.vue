@@ -34,4 +34,8 @@ const LoadingPlaceholderClassName = computed(() => [
 .large {
   height: 100%;
 }
+
+.large-500 {
+  height: 500px;
+}
 </style>

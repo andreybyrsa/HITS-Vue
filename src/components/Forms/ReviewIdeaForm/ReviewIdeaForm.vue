@@ -13,8 +13,8 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
-import ApplicationTeamsServise from '@Services/ApplicationTeamsServise'
-import ApplicationTeams from '@Domain/ApplicationTeams'
+import RequestTeamsServise from '@Services/RequestTeamsServise'
+import RequestTeams from '@Domain/RequestTeams'
 
 defineProps<ReviewIdeaFormProps>()
 
@@ -62,9 +62,9 @@ const filters = [
 //   return teams.filter((team) => team.name.toLowerCase().includes(searchTerm))
 // })
 
-const teams = defineModel<ApplicationTeams[]>({ required: true })
+const teams = defineModel<RequestTeams[]>({ required: true })
 
-function filterTeams(teams: ApplicationTeams[]) {
+function filterTeams(teams: RequestTeams[]) {
   return teams.filter((team) => team.accepted == false)
 }
 
@@ -74,7 +74,7 @@ async function handleAddApplication(id: number) {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await ApplicationTeamsServise.addApplicationTeams(id, token)
+    const response = await RequestTeamsServise.addRequestTeams(id, token)
 
     if (response instanceof Error) {
       return // notification

@@ -1,4 +1,5 @@
 import Market from '@Domain/Market'
+import ApplicationTeams from '@Domain/RequestTeams'
 
 interface MarketModalProps {
   isOpened: boolean
@@ -12,4 +13,18 @@ interface MarketModalEmits {
   (event: 'close-modal'): void
 }
 
-export { MarketModalProps, MarketDescriptionProps, MarketModalEmits }
+interface MarketAcceptTeamProps {
+  teams?: ApplicationTeams[]
+}
+
+interface MarketInfoProps {
+  idea: Market
+}
+
+export {
+  MarketModalProps,
+  MarketDescriptionProps,
+  MarketModalEmits,
+  MarketAcceptTeamProps,
+  MarketInfoProps,
+}

@@ -15,11 +15,11 @@ import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import ApplicationTeams from '@Domain/ApplicationTeams'
+import RequestTeams from '@Domain/RequestTeams'
 
 import JoinIdea from '@Domain/JoinIdea'
 import Team from '@Domain/Team'
-import ApplicationTeamsServise from '@Services/ApplicationTeamsServise'
+import RequestTeamsServise from '@Services/RequestTeamsServise'
 import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
 import TeamPlaceholder from '../TeamForm/TeamPlaceholder.vue'
 
@@ -30,7 +30,7 @@ const emit = defineEmits<JoinIdeaModalEmits>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const teams = defineModel<ApplicationTeams[]>({ required: true })
+const teams = defineModel<RequestTeams[]>({ required: true })
 const textArea = ref<string>('')
 
 function filterTeams(teams: Team[]) {
@@ -88,7 +88,7 @@ async function sendApplicationTeam(team: Team) {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const applicationTeam: ApplicationTeams = {
+    const applicationTeam: RequestTeams = {
       id: team.id,
       ideaId: props.idea.id,
       accepted: false,
@@ -104,10 +104,7 @@ async function sendApplicationTeam(team: Team) {
       letter: textArea.value,
     }
 
-    const response = await ApplicationTeamsServise.postApplication(
-      applicationTeam,
-      token,
-    )
+    const response = await RequestTeamsServise.postRequest(applicationTeam, token)
 
     if (response instanceof Error) {
       return

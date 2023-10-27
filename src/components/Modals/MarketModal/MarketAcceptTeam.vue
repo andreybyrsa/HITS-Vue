@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import MarketAcceptTeamProps from '@Components/Modals/MarketModal/MarketAcceptTeams.types'
+import { MarketAcceptTeamProps } from '@Components/Modals/MarketModal/MarketModal.types'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import ApplicationTeams from '@Domain/ApplicationTeams'
+import RequestTeams from '@Domain/RequestTeams'
 
 defineProps<MarketAcceptTeamProps>()
 
-const teams = defineModel<ApplicationTeams[]>({ required: true })
+const teams = defineModel<RequestTeams[]>({ required: true })
 
-function filterTeams(teams: ApplicationTeams[]) {
+function filterTeams(teams: RequestTeams[]) {
   return teams.filter((team) => team.accepted == true)
 }
 </script>
