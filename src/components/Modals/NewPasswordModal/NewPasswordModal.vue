@@ -16,6 +16,10 @@ import ManageUsersService from '@Services/ManageUsersService'
 
 import Validation from '@Utils/Validation'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationsStore = useNotificationsStore()
+
 const props = defineProps<NewPasswordModalProps>()
 
 const router = useRouter()
@@ -41,7 +45,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
   const response = await ManageUsersService.updateUserPassword(values)
 
   if (response instanceof Error) {
-    return // notification
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
 
   router.push('/login')

@@ -5,6 +5,7 @@ import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
+import Notification from '@Domain/Notification'
 
 interface Mocks {
   users: User[]
@@ -17,6 +18,7 @@ interface Mocks {
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
+  notifications: Notification[]
 }
 
 function getMocks(): Mocks {
@@ -306,6 +308,41 @@ function getMocks(): Mocks {
     },
   ]
 
+  const notifications: Notification[] = [
+    {
+      id: 0,
+      title: 'Чат 1',
+      message: 'Попов(менеджер, проект 1): дедлайн завтра',
+      isReaded: false,
+      isFavourite: false,
+      createdAt: '20:15 28.09.23',
+    },
+    {
+      id: 1,
+      title: 'Чат 2',
+      message: 'Петров(менеджер, проект 2): завтра',
+      isReaded: false,
+      isFavourite: false,
+      createdAt: '12:34 28.09.23',
+    },
+    {
+      id: 2,
+      title: 'Чат 1',
+      message: 'Попов(менеджер, проект 1): дедлайн завтра',
+      isReaded: true,
+      isFavourite: false,
+      createdAt: '14:40 27.09.23',
+    },
+    {
+      id: 3,
+      title: 'Чат 2',
+      message: 'Петров(менеджер, проект 2): дедлайн завтра',
+      isReaded: true,
+      isFavourite: false,
+      createdAt: '12:34 26.09.23',
+    },
+  ]
+
   return {
     users,
     usersEmails,
@@ -317,6 +354,7 @@ function getMocks(): Mocks {
     ideas,
     ideasSkills,
     teams,
+    notifications,
   }
 }
 

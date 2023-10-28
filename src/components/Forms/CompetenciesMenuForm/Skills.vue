@@ -53,7 +53,10 @@ onMounted(async () => {
     const responseSkill = await SkillsService.getAllSkills(token)
 
     if (responseSkill instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', 'Ошибка')
+      return notificationsStore.createSystemNotification(
+        'Система',
+        responseSkill.message,
+      )
     }
     skills.value = responseSkill
   }

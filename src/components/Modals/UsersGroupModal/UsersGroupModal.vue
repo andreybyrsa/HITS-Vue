@@ -135,7 +135,6 @@ const handleCreateGroup = handleSubmit(async (values) => {
     usersGroups.value?.push(response)
 
     notificationsStore.createSystemNotification('Система', 'Группа успешно создана')
-    console.log(NotificationMiddleware)
     emit('close-modal')
   }
 })

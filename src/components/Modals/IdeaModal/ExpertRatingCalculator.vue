@@ -22,6 +22,10 @@ import RatingService from '@Services/RatingService'
 
 import useUserStore from '@Store/user/userStore'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationsStore = useNotificationsStore()
+
 const props = defineProps<ExperCalculatorProps>()
 const ratings = defineModel<Rating[]>({ required: false })
 
@@ -88,7 +92,7 @@ const handleConfirmRating = handleSubmit(async (values) => {
     const response = await RatingService.confirmExpertRating(values, id, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     ratings.value?.forEach((rating) => {
@@ -108,7 +112,7 @@ const handleSaveRating = async () => {
     const response = await RatingService.saveExpertRating(values, id, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     isSavedRating.value = true

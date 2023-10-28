@@ -11,6 +11,10 @@ import IdeasService from '@Services/IdeasService'
 
 import useUserStore from '@Store/user/userStore'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationsStore = useNotificationsStore()
+
 const idea = defineModel<Idea>({ required: true })
 
 const userStore = useUserStore()
@@ -65,7 +69,7 @@ const handleSendToApproval = async () => {
     const response = await IdeasService.sendIdeaOnApproval(id, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     idea.value.status = 'ON_APPROVAL'
@@ -86,7 +90,7 @@ const handleSendToEditing = async () => {
     )
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     idea.value.status = 'ON_EDITING'
@@ -107,7 +111,7 @@ const handleSendToConfirmation = async () => {
     )
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     idea.value.status = 'ON_CONFIRMATION'

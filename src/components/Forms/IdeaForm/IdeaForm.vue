@@ -22,6 +22,9 @@ import IdeasService from '@Services/IdeasService'
 import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationsStore = useNotificationsStore()
 
 const props = defineProps<IdeaForm>()
 
@@ -72,7 +75,10 @@ watchImmediate(
         const response = await IdeasService.getIdeaSkills(id, token)
 
         if (response instanceof Error) {
-          return // notification
+          return notificationsStore.createSystemNotification(
+            'Система',
+            response.message,
+          )
         }
 
         stackTechnologies.value = response.skills
@@ -85,7 +91,10 @@ watchImmediate(
         const response = await UsersGroupsService.getUsersGroups(token)
 
         if (response instanceof Error) {
-          return // notification
+          return notificationsStore.createSystemNotification(
+            'Система',
+            response.message,
+          )
         }
 
         const experts = response.find((userGroup) =>
@@ -98,7 +107,7 @@ watchImmediate(
           setFieldValue('experts', experts)
           setFieldValue('projectOffice', projectOffice)
         } else {
-          // notification
+          return notificationsStore.createSystemNotification('Система', '')
         }
       }
     }
@@ -113,7 +122,10 @@ const handlePostIdea = handleSubmit(async (values) => {
     const ideaResponse = await IdeasService.createIdea(values, token)
 
     if (ideaResponse instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        ideaResponse.message,
+      )
     }
 
     const ideaSkills = {
@@ -124,7 +136,10 @@ const handlePostIdea = handleSubmit(async (values) => {
     const ideaSkillsResponse = await IdeasService.createIdeaSkills(ideaSkills, token)
 
     if (ideaSkillsResponse instanceof Error) {
-      // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        ideaSkillsResponse.message,
+      )
     }
 
     router.push({ name: 'ideas-list' })
@@ -140,7 +155,10 @@ const handleUpdateIdea = handleSubmit(async (values) => {
     const ideaResponse = await IdeasService.updateIdea(values, id, token)
 
     if (ideaResponse instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        ideaResponse.message,
+      )
     }
 
     const ideaSkills = {
@@ -155,7 +173,10 @@ const handleUpdateIdea = handleSubmit(async (values) => {
     )
 
     if (ideaSkillsResponse instanceof Error) {
-      // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        ideaSkillsResponse.message,
+      )
     }
 
     router.push({ name: 'ideas-list' })

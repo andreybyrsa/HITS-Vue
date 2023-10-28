@@ -23,6 +23,10 @@ import useUserStore from '@Store/user/userStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationsStore = useNotificationsStore()
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -47,7 +51,7 @@ function checkResponseStatus<T>(
   if (data.status === 'fulfilled') {
     refValue.value = data.value
   } else {
-    // notification
+    return notificationsStore.createSystemNotification('Система', '')
   }
 }
 

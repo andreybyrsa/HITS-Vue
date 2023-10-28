@@ -19,7 +19,6 @@ import useUserStore from '@Store/user/userStore'
 import Validation from '@Utils/Validation'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
 
 const notificationsStore = useNotificationsStore()
 
