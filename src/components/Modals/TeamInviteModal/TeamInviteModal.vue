@@ -1,24 +1,20 @@
-<script lang="ts" setup generic="User">
+<script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import {
-  InviteModalEmits,
-  InviteModalProps,
-} from '@Components/Modals/InviteModal/InviteModal.types'
+  TeamInviteModalEmits,
+  TeamInviteModalProps,
+} from '@Components/Modals/TeamInviteModal/TeamInviteModal.types'
 import Button from '@Components/Button/Button.vue'
 import InviteUnregisteredUser from '@Components/Modals/InviteModal/InviteUnregisteredUser.vue'
 import InviteRegisteredUser from '@Components/Modals/InviteModal/InviteRegisteredUser.vue'
 
-defineModel<User | User[]>({
-  required: false,
-})
+defineProps<TeamInviteModalProps>()
 
-defineProps<InviteModalProps<User>>()
-
-const emit = defineEmits<InviteModalEmits<User>>()
+const emit = defineEmits<TeamInviteModalEmits>()
 
 const { enter } = useMagicKeys()
 
@@ -65,15 +61,11 @@ const inviteUnRegisteredUsers = async (emails: string[]) => {
           Пригласить нового пользователя</Button
         >
       </div>
+
       <InviteRegisteredUser
         v-if="isFromPortal"
         :name="name"
-        :users="users"
-        :display-by="displayBy"
-        :email="(email as keyof User)"
-        :is-advanced-search="true"
         @invite-registered-users="inviteRegisteredUsers"
-        @search-by-advacned-field="(users: User[], searchedValue: string) => emit('searchByAdvacnedField', users, searchedValue)"
       />
       <InviteUnregisteredUser
         v-else

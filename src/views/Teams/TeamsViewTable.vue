@@ -66,15 +66,15 @@ function sortName(changes: Team[]) {
         <Button
           class-name=" btn-primary text-white"
           prepend-icon-name="bi bi-list fs-4"
-          v-dropdown="'lastActivityNoteTable'"
-        ></Button>
+          v-dropdown="'contextTeamMenu'"
+        />
 
-        <DropDown id="lastActivityNoteTable">
+        <DropDown id="contextTeamMenu">
           <ul class="list-group list-group-flush">
             <li class="list-group-item list-group-item-action p-1">
               <button
                 class="w-100 text-start"
-                @click="router.push(`${item.id}`)"
+                @click="router.push(`list/${item.id}`)"
               >
                 Просмотреть
               </button>

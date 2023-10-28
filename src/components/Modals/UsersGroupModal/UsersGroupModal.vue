@@ -195,6 +195,8 @@ const handleUpdateGroup = handleSubmit(async (values) => {
 
         <UsersColumns
           :users="fields"
+          :display-by="['lastName', 'firstName']"
+          :email="'email'"
           :unselected-users="unselectedUsers"
           @select-user="selectUser"
           @unselect-user="unselectUser"

@@ -49,7 +49,7 @@ const getTeam = async (
     .get(
       `/team/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id } },
+      { params: { id: `${id}` } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -183,7 +183,7 @@ const fetchInvitationsAndRequestions = async (
 }
 
 const getTeamRequest = async (
-  id: number | number[],
+  id: string | string[],
   token: string,
 ): Promise<TeamRequest | Error> => {
   return await teamRequestAxios

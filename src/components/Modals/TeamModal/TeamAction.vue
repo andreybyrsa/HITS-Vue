@@ -1,85 +1,69 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 
-import { TeamActionProps } from '@Components/Modals/TeamModal/TeamAction.types'
+import {
+  TeamActionProps,
+  modalNames,
+} from '@Components/Modals/TeamModal/TeamAction.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import RequestModal from '@Components/Modals/TeamModal/RequestModal.vue'
-import InviteModal from '@Components/Modals/InviteModal/InviteModal.vue'
+import TeamRequestModal from '@Components/Modals/TeamRequestModal/TeamRequestModal.vue'
+import TeamInviteModal from '@Components/Modals/TeamInviteModal/TeamInviteModal.vue'
+import RequestsAndInvitationsModal from '@Components/Modals/TeamModal/RequestsAndInvitationsModal.vue'
+import TeamActionButtons from '@Components/Modals/TeamModal/TeamActionButtons.vue'
+
+import useUserStore from '@Store/user/userStore'
+
+import TeamService from '@Services/TeamService'
 
 import { TeamRequest } from '@Domain/TeamRequest'
-import useUserStore from '@Store/user/userStore'
-import TeamService from '@Services/TeamService'
-import RequestsAndInvitationsModal from './RequestsAndInvitationsModal.vue'
-import { User } from '@Domain/User'
-import ManageUsersService from '@Services/ManageUsersService'
-import TeamActionButtons from './TeamActionButtons.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const { deleteTeam } = TeamService
+const { deleteTeam, invitePortalUsers, requestToTheTeam, inviteOutsideUsers } =
+  TeamService
+
 defineProps<TeamActionProps>()
 const router = useRouter()
 
-const disabled = ref<boolean>(false)
+const { deleteModal, inviteModal, requestModal, requestsAndInvitationsModal } =
+  modalNames
 
-const profiles = ref<User[]>()
-
-const teamId = ref<number>(0)
-const isOpenedDeleteModal = ref<boolean>(false)
-const isOpenedInviteModal = ref<boolean>(false)
-const isOpenedRequestModal = ref<boolean>(false)
-const isOpenedRequestsList = ref<boolean>(false)
-
-onMounted(async () => {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await ManageUsersService.getUsers(token)
-
-    if (response instanceof Error) {
-      return //уведомление ошибки
-    }
-    profiles.value = response
-  }
-})
+const teamId = ref<number | null>(null)
+const modalId = ref<string | null>(null)
 
 const handleDeleteTeam = async () => {
   const currentUser = user.value
-  if (currentUser?.token) {
+  if (currentUser?.token && teamId.value) {
     const { token } = currentUser
     const response = await deleteTeam(teamId.value, token)
     if (response instanceof Error) {
       return // уведомление об ошибке
     }
     // уведомление об успехе
-    isOpenedDeleteModal.value = false
+    closeModal()
     router.push('/teams/list')
   }
 }
 const handleInviteFromPortal = async (users: string[]) => {
   const currentUser = user.value
-  if (currentUser?.token) {
+  if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await TeamService.invitePortalUsers(
-      { users: users },
-      teamId.value,
-      token,
-    )
+    const response = await invitePortalUsers({ users: users }, teamId.value, token)
     if (response instanceof Error) {
       return // уведомление об ошибке
     }
     // уведомление об успехе
   }
-  isOpenedInviteModal.value = false
+  closeModal()
 }
 
 const handleInviteFromOutside = async (emails: string[]) => {
   const currentUser = user.value
-  if (currentUser?.token) {
+  if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await TeamService.inviteOutsideUsers(
+    const response = await inviteOutsideUsers(
       teamId.value,
       { emails: emails },
       token,
@@ -89,72 +73,29 @@ const handleInviteFromOutside = async (emails: string[]) => {
     }
     // уведомление об успехе
   }
-  isOpenedInviteModal.value = false
+  closeModal()
 }
 
 const handleSendRequestToTheTeam = async (teamRequest: TeamRequest) => {
   const currentUser = user.value
-  if (currentUser?.token) {
+  if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await TeamService.requestToTheTeam(
-      teamId.value,
-      teamRequest,
-      token,
-    )
+    const response = await requestToTheTeam(teamId.value, teamRequest, token)
     if (response instanceof Error) {
       return // уведомление об ошибке
     }
     // уведомление об успехе
-    isOpenedRequestModal.value = false
+    closeModal()
   }
 }
 
-const searchBySkill = (users: User[], searchedValue: string) => {
-  return users.reduce<User[]>((optionsArray, option) => {
-    const currentSkills = option.skills
-
-    const isIncludesSeachedValue = currentSkills.find(
-      (currentSkill) =>
-        currentSkill.name.trim().toLocaleLowerCase() == searchedValue,
-    )
-
-    if (isIncludesSeachedValue) {
-      optionsArray.push(option)
-    }
-
-    return optionsArray
-  }, [])
-}
-
-function handleCloseDeleteModal() {
-  isOpenedDeleteModal.value = false
-  teamId.value = 0
-}
-function handleOpenDeleteModal(id: number) {
+function openModal(id: number, modal: string) {
   teamId.value = id
-  isOpenedDeleteModal.value = true
+  modalId.value = modal
 }
-function handleCloseInviteModal() {
-  isOpenedInviteModal.value = false
-  teamId.value = 0
-}
-function handleOpenInviteModal(id: number) {
-  teamId.value = id
-  isOpenedInviteModal.value = true
-}
-function handleCloseRequestModal() {
-  isOpenedRequestModal.value = false
-  teamId.value = 0
-}
-function handleOpenRequestModal(id: number) {
-  teamId.value = id
-  isOpenedRequestModal.value = true
-}
-function handleCloseRequestsListModal() {
-  isOpenedRequestsList.value = false
-}
-function handleOpenRequestsListModal() {
-  isOpenedRequestsList.value = true
+
+function closeModal() {
+  modalId.value = null
 }
 </script>
 <template>
@@ -162,52 +103,45 @@ function handleOpenRequestsListModal() {
     class="team-action"
     v-if="team && user"
   >
-    <TeamActionButtons :team="team" />
+    <TeamActionButtons
+      :team="team"
+      @open-modal="openModal"
+    />
 
     <DeleteModal
       v-if="user?.email == team.owner.email"
-      :is-opened="isOpenedDeleteModal"
-      @close-modal="handleCloseDeleteModal"
-      @delete="handleDeleteTeam()"
+      :is-opened="modalId == deleteModal"
+      @close-modal="closeModal"
+      @delete="handleDeleteTeam"
     />
-    <InviteModal
-      v-if="profiles"
-      :users="profiles"
+    <TeamInviteModal
       :display-by="['firstName', 'lastName']"
       :email="'email'"
       name="teamMembers"
-      :is-advanced-search="true"
-      :is-opened="isOpenedInviteModal"
-      @close-modal="handleCloseInviteModal"
+      :is-opened="modalId == inviteModal"
+      @close-modal="closeModal"
       @invite-registered-users="handleInviteFromPortal"
       @invite-unregistered-users="handleInviteFromOutside"
-      @search-by-advacned-field="searchBySkill"
     />
     <template v-if="user?.email != team.owner.email">
-      <RequestModal
-        v-if="team.members.find((member) => member.email == user?.email)"
+      <TeamRequestModal
         mode="write"
-        type="leave"
+        :type="
+          team.members.find((member) => member.email == user?.email)
+            ? 'leave'
+            : 'enter'
+        "
         :sender="user"
-        :is-opened="isOpenedRequestModal"
-        @close-modal="handleCloseRequestModal"
-        @request="handleSendRequestToTheTeam"
-      />
-      <RequestModal
-        v-else
-        type="enter"
-        mode="write"
-        :sender="user"
-        :is-opened="isOpenedRequestModal"
-        @close-modal="handleCloseRequestModal"
+        :is-opened="modalId == requestModal"
+        @close-modal="closeModal"
         @request="handleSendRequestToTheTeam"
       />
     </template>
     <RequestsAndInvitationsModal
-      :is-opened="isOpenedRequestsList"
+      :is-opened="modalId == requestsAndInvitationsModal"
       :team="team"
-      @close-modal="handleCloseRequestsListModal"
-    ></RequestsAndInvitationsModal>
+      @close-modal="closeModal"
+    />
   </div>
 </template>
 <style lang="scss" scoped>

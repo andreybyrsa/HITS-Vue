@@ -2,7 +2,7 @@
 import { useDateFormat, useToggle } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
-import RequestsTableProps from '@Components/Modals/TeamModal/RequestsTable.types'
+import RequestsTableProps from '@Components/Modals/TeamLettersModal/RequestsTable.types'
 import Button from '@Components/Button/Button.vue'
 
 import { TeamRequest } from '@Domain/TeamRequest'
@@ -64,7 +64,7 @@ function sortDate(date: TeamRequest[]) {
         {{ request.sender.lastName }}</Button
       >
       <Typography class-name="py-2">{{
-        getFormattedDate(request.requestDate.toDateString())
+        getFormattedDate(request.requestDate)
       }}</Typography>
       <Button
         class="text-start rounded-3 bg-primary text-white"

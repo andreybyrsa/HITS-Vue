@@ -7,9 +7,9 @@ import useUserStore from '@Store/user/userStore'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
-  RequestsAndInvitationsEmits,
-  RequestsAndInvitationsProps,
-} from '@Components/Modals/TeamModal//RequestsAndInvitationsModal.types'
+  TeamLettersModalEmits,
+  TeamLettersModalProps,
+} from '@Components/Modals/TeamLettersModal/TeamLettersModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 
@@ -17,9 +17,9 @@ import TeamService from '@Services/TeamService'
 import { TeamRequestsAndInvitations } from '@Domain/TeamRequest'
 import RequestsTable from '@Components/Modals/TeamModal/RequestsTable.vue'
 import InvitationsTable from './InvitationsTable.vue'
-const props = defineProps<RequestsAndInvitationsProps>()
+const props = defineProps<TeamLettersModalProps>()
 
-const emits = defineEmits<RequestsAndInvitationsEmits>()
+const emits = defineEmits<TeamLettersModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

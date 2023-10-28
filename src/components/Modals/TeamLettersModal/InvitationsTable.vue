@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router'
 import { useDateFormat, useToggle } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
-import InvitationsTableProps from '@Components/Modals/TeamModal/InvitationsTable.types'
+import InvitationsTableProps from '@Components/Modals/TeamLettersModal/InvitationsTable.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 

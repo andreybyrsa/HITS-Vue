@@ -11,8 +11,6 @@ interface User {
   roles: RolesTypes[]
   role?: RolesTypes
   lastActivity?: Date
-
-  skills: Skill[]
 }
 
 interface LoginUser {

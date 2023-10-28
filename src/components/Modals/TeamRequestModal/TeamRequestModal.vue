@@ -7,14 +7,20 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import { TeamRequest } from '@Domain/TeamRequest'
 
 import {
-  RequestModalEmits,
-  RequestModalProps,
-} from '@Components/Modals/TeamModal/RequestModal.types'
+  TeamRequestModalEmits,
+  TeamRequestModalProps,
+} from '@Components/Modals/TeamRequestModal/TeamRequestModal.types'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
-const props = defineProps<RequestModalProps>()
-const emit = defineEmits<RequestModalEmits>()
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+
+const props = defineProps<TeamRequestModalProps>()
+const emit = defineEmits<TeamRequestModalEmits>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const TextareaClassName = computed(() => [
   'form-control',
@@ -31,7 +37,6 @@ const { values, resetForm, handleSubmit } = useForm<TeamRequest>({
         : 'Вы не указали причину'),
   },
   initialValues: {
-    sender: props.sender,
     text: props.request ? props.request.text : '',
     type: props.type,
   },
@@ -43,8 +48,12 @@ const { value, errorMessage } = useField<string>('text', {
 })
 
 const handleSendRequest = handleSubmit(async () => {
-  emit('request', values)
-  resetForm()
+  const currentUser = user.value
+  if (currentUser) {
+    values.sender = currentUser
+    emit('request', values)
+    resetForm()
+  }
 })
 
 const handleApprove = async () => {
@@ -75,7 +84,10 @@ function closeRequestModal() {
     :is-opened="isOpened"
     @on-outside-close="closeRequestModal"
   >
-    <div class="request-modal p-3">
+    <div
+      v-if="user"
+      class="request-modal p-3"
+    >
       <Typography class-name="text-primary d-flex justify-content-center">
         {{ type == 'enter' ? 'Мотивационное письмо' : 'Причина ухода' }}</Typography
       >
@@ -94,7 +106,6 @@ function closeRequestModal() {
       <div></div>
 
       <template v-if="request">
-        >
         <div class="request-modal__buttons">
           <Button
             class-name="rounded-end btn-primary"
@@ -111,7 +122,7 @@ function closeRequestModal() {
         </div></template
       >
       <template v-else>
-        ><Button
+        <Button
           class-name="rounded-end btn-primary"
           @click="handleSendRequest"
         >

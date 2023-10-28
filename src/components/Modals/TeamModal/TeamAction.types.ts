@@ -10,8 +10,25 @@ interface Project {
   description: string
 }
 
-interface TeamActionButtons {
+interface TeamActionButtonsProps {
   team: Team
 }
 
-export { TeamActionProps, Project, TeamActionButtons }
+interface TeamActionButtonsEmits {
+  (event: 'handleOpenModal', id: number, modalName: string): void
+}
+
+const modalNames = {
+  deleteModal: 'deleteModal',
+  inviteModal: 'inviteModal',
+  requestModal: 'requestModal',
+  requestsAndInvitationsModal: 'requestsAndInvitationsListModal',
+}
+
+export {
+  TeamActionProps,
+  Project,
+  TeamActionButtonsProps,
+  TeamActionButtonsEmits,
+  modalNames,
+}

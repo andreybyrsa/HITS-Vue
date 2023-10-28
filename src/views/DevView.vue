@@ -36,79 +36,79 @@ const portfolio2: Project = {
     'Данное решение поможет легче реализовывать идеи, решать проекты, подобрав для них команду',
 }
 const skillFron1: Skill = {
-  id: '123wrg6eret5',
+  id: 1,
   name: 'React',
   type: 'FRAMEWORK',
   confirmed: true,
 }
 const skillFron2: Skill = {
-  id: '123wrg6er5',
+  id: 2,
   name: 'Vue',
   type: 'FRAMEWORK',
   confirmed: true,
 }
 const skillBack: Skill = {
-  id: '12363wrgwr46',
+  id: 3,
   name: 'Django',
   type: 'FRAMEWORK',
   confirmed: true,
 }
 const skillDB1: Skill = {
-  id: '12336sgwrgwr56',
+  id: 4,
   name: 'PostgreSQL',
   type: 'DATABASE',
   confirmed: true,
 }
 const skillDB2: Skill = {
-  id: '12336sgwrgwr5rgr6',
+  id: 5,
   name: 'SQLite',
   type: 'DATABASE',
   confirmed: true,
 }
 const skillDB3: Skill = {
-  id: '12336sgwrrtgwr5rgr6',
+  id: 6,
   name: 'MongoDB',
   type: 'DATABASE',
   confirmed: true,
 }
 const skillDEV1: Skill = {
-  id: '1233563twetw5636',
+  id: 7,
   name: 'Docker',
   type: 'DEVOPS',
   confirmed: true,
 }
 const skillDEV2: Skill = {
-  id: '1233563twetw5fgf636',
+  id: 8,
   name: 'Git',
   type: 'DEVOPS',
   confirmed: true,
 }
 const skillDEV3: Skill = {
-  id: '1233563twrgetw5636',
+  id: 9,
   name: 'VSCode',
   type: 'DEVOPS',
   confirmed: true,
 }
 const skillLang1: Skill = {
-  id: '12365635wetwetwe632436',
+  id: 10,
   name: 'Python',
   type: 'LANGUAGE',
   confirmed: true,
 }
 const skillLang2: Skill = {
-  id: '12262462462grgrwegrtw36',
+  id: 11,
   name: 'JavaScript',
   type: 'LANGUAGE',
   confirmed: true,
 }
 const skillLang3: Skill = {
-  id: '12262462462wetw36',
+  id: 12,
   name: 'Java',
   type: 'LANGUAGE',
   confirmed: true,
 }
 const userOwner: TeamMember = {
-  email: 'test1@gmail.com',
+  email: '123213@mail.com',
   firstName: 'Timur',
   lastName: 'Minyazeff',
   skills: [
@@ -163,7 +163,7 @@ const user2: TeamMember = {
   skills: [skillFron2, skillLang2, skillDEV1, skillDEV2, skillDEV3, skillFron1],
 }
 const team: Team = {
-  id: '0',
+  id: 0,
   name: 'Разработчики',
   description: 'Группа разработки вебсайтов',
   createdAt: new Date(20, 20, 20),

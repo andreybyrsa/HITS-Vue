@@ -114,7 +114,7 @@ function getMocks(): Mocks {
         roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         skills: [
           {
-            id: '0',
+            id: 0,
             name: 'Python',
             type: 'LANGUAGE',
             confirmed: true,
@@ -137,7 +137,7 @@ function getMocks(): Mocks {
         roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         skills: [
           {
-            id: '0',
+            id: 0,
             name: 'Java',
             type: 'LANGUAGE',
             confirmed: true,

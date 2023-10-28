@@ -6,7 +6,7 @@ import { watchImmediate } from '@vueuse/core'
 
 import useUserStore from '@Store/user/userStore'
 import TeamService from '@Services/TeamService'
-import RequestModal from '@Components/Modals/TeamModal/RequestModal.vue'
+import TeamRequestModal from '@Components/Modals/TeamRequestModal/TeamRequestModal.vue'
 import { TeamRequest } from '@Domain/TeamRequest'
 
 const userStore = useUserStore()
@@ -23,9 +23,9 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = route.params
+    const { requestId } = route.params
 
-    const response = await TeamService.getTeamRequest(id, token)
+    const response = await TeamService.getTeamRequest(requestId, token)
 
     if (response instanceof Error) {
       return
@@ -69,7 +69,7 @@ function handleCloseTeamModal() {
 </script>
 
 <template>
-  <RequestModal
+  <TeamRequestModal
     mode="read"
     :request="currentTeamRequest"
     :type="currentTeamRequest?.type"
