@@ -257,15 +257,18 @@ const removeAllFromFavorites = () => {
       <div class="notification-window-modal__header">
         <div v-if="showAllTab">
           <div v-if="hasNewNotifications">
-            <div v-if="notifications">
-              <Typography class-name="fs-5 text-primary text-wrap"
-                >Не прочитано</Typography
-              >
+            <Typography class-name="fs-5 text-primary text-wrap"
+              >Не прочитано</Typography
+            >
+            <div
+              class="notification-window-modal__new-notification p-2 mb-2 rounded-3"
+              v-for="notification in newNotifications"
+              :key="notification.id"
+            >
               <div
-                class="notification-window-modal__new-notification p-2 mb-2 bg-primary rounded-3"
+                v-if="notifications"
+                class="notification-window-modal__new-notification bg-primary"
                 style="--bs-bg-opacity: 0.55"
-                v-for="notification in newNotifications"
-                :key="notification.id"
               >
                 <div class="notification-window-modal__title text-wrap row">
                   <div class-name="row">
@@ -291,9 +294,10 @@ const removeAllFromFavorites = () => {
                   notification.message
                 }}</Typography>
               </div>
-              <hr class="hr hr-blurry" />
+              <LoadingPlaceholder v-else />
             </div>
-            <LoadingPlaceholder v-else />
+
+            <hr class="hr hr-blurry" />
           </div>
           <div v-if="notifications">
             <Typography class-name="fs-5 text-primary text-wrap"
@@ -302,45 +306,50 @@ const removeAllFromFavorites = () => {
             <div
               v-for="notification in readedNotifications"
               :key="notification.id"
-              class="notification-window-modal__notification p-2 mb-2 bg-white border border-primary rounded-3"
+              class="notification-window-modal__notification p-2 mb-2 rounded-3"
             >
-              <div class="notification-window-modal__title text-wrap row">
-                <div class-name="row">
-                  <Typography class-name="fs-6 text-black col">
-                    {{ notification.createdAt }}
+              <div
+                v-if="notifications"
+                class="bg-white border border-primary"
+              >
+                <div class="notification-window-modal__title text-wrap row">
+                  <div class-name="row">
+                    <Typography class-name="fs-6 text-black col">
+                      {{ notification.createdAt }}
+                    </Typography>
+                    <Button
+                      class="notification-window-modal__favorite-btn text-primary col float-end"
+                      v-if="!notification.isFavourite"
+                      prepend-icon-name="bi bi-star"
+                      @click="addToFavorites"
+                    ></Button>
+                    <Button
+                      class="notification-window-modal__favorite-btn text-primary col float-end"
+                      v-else
+                      prepend-icon-name="bi bi-star-fill"
+                      @click="removeFromFavorites"
+                    ></Button>
+                  </div>
+                  <Typography class-name="fs-6 text-black fw-bold col-2">
+                    {{ notification.title }}
                   </Typography>
-                  <Button
-                    class="notification-window-modal__favorite-btn text-primary col float-end"
-                    v-if="!notification.isFavourite"
-                    prepend-icon-name="bi bi-star"
-                    @click="addToFavorites"
-                  ></Button>
-                  <Button
-                    class="notification-window-modal__favorite-btn text-primary col float-end"
-                    v-else
-                    prepend-icon-name="bi bi-star-fill"
-                    @click="removeFromFavorites"
-                  ></Button>
                 </div>
-                <Typography class-name="fs-6 text-black fw-bold col-2">
-                  {{ notification.title }}
-                </Typography>
+                <Typography class-name="fs-6 text-black">{{
+                  notification.message
+                }}</Typography>
               </div>
-              <Typography class-name="fs-6 text-black">{{
-                notification.message
-              }}</Typography>
+              <LoadingPlaceholder v-else />
             </div>
           </div>
-          <LoadingPlaceholder v-else />
         </div>
         <div v-else>
           <div v-if="hasFavoriteNotifications">
-            <div v-if="notifications">
-              <div
-                class="notification-window-modal__notification p-2 mb-2 bg-white border border-primary rounded-3"
-                v-for="notification in favoriteNotifications"
-                :key="notification.id"
-              >
+            <div
+              class="notification-window-modal__notification p-2 mb-2 bg-white border border-primary rounded-3"
+              v-for="notification in favoriteNotifications"
+              :key="notification.id"
+            >
+              <div v-if="notifications">
                 <div class="notification-window-modal__title text-wrap row">
                   <div class-name="row">
                     <Typography class-name="fs-6 text-black col">{{
@@ -360,8 +369,8 @@ const removeAllFromFavorites = () => {
                   notification.message
                 }}</Typography>
               </div>
+              <LoadingPlaceholder v-else />
             </div>
-            <LoadingPlaceholder v-else />
           </div>
           <div v-else>
             <Typography
