@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import CommandViewTable from './CommandViewTable.vue'
@@ -89,11 +88,7 @@ const filters = [
     </template>
     <template #content>
       <Typography class-name="fs-2 text-primary w-75">Список команд</Typography>
-      <SearchAndFilters
-        :filtersData="filters"
-        v-model:searchedValue="searchedValue"
-        v-model:selectedFilters="selectedFilters"
-      />
+
       <CommandViewTable
         :command="filterCommand(commandData) || commandData"
         :searched-value="searchedValue"
