@@ -52,8 +52,8 @@ const { values, setFieldValue, setValues, handleSubmit } = useForm<Idea>({
   initialValues: {
     customer: 'ВШЦТ',
     contactPerson: 'ВШЦТ',
-    createdAt: new Date(),
-    modifiedAt: new Date(),
+    createdAt: new Date().toDateString(),
+    modifiedAt: new Date().toDateString(),
     status: 'NEW',
   },
 })
