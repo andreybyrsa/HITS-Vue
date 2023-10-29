@@ -107,7 +107,7 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
   if (currentUser?.token) {
     const newSkill = { name, type, confirmed: false } as Skill
     const { token } = currentUser
-    const response = await SkillsService.addNoConfirmedSkill(newSkill, token)
+    const response = await SkillsService.createNoConfirmedSkill(newSkill, token)
 
     if (response instanceof Error) {
       return // notification

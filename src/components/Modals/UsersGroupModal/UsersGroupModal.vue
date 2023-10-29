@@ -94,7 +94,7 @@ onUpdated(async () => {
 
       isLoadingGroup.value = false
     }
-  } else {
+  } else if (props.isOpened) {
     setValues({ name: '', users: [], roles: [] })
     unselectedUsers.value = [...users.value]
     usersGroupModalMode.value = 'CREATE'

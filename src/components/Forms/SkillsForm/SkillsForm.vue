@@ -11,6 +11,7 @@ import Table from '@Components/Table/Table.vue'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
+import SkillModal from '@Components/Modals/SkillModal/SkillModal.vue'
 
 import { SkillType, Skill } from '@Domain/Skill'
 
@@ -19,26 +20,32 @@ import SkillsService from '@Services/SkillService'
 import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
-
-import AddSkillModal from './AddSkillModal.vue'
-
 const { user } = storeToRefs(userStore)
 
-const isOpenedDeleteModal = ref(false)
+const skills = ref<Skill[]>()
+const updatingSkill = ref<Skill | null>(null)
+const currentDeleteSkillId = ref<number | null>(null)
 
-const isOpenAddSkillModal = ref(false)
+const isOpenedDeletingModal = ref(false)
+const isOpenCreatingSkillModal = ref(false)
+const isOpenUpdatingSkillModal = ref(false)
 
-const isOpenUpdateSkillModal = ref(false)
 const searchValue = ref('')
-
-const currentSkillId = ref()
 
 const columns = [
   { key: 'name', label: 'Название' },
   { key: 'type', label: 'Тип' },
 ]
 
-const skills = ref<Skill[]>([])
+const availableTypes = ['Language', 'Framework', 'Database', 'Devops']
+const availableStatuses = ['Утверждено', 'На рассмотрении']
+
+const filteredTypes = defineModel<SkillType[]>('filteredTypes', {
+  required: true,
+})
+const filteredStatuses = defineModel<Skill[]>('filteredStatuses', {
+  required: true,
+})
 
 onMounted(async () => {
   const currentUser = user.value
@@ -50,23 +57,10 @@ onMounted(async () => {
     if (responseSkill instanceof Error) {
       return // notification
     }
+
     skills.value = responseSkill
   }
 })
-
-const handleDeleteSkill = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await SkillsService.deleteSkill(currentSkillId.value, token)
-
-    if (response instanceof Error) {
-      return // notification
-    }
-    skills.value = skills.value.filter((skill) => skill.id !== currentSkillId.value)
-  }
-}
 
 const handleConfirmSkill = async (skill: Skill, id: number) => {
   const currentUser = user.value
@@ -83,59 +77,73 @@ const handleConfirmSkill = async (skill: Skill, id: number) => {
       return // notification
     }
 
-    const currentSkill = skills.value.find((skill) => skill.id === id)
+    const currentSkill = skills.value?.find((skill) => skill.id === id)
+
     if (currentSkill) {
       currentSkill.confirmed = true
     }
   }
 }
 
-const availableTypes = ['Language', 'Framework', 'Database', 'Devops']
-const availableStatuses = ['Утверждено', 'На рассмотрении']
+const handleDeleteSkill = async () => {
+  const currentUser = user.value
 
-const searchedValue = defineModel<string>('searchValue', {
-  required: true,
-})
-const filteredTypes = defineModel<SkillType[]>('filteredTypes', {
-  required: true,
-})
+  if (currentUser?.token && currentDeleteSkillId.value) {
+    const { token } = currentUser
+    const response = await SkillsService.deleteSkill(
+      currentDeleteSkillId.value,
+      token,
+    )
 
-const filteredStatuses = defineModel<Skill[]>('filteredStatuses', {
-  required: true,
-})
+    if (response instanceof Error) {
+      return // notification
+    }
 
-function openDeleteSkillModal(id: number) {
-  isOpenedDeleteModal.value = true
-  currentSkillId.value = id
+    const currentSkillIndex = skills.value?.findIndex(
+      (skill) => skill.id === currentDeleteSkillId.value,
+    )
+
+    if (currentSkillIndex !== undefined && currentSkillIndex !== -1) {
+      skills.value?.splice(currentSkillIndex, 1)
+    }
+  }
 }
 
-function handleCloseDeleteModal() {
-  isOpenedDeleteModal.value = false
+function openCreatingSkillModal() {
+  isOpenCreatingSkillModal.value = true
+}
+function closeCreatingSkillModal() {
+  isOpenCreatingSkillModal.value = false
 }
 
-function openAddSkillModal() {
-  isOpenAddSkillModal.value = true
+function openUpdatingSkillModal(skill: Skill) {
+  updatingSkill.value = skill
+  isOpenUpdatingSkillModal.value = true
+}
+function closeUpdatingSkillModal() {
+  updatingSkill.value = null
+  isOpenUpdatingSkillModal.value = false
 }
 
-function handleCloseAddSkillModal() {
-  isOpenAddSkillModal.value = false
+function openDeletingModal(id: number) {
+  currentDeleteSkillId.value = id
+  isOpenedDeletingModal.value = true
 }
-
-function openUpdateSkillModal(id: number) {
-  isOpenUpdateSkillModal.value = true
-  currentSkillId.value = id
-}
-
-function handleCloseUpdateSkillModal() {
-  isOpenUpdateSkillModal.value = false
+function closeDeletingModal() {
+  currentDeleteSkillId.value = null
+  isOpenedDeletingModal.value = false
 }
 </script>
 
 <template>
-  <form class="competencies-menu-form p-3 px-3">
+  <form
+    v-if="skills"
+    class="competencies-menu-form p-3 px-3"
+  >
     <Typography class-name="fs-2 text-primary text-center w-100">
       Справочник компетенций
     </Typography>
+
     <div class="competencies-menu-form__content w-100">
       <div class="competencies-menu-form__search">
         <div class="search-bar p-2 mb-3 rounded bg-primary d-flex">
@@ -206,13 +214,14 @@ function handleCloseUpdateSkillModal() {
           </Input>
           <Button
             class-name="btn-light px-2 py-2 border shadow h-100 ms-2"
-            @click="openAddSkillModal"
+            @click="openCreatingSkillModal"
             prepend-icon-name="bi bi-plus-lg"
           >
             Добавить
           </Button>
         </div>
       </div>
+
       <Table
         :columns="columns"
         :data="skills"
@@ -232,6 +241,7 @@ function handleCloseUpdateSkillModal() {
             title="На рассмотрении"
           />
         </template>
+
         <template #actions="{ item }: { item: Skill }">
           <Button
             class-name="btn-primary fs-3 "
@@ -241,64 +251,49 @@ function handleCloseUpdateSkillModal() {
           <DropDown>
             <ul class="list-group list-group-flush">
               <li
-                v-if="item.confirmed == true"
+                v-if="item.confirmed"
                 class="list-group-item list-group-item-action p-1"
-                @click="openUpdateSkillModal(item.id)"
+                @click="openUpdatingSkillModal(item)"
               >
-                <Button prepend-icon-name="bi bi-pencil-square text-primary"
-                  >Редактировать</Button
-                >
+                Редактировать
               </li>
+
               <li
-                v-if="item.confirmed == true"
-                class="list-group-item list-group-item-action p-1"
-              >
-                <Button
-                  prepend-icon-name="bi bi-trash text-danger"
-                  @click="openDeleteSkillModal(item.id)"
-                  >Удалить</Button
-                >
-              </li>
-              <li
-                v-if="item.confirmed == false"
+                v-if="item.confirmed === false"
                 class="list-group-item list-group-item-action p-1"
                 @click="handleConfirmSkill(item, item.id)"
               >
-                <Button prepend-icon-name="bi bi-check-lg text-success fs-4"
-                  >Одобрить</Button
-                >
+                Одобрить
               </li>
+
               <li
-                v-if="item.confirmed == false"
                 class="list-group-item list-group-item-action p-1"
-                @click="openDeleteSkillModal(item.id)"
+                @click="openDeletingModal(item.id)"
               >
-                <Button prepend-icon-name="bi bi-x-lg text-danger "
-                  >Отклонить</Button
-                >
+                Удалить
               </li>
             </ul>
           </DropDown>
         </template>
       </Table>
     </div>
+
+    <SkillModal
+      :is-opened="isOpenCreatingSkillModal"
+      v-model="skills"
+      @close-modal="closeCreatingSkillModal"
+    />
+    <SkillModal
+      :is-opened="isOpenUpdatingSkillModal"
+      :skill="updatingSkill"
+      v-model="skills"
+      @close-modal="closeUpdatingSkillModal"
+    />
+
     <DeleteModal
-      :is-opened="isOpenedDeleteModal"
-      @close-modal="handleCloseDeleteModal"
+      :is-opened="isOpenedDeletingModal"
+      @close-modal="closeDeletingModal"
       @delete="handleDeleteSkill"
-    />
-    <AddSkillModal
-      :is-opened="isOpenAddSkillModal"
-      @close-modal="handleCloseAddSkillModal"
-      :status="'ADD'"
-      v-model="skills"
-    />
-    <AddSkillModal
-      :is-opened="isOpenUpdateSkillModal"
-      @close-modal="handleCloseUpdateSkillModal"
-      :currentId="currentSkillId"
-      :status="'EDIT'"
-      v-model="skills"
     />
   </form>
 </template>
@@ -340,15 +335,8 @@ function handleCloseUpdateSkillModal() {
   }
 }
 
-.main {
-  width: 80%;
-}
-
 .search-bar {
   width: 80%;
   @include flexible(center, stretch, $gap: 3);
-}
-.icons {
-  background-color: black;
 }
 </style>

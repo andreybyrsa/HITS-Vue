@@ -63,7 +63,7 @@ const getSkillsByType = async (
     })
 }
 
-const addSkill = async (skill: Skill, token: string): Promise<Skill | Error> => {
+const createSkill = async (skill: Skill, token: string): Promise<Skill | Error> => {
   return await skillsAxios
     .post('/skill/add', skill, {
       headers: { Authorization: `Bearer ${token}` },
@@ -75,7 +75,7 @@ const addSkill = async (skill: Skill, token: string): Promise<Skill | Error> => 
     })
 }
 
-const addNoConfirmedSkill = async (
+const createNoConfirmedSkill = async (
   skill: Skill,
   token: string,
 ): Promise<Skill | Error> => {
@@ -147,8 +147,8 @@ const SkillsService = {
   getSkillsByType,
   getAllConfirmedOrCreatorSkills,
 
-  addSkill,
-  addNoConfirmedSkill,
+  createSkill,
+  createNoConfirmedSkill,
 
   confirmSkill,
   deleteSkill,
