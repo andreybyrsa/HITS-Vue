@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -23,6 +23,19 @@ import { Skill } from '@Domain/Skill'
 import { Project } from '@Components/Modals/TeamModal/TeamAction.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import TeamMember from '@Domain/TeamMember'
+import TeamService from '@Services/TeamService'
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await TeamService.getTeams(token)
+
+    console.log(response)
+  }
+})
 const portfolio1: Project = {
   id: '1',
   name: 'Сервис позволяющий примерять одежду онлайн',
@@ -108,6 +121,7 @@ const skillLang3: Skill = {
   confirmed: true,
 }
 const userOwner: TeamMember = {
+  id: 135,
   email: '123213@mail.com',
   firstName: 'Timur',
   lastName: 'Minyazeff',
@@ -125,6 +139,7 @@ const userOwner: TeamMember = {
   ],
 }
 const userLeader: TeamMember = {
+  id: 14,
   email: 'test2@gmail.com',
   firstName: 'Andrey',
   lastName: 'Byrsa',
@@ -143,6 +158,7 @@ const userLeader: TeamMember = {
   ],
 }
 const user1: TeamMember = {
+  id: 13,
   email: 'test3@gmail.com',
   firstName: 'Mamed',
   lastName: 'Bairamov',
@@ -157,6 +173,7 @@ const user1: TeamMember = {
   ],
 }
 const user2: TeamMember = {
+  id: 12,
   email: 'test4@gmail.com',
   firstName: 'Kirill',
   lastName: 'Vlasiv',
@@ -166,7 +183,7 @@ const team: Team = {
   id: 0,
   name: 'Разработчики',
   description: 'Группа разработки вебсайтов',
-  createdAt: new Date(20, 20, 20),
+  createdAt: new Date(20, 20, 20).toLocaleDateString(),
   owner: userOwner,
   leader: userLeader,
   members: [user1, user2, userLeader, userOwner],

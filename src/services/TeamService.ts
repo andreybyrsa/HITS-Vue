@@ -5,10 +5,8 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import TeamMember from '@Domain/TeamMember'
 import { TeamRequest, TeamRequestsAndInvitations } from '@Domain/TeamRequest'
-import {
-  TeamUnregisteredInvitations,
-  TeamRegisteredInvitations,
-} from '@Domain/TeamInvitation'
+import { TeamInvitations } from '@Domain/TeamInvitation'
+import axios from 'axios'
 
 const teamsAxios = defineAxios(getMocks().teams)
 const teamMemberAxios = defineAxios(getMocks().teamMember)
@@ -30,8 +28,8 @@ const getTeamMembers = async (token: string): Promise<TeamMember[] | Error> => {
 }
 
 const getTeams = async (token: string): Promise<Team[] | Error> => {
-  return await teamsAxios
-    .get('/team/all', {
+  return await axios
+    .get(`/team/all `, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -45,12 +43,10 @@ const getTeam = async (
   id: string | string[],
   token: string,
 ): Promise<Team | Error> => {
-  return await teamsAxios
-    .get(
-      `/team/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id: `${id}` } },
-    )
+  return await axios
+    .get(`/team/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения команды'
@@ -59,8 +55,8 @@ const getTeam = async (
 }
 
 const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
-  return await teamsAxios
-    .post('/team/create', team, {
+  return await axios
+    .post(`/team/add`, team, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -75,16 +71,10 @@ const updateTeam = async (
   id: number,
   token: string,
 ): Promise<Success | Error> => {
-  return await teamsAxios
-    .put<Success>(
-      `/team/update/${id}`,
-      team,
-      { headers: { Authorization: `Bearer ${token}` } },
-      {
-        params: { id: `${id}` },
-        responseData: { success: 'Успешное обновление команды' },
-      },
-    )
+  return await axios
+    .put(`/team/update/${id}`, team, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка обновления команды'
@@ -93,12 +83,10 @@ const updateTeam = async (
 }
 
 const deleteTeam = async (id: number, token: string): Promise<Success | Error> => {
-  return await teamsAxios
-    .delete(
-      `/team/delete/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id: `${id}` } },
-    )
+  return await axios
+    .delete(`/team/delete/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка удаления команды'
@@ -106,21 +94,18 @@ const deleteTeam = async (id: number, token: string): Promise<Success | Error> =
     })
 }
 
-const invitePortalUsers = async (
-  users: TeamRegisteredInvitations,
+const kickMember = async (
+  member: TeamMember,
   teamId: number,
   token: string,
 ): Promise<Success | Error> => {
-  return await registeredInvitations
-    .post<Success>(
-      `/team/send-invite/${teamId}`,
-      users,
-      { headers: { Authorization: `Bearer ${token}` } },
-      { responseData: { success: 'Успешное приглашение новых пользователей' } },
-    )
+  return await axios
+    .put(`/team/kick/${teamId}`, member, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
+      const error = response?.data?.error ?? 'Ошибка кика пользователя'
       return new Error(error)
     })
 }
@@ -142,9 +127,28 @@ const deleteInvitation = async (
     })
 }
 
+const invitePortalUsers = async (
+  users: TeamInvitations,
+  teamId: number,
+  token: string,
+): Promise<Success | Error> => {
+  return await registeredInvitations
+    .post<Success>(
+      `/team/send-invite/${teamId}`,
+      users,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { responseData: { success: 'Успешное приглашение новых пользователей' } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
+      return new Error(error)
+    })
+}
+
 const inviteOutsideUsers = async (
   teamId: number,
-  emails: TeamUnregisteredInvitations,
+  emails: TeamInvitations,
   token: string,
 ): Promise<Success | Error> => {
   return await unregisteredInvitations
@@ -201,34 +205,13 @@ const getTeamRequest = async (
     })
 }
 
-const kickMember = async (
-  member: TeamMember,
-  teamId: number,
-  token: string,
-): Promise<Success | Error> => {
-  return await teamMemberAxios
-    .put<Success>(
-      `/team/kick/${teamId}`,
-      member,
-      { headers: { Authorization: `Bearer ${token}` } },
-      {
-        responseData: { success: 'Успешное приглашение новых пользователей' },
-      },
-    )
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка кика пользователя'
-      return new Error(error)
-    })
-}
-
-const requestToTheTeam = async (
+const sendRequest = async (
   teamId: number,
   teamRequest: TeamRequest,
   token: string,
 ): Promise<Success | Error> => {
   return await teamRequestAxios
-    .put<Success>(
+    .post<Success>(
       `/team/request/${teamId}`,
       teamRequest,
       { headers: { Authorization: `Bearer ${token}` } },
@@ -241,24 +224,39 @@ const requestToTheTeam = async (
     })
 }
 
-const responseToRequest = async (
-  request: TeamRequest,
+const rejectRequest = async (
+  requestId: number,
   token: string,
 ): Promise<Success | Error> => {
   return await teamRequestAxios
-    .put<Success>(
-      `team/response/`,
-      request,
+    .delete(
+      `reject-request/${requestId}`,
       { headers: { Authorization: `Bearer ${token}` } },
-      { responseData: { success: 'Успешная отправка заявки' } },
+      { params: { id: `${requestId}` } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка отправки заявления'
-      return new Error(error)
+      const error = response?.data?.error ?? 'Не удалось отклонить заявку'
+      return Error(error)
     })
 }
 
+const acceptRequest = async (
+  requestId: number,
+  token: string,
+): Promise<Success | Error> => {
+  return await teamRequestAxios
+    .delete(
+      `accept-request/${requestId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id: `${requestId}` } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Не удалось принять заявку'
+      return Error(error)
+    })
+}
 const TeamService = {
   getTeamMembers,
   getTeams,
@@ -271,9 +269,10 @@ const TeamService = {
   kickMember,
   updateTeam,
   deleteTeam,
-  requestToTheTeam,
+  sendRequest,
   getTeamRequest,
-  responseToRequest,
+  rejectRequest,
+  acceptRequest,
 }
 
 export default TeamService

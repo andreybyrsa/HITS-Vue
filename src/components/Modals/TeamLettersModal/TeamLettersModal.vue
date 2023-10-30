@@ -15,8 +15,8 @@ import Button from '@Components/Button/Button.vue'
 
 import TeamService from '@Services/TeamService'
 import { TeamRequestsAndInvitations } from '@Domain/TeamRequest'
-import RequestsTable from '@Components/Modals/TeamModal/RequestsTable.vue'
-import InvitationsTable from './InvitationsTable.vue'
+import RequestsTable from '@Components/Modals/TeamLettersModal/RequestsTable.vue'
+import InvitationsTable from '@Components/Modals/TeamLettersModal/InvitationsTable.vue'
 const props = defineProps<TeamLettersModalProps>()
 
 const emits = defineEmits<TeamLettersModalEmits>()

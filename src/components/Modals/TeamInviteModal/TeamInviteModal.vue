@@ -9,8 +9,8 @@ import {
   TeamInviteModalProps,
 } from '@Components/Modals/TeamInviteModal/TeamInviteModal.types'
 import Button from '@Components/Button/Button.vue'
-import InviteUnregisteredUser from '@Components/Modals/InviteModal/InviteUnregisteredUser.vue'
-import InviteRegisteredUser from '@Components/Modals/InviteModal/InviteRegisteredUser.vue'
+import TeamInviteRegisteredUser from '@Components/Modals/TeamInviteModal/TeamInviteRegisteredUser.vue'
+import TeamInviteUnregisteredUser from '@Components/Modals/TeamInviteModal/TeamInviteUnregisteredUser.vue'
 
 defineProps<TeamInviteModalProps>()
 
@@ -62,12 +62,12 @@ const inviteUnRegisteredUsers = async (emails: string[]) => {
         >
       </div>
 
-      <InviteRegisteredUser
+      <TeamInviteRegisteredUser
         v-if="isFromPortal"
         :name="name"
         @invite-registered-users="inviteRegisteredUsers"
       />
-      <InviteUnregisteredUser
+      <TeamInviteUnregisteredUser
         v-else
         @invite-unregistered-users="inviteUnRegisteredUsers"
       />

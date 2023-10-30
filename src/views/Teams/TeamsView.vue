@@ -26,7 +26,7 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
     const response = await TeamService.getTeams(token)
-
+    console.log(response)
     if (response instanceof Error) {
       return
     }

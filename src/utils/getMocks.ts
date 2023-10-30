@@ -6,17 +6,13 @@ import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 import { TeamRequest, TeamRequestsAndInvitations } from '@Domain/TeamRequest'
-import {
-  TeamInvitation,
-  TeamUnregisteredInvitations,
-  TeamRegisteredInvitations,
-} from '@Domain/TeamInvitation'
+import { TeamInvitation, TeamInvitations } from '@Domain/TeamInvitation'
 
 interface Mocks {
   users: User[]
   usersEmails: string[]
-  unregisteredInvitations: TeamUnregisteredInvitations[]
-  registeredInvitations: TeamRegisteredInvitations[]
+  unregisteredInvitations: TeamInvitations[]
+  registeredInvitations: TeamInvitations[]
   skills: Skill[]
   usersGroups: UsersGroup[]
   teamMember: TeamMember[]
@@ -51,14 +47,14 @@ function getMocks(): Mocks {
       confirmed: false,
     },
   ]
-  const unregisteredInvitations: TeamUnregisteredInvitations[] = [
+  const unregisteredInvitations: TeamInvitations[] = [
     {
       emails: ['first@mail.com', 'second@mail.com', 'third@mail.com'],
     },
   ]
-  const registeredInvitations: TeamRegisteredInvitations[] = [
+  const registeredInvitations: TeamInvitations[] = [
     {
-      users: ['fourth@mail.com', 'fifth@fg.dc'],
+      emails: ['fourth@mail.com', 'fifth@fg.dc'],
     },
   ]
   const teamInvitations: TeamInvitation[] = [
@@ -68,37 +64,31 @@ function getMocks(): Mocks {
       teamId: '0',
       inviter: {
         id: 0,
-        token: '10296538',
         email: 'test1@gmail.com',
         firstName: 'Админ',
         lastName: 'Админ',
-        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         skills: [...skills],
       },
-      createdAt: new Date(0, 0, 0),
+      createdAt: new Date(0, 0, 0).toUTCString(),
     },
     {
       id: 1,
       user: {
-        id: 5,
-        token: '10296538',
-        email: 'test451@gmail.com',
+        userId: 5,
+        userEmail: 'test451@gmail.com',
         firstName: 'Чел',
         lastName: 'Чел',
-        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         skills: [...skills],
       },
       teamId: '0',
       inviter: {
         id: 0,
-        token: '10296538',
         email: 'test1@gmail.com',
         firstName: 'Админ',
         lastName: 'Админ',
-        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
         skills: [...skills],
       },
-      createdAt: new Date(0, 0, 0),
+      createdAt: new Date(0, 0, 0).toLocaleDateString(),
     },
   ]
   const teamRequests: TeamRequest[] = [
@@ -112,18 +102,10 @@ function getMocks(): Mocks {
         firstName: 'Админ',
         lastName: 'Админ',
         roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        skills: [
-          {
-            id: 0,
-            name: 'Python',
-            type: 'LANGUAGE',
-            confirmed: true,
-          },
-        ],
       },
       text: 'Выпустите',
       type: 'leave',
-      requestDate: new Date(10, 10, 23).toLocaleDateString(),
+      createdAt: new Date(10, 10, 23).toLocaleDateString(),
     },
     {
       id: 1,
@@ -135,18 +117,10 @@ function getMocks(): Mocks {
         firstName: 'Админ',
         lastName: 'Админ',
         roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        skills: [
-          {
-            id: 0,
-            name: 'Java',
-            type: 'LANGUAGE',
-            confirmed: true,
-          },
-        ],
       },
       text: 'Впустите',
       type: 'enter',
-      requestDate: new Date(10, 10, 22).toLocaleDateString(),
+      createdAt: new Date(10, 10, 22).toLocaleDateString(),
     },
   ]
   const teamRequestsAndInvitations: TeamRequestsAndInvitations[] = [
@@ -165,7 +139,6 @@ function getMocks(): Mocks {
       firstName: 'Админ',
       lastName: 'Админ',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      skills: [...skills],
     },
 
     {
@@ -175,7 +148,6 @@ function getMocks(): Mocks {
       firstName: 'Пользователь',
       lastName: 'Пользователь',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      skills: [...skills],
     },
 
     {
@@ -185,7 +157,6 @@ function getMocks(): Mocks {
       firstName: 'Менеджер',
       lastName: 'Менеджер',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      skills: [...skills],
     },
 
     {
@@ -195,7 +166,6 @@ function getMocks(): Mocks {
       firstName: 'Владелец',
       lastName: 'Владелец',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      skills: [...skills],
     },
   ]
 
@@ -218,6 +188,7 @@ function getMocks(): Mocks {
 
   const teamMember: TeamMember[] = [
     {
+      id: 33,
       email: 'admin@mail.com',
       firstName: 'Админ',
       lastName: 'Адмиг',
@@ -225,20 +196,15 @@ function getMocks(): Mocks {
       skills: [...skills],
     },
     {
-      email: '1@mail.com',
-      firstName: 'Пользователь',
-      lastName: 'Пользователь',
+      id: 343,
+      email: 'admin@mail.com',
+      firstName: 'Админ',
+      lastName: 'Адмиг',
 
-      skills: [
-        {
-          id: 2,
-          name: 'C++',
-          type: 'LANGUAGE',
-          confirmed: false,
-        },
-      ],
+      skills: [...skills],
     },
     {
+      id: 3,
       email: '2@mail.com',
       firstName: 'Менеджер',
       lastName: 'Менеджер',
@@ -259,6 +225,7 @@ function getMocks(): Mocks {
       ],
     },
     {
+      id: 345,
       email: '3@mail.com',
       firstName: 'Владелец',
       lastName: 'Владелец',
@@ -404,24 +371,24 @@ function getMocks(): Mocks {
       id: 0,
       name: 'Команда новая',
       closed: false,
-      createdAt: new Date(13, 10, 2023),
+      createdAt: new Date(13, 10, 2023).toLocaleDateString(),
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: users[0],
-      leader: users[1],
-      members: [...users],
-      skills: [],
+      owner: teamMember[0],
+      leader: teamMember[1],
+      members: [...teamMember],
+      skills: [...skills],
     },
     {
       id: 1,
       name: 'Команда новая',
       closed: false,
-      createdAt: new Date(13, 10, 2023),
+      createdAt: new Date(13, 10, 2023).toLocaleDateString(),
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: users[1],
-      leader: users[2],
-      members: [users[3]],
+      owner: teamMember[1],
+      leader: teamMember[2],
+      members: [teamMember[2], teamMember[3]],
       skills: [...skills],
     },
   ]

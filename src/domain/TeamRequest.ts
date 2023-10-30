@@ -1,5 +1,5 @@
 import { User } from '@Domain/User'
-import { TeamInvitation } from './TeamInvitation'
+import { TeamInvitation } from '@Domain/TeamInvitation'
 
 type teamRequestType = 'leave' | 'enter'
 
@@ -9,10 +9,7 @@ interface TeamRequest {
   sender: User
   text: string
   type: teamRequestType
-  requestDate: string
-  responedBy?: string
-  resposneDate?: string
-  isApproved?: boolean
+  createdAt: string
 }
 
 interface TeamRequestsAndInvitations {

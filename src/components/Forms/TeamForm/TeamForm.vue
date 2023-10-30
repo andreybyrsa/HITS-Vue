@@ -46,6 +46,7 @@ const handleCreateTeam = handleSubmit(async (values) => {
     const { token } = currentUser
     const response = await TeamService.createTeam(values, token)
 
+    console.log(response)
     if (response instanceof Error) {
       return
     }

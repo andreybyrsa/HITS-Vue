@@ -1,18 +1,17 @@
-import { User } from '@Domain/User'
+import TeamMember from '@Domain/TeamMember'
+import Profile from '@Domain/Profile'
 
 interface TeamInvitation {
   id: number
-  userEmail?: string
-  user?: User
+  userEmail?: string //незарегистрированный пользователь
+  user?: Profile //зарегистрированный пользователь
   teamId: string
-  inviter: User
-  createdAt: Date
+  inviter: TeamMember
+  createdAt: string
 }
 
-interface TeamUnregisteredInvitations {
+interface TeamInvitations {
   emails: string[]
 }
-interface TeamRegisteredInvitations {
-  users: string[]
-}
-export { TeamInvitation, TeamUnregisteredInvitations, TeamRegisteredInvitations }
+
+export { TeamInvitation, TeamInvitations }

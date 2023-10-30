@@ -10,7 +10,7 @@ import {
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import TeamRequestModal from '@Components/Modals/TeamRequestModal/TeamRequestModal.vue'
 import TeamInviteModal from '@Components/Modals/TeamInviteModal/TeamInviteModal.vue'
-import RequestsAndInvitationsModal from '@Components/Modals/TeamModal/RequestsAndInvitationsModal.vue'
+import TeamLettersModal from '@Components/Modals/TeamLettersModal/TeamLettersModal.vue'
 import TeamActionButtons from '@Components/Modals/TeamModal/TeamActionButtons.vue'
 
 import useUserStore from '@Store/user/userStore'
@@ -50,7 +50,7 @@ const handleInviteFromPortal = async (users: string[]) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await invitePortalUsers({ users: users }, teamId.value, token)
+    const response = await invitePortalUsers({ emails: users }, teamId.value, token)
     if (response instanceof Error) {
       return // уведомление об ошибке
     }
@@ -137,7 +137,7 @@ function closeModal() {
         @request="handleSendRequestToTheTeam"
       />
     </template>
-    <RequestsAndInvitationsModal
+    <TeamLettersModal
       :is-opened="modalId == requestsAndInvitationsModal"
       :team="team"
       @close-modal="closeModal"

@@ -75,7 +75,7 @@ const handleDeleteTeamInvitation = async (invitationId: number) => {
       >
 
       <Typography class-name="py-2">{{
-        getFormattedDate(invitation.createdAt.toDateString())
+        getFormattedDate(invitation.createdAt)
       }}</Typography>
       <Button
         class="text-start rounded-3 bg-danger text-white"

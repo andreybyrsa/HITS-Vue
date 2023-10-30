@@ -24,8 +24,8 @@ function getFormattedDate(date: string) {
 
 function sortDate(date: TeamRequest[]) {
   date.sort((a, b) => {
-    const A = new Date(a.requestDate).getTime()
-    const B = new Date(b.requestDate).getTime()
+    const A = new Date(a.createdAt).getTime()
+    const B = new Date(b.createdAt).getTime()
     return isSorted.value ? B - A : A - B
   })
 
@@ -64,7 +64,7 @@ function sortDate(date: TeamRequest[]) {
         {{ request.sender.lastName }}</Button
       >
       <Typography class-name="py-2">{{
-        getFormattedDate(request.requestDate)
+        getFormattedDate(request.createdAt)
       }}</Typography>
       <Button
         class="text-start rounded-3 bg-primary text-white"
