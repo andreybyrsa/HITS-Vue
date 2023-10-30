@@ -29,7 +29,7 @@ const BoxLabelClassName = computed(() => ['form-check-label', props.className])
 </script>
 
 <template>
-  <div class="d-flex gap-2">
+  <div class="form-check-wrapper">
     <input
       type="checkbox"
       :name="name"
@@ -37,8 +37,17 @@ const BoxLabelClassName = computed(() => ['form-check-label', props.className])
       v-model="value"
       :value="props.value"
     />
-    <span :class="BoxLabelClassName">
+    <span
+      v-if="label"
+      :class="BoxLabelClassName"
+    >
       {{ label }}
     </span>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.form-check-wrapper {
+  @include flexible(center, center, $gap: 8px);
+}
+</style>

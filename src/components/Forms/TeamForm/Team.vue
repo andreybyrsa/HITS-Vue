@@ -10,13 +10,12 @@ import Icon from '@Components/Icon/Icon.vue'
 import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
 
-import { User } from '@Domain/User'
+import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
 
-import useUserStore from '@Store/user/userStore'
-import SkillsService from '@Services/SkillService'
 import TeamService from '@Services/TeamService'
-import TeamMember from '@Domain/TeamMember'
+
+import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -70,7 +69,7 @@ watchImmediate(teamUsers, (currentTeam) => {
   currentTeam.forEach((member) => membersSkills.push(...member.skills))
 
   teamSkills.value = [
-    ...new Map(membersSkills.map((skill) => [skill.skillId, skill])).values(),
+    ...new Map(membersSkills.map((skill) => [skill.id, skill])).values(),
   ]
   radarChartsSkills.value = membersSkills
 })
