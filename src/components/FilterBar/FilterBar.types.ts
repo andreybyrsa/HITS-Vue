@@ -2,17 +2,18 @@ import { Ref } from 'vue'
 
 type FilterValue = string | number | boolean | object
 
-interface Filter {
+interface Filter<DataType> {
   category: string
   isUniqueChoice: boolean
   choices: { label: string; value: FilterValue }[]
   refValue: Ref<FilterValue | FilterValue[] | undefined>
+  checkFilter: (data: DataType, filter: FilterValue) => void
 }
 
-interface FilterBarProps {
+interface FilterBarProps<DataType> {
   className?: string
   title?: string
-  filters: Filter[]
+  filters: Filter<DataType>[]
 }
 
 export { FilterBarProps, Filter, FilterValue }

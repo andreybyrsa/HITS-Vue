@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="DataType">
-import { ref, computed, Ref } from 'vue'
+import { ref, Ref, computed, onMounted } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 
 import {
@@ -8,6 +8,7 @@ import {
   TypedStyleFunction,
 } from '@Components/Table/Table.types'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
+import { FilterValue } from '@Components/FilterBar/FilterBar.types'
 import Icon from '@Components/Icon/Icon.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
@@ -17,8 +18,9 @@ import DropDown from '@Components/DropDown/DropDown.vue'
 const props = defineProps<TableProps<DataType>>()
 
 const data = ref<DataType[]>([]) as Ref<DataType[]>
+const filtersRefs = ref<Ref<FilterValue | FilterValue[] | undefined>[]>([])
 const checkedData = ref<DataType[]>([]) as Ref<DataType[]>
-const searchValue = ref('')
+const searchedValue = ref('')
 const isCheckedAll = ref(false)
 
 watchImmediate(
@@ -26,6 +28,48 @@ watchImmediate(
   () => {
     data.value = props.data
   },
+)
+
+onMounted(() => {
+  if (props.filters) {
+    filtersRefs.value = props.filters.map((filter) => filter.refValue)
+  }
+})
+
+watchImmediate(
+  filtersRefs,
+  (filters) => {
+    if (filters.length) {
+      const isSelectedFilters = filters.some((filter) => {
+        if (filter.value instanceof Array) {
+          return filter.value.length
+        }
+        return filter.value !== undefined
+      })
+
+      if (isSelectedFilters) {
+        data.value = props.data.filter((dataValue) => {
+          return filters.every((filter, index) => {
+            if (filter.value instanceof Array) {
+              return filter.value.length
+                ? filter.value.some((value) =>
+                    props.filters?.[index].checkFilter(dataValue, value),
+                  )
+                : true
+            }
+            console.log(filter.value)
+
+            return filter.value !== undefined
+              ? props.filters?.[index].checkFilter(dataValue, filter.value)
+              : true
+          })
+        })
+      } else {
+        data.value = props.data
+      }
+    }
+  },
+  { deep: true },
 )
 
 watchImmediate(checkedData, () => {
@@ -42,7 +86,8 @@ const searchedData = computed(() => {
 
     return data.value.filter((value) => {
       const currentData = `${value[currentDataKey]}`.toLocaleLowerCase().trim()
-      const isIncludesSearcheValue = currentData.includes(searchValue.value)
+      const currentSearchedValue = searchedValue.value.toLocaleLowerCase().trim()
+      const isIncludesSearcheValue = currentData.includes(currentSearchedValue)
 
       return isIncludesSearcheValue
     })
@@ -135,7 +180,7 @@ function checkDropdownActionStatement(
           name="search"
           class-name="rounded-end"
           no-form-controlled
-          v-model="searchValue"
+          v-model="searchedValue"
           placeholder="Поиск"
         >
           <template #prepend>
