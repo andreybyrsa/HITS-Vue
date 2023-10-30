@@ -21,7 +21,7 @@ import { TeamRequest } from '@Domain/TeamRequest'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const { deleteTeam, invitePortalUsers, requestToTheTeam, inviteOutsideUsers } =
+const { deleteTeam, invitePortalUsers, inviteOutsideUsers, sendRequest } =
   TeamService
 
 defineProps<TeamActionProps>()
@@ -80,7 +80,7 @@ const handleSendRequestToTheTeam = async (teamRequest: TeamRequest) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await requestToTheTeam(teamId.value, teamRequest, token)
+    const response = await sendRequest(teamId.value, teamRequest, token)
     if (response instanceof Error) {
       return // уведомление об ошибке
     }

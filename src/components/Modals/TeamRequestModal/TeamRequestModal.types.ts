@@ -2,8 +2,9 @@ import { TeamRequest } from '@Domain/TeamRequest'
 
 interface TeamRequestModalEmits {
   (event: 'close-modal'): void
-  (event: 'request', request: TeamRequest): void
-  (event: 'response', request: TeamRequest): void
+  (event: 'sendRequest', request: TeamRequest): void
+  (event: 'reject', requestId: number): void
+  (event: 'accept', requestId: number): void
 }
 
 interface TeamRequestModalProps {

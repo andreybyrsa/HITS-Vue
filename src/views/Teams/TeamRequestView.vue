@@ -50,11 +50,24 @@ watchImmediate(
   },
 )
 
-const handleResponse = async (request: TeamRequest) => {
+const handleReject = async (requestId: number) => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TeamService.responseToRequest(request, token)
+    const response = await TeamService.rejectRequest(requestId, token)
+
+    if (response instanceof Error) {
+      return //уведомление
+    }
+    //уведомеление
+  }
+}
+
+const handleAccept = async (requestId: number) => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await TeamService.acceptRequest(requestId, token)
 
     if (response instanceof Error) {
       return //уведомление
@@ -75,8 +88,7 @@ function handleCloseTeamModal() {
     :type="currentTeamRequest?.type"
     :is-opened="openModal"
     @close-modal="handleCloseTeamModal"
-    @response="handleResponse"
+    @accept="handleAccept"
+    @reject="handleReject"
   />
 </template>
-
-<style lang="scss"></style>

@@ -12,6 +12,7 @@ import {
 } from '@Components/Modals/TeamRequestModal/TeamRequestModal.types'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import TeamRequestPlaceholder from '@Components/Modals/TeamRequestModal/TeamRequestPlaceholder.vue'
 
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
@@ -51,16 +52,16 @@ const handleSendRequest = handleSubmit(async () => {
   const currentUser = user.value
   if (currentUser) {
     values.sender = currentUser
-    emit('request', values)
+    emit('sendRequest', values)
     resetForm()
+    closeRequestModal()
   }
 })
 
 const handleApprove = async () => {
   const curreuntRequest = props.request
   if (curreuntRequest) {
-    curreuntRequest.isApproved = true
-    emit('response', curreuntRequest)
+    emit('accept', curreuntRequest.id)
     closeRequestModal()
   }
 }
@@ -68,8 +69,7 @@ const handleApprove = async () => {
 const handleReject = async () => {
   const curreuntRequest = props.request
   if (curreuntRequest) {
-    curreuntRequest.isApproved = false
-    emit('response', curreuntRequest)
+    emit('reject', curreuntRequest.id)
     closeRequestModal()
   }
 }
@@ -84,10 +84,7 @@ function closeRequestModal() {
     :is-opened="isOpened"
     @on-outside-close="closeRequestModal"
   >
-    <div
-      v-if="user"
-      class="request-modal p-3"
-    >
+    <div class="request-modal p-3">
       <Typography class-name="text-primary d-flex justify-content-center">
         {{ type == 'enter' ? 'Мотивационное письмо' : 'Причина ухода' }}</Typography
       >
@@ -98,14 +95,14 @@ function closeRequestModal() {
           placeholder="Опишите причину заявления"
           :class="TextareaClassName"
           :disabled="request ? true : false"
-        />
+        ></textarea>
         <span class="invalid-feedback">
           {{ errorMessage }}
         </span>
       </div>
       <div></div>
 
-      <template v-if="request">
+      <template v-if="request && mode == 'read'">
         <div class="request-modal__buttons">
           <Button
             class-name="rounded-end btn-primary"
@@ -130,6 +127,9 @@ function closeRequestModal() {
         </Button></template
       >
     </div>
+    <TeamRequestPlaceholder
+      v-if="mode == 'read' && !request"
+    ></TeamRequestPlaceholder>
   </ModalLayout>
 </template>
 <style lang="scss" scoped>
