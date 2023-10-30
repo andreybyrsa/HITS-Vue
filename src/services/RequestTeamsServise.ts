@@ -4,17 +4,17 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import RequestTeams from '@Domain/RequestTeams'
 
-const ApplicationTeamsAxios = defineAxios(getMocks().applicationTeams)
+const RequestTeamsAxios = defineAxios(getMocks().RequestTeams)
 
-function filterApplicationsById(ideaId: number, applications: RequestTeams[]) {
-  return applications.filter((application) => application.ideaId === ideaId)
+function filterApplicationsById(ideaId: number, request: RequestTeams[]) {
+  return request.filter((request) => request.ideaId === ideaId)
 }
 
 const getRequestAll = async (
   ideaId: number,
   token: string,
 ): Promise<RequestTeams[] | Error> => {
-  return await ApplicationTeamsAxios.get<RequestTeams[]>(
+  return await RequestTeamsAxios.get<RequestTeams[]>(
     '/application/all',
     {
       headers: { Authorization: `Bearer ${token}` },
@@ -32,7 +32,7 @@ const postRequest = async (
   team: RequestTeams,
   token: string,
 ): Promise<RequestTeams | Error> => {
-  return await ApplicationTeamsAxios.post('/application/create', team, {
+  return await RequestTeamsAxios.post('/application/create', team, {
     headers: { Authorization: `Bearer ${token}` },
   })
     .then((response) => response.data)
@@ -46,7 +46,7 @@ const addRequestTeams = async (
   id: number,
   token: string,
 ): Promise<Success | Error> => {
-  return await ApplicationTeamsAxios.putNoRequestBody<Success>(
+  return await RequestTeamsAxios.putNoRequestBody<Success>(
     `/application/add/${id}`,
     { headers: { Authorization: `Bearer ${token}` } },
     {
@@ -62,11 +62,11 @@ const addRequestTeams = async (
     })
 }
 
-const ApplicationTeamsServise = {
+const RequestTeamsServise = {
   getRequestAll,
   postRequest,
 
   addRequestTeams,
 }
 
-export default ApplicationTeamsServise
+export default RequestTeamsServise

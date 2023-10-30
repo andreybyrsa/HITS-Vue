@@ -14,6 +14,8 @@ import {
 import useUserStore from '@Store/user/userStore'
 import Market from '@Domain/Market'
 
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+
 defineProps<MarketDescriptionProps>()
 
 const emit = defineEmits<MarketModalEmits>()

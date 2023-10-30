@@ -15,7 +15,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import JoinIdeaModal from '@Components/Modals/JoinIdeaModal/JoinIdeaModal.vue'
 
 import useUserStore from '@Store/user/userStore'
-import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
+import RequestTeamForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
 
 const searchValue = ref('')
 
@@ -100,6 +100,8 @@ function handleCloseJoinModal() {
     <template #content>
       <router-view></router-view>
 
+      <RequestTeamForm />
+
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
 
       <Select
@@ -152,22 +154,12 @@ function handleCloseJoinModal() {
         </NavTab>
       </div>
 
-      <MarketModal
-        :is-opened="isOpenedModal"
-        @close-modal="handleCloseModal"
-      />
-
       <JoinIdeaModal
         :is-opened="isOpenedJoinModal"
         @close-modal="handleCloseJoinModal"
       />
 
-      <Button
-        class-name="btn-primary"
-        @click="$router.push(`/dev/0`)"
-      >
-        Открыть окно
-      </Button>
+      <Button class-name="btn-primary"> Открыть окно </Button>
 
       <pre class="sss">Пользователь из userStore - {{ user }}</pre>
 

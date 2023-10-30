@@ -167,7 +167,7 @@ function handleCloseJoinModal() {
                 <Button
                   class="apply-button"
                   prepend-icon-name="bi bi-send-fill"
-                  @click="handleOpenJoinModal"
+                  @click="handleOpenJoinModal()"
                 >
                   Подать заявку
                 </Button>

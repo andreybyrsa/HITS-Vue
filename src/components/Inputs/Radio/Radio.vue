@@ -29,7 +29,7 @@ const RadioLabelClassName = computed(() => ['form-check-label', props.className]
 </script>
 
 <template>
-  <div class="d-flex gap-2">
+  <div>
     <input
       :name="name"
       type="radio"

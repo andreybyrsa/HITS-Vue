@@ -11,7 +11,7 @@ import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.
 import MarketAcceptTeam from '@Components/Modals/MarketModal/MarketAcceptTeam.vue'
 import MarketPlaceholder from '@Components/Modals/MarketModal/MarketPlaceholder.vue'
 
-import JoinIdeaForm from '@Components/Forms/JoinIdeaForm/JoinIdeaForm.vue'
+import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
 import ReviewIdeaForm from '@Components/Forms/ReviewIdeaForm/ReviewIdeaForm.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
@@ -116,9 +116,9 @@ function closeMarketModal() {
           v-model="requestTeams"
         />
 
-        <JoinIdeaForm
+        <RequestToIdeaForm
+          :teams="teams"
           :idea="idea"
-          :teams-free="teams"
           v-model="requestTeams"
         />
 

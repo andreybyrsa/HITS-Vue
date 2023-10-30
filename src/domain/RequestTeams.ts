@@ -2,20 +2,19 @@ import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 
 interface RequestTeams {
-  id: number
   ideaId: number
   accepted: boolean
+  letter: string
 
+  id: number
   name: string
-  status: string
-  changedDate: string
+  createdAt: string
   closed: boolean
   description: string
   owner: User
   leader: User
   members: User[]
   skills: Skill[]
-  letter: string
 }
 
 export default RequestTeams

@@ -152,16 +152,16 @@ async function handleAddApplication(id: number) {
             <div class="team__main-info info">
               <div class="info__element">
                 <Icon class="bi bi-clock-history me-1"></Icon>
-                <Typography>Изменено {{ team.changedDate }}</Typography>
+                <Typography>Изменено {{ team.createdAt }}</Typography>
               </div>
               <div class="info__element">
                 <Icon class="bi bi-people-fill me-1"></Icon>
                 <Typography>Участников: {{ team.members.length }}</Typography>
               </div>
-              <div class="info__element">
+              <!-- <div class="info__element">
                 <Icon class="bi bi-briefcase-fill me-1"></Icon>
                 <Typography>Статус: {{ team.status }}</Typography>
-              </div>
+              </div> -->
               <div class="info__buttons">
                 <div class="info__buttons-more">
                   <Button
@@ -172,7 +172,7 @@ async function handleAddApplication(id: number) {
                     <Icon class="bi bi-caret-down fs-5"></Icon>
                   </Button>
                 </div>
-                <div
+                <!-- <div
                   class="info__buttons-accept"
                   v-if="team.status === 'Ждут принятия'"
                 >
@@ -181,7 +181,7 @@ async function handleAddApplication(id: number) {
                     class-name="bg-primary text-light"
                     >Принять</Button
                   >
-                </div>
+                </div> -->
               </div>
             </div>
           </div>

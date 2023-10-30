@@ -20,7 +20,7 @@ interface Mocks {
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
-  applicationTeams: RequestTeams[]
+  RequestTeams: RequestTeams[]
 }
 
 function getMocks(): Mocks {
@@ -70,7 +70,7 @@ function getMocks(): Mocks {
     },
     {
       id: 1,
-      name: 'React JS',
+      name: 'ReactJS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
@@ -354,7 +354,7 @@ function getMocks(): Mocks {
       id: 10,
       name: 'Фронтендеры',
       closed: false,
-      createdAt: new Date(13, 10, 2023),
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[0],
@@ -366,11 +366,11 @@ function getMocks(): Mocks {
       id: 11,
       name: 'Бэккендеры',
       closed: false,
-      createdAt: new Date(13, 10, 2023),
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: users[1],
-      leader: users[2],
+      owner: users[2],
+      leader: users[1],
       members: [...users],
       skills: [...skills],
     },
@@ -378,17 +378,17 @@ function getMocks(): Mocks {
       id: 12,
       name: 'Мушкетеры',
       closed: false,
-      createdAt: new Date(13, 10, 2023),
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: users[1],
-      leader: users[2],
+      owner: users[2],
+      leader: users[1],
       members: [users[3]],
       skills: [skills[0]],
     },
   ]
 
-  const applicationTeams: RequestTeams[] = [
+  const RequestTeams: RequestTeams[] = [
     {
       id: 0,
       ideaId: 1,
@@ -402,8 +402,7 @@ function getMocks(): Mocks {
       leader: users[2],
       members: [...users],
       skills: [...skills],
-      status: 'Ждут принятия',
-      changedDate: '2023-10-20T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -414,14 +413,13 @@ function getMocks(): Mocks {
 
       name: 'программисты из apple',
       closed: false,
-      changedDate: '2023-10-20T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
       leader: users[2],
       members: [...users],
       skills: [...skills],
-      status: 'Ждут принятия',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -432,14 +430,13 @@ function getMocks(): Mocks {
 
       name: 'Удальцы',
       closed: false,
-      changedDate: '2023-10-20T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
       leader: users[2],
       members: [...users],
       skills: [...skills],
-      status: 'Ждут принятия',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -450,14 +447,13 @@ function getMocks(): Mocks {
 
       name: 'Молодцы',
       closed: false,
-      changedDate: '2023-10-20T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
       leader: users[2],
       members: [...users],
       skills: [...skills],
-      status: 'Ждут принятия',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -468,14 +464,13 @@ function getMocks(): Mocks {
 
       name: 'Хорошая компания',
       closed: false,
-      changedDate: '2023-10-20T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
       leader: users[2],
       members: [...users],
       skills: [...skills],
-      status: 'Ждут принятия',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -486,14 +481,13 @@ function getMocks(): Mocks {
 
       name: 'Негатив',
       closed: false,
-      changedDate: '2023-10-20T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
       leader: users[2],
       members: [...users],
       skills: [...skills],
-      status: 'Ждут принятия',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -504,14 +498,13 @@ function getMocks(): Mocks {
 
       name: 'Позитив',
       closed: false,
-      changedDate: '2023-10-20T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
       leader: users[2],
       members: [...users],
       skills: [...skills],
-      status: 'Ждут принятия',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -529,7 +522,7 @@ function getMocks(): Mocks {
     ideasMarket,
     ideasSkills,
     teams,
-    applicationTeams,
+    RequestTeams,
   }
 }
 
