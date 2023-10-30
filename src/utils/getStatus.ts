@@ -15,7 +15,7 @@ function getStatus(): GetRolesType {
       ON_EDITING: 'На редактировании',
       ON_APPROVAL: 'На согласовании',
       ON_CONFIRMATION: 'На утверждении',
-      CONFIRMED: 'Ждет открытия',
+      CONFIRMED: 'Утверждена',
     },
   }
 }

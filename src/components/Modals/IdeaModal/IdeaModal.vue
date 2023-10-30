@@ -15,11 +15,11 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import { Idea, Rating } from '@Domain/Idea'
 import Comment from '@Domain/Comment'
 
-import IdeasService from '@Services/IdeasService'
 import RatingService from '@Services/RatingService'
 
-import useCommentsStore from '@Store/comments/commentsStore'
 import useUserStore from '@Store/user/userStore'
+import useIdeasStore from '@Store/ideas/ideasStore'
+import useCommentsStore from '@Store/comments/commentsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
@@ -36,6 +36,7 @@ const rating = ref<Rating>()
 
 const isOpenedIdeaModal = ref(true)
 
+const ideasStore = useIdeasStore()
 const commentsStore = useCommentsStore()
 
 const ideaModalRef = ref<VueElement | null>(null)
@@ -59,7 +60,7 @@ onMounted(async () => {
     const id = +route.params.id
 
     const ideaParallelRequests = [
-      () => IdeasService.getIdea(id, token),
+      () => ideasStore.getIdea(id, token),
       () => RatingService.getAllIdeaRatings(id, token),
       () => commentsStore.getComments(id, token),
     ]
@@ -75,8 +76,6 @@ onMounted(async () => {
         }
       })
     })
-
-    // await commentsStore.connectRsocket(id)
   }
 })
 

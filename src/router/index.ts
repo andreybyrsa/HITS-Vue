@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
-import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
-import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
 import UsersGroupsForm from '@Components/Forms/UsersGroupsForm/UsersGroupsForm.vue'
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 import SkillsForm from '@Components/Forms/CompetenciesMenuForm/Skills.vue'
@@ -12,7 +10,9 @@ import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
-import AdminView from '@Views/AdminView.vue'
+import UsersView from '@Views/Admin/UsersView.vue'
+import AddUsersView from '@Views/Admin/AddUsersView.vue'
+import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
@@ -60,7 +60,7 @@ const routes: RouteRecordRaw[] = [
           },
 
           {
-            path: 'edit/:id',
+            path: 'update/:id',
             meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
             component: EditIdeaView,
           },
@@ -120,21 +120,20 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'admin',
-        component: AdminView,
         children: [
           {
-            path: 'add-users',
-            component: AddUsersForm,
+            path: 'users',
+            component: UsersView,
             meta: { roles: ['ADMIN'] },
           },
           {
-            path: 'edit-users',
-            component: EditUsersForm,
+            path: 'add-users',
+            component: AddUsersView,
             meta: { roles: ['ADMIN'] },
           },
           {
             path: 'users-groups',
-            component: UsersGroupsForm,
+            component: UsersGroupsView,
             meta: { roles: ['ADMIN'] },
           },
           {

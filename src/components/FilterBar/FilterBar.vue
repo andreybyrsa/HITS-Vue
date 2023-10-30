@@ -1,17 +1,22 @@
-<script lang="ts" setup generic="FilterType">
-import { Ref } from 'vue'
+<script lang="ts" setup>
+import { Ref, computed } from 'vue'
 
-import { FilterBarProps } from '@Components/FilterBar/FilterBar.types'
+import { FilterBarProps, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import Button from '@Components/Button/Button.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 
-const props = defineProps<FilterBarProps<FilterType>>()
+const props = defineProps<FilterBarProps>()
+
+const FilterBarClassName = computed(() => [
+  'filter w-25 bg-white p-2',
+  props.className,
+])
 
 function chooseFilter(
-  filter: FilterType,
-  refValue: Ref<FilterType | FilterType[] | undefined>,
+  filter: FilterValue,
+  refValue: Ref<FilterValue | FilterValue[] | undefined>,
 ) {
   if (refValue.value instanceof Array) {
     const existingRefFilterIndex = refValue.value.findIndex(
@@ -49,9 +54,12 @@ function resetFilters() {
 </script>
 
 <template>
-  <div class="filter w-25 bg-white p-2">
-    <div class="text-center border-bottom pb-2">
-      <Typography class-name="text-secondary fw-medium">{{ title }}</Typography>
+  <div :class="FilterBarClassName">
+    <div
+      v-if="title"
+      class="text-center border-bottom pb-2"
+    >
+      <Typography class-name="text-secondary fw-semibold">{{ title }}</Typography>
     </div>
 
     <div
@@ -91,6 +99,7 @@ function resetFilters() {
     <div class="w-100 d-flex justify-content-center">
       <Button
         class-name="btn-danger"
+        prepend-icon-name="bi bi-x-lg"
         @click="resetFilters"
       >
         Сбросить фильтры
@@ -114,7 +123,7 @@ function resetFilters() {
 
     @include flexible(center, flex-start);
 
-    transition: background-color $default-transition-settings;
+    transition: background-color;
 
     &:hover {
       background-color: rgb(108, 117, 125, 0.1);
