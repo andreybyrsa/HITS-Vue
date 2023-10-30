@@ -190,7 +190,7 @@ async function handleConfirmSkill(skill: Skill) {
 const handleDeleteSkill = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentDeleteSkillId.value) {
+  if (currentUser?.token && currentDeleteSkillId.value !== null) {
     const { token } = currentUser
     const response = await SkillsService.deleteSkill(
       currentDeleteSkillId.value,

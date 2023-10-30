@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
-import UsersGroupsForm from '@Components/Forms/UsersGroupsForm/UsersGroupsForm.vue'
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
-import SkillsForm from '@Components/Forms/CompetenciesMenuForm/Skills.vue'
 
 import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
@@ -13,17 +11,18 @@ import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 import UsersView from '@Views/Admin/UsersView.vue'
 import AddUsersView from '@Views/Admin/AddUsersView.vue'
 import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
+import SkillsView from '@Views/Admin/SkillsView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
+import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
-import CommandView from '@Views/CommandView/CommandView.vue'
 
 import DevView from '@Views/DevView.vue'
 
@@ -78,10 +77,10 @@ const routes: RouteRecordRaw[] = [
             meta: {
               roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
             },
-            component: CommandView,
+            component: TeamsView,
           },
           {
-            path: 'edit/:id',
+            path: 'update/:id',
             meta: {
               roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
               isPageEdit: true,
@@ -118,7 +117,7 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'skills',
-            component: SkillsForm,
+            component: SkillsView,
             meta: { roles: ['ADMIN'] },
           },
         ],

@@ -29,7 +29,7 @@ import getRoles from '@Utils/getRoles'
 const props = defineProps<UsersGroupModalProps>()
 const emit = defineEmits<UsersGroupModalEmits>()
 
-const usersGroups = defineModel<UsersGroup[] | undefined>({
+const usersGroups = defineModel<UsersGroup[]>({
   required: true,
 })
 
@@ -124,7 +124,7 @@ const handleCreateGroup = handleSubmit(async (values) => {
       return // notification
     }
 
-    usersGroups.value?.push(response)
+    usersGroups.value.push(response)
 
     // notification
     emit('close-modal')
@@ -143,12 +143,12 @@ const handleUpdateGroup = handleSubmit(async (values) => {
       return // notification
     }
 
-    const editingGroupIndex = usersGroups.value?.findIndex(
+    const editingGroupIndex = usersGroups.value.findIndex(
       (group) => group.id === values.id,
     )
 
-    if (editingGroupIndex !== undefined && editingGroupIndex !== -1) {
-      usersGroups.value?.splice(editingGroupIndex, 1, values)
+    if (editingGroupIndex !== -1) {
+      usersGroups.value.splice(editingGroupIndex, 1, values)
     }
 
     // notification

@@ -17,17 +17,17 @@
         </Button>
       </div>
 
-      <UsersGroupsTable
-        v-if="usersGroups"
-        v-model="usersGroups"
-      />
-      <TablePlaceholder v-else />
+      <template v-if="usersGroups">
+        <UsersGroupsTable v-model="usersGroups" />
 
-      <UsersGroupModal
-        :isOpened="isOpenedCreatingGroupModal"
-        v-model="usersGroups"
-        @close-modal="closeCreatingGroupModal"
-      />
+        <UsersGroupModal
+          :isOpened="isOpenedCreatingGroupModal"
+          v-model="usersGroups"
+          @close-modal="closeCreatingGroupModal"
+        />
+      </template>
+
+      <TablePlaceholder v-else />
     </template>
   </PageLayout>
 </template>
@@ -41,6 +41,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import UsersGroupsTable from '@Components/Tables/UsersGroupsTable/UsersGroupsTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 import UsersGroupModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
+import Button from '@Components/Button/Button.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -49,7 +50,6 @@ import UsersGroup from '@Domain/UsersGroup'
 import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
-import Button from '@Components/Button/Button.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

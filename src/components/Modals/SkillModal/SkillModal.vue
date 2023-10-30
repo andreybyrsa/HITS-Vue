@@ -178,8 +178,8 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     @include flexible(center, flex-start, column, $gap: 12px);
   }
 }
-.modal-layout-enter-from .edit-user-modal,
-.modal-layout-leave-to .edit-user-modal {
+.modal-layout-enter-from .add-skill-modal,
+.modal-layout-leave-to .add-skill-modal {
   transform: scale(0.9);
 }
 </style>

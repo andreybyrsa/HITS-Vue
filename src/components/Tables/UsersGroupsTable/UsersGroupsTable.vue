@@ -1,7 +1,7 @@
 <template>
   <Table
     :columns="usersGroupsTableColumns"
-    :data="usersGroupsData"
+    :data="usersGroups"
     search-by="name"
     :filters="usersGroupsFilters"
     :dropdown-actions-menu="dropdownUsersGroupsActions"
@@ -21,14 +21,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Table from '@Components/Table/Table.vue'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import UsersGroupModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import { Filter } from '@Components/FilterBar/FilterBar.types'
+import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 
 import UsersGroup from '@Domain/UsersGroup'
 import RolesTypes from '@Domain/Roles'
@@ -46,22 +46,13 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const currentGroupId = ref()
-const currentDeleteGroupId = ref()
+const currentDeleteGroupId = ref<number | null>(null)
 
 const isOpenedUpdatingGroupModal = ref(false)
 const isOpenedDeletingGroupModal = ref(false)
 
 const availableRoles = getRoles()
 const rolesFilter = ref<RolesTypes[]>([])
-
-const usersGroupsData = computed<UsersGroup[]>(() => {
-  if (rolesFilter.value.length) {
-    return usersGroups.value.filter((user) =>
-      rolesFilter.value.some((role) => user.roles.includes(role)),
-    )
-  }
-  return usersGroups.value
-})
 
 const usersGroupsTableColumns: TableColumn<UsersGroup>[] = [
   {
@@ -86,11 +77,12 @@ const dropdownUsersGroupsActions: DropdownMenuAction<UsersGroup>[] = [
   },
   {
     label: 'Удалить',
+    className: 'text-danger',
     click: openDeletingGroupModal,
   },
 ]
 
-const usersGroupsFilters: Filter[] = [
+const usersGroupsFilters: Filter<UsersGroup>[] = [
   {
     category: 'Роли',
     choices: [
@@ -101,6 +93,7 @@ const usersGroupsFilters: Filter[] = [
     ],
     refValue: rolesFilter,
     isUniqueChoice: false,
+    checkFilter: checkUsersGroupRoles,
   },
 ]
 
@@ -111,6 +104,10 @@ function getGroupNameStyle() {
 function getGroupRolesFormat(roles: RolesTypes[], index: number) {
   const currentRole = roles[index]
   return availableRoles.translatedGroups[currentRole]
+}
+
+function checkUsersGroupRoles(usersGroup: UsersGroup, role: FilterValue) {
+  return usersGroup.roles.find((usersGroupRole) => usersGroupRole === role)
 }
 
 function openUpdatingGroupModal(usersGroup: UsersGroup) {
@@ -132,7 +129,7 @@ function closeDeletingGroupModal() {
 const handleDeleteGroup = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && currentDeleteGroupId.value !== null) {
     const { token } = currentUser
     const response = await UsersGroupsService.deleteUsersGroup(
       currentDeleteGroupId.value,
@@ -143,7 +140,7 @@ const handleDeleteGroup = async () => {
       return // notification
     }
 
-    usersGroups.value = usersGroups.value?.filter(
+    usersGroups.value = usersGroups.value.filter(
       (group) => group.id !== currentDeleteGroupId.value,
     )
   }
