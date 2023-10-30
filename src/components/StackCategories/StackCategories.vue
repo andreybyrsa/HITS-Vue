@@ -11,7 +11,7 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
 
 import { Skill, SkillType } from '@Domain/Skill'
 
-import SkillsService from '@Services/SkillService'
+import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
 

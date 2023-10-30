@@ -16,11 +16,12 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { Skill, SkillType } from '@Domain/Skill'
 
-import SkillsService from '@Services/SkillService'
+import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
 
 import Validation from '@Utils/Validation'
+import getSkills from '@Utils/getSkills'
 
 const skills = defineModel<Skill[]>({ required: true })
 const props = defineProps<SkillModalProps>()
@@ -31,24 +32,12 @@ const { user } = storeToRefs(userStore)
 
 const skillModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
-const SkillTypeOptions = [
-  {
-    value: 'LANGUAGE',
-    label: 'Язык разработки',
-  },
-  {
-    value: 'FRAMEWORK',
-    label: 'Фреймворк',
-  },
-  {
-    value: 'DATABASE',
-    label: 'База данных',
-  },
-  {
-    value: 'DEVOPS',
-    label: 'Девопс технология',
-  },
-]
+const availableSkills = getSkills()
+
+const SkillTypeOptions = availableSkills.skills.map((skillType) => ({
+  value: skillType,
+  label: availableSkills.translatedSkills[skillType],
+}))
 
 const { handleSubmit, setValues } = useForm<Skill>({
   validationSchema: {
