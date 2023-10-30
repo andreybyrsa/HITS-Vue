@@ -7,7 +7,6 @@ import Button from '@Components/Button/Button.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
-import Table from '@Components/Table/Table.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
@@ -15,47 +14,6 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
 import ExchangeModal from '@Components/Modals/ExchangeModal/ExchangeModal.vue'
-
-const searchValue = ref('')
-
-const columns = [
-  { key: 'number', label: '#' },
-  { key: 'date', label: 'Дата' },
-  { key: 'who', label: 'Кто' },
-  { key: 'doing', label: 'Что сделал' },
-  { key: 'name', label: 'Где' },
-]
-
-const data = [
-  {
-    number: 1,
-    date: '11-11-2001',
-    who: 'Victor',
-    doing: 'сломався',
-    name: 'в идее номер 1338 в идее номер 1338 в идее номер 1338 в идее номер 1338 в идее номер 1338 в идее номер 1338',
-  },
-  {
-    number: 2,
-    date: '11-11-2001',
-    who: 'Victor',
-    doing: 'сломався',
-    name: 'в идее номер 1338',
-  },
-  {
-    number: 3,
-    date: '11-11-2001',
-    who: 'Victor',
-    doing: 'сломався',
-    name: 'в идее номер 1338',
-  },
-  {
-    number: 4,
-    date: '11-11-2001',
-    who: 'Victor',
-    doing: 'сломався',
-    name: 'в идее номер 1338',
-  },
-]
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -93,6 +51,7 @@ function handleCloseModal() {
 
     <template #content>
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
+      <div class="table-responsive"></div>
 
       <Select
         name="component"
@@ -156,24 +115,7 @@ function handleCloseModal() {
         Открыть окно
       </Button>
 
-      <pre class="sss">Пользователь из userStore - {{ user }}</pre>
-
-      <Table
-        :columns="columns"
-        :data="data"
-        :search-value="searchValue"
-        :filter-value="columns[0].key"
-      >
-        <template #actions="{ item }">
-          <div>
-            <Button
-              class-name=" btn-primary text-white  fs-3  "
-              prepend-icon-name="bi bi-list"
-              >{{ item.number }}</Button
-            >
-          </div>
-        </template>
-      </Table>
+      <pre>Пользователь из userStore - {{ user }}</pre>
     </template>
   </PageLayout>
 </template>
@@ -183,9 +125,5 @@ function handleCloseModal() {
   &__content {
     @include flexible(flex-start, flex-start, column, $gap: 16px);
   }
-}
-
-.sss {
-  width: 500px;
 }
 </style>

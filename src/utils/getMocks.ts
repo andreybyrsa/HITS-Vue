@@ -219,8 +219,8 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: 0,
-      initiator: 'admin@mail.com',
-      name: 'Идея по созданию идеи',
+      initiator: '1@mail.com',
+      name: 'Идея по созданию идеи Идея по созданию идеи Идея по созданию идеи Идея по созданию идеи',
       projectType: 'INSIDE',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -230,8 +230,8 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      createdAt: new Date(),
-      modifiedAt: new Date(),
+      createdAt: '2023-10-21T11:02:17Z',
+      modifiedAt: '2023-10-26T11:02:17Z',
       status: 'ON_CONFIRMATION',
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
@@ -241,7 +241,7 @@ function getMocks(): Mocks {
       suitability: 1,
       technicalRealizability: 1,
       preAssessment: 1,
-      rating: 8 / 5,
+      rating: 3,
     },
     {
       id: 1,
@@ -256,8 +256,8 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      createdAt: new Date(),
-      modifiedAt: new Date(),
+      createdAt: '2023-10-24T11:02:17Z',
+      modifiedAt: '2023-10-25T11:02:17Z',
       status: 'NEW',
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
@@ -267,7 +267,33 @@ function getMocks(): Mocks {
       suitability: 3,
       technicalRealizability: 5,
       preAssessment: 4,
-      rating: null,
+      rating: 2,
+    },
+    {
+      id: 2,
+      initiator: 'admin@mail.com',
+      name: 'Идея 2',
+      projectType: 'INSIDE',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: '2023-10-25T11:02:17Z',
+      modifiedAt: '2023-10-25T11:02:17Z',
+      status: 'NEW',
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: null,
+      projectOffice: null,
+      budget: 4,
+      suitability: 3,
+      technicalRealizability: 5,
+      preAssessment: 4,
+      rating: 4,
     },
   ]
 
@@ -282,11 +308,12 @@ function getMocks(): Mocks {
   const teams: Team[] = [
     {
       id: 0,
-      name: 'Команда новая',
+      name: 'Команда 1',
       closed: false,
-      createdAt: new Date(13, 10, 2023),
+      createdAt: '2023-10-23T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 4,
       owner: users[0],
       leader: users[1],
       members: [...users],
@@ -294,11 +321,12 @@ function getMocks(): Mocks {
     },
     {
       id: 1,
-      name: 'Команда новая',
-      closed: false,
-      createdAt: new Date(13, 10, 2023),
+      name: 'Команда 2',
+      closed: true,
+      createdAt: '2023-10-25T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 3,
       owner: users[1],
       leader: users[2],
       members: [users[3]],
