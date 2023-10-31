@@ -58,10 +58,9 @@ function isMultiselect(
 
 function getCurrentOption(option: OptionType) {
   if (props.displayBy) {
-    const label = props.displayBy.reduce(
-      (prevValue, key) => (prevValue += `${option[key]} `),
-      '',
-    )
+    const label = props.displayBy
+      .reduce((prevValue, key) => (prevValue += `${option[key]} `), '')
+      .slice(0, -1)
 
     return { label, option }
   }
@@ -153,6 +152,13 @@ onClickOutside(comboboxRef, () => {
   isOpenedChoices.value = false
   searchedValue.value = ''
 })
+
+function checkNewOptionButton() {
+  const isExistNewOption = props.options.find(
+    (option) => getCurrentOption(option).label === searchedValue.value,
+  )
+  return !isExistNewOption && searchedValue.value.length && isOpenedChoices.value
+}
 </script>
 
 <template>
@@ -183,7 +189,7 @@ onClickOutside(comboboxRef, () => {
         class-name="combobox__icon bi bi-chevron-down"
       />
       <Icon
-        v-if="!searchedOptions.length && isOpenedChoices"
+        v-if="checkNewOptionButton()"
         class-name="combobox__icon bi bi-plus-lg"
         @click="handleAddNewOption"
       />

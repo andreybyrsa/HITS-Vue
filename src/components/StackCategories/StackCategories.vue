@@ -134,7 +134,7 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
         class="w-25"
       >
         <Combobox
-          name="stack"
+          :name="`stack-${category.key}`"
           :options="skills[category.key]"
           :display-by="['name']"
           v-model="choosenSkills[category.key]"

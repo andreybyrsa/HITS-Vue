@@ -20,7 +20,6 @@ import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
 
-import Validation from '@Utils/Validation'
 import getSkills from '@Utils/getSkills'
 
 const skills = defineModel<Skill[]>({ required: true })
@@ -34,7 +33,7 @@ const skillModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
 const availableSkills = getSkills()
 
-const SkillTypeOptions = availableSkills.skills.map((skillType) => ({
+const skillTypeOptions = availableSkills.skills.map((skillType) => ({
   value: skillType,
   label: availableSkills.translatedSkills[skillType],
 }))
@@ -42,9 +41,9 @@ const SkillTypeOptions = availableSkills.skills.map((skillType) => ({
 const { handleSubmit, setValues } = useForm<Skill>({
   validationSchema: {
     name: (value: string) =>
-      Validation.checkName(value) || 'Неверно введено название компетенции',
+      value?.length > 0 || 'Неверно введено название компетенции',
     type: (value: SkillType) =>
-      Validation.checkName(value) || 'Неверно выбран тип компетенции',
+      value?.length > 0 || 'Неверно выбран тип компетенции',
   },
   initialValues: {
     confirmed: true,
@@ -129,7 +128,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
 
         <Select
           name="type"
-          :options="SkillTypeOptions"
+          :options="skillTypeOptions"
           label="Тип компетенции*"
           placeholder="Выберите тип компетенции"
           validate-on-update
@@ -171,6 +170,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
   );
 
   transition: all $default-transition-settings;
+
   &__header {
     @include flexible(center, space-between);
   }
@@ -178,6 +178,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     @include flexible(center, flex-start, column, $gap: 12px);
   }
 }
+
 .modal-layout-enter-from .add-skill-modal,
 .modal-layout-leave-to .add-skill-modal {
   transform: scale(0.9);
