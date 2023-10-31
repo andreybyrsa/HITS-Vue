@@ -5,8 +5,10 @@ interface Team {
   id: number
   name: string
   createdAt: string
-  closed: boolean
+
   description: string
+  closed: boolean
+  membersCount: number
   owner: User
   leader: User
   members: User[]

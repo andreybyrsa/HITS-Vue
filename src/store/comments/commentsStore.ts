@@ -65,12 +65,12 @@ const useCommentsStore = defineStore('comments', {
 
       if (response instanceof Error) {
         // notification
-      } else {
-        const currentCommentIndex = this.comments?.findIndex(
+      } else if (this.comments) {
+        const deletingCommentIndex = this.comments.findIndex(
           (comment) => comment.id === commentId,
         )
-        if (currentCommentIndex !== undefined && currentCommentIndex !== -1) {
-          this.comments?.splice(currentCommentIndex, 1)
+        if (deletingCommentIndex !== -1) {
+          this.comments.splice(deletingCommentIndex, 1)
         }
       }
     },

@@ -7,7 +7,6 @@ import ReviewIdeaFormProps from '@Components/Forms/ReviewIdeaForm/ReviewIdeaForm
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
-import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Icon from '@Components/Icon/Icon.vue'
@@ -100,11 +99,6 @@ async function handleAddApplication(id: number) {
         <Button class-name="btn-success">Принять</Button>
         <Button class-name="btn-danger">Удалить</Button>
       </div>
-      <SearchAndFilters
-        :filtersData="filters"
-        v-model:searchedValue="searchedValue"
-        v-model:selectedFilters="selectedFilters"
-      />
 
       <div class="w-100 border-bottom text-secondary">
         <Typography>Заявки в команду: {{ filterTeams(teams).length }}</Typography>

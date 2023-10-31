@@ -30,7 +30,7 @@ const WrapperClassName = computed(() => ['d-flex gap-2', props.wrapperClassName]
 </script>
 
 <template>
-  <div :class="WrapperClassName">
+  <div class="form-check-wrapper">
     <input
       type="checkbox"
       :name="name"
@@ -46,3 +46,9 @@ const WrapperClassName = computed(() => ['d-flex gap-2', props.wrapperClassName]
     </span>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.form-check-wrapper {
+  @include flexible(center, center, $gap: 8px);
+}
+</style>

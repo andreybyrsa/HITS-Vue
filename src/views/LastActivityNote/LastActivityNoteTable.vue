@@ -1,10 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { useDateFormat, useToggle } from '@vueuse/core'
 
 import { TableColumn } from '@Components/Table/Table.types'
-import Button from '@Components/Button/Button.vue'
-import DropDown from '@Components/DropDown/DropDown.vue'
 import Table from '@Components/Table/Table.vue'
 
 import {
@@ -16,19 +13,25 @@ const props = defineProps<LastActivityNoteProps>()
 
 const [isSorted, setIsSorted] = useToggle(true)
 
-const columns: TableColumn[] = [
+const columns: TableColumn<Change>[] = [
   {
     key: 'date',
     label: 'Дата',
-    click: () => sortDate(props.changes),
-    getFormat: getFormattedDate,
+    headerCellClick: () => sortDate(props.changes),
+    getRowCellFormat: getFormattedDate,
   },
-  { key: 'who', label: 'Кто', click: () => sortWho(props.changes) },
-  { key: 'doing', label: 'Что сделал', click: () => sortDoing(props.changes) },
-  { key: 'name', label: 'Номер идеи', click: () => sortName(props.changes) },
+  { key: 'who', label: 'Кто', headerCellClick: () => sortWho(props.changes) },
+  {
+    key: 'doing',
+    label: 'Что сделал',
+    headerCellClick: () => sortDoing(props.changes),
+  },
+  {
+    key: 'name',
+    label: 'Номер идеи',
+    headerCellClick: () => sortName(props.changes),
+  },
 ]
-
-const searchValue = ref('')
 
 function getFormattedDate(date: string) {
   if (date) {
@@ -77,26 +80,6 @@ function sortName(changes: Change[]) {
   <Table
     :columns="columns"
     :data="props.changes"
-    :search-value="searchValue"
-  >
-    <template #actions>
-      <div class="bg-light">
-        <Button
-          class-name=" btn-primary text-white"
-          prepend-icon-name="bi bi-list fs-4"
-          v-dropdown="'lastActivityNoteTable'"
-        ></Button>
-
-        <DropDown id="lastActivityNoteTable">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item list-group-item-action p-1">
-              <button class="w-100 text-start">Перейти к идее</button>
-            </li>
-          </ul>
-        </DropDown>
-      </div>
-    </template>
-  </Table>
+    search-by="name"
+  ></Table>
 </template>
-
-<style lang="scss" scoped></style>

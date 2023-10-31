@@ -70,16 +70,16 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     routes: [
       {
         id: 8,
-        to: '/admin/add-users',
-        text: 'Добавить пользователей',
-        iconName: 'bi bi-person-add',
+        to: '/admin/users',
+        text: 'Пользователи',
+        iconName: 'bi bi-person-gear',
         roles: ['ADMIN'],
       },
       {
         id: 9,
-        to: '/admin/edit-users',
-        text: 'Редактировать пользователей',
-        iconName: 'bi bi-person-gear',
+        to: '/admin/add-users',
+        text: 'Добавить пользователей',
+        iconName: 'bi bi-person-add',
         roles: ['ADMIN'],
       },
       {
@@ -100,13 +100,13 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
   },
-  {
-    id: 12,
-    text: 'Отчеты',
-    to: '/notes',
-    iconName: 'bi bi-file-earmark',
-    roles: ['EXPERT', 'ADMIN'],
-  },
+  // {
+  //   id: 12,
+  //   text: 'Отчеты',
+  //   to: '/notes',
+  //   iconName: 'bi bi-file-earmark',
+  //   roles: ['EXPERT', 'ADMIN'],
+  // },
   {
     id: 13,
     text: 'Настройки',

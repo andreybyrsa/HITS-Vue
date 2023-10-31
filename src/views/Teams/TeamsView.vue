@@ -1,24 +1,26 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-import IdeasTable from '@Components/Tables/IdeasTable/IdeasTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
+import TeamsTable from '@Components/Tables/TeamsTable/TeamsTable.vue'
+
+import Team from '@Domain/Team'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
+import TeamService from '@Services/TeamService'
+
 import useUserStore from '@Store/user/userStore'
-import useIdeasStore from '@Store/ideas/ideasStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const ideaStore = useIdeasStore()
-const { ideas } = storeToRefs(ideaStore)
+const teams = ref<Team[]>()
 
 const router = useRouter()
 
@@ -28,36 +30,42 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    await ideaStore.fetchIdeas(token)
+    const response = await TeamService.getTeams(token)
+
+    if (response instanceof Error) {
+      return // notification
+    }
+
+    teams.value = response
   }
 })
 
-function navigateToCreateIdeaPage() {
-  router.push('/ideas/create')
+function navigateToCreateTeamPage() {
+  router.push('/teams/create')
 }
 </script>
 
 <template>
-  <PageLayout content-class-name="ideas-page__content p-3 bg-white">
+  <PageLayout content-class-name="teams-page__content p-3 bg-white">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
 
     <template #content>
-      <div class="ideas-page__header w-100">
-        <Typography class-name="fs-2 text-primary">Список идей</Typography>
+      <div class="teams-page__header w-100">
+        <Typography class-name="fs-2 text-primary">Список команд</Typography>
         <Button
           class-name="btn-primary"
           prepend-icon-name="bi bi-plus-lg"
-          @click="navigateToCreateIdeaPage"
+          @click="navigateToCreateTeamPage"
         >
-          Создать идею
+          Создать команду
         </Button>
       </div>
 
-      <IdeasTable
-        v-if="ideas"
-        :ideas="ideas"
+      <TeamsTable
+        v-if="teams"
+        v-model="teams"
       />
       <TablePlaceholder v-else />
 
@@ -67,7 +75,7 @@ function navigateToCreateIdeaPage() {
 </template>
 
 <style lang="scss" scoped>
-.ideas-page {
+.teams-page {
   &__header {
     @include flexible(center, space-between);
   }

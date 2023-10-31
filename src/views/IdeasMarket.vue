@@ -6,7 +6,6 @@ import { useDateFormat } from '@vueuse/core'
 import Button from '@Components/Button/Button.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import SearchAndFilters from './Ideas/SearchAndFilters.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Market from '@Domain/Market'
 import JoinIdeaModal from '@Components/Modals/JoinIdeaModal/JoinIdeaModal.vue'
@@ -80,11 +79,6 @@ function handleCloseJoinModal() {
     <template #content>
       <router-view />
       <Typography class-name="fs-2 text-primary w-75">Биржа идей</Typography>
-      <SearchAndFilters
-        :filtersData="filters"
-        v-model:searchedValue="searchedValue"
-        v-model:selectedFilters="selectedFilters"
-      />
       <div class="market-modal-window__pages-headers">
         <Button @click="toggleView('all')">
           <Typography
