@@ -1,13 +1,13 @@
 import StatusTypes from '@Domain/IdeaStatus'
 
-interface GetRolesType {
+interface GetStatusType {
   status: StatusTypes[]
   translatedStatus: {
     [key in StatusTypes]: string
   }
 }
 
-function getStatus(): GetRolesType {
+function getStatus(): GetStatusType {
   return {
     status: ['NEW', 'ON_EDITING', 'ON_APPROVAL', 'ON_CONFIRMATION', 'CONFIRMED'],
     translatedStatus: {

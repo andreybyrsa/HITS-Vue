@@ -306,7 +306,7 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: 0,
-      initiator: 'admin@mail.com',
+      initiator: '1@mail.com',
       name: 'Идея по созданию идеи Идея по созданию идеи Идея по созданию идеи Идея по созданию идеи',
       projectType: 'INSIDE',
       problem:
@@ -395,26 +395,28 @@ function getMocks(): Mocks {
   const teams: Team[] = [
     {
       id: 0,
-      name: 'Команда новая',
+      name: 'Команда 1',
       closed: false,
-      createdAt: new Date(13, 10, 2023).toLocaleDateString(),
+      createdAt: '2023-10-23T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[0],
-      leader: teamMember[1],
-      members: [...teamMember],
-      skills: [...skills],
+      membersCount: 4,
+      owner: users[0],
+      leader: users[1],
+      members: [...users],
+      skills: [],
     },
     {
       id: 1,
-      name: 'Команда новая',
-      closed: false,
-      createdAt: new Date(13, 10, 2023).toLocaleDateString(),
+      name: 'Команда 2',
+      closed: true,
+      createdAt: '2023-10-25T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[1],
-      leader: teamMember[2],
-      members: [teamMember[2], teamMember[3]],
+      membersCount: 3,
+      owner: users[1],
+      leader: users[2],
+      members: [users[3]],
       skills: [...skills],
     },
   ]

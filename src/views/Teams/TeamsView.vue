@@ -1,110 +1,87 @@
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import SearchAndFilters from '@Views/Ideas/SearchAndFilters.vue'
+import Button from '@Components/Button/Button.vue'
+import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
+import TeamsTable from '@Components/Tables/TeamsTable/TeamsTable.vue'
+
+import Team from '@Domain/Team'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+
 import TeamService from '@Services/TeamService'
+
 import useUserStore from '@Store/user/userStore'
-import Team from '@Domain/Team'
-import TeamsViewTable from '@Views/Teams/TeamsViewTable.vue'
-
-const searchedValue = ref('')
-const selectedFilters = ref<string[]>([])
-
-const commandData = ref<Team[]>([])
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const teams = ref<Team[]>()
+
+const router = useRouter()
 
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
+
     const response = await TeamService.getTeams(token)
-    console.log(response)
+
     if (response instanceof Error) {
-      return
+      return // notification
     }
 
-    commandData.value = response
+    teams.value = response
   }
 })
 
-watch(
-  () => searchedValue.value,
-  (newVal) => {
-    if (newVal) {
-      selectedFilters.value.push(newVal)
-    }
-  },
-)
-
-function filterCommand(team: Team[]) {
-  if (selectedFilters.value.length || searchedValue.value) {
-    const dataFilter: Team[] = []
-    team?.forEach((elem) => {
-      const filters = [...selectedFilters.value]
-      if (searchedValue.value) filters.push(searchedValue.value)
-      const matchesAllFilters = filters.every(
-        (filter) =>
-          Object.values(elem)
-            .map(String)
-            .some((value) => value.toLowerCase() === filter.toLowerCase()) ||
-          elem.skills
-            .map((competence) => competence.name.toLowerCase())
-            .includes(filter.toLowerCase()),
-      )
-      if (matchesAllFilters) {
-        dataFilter.push(elem)
-      }
-    })
-    return dataFilter
-  } else false
+function navigateToCreateTeamPage() {
+  router.push('/teams/create')
 }
-
-const filters = [
-  {
-    label: 'Открытые комадны',
-    value: 'OPEN_TEAM',
-  },
-  {
-    label: 'Закрытые команды',
-    value: 'CLOSE_TEAM',
-  },
-  {
-    label: 'Компетенции',
-    valueDrop: [],
-  },
-]
 </script>
+
 <template>
-  <PageLayout content-class-name="command-page__content p-3">
+  <PageLayout content-class-name="teams-page__content p-3 bg-white">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
+
     <template #content>
-      <Typography class-name="fs-2 text-primary w-75">Список команд</Typography>
-      <SearchAndFilters
-        :filtersData="filters"
-        v-model:searchedValue="searchedValue"
-        v-model:selectedFilters="selectedFilters"
+      <div class="teams-page__header w-100">
+        <Typography class-name="fs-2 text-primary">Список команд</Typography>
+        <Button
+          class-name="btn-primary"
+          prepend-icon-name="bi bi-plus-lg"
+          @click="navigateToCreateTeamPage"
+        >
+          Создать команду
+        </Button>
+      </div>
+
+      <TeamsTable
+        v-if="teams"
+        v-model="teams"
       />
-      <TeamsViewTable
-        :command="filterCommand(commandData) || commandData"
-        :searched-value="searchedValue"
-      />
+      <TablePlaceholder v-else />
+
+      <router-view />
     </template>
   </PageLayout>
 </template>
-<style lang="scss">
-.command-page {
+
+<style lang="scss" scoped>
+.teams-page {
+  &__header {
+    @include flexible(center, space-between);
+  }
+
   &__content {
-    @include flexible(center, start, column, $gap: 12px);
+    @include flexible(stretch, flex-start, column);
   }
 }
 </style>

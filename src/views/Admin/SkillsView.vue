@@ -5,25 +5,24 @@
     </template>
 
     <template #content>
-      <div class="users-groups-page__header">
-        <Typography class-name="fs-2 text-primary">Группы пользователей</Typography>
+      <div class="skills-page__header">
+        <Typography class-name="fs-2 text-primary">Список компетенций</Typography>
 
         <Button
           class-name="btn-primary"
           prepend-icon-name="bi bi-plus-lg"
-          @click="openCreatingGroupModal"
+          @click="openCreatingSkillModal"
         >
-          Создать группу
+          Добавить компетеницю
         </Button>
       </div>
 
-      <template v-if="usersGroups">
-        <UsersGroupsTable v-model="usersGroups" />
-
-        <UsersGroupModal
-          :isOpened="isOpenedCreatingGroupModal"
-          v-model="usersGroups"
-          @close-modal="closeCreatingGroupModal"
+      <template v-if="skills">
+        <SkillsTable v-model="skills" />
+        <SkillModal
+          :is-opened="isOpenCreatingSkillModal"
+          v-model="skills"
+          @close-modal="closeCreatingSkillModal"
         />
       </template>
 
@@ -38,51 +37,51 @@ import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import UsersGroupsTable from '@Components/Tables/UsersGroupsTable/UsersGroupsTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
-import UsersGroupModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
 import Button from '@Components/Button/Button.vue'
+import SkillsTable from '@Components/Tables/SkillsTable/SkillsTable.vue'
+import SkillModal from '@Components/Modals/SkillModal/SkillModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
-import UsersGroup from '@Domain/UsersGroup'
+import { Skill } from '@Domain/Skill'
 
-import UsersGroupsService from '@Services/UsersGroupsService'
+import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const usersGroups = ref<UsersGroup[]>()
+const skills = ref<Skill[]>()
 
-const isOpenedCreatingGroupModal = ref(false)
+const isOpenCreatingSkillModal = ref(false)
 
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const responseGroups = await UsersGroupsService.getUsersGroups(token)
+    const responseSkill = await SkillsService.getAllSkills(token)
 
-    if (responseGroups instanceof Error) {
+    if (responseSkill instanceof Error) {
       return // notification
     }
 
-    usersGroups.value = responseGroups
+    skills.value = responseSkill
   }
 })
 
-function openCreatingGroupModal() {
-  isOpenedCreatingGroupModal.value = true
+function openCreatingSkillModal() {
+  isOpenCreatingSkillModal.value = true
 }
-function closeCreatingGroupModal() {
-  isOpenedCreatingGroupModal.value = false
+function closeCreatingSkillModal() {
+  isOpenCreatingSkillModal.value = false
 }
 </script>
 
 <style lang="scss">
-.users-groups-page {
+.skills-page {
   &__header {
     @include flexible(center, space-between);
   }

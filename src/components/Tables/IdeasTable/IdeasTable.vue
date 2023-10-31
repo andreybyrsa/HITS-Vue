@@ -28,7 +28,7 @@ import {
   DropdownMenuAction,
 } from '@Components/Table/Table.types'
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
-import { Filter } from '@Components/FilterBar/FilterBar.types'
+import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
 import { Idea } from '@Domain/Idea'
@@ -71,28 +71,6 @@ watchImmediate(
     ideasData.value = props.ideas
   },
 )
-
-watchImmediate(filterByInitiator, (filter) => {
-  if (filter) {
-    ideasData.value = props.ideas.filter((idea) => {
-      if (filter === 'MY_IDEAS') {
-        return idea.initiator === user.value?.email
-      } else if (filter === 'COMPETITORS_IDEAS') {
-        return idea.initiator !== user.value?.email
-      }
-    })
-  } else {
-    ideasData.value = props.ideas
-  }
-})
-
-watchImmediate(filterByIdeaStatus, (filter) => {
-  if (filter) {
-    ideasData.value = props.ideas.filter((idea) => idea.status === filter)
-  } else {
-    ideasData.value = props.ideas
-  }
-})
 
 const iedaTableColumns: TableColumn<Idea>[] = [
   {
@@ -169,7 +147,7 @@ const dropdownIdeasActions: DropdownMenuAction<Idea>[] = [
   },
 ]
 
-const ideasFilters: Filter[] = [
+const ideasFilters: Filter<Idea>[] = [
   {
     category: 'Идеи',
     choices: [
@@ -179,18 +157,17 @@ const ideasFilters: Filter[] = [
     ],
     refValue: filterByInitiator,
     isUniqueChoice: true,
+    checkFilter: checkIdeaInitiator,
   },
   {
     category: 'Статус',
-    choices: [
-      { label: 'Новая', value: 'NEW' },
-      { label: 'На редактировании', value: 'ON_EDITING' },
-      { label: 'На согласовании', value: 'ON_APPROVAL' },
-      { label: 'На утверждении', value: 'ON_CONFIRMATION' },
-      { label: 'Утверждена', value: 'CONFIRMED' },
-    ],
+    choices: availableStatus.status.map((ideaStatus) => ({
+      label: availableStatus.translatedStatus[ideaStatus],
+      value: ideaStatus,
+    })),
     refValue: filterByIdeaStatus,
     isUniqueChoice: true,
+    checkFilter: checkIdeaStatus,
   },
 ]
 
@@ -324,7 +301,6 @@ function handleOpenDeleteModal(idea: Idea) {
 }
 
 function handleCloseDeleteModal() {
-  deletingIdeaId.value = null
   isOpenedIdeaDeleteModal.value = false
 }
 
@@ -372,5 +348,15 @@ function checkUpdateIdeaAction(idea: Idea) {
     }
   }
   return false
+}
+
+function checkIdeaInitiator(idea: Idea, filter: FilterValue) {
+  if (filter === 'MY_IDEAS') {
+    return idea.initiator === user.value?.email
+  }
+  return idea.initiator !== user.value?.email
+}
+function checkIdeaStatus(idea: Idea, status: FilterValue) {
+  return idea.status === status
 }
 </script>

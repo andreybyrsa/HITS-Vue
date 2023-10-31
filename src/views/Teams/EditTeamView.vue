@@ -27,9 +27,9 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = route.params
+    const teamId = +route.params.id
 
-    const response = await TeamService.getTeam(id, token)
+    const response = await TeamService.getTeam(teamId, token)
 
     if (response instanceof Error) {
       return

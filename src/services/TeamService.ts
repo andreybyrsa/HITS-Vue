@@ -39,7 +39,7 @@ const getTeams = async (token: string): Promise<Team[] | Error> => {
 }
 
 const getTeam = async (
-  id: string | string[],
+  id: number | number[],
   token: string,
 ): Promise<Team | Error> => {
   return await teamsAxios

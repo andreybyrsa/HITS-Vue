@@ -1,7 +1,7 @@
 <template>
   <Table
     :columns="usersTableColumns"
-    :data="usersData"
+    :data="users"
     search-by="email"
     :filters="usersFilters"
     :dropdown-actions-menu="dropdownUsersActions"
@@ -16,9 +16,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
-import { Filter } from '@Components/FilterBar/FilterBar.types'
+import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import Table from '@Components/Table/Table.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
@@ -36,15 +36,6 @@ const availableRoles = getRoles()
 
 const updatingUser = ref<User | null>(null)
 const isOpenedUpdatingUserModal = ref(false)
-
-const usersData = computed<User[]>(() => {
-  if (rolesFilter.value.length) {
-    return users.value.filter((user) =>
-      rolesFilter.value.some((role) => user.roles.includes(role)),
-    )
-  }
-  return users.value
-})
 
 const usersTableColumns: TableColumn<User>[] = [
   {
@@ -77,7 +68,7 @@ const dropdownUsersActions: DropdownMenuAction<User>[] = [
   },
 ]
 
-const usersFilters: Filter[] = [
+const usersFilters: Filter<User>[] = [
   {
     category: 'Роли',
     choices: [
@@ -88,6 +79,7 @@ const usersFilters: Filter[] = [
     ],
     refValue: rolesFilter,
     isUniqueChoice: false,
+    checkFilter: checkUserRoles,
   },
 ]
 
@@ -100,6 +92,10 @@ function getUserRolesFormat(roles: RolesTypes[], index: number) {
   return availableRoles.translatedRoles[currentRole]
 }
 
+function checkUserRoles(user: User, role: FilterValue) {
+  return user.roles.find((userRole) => userRole === role)
+}
+
 function handleOpenUpdatingModal(currentUser: User) {
   const selectedUser = users.value.find((user) => user.id === currentUser.id)
 
@@ -110,7 +106,6 @@ function handleOpenUpdatingModal(currentUser: User) {
 }
 
 function handleCloseUpdatingModal() {
-  updatingUser.value = null
   isOpenedUpdatingUserModal.value = false
 }
 </script>

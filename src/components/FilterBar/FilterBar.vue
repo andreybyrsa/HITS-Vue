@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup generic="DataType">
 import { Ref, computed } from 'vue'
 
 import { FilterBarProps, FilterValue } from '@Components/FilterBar/FilterBar.types'
@@ -7,7 +7,7 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 
-const props = defineProps<FilterBarProps>()
+const props = defineProps<FilterBarProps<DataType>>()
 
 const FilterBarClassName = computed(() => [
   'filter w-25 bg-white p-2',
