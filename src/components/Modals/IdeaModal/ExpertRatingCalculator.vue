@@ -21,16 +21,15 @@ import { Rating } from '@Domain/Idea'
 import RatingService from '@Services/RatingService'
 
 import useUserStore from '@Store/user/userStore'
-
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-const notificationsStore = useNotificationsStore()
 
 const props = defineProps<ExperCalculatorProps>()
 const ratings = defineModel<Rating[]>({ required: false })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const notificationsStore = useNotificationsStore()
 
 const overallRatingPlaceholder = ref('Вычисление')
 

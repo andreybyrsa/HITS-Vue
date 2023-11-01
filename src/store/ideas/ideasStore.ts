@@ -3,11 +3,11 @@ import InitialState from './initialState'
 
 import RolesTypes from '@Domain/Roles'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
+import { Idea } from '@Domain/Idea'
 
 import IdeasService from '@Services/IdeasService'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { Idea } from '@Domain/Idea'
 
 const useIdeasStore = defineStore('ideas', {
   state: (): InitialState => ({
@@ -20,10 +20,7 @@ const useIdeasStore = defineStore('ideas', {
           const response = await IdeasService.getInitiatorIdeas(token)
 
           if (response instanceof Error) {
-            return useNotificationsStore().createSystemNotification(
-              'Система',
-              response.message,
-            )
+            return response
           }
 
           this.ideas = response
@@ -32,10 +29,7 @@ const useIdeasStore = defineStore('ideas', {
           const response = await IdeasService.getIdeas(token)
 
           if (response instanceof Error) {
-            return useNotificationsStore().createSystemNotification(
-              'Система',
-              response.message,
-            )
+            return response
           }
 
           this.ideas = response
@@ -67,30 +61,8 @@ const useIdeasStore = defineStore('ideas', {
     },
   },
   actions: {
-    async sendIdeaOnApproval(id: number, token: string) {
-      const response = await IdeasService.sendIdeaOnApproval(id, token)
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentIdea = this.ideas.find((idea) => idea.id === id)
-
-        if (currentIdea) {
-          currentIdea.status = 'ON_APPROVAL'
-        }
-      }
-    },
-
-    async updateIdeaStatusByProjectOffice(
-      id: number,
-      status: IdeaStatusTypes,
-      token: string,
-    ) {
-      const response = await IdeasService.updateIdeaStatusByProjectOffice(
-        id,
-        status,
-        token,
-      )
+    async updateIdeaStatus(id: number, status: IdeaStatusTypes, token: string) {
+      const response = await IdeasService.updateIdeaStatus(id, status, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -109,7 +81,10 @@ const useIdeasStore = defineStore('ideas', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        this.ideas = this.ideas.filter((idea) => idea.id !== id)
+        const deletingIdeaIndex = this.ideas.findIndex((idea) => idea.id === id)
+        if (deletingIdeaIndex !== -1) {
+          this.ideas.splice(deletingIdeaIndex, 1)
+        }
       }
     },
   },

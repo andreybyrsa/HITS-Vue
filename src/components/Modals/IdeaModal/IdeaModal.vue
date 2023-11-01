@@ -52,7 +52,7 @@ function checkResponseStatus<T>(
   if (data.status === 'fulfilled') {
     refValue.value = data.value
   } else {
-    return notificationsStore.createSystemNotification('Система', '')
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
   }
 }
 

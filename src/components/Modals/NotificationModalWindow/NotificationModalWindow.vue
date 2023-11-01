@@ -39,16 +39,16 @@ const favoriteNotifications = ref<Notification[]>([])
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await NotificatonsService.getNotifications(token)
+  // if (currentUser?.token) {
+  //   const { token } = currentUser
+  //   const response = await NotificatonsService.getNotifications(token)
 
-    if (response instanceof Error) {
-      return NotificationsStore.createSystemNotification('Система', response.message)
-    }
+  //   if (response instanceof Error) {
+  //     return NotificationsStore.createSystemNotification('Система', response.message)
+  //   }
 
-    notifications.value = response
-  }
+  //   notifications.value = response
+  // }
 })
 
 for (const notification of notifications.value) {
@@ -58,12 +58,6 @@ for (const notification of notifications.value) {
     readedNotifications.value.push(notification)
   }
 }
-
-// for (const notification of notifications.value) {
-//   if (notification.isReaded === true) {
-//     readedNotifications.value.push(notification)
-//   }
-// }
 
 const showAllTab = ref(true)
 

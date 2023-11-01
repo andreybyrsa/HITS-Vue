@@ -1,6 +1,12 @@
-interface IdeaFormSubmitEmits {
-  (event: 'on-submit'): void
-  (event: 'on-update'): void
+import { Idea } from '@Domain/Idea'
+
+interface IdeaFormSubmitProps {
+  idea: Idea
 }
 
-export default IdeaFormSubmitEmits
+interface IdeaFormSubmitEmits {
+  (event: 'on-send-on-approval'): void
+  (event: 'on-save-draft'): void
+}
+
+export { IdeaFormSubmitProps, IdeaFormSubmitEmits }

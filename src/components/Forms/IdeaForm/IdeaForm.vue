@@ -55,8 +55,6 @@ const { values, setFieldValue, setValues, handleSubmit, validateField } =
     initialValues: {
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
-      createdAt: new Date().toDateString(),
-      modifiedAt: new Date().toDateString(),
       status: 'NEW',
     },
   })
@@ -218,8 +216,9 @@ async function saveIdeaSkills(
       <PreAssessmentCalculator :idea="values" />
 
       <IdeaFormSubmit
-        @on-submit="handleSaveAndSendOnApproval"
-        @on-update="handleSaveDraftIdea"
+        :idea="values"
+        @on-send-on-approval="handleSaveAndSendOnApproval"
+        @on-save-draft="handleSaveDraftIdea"
       />
     </div>
   </FormLayout>
