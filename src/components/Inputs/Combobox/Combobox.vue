@@ -146,6 +146,7 @@ function focusCombobox() {
 
 async function handleAddNewOption() {
   emit('addNewOption', searchedValue.value)
+  searchedValue.value = ''
 }
 
 onClickOutside(comboboxRef, () => {
@@ -187,6 +188,7 @@ function checkNewOptionButton() {
       <Icon
         v-if="searchedOptions.length && !isOpenedChoices"
         class-name="combobox__icon bi bi-chevron-down"
+        @click="focusCombobox"
       />
       <Icon
         v-if="checkNewOptionButton()"

@@ -115,6 +115,7 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
 
     if (skills.value) {
       skills.value[type].push(response)
+      choosenSkills.value[type].push(response)
     }
   }
 }

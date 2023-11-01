@@ -39,17 +39,16 @@ const { values, setFieldValue, setValues, handleSubmit, validateField } =
   useForm<Idea>({
     validationSchema: {
       name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-      projectType: (value: string) => value?.length > 0 || 'Поле не заполнено',
       problem: (value: string) => value?.length > 0 || 'Поле не заполнено',
       solution: (value: string) => value?.length > 0 || 'Поле не заполнено',
       result: (value: string) => value?.length > 0 || 'Поле не заполнено',
       description: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      maxTeamSize: (value: string) => value || 'Поле не заполнено',
+      minTeamSize: (value: string) => value || 'Поле не заполнено',
 
       customer: (value: string) => value?.length > 0 || 'Поле не заполнено',
       contactPerson: (value: string) => value?.length > 0 || 'Поле не заполнено',
 
-      technicalRealizability: (value: number) =>
-        (value && value > 0) || 'Поле не заполнено',
       suitability: (value: number) => (value && value > 0) || 'Поле не заполнено',
       budget: (value: number) => (value && value > 0) || 'Поле не заполнено',
     },
@@ -108,7 +107,10 @@ watchImmediate(
           setFieldValue('experts', experts)
           setFieldValue('projectOffice', projectOffice)
         } else {
-          return notificationsStore.createSystemNotification('Система', '')
+          return notificationsStore.createSystemNotification(
+            'Система',
+            'Группы не подгружены',
+          )
         }
       }
     }
@@ -204,7 +206,7 @@ async function saveIdeaSkills(
     </Typography>
 
     <div class="w-75 d-flex flex-column gap-3">
-      <IdeaFormInputs />
+      <IdeaFormInputs @set-value="setFieldValue" />
 
       <StackCategories v-model:stack="stackTechnologies" />
 

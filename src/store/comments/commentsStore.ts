@@ -9,8 +9,6 @@ import CommentService from '@Services/CommentService'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-const notificationsStore = useNotificationsStore()
-
 const useCommentsStore = defineStore('comments', {
   state: (): InitialState => ({
     comments: null,
@@ -23,7 +21,10 @@ const useCommentsStore = defineStore('comments', {
         const response = await CommentService.getComments(ideaId, token)
 
         if (response instanceof Error) {
-          return response
+          return useNotificationsStore().createNotification(
+            'Система',
+            response.message,
+          )
         }
 
         this.comments = response
@@ -56,7 +57,7 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.createComment(comment, token)
 
       if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
+        return useNotificationsStore().createNotification(
           'Система',
           response.message,
         )
@@ -71,7 +72,7 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
+        return useNotificationsStore().createNotification(
           'Система',
           response.message,
         )
@@ -89,7 +90,7 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.checkComment(userId, commentId, token)
 
       if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
+        return useNotificationsStore().createNotification(
           'Система',
           response.message,
         )

@@ -5,46 +5,43 @@ import { User, LoginUser, RegisterUser } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
 import AuthService from '@Services/AuthService'
+import InvitationService from '@Services/InvitationService'
+
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
     user: null,
-    loginError: '',
-    registerError: '',
   }),
   actions: {
     async loginUser(user: LoginUser) {
       const response = await AuthService.loginUser(user)
 
       if (response instanceof Error) {
-        const { message } = response
-        return (this.loginError = message)
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
+        this.user = localStorageUser
+
+        this.router.push({ name: 'ideas-list' })
       }
-
-      const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-      this.user = localStorageUser
-
-      this.loginError = ''
-
-      this.router.push({ name: 'ideas-list' })
     },
 
-    async registerUser(user: RegisterUser) {
+    async registerUser(user: RegisterUser, slug: string) {
       const response = await AuthService.registerUser(user)
 
       if (response instanceof Error) {
-        const { message } = response
-        return (this.registerError = message)
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
+        this.user = localStorageUser
+
+        this.router.push({ name: 'ideas-list' })
+
+        await InvitationService.deleteInvitationInfo(slug)
       }
-
-      const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-      this.user = localStorageUser
-
-      this.registerError = ''
-
-      this.router.push({ name: 'ideas-list' })
     },
 
     setUserFromLocalStorage(localStorageUser: User) {
