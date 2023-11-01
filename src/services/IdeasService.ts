@@ -1,5 +1,3 @@
-// import { AxiosResponse } from 'axios'
-
 import { Idea, IdeaSkills } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
@@ -22,13 +20,17 @@ const getIdeas = async (token: string): Promise<Idea[] | Error> => {
     })
 }
 
-// const getIdea = async (id: number, token: string): Promise<AxiosResponse<Idea>> => {
-//   return await ideasAxios.get(
-//     `/idea/${id}`,
-//     { headers: { Authorization: `Bearer ${token}` } },
-//     { params: { id } },
-//   )
-// }
+const getInitiatorIdeas = async (token: string): Promise<Idea[] | Error> => {
+  return await ideasAxios
+    .get('/idea/initiator/all', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки идей'
+      return new Error(error)
+    })
+}
 
 const getIdea = async (id: number, token: string): Promise<Idea | Error> => {
   return await ideasAxios
@@ -216,6 +218,7 @@ const deleteIdeaByAdmin = async (
 
 const IdeasService = {
   getIdeas,
+  getInitiatorIdeas,
   getIdea,
   getIdeaSkills,
 

@@ -23,9 +23,9 @@ const props = defineProps<PreAssessmentProps>()
 const preAssessmentPlaceholder = ref('вычисление')
 
 const currentPreAssessment = computed(() => {
-  const { technicalRealizability, suitability, budget } = props.idea
-  if (technicalRealizability && suitability && budget) {
-    return +((technicalRealizability + suitability + budget) / 3).toFixed(1)
+  const { suitability, budget } = props.idea
+  if (suitability && budget) {
+    return +((suitability + budget) / 2).toFixed(1)
   }
 
   return NaN

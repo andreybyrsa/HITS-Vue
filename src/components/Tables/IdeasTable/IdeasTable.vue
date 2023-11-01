@@ -60,10 +60,7 @@ const isSortedByModifiedAt = ref(false)
 const isSortedByPreAssessment = ref(false)
 const isSortedByRating = ref(false)
 
-const filterByInitiator = ref<
-  'MY_IDEAS' | 'COMPETITORS_IDEAS' | 'ORGANISATIONS_IDEAS'
->()
-const filterByIdeaStatus = ref<IdeaStatusTypes>()
+const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
 
 watchImmediate(
   () => props.ideas,
@@ -149,24 +146,13 @@ const dropdownIdeasActions: DropdownMenuAction<Idea>[] = [
 
 const ideasFilters: Filter<Idea>[] = [
   {
-    category: 'Идеи',
-    choices: [
-      { label: 'Мои идеи', value: 'MY_IDEAS' },
-      { label: 'Идеи конкурентов', value: 'COMPETITORS_IDEAS' },
-      { label: 'Идеи организации', value: 'ORGANISATIONS_IDEAS' },
-    ],
-    refValue: filterByInitiator,
-    isUniqueChoice: true,
-    checkFilter: checkIdeaInitiator,
-  },
-  {
     category: 'Статус',
     choices: availableStatus.status.map((ideaStatus) => ({
       label: availableStatus.translatedStatus[ideaStatus],
       value: ideaStatus,
     })),
     refValue: filterByIdeaStatus,
-    isUniqueChoice: true,
+    isUniqueChoice: false,
     checkFilter: checkIdeaStatus,
   },
 ]
@@ -322,7 +308,7 @@ function checkDeleteIdeaAction(idea: Idea) {
       status === 'NEW' || status === 'ON_EDITING' || status === 'ON_APPROVAL'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === currentUser.email && requiredIdeaStatus
+      return initiator === `${currentUser.id}` && requiredIdeaStatus
     }
 
     if (currentUser.role === 'ADMIN') {
@@ -344,18 +330,12 @@ function checkUpdateIdeaAction(idea: Idea) {
     }
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === currentUser.email && requiredIdeaStatus
+      return initiator === `${currentUser.id}` && requiredIdeaStatus
     }
   }
   return false
 }
 
-function checkIdeaInitiator(idea: Idea, filter: FilterValue) {
-  if (filter === 'MY_IDEAS') {
-    return idea.initiator === user.value?.email
-  }
-  return idea.initiator !== user.value?.email
-}
 function checkIdeaStatus(idea: Idea, status: FilterValue) {
   return idea.status === status
 }
