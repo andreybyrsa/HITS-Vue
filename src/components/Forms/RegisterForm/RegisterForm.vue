@@ -2,7 +2,6 @@
 import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
-import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -21,7 +20,6 @@ import useUserStore from '@Store/user/userStore'
 import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
-const { registerError } = storeToRefs(userStore)
 
 const route = useRoute()
 
@@ -56,15 +54,9 @@ const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
 })
 
 const handleRegister = handleSubmit(async (values) => {
-  const { slug } = route.params
+  const slug = route.params.slug.toString()
 
-  await userStore.registerUser(values)
-
-  if (registerError?.value) {
-    // notification
-  } else {
-    await InvitationService.deleteInvitationInfo(slug)
-  }
+  await userStore.registerUser(values, slug)
 })
 </script>
 

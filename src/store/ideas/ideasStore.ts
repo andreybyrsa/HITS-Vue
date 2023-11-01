@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
+import RolesTypes from '@Domain/Roles'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 import IdeasService from '@Services/IdeasService'
-import RolesTypes from '@Domain/Roles'
+
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const useIdeasStore = defineStore('ideas', {
   state: (): InitialState => ({
@@ -17,7 +19,10 @@ const useIdeasStore = defineStore('ideas', {
           const response = await IdeasService.getInitiatorIdeas(token)
 
           if (response instanceof Error) {
-            return response
+            return useNotificationsStore().createSystemNotification(
+              'Система',
+              response.message,
+            )
           }
 
           this.ideas = response
@@ -26,7 +31,10 @@ const useIdeasStore = defineStore('ideas', {
           const response = await IdeasService.getIdeas(token)
 
           if (response instanceof Error) {
-            return response
+            return useNotificationsStore().createSystemNotification(
+              'Система',
+              response.message,
+            )
           }
 
           this.ideas = response
@@ -40,8 +48,10 @@ const useIdeasStore = defineStore('ideas', {
         const response = await IdeasService.getIdea(id, token)
 
         if (response instanceof Error) {
-          // notification
-          return response
+          return useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
         }
 
         const existingIdeaIndex = this.ideas.findIndex((idea) => idea.id === id)
@@ -59,7 +69,7 @@ const useIdeasStore = defineStore('ideas', {
       const response = await IdeasService.sendIdeaOnApproval(id, token)
 
       if (response instanceof Error) {
-        // notification
+        useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         const currentIdea = this.ideas.find((idea) => idea.id === id)
 
@@ -81,7 +91,7 @@ const useIdeasStore = defineStore('ideas', {
       )
 
       if (response instanceof Error) {
-        // notification
+        useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         const currentIdea = this.ideas.find((idea) => idea.id === id)
 
@@ -95,7 +105,7 @@ const useIdeasStore = defineStore('ideas', {
       const response = await IdeasService.deleteIdea(id, token)
 
       if (response instanceof Error) {
-        // notification
+        useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         this.ideas = this.ideas.filter((idea) => idea.id !== id)
       }
