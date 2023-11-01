@@ -89,13 +89,17 @@ const handleInvite = handleSubmit(async (values) => {
       id="addUsersFromCollapse"
       class-name="w-100"
     >
-      <Checkbox
+      <div
         v-for="role in currentRoles.roles"
         :key="role"
-        name="roles"
-        :value="role"
-        :label="currentRoles.translatedRoles[role]"
-      />
+        class="d-flex"
+      >
+        <Checkbox
+          name="roles"
+          :value="role"
+          :label="currentRoles.translatedRoles[role]"
+        />
+      </div>
     </Collapse>
 
     <Button
