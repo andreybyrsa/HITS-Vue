@@ -76,9 +76,22 @@ const createIdeaSkills = async (
     })
 }
 
-const createIdea = async (idea: Idea, token: string): Promise<Idea | Error> => {
+const saveAndSendIdeaOnApproval = async (
+  idea: Idea,
+  token: string,
+): Promise<Idea | Error> => {
   return await ideasAxios
     .post('/idea/add', idea, { headers: { Authorization: `Bearer ${token}` } })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка добавления идеи'
+      return new Error(error)
+    })
+}
+
+const saveIdeaDraft = async (idea: Idea, token: string): Promise<Idea | Error> => {
+  return await ideasAxios
+    .post('/idea/draft/add', idea, { headers: { Authorization: `Bearer ${token}` } })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка добавления идеи'
@@ -219,8 +232,9 @@ const IdeasService = {
   getIdea,
   getIdeaSkills,
 
-  createIdea,
+  saveIdeaDraft,
   createIdeaSkills,
+  saveAndSendIdeaOnApproval,
 
   updateIdea,
   updateIdeaSkills,

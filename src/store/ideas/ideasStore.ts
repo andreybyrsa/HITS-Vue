@@ -6,6 +6,10 @@ import IdeaStatusTypes from '@Domain/IdeaStatus'
 import IdeasService from '@Services/IdeasService'
 import { Idea } from '@Domain/Idea'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationsStore = useNotificationsStore()
+
 const useIdeasStore = defineStore('ideas', {
   state: (): InitialState => ({
     ideas: null,
@@ -38,7 +42,10 @@ const useIdeasStore = defineStore('ideas', {
         const response = await IdeasService.getIdea(id, token)
 
         if (response instanceof Error) {
-          // notification
+          return notificationsStore.createSystemNotification(
+            'Система',
+            response.message,
+          )
           return response
         }
 
@@ -61,7 +68,10 @@ const useIdeasStore = defineStore('ideas', {
       const response = await IdeasService.getIdeas(token)
 
       if (response instanceof Error) {
-        // notification
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       } else {
         this.ideas = response
       }
@@ -71,7 +81,10 @@ const useIdeasStore = defineStore('ideas', {
       const response = await IdeasService.deleteIdea(id, token)
 
       if (response instanceof Error) {
-        // notification
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       } else if (this.ideas) {
         this.ideas = this.ideas.filter((idea) => idea.id !== id)
       }
@@ -81,7 +94,10 @@ const useIdeasStore = defineStore('ideas', {
       const response = await IdeasService.sendIdeaOnApproval(id, token)
 
       if (response instanceof Error) {
-        // notification
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       } else if (this.ideas) {
         const currentIdea = this.ideas.find((idea) => idea.id === id)
 
@@ -103,7 +119,10 @@ const useIdeasStore = defineStore('ideas', {
       )
 
       if (response instanceof Error) {
-        // notification
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       } else if (this.ideas) {
         const currentIdea = this.ideas.find((idea) => idea.id === id)
 
