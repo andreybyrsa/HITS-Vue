@@ -15,7 +15,7 @@ const emit = defineEmits<IdeaFormSubmitEmits>()
     </Button>
 
     <Button
-      class-name="btn-primary d-block mx-2"
+      class-name="btn-warning d-block mx-2"
       @click="emit('on-submit')"
     >
       Отправить на согласование

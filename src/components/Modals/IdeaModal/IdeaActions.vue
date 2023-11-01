@@ -10,10 +10,6 @@ import { Idea } from '@Domain/Idea'
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-const notificationsStore = useNotificationsStore()
-
 const idea = defineModel<Idea>({ required: true })
 
 const userStore = useUserStore()
@@ -67,17 +63,7 @@ const handleSendToApproval = async () => {
     const { token } = currentUser
     const { id } = idea.value
 
-<<<<<<< HEAD
-    const response = await IdeasService.sendIdeaOnApproval(id, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    idea.value.status = 'ON_APPROVAL'
-=======
     await ideasStore.sendIdeaOnApproval(id, token)
->>>>>>> main
   }
 }
 
@@ -88,21 +74,7 @@ const handleSendToEditing = async () => {
     const { token } = currentUser
     const { id } = idea.value
 
-<<<<<<< HEAD
-    const response = await IdeasService.updateIdeaStatusByProjectOffice(
-      id,
-      'ON_EDITING',
-      token,
-    )
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    idea.value.status = 'ON_EDITING'
-=======
     await ideasStore.updateIdeaStatusByProjectOffice(id, 'ON_EDITING', token)
->>>>>>> main
   }
 }
 
@@ -113,21 +85,7 @@ const handleSendToConfirmation = async () => {
     const { token } = currentUser
     const { id } = idea.value
 
-<<<<<<< HEAD
-    const response = await IdeasService.updateIdeaStatusByProjectOffice(
-      id,
-      'ON_CONFIRMATION',
-      token,
-    )
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    idea.value.status = 'ON_CONFIRMATION'
-=======
     await ideasStore.updateIdeaStatusByProjectOffice(id, 'ON_CONFIRMATION', token)
->>>>>>> main
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, toRefs, computed, onMounted } from 'vue'
+import { toRefs, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
@@ -14,10 +14,6 @@ const { notifications } = storeToRefs(notificationStore)
 const props = defineProps<NotificationModalProps>()
 const { id, message } = toRefs(props.notification)
 
-// const isUnreadedNotification = ref(
-//   !!newNotifications.value.find((notification) => notification.id === id.value),
-// )
-
 onMounted(() => {
   if (props.timeExpired) {
     setTimeout(() => closeNotification(), props.timeExpired)
@@ -27,7 +23,7 @@ onMounted(() => {
 const NotificationClassName = computed(() => ['card text-primary shadow'])
 
 function closeNotification() {
-  notificationStore.readNotification(id.value)
+  notificationStore.closeNotification(id.value)
 }
 </script>
 

@@ -30,11 +30,13 @@ import Team from '@Domain/Team'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const router = useRouter()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const teams = defineModel<Team[]>({ required: true })
 
@@ -180,10 +182,9 @@ async function handleDeleteTeam() {
     const { token } = currentUser
 
     const response = await TeamService.deleteTeam(deletingTeamId.value, token)
-    console.log(deletingTeamId.value)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const deletingTeamIndex = teams.value.findIndex(

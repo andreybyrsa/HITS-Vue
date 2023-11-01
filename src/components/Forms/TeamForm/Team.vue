@@ -16,9 +16,11 @@ import { Skill } from '@Domain/Skill'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const users = ref<TeamMember[]>()
 const owner = ref<TeamMember | undefined>(useFieldValue<TeamMember>('owner').value)
@@ -40,7 +42,7 @@ onMounted(async () => {
     const response = await TeamService.getTeamMembers(token)
 
     if (response instanceof Error) {
-      return
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     users.value = response

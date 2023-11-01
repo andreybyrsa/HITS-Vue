@@ -21,10 +21,11 @@ const useCommentsStore = defineStore('comments', {
         const response = await CommentService.getComments(ideaId, token)
 
         if (response instanceof Error) {
-          return useNotificationsStore().createNotification(
+          useNotificationsStore().createSystemNotification(
             'Система',
             response.message,
           )
+          return response
         }
 
         this.comments = response
@@ -57,7 +58,7 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.createComment(comment, token)
 
       if (response instanceof Error) {
-        return useNotificationsStore().createNotification(
+        return useNotificationsStore().createSystemNotification(
           'Система',
           response.message,
         )
@@ -72,7 +73,7 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
-        return useNotificationsStore().createNotification(
+        return useNotificationsStore().createSystemNotification(
           'Система',
           response.message,
         )
@@ -90,7 +91,7 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.checkComment(userId, commentId, token)
 
       if (response instanceof Error) {
-        return useNotificationsStore().createNotification(
+        return useNotificationsStore().createSystemNotification(
           'Система',
           response.message,
         )

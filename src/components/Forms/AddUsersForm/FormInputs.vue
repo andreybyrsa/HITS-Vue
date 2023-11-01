@@ -69,12 +69,12 @@ const handleFileLoad = async (event: HTMLTargetEvent) => {
 
         notificationsStore.createSystemNotification(
           'Система',
-          'Файл успешно загружен',
+          `Загружено ${emails.length} почт`,
         )
       })
       .catch(({ response }) => {
         const error = response?.data?.error ?? 'Ошибка загрузки файла'
-        notificationsStore.createSystemNotification('Система', response.message)
+        notificationsStore.createSystemNotification('Система', error)
       })
   }
 }

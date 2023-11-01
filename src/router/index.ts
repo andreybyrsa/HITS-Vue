@@ -26,9 +26,6 @@ import ErrorView from '@Views/ErrorView.vue'
 
 import DevView from '@Views/DevView.vue'
 
-// import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
-// import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
-
 import RoleAndNotificationMiddleware from '@Middlewares/RoleAndNotificationMiddleware.vue'
 
 const routes: RouteRecordRaw[] = [

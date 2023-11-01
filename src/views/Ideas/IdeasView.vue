@@ -16,11 +16,14 @@ import { Idea } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const ideaStore = useIdeasStore()
+
+const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
 
@@ -37,7 +40,10 @@ watchImmediate(
       const response = await ideaStore.getIdeas(currentRole, token)
 
       if (response instanceof Error) {
-        return // notification
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
 
       ideas.value = response

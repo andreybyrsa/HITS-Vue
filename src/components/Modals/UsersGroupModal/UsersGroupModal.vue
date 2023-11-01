@@ -91,7 +91,10 @@ onUpdated(async () => {
       const response = await UsersGroupsService.getUsersGroup(usersGroupId, token)
 
       if (response instanceof Error) {
-        return
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
 
       setValues({ ...response })
