@@ -21,6 +21,10 @@ import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationsStore = useNotificationsStore()
+
 const route = useRoute()
 const { slug } = route.params
 
@@ -49,7 +53,7 @@ onMounted(async () => {
     const response = await InvitationService.getInfoToChangeEmail(slug, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const { newEmail, oldEmail } = response
@@ -69,7 +73,7 @@ const handleChangeEmail = handleSubmit(async (values) => {
     const response = await ManageUsersService.updateUserEmail(values, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     userStore.removeUser()

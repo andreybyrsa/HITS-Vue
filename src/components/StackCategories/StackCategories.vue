@@ -14,6 +14,7 @@ import { Skill, SkillType } from '@Domain/Skill'
 import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const stackValue = defineModel<Skill[]>('stack', {
   required: false,
@@ -24,6 +25,7 @@ const stackByTypes = defineModel<Record<SkillType, Skill[]>>('stackByTypes', {
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const skills = ref<Record<SkillType, Skill[]>>()
 
@@ -41,7 +43,7 @@ onMounted(async () => {
     const response = await SkillsService.getAllConfirmedOrCreatorSkills(token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     skills.value = response
@@ -110,11 +112,12 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
     const response = await SkillsService.createNoConfirmedSkill(newSkill, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     if (skills.value) {
       skills.value[type].push(response)
+      choosenSkills.value[type].push(response)
     }
   }
 }
@@ -134,7 +137,7 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
         class="w-25"
       >
         <Combobox
-          name="stack"
+          :name="`stack-${category.key}`"
           :options="skills[category.key]"
           :display-by="['name']"
           v-model="choosenSkills[category.key]"

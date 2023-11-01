@@ -63,7 +63,7 @@ const handleSendToApproval = async () => {
     const { token } = currentUser
     const { id } = idea.value
 
-    await ideasStore.sendIdeaOnApproval(id, token)
+    await ideasStore.updateIdeaStatus(id, 'ON_APPROVAL', token)
   }
 }
 
@@ -74,7 +74,7 @@ const handleSendToEditing = async () => {
     const { token } = currentUser
     const { id } = idea.value
 
-    await ideasStore.updateIdeaStatusByProjectOffice(id, 'ON_EDITING', token)
+    await ideasStore.updateIdeaStatus(id, 'ON_EDITING', token)
   }
 }
 
@@ -85,7 +85,7 @@ const handleSendToConfirmation = async () => {
     const { token } = currentUser
     const { id } = idea.value
 
-    await ideasStore.updateIdeaStatusByProjectOffice(id, 'ON_CONFIRMATION', token)
+    await ideasStore.updateIdeaStatus(id, 'ON_CONFIRMATION', token)
   }
 }
 </script>

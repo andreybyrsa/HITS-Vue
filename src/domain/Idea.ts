@@ -7,19 +7,21 @@ interface Idea {
   initiator: string
   createdAt: string
   modifiedAt: string
+
   name: string
   problem: string
   description: string
   solution: string
   result: string
-  projectType: 'INSIDE' | 'OUTSIDE'
   status: IdeaStatusTypes
+  maxTeamSize: number
+  minTeamSize: number
+
   projectOffice: UsersGroup | null
   experts: UsersGroup | null
   customer: string
   contactPerson: string
 
-  technicalRealizability: number
   suitability: number
   budget: number
   preAssessment: number

@@ -19,8 +19,8 @@ import { Skill, SkillType } from '@Domain/Skill'
 import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import Validation from '@Utils/Validation'
 import getSkills from '@Utils/getSkills'
 
 const skills = defineModel<Skill[]>({ required: true })
@@ -30,11 +30,13 @@ const emit = defineEmits<SkillModalEmits>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const notificationsStore = useNotificationsStore()
+
 const skillModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
 const availableSkills = getSkills()
 
-const SkillTypeOptions = availableSkills.skills.map((skillType) => ({
+const skillTypeOptions = availableSkills.skills.map((skillType) => ({
   value: skillType,
   label: availableSkills.translatedSkills[skillType],
 }))
@@ -42,9 +44,9 @@ const SkillTypeOptions = availableSkills.skills.map((skillType) => ({
 const { handleSubmit, setValues } = useForm<Skill>({
   validationSchema: {
     name: (value: string) =>
-      Validation.checkName(value) || 'Неверно введено название компетенции',
+      value?.length > 0 || 'Неверно введено название компетенции',
     type: (value: SkillType) =>
-      Validation.checkName(value) || 'Неверно выбран тип компетенции',
+      value?.length > 0 || 'Неверно выбран тип компетенции',
   },
   initialValues: {
     confirmed: true,
@@ -68,7 +70,7 @@ const handleCreateSkill = handleSubmit(async (values) => {
     const response = await SkillsService.createSkill(values, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     skills.value.push(response)
@@ -84,7 +86,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     const response = await SkillsService.updateSkill(values, values.id, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const skillIndex = skills.value.findIndex((skill) => skill.id === values.id)
@@ -129,7 +131,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
 
         <Select
           name="type"
-          :options="SkillTypeOptions"
+          :options="skillTypeOptions"
           label="Тип компетенции*"
           placeholder="Выберите тип компетенции"
           validate-on-update
@@ -171,6 +173,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
   );
 
   transition: all $default-transition-settings;
+
   &__header {
     @include flexible(center, space-between);
   }
@@ -178,6 +181,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     @include flexible(center, flex-start, column, $gap: 12px);
   }
 }
+
 .modal-layout-enter-from .add-skill-modal,
 .modal-layout-leave-to .add-skill-modal {
   transform: scale(0.9);

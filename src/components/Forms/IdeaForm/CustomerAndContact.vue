@@ -89,10 +89,7 @@ watchImmediate(
     />
   </div>
 
-  <div
-    v-if="props.idea.customer !== 'ВШЦТ'"
-    class="w-100"
-  >
+  <div class="w-100">
     <Combobox
       name="contactPerson"
       label="Контактное лицо*"
