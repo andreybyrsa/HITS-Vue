@@ -1,49 +1,116 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
-import { Idea } from '@Domain/Idea'
+import RolesTypes from '@Domain/Roles'
+import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 import IdeasService from '@Services/IdeasService'
+
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const useIdeasStore = defineStore('ideas', {
   state: (): InitialState => ({
     ideas: [],
   }),
+  getters: {
+    getIdeas() {
+      return async (role: RolesTypes, token: string) => {
+        if (role === 'INITIATOR') {
+          const response = await IdeasService.getInitiatorIdeas(token)
+
+          if (response instanceof Error) {
+            return useNotificationsStore().createSystemNotification(
+              'Система',
+              response.message,
+            )
+          }
+
+          this.ideas = response
+          return this.ideas
+        } else {
+          const response = await IdeasService.getIdeas(token)
+
+          if (response instanceof Error) {
+            return useNotificationsStore().createSystemNotification(
+              'Система',
+              response.message,
+            )
+          }
+
+          this.ideas = response
+          return this.ideas
+        }
+      }
+    },
+
+    getIdea() {
+      return async (id: number, token: string) => {
+        const response = await IdeasService.getIdea(id, token)
+
+        if (response instanceof Error) {
+          return useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        }
+
+        const existingIdeaIndex = this.ideas.findIndex((idea) => idea.id === id)
+
+        if (existingIdeaIndex !== -1) {
+          this.ideas.splice(existingIdeaIndex, 1, response)
+        }
+
+        return this.ideas[existingIdeaIndex]
+      }
+    },
+  },
   actions: {
-    async fetchIdeas(token: string) {
-      const response = await IdeasService.getIdeas(token)
+    async sendIdeaOnApproval(id: number, token: string) {
+      const response = await IdeasService.sendIdeaOnApproval(id, token)
 
       if (response instanceof Error) {
-        return
-      }
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentIdea = this.ideas.find((idea) => idea.id === id)
 
-      this.ideas = response
+        if (currentIdea) {
+          currentIdea.status = 'ON_APPROVAL'
+        }
+      }
     },
-    async deleteInitiatorIdea(id: number, token: string) {
+
+    async updateIdeaStatusByProjectOffice(
+      id: number,
+      status: IdeaStatusTypes,
+      token: string,
+    ) {
+      const response = await IdeasService.updateIdeaStatusByProjectOffice(
+        id,
+        status,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentIdea = this.ideas.find((idea) => idea.id === id)
+
+        if (currentIdea) {
+          currentIdea.status = status
+        }
+      }
+    },
+
+    async deleteIdea(id: number, token: string) {
       const response = await IdeasService.deleteIdea(id, token)
 
       if (response instanceof Error) {
-        return
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        this.ideas = this.ideas.filter((idea) => idea.id !== id)
       }
-
-      const deleteIdea = this.ideas.find((idea) => idea.id == id)
-      if (deleteIdea) {
-        const index = this.ideas.indexOf(deleteIdea)
-        this.ideas.splice(index, 1)
-      }
-    },
-    async sendInitiatorIdeaOnApproval(id: number, token: string) {
-      await IdeasService.sendIdeaOnApproval(id, token)
-      this.ideas.forEach((idea: Idea) =>
-        idea.id == id ? (idea.status = 'ON_APPROVAL') : idea,
-      )
-    },
-    async updateIdeaByAdmin(idea: Idea, id: number, token: string) {
-      await IdeasService.updateIdea(idea, id, token)
-      this.ideas.forEach((idea: Idea) =>
-        idea.id == id ? (idea.status = 'ON_APPROVAL') : idea,
-      )
     },
   },
 })
+
 export default useIdeasStore

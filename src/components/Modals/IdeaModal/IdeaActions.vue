@@ -7,9 +7,8 @@ import Button from '@Components/Button/Button.vue'
 
 import { Idea } from '@Domain/Idea'
 
-import IdeasService from '@Services/IdeasService'
-
 import useUserStore from '@Store/user/userStore'
+import useIdeasStore from '@Store/ideas/ideasStore'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
@@ -19,6 +18,8 @@ const idea = defineModel<Idea>({ required: true })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const ideasStore = useIdeasStore()
 
 const router = useRouter()
 
@@ -66,6 +67,7 @@ const handleSendToApproval = async () => {
     const { token } = currentUser
     const { id } = idea.value
 
+<<<<<<< HEAD
     const response = await IdeasService.sendIdeaOnApproval(id, token)
 
     if (response instanceof Error) {
@@ -73,6 +75,9 @@ const handleSendToApproval = async () => {
     }
 
     idea.value.status = 'ON_APPROVAL'
+=======
+    await ideasStore.sendIdeaOnApproval(id, token)
+>>>>>>> main
   }
 }
 
@@ -83,6 +88,7 @@ const handleSendToEditing = async () => {
     const { token } = currentUser
     const { id } = idea.value
 
+<<<<<<< HEAD
     const response = await IdeasService.updateIdeaStatusByProjectOffice(
       id,
       'ON_EDITING',
@@ -94,6 +100,9 @@ const handleSendToEditing = async () => {
     }
 
     idea.value.status = 'ON_EDITING'
+=======
+    await ideasStore.updateIdeaStatusByProjectOffice(id, 'ON_EDITING', token)
+>>>>>>> main
   }
 }
 
@@ -104,6 +113,7 @@ const handleSendToConfirmation = async () => {
     const { token } = currentUser
     const { id } = idea.value
 
+<<<<<<< HEAD
     const response = await IdeasService.updateIdeaStatusByProjectOffice(
       id,
       'ON_CONFIRMATION',
@@ -115,6 +125,9 @@ const handleSendToConfirmation = async () => {
     }
 
     idea.value.status = 'ON_CONFIRMATION'
+=======
+    await ideasStore.updateIdeaStatusByProjectOffice(id, 'ON_CONFIRMATION', token)
+>>>>>>> main
   }
 }
 </script>
@@ -127,7 +140,7 @@ const handleSendToConfirmation = async () => {
     <Button
       v-if="getAccessToEditByInitiator()"
       class-name="btn-light"
-      @click="router.push(`/ideas/edit/${idea.id}`)"
+      @click="router.push(`/ideas/update/${idea.id}`)"
     >
       Редактировать
     </Button>

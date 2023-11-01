@@ -2,7 +2,6 @@
 import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
-import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -17,16 +16,12 @@ import RolesTypes from '@Domain/Roles'
 import InvitationService from '@Services/InvitationService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
 
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
-
-const notificationsStore = useNotificationsStore()
-
 const userStore = useUserStore()
-const { registerError } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const route = useRoute()
 
@@ -39,12 +34,8 @@ onMounted(async () => {
   }
 
   const { email, roles } = response
-  if (email && roles) {
-    setFieldValue('email', email)
-    setFieldValue('roles', roles)
-  } else {
-    notificationsStore.createSystemNotification('Система', 'Успех')
-  }
+  setFieldValue('email', email)
+  setFieldValue('roles', roles)
 })
 
 const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
@@ -61,15 +52,9 @@ const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
 })
 
 const handleRegister = handleSubmit(async (values) => {
-  const { slug } = route.params
+  const slug = route.params.slug.toString()
 
-  await userStore.registerUser(values)
-
-  if (registerError?.value) {
-    notificationsStore.createSystemNotification('Система', 'Ошибка')
-  } else {
-    await InvitationService.deleteInvitationInfo(slug)
-  }
+  await userStore.registerUser(values, slug)
 })
 </script>
 

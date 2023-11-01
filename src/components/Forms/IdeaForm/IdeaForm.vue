@@ -35,31 +35,31 @@ const router = useRouter()
 
 const stackTechnologies = ref<Skill[]>([])
 
-const { values, setFieldValue, setValues, handleSubmit } = useForm<Idea>({
-  validationSchema: {
-    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    projectType: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    problem: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    solution: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    result: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    description: (value: string) => value?.length > 0 || 'Поле не заполнено',
+const { values, setFieldValue, setValues, handleSubmit, validateField } =
+  useForm<Idea>({
+    validationSchema: {
+      name: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      problem: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      solution: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      result: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      description: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      maxTeamSize: (value: string) => value || 'Поле не заполнено',
+      minTeamSize: (value: string) => value || 'Поле не заполнено',
 
-    customer: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    contactPerson: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      customer: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      contactPerson: (value: string) => value?.length > 0 || 'Поле не заполнено',
 
-    technicalRealizability: (value: number) =>
-      (value && value > 0) || 'Поле не заполнено',
-    suitability: (value: number) => (value && value > 0) || 'Поле не заполнено',
-    budget: (value: number) => (value && value > 0) || 'Поле не заполнено',
-  },
-  initialValues: {
-    customer: 'ВШЦТ',
-    contactPerson: 'ВШЦТ',
-    createdAt: new Date(),
-    modifiedAt: new Date(),
-    status: 'NEW',
-  },
-})
+      suitability: (value: number) => (value && value > 0) || 'Поле не заполнено',
+      budget: (value: number) => (value && value > 0) || 'Поле не заполнено',
+    },
+    initialValues: {
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      createdAt: new Date().toDateString(),
+      modifiedAt: new Date().toDateString(),
+      status: 'NEW',
+    },
+  })
 
 watchImmediate(
   () => props.idea,
@@ -107,19 +107,25 @@ watchImmediate(
           setFieldValue('experts', experts)
           setFieldValue('projectOffice', projectOffice)
         } else {
-          return notificationsStore.createSystemNotification('Система', '')
+          return notificationsStore.createSystemNotification(
+            'Система',
+            'Группы не подгружены',
+          )
         }
       }
     }
   },
 )
 
-const handlePostIdea = handleSubmit(async (values) => {
+const handleSaveAndSendOnApproval = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const ideaResponse = await IdeasService.createIdea(values, token)
+    const ideaResponse = await IdeasService.saveAndSendIdeaOnApproval(
+      { ...values, status: 'ON_APPROVAL' },
+      token,
+    )
 
     if (ideaResponse instanceof Error) {
       return notificationsStore.createSystemNotification(
@@ -128,46 +134,48 @@ const handlePostIdea = handleSubmit(async (values) => {
       )
     }
 
-    const ideaSkills = {
-      ideaId: ideaResponse.id,
-      skills: stackTechnologies.value,
-    } as IdeaSkills
-
-    const ideaSkillsResponse = await IdeasService.createIdeaSkills(ideaSkills, token)
-
-    if (ideaSkillsResponse instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        ideaSkillsResponse.message,
-      )
-    }
+    await saveIdeaSkills(ideaResponse.id, token, props.idea)
 
     router.push({ name: 'ideas-list' })
   }
 })
 
-const handleUpdateIdea = handleSubmit(async (values) => {
+const handleSaveDraftIdea = async () => {
   const currentUser = user.value
-
-  if (currentUser?.token && props.idea) {
+  if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = props.idea
-    const ideaResponse = await IdeasService.updateIdea(values, id, token)
 
-    if (ideaResponse instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        ideaResponse.message,
-      )
+    const { valid } = await validateField('name')
+
+    if (valid) {
+      const response = await IdeasService.saveIdeaDraft(values, token)
+
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+
+      await saveIdeaSkills(response.id, token, props.idea)
+
+      router.push({ name: 'ideas-list' })
     }
+  }
+}
 
-    const ideaSkills = {
-      ideaId: id,
-      skills: stackTechnologies.value,
-    } as IdeaSkills
-
+async function saveIdeaSkills(
+  ideaId: number,
+  token: string,
+  idea: Idea | undefined,
+) {
+  const ideaSkills = {
+    ideaId,
+    skills: stackTechnologies.value,
+  } as IdeaSkills
+  if (idea) {
     const ideaSkillsResponse = await IdeasService.updateIdeaSkills(
-      id,
+      ideaId,
       ideaSkills,
       token,
     )
@@ -178,10 +186,17 @@ const handleUpdateIdea = handleSubmit(async (values) => {
         ideaSkillsResponse.message,
       )
     }
+  } else {
+    const ideaSkillsResponse = await IdeasService.createIdeaSkills(ideaSkills, token)
 
-    router.push({ name: 'ideas-list' })
+    if (ideaSkillsResponse instanceof Error) {
+      return notificationsStore.createSystemNotification(
+        'Система',
+        ideaSkillsResponse.message,
+      )
+    }
   }
-})
+}
 </script>
 
 <template>
@@ -191,7 +206,7 @@ const handleUpdateIdea = handleSubmit(async (values) => {
     </Typography>
 
     <div class="w-75 d-flex flex-column gap-3">
-      <IdeaFormInputs />
+      <IdeaFormInputs @set-value="setFieldValue" />
 
       <StackCategories v-model:stack="stackTechnologies" />
 
@@ -203,9 +218,8 @@ const handleUpdateIdea = handleSubmit(async (values) => {
       <PreAssessmentCalculator :idea="values" />
 
       <IdeaFormSubmit
-        :is-editing="!!idea"
-        @on-submit="handlePostIdea"
-        @on-update="handleUpdateIdea"
+        @on-submit="handleSaveAndSendOnApproval"
+        @on-update="handleSaveDraftIdea"
       />
     </div>
   </FormLayout>

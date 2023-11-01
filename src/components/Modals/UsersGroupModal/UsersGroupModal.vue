@@ -34,7 +34,7 @@ const notificationsStore = useNotificationsStore()
 const props = defineProps<UsersGroupModalProps>()
 const emit = defineEmits<UsersGroupModalEmits>()
 
-const usersGroups = defineModel<UsersGroup[] | undefined>({
+const usersGroups = defineModel<UsersGroup[]>({
   required: true,
 })
 
@@ -102,7 +102,7 @@ onUpdated(async () => {
 
       isLoadingGroup.value = false
     }
-  } else {
+  } else if (props.isOpened) {
     setValues({ name: '', users: [], roles: [] })
     unselectedUsers.value = [...users.value]
     usersGroupModalMode.value = 'CREATE'
@@ -132,7 +132,7 @@ const handleCreateGroup = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    usersGroups.value?.push(response)
+    usersGroups.value.push(response)
 
     notificationsStore.createSystemNotification('Система', 'Группа успешно создана')
     emit('close-modal')
@@ -151,12 +151,12 @@ const handleUpdateGroup = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    const editingGroupIndex = usersGroups.value?.findIndex(
+    const editingGroupIndex = usersGroups.value.findIndex(
       (group) => group.id === values.id,
     )
 
-    if (editingGroupIndex !== undefined && editingGroupIndex !== -1) {
-      usersGroups.value?.splice(editingGroupIndex, 1, values)
+    if (editingGroupIndex !== -1) {
+      usersGroups.value.splice(editingGroupIndex, 1, values)
     }
 
     notificationsStore.createSystemNotification('Система', 'Группа успешно изменена')

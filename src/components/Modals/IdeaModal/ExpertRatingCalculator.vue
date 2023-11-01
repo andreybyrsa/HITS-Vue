@@ -52,9 +52,7 @@ watchImmediate(
   () => props.rating,
   (currentRating) => {
     if (currentRating) {
-      setValues({
-        ...currentRating,
-      })
+      setValues({ ...currentRating })
     }
   },
 )

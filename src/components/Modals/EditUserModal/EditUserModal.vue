@@ -133,7 +133,8 @@ const handleEditUser = handleSubmit(async (values) => {
             id="editUserModalCollapse"
             class-name="w-100"
           >
-            <template
+            <div
+              class="d-flex"
               v-for="role in availableRoles.roles"
               :key="role"
             >
@@ -144,7 +145,7 @@ const handleEditUser = handleSubmit(async (values) => {
                 :label="availableRoles.translatedRoles[role]"
                 :value="role"
               />
-            </template>
+            </div>
           </Collapse>
         </div>
 

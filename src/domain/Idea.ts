@@ -1,25 +1,27 @@
-import StatusTypes from '@Domain/IdeaStatus'
+import IdeaStatusTypes from '@Domain/IdeaStatus'
 import UsersGroup from '@Domain/UsersGroup'
 import { Skill } from '@Domain/Skill'
 
 interface Idea {
   id: number
-  createdAt: Date
-  modifiedAt: Date
+  initiator: string
+  createdAt: string
+  modifiedAt: string
+
   name: string
   problem: string
   description: string
   solution: string
   result: string
-  projectType: 'INSIDE' | 'OUTSIDE'
-  status: StatusTypes
-  initiator: string
+  status: IdeaStatusTypes
+  maxTeamSize: number
+  minTeamSize: number
+
   projectOffice: UsersGroup | null
   experts: UsersGroup | null
   customer: string
   contactPerson: string
 
-  technicalRealizability: number
   suitability: number
   budget: number
   preAssessment: number

@@ -1,13 +1,19 @@
 import { Ref } from 'vue'
 
-interface FilterBarProps<FilterType> {
-  title: string
-  filters: {
-    category: string
-    isUniqueChoice: boolean
-    choices: { label: string; value: FilterType }[]
-    refValue: Ref<FilterType | FilterType[] | undefined>
-  }[]
+type FilterValue = string | number | boolean | object
+
+interface Filter<DataType> {
+  category: string
+  isUniqueChoice: boolean
+  choices: { label: string; value: FilterValue }[]
+  refValue: Ref<FilterValue | FilterValue[] | undefined>
+  checkFilter: (data: DataType, filter: FilterValue) => void
 }
 
-export { FilterBarProps }
+interface FilterBarProps<DataType> {
+  className?: string
+  title?: string
+  filters: Filter<DataType>[]
+}
+
+export { FilterBarProps, Filter, FilterValue }
