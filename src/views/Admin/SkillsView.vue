@@ -49,9 +49,11 @@ import { Skill } from '@Domain/Skill'
 import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const skills = ref<Skill[]>()
 
@@ -65,7 +67,10 @@ onMounted(async () => {
     const responseSkill = await SkillsService.getAllSkills(token)
 
     if (responseSkill instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        responseSkill.message,
+      )
     }
 
     skills.value = responseSkill

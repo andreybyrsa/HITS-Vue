@@ -19,6 +19,7 @@ import { Skill, SkillType } from '@Domain/Skill'
 import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import getSkills from '@Utils/getSkills'
 
@@ -28,6 +29,8 @@ const emit = defineEmits<SkillModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const notificationsStore = useNotificationsStore()
 
 const skillModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
@@ -67,7 +70,7 @@ const handleCreateSkill = handleSubmit(async (values) => {
     const response = await SkillsService.createSkill(values, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     skills.value.push(response)
@@ -83,7 +86,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     const response = await SkillsService.updateSkill(values, values.id, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const skillIndex = skills.value.findIndex((skill) => skill.id === values.id)

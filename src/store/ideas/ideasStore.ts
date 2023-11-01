@@ -7,6 +7,7 @@ import IdeaStatusTypes from '@Domain/IdeaStatus'
 import IdeasService from '@Services/IdeasService'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { Idea } from '@Domain/Idea'
 
 const useIdeasStore = defineStore('ideas', {
   state: (): InitialState => ({
@@ -48,10 +49,11 @@ const useIdeasStore = defineStore('ideas', {
         const response = await IdeasService.getIdea(id, token)
 
         if (response instanceof Error) {
-          return useNotificationsStore().createSystemNotification(
+          useNotificationsStore().createSystemNotification(
             'Система',
             response.message,
           )
+          return response
         }
 
         const existingIdeaIndex = this.ideas.findIndex((idea) => idea.id === id)
@@ -60,7 +62,7 @@ const useIdeasStore = defineStore('ideas', {
           this.ideas.splice(existingIdeaIndex, 1, response)
         }
 
-        return this.ideas[existingIdeaIndex]
+        return this.ideas[existingIdeaIndex] as Idea
       }
     },
   },

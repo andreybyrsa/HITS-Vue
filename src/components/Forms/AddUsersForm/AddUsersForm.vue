@@ -16,6 +16,7 @@ import { InviteUsersForm } from '@Domain/Invitation'
 import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import InvitationService from '@Services/InvitationService'
 
@@ -23,6 +24,7 @@ import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
 
 const userStore = useUserStore()
+const notificationsStore = useNotificationsStore()
 
 const { user } = storeToRefs(userStore)
 
@@ -52,10 +54,9 @@ const handleInvite = handleSubmit(async (values) => {
     const response = await InvitationService.inviteUsers(values, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    // notification
     resetForm()
   }
 })

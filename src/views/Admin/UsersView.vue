@@ -32,9 +32,11 @@ import { User } from '@Domain/User'
 import ManageUsersService from '@Services/ManageUsersService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const users = ref<User[]>()
 
@@ -46,7 +48,7 @@ onMounted(async () => {
     const response = await ManageUsersService.getUsers(token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     users.value = response

@@ -15,14 +15,15 @@ import { Idea } from '@Domain/Idea'
 import IdeasService from '@Services/IdeasService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const router = useRoute()
 
 const currentIdea = ref<Idea>()
-const isLoading = ref(false)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -34,10 +35,9 @@ onMounted(async () => {
     const response = await IdeasService.getIdea(id, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    isLoading.value = false
     currentIdea.value = response
   }
 })

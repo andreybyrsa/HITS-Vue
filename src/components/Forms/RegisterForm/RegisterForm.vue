@@ -16,10 +16,12 @@ import RolesTypes from '@Domain/Roles'
 import InvitationService from '@Services/InvitationService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
+const notificationsStore = useNotificationsStore()
 
 const route = useRoute()
 
@@ -28,16 +30,12 @@ onMounted(async () => {
   const response = await InvitationService.getInvitationInfo(slug)
 
   if (response instanceof Error) {
-    return // notification
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
 
   const { email, roles } = response
-  if (email && roles) {
-    setFieldValue('email', email)
-    setFieldValue('roles', roles)
-  } else {
-    // notification
-  }
+  setFieldValue('email', email)
+  setFieldValue('roles', roles)
 })
 
 const { setFieldValue, handleSubmit } = useForm<RegisterUser>({

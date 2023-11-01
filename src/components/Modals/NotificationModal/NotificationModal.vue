@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, toRefs, computed, onMounted } from 'vue'
+import { toRefs, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
@@ -9,17 +9,13 @@ import Typography from '@Components/Typography/Typography.vue'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const notificationStore = useNotificationsStore()
-const { newNotifications } = storeToRefs(notificationStore)
+const { notifications } = storeToRefs(notificationStore)
 
 const props = defineProps<NotificationModalProps>()
 const { id, message } = toRefs(props.notification)
 
-const isUnreadedNotification = ref(
-  !!newNotifications.value.find((notification) => notification.id === id.value),
-)
-
 onMounted(() => {
-  if (isUnreadedNotification.value && props.timeExpired) {
+  if (props.timeExpired) {
     setTimeout(() => closeNotification(), props.timeExpired)
   }
 })
@@ -27,7 +23,7 @@ onMounted(() => {
 const NotificationClassName = computed(() => ['card text-primary shadow'])
 
 function closeNotification() {
-  notificationStore.readNotification(id.value)
+  notificationStore.closeNotification(id.value)
 }
 </script>
 
@@ -35,11 +31,11 @@ function closeNotification() {
   <Teleport to="#notifications">
     <Transition name="notification-modal">
       <div
-        v-if="isUnreadedNotification"
+        v-if="notifications"
         :class="NotificationClassName"
       >
         <div class="card-header">
-          <Typography>Уведомление</Typography>
+          <Typography>{{ notification.title }}</Typography>
 
           <Button
             class-name="btn-close"
