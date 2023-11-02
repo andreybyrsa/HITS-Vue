@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useField, useForm } from 'vee-validate'
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { TeamRequest } from '@Domain/TeamRequest'
+import { TeamAccession } from '@Domain/TeamAccession'
 
 import {
   TeamRequestModalEmits,
@@ -16,12 +16,36 @@ import TeamRequestPlaceholder from '@Components/Modals/TeamRequestModal/TeamRequ
 
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
+import TeamService from '@Services/TeamService'
 
 const props = defineProps<TeamRequestModalProps>()
 const emit = defineEmits<TeamRequestModalEmits>()
 
+const request = ref<TeamAccession>()
+
+const route = useRoute()
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+onMounted(async () => {
+  const currentUser = user.value
+  if (props.mode == 'write' && currentUser?.token) {
+    const id = +route.params.requestId
+    const { token } = currentUser
+    const response = await TeamService.getTeamRequest(id, token)
+
+    console.log(id)
+    console.log(response)
+
+    if (response instanceof Error) {
+      return //уведомление
+    }
+
+    request.value = response
+  }
+})
 
 const TextareaClassName = computed(() => [
   'form-control',
@@ -29,17 +53,17 @@ const TextareaClassName = computed(() => [
   'request-modal__textarea rounded',
 ])
 
-const { values, resetForm, handleSubmit } = useForm<TeamRequest>({
+const { values, resetForm, handleSubmit } = useForm<TeamAccession>({
   validationSchema: {
     text: (value: string) =>
       value?.length > 0 ||
-      (props.type == 'enter'
+      (props.type == 'ENTER'
         ? 'Вы не написали мотивационное письмо'
         : 'Вы не указали причину'),
   },
   initialValues: {
-    text: props.request ? props.request.text : '',
-    type: props.type,
+    text: request.value ? request.value.text : '',
+    requestType: props.type,
   },
 })
 
@@ -51,7 +75,7 @@ const { value, errorMessage } = useField<string>('text', {
 const handleSendRequest = handleSubmit(async () => {
   const currentUser = user.value
   if (currentUser) {
-    values.sender = currentUser
+    values.targetEmail = currentUser.email
     emit('sendRequest', values)
     resetForm()
     closeRequestModal()
@@ -59,7 +83,7 @@ const handleSendRequest = handleSubmit(async () => {
 })
 
 const handleApprove = async () => {
-  const curreuntRequest = props.request
+  const curreuntRequest = request.value
   if (curreuntRequest) {
     emit('accept', curreuntRequest.id)
     closeRequestModal()
@@ -67,7 +91,7 @@ const handleApprove = async () => {
 }
 
 const handleReject = async () => {
-  const curreuntRequest = props.request
+  const curreuntRequest = request.value
   if (curreuntRequest) {
     emit('reject', curreuntRequest.id)
     closeRequestModal()
@@ -86,13 +110,13 @@ function closeRequestModal() {
   >
     <div class="request-modal p-3">
       <Typography class-name="text-primary d-flex justify-content-center">
-        {{ type == 'enter' ? 'Мотивационное письмо' : 'Причина ухода' }}</Typography
+        {{ type == 'ENTER' ? 'Мотивационное письмо' : 'Причина ухода' }}</Typography
       >
       <div class="input-group h-50">
         <textarea
           name="text"
           v-model="value"
-          placeholder="Опишите причину заявления"
+          :placeholder="mode == 'write' ? 'Опишите причину заявления' : ''"
           :class="TextareaClassName"
           :disabled="request ? true : false"
         ></textarea>

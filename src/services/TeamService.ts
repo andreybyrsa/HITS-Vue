@@ -4,13 +4,12 @@ import Success from '@Domain/ResponseMessage'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import TeamMember from '@Domain/TeamMember'
-import { TeamRequest, TeamRequestsAndInvitations } from '@Domain/TeamRequest'
-import { TeamInvitations } from '@Domain/TeamInvitation'
+import { TeamAccession } from '@Domain/TeamAccession'
 
 const teamsAxios = defineAxios(getMocks().teams)
 const teamMemberAxios = defineAxios(getMocks().teamMember)
-const teamRequestAxios = defineAxios(getMocks().teamRequests)
-const teamRequestsAndInvitations = defineAxios(getMocks().teamRequestsAndInvitations)
+const teamAccessions = defineAxios(getMocks().teamAccessions)
+const teamRequests = defineAxios(getMocks().teamRequests)
 const unregisteredInvitations = defineAxios(getMocks().unregisteredInvitations)
 const registeredInvitations = defineAxios(getMocks().registeredInvitations)
 
@@ -38,17 +37,14 @@ const getTeams = async (token: string): Promise<Team[] | Error> => {
     })
 }
 
-const getTeam = async (
-  id: number | number[],
-  token: string,
-): Promise<Team | Error> => {
+const getTeam = async (id: number, token: string): Promise<Team | Error> => {
   return await teamsAxios
     .get(
       `/team/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
-      { params: { id: `${id}` } },
+      { params: { id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -127,32 +123,32 @@ const kickMember = async (
     })
 }
 
-const deleteInvitation = async (
-  invitationId: number,
+const deleteTeamAccession = async (
+  id: number,
   token: string,
 ): Promise<Success | Error> => {
-  return await registeredInvitations
+  return await teamAccessions
     .delete(
-      `/team/send-invite/${invitationId}`,
+      `/team/accession/delete/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
-      { responseData: { success: 'Успешное приглашение новых пользователей' } },
+      { responseData: { success: 'Успешное удаление' } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
+      const error = response?.data?.error ?? 'Ошибка'
       return new Error(error)
     })
 }
 
 const invitePortalUsers = async (
-  users: TeamInvitations,
+  emails: string[],
   teamId: number,
   token: string,
 ): Promise<Success | Error> => {
   return await registeredInvitations
     .post<Success>(
       `/team/send-invite/${teamId}`,
-      users,
+      { emails },
       { headers: { Authorization: `Bearer ${token}` } },
       { responseData: { success: 'Успешное приглашение новых пользователей' } },
     )
@@ -164,14 +160,14 @@ const invitePortalUsers = async (
 }
 
 const inviteOutsideUsers = async (
+  emails: string[],
   teamId: number,
-  emails: TeamInvitations,
   token: string,
 ): Promise<Success | Error> => {
   return await unregisteredInvitations
     .post<Success>(
       `/team/send-invite-unregistered/${teamId}`,
-      emails,
+      { emails },
       { headers: { Authorization: `Bearer ${token}` } },
       {
         responseData: { success: 'Успешное приглашение новых пользователей' },
@@ -187,15 +183,11 @@ const inviteOutsideUsers = async (
 const fetchInvitationsAndRequestions = async (
   teamId: number,
   token: string,
-): Promise<TeamRequestsAndInvitations | Error> => {
-  return await teamRequestsAndInvitations
-    .get(
-      `/team/invitations/${teamId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-      { params: { teamId: `${teamId}` } },
-    )
+): Promise<TeamAccession[] | Error> => {
+  return await teamAccessions
+    .get(`/team/invitations/${teamId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки приглашений и заявок'
@@ -204,16 +196,16 @@ const fetchInvitationsAndRequestions = async (
 }
 
 const getTeamRequest = async (
-  id: string | string[],
+  id: number,
   token: string,
-): Promise<TeamRequest | Error> => {
-  return await teamRequestAxios
+): Promise<TeamAccession | Error> => {
+  return await teamRequests
     .get(
       `/team/request/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
-      { params: { id: `${id}` } },
+      { params: { id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -224,10 +216,10 @@ const getTeamRequest = async (
 
 const sendRequest = async (
   teamId: number,
-  teamRequest: TeamRequest,
+  teamRequest: TeamAccession,
   token: string,
 ): Promise<Success | Error> => {
-  return await teamRequestAxios
+  return await teamAccessions
     .post<Success>(
       `/team/request/${teamId}`,
       teamRequest,
@@ -245,7 +237,7 @@ const rejectRequest = async (
   requestId: number,
   token: string,
 ): Promise<Success | Error> => {
-  return await teamRequestAxios
+  return await teamAccessions
     .delete(
       `reject-request/${requestId}`,
       { headers: { Authorization: `Bearer ${token}` } },
@@ -262,7 +254,7 @@ const acceptRequest = async (
   requestId: number,
   token: string,
 ): Promise<Success | Error> => {
-  return await teamRequestAxios
+  return await teamAccessions
     .delete(
       `accept-request/${requestId}`,
       { headers: { Authorization: `Bearer ${token}` } },
@@ -281,7 +273,7 @@ const TeamService = {
   createTeam,
   invitePortalUsers,
   inviteOutsideUsers,
-  deleteInvitation,
+  deleteTeamAccession,
   fetchInvitationsAndRequestions,
   kickMember,
   updateTeam,

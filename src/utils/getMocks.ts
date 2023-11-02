@@ -5,14 +5,13 @@ import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
-import { TeamRequest, TeamRequestsAndInvitations } from '@Domain/TeamRequest'
-import { TeamInvitation, TeamInvitations } from '@Domain/TeamInvitation'
+import { TeamAccession, InvitedUsers } from '@Domain/TeamAccession'
 
 interface Mocks {
   users: User[]
   usersEmails: string[]
-  unregisteredInvitations: TeamInvitations[]
-  registeredInvitations: TeamInvitations[]
+  unregisteredInvitations: InvitedUsers[]
+  registeredInvitations: InvitedUsers[]
   skills: Skill[]
   usersGroups: UsersGroup[]
   teamMember: TeamMember[]
@@ -21,9 +20,9 @@ interface Mocks {
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
-  teamRequests: TeamRequest[]
-  teamInvitations: TeamInvitation[]
-  teamRequestsAndInvitations: TeamRequestsAndInvitations[]
+  teamAccessions: TeamAccession[]
+  teamRequests: TeamAccession[]
+  teamInvitations: TeamAccession[]
 }
 
 function getMocks(): Mocks {
@@ -47,21 +46,22 @@ function getMocks(): Mocks {
       confirmed: false,
     },
   ]
-  const unregisteredInvitations: TeamInvitations[] = [
+  const unregisteredInvitations: InvitedUsers[] = [
     {
       emails: ['first@mail.com', 'second@mail.com', 'third@mail.com'],
     },
   ]
-  const registeredInvitations: TeamInvitations[] = [
+  const registeredInvitations: InvitedUsers[] = [
     {
       emails: ['fourth@mail.com', 'fifth@fg.dc'],
     },
   ]
-  const teamInvitations: TeamInvitation[] = [
+  const teamInvitations: TeamAccession[] = [
     {
       id: 0,
-      userEmail: '1wgwrgw2@mail.com',
-      teamId: '0',
+      teamId: 0,
+      targetEmail: '1wgwrgw2@mail.com',
+      targetUserType: 'UNREGISTERED',
       inviter: {
         id: 0,
         email: 'test1@gmail.com',
@@ -69,18 +69,14 @@ function getMocks(): Mocks {
         lastName: 'Админ',
         skills: [...skills],
       },
-      createdAt: new Date(0, 0, 0).toUTCString(),
+      updatedAt: '2021-11-20T14:02:17Z',
+      stage: 'INVITATION',
     },
     {
       id: 1,
-      user: {
-        userId: 5,
-        userEmail: 'test451@gmail.com',
-        firstName: 'Чел',
-        lastName: 'Чел',
-        skills: [...skills],
-      },
-      teamId: '0',
+      targetEmail: 'test451@gmail.com',
+      targetUserType: 'UNREGISTERED',
+      teamId: 0,
       inviter: {
         id: 0,
         email: 'test1@gmail.com',
@@ -88,48 +84,33 @@ function getMocks(): Mocks {
         lastName: 'Админ',
         skills: [...skills],
       },
-      createdAt: new Date(0, 0, 0).toLocaleDateString(),
+      updatedAt: '2022-11-20T14:02:17Z',
+      stage: 'INVITATION',
     },
   ]
-  const teamRequests: TeamRequest[] = [
+  const teamRequests: TeamAccession[] = [
     {
       id: 0,
-      teamId: '0',
-      sender: {
-        id: 0,
-        token: '10296538',
-        email: 'admin@mail.com',
-        firstName: 'Админ',
-        lastName: 'Админ',
-        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      },
+      teamId: 0,
+      targetEmail: 'admin@mail.com',
+      targetUserType: 'REGISTERED',
       text: 'Выпустите',
-      type: 'leave',
-      createdAt: new Date(10, 10, 23).toLocaleDateString(),
+      requestType: 'LEAVE',
+      updatedAt: '2022-11-20T11:02:17Z',
+      stage: 'REQUEST',
     },
     {
       id: 1,
-      teamId: '0',
-      sender: {
-        id: 0,
-        token: '10296538',
-        email: 'admin@mail.com',
-        firstName: 'Админ',
-        lastName: 'Админ',
-        roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-      },
+      teamId: 0,
+      targetEmail: 'admin@mail.com',
+      targetUserType: 'REGISTERED',
       text: 'Впустите',
-      type: 'enter',
-      createdAt: new Date(10, 10, 22).toLocaleDateString(),
+      requestType: 'ENTER',
+      updatedAt: '2023-10-20T11:02:17Z',
+      stage: 'REQUEST',
     },
   ]
-  const teamRequestsAndInvitations: TeamRequestsAndInvitations[] = [
-    {
-      requests: teamRequests,
-      invitations: teamInvitations,
-      teamId: '0',
-    },
-  ]
+  const teamAccessions: TeamAccession[] = [...teamInvitations, ...teamRequests]
 
   const users: User[] = [
     {
@@ -189,7 +170,7 @@ function getMocks(): Mocks {
   const teamMember: TeamMember[] = [
     {
       id: 33,
-      email: 'admin@mail.com',
+      email: 'test1@gmail.com',
       firstName: 'Админ',
       lastName: 'Адмиг',
 
@@ -197,7 +178,7 @@ function getMocks(): Mocks {
     },
     {
       id: 343,
-      email: 'admin@mail.com',
+      email: 'test1@gmail.com',
       firstName: 'Админ',
       lastName: 'Адмиг',
 
@@ -401,9 +382,9 @@ function getMocks(): Mocks {
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 4,
-      owner: users[0],
-      leader: users[1],
-      members: [...users],
+      owner: teamMember[0],
+      leader: teamMember[1],
+      members: [...teamMember],
       skills: [],
     },
     {
@@ -414,9 +395,9 @@ function getMocks(): Mocks {
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 3,
-      owner: users[1],
-      leader: users[2],
-      members: [users[3]],
+      owner: teamMember[1],
+      leader: teamMember[2],
+      members: [teamMember[3]],
       skills: [...skills],
     },
   ]
@@ -436,7 +417,7 @@ function getMocks(): Mocks {
     teamInvitations,
     unregisteredInvitations,
     registeredInvitations,
-    teamRequestsAndInvitations,
+    teamAccessions,
   }
 }
 

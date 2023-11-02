@@ -41,7 +41,7 @@ function shareButton(id: number) {
   <Button
     v-if="team.leader.email == user?.email || team.owner.email == user?.email"
     class-name="bi bi-envelope-plus-fill btn-primary w-100"
-    @click="emits('handleOpenModal', team.id, inviteModal)"
+    @click="emits('openModal', team.id, inviteModal)"
     >Пригласить в команду</Button
   >
   <Button
@@ -51,13 +51,13 @@ function shareButton(id: number) {
       !team.members.find((member) => member.email == user?.email)
     "
     class-name="bi bi-card-text btn-primary w-100"
-    @click="emits('handleOpenModal', team.id, requestModal)"
+    @click="emits('openModal', team.id, requestModal)"
     >Подать заявку на вступление</Button
   >
   <Button
     v-if="team.leader.email == user?.email || team.owner.email == user?.email"
     class-name="bi bi-card-checklist btn-primary w-100"
-    @click="emits('handleOpenModal', team.id, requestsAndInvitationsModal)"
+    @click="emits('openModal', team.id, requestsAndInvitationsModal)"
     >Заявки и приглашения</Button
   >
   <Button
@@ -69,7 +69,7 @@ function shareButton(id: number) {
   <Button
     v-if="team.owner.email == user?.email"
     class-name="bi bi-trash3-fill btn-danger w-100"
-    @click="emits('handleOpenModal', team.id, deleteModal)"
+    @click="emits('openModal', team.id, deleteModal)"
     >Удалить команду</Button
   >
   <Button
@@ -78,7 +78,7 @@ function shareButton(id: number) {
       team.members.find((member) => member.email == user?.email)
     "
     class-name="bi bi-box-arrow-left btn-danger w-100"
-    @click="emits('handleOpenModal', team.id, requestModal)"
+    @click="emits('openModal', team.id, requestModal)"
     >Подать заявку на выход</Button
   >
 </template>

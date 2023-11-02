@@ -18,7 +18,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const app = createApp(App)
 
-const MODE = 'PRODUCTION'
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
 const API_URL: 'http://localhost:3000/api/v1' | 'http://hits.tyuiu.ru/api/v1' =
   'http://localhost:3000/api/v1'
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Typography from '@Components/Typography/Typography.vue'
-import TeamStuffProps from './TeamStuff.types'
+import { TeamStuffProps } from '@Components/Modals/TeamModal/TeamModal.types'
 
 defineProps<TeamStuffProps>()
 </script>
@@ -10,7 +10,7 @@ defineProps<TeamStuffProps>()
     <router-link
       class="nav-route list-group-item list-group-item-light"
       active-class="active"
-      :to="'profile/' + team?.owner.email"
+      :to="'profile/' + team?.owner.id"
     >
       <Typography class="text-primary">{{
         team.owner.firstName + ' ' + team.owner.lastName
@@ -23,7 +23,7 @@ defineProps<TeamStuffProps>()
     <router-link
       class="nav-route list-group-item list-group-item-light"
       active-class="active"
-      :to="'profile/' + team.leader.email"
+      :to="'profile/' + team.leader.id"
     >
       <Typography class="text-primary">{{
         team.leader.firstName + ' ' + team.leader.lastName

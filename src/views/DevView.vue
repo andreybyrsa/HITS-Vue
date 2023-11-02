@@ -15,14 +15,11 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import useUserStore from '@Store/user/userStore'
 import ExchangeModal from '@Components/Modals/ExchangeModal/ExchangeModal.vue'
 
-const searchValue = ref('')
-import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
-import Team from '@Domain/Team'
-import { Skill } from '@Domain/Skill'
-import { Project } from '@Components/Modals/TeamModal/TeamAction.types'
 import Input from '@Components/Inputs/Input/Input.vue'
-import TeamMember from '@Domain/TeamMember'
 import TeamService from '@Services/TeamService'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 onMounted(async () => {
   const currentUser = user.value
@@ -35,178 +32,178 @@ onMounted(async () => {
     console.log(response)
   }
 })
-const portfolio1: Project = {
-  id: '1',
-  name: 'Сервис позволяющий примерять одежду онлайн',
-  description:
-    'Данное решение имплементрует обученные нейросети для того, чтобы любой пользователь, который выбрал одежду из общего каталога, взятого с каталогов популярных магазинов одежды, и смог примерить ее по фото, подобрав свой размер, не выходя из дома',
-}
-const portfolio2: Project = {
-  id: '2',
-  name: 'Сайт управления идеями и проектами',
-  description:
-    'Данное решение поможет легче реализовывать идеи, решать проекты, подобрав для них команду',
-}
-const skillFron1: Skill = {
-  id: 1,
-  name: 'React',
-  type: 'FRAMEWORK',
-  confirmed: true,
-}
-const skillFron2: Skill = {
-  id: 2,
-  name: 'Vue',
-  type: 'FRAMEWORK',
-  confirmed: true,
-}
-const skillBack: Skill = {
-  id: 3,
-  name: 'Django',
-  type: 'FRAMEWORK',
-  confirmed: true,
-}
-const skillDB1: Skill = {
-  id: 4,
-  name: 'PostgreSQL',
-  type: 'DATABASE',
-  confirmed: true,
-}
-const skillDB2: Skill = {
-  id: 5,
-  name: 'SQLite',
-  type: 'DATABASE',
-  confirmed: true,
-}
-const skillDB3: Skill = {
-  id: 6,
-  name: 'MongoDB',
-  type: 'DATABASE',
-  confirmed: true,
-}
-const skillDEV1: Skill = {
-  id: 7,
-  name: 'Docker',
-  type: 'DEVOPS',
-  confirmed: true,
-}
-const skillDEV2: Skill = {
-  id: 8,
-  name: 'Git',
-  type: 'DEVOPS',
-  confirmed: true,
-}
-const skillDEV3: Skill = {
-  id: 9,
-  name: 'VSCode',
-  type: 'DEVOPS',
-  confirmed: true,
-}
-const skillLang1: Skill = {
-  id: 10,
-  name: 'Python',
-  type: 'LANGUAGE',
-  confirmed: true,
-}
-const skillLang2: Skill = {
-  id: 11,
-  name: 'JavaScript',
-  type: 'LANGUAGE',
-  confirmed: true,
-}
-const skillLang3: Skill = {
-  id: 12,
-  name: 'Java',
-  type: 'LANGUAGE',
-  confirmed: true,
-}
-const userOwner: TeamMember = {
-  id: 135,
-  email: '123213@mail.com',
-  firstName: 'Timur',
-  lastName: 'Minyazeff',
-  skills: [
-    skillFron1,
-    skillBack,
-    skillDEV1,
-    skillDEV2,
-    skillDEV3,
-    skillLang2,
-    skillLang1,
-    skillLang3,
-    skillDB1,
-    skillDB2,
-  ],
-}
-const userLeader: TeamMember = {
-  id: 14,
-  email: 'test2@gmail.com',
-  firstName: 'Andrey',
-  lastName: 'Byrsa',
-  skills: [
-    skillFron1,
-    skillFron2,
-    skillDEV1,
-    skillDEV2,
-    skillDEV3,
-    skillLang2,
-    skillLang1,
-    skillLang3,
-    skillDB1,
-    skillDB2,
-    skillDB3,
-  ],
-}
-const user1: TeamMember = {
-  id: 13,
-  email: 'test3@gmail.com',
-  firstName: 'Mamed',
-  lastName: 'Bairamov',
-  skills: [
-    skillFron1,
-    skillFron2,
-    skillLang1,
-    skillDEV1,
-    skillDEV2,
-    skillDEV3,
-    skillDB3,
-  ],
-}
-const user2: TeamMember = {
-  id: 12,
-  email: 'test4@gmail.com',
-  firstName: 'Kirill',
-  lastName: 'Vlasiv',
-  skills: [skillFron2, skillLang2, skillDEV1, skillDEV2, skillDEV3, skillFron1],
-}
-const team: Team = {
-  id: 0,
-  name: 'Разработчики',
-  description: 'Группа разработки вебсайтов',
-  createdAt: new Date(20, 20, 20).toLocaleDateString(),
-  owner: userOwner,
-  leader: userLeader,
-  members: [user1, user2, userLeader, userOwner],
-  skills: [
-    skillBack,
-    skillFron1,
-    skillFron2,
-    skillDEV1,
-    skillDEV2,
-    skillDEV3,
-    skillDB1,
-    skillDB2,
-    skillDB3,
-    skillLang1,
-    skillLang2,
-    skillLang3,
-  ],
-  closed: false,
-  projects: [portfolio1, portfolio2],
-}
-const openModal = ref(false)
-function handleCloseIdeaModal() {
-  openModal.value = false
-}
+// const portfolio1: Project = {
+//   id: '1',
+//   name: 'Сервис позволяющий примерять одежду онлайн',
+//   description:
+//     'Данное решение имплементрует обученные нейросети для того, чтобы любой пользователь, который выбрал одежду из общего каталога, взятого с каталогов популярных магазинов одежды, и смог примерить ее по фото, подобрав свой размер, не выходя из дома',
+// }
+// const portfolio2: Project = {
+//   id: '2',
+//   name: 'Сайт управления идеями и проектами',
+//   description:
+//     'Данное решение поможет легче реализовывать идеи, решать проекты, подобрав для них команду',
+// }
+// const skillFron1: Skill = {
+//   id: 1,
+//   name: 'React',
+//   type: 'FRAMEWORK',
+//   confirmed: true,
+// }
+// const skillFron2: Skill = {
+//   id: 2,
+//   name: 'Vue',
+//   type: 'FRAMEWORK',
+//   confirmed: true,
+// }
+// const skillBack: Skill = {
+//   id: 3,
+//   name: 'Django',
+//   type: 'FRAMEWORK',
+//   confirmed: true,
+// }
+// const skillDB1: Skill = {
+//   id: 4,
+//   name: 'PostgreSQL',
+//   type: 'DATABASE',
+//   confirmed: true,
+// }
+// const skillDB2: Skill = {
+//   id: 5,
+//   name: 'SQLite',
+//   type: 'DATABASE',
+//   confirmed: true,
+// }
+// const skillDB3: Skill = {
+//   id: 6,
+//   name: 'MongoDB',
+//   type: 'DATABASE',
+//   confirmed: true,
+// }
+// const skillDEV1: Skill = {
+//   id: 7,
+//   name: 'Docker',
+//   type: 'DEVOPS',
+//   confirmed: true,
+// }
+// const skillDEV2: Skill = {
+//   id: 8,
+//   name: 'Git',
+//   type: 'DEVOPS',
+//   confirmed: true,
+// }
+// const skillDEV3: Skill = {
+//   id: 9,
+//   name: 'VSCode',
+//   type: 'DEVOPS',
+//   confirmed: true,
+// }
+// const skillLang1: Skill = {
+//   id: 10,
+//   name: 'Python',
+//   type: 'LANGUAGE',
+//   confirmed: true,
+// }
+// const skillLang2: Skill = {
+//   id: 11,
+//   name: 'JavaScript',
+//   type: 'LANGUAGE',
+//   confirmed: true,
+// }
+// const skillLang3: Skill = {
+//   id: 12,
+//   name: 'Java',
+//   type: 'LANGUAGE',
+//   confirmed: true,
+// }
+// const userOwner: TeamMember = {
+//   id: 135,
+//   email: '123213@mail.com',
+//   firstName: 'Timur',
+//   lastName: 'Minyazeff',
+//   skills: [
+//     skillFron1,
+//     skillBack,
+//     skillDEV1,
+//     skillDEV2,
+//     skillDEV3,
+//     skillLang2,
+//     skillLang1,
+//     skillLang3,
+//     skillDB1,
+//     skillDB2,
+//   ],
+// }
+// const userLeader: TeamMember = {
+//   id: 14,
+//   email: 'test2@gmail.com',
+//   firstName: 'Andrey',
+//   lastName: 'Byrsa',
+//   skills: [
+//     skillFron1,
+//     skillFron2,
+//     skillDEV1,
+//     skillDEV2,
+//     skillDEV3,
+//     skillLang2,
+//     skillLang1,
+//     skillLang3,
+//     skillDB1,
+//     skillDB2,
+//     skillDB3,
+//   ],
+// }
+// const user1: TeamMember = {
+//   id: 13,
+//   email: 'test3@gmail.com',
+//   firstName: 'Mamed',
+//   lastName: 'Bairamov',
+//   skills: [
+//     skillFron1,
+//     skillFron2,
+//     skillLang1,
+//     skillDEV1,
+//     skillDEV2,
+//     skillDEV3,
+//     skillDB3,
+//   ],
+// }
+// const user2: TeamMember = {
+//   id: 12,
+//   email: 'test4@gmail.com',
+//   firstName: 'Kirill',
+//   lastName: 'Vlasiv',
+//   skills: [skillFron2, skillLang2, skillDEV1, skillDEV2, skillDEV3, skillFron1],
+// }
+// const team: Team = {
+//   id: 0,
+//   name: 'Разработчики',
+//   description: 'Группа разработки вебсайтов',
+//   createdAt: new Date(20, 20, 20).toLocaleDateString(),
+//   owner: userOwner,
+//   leader: userLeader,
+//   members: [user1, user2, userLeader, userOwner],
+//   skills: [
+//     skillBack,
+//     skillFron1,
+//     skillFron2,
+//     skillDEV1,
+//     skillDEV2,
+//     skillDEV3,
+//     skillDB1,
+//     skillDB2,
+//     skillDB3,
+//     skillLang1,
+//     skillLang2,
+//     skillLang3,
+//   ],
+//   closed: false,
+//   projects: [portfolio1, portfolio2],
+// }
+// const openModal = ref(false)
+// function handleCloseIdeaModal() {
+//   openModal.value = false
+// }
 
 const columns = [
   { key: 'number', label: '#' },
@@ -301,14 +298,9 @@ function handleCloseModal() {
         name="второй"
       >
       </Input>
-      <TeamModal
-        :is-opened="openModal"
-        @close-modal="handleCloseIdeaModal"
-        :team="team"
-      ></TeamModal>
 
       <Button
-        @click="openModal = true"
+        @click="router.push('/teams/list/1')"
         class-name="btn-primary"
         append-icon-name="bi bi-plus-lg"
         >Открыть команду</Button

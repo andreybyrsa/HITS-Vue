@@ -1,31 +1,49 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 
+import { useRoute, useRouter } from 'vue-router'
+
+import { onMounted, ref } from 'vue'
+
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import {
-  TeamModalEmits,
-  TeamModalProps,
-} from '@Components/Modals/TeamModal/TeamModal.types'
 import TeamAction from '@Components/Modals/TeamModal/TeamAction.vue'
 import TeamModalPlaceholder from '@Components/Modals/TeamModal/TeamModalPlaceholder.vue'
+import TeamDescription from '@Components/Modals/TeamModal/TeamDescription.vue'
+import TeamStuff from '@Components/Modals/TeamModal/TeamStuff.vue'
 
 import useUserStore from '@Store/user/userStore'
 
 import TeamService from '@Services/TeamService'
 import TeamMember from '@Domain/TeamMember'
-import TeamDescription from './TeamDescription.vue'
-import TeamStuff from './TeamStuff.vue'
 
-defineProps<TeamModalProps>()
-const emit = defineEmits<TeamModalEmits>()
+import Team from '@Domain/Team'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-function closeTeamModal() {
-  emit('close-modal')
-}
+const route = useRoute()
+
+const router = useRouter()
+
+const team = ref<Team>()
+
+const isOpened = ref<boolean>(true)
+
+onMounted(async () => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const id = +route.params.teamId
+    const { token } = currentUser
+    const response = await TeamService.getTeam(id, token)
+
+    if (response instanceof Error) {
+      return
+    }
+
+    team.value = response
+  }
+})
 
 const handleKick = async (member: TeamMember, teamId: number) => {
   const currentUser = user.value
@@ -38,6 +56,11 @@ const handleKick = async (member: TeamMember, teamId: number) => {
     }
   }
 }
+
+function closeTeamModal() {
+  isOpened.value = false
+  router.push('/teams/list')
+}
 </script>
 
 <template>
@@ -46,24 +69,24 @@ const handleKick = async (member: TeamMember, teamId: number) => {
     @on-outside-close="closeTeamModal"
   >
     <div
-      v-if="team"
       class="team-modal p-3 overflow-y-scroll"
       ref="teamModalRef"
     >
-      <div class="team-modal__left-side w-75">
-        <TeamDescription
-          :team="team"
-          @handle-kick="handleKick"
-          @close-modal="closeTeamModal"
-        />
-      </div>
-      <div class="team-modal__right-side p-3 rounded w-25 bg-white">
-        <TeamStuff :team="team" />
-        <TeamAction :team="team" />
-      </div>
-    </div>
-    <div v-else>
-      <TeamModalPlaceholder />
+      <template v-if="team">
+        <div class="team-modal__left-side w-75">
+          <TeamDescription
+            :team="team"
+            @handle-kick="handleKick"
+            @close-modal="closeTeamModal"
+          />
+        </div>
+        <div class="team-modal__right-side p-3 rounded w-25 bg-white">
+          <TeamStuff :team="team" />
+          <TeamAction :team="team" /></div
+      ></template>
+      <template v-else>
+        <TeamModalPlaceholder />
+      </template>
     </div>
   </ModalLayout>
 </template>

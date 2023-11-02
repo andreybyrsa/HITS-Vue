@@ -5,9 +5,9 @@ import ProfileSkillCharts from '@Components/Modals/TeamModal/ProfileSkillCharts.
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import {
-  TeamDescriptionEmit,
+  TeamDescriptionEmits,
   TeamDescriptionProps,
-} from '@Components/Modals/TeamModal/TeamDescription.types'
+} from '@Components/Modals/TeamModal/TeamModal.types'
 
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
@@ -19,14 +19,14 @@ const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
 
-const emit = defineEmits<TeamDescriptionEmit>()
+const emit = defineEmits<TeamDescriptionEmits>()
 
 const handleKick = async (member: TeamMember, teamId: number) => {
   emit('handleKick', member, teamId)
 }
 </script>
 <template>
-  <div class="team-modal__header">
+  <div class="header">
     <Button
       class-name="btn-primary"
       prepend-icon-name="bi bi-backspace-fill"
@@ -70,7 +70,7 @@ const handleKick = async (member: TeamMember, teamId: number) => {
           :key="member.email"
           class="field nav-route list-group-item list-group-item-light"
           active-class="active"
-          :to="'profile/' + member.email"
+          :to="'profile/' + member.id"
         >
           <Icon class-name="bi bi-person" />
           <Typography class="text-dark">{{

@@ -18,7 +18,7 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
 
 <style lang="scss" scoped>
 .team-modal-placeholder {
-  @include flexible(flex-start, center);
+  @include flexible(stretch, stretch);
 
   &__content {
     @include flexible(center, flex-start, column, $gap: 16px);

@@ -15,7 +15,7 @@ interface TeamActionButtonsProps {
 }
 
 interface TeamActionButtonsEmits {
-  (event: 'handleOpenModal', id: number, modalName: string): void
+  (event: 'openModal', id: number, modalName: string): void
 }
 
 const modalNames = {
