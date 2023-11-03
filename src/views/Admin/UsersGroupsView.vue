@@ -50,9 +50,11 @@ import UsersGroup from '@Domain/UsersGroup'
 import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const usersGroups = ref<UsersGroup[]>()
 
@@ -66,7 +68,10 @@ onMounted(async () => {
     const responseGroups = await UsersGroupsService.getUsersGroups(token)
 
     if (responseGroups instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        responseGroups.message,
+      )
     }
 
     usersGroups.value = responseGroups

@@ -1,7 +1,7 @@
 import { Idea } from '@Domain/Idea'
 
 interface InitialState {
-  ideas: Idea[] | null
+  ideas: Idea[]
 }
 
 export default InitialState

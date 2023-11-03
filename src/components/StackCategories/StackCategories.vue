@@ -5,15 +5,16 @@ import { watchImmediate } from '@vueuse/core'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import Icon from '@Components/Icon/Icon.vue'
 import comboboxStackCategories from '@Components/StackCategories/StackCategories'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+import Skills from '@Components/Skills/Skills.vue'
 
 import { Skill, SkillType } from '@Domain/Skill'
 
 import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const stackValue = defineModel<Skill[]>('stack', {
   required: false,
@@ -24,6 +25,7 @@ const stackByTypes = defineModel<Record<SkillType, Skill[]>>('stackByTypes', {
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const skills = ref<Record<SkillType, Skill[]>>()
 
@@ -41,7 +43,7 @@ onMounted(async () => {
     const response = await SkillsService.getAllConfirmedOrCreatorSkills(token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     skills.value = response
@@ -72,23 +74,8 @@ watchImmediate(
   { deep: true },
 )
 
-function unselectTechnology(key: SkillType, index: number) {
-  choosenSkills.value[key].splice(index, 1)
-}
-
-function getTechnologyClassName(key: SkillType) {
-  const clasName = 'px-2 py-1 d-flex gap-1 bg-opacity-75 rounded text-white'
-
-  switch (key) {
-    case 'LANGUAGE':
-      return clasName + ' bg-success'
-    case 'FRAMEWORK':
-      return clasName + ' bg-info'
-    case 'DATABASE':
-      return clasName + ' bg-warning'
-    default:
-      return clasName + ' bg-danger'
-  }
+function unselectTechnology(skill: Skill, index: number) {
+  choosenSkills.value[skill.type].splice(index, 1)
 }
 
 function checkIsChoosenSkills() {
@@ -110,11 +97,12 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
     const response = await SkillsService.createNoConfirmedSkill(newSkill, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     if (skills.value) {
       skills.value[type].push(response)
+      choosenSkills.value[type].push(response)
     }
   }
 }
@@ -134,7 +122,7 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
         class="w-25"
       >
         <Combobox
-          name="stack"
+          :name="`stack-${category.key}`"
           :options="skills[category.key]"
           :display-by="['name']"
           v-model="choosenSkills[category.key]"
@@ -146,19 +134,13 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
 
         <div
           v-if="checkIsChoosenSkills()"
-          class="stack-categories__technologies mt-2"
+          class="mt-2"
         >
-          <div
-            v-for="(technology, index) in choosenSkills[category.key]"
-            :key="index"
-            :class="getTechnologyClassName(category.key)"
-          >
-            <Typography>{{ technology.name }}</Typography>
-            <Icon
-              class-name="stack-categories__delete-technology bi bi-x-lg"
-              @click="unselectTechnology(category.key, index)"
-            />
-          </div>
+          <Skills
+            :skills="choosenSkills[category.key]"
+            skill-action-icon="bi bi-x-lg"
+            @skill-action="unselectTechnology"
+          />
         </div>
       </div>
     </div>
@@ -179,13 +161,5 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
 <style lang="scss" scoped>
 .stack-categories {
   @include flexible(flex-start, stretch, $gap: 16px);
-
-  &__technologies {
-    @include flexible(center, flex-start, $flex-wrap: wrap, $gap: 4px);
-  }
-
-  &__delete-technology {
-    cursor: pointer;
-  }
 }
 </style>

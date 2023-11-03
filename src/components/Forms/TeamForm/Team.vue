@@ -20,9 +20,11 @@ import useUserStore from '@Store/user/userStore'
 import ProfileService from '@Services/ProfileService'
 
 const props = defineProps<TeamProps>()
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const users = ref<TeamMember[]>()
 const owner = ref<TeamMember | undefined>(useFieldValue<TeamMember>('owner').value)
@@ -46,7 +48,10 @@ onMounted(async () => {
       const response = await TeamService.getTeamMembers(token)
 
       if (response instanceof Error) {
-        return
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
 
       users.value = response
@@ -64,8 +69,10 @@ onMounted(async () => {
       const response = await ProfileService.getProfile(id, token)
 
       if (response instanceof Error) {
-        console.log(id)
-        return
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
 
       const ownerTeamMember: TeamMember = {

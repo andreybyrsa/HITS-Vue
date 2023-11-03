@@ -7,6 +7,7 @@ import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import Skills from '@Components/Skills/Skills.vue'
 
 defineProps<IdeaDescriptionProps>()
 const emit = defineEmits<IdeaDescriptionEmits>()
@@ -47,12 +48,29 @@ const emit = defineEmits<IdeaDescriptionEmits>()
         </div>
       </Collapse>
     </li>
+
+    <li class="list-group-item p-0 overflow-hidden">
+      <Button
+        class-name="collapse-controller btn-light w-100"
+        v-collapse="'idea-skills'"
+      >
+        Стек технологий
+      </Button>
+      <Collapse id="idea-skills">
+        <div class="p-2">
+          <Skills :skills="ideaSkills?.skills" />
+        </div>
+      </Collapse>
+    </li>
   </ul>
 </template>
 
 <style lang="scss" scoped>
 .idea-description-header {
   @include flexible(stretch, flex-start, $gap: 16px);
+}
+.idea-skill-placeholder {
+  width: 100px;
 }
 
 .collapse-controller {

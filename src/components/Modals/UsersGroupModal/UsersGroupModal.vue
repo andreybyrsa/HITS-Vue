@@ -26,6 +26,11 @@ import useUserStore from '@Store/user/userStore'
 
 import getRoles from '@Utils/getRoles'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+
+const notificationsStore = useNotificationsStore()
+
 const props = defineProps<UsersGroupModalProps>()
 const emit = defineEmits<UsersGroupModalEmits>()
 
@@ -53,7 +58,10 @@ onMounted(async () => {
     const responseUsers = await ManageUsersService.getUsers(token)
 
     if (responseUsers instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        responseUsers.message,
+      )
     }
 
     users.value = responseUsers
@@ -83,7 +91,10 @@ onUpdated(async () => {
       const response = await UsersGroupsService.getUsersGroup(usersGroupId, token)
 
       if (response instanceof Error) {
-        return
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
 
       setValues({ ...response })
@@ -121,12 +132,12 @@ const handleCreateGroup = handleSubmit(async (values) => {
     const response = await UsersGroupsService.createUsersGroup(values, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     usersGroups.value.push(response)
 
-    // notification
+    notificationsStore.createSystemNotification('Система', 'Группа успешно создана')
     emit('close-modal')
   }
 })
@@ -140,7 +151,7 @@ const handleUpdateGroup = handleSubmit(async (values) => {
     const response = await UsersGroupsService.updateUsersGroup(values, token, id)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const editingGroupIndex = usersGroups.value.findIndex(
@@ -151,7 +162,8 @@ const handleUpdateGroup = handleSubmit(async (values) => {
       usersGroups.value.splice(editingGroupIndex, 1, values)
     }
 
-    // notification
+    notificationsStore.createSystemNotification('Система', 'Группа успешно изменена')
+
     emit('close-modal')
   }
 })

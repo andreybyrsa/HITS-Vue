@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { ref } from 'vue'
+import { watchImmediate } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
@@ -11,26 +12,44 @@ import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
+import { Idea } from '@Domain/Idea'
+
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const ideaStore = useIdeasStore()
-const { ideas } = storeToRefs(ideaStore)
+
+const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
 
-onMounted(async () => {
-  const currentUser = user.value
+const ideas = ref<Idea[]>()
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+watchImmediate(
+  () => user.value?.role,
+  async (currentRole) => {
+    const currentUser = user.value
 
-    await ideaStore.fetchIdeas(token)
-  }
-})
+    if (currentUser?.token && currentRole) {
+      const { token } = currentUser
+
+      const response = await ideaStore.getIdeas(currentRole, token)
+
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+
+      ideas.value = response
+    }
+  },
+)
 
 function navigateToCreateIdeaPage() {
   router.push('/ideas/create')

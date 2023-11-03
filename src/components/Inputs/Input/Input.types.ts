@@ -27,6 +27,7 @@ interface InputEmits {
   (event: 'change', value: HTMLTargetEvent): void
   (event: 'focus'): void
   (event: 'blur'): void
+  (event: 'keydown', value: KeyboardEvent): void
 }
 
 export { InputProps, InputEmits }

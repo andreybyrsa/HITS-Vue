@@ -17,11 +17,13 @@ import Team from '@Domain/Team'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<TeamFormProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
 
@@ -48,7 +50,7 @@ const handleCreateTeam = handleSubmit(async (values) => {
 
     console.log(response)
     if (response instanceof Error) {
-      return
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     router.push({ name: 'teams-list' })
@@ -64,7 +66,7 @@ const handleUpdateTeam = handleSubmit(async (values) => {
     const response = await TeamService.updateTeam(values, id, token)
 
     if (response instanceof Error) {
-      return
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     router.push({ name: 'teams-list' })
