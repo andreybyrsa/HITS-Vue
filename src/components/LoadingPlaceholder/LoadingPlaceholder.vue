@@ -27,6 +27,14 @@ const LoadingPlaceholderClassName = computed(() => [
   height: 100px;
 }
 
+.third {
+  height: 300px;
+}
+
+.second {
+  height: 200px;
+}
+
 .large {
   height: 100%;
 }

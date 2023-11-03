@@ -5,6 +5,7 @@ import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
+import { Project } from '@Domain/Project'
 import Notification from '@Domain/Notification'
 
 interface Mocks {
@@ -18,6 +19,9 @@ interface Mocks {
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
+  profileIdeas: Idea[]
+  profileProjects: Project[]
+  profileSkills: Skill[]
   notifications: Notification[]
 }
 
@@ -64,22 +68,22 @@ function getMocks(): Mocks {
 
   const skills: Skill[] = [
     {
-      id: 0,
+      id: 21446,
       name: 'JavaScript',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
-      id: 1,
+      id: 18764,
       name: 'React JS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
-      id: 2,
+      id: 265345,
       name: 'C++',
       type: 'LANGUAGE',
-      confirmed: false,
+      confirmed: true,
     },
   ]
 
@@ -336,6 +340,123 @@ function getMocks(): Mocks {
     },
   ]
 
+  const profileIdeas: Idea[] = [
+    {
+      id: 946,
+      initiator: 'admin@mail.com',
+      name: 'Как чистить картошку',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description: 'Новейшие методы чистки картофиля в различных состояниях',
+      createdAt: '',
+      modifiedAt: '',
+      status: 'ON_CONFIRMATION',
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: null,
+      projectOffice: null,
+      budget: 1,
+      suitability: 1,
+      preAssessment: 1,
+      rating: 8 / 5,
+      maxTeamSize: 10,
+      minTeamSize: 5,
+    },
+    {
+      id: 941,
+      initiator: 'admin@mail.com',
+      name: 'номер 2',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description: 'fefdsf gwe fe gwef ef',
+      createdAt: '',
+      modifiedAt: '',
+      status: 'ON_CONFIRMATION',
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: null,
+      projectOffice: null,
+      budget: 1,
+      suitability: 1,
+      preAssessment: 1,
+      rating: 8 / 5,
+      maxTeamSize: 10,
+      minTeamSize: 5,
+    },
+    {
+      id: 940,
+      initiator: 'admin@mail.com',
+      name: 'номер 3',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description: 'аппыу рк р ккуп цкпцу',
+      createdAt: '',
+      modifiedAt: '',
+      status: 'ON_CONFIRMATION',
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: null,
+      projectOffice: null,
+      budget: 1,
+      suitability: 1,
+      preAssessment: 1,
+      rating: 8 / 5,
+      maxTeamSize: 10,
+      minTeamSize: 5,
+    },
+  ]
+
+  const profileProjects: Project[] = [
+    {
+      id: 412,
+      name: 'Поднятие уровня моря',
+      description: 'Надо бы поднять уровень моря',
+    },
+    {
+      id: 445,
+      name: 'Еда экспресс',
+      description: 'Технология эффективного питания',
+    },
+    {
+      id: 733,
+      name: 'Важный проект',
+      description: 'Очень важный проект',
+    },
+  ]
+
+  const profileSkills: Skill[] = [
+    {
+      id: 174,
+      name: 'JavaScript',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 834,
+      name: 'Vue.js',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: 124,
+      name: 'Java',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+  ]
+
   const notifications: Notification[] = [
     {
       id: 0,
@@ -382,6 +503,9 @@ function getMocks(): Mocks {
     ideas,
     ideasSkills,
     teams,
+    profileIdeas,
+    profileProjects,
+    profileSkills,
     notifications,
   }
 }

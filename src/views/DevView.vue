@@ -128,22 +128,6 @@ function handleCloseProfile() {
 
       <pre class="sss">Пользователь из userStore - {{ user }}</pre>
 
-      <Table
-        :columns="columns"
-        :data="data"
-        :search-value="searchValue"
-        :filter-value="columns[0].key"
-      >
-        <template #actions="{ item }">
-          <div>
-            <Button
-              class-name=" btn-primary text-white  fs-3  "
-              prepend-icon-name="bi bi-list"
-              >{{ item.number }}</Button
-            >
-          </div>
-        </template>
-      </Table>
       <Button
         class="w-100 fs-3 p-4 text-white bg-primary"
         @click="handleOpenProfile"
