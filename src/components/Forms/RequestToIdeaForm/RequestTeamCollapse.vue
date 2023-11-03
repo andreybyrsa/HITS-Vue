@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { watch, ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -20,17 +20,14 @@ import RequestTeams from '@Domain/RequestTeams'
 
 const props = defineProps<RequestTeamCollapseProps>()
 
-const router = useRouter()
 const route = useRoute()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const teams = defineModel<Team[]>('teams')
 const requestTeams = defineModel<RequestTeams[]>('requestTeams', { required: true })
 
 const letter = ref<string>('')
-const selectTeam = ref<Team>()
 
 function getTechnologyClassName(type: SkillType) {
   const className = 'px-2 py-1 rounded '
@@ -164,7 +161,10 @@ function checkTeamRequest(teamProps: Team) {
     :key="team?.id"
     class="team-request-collapse__button py-1 px-2 border rounded w-100"
   >
-    <Button class-name="btn-link">
+    <Button
+      class-name="btn-link"
+      disabled
+    >
       {{ team.name }}
     </Button>
     <Button
