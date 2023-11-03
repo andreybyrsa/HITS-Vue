@@ -5,6 +5,7 @@ import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
+import IdeasMarket from '@Domain/IdeasMarket'
 
 interface Mocks {
   users: User[]
@@ -17,6 +18,7 @@ interface Mocks {
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
+  IdeasMarket: IdeasMarket[]
 }
 
 function getMocks(): Mocks {
@@ -306,6 +308,75 @@ function getMocks(): Mocks {
     },
   ]
 
+  const IdeasMarket: IdeasMarket[] = [
+    {
+      id: 1,
+      position: 1,
+      name: 'BaccaratHelper',
+      initiator: 'Андрей Бырса',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
+      stack: [
+        {
+          id: 0,
+          name: 'JavaScript',
+          type: 'LANGUAGE',
+          confirmed: true,
+        },
+      ],
+      createdAt: new Date('10.01.2023'),
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 111,
+      acceptedRequests: 4,
+      isFavorite: false,
+    },
+    {
+      id: 2,
+      position: 2,
+      name: 'Vaccarat',
+      initiator: 'Кирилл Власов',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...........................',
+      stack: [
+        {
+          id: 0,
+          name: 'JavaScript',
+          type: 'LANGUAGE',
+          confirmed: true,
+        },
+      ],
+      createdAt: new Date('10.01.2023'),
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 222,
+      acceptedRequests: 5,
+      isFavorite: false,
+    },
+    {
+      id: 3,
+      position: 3,
+      name: 'Insensible',
+      initiator: 'Тимур Минязев',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
+      stack: [
+        {
+          id: 0,
+          name: 'JavaScript',
+          type: 'LANGUAGE',
+          confirmed: true,
+        },
+      ],
+      createdAt: new Date('10.01.2023'),
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 0,
+      acceptedRequests: 0,
+      isFavorite: false,
+    },
+  ]
+
   return {
     users,
     usersEmails,
@@ -317,6 +388,7 @@ function getMocks(): Mocks {
     ideas,
     ideasSkills,
     teams,
+    IdeasMarket,
   }
 }
 

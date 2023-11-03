@@ -28,6 +28,7 @@ import CommandView from '@Views/CommandView/CommandView.vue'
 import DevView from '@Views/DevView.vue'
 
 import IdeasMarket from '@Views/IdeasMarket.vue'
+import IdeasMarketViewVue from '@Views/IdeasMarket/IdeasMarketView.vue'
 
 import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
 import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
@@ -180,7 +181,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/market',
     name: 'market',
-    component: IdeasMarket,
+    component: IdeasMarketViewVue,
   },
 ]
 
