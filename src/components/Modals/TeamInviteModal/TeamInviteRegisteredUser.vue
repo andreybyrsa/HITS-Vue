@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
+import { storeToRefs } from 'pinia'
 
 import UsersColumns from '@Components/UserColumns/UsersColumns.vue'
 import {
@@ -11,11 +12,10 @@ import {
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 
-import Profile from '@Domain/Profile'
-
-import ProfileService from '@Services/ProfileService'
 import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
+
+import TeamMember from '@Domain/TeamMember'
+import TeamService from '@Services/TeamService'
 
 defineProps<TeamInviteRegisteredUsersProps>()
 
@@ -26,23 +26,23 @@ const { user } = storeToRefs(userStore)
 
 const searchedValue = ref('')
 
-const profiles = ref<Profile[]>()
+const profiles = ref<TeamMember[]>()
 
 const isSeachUsersBySkills = ref<boolean>(false)
 
 const { handleSubmit } = useForm<TeamInviteRegisteredUsersForm>({
   validationSchema: {
-    users: (value: Profile[]) => value?.length > 0 || 'Выберите пользователей',
+    users: (value: TeamMember[]) => value?.length > 0 || 'Выберите пользователей',
   },
 })
 
-const { fields, push, remove } = useFieldArray<Profile>('profiles')
+const { fields, push, remove } = useFieldArray<TeamMember>('profiles')
 
 onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await ProfileService.getAllProfiles(token)
+    const response = await TeamService.getAllTeamProfiles(token)
 
     if (response instanceof Error) {
       return //уведомление
@@ -56,7 +56,7 @@ const inviteUsers = handleSubmit(async (values: TeamInviteRegisteredUsersForm) =
   emit(
     'inviteRegisteredUsers',
     values.users.reduce<string[]>((emails, currentUser) => {
-      emails.push(`${currentUser.userEmail}`)
+      emails.push(`${currentUser.email}`)
       return emails
     }, []),
   )
@@ -66,8 +66,8 @@ const searchedOptions = computed(() => {
   const currentSearchedValue = searchedValue.value.trim().toLocaleLowerCase()
   return isSeachUsersBySkills.value
     ? getUsersBySearchedValue(currentSearchedValue)
-    : profiles.value?.reduce<Profile[]>((allProfiles, profile) => {
-        const currentOptionSearchingFields = `${profile.firstName} ${profile.lastName} ${profile.userEmail}`
+    : profiles.value?.reduce<TeamMember[]>((allProfiles, profile) => {
+        const currentOptionSearchingFields = `${profile.firstName} ${profile.lastName} ${profile.email}`
 
         const isIncludesSeachedValue = currentOptionSearchingFields
           .trim()
@@ -82,25 +82,23 @@ const searchedOptions = computed(() => {
       }, [])
 })
 
-function selectUser(profile: Profile, index: number) {
+function selectUser(profile: TeamMember, index: number) {
   profiles.value?.splice(
-    profiles.value.findIndex(
-      (currentProfile) => currentProfile.userId == profile.userId,
-    ),
+    profiles.value.findIndex((currentProfile) => currentProfile.id == profile.id),
     1,
   )
   searchedOptions.value?.splice(index, 1)
   push(profile)
 }
 
-function unselectUser(profile: Profile, index: number) {
+function unselectUser(profile: TeamMember, index: number) {
   searchedOptions.value?.push(profile)
   profiles.value?.push(profile)
   remove(index)
 }
 
 function getUsersBySearchedValue(searchedValue: string) {
-  profiles.value?.reduce<Profile[]>((allProfiles, profile) => {
+  profiles.value?.reduce<TeamMember[]>((allProfiles, profile) => {
     const profileContainsSkill = profile.skills.find((skill) =>
       skill.name.trim().toLocaleLowerCase().includes(searchedValue),
     )
@@ -142,7 +140,7 @@ function getUsersBySearchedValue(searchedValue: string) {
       :unselected-users="searchedOptions"
       v-model="searchedOptions"
       :display-by="['firstName', 'lastName']"
-      :email="'userEmail'"
+      :email="'email'"
       @on-select="selectUser"
       @on-unselect="unselectUser"
     />

@@ -16,10 +16,10 @@ import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
 
 import TeamService from '@Services/TeamService'
-import ProfileService from '@Services/ProfileService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import Input from '@Components/Inputs/Input/Input.vue'
 
 const props = defineProps<TeamProps>()
 
@@ -67,7 +67,7 @@ onMounted(async () => {
 
       users.value = [...members.value, owner.value]
     } else {
-      const response = await ProfileService.getProfile(id, token)
+      const response = await TeamService.getTeamProfile(id, token)
 
       if (response instanceof Error) {
         return notificationsStore.createSystemNotification(
@@ -76,17 +76,9 @@ onMounted(async () => {
         )
       }
 
-      const ownerTeamMember: TeamMember = {
-        id,
-        firstName: response.firstName,
-        lastName: response.lastName,
-        email: response.userEmail,
-        skills: response.skills,
-      }
+      users.value = [response]
 
-      users.value = [ownerTeamMember]
-
-      owner.value = ownerTeamMember
+      owner.value = response
     }
   }
 })
@@ -168,6 +160,7 @@ function getMemberColor(member: TeamMember) {
     class="team w-100"
   >
     <Combobox
+      v-if="mode == 'editing'"
       name="owner"
       label="Владелец команды*"
       :options="users"
@@ -175,6 +168,16 @@ function getMemberColor(member: TeamMember) {
       v-model="owner"
       placeholder="Выберите владельца"
     />
+
+    <div
+      class="d-flex flex-column"
+      v-else
+    >
+      <label class="form-label mb-2 text-primary"> Владелец команды: </label>
+      <Typography class-name="form-control">
+        {{ owner?.firstName + ' ' + owner?.lastName + ' (Вы)' }}</Typography
+      >
+    </div>
 
     <Combobox
       name="leader"

@@ -1,4 +1,4 @@
-import Profile from '@Domain/Profile'
+import TeamMember from '@Domain/TeamMember'
 
 interface TeamInviteModalProps {
   name: string
@@ -21,12 +21,12 @@ interface TeamInviteRegisteredUsersProps {
 
 interface TeamInviteRegisteredUsersEmits {
   (event: 'inviteRegisteredUsers', users: string[]): void
-  (event: 'onSelect', value: Profile, index: number): void
-  (event: 'onUnselecte', value: Profile, index: number): void
+  (event: 'onSelect', value: TeamMember, index: number): void
+  (event: 'onUnselecte', value: TeamMember, index: number): void
 }
 
 interface TeamInviteRegisteredUsersForm {
-  users: Profile[]
+  users: TeamMember[]
 }
 
 interface TeamInviteUnregisteredUsersForm {

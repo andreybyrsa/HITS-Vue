@@ -1,4 +1,4 @@
-import { Skill } from './Skill'
+import { Skill } from '@Domain/Skill'
 
 interface TeamMember {
   id: number

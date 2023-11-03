@@ -7,7 +7,6 @@ import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 import Notification from '@Domain/Notification'
 import { TeamAccession, InvitedUsers } from '@Domain/TeamAccession'
-import Profile from '@Domain/Profile'
 
 interface Mocks {
   users: User[]
@@ -16,7 +15,6 @@ interface Mocks {
   registeredInvitations: InvitedUsers[]
   skills: Skill[]
   usersGroups: UsersGroup[]
-  teamMember: TeamMember[]
   comments: Comment[]
   ideas: Idea[]
   ratings: Rating[]
@@ -25,7 +23,7 @@ interface Mocks {
   teamAccessions: TeamAccession[]
   teamRequests: TeamAccession[]
   teamInvitations: TeamAccession[]
-  profiles: Profile[]
+  profiles: TeamMember[]
   notifications: Notification[]
 }
 
@@ -441,34 +439,31 @@ function getMocks(): Mocks {
     },
   ]
 
-  const profiles: Profile[] = [
+  const profiles: TeamMember[] = [
     {
-      userId: 0,
-      userEmail: 'test1@gmail.com',
+      id: 0,
+      email: 'test1@gmail.com',
       firstName: 'Админ',
       lastName: 'Админ',
       skills: skills,
     },
-
     {
-      userId: 1,
-      userEmail: '1@mail.com',
+      id: 1,
+      email: 'test2@gmail.com',
       firstName: 'Пользователь',
       lastName: 'Пользователь',
       skills: skills,
     },
-
     {
-      userId: 2,
-      userEmail: '2@mail.com',
+      id: 2,
+      email: 'test3@gmail.com',
       firstName: 'Менеджер',
       lastName: 'Менеджер',
       skills: skills,
     },
-
     {
-      userId: 3,
-      userEmail: '3@mail.com',
+      id: 3,
+      email: 'test4@gmail.com',
       firstName: 'Владелец',
       lastName: 'Владелец',
       skills: skills,
@@ -478,7 +473,6 @@ function getMocks(): Mocks {
   return {
     users,
     usersEmails,
-    teamMember,
     skills,
     usersGroups,
     comments,
