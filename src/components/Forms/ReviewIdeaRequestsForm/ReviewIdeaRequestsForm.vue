@@ -15,11 +15,15 @@ const { user } = storeToRefs(userStore)
 defineProps<ReviewIdeaRequestsFormProps>()
 
 const teams = defineModel<RequestTeams[]>({ required: true })
+
+function filterTeamsAccepted(teams: RequestTeams[]) {
+  return teams.filter((elem) => elem.accepted === false)
+}
 </script>
 
 <template>
   <div
-    v-if="user?.email == idea.initiator"
+    v-if="user?.email == idea.initiator && filterTeamsAccepted(teams).length"
     class="review-request-form bg-white px-3 py-1 rounded-3"
   >
     <ReviewIdeaRequestTable v-model="teams" />

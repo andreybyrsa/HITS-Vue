@@ -1,15 +1,16 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-import Table from '@Components/Table/Table.vue'
 import {
   TableColumn,
   CheckedDataAction,
   DropdownMenuAction,
 } from '@Components/Table/Table.types'
+
+import Table from '@Components/Table/Table.vue'
+import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -24,18 +25,9 @@ const router = useRouter()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const teamsData = ref<RequestTeams[]>([])
-
 function filterTeamsAccepted(teams: RequestTeams[]) {
   return teams.filter((elem) => elem.accepted === false)
 }
-
-watchImmediate(
-  () => teams.value,
-  () => {
-    teamsData.value = filterTeamsAccepted(teams.value)
-  },
-)
 
 const requestsTableColumns: TableColumn<RequestTeams>[] = [
   {
@@ -61,8 +53,12 @@ const requestsTableColumns: TableColumn<RequestTeams>[] = [
 
 const dropdownIdeasActions: DropdownMenuAction<RequestTeams>[] = [
   {
-    label: 'Просмотреть',
+    label: 'Профиль команды',
     click: navigateToTeamModal,
+  },
+  {
+    label: 'Просмотреть письмо',
+    click: openLetterTeam,
   },
   {
     label: 'Принять',
@@ -81,15 +77,36 @@ function navigateToTeamModal(team: RequestTeams) {
 }
 
 function acceptRequestTeam(team: RequestTeams) {
-  // router.push(`/ideas/list/${idea.id}`)
+  team.accepted = true
+  teams.value.forEach((teamValue) =>
+    teamValue.id == team.id ? (teamValue.accepted = true) : null,
+  )
+}
+
+const isOpenedModal = ref<boolean>(false)
+const currentTeam = ref<RequestTeams>()
+function openLetterTeam(team: RequestTeams) {
+  isOpenedModal.value = true
+  currentTeam.value = team
+}
+
+function closeLetterTeam() {
+  isOpenedModal.value = false
 }
 </script>
 
 <template>
   <Table
     :columns="requestsTableColumns"
-    :data="teamsData"
+    :data="filterTeamsAccepted(teams)"
     search-by="name"
     :dropdown-actions-menu="dropdownIdeasActions"
+  />
+  <LetterModal
+    v-if="currentTeam"
+    :letter="currentTeam.letter"
+    :is-opened="isOpenedModal"
+    @close-modal="closeLetterTeam"
+    @accept-request="acceptRequestTeam(currentTeam)"
   />
 </template>
