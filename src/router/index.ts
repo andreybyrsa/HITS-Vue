@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 
@@ -27,6 +28,8 @@ import ErrorView from '@Views/ErrorView.vue'
 import DevView from '@Views/DevView.vue'
 
 import RoleAndNotificationMiddleware from '@Middlewares/RoleAndNotificationMiddleware.vue'
+
+import useUserStore from '@Store/user/userStore'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -172,11 +175,33 @@ const routes: RouteRecordRaw[] = [
     name: 'forgot-password',
     component: ForgotPasswordView,
   },
+  {
+    path: '/:pathMatch(.*)*',
+    component: ErrorView,
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+})
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+router.beforeEach((to, from, next) => {
+  const currentRole = user.value?.role
+
+  if (to.name === 'login') {
+    next({ name: 'ideas-list' })
+  } else if (
+    !to.meta.roles ||
+    (currentRole && ((role: string) => (to.meta.roles as string[]).includes(role)))
+  ) {
+    next()
+  } else {
+    next({ name: 'error' })
+  }
 })
 
 export default router
