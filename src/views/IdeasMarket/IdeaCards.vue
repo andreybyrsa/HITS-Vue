@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import IdeasMarket from '@Domain/IdeasMarket'
 import useUserStore from '@Store/user/userStore'
