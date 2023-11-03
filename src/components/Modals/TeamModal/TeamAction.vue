@@ -27,8 +27,7 @@ const { deleteTeam, invitePortalUsers, inviteOutsideUsers, sendRequest } =
 defineProps<TeamActionProps>()
 const router = useRouter()
 
-const { deleteModal, inviteModal, requestModal, requestsAndInvitationsModal } =
-  modalNames
+const { deleteModal, inviteModal, requestModal, teamAccessionsModal } = modalNames
 
 const teamId = ref<number | null>(null)
 const modalName = ref<string | null>(null)
@@ -88,7 +87,6 @@ const handleSendRequestToTheTeam = async (teamRequest: TeamAccession) => {
 function openModal(id: number, modal: string) {
   teamId.value = id
   modalName.value = modal
-  console.log(modalName.value)
 }
 
 function closeModal() {
@@ -132,11 +130,11 @@ function closeModal() {
       :sender="user"
       :is-opened="modalName === requestModal"
       @close-modal="closeModal"
-      @request="handleSendRequestToTheTeam"
+      @send-request="handleSendRequestToTheTeam"
     />
 
     <TeamAccessionsModal
-      :is-opened="modalName == requestsAndInvitationsModal"
+      :is-opened="modalName == teamAccessionsModal"
       :team="team"
       @close-modal="closeModal"
     />

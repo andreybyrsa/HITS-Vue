@@ -13,18 +13,6 @@ const teamRequests = defineAxios(getMocks().teamRequests)
 const unregisteredInvitations = defineAxios(getMocks().unregisteredInvitations)
 const registeredInvitations = defineAxios(getMocks().registeredInvitations)
 
-const getTeamMembers = async (token: string): Promise<TeamMember[] | Error> => {
-  return await teamMemberAxios
-    .get('/users/all', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения компетенций'
-      return new Error(error)
-    })
-}
-
 const getTeams = async (token: string): Promise<Team[] | Error> => {
   return await teamsAxios
     .get(`/team/all `, {
@@ -267,7 +255,6 @@ const acceptRequest = async (
     })
 }
 const TeamService = {
-  getTeamMembers,
   getTeams,
   getTeam,
   createTeam,

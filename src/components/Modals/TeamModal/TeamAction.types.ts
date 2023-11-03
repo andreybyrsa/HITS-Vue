@@ -22,7 +22,7 @@ const modalNames = {
   deleteModal: 'deleteModal',
   inviteModal: 'inviteModal',
   requestModal: 'requestModal',
-  requestsAndInvitationsModal: 'requestsAndInvitationsListModal',
+  teamAccessionsModal: 'teamAccessionsModal',
 }
 
 export {

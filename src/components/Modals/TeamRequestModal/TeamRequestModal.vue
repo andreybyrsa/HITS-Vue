@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useField, useForm } from 'vee-validate'
-import { computed, onMounted, ref } from 'vue'
+import { computed } from 'vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
@@ -16,36 +16,12 @@ import TeamRequestPlaceholder from '@Components/Modals/TeamRequestModal/TeamRequ
 
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
-import TeamService from '@Services/TeamService'
 
 const props = defineProps<TeamRequestModalProps>()
 const emit = defineEmits<TeamRequestModalEmits>()
 
-const request = ref<TeamAccession>()
-
-const route = useRoute()
-
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-
-onMounted(async () => {
-  const currentUser = user.value
-  if (props.mode == 'write' && currentUser?.token) {
-    const id = +route.params.requestId
-    const { token } = currentUser
-    const response = await TeamService.getTeamRequest(id, token)
-
-    console.log(id)
-    console.log(response)
-
-    if (response instanceof Error) {
-      return //уведомление
-    }
-
-    request.value = response
-  }
-})
 
 const TextareaClassName = computed(() => [
   'form-control',
@@ -62,7 +38,7 @@ const { values, resetForm, handleSubmit } = useForm<TeamAccession>({
         : 'Вы не указали причину'),
   },
   initialValues: {
-    text: request.value ? request.value.text : '',
+    text: props.teamRequest ? props.teamRequest.text : '',
     requestType: props.type,
   },
 })
@@ -82,24 +58,16 @@ const handleSendRequest = handleSubmit(async () => {
   }
 })
 
-const handleApprove = async () => {
-  const curreuntRequest = request.value
-  if (curreuntRequest) {
-    emit('accept', curreuntRequest.id)
-    closeRequestModal()
-  }
-}
-
-const handleReject = async () => {
-  const curreuntRequest = request.value
-  if (curreuntRequest) {
-    emit('reject', curreuntRequest.id)
-    closeRequestModal()
-  }
-}
-
 function closeRequestModal() {
   emit('close-modal')
+}
+
+async function handleApprove() {
+  emit('accept')
+}
+
+async function handleReject() {
+  emit('reject')
 }
 </script>
 
@@ -118,7 +86,7 @@ function closeRequestModal() {
           v-model="value"
           :placeholder="mode == 'write' ? 'Опишите причину заявления' : ''"
           :class="TextareaClassName"
-          :disabled="request ? true : false"
+          :disabled="teamRequest ? true : false"
         ></textarea>
         <span class="invalid-feedback">
           {{ errorMessage }}
@@ -126,7 +94,7 @@ function closeRequestModal() {
       </div>
       <div></div>
 
-      <template v-if="request && mode == 'read'">
+      <template v-if="teamRequest && mode == 'read'">
         <div class="request-modal__buttons">
           <Button
             class-name="rounded-end btn-primary"
@@ -152,7 +120,7 @@ function closeRequestModal() {
       >
     </div>
     <TeamRequestPlaceholder
-      v-if="mode == 'read' && !request"
+      v-if="mode == 'read' && !teamRequest"
     ></TeamRequestPlaceholder>
   </ModalLayout>
 </template>

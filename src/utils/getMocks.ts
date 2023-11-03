@@ -94,7 +94,7 @@ function getMocks(): Mocks {
   ]
   const teamRequests: TeamAccession[] = [
     {
-      id: 0,
+      id: 3,
       teamId: 0,
       targetEmail: 'admin@mail.com',
       targetUserType: 'REGISTERED',
@@ -104,7 +104,7 @@ function getMocks(): Mocks {
       stage: 'REQUEST',
     },
     {
-      id: 1,
+      id: 4,
       teamId: 0,
       targetEmail: 'admin@mail.com',
       targetUserType: 'REGISTERED',

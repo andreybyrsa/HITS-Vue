@@ -16,8 +16,7 @@ defineProps<TeamActionButtonsProps>()
 
 const emits = defineEmits<TeamActionButtonsEmits>()
 
-const { deleteModal, inviteModal, requestModal, requestsAndInvitationsModal } =
-  modalNames
+const { deleteModal, inviteModal, requestModal, teamAccessionsModal } = modalNames
 
 const router = useRouter()
 
@@ -46,8 +45,8 @@ function shareButton(id: number) {
   >
   <Button
     v-if="
-      team.leader.email != user?.email &&
-      team.owner.email != user?.email &&
+      team.leader.email != user?.email ||
+      team.owner.email != user?.email ||
       !team.members.find((member) => member.email == user?.email)
     "
     class-name="bi bi-card-text btn-primary w-100"
@@ -57,7 +56,7 @@ function shareButton(id: number) {
   <Button
     v-if="team.leader.email == user?.email || team.owner.email == user?.email"
     class-name="bi bi-card-checklist btn-primary w-100"
-    @click="emits('openModal', team.id, requestsAndInvitationsModal)"
+    @click="emits('openModal', team.id, teamAccessionsModal)"
     >Заявки и приглашения</Button
   >
   <Button
@@ -74,7 +73,7 @@ function shareButton(id: number) {
   >
   <Button
     v-if="
-      team.owner.email != user?.email ||
+      team.owner.email != user?.email &&
       team.members.find((member) => member.email == user?.email)
     "
     class-name="bi bi-box-arrow-left btn-danger w-100"
