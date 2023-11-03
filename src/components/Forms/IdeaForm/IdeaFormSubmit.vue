@@ -20,7 +20,7 @@ const emit = defineEmits<IdeaFormSubmitEmits>()
     </Button>
 
     <Button
-      class-name="btn-warning d-block mx-2"
+      class-name="btn-success d-block mx-2"
       @click="emit('on-send-on-approval')"
     >
       Отправить на согласование

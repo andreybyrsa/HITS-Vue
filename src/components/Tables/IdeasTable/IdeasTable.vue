@@ -311,9 +311,7 @@ function checkDeleteIdeaAction(idea: Idea) {
       return initiator === `${currentUser.id}` && requiredIdeaStatus
     }
 
-    if (currentUser.role === 'ADMIN') {
-      return requiredIdeaStatus
-    }
+    return currentUser.role === 'ADMIN'
   }
   return false
 }
@@ -325,13 +323,11 @@ function checkUpdateIdeaAction(idea: Idea) {
     const { initiator, status } = idea
     const requiredIdeaStatus = status === 'NEW' || status === 'ON_EDITING'
 
-    if (currentUser.role === 'ADMIN') {
-      return requiredIdeaStatus
-    }
-
     if (currentUser.role === 'INITIATOR') {
       return initiator === `${currentUser.id}` && requiredIdeaStatus
     }
+
+    return currentUser.role === 'ADMIN'
   }
   return false
 }
