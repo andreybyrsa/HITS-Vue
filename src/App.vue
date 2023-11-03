@@ -24,6 +24,7 @@ window.addEventListener('click', () => {
 
 ::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -110,7 +111,6 @@ p {
 #notifications {
   @include position(fixed, $top: 8px, $right: 8px, $z-index: 10);
 
-  height: 100vh;
   overflow-y: scroll;
 
   @include flexible(flex-start, stretch, column, $gap: 8px);

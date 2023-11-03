@@ -3,18 +3,18 @@ import { ref, VueElement, onMounted, onUpdated } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
+import { IdeaActionsProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
 import Button from '@Components/Button/Button.vue'
 
-import { Idea } from '@Domain/Idea'
-
-import IdeasService from '@Services/IdeasService'
-
 import useUserStore from '@Store/user/userStore'
+import useIdeasStore from '@Store/ideas/ideasStore'
 
-const idea = defineModel<Idea>({ required: true })
+const props = defineProps<IdeaActionsProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const ideasStore = useIdeasStore()
 
 const router = useRouter()
 
@@ -32,26 +32,26 @@ function checkComponentContent() {
 function getAccessToEditByInitiator() {
   if (user.value) {
     const { email, role } = user.value
-    const { status, initiator } = idea.value
+    const { status, initiator } = props.idea
 
-    if (status === 'NEW' || status === 'ON_EDITING') {
-      if (role === 'ADMIN') return true
-
-      return email === initiator
+    if (role === 'INITIATOR' && email === initiator) {
+      return status === 'NEW' || status === 'ON_EDITING'
     }
+
+    return role === 'ADMIN'
   }
 }
 
 function getAccessToApproval() {
   if (user.value) {
     const { role } = user.value
-    const { status } = idea.value
+    const { status } = props.idea
 
-    if (status === 'ON_APPROVAL') {
-      if (role === 'ADMIN') return true
-
-      return role === 'PROJECT_OFFICE'
+    if (role === 'PROJECT_OFFICE') {
+      return status === 'ON_APPROVAL'
     }
+
+    return role === 'ADMIN'
   }
 }
 
@@ -60,15 +60,9 @@ const handleSendToApproval = async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = idea.value
+    const { id } = props.idea
 
-    const response = await IdeasService.sendIdeaOnApproval(id, token)
-
-    if (response instanceof Error) {
-      return // notification
-    }
-
-    idea.value.status = 'ON_APPROVAL'
+    await ideasStore.updateIdeaStatus(id, 'ON_APPROVAL', token)
   }
 }
 
@@ -77,19 +71,9 @@ const handleSendToEditing = async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = idea.value
+    const { id } = props.idea
 
-    const response = await IdeasService.updateIdeaStatusByProjectOffice(
-      id,
-      'ON_EDITING',
-      token,
-    )
-
-    if (response instanceof Error) {
-      return // notification
-    }
-
-    idea.value.status = 'ON_EDITING'
+    await ideasStore.updateIdeaStatus(id, 'ON_EDITING', token)
   }
 }
 
@@ -98,19 +82,9 @@ const handleSendToConfirmation = async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = idea.value
+    const { id } = props.idea
 
-    const response = await IdeasService.updateIdeaStatusByProjectOffice(
-      id,
-      'ON_CONFIRMATION',
-      token,
-    )
-
-    if (response instanceof Error) {
-      return // notification
-    }
-
-    idea.value.status = 'ON_CONFIRMATION'
+    await ideasStore.updateIdeaStatus(id, 'ON_CONFIRMATION', token)
   }
 }
 </script>
@@ -118,12 +92,12 @@ const handleSendToConfirmation = async () => {
 <template>
   <div
     ref="ideaActionsButtons"
-    class="rounded-3 bg-white p-3 d-flex gap-3"
+    class="rounded-3 bg-white p-3 d-flex flex-wrap gap-3"
   >
     <Button
       v-if="getAccessToEditByInitiator()"
       class-name="btn-light"
-      @click="router.push(`/ideas/edit/${idea.id}`)"
+      @click="router.push(`/ideas/update/${idea.id}`)"
     >
       Редактировать
     </Button>

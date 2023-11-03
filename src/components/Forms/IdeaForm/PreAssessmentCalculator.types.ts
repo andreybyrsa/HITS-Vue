@@ -7,18 +7,10 @@ interface PreAssessmentProps {
 }
 
 interface PreAssessmentSelect {
-  name: 'technicalRealizability' | 'suitability' | 'budget'
+  name: 'suitability' | 'budget'
   label: string
   options: OptionType[]
 }
-
-const technicalRealizabilityOptions = [
-  { label: 'Команда уже делала такие проекты', value: 5 },
-  { label: 'Есть знания реализации, но нет практического опыта', value: 4 },
-  { label: 'Команда делала проекты на альтернативных стеках', value: 3 },
-  { label: 'Есть знания в другом стеке, но нет практического опыта', value: 2 },
-  { label: 'Нет знаний и опыта', value: 1 },
-]
 
 const suitabilityOptions = [
   { label: 'Есть заказчик, инвестор и эксперт в предметной области', value: 5 },
@@ -37,11 +29,6 @@ const budgetOptions = [
 ]
 
 const preAssessmentSelects: PreAssessmentSelect[] = [
-  {
-    name: 'technicalRealizability',
-    label: 'Техническая реализуемость*',
-    options: technicalRealizabilityOptions,
-  },
   {
     name: 'suitability',
     label: 'Пригодность*',

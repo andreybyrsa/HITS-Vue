@@ -2,7 +2,7 @@ import { User } from '@Domain/User'
 
 interface EditUserModalProps {
   isOpened: boolean
-  user?: User
+  user: User | null
 }
 
 interface EditUserModalEmits {

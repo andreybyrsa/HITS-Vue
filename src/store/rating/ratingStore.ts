@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
+
 import { Rating } from '@Domain/Idea'
+
 import RatingService from '@Services/RatingService'
-import InitialState from './initialState'
+
+import InitialState from '@Store/rating/initialState'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 const useRatingStore = defineStore('rating', {
   state: (): InitialState => ({
     ratings: [],
@@ -12,7 +17,10 @@ const useRatingStore = defineStore('rating', {
       if (index === -1) {
         const response = await RatingService.getAllIdeaRatings(ideaId, token)
         if (response instanceof Error) {
-          return
+          return useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
         }
         this.ratings.push({
           ideaId,
@@ -23,7 +31,10 @@ const useRatingStore = defineStore('rating', {
     async fetchRatings(ideaId: number, token: string) {
       const response = await RatingService.getAllIdeaRatings(ideaId, token)
       if (response instanceof Error) {
-        return
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
       const index = this.ratings.findIndex((item) => item.ideaId === ideaId)
       if (index !== -1) {
@@ -35,7 +46,10 @@ const useRatingStore = defineStore('rating', {
     async saveRating(rating: Rating, ideaId: number, token: string) {
       const response = await RatingService.saveExpertRating(rating, ideaId, token)
       if (response instanceof Error) {
-        return
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
       const index = this.ratings.findIndex((item) => item.ideaId === ideaId)
       if (index !== -1) {
@@ -54,7 +68,10 @@ const useRatingStore = defineStore('rating', {
     async confirmRating(rating: Rating, ideaId: number, token: string) {
       const response = await RatingService.confirmExpertRating(rating, ideaId, token)
       if (response instanceof Error) {
-        return
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
       const index = this.ratings.findIndex((item) => item.ideaId === ideaId)
       if (index !== -1) {
@@ -88,7 +105,10 @@ const useRatingStore = defineStore('rating', {
         }
         const response = await RatingService.getExpertRating(ideaId, token)
         if (response instanceof Error) {
-          return
+          return useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
         }
         return response
       },

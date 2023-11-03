@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, Ref } from 'vue'
+import { ref } from 'vue'
 import { useForm } from 'vee-validate'
 
 import Button from '@Components/Button/Button.vue'
@@ -12,16 +12,17 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { RecoveryData } from '@Domain/Invitation'
 
-import useTimer from '@Hooks/useTimer'
-
 import InvitationService from '@Services/InvitationService'
+
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
 
 const isOpenedModal = ref(false)
 
 const authKey = ref('')
-let expiredTime: Ref<string>
+
+const notificationsStore = useNotificationsStore()
 
 const { values, handleSubmit } = useForm<RecoveryData>({
   validationSchema: {
@@ -34,15 +35,16 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
   const response = await InvitationService.sendRecoveryEmail(values)
 
   if (response instanceof Error) {
-    return // notification
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
 
   authKey.value = response
   isOpenedModal.value = true
 
-  expiredTime = useTimer(300)
-
-  // notification
+  notificationsStore.createSystemNotification(
+    'Система',
+    'На почту отправлен код аутентификации',
+  )
 })
 </script>
 
