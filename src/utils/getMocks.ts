@@ -401,7 +401,7 @@ function getMocks(): Mocks {
       membersCount: 3,
       owner: teamMember[1],
       leader: teamMember[2],
-      members: [teamMember[3]],
+      members: [teamMember[3], teamMember[2]],
       skills: [...skills],
     },
   ]

@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useField, useFieldValue } from 'vee-validate'
 import { watchImmediate } from '@vueuse/core'
+import { useRoute } from 'vue-router'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -15,12 +16,14 @@ import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
 
 import TeamService from '@Services/TeamService'
-
-import useUserStore from '@Store/user/userStore'
 import ProfileService from '@Services/ProfileService'
 
-const props = defineProps<TeamProps>()
+import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const props = defineProps<TeamProps>()
+
+const route = useRoute()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -44,8 +47,10 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { id, token } = currentUser
 
+    const teamId = +route.params.id
+
     if (props.mode == 'editing') {
-      const response = await TeamService.getTeamMembers(token)
+      const response = await TeamService.getTeam(teamId, token)
 
       if (response instanceof Error) {
         return notificationsStore.createSystemNotification(
@@ -54,17 +59,13 @@ onMounted(async () => {
         )
       }
 
-      users.value = response
+      members.value = response.members
 
-      if (!owner.value) {
-        const currentOwner = response.find(
-          (user) => user.email === currentUser.email,
-        )
+      owner.value = response.owner
 
-        if (currentOwner) {
-          owner.value = currentOwner
-        }
-      }
+      leader.value = response.leader
+
+      users.value = [...members.value, owner.value]
     } else {
       const response = await ProfileService.getProfile(id, token)
 
