@@ -1,14 +1,21 @@
-import axios from 'axios'
-
 import Profile from '@Domain/Profile'
+import defineAxios from '@Utils/defineAxios'
+import getMocks from '@Utils/getMocks'
 
-const PROFILE_URL = 'http://localhost:3000/api/v1/profile'
+const profilesAxios = defineAxios(getMocks().profiles)
 
-const getProfile = async (token: string): Promise<Profile | Error> => {
-  return await axios
-    .get(`${PROFILE_URL}/all`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+const getProfile = async (
+  userId: number,
+  token: string,
+): Promise<Profile | Error> => {
+  return await profilesAxios
+    .get(
+      `/profile/${userId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      { params: { userId } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения профиля'
@@ -17,8 +24,8 @@ const getProfile = async (token: string): Promise<Profile | Error> => {
 }
 
 const getAllProfiles = async (token: string): Promise<Profile[] | Error> => {
-  return await axios
-    .get(`${PROFILE_URL}/all`, {
+  return await profilesAxios
+    .get(`/profile/all`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)

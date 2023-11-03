@@ -97,7 +97,7 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 
       <TeamType />
 
-      <TeamVue />
+      <TeamVue :mode="mode" />
 
       <Button
         v-if="props.team"

@@ -50,6 +50,7 @@ onMounted(async () => {
       <TeamForm
         v-if="team"
         :team="team"
+        mode="editing"
       />
 
       <TeamFormPlaceholder v-else />

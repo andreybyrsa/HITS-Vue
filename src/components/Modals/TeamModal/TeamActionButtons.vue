@@ -74,7 +74,7 @@ function shareButton(id: number) {
   >
   <Button
     v-if="
-      team.owner.email == user?.email ||
+      team.owner.email != user?.email ||
       team.members.find((member) => member.email == user?.email)
     "
     class-name="bi bi-box-arrow-left btn-danger w-100"

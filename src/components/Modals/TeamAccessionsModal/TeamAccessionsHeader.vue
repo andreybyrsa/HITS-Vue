@@ -28,7 +28,7 @@ const closeTeamModal = () => {
     <Typography
       class-name="p-3 w-100 bg-white rounded-3 fs-5 text-primary text-nowrap overflow-x-scroll"
     >
-      Завления и приглашения в команду {{ team.name }}
+      Заявления и приглашения в команду "{{ team.name }}"
     </Typography>
   </div>
 </template>
