@@ -36,6 +36,7 @@ import RolesTypes from '@Domain/Roles'
 import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import getRoles from '@Utils/getRoles'
 import getRolesStyle from '@Utils/getRolesStyle'
@@ -44,6 +45,7 @@ const usersGroups = defineModel<UsersGroup[]>({ required: true })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const currentGroupId = ref()
 const currentDeleteGroupId = ref<number | null>(null)
@@ -137,7 +139,7 @@ const handleDeleteGroup = async () => {
     )
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     usersGroups.value = usersGroups.value.filter(

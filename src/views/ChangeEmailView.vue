@@ -12,14 +12,17 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { NewEmailForm } from '@Domain/Invitation'
 
-import useUserStore from '@Store/user/userStore'
-
 import InvitationService from '@Services/InvitationService'
+
+import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
+
 const { handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
     newEmail: (value: string) =>
@@ -38,10 +41,16 @@ const sendChangingUrl = handleSubmit(async (values) => {
     const response = await InvitationService.sendUrlToChangeEmail(values, token)
 
     if (response instanceof Error) {
-      return // notification
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        response.message,
+      )
     }
 
-    return // notification
+    useNotificationsStore().createSystemNotification(
+      'Система',
+      'Ссылка изменения почты отправлена на новую почту',
+    )
   }
 })
 </script>

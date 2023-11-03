@@ -36,6 +36,7 @@ import { Skill, SkillType } from '@Domain/Skill'
 import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import getSkills from '@Utils/getSkills'
 
@@ -43,6 +44,7 @@ const skills = defineModel<Skill[]>({ required: true })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const updatingSkill = ref<Skill | null>(null)
 const currentDeleteSkillId = ref<number | null>(null)
@@ -176,7 +178,7 @@ async function handleConfirmSkill(skill: Skill) {
     )
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const currentSkill = skills.value.find((skill) => skill.id === id)
@@ -198,7 +200,7 @@ const handleDeleteSkill = async () => {
     )
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const currentSkillIndex = skills.value.findIndex(

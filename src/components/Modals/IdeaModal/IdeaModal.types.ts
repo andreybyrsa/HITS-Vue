@@ -1,14 +1,15 @@
 import { VueElement } from 'vue'
 
-import { Idea, Rating } from '@Domain/Idea'
+import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Market from '@Domain/Market'
 
 interface IdeaDescriptionProps {
   idea: Idea
+  ideaSkills?: IdeaSkills
 }
 
 interface IdeaActionsProps {
-  idea?: Idea
+  idea: Idea
 }
 
 interface IdeaCommentsProps {

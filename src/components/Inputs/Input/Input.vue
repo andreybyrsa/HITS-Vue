@@ -58,6 +58,7 @@ const LabelClassName = computed(() => [
         @change="(event) => emit('change', event as HTMLTargetEvent)"
         @focus="emit('focus')"
         @blur="emit('blur')"
+        @keydown="(event) => emit('keydown', event as KeyboardEvent)"
         :placeholder="placeholder"
         :disabled="disabled"
       />

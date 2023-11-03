@@ -13,7 +13,7 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
       return {
         token: '1',
         email: '1@mail.com',
-        roles: ['ADMIN'],
+        roles: ['ADMIN', 'INITIATOR'],
       }
     })
 }

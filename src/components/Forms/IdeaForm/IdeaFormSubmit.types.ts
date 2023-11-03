@@ -1,10 +1,12 @@
+import { Idea } from '@Domain/Idea'
+
 interface IdeaFormSubmitProps {
-  isEditing: boolean
+  idea: Idea
 }
 
 interface IdeaFormSubmitEmits {
-  (event: 'on-submit'): void
-  (event: 'on-update'): void
+  (event: 'on-send-on-approval'): void
+  (event: 'on-save-draft'): void
 }
 
 export { IdeaFormSubmitProps, IdeaFormSubmitEmits }
