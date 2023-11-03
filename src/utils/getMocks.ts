@@ -429,6 +429,19 @@ function getMocks(): Mocks {
       members: [users[3]],
       skills: [skills[0]],
     },
+    {
+      id: 13,
+      name: 'Смешарики',
+      closed: true,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 4,
+      owner: users[2],
+      leader: users[1],
+      members: [users[3]],
+      skills: [skills[0]],
+    },
   ]
 
   const RequestTeams: RequestTeams[] = [
@@ -553,6 +566,25 @@ function getMocks(): Mocks {
       teamId: 6,
 
       name: 'Позитив',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      owner: users[1],
+      leader: users[2],
+      members: [...users],
+      skills: [...skills],
+      letter:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+    },
+    {
+      id: 7,
+      ideaId: 2,
+      accepted: false,
+      teamId: 13,
+
+      name: 'Смешарики',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
       membersCount: 4,

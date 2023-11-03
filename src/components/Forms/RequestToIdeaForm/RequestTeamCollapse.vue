@@ -10,12 +10,12 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import Skills from '@Components/Skills/Skills.vue'
 
 import useUserStore from '@Store/user/userStore'
 import RequestTeamsServise from '@Services/RequestTeamsServise'
 
 import Team from '@Domain/Team'
-import { SkillType } from '@Domain/Skill'
 import RequestTeams from '@Domain/RequestTeams'
 
 const props = defineProps<RequestTeamCollapseProps>()
@@ -28,21 +28,6 @@ const { user } = storeToRefs(userStore)
 const requestTeams = defineModel<RequestTeams[]>('requestTeams', { required: true })
 
 const letter = ref<string>('')
-
-function getTechnologyClassName(type: SkillType) {
-  const className = 'px-2 py-1 rounded '
-
-  switch (type) {
-    case 'LANGUAGE':
-      return className + ' bg-success-subtle text-success'
-    case 'FRAMEWORK':
-      return className + ' bg-info-subtle text-info'
-    case 'DATABASE':
-      return className + ' bg-warning-subtle text-warning'
-    default:
-      return className + ' bg-danger-subtle text-danger'
-  }
-}
 
 const { handleSubmit } = useForm({
   validationSchema: {
@@ -114,8 +99,8 @@ function checkTeamRequest(teamProps: Team) {
               <div class="d-flex flex-wrap gap-2">
                 <div
                   class="p-1 rounded bg-light border"
-                  v-for="member in team.members"
-                  :key="member.id"
+                  v-for="(member, index) in team.members"
+                  :key="index"
                 >
                   {{ member.firstName }} {{ member.lastName }}
                 </div>
@@ -124,13 +109,7 @@ function checkTeamRequest(teamProps: Team) {
             <div class="w-50 border-start ps-3 pb-1">
               <div class="text-primary pb-1">Компетенции:</div>
               <div class="d-flex flex-wrap gap-2">
-                <div
-                  v-for="skill in team.skills"
-                  :key="skill.id"
-                  :class="getTechnologyClassName(skill.type)"
-                >
-                  {{ skill.name }}
-                </div>
+                <Skills :skills="team.skills" />
               </div>
             </div>
           </div>
@@ -157,14 +136,11 @@ function checkTeamRequest(teamProps: Team) {
 
   <div
     v-else
-    v-for="team in checkSendTeamRequest()"
-    :key="team?.id"
+    v-for="(team, index) in checkSendTeamRequest()"
+    :key="index"
     class="team-request-collapse__button py-1 px-2 border rounded w-100"
   >
-    <Button
-      class-name="btn-link"
-      disabled
-    >
+    <Button class-name="btn-link">
       {{ team.name }}
     </Button>
     <Button
