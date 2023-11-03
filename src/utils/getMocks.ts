@@ -45,8 +45,8 @@ function getMocks(): Mocks {
       id: 2,
       token: '059182',
       email: 'kirill.vlasov.05@inbox.ru',
-      firstName: 'Менеджер',
-      lastName: 'Менеджер',
+      firstName: 'Кирилл',
+      lastName: 'Власов',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
     {
@@ -79,6 +79,18 @@ function getMocks(): Mocks {
       name: 'C++',
       type: 'LANGUAGE',
       confirmed: false,
+    },
+    {
+      id: 3,
+      name: 'Docker',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: 4,
+      name: 'MongoDB',
+      type: 'DATABASE',
+      confirmed: true,
     },
   ]
 
@@ -422,9 +434,11 @@ function getMocks(): Mocks {
       id: 0,
       ideaId: 1,
       accepted: false,
+      teamId: 0,
 
       name: 'Первые разрабы мира',
       closed: false,
+      membersCount: 4,
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
@@ -439,10 +453,12 @@ function getMocks(): Mocks {
       id: 1,
       ideaId: 1,
       accepted: false,
+      teamId: 1,
 
-      name: 'программисты из apple',
+      name: 'Программисты из apple',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
@@ -456,10 +472,12 @@ function getMocks(): Mocks {
       id: 2,
       ideaId: 1,
       accepted: true,
+      teamId: 2,
 
       name: 'Удальцы',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
@@ -473,10 +491,12 @@ function getMocks(): Mocks {
       id: 3,
       ideaId: 1,
       accepted: true,
+      teamId: 3,
 
       name: 'Молодцы',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
@@ -490,6 +510,7 @@ function getMocks(): Mocks {
       id: 4,
       ideaId: 2,
       accepted: false,
+      teamId: 4,
 
       name: 'Хорошая компания',
       closed: false,
@@ -498,6 +519,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
       leader: users[2],
+      membersCount: 4,
       members: [...users],
       skills: [...skills],
       letter:
@@ -507,6 +529,7 @@ function getMocks(): Mocks {
       id: 5,
       ideaId: 2,
       accepted: false,
+      teamId: 5,
 
       name: 'Негатив',
       closed: false,
@@ -515,6 +538,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],
       leader: users[2],
+      membersCount: 4,
       members: [...users],
       skills: [...skills],
       letter:
@@ -524,10 +548,12 @@ function getMocks(): Mocks {
       id: 6,
       ideaId: 2,
       accepted: true,
+      teamId: 6,
 
       name: 'Позитив',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       owner: users[1],

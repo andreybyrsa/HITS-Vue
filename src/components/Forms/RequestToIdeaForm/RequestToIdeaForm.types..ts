@@ -2,12 +2,11 @@ import Market from '@Domain/Market'
 import Team from '@Domain/Team'
 
 interface RequestToIdeaProps {
-  teams: Team[]
   idea: Market
 }
 
-interface RequestTeamProps {
-  teams: Team[]
+interface RequestTeamCollapseProps {
+  team: Team
 }
 
-export { RequestToIdeaProps, RequestTeamProps }
+export { RequestToIdeaProps, RequestTeamCollapseProps }

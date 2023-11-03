@@ -5,6 +5,7 @@ interface RequestTeams {
   ideaId: number
   accepted: boolean
   letter: string
+  teamId: number
 
   id: number
   name: string
@@ -13,6 +14,7 @@ interface RequestTeams {
   description: string
   owner: User
   leader: User
+  membersCount: number
   members: User[]
   skills: Skill[]
 }
