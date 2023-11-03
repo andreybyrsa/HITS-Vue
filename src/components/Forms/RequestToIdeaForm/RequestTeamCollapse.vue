@@ -92,34 +92,6 @@ function checkTeamRequest(teamProps: Team) {
 </script>
 
 <template>
-  <!-- {{ checkTeamRequest(team) }}
-
-  <div
-    v-for="team in requestTeams"
-    :key="team.id"
-  >
-    {{ team.name }}
-  </div> -->
-
-  <div
-    v-for="team in checkSendTeamRequest()"
-    :key="team?.id"
-    class="team-request-collapse__button py-1 px-2 border rounded w-100"
-  >
-    <Button
-      class-name="btn-link"
-      disabled
-    >
-      {{ team.name }}
-    </Button>
-    <Button
-      class-name="btn-secondary"
-      disabled
-    >
-      Заявка подана
-    </Button>
-  </div>
-
   <div
     v-if="!checkTeamRequest(team)"
     class="team-request-collapse w-100"
@@ -184,6 +156,23 @@ function checkTeamRequest(teamProps: Team) {
         </div>
       </Collapse>
     </div>
+  </div>
+
+  <div
+    v-else
+    v-for="team in checkSendTeamRequest()"
+    :key="team?.id"
+    class="team-request-collapse__button py-1 px-2 border rounded w-100"
+  >
+    <Button class-name="btn-link">
+      {{ team.name }}
+    </Button>
+    <Button
+      class-name="btn-secondary"
+      disabled
+    >
+      Заявка подана
+    </Button>
   </div>
 </template>
 
