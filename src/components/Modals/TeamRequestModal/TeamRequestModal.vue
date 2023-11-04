@@ -54,7 +54,7 @@ const handleSendRequest = handleSubmit(async (values) => {
   const currentUser = user.value
   if (currentUser) {
     values.targetEmail = currentUser.email
-    await emit('sendRequest', values)
+    emit('sendRequest', values)
     resetForm()
   }
 })

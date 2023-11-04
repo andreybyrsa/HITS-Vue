@@ -1,9 +1,8 @@
 import Notification from '@Domain/Notification'
 
 interface InitialState {
-  newNotifications: Notification[]
-  systemNotifications: Notification[]
   notifications: Notification[]
+  systemNotifications: Notification[]
 }
 
 export default InitialState

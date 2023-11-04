@@ -24,8 +24,6 @@ const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
 
 const { user } = storeToRefs(userStore)
-const { deleteTeam, inviteRegisteredUsers, inviteUnregisteredUsers, sendRequest } =
-  TeamService
 
 defineProps<TeamActionProps>()
 const router = useRouter()
@@ -39,7 +37,8 @@ const handleDeleteTeam = async () => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await deleteTeam(teamId.value, token)
+    const response = await TeamService.deleteTeam(teamId.value, token)
+    console.log(response)
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
@@ -52,7 +51,11 @@ const handleInviteFromPortal = async (users: string[]) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await inviteRegisteredUsers(users, teamId.value, token)
+    const response = await TeamService.inviteRegisteredUsers(
+      users,
+      teamId.value,
+      token,
+    )
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
@@ -65,7 +68,11 @@ const handleInviteFromOutside = async (emails: string[]) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await inviteUnregisteredUsers(emails, teamId.value, token)
+    const response = await TeamService.inviteUnregisteredUsers(
+      emails,
+      teamId.value,
+      token,
+    )
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
@@ -78,8 +85,8 @@ const handleSendRequestToTheTeam = async (teamRequest: TeamAccession) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await sendRequest(teamId.value, teamRequest, token)
-
+    const response = await TeamService.sendRequest(teamId.value, teamRequest, token)
+    console.log(response)
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }

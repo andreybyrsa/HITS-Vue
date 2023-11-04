@@ -26,7 +26,6 @@ const { user } = storeToRefs(userStore)
 
 const NotificationsStore = useNotificationsStore()
 const { notifications } = storeToRefs(NotificationsStore)
-const { newNotifications } = storeToRefs(NotificationsStore)
 
 defineProps<NotificatonModalWindowProps>()
 
@@ -53,7 +52,7 @@ onMounted(async () => {
 
 for (const notification of notifications.value) {
   if (notification.isReaded === false) {
-    newNotifications.value.push(notification)
+    notifications.value.push(notification)
   } else {
     readedNotifications.value.push(notification)
   }
@@ -61,7 +60,7 @@ for (const notification of notifications.value) {
 
 const showAllTab = ref(true)
 
-const hasNewNotifications = computed(() => newNotifications.value.length > 0)
+const hasNewNotifications = computed(() => notifications.value.length > 0)
 
 const hasFavoriteNotifications = computed(
   () => favoriteNotifications.value.length > 0,
@@ -71,11 +70,11 @@ const switchTabToShow = (tab: any) => {
 }
 
 const markAllAsRead = () => {
-  newNotifications.value.forEach((notification) => {
+  notifications.value.forEach((notification) => {
     notification.isReaded = true
     readedNotifications.value.unshift(notification)
   })
-  newNotifications.value = []
+  notifications.value = []
 }
 
 const markAsRead = async () => {

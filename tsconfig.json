@@ -25,7 +25,6 @@
       "@Domain/*": ["src/domain/*"],
       "@Store/*": ["src/store/*"],
       "@Services/*": ["src/services/*"],
-      "@Middlewares/*": ["src/middlewares/*"],
       "@Utils/*": ["src/utils/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]

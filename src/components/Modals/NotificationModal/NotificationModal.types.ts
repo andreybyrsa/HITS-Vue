@@ -5,4 +5,8 @@ interface NotificationModalProps {
   timeExpired?: number
 }
 
-export default NotificationModalProps
+interface NotificationModalEmits {
+  (event: 'close-notification', notification: Notification): void
+}
+
+export { NotificationModalProps, NotificationModalEmits }

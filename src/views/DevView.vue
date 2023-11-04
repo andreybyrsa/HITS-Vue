@@ -83,8 +83,6 @@ function switchContent() {
   switchButton.value ? (switchButton.value = false) : (switchButton.value = true)
 }
 
-userStore.checkLastActivity()
-
 const { values, handleSubmit } = useForm({
   validationSchema: {
     component: (value: string) => value?.length || 'Обязательно к заполнению',

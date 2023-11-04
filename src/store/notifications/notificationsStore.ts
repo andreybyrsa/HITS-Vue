@@ -1,48 +1,90 @@
 import { defineStore } from 'pinia'
-import InitialState from './initialState'
+
+import Notification from '@Domain/Notification'
+
+import NotificatonsService from '@Services/NotificationService'
+
+import InitialState from '@Store/notifications/initialState'
 
 const useNotificationsStore = defineStore('notification', {
   state: (): InitialState => ({
     notifications: [],
-    newNotifications: [],
     systemNotifications: [],
   }),
   actions: {
-    createNotification(title: string, message: string, createdAt: string) {
-      const id = Math.random()
+    async createNotification(title: string, message: string, token: string) {
       const notification = {
-        id,
         title,
         message,
-        isReaded: false,
-        isFavourite: false,
-        createdAt,
-      }
-      this.notifications.unshift(notification)
-    },
+      } as Notification
 
-    readNotification(id: number) {
+      const response = await NotificatonsService.createNotification(
+        notification,
+        token,
+      )
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        this.notifications.push(notification)
+      }
+    },
+    async readNotificationNotification(id: number, token: string) {
+      const response = await NotificatonsService.checkNotification(id, token)
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        const currentNotification = this.notifications.find(
+          (notification) => notification.id === id,
+        )
+
+        if (currentNotification) {
+          currentNotification.isReaded = true
+        }
+      }
+    },
+    async closeNotification(id: number, token: string) {
+      const response = await NotificatonsService.closeNotification(id, token)
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        const currentNotification = this.notifications.find(
+          (notification) => notification.id === id,
+        )
+        if (currentNotification) {
+          currentNotification.isShowed = true
+        }
+      }
+
       const notification = this.notifications.find((n) => n.id === id)
       if (notification) {
         notification.isReaded = true
       }
     },
 
-    closeNotification(id: number) {
-      this.newNotifications = this.newNotifications.filter((n) => n.id !== id)
-      this.systemNotifications = this.systemNotifications.filter((n) => n.id !== id)
-    },
-
     createSystemNotification(title: string, message: string) {
-      const id = Math.random()
+      const id = Math.random() * 1000000
       const systemNotification = {
         id,
         title,
         message,
-        isReaded: false,
+        isShowed: false,
         isFavourite: false,
-      }
+        isReaded: false,
+        createdAt: new Date().toDateString(),
+      } as Notification
       this.systemNotifications.push(systemNotification)
+    },
+    closeSystemNotification(id: number) {
+      const currentNotification = this.systemNotifications.find(
+        (notification) => notification.id === id,
+      )
+
+      if (currentNotification) {
+        currentNotification.isShowed = true
+      }
     },
   },
 })

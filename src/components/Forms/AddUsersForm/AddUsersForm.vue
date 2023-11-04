@@ -15,10 +15,10 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import { InviteUsersForm } from '@Domain/Invitation'
 import RolesTypes from '@Domain/Roles'
 
+import InvitationService from '@Services/InvitationService'
+
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import InvitationService from '@Services/InvitationService'
 
 import Validation from '@Utils/Validation'
 import getRoles from '@Utils/getRoles'
@@ -35,7 +35,7 @@ const { errors, resetForm, submitCount, handleSubmit } = useForm<InviteUsersForm
   validationSchema: {
     emails: (value: string[]) =>
       value?.every((email) => Validation.checkEmail(email)),
-    roles: (value: RolesTypes[]) => value?.length,
+    roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
   },
   initialValues: {
     emails: [''],

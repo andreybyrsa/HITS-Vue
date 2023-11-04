@@ -1,7 +1,7 @@
 import { User } from '@Domain/User'
 
 class LocalStorageUser {
-  getLocalStorageUser(): User {
+  getLocalStorageUser(): User | null {
     const localStorageUser = localStorage.getItem('user') ?? '{}'
 
     return JSON.parse(localStorageUser, (key: string, value: string) => {

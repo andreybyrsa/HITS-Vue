@@ -7,8 +7,11 @@ import { UpdateUserPassword } from '@Domain/ManageUsers'
 import { NewEmailForm } from '@Domain/Invitation'
 import Success from '@Domain/ResponseMessage'
 
+import useUserStore from '@Store/user/userStore'
+
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const usersAxios = defineAxios(getMocks().users)
 const usersEmailsAxios = defineAxios(getMocks().usersEmails)
@@ -17,6 +20,7 @@ const getUsers = async (token: string): Promise<User[] | Error> => {
   return await usersAxios
     .get('/profile/get/users', {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -29,6 +33,7 @@ const getUsersEmails = async (token: string): Promise<string[] | Error> => {
   return await usersEmailsAxios
     .get(`/profile/get/emails`, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -45,7 +50,10 @@ const updateUserInfo = async (
     .put(
       '/profile/change/info',
       newUserData,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id: newUserData.id } },
     )
     .then((response) => response.data)

@@ -23,6 +23,8 @@ import RatingService from '@Services/RatingService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
+import Validation from '@Utils/Validation'
+
 const props = defineProps<ExperCalculatorProps>()
 const ratings = defineModel<Rating[]>({ required: false })
 
@@ -37,13 +39,18 @@ const isSavedRating = ref(false)
 
 const { values, setFieldValue, setValues, handleSubmit } = useForm<Rating>({
   validationSchema: {
-    rating: (value: number) => (value && value >= 0) || 'Поля не заполнены',
-    marketValue: (value: number) => (value && value >= 0) || 'Поле не заполнено',
-    originality: (value: number) => (value && value >= 0) || 'Поле не заполнено',
+    rating: (value: number) =>
+      Validation.checkIsEmptyValue(value) || 'Поля не заполнены',
+    marketValue: (value: number) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    originality: (value: number) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     technicalRealizability: (value: number) =>
-      (value && value >= 0) || 'Поле не заполнено',
-    suitability: (value: number) => (value && value >= 0) || 'Поле не заполнено',
-    budget: (value: number) => (value && value >= 0) || 'Поле не заполнено',
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    suitability: (value: number) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    budget: (value: number) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
   },
 })
 
