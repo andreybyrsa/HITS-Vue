@@ -1,8 +1,11 @@
 import Success from '@Domain/ResponseMessage'
 import UserGroup from '@Domain/UsersGroup'
 
+import useUserStore from '@Store/user/userStore'
+
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const usersGroupsAxios = defineAxios(getMocks().usersGroups)
 
@@ -10,6 +13,7 @@ const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
   return await usersGroupsAxios
     .get('/group/all', {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -25,7 +29,10 @@ const getUsersGroup = async (
   return await usersGroupsAxios
     .get(
       `/group/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)
@@ -42,6 +49,7 @@ const createUsersGroup = async (
   return await usersGroupsAxios
     .post('/group/create', usersData, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -59,7 +67,10 @@ const updateUsersGroup = async (
     .put(
       `/group/update/${id}`,
       usersGroup,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)
@@ -77,7 +88,10 @@ const deleteUsersGroup = async (
   return await usersGroupsAxios
     .delete(
       `/group/delete/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)

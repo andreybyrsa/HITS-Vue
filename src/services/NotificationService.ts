@@ -1,16 +1,18 @@
-import { API_URL } from '@Main'
-
 import Notification from '@Domain/Notification'
+
+import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const notificationsAxios = defineAxios(getMocks().notifications)
 
 const getNotifications = async (token: string): Promise<Notification[] | Error> => {
   return await notificationsAxios
-    .get(`${API_URL}/notifications/get/all`, {
+    .get('/notifications/get/all', {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -23,12 +25,29 @@ const getFavoriteNotifications = async (
   token: string,
 ): Promise<Notification[] | Error> => {
   return await notificationsAxios
-    .get(`${API_URL}/notifications/get/favorite`, {
+    .get('/notifications/get/favorite', {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки избранных уведомлений'
+      return new Error(error)
+    })
+}
+
+const createNotification = async (
+  notification: Notification,
+  token: string,
+): Promise<Notification | Error> => {
+  return await notificationsAxios
+    .post('/notifications/create', notification, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка создания уведомления'
       return new Error(error)
     })
 }
@@ -39,9 +58,10 @@ const markAsFavoriteNotification = async (
 ): Promise<Notification | Error> => {
   return await notificationsAxios
     .putNoRequestBody<Notification>(
-      `${API_URL}/put/notifications/mark-as-favorite/${id}`,
+      `/put/notifications/mark-as-favorite/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       {
         params: { id },
@@ -62,9 +82,10 @@ const unMarkAsFavoriteNotification = async (
 ): Promise<Notification | Error> => {
   return await notificationsAxios
     .putNoRequestBody<Notification>(
-      `${API_URL}/put/notifications/unmark-as-favorite/${id}`,
+      `/put/notifications/unmark-as-favorite/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       {
         params: { id },
@@ -85,8 +106,11 @@ const checkNotification = async (
 ): Promise<void | Error> => {
   return await notificationsAxios
     .putNoRequestBody<void>(
-      `${API_URL}/notificaion/check/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      `/notificaion/check/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id }, requestData: { isReaded: true } },
     )
     .then((response) => response.data)
@@ -96,14 +120,39 @@ const checkNotification = async (
     })
 }
 
+const closeNotification = async (
+  id: number,
+  token: string,
+): Promise<void | Error> => {
+  return await notificationsAxios
+    .putNoRequestBody<void>(
+      `/put/notifications/close/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id },
+        requestData: { isShowed: true },
+      },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка закрытия уведомления'
+      return new Error(error)
+    })
+}
+
 const NotificatonsService = {
   getNotifications,
   getFavoriteNotifications,
 
+  createNotification,
+
   markAsFavoriteNotification,
   unMarkAsFavoriteNotification,
-
   checkNotification,
+  closeNotification,
 }
 
 export default NotificatonsService

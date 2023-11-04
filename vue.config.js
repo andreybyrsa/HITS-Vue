@@ -23,7 +23,6 @@ module.exports = defineConfig({
         '@Domain': resolvePath('src/domain'),
         '@Hooks': resolvePath('src/hooks/'),
         '@Services': resolvePath('src/services'),
-        '@Middlewares': resolvePath('src/middlewares'),
         '@Store': resolvePath('src/store/'),
         '@Utils': resolvePath('src/utils/'),
       },
