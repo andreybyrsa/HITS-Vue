@@ -36,21 +36,21 @@ function createMockResponse<MockResponseType>(
 function defineAxios<MocksType>(mocks: MocksType[]) {
   const mockArray = ref(mocks) as Ref<MocksType[]>
 
-  async function get(
+  function get(
     endPoint: string,
     config?: AxiosRequestConfig<MocksType>,
   ): Promise<AxiosResponse<MocksType[]>>
-  async function get(
+  function get(
     endPoint: string,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType>,
   ): Promise<AxiosResponse<MocksType>>
-  async function get<ResponseType>(
+  function get<ResponseType>(
     endPoint: string,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<ResponseType>>
-  async function get<ResponseType>(
+  function get<ResponseType>(
     endPoint: string,
     config?: AxiosRequestConfig<MocksType>,
     mockConfig?: AxiosMockConfig<MocksType, ResponseType>,
@@ -83,61 +83,88 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     )
   }
 
-  async function post(
+  function post(
     endPoint: string,
     mockData: MocksType,
     config?: AxiosRequestConfig<MocksType>,
   ): Promise<AxiosResponse<MocksType>>
-  async function post<ResponseType>(
+  function post(
+    endPoint: string,
+    mockData: MocksType[],
+    config?: AxiosRequestConfig<MocksType[]>,
+  ): Promise<AxiosResponse<MocksType[]>>
+  function post<ResponseType>(
     endPoint: string,
     mockData: MocksType,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<ResponseType>>
-  async function post<ResponseType>(
+  function post<ResponseType>(
     endPoint: string,
-    mockData: MocksType,
-    config?: AxiosRequestConfig<MocksType>,
+    mockData: MocksType | MocksType[],
+    config?: AxiosRequestConfig<MocksType | MocksType[]>,
     mockConfig?: AxiosMockConfig<MocksType, ResponseType>,
-  ): Promise<AxiosResponse<MocksType | ResponseType>> {
+  ): Promise<AxiosResponse<MocksType | MocksType[] | ResponseType>> {
     if (MODE === 'PRODUCTION') {
       return axios.post(`${API_URL}${endPoint}`, mockData, config)
     }
 
     return new Promise((resolve, reject) =>
       setTimeout(() => {
-        const id = Math.random() * 100000000
-        const data = { ...mockData, id } as MocksType
-        mockArray.value.push(data)
+        if (mockData instanceof Array) {
+          const values: MocksType[] = []
+          mockData.forEach((value) => {
+            const id = Math.random() * 100000000
+            const data = { ...value, id } as MocksType
+            values.push(data)
+            mockArray.value.push(data)
+          })
 
-        if (mockConfig) {
-          const { responseData } = mockConfig
+          if (mockConfig) {
+            const { responseData } = mockConfig
 
-          if (responseData) {
-            resolve(createMockResponse(responseData))
+            if (responseData) {
+              resolve(createMockResponse(responseData))
+            } else {
+              reject(createMockResponse('Ошибка возврата данных'))
+            }
           } else {
-            reject(createMockResponse('Ошибка возврата данных'))
+            resolve(createMockResponse(values))
           }
         } else {
-          resolve(createMockResponse(data))
+          const id = Math.random() * 100000000
+          const data = { ...mockData, id } as MocksType
+          mockArray.value.push(data)
+
+          if (mockConfig) {
+            const { responseData } = mockConfig
+
+            if (responseData) {
+              resolve(createMockResponse(responseData))
+            } else {
+              reject(createMockResponse('Ошибка возврата данных'))
+            }
+          } else {
+            resolve(createMockResponse(data))
+          }
         }
       }, 500),
     )
   }
 
-  async function put(
+  function put(
     endPoint: string,
     newMockData: MocksType | OptionalMocksDataType<MocksType>,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType>,
   ): Promise<AxiosResponse<MocksType>>
-  async function put<ResponseType>(
+  function put<ResponseType>(
     endPoint: string,
     newMockData: MocksType | OptionalMocksDataType<MocksType>,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<ResponseType>>
-  async function put<ResponseType>(
+  function put<ResponseType>(
     endPoint: string,
     newMockData: MocksType | OptionalMocksDataType<MocksType>,
     config: AxiosRequestConfig<MocksType>,
@@ -185,12 +212,12 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     })
   }
 
-  async function putNoRequestBody<ResponseType>(
+  function putNoRequestBody<ResponseType>(
     endPoint: string,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<ResponseType>>
-  async function putNoRequestBody<ResponseType>(
+  function putNoRequestBody<ResponseType>(
     endPoint: string,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
@@ -227,7 +254,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     })
   }
 
-  async function deleteData(
+  function deleteData(
     endPoint: string,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType>,
