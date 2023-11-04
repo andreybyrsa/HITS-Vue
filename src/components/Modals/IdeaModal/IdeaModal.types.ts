@@ -1,7 +1,7 @@
 import { VueElement } from 'vue'
 
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
-import Market from '@Domain/Market'
+import IdeasMarket from '@Domain/IdeasMarket'
 
 interface IdeaDescriptionProps {
   idea: Idea
@@ -13,7 +13,7 @@ interface IdeaActionsProps {
 }
 
 interface IdeaCommentsProps {
-  idea: Idea | Market
+  idea: Idea | IdeasMarket
 
   ideaModalRef: VueElement | null
 }
@@ -30,7 +30,7 @@ interface IdeaDescriptionEmits {
 interface IdeaModalCollapseType {
   key: number
   id: number
-  ideaKey: keyof Idea | keyof Market
+  ideaKey: keyof Idea | keyof IdeasMarket
   text: string
 }
 

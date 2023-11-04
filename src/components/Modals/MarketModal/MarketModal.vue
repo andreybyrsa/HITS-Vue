@@ -25,7 +25,7 @@ import useCommentsStore from '@Store/comments/commentsStore'
 import Team from '@Domain/Team'
 import Comment from '@Domain/Comment'
 import RequestTeams from '@Domain/RequestTeams'
-import Market from '@Domain/Market'
+import IdeasMarket from '@Domain/IdeasMarket'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
@@ -39,7 +39,7 @@ const { user } = storeToRefs(userStore)
 const route = useRoute()
 const router = useRouter()
 
-const idea = ref<Market>()
+const idea = ref<IdeasMarket>()
 const requestTeams = ref<RequestTeams[]>()
 const teams = ref<Team[]>()
 
@@ -68,9 +68,9 @@ onMounted(async () => {
       () => useCommentsStore().getComments(id, token),
     ]
 
-    await makeParallelRequests<RequestTeams[] | Team[] | Market | Comment[] | Error>(
-      marketParallelRequests,
-    ).then((responses) => {
+    await makeParallelRequests<
+      RequestTeams[] | Team[] | IdeasMarket | Comment[] | Error
+    >(marketParallelRequests).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
           checkResponseStatus(response, idea)

@@ -11,7 +11,6 @@ import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import JoinIdeaModal from '@Components/Modals/JoinIdeaModal/JoinIdeaModal.vue'
 
 import useUserStore from '@Store/user/userStore'
 import RequestTeamForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
@@ -110,11 +109,6 @@ function handleCloseJoinModal() {
           Перейти на Ideas
         </NavTab>
       </div>
-
-      <JoinIdeaModal
-        :is-opened="isOpenedJoinModal"
-        @close-modal="handleCloseJoinModal"
-      />
 
       <Button class-name="btn-primary"> Открыть окно </Button>
 

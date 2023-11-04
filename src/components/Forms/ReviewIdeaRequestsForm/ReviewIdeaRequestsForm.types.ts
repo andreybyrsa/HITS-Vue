@@ -1,7 +1,7 @@
-import Market from '@Domain/Market'
+import IdeasMarket from '@Domain/IdeasMarket'
 
 interface ReviewIdeaRequestsFormProps {
-  idea: Market
+  idea: IdeasMarket
 }
 
 export default ReviewIdeaRequestsFormProps

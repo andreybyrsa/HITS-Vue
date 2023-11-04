@@ -1,4 +1,4 @@
-import Market from '@Domain/Market'
+import IdeasMarket from '@Domain/IdeasMarket'
 import ApplicationTeams from '@Domain/RequestTeams'
 
 interface MarketModalProps {
@@ -6,7 +6,7 @@ interface MarketModalProps {
 }
 
 interface MarketDescriptionProps {
-  idea: Market
+  idea: IdeasMarket
 }
 
 interface MarketModalEmits {
@@ -18,7 +18,7 @@ interface MarketAcceptTeamProps {
 }
 
 interface MarketInfoProps {
-  idea: Market
+  idea: IdeasMarket
 }
 
 export {

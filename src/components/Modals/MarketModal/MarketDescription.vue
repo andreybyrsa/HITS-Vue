@@ -12,9 +12,7 @@ import {
 } from '@Components/Modals/MarketModal/MarketModal.types'
 
 import useUserStore from '@Store/user/userStore'
-import Market from '@Domain/Market'
-
-import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import IdeasMarket from '@Domain/IdeasMarket'
 
 defineProps<MarketDescriptionProps>()
 
@@ -66,7 +64,7 @@ function closeModal() {
         </Button>
         <Collapse :id="collapse.id">
           <div class="p-2">
-            {{ idea?.[collapse.ideaKey as keyof Market] }}
+            {{ idea?.[collapse.ideaKey as keyof IdeasMarket] }}
           </div>
         </Collapse>
       </li>

@@ -1,8 +1,8 @@
-import Market from '@Domain/Market'
+import IdeasMarket from '@Domain/IdeasMarket'
 import Team from '@Domain/Team'
 
 interface RequestToIdeaProps {
-  idea: Market
+  idea: IdeasMarket
 }
 
 interface RequestTeamCollapseProps {

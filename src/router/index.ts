@@ -24,14 +24,13 @@ import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
-
 import DevView from '@Views/DevView.vue'
 
+// import IdeasMarket from '@Views/IdeasMarket/IdeasMarketView.vue'
+
+import IdeasMarketViewVue from '@Views/IdeasMarket/IdeasMarketView.vue'
+
 import RoleAndNotificationMiddleware from '@Middlewares/RoleAndNotificationMiddleware.vue'
-
-import IdeasMarket from '@Views/IdeasMarket.vue'
-
-import ReviewIdeaFormVue from '@Components/Forms/ReviewIdeaForm/ReviewIdeaForm.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -64,18 +63,6 @@ const routes: RouteRecordRaw[] = [
             path: 'update/:id',
             meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
             component: EditIdeaView,
-          },
-        ],
-      },
-      {
-        path: 'market',
-        name: 'market',
-        component: IdeasMarket,
-        children: [
-          {
-            path: ':id',
-            name: 'MarketModal',
-            component: MarketModal,
           },
         ],
       },
@@ -190,9 +177,16 @@ const routes: RouteRecordRaw[] = [
     component: ForgotPasswordView,
   },
   {
-    path: '/review-idea',
-    name: 'review-idea',
-    component: ReviewIdeaFormVue,
+    path: '/market',
+    name: 'market',
+    component: IdeasMarketViewVue,
+    children: [
+      {
+        path: ':id',
+        name: 'MarketModal',
+        component: MarketModal,
+      },
+    ],
   },
 ]
 

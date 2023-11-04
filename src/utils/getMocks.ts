@@ -5,8 +5,8 @@ import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
-import Market from '@Domain/Market'
 import RequestTeams from '@Domain/RequestTeams'
+import IdeasMarket from '@Domain/IdeasMarket'
 import Notification from '@Domain/Notification'
 
 interface Mocks {
@@ -17,11 +17,11 @@ interface Mocks {
   teamMember: TeamMember[]
   comments: Comment[]
   ideas: Idea[]
-  ideasMarket: Market[]
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
   RequestTeams: RequestTeams[]
+  IdeasMarket: IdeasMarket[]
   notifications: Notification[]
 }
 
@@ -346,75 +346,6 @@ function getMocks(): Mocks {
     },
   ]
 
-  const ideasMarket: Market[] = [
-    {
-      id: 1,
-      position: '1',
-      name: 'BaccaratHelper',
-      initiator: 'kirill.vlasov.05@inbox.ru',
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      stack: 'ReactJS',
-      creationDate: '2023-10-20T11:02:17Z',
-      members: 8,
-      customer: 'ВШЦТ',
-      teamSize: 10,
-      status: 'Открыта',
-      numberofRequests: 2,
-      isFavorite: false,
-    },
-    {
-      id: 2,
-      position: '2',
-      name: 'Vaccarat',
-      initiator: 'andrey@mail.com',
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      stack: 'ReactJS',
-      creationDate: '2023-10-20T11:02:17Z',
-      members: 4,
-      customer: 'ВШЦТ',
-      teamSize: 10,
-      status: 'Открыта',
-      numberofRequests: 0,
-      isFavorite: false,
-    },
-    {
-      id: 3,
-      position: '3',
-      name: 'Insensible',
-      initiator: 'timyr@mail.com',
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      stack: 'Django',
-      creationDate: '2023-10-20T11:02:17Z',
-      members: 10,
-      customer: 'ВШЦТ',
-      teamSize: 10,
-      status: 'Открыта',
-      numberofRequests: 0,
-      isFavorite: false,
-    },
-  ]
-
   const teams: Team[] = [
     {
       id: 10,
@@ -625,6 +556,95 @@ function getMocks(): Mocks {
     },
   ]
 
+  const IdeasMarket: IdeasMarket[] = [
+    {
+      id: 1,
+      position: 1,
+      name: 'BaccaratHelper',
+      initiator: 'kirill.vlasov.05@inbox.ru',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
+      stack: [
+        {
+          id: 0,
+          name: 'JavaScript',
+          type: 'LANGUAGE',
+          confirmed: true,
+        },
+      ],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 111,
+      acceptedRequests: 4,
+      isFavorite: false,
+    },
+    {
+      id: 2,
+      position: 2,
+      name: 'Vaccarat',
+      initiator: 'andrey@mail.com',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
+      stack: [
+        {
+          id: 0,
+          name: 'ReactJS',
+          type: 'FRAMEWORK',
+          confirmed: true,
+        },
+      ],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 222,
+      acceptedRequests: 5,
+      isFavorite: false,
+    },
+    {
+      id: 3,
+      position: 3,
+      name: 'Insensible',
+      initiator: 'Тимур Минязев',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
+      stack: [
+        {
+          id: 0,
+          name: 'PostgreSQL',
+          type: 'DATABASE',
+          confirmed: true,
+        },
+      ],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 0,
+      acceptedRequests: 0,
+      isFavorite: false,
+    },
+  ]
   const notifications: Notification[] = [
     {
       id: 0,
@@ -669,10 +689,10 @@ function getMocks(): Mocks {
     comments,
     ratings,
     ideas,
-    ideasMarket,
     ideasSkills,
     teams,
     RequestTeams,
+    IdeasMarket,
     notifications,
   }
 }
