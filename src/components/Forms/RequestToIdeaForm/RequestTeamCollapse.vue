@@ -43,7 +43,7 @@ const sendRequestTeam = handleSubmit(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const id = +route.params.id
+    const id = props.idea.id
 
     const requestTeam: RequestTeams = {
       ...props.team,
@@ -53,6 +53,8 @@ const sendRequestTeam = handleSubmit(async () => {
       accepted: false,
       letter: letter.value,
     }
+
+    console.log(requestTeam)
 
     const response = await RequestTeamsServise.postRequest(requestTeam, token)
 

@@ -43,6 +43,7 @@ function sendOnPageCreateTeam() {
         v-for="(team, index) in filterTeamOwner()"
         :key="index"
         :team="team"
+        :idea="idea"
         v-model:teams="teams"
         v-model:requestTeams="requestTeams"
       />

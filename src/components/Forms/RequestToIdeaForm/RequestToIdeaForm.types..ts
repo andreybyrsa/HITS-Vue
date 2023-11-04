@@ -7,6 +7,7 @@ interface RequestToIdeaProps {
 
 interface RequestTeamCollapseProps {
   team: Team
+  idea: IdeasMarket
 }
 
 export { RequestToIdeaProps, RequestTeamCollapseProps }

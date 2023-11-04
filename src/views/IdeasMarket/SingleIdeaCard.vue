@@ -9,12 +9,21 @@ import SingleIdeaCardProps from '@Views/IdeasMarket/IdeasMarketView.types'
 
 import IdeasMarket from '@Domain/IdeasMarket'
 import IdeasMarketStatusTypes from '@Domain/MarketStatus'
+import RequestToIdeaModal from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.vue'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
 
 import getMarketStatus from '@Utils/getMarketStatus'
+import { Ref, onMounted, ref } from 'vue'
+import RequestTeams from '@Domain/RequestTeams'
+import Team from '@Domain/Team'
+import RequestTeamsServise from '@Services/RequestTeamsServise'
+import TeamService from '@Services/TeamService'
+
+import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import { useDateFormat } from '@vueuse/core'
 
 const availableStatus = getMarketStatus()
 
@@ -22,22 +31,52 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const props = defineProps<SingleIdeaCardProps>()
-const ideas = defineModel<IdeasMarket[]>({ required: true })
+const ideas = defineModel<IdeasMarket[]>('ideas', { required: true })
 
-function getFormattedDate(date: Date | string) {
-  if (date) {
-    if (date instanceof Date) {
-      const formattedDate = date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      })
-      return formattedDate.replace(/\//g, '.')
-    } else {
-      return date
-    }
+const requestTeams = ref<RequestTeams[]>()
+const teams = ref<Team[]>()
+
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    // notification
   }
-  return ''
+}
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const teamsParallelRequests = [
+      () => RequestTeamsServise.getRequestAll(props.idea.id, token),
+      () => TeamService.getTeams(token),
+    ]
+
+    await makeParallelRequests<RequestTeams[] | Team[] | Error>(
+      teamsParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, requestTeams)
+        } else if (response.id === 1) {
+          checkResponseStatus(response, teams)
+        }
+      })
+    })
+  }
+})
+
+function getFormattedDate(date: string) {
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
+  }
 }
 function getTranslatedStatus(status: IdeasMarketStatusTypes) {
   return availableStatus.translatedStatus[status]
@@ -78,6 +117,14 @@ const handleRemoveIdeaFromFavorites = async () => {
       ideas.value.splice(currentIdeaIndex, 1)
     }
   }
+}
+
+const isOpenRequestToIdeaModal = ref<boolean>(false)
+function openRequestToIdeaModal() {
+  isOpenRequestToIdeaModal.value = true
+}
+function closeRequestToIdeaModal() {
+  isOpenRequestToIdeaModal.value = false
 }
 </script>
 
@@ -122,8 +169,10 @@ const handleRemoveIdeaFromFavorites = async () => {
       </div>
       <div class="idea-buttons">
         <Button
+          v-if="user?.email != idea.initiator"
           class="apply-button"
           prepend-icon-name="bi bi-send-fill"
+          @click="openRequestToIdeaModal"
         >
           Подать заявку
         </Button>
@@ -144,6 +193,15 @@ const handleRemoveIdeaFromFavorites = async () => {
       </div>
     </div>
   </div>
+
+  <RequestToIdeaModal
+    v-if="teams && requestTeams"
+    :is-opened="isOpenRequestToIdeaModal"
+    @close-modal="closeRequestToIdeaModal"
+    :idea="idea"
+    v-model:teams="teams"
+    v-model:requestTeams="requestTeams"
+  />
 </template>
 
 <style lang="scss">

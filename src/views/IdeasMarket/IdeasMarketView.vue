@@ -16,6 +16,8 @@ import IdeasMarket from '@Domain/IdeasMarket'
 import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
+import RequestTeams from '@Domain/RequestTeams'
+import Team from '@Domain/Team'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -130,7 +132,7 @@ function getNavTabClass(isAllIdeas: boolean) {
             :key="idea.id"
             :idea="idea"
             :is-all-ideas="isAllIdeas"
-            v-model="ideas"
+            v-model:ideas="ideas"
           />
         </div>
       </div>
