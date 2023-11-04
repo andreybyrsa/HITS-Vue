@@ -93,18 +93,18 @@ const { currentUser } = storeToRefs(userStore)
 //   }
 // })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   const currentRole = currentUser.value?.role
 
   if (to.name === 'login' && currentUser) {
-    next({ name: 'ideas-list' })
+    return { name: 'ideas-list' }
   } else if (
     !to.meta.roles ||
     (currentRole && (to.meta.roles as string[]).includes(currentRole))
   ) {
-    next()
+    return true
   } else {
-    next({ name: 'error' })
+    return { name: 'error' }
   }
 })
 
