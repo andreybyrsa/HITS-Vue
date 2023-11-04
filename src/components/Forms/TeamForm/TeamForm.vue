@@ -18,6 +18,7 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import Validation from '@Utils/Validation'
 
 const props = defineProps<TeamFormProps>()
 
@@ -29,12 +30,17 @@ const router = useRouter()
 
 const { handleSubmit } = useForm<Team>({
   validationSchema: {
-    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    description: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    closed: (value: boolean) => value !== undefined || 'Тип команды не выбран',
-    owner: (value: User) => value !== undefined || 'Поле не выбрано',
-    leader: (value: User) => value !== undefined || 'Поле не выбрано',
-    members: (value: User[]) => value?.length > 0 || 'Участники не выбраны',
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    description: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    closed: (value: boolean) =>
+      Validation.checkIsEmptyValue(value) || 'Тип команды не выбран',
+    owner: (value: User) => Validation.checkIsEmptyValue(value) || 'Поле не выбрано',
+    leader: (value: User) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не выбрано',
+    members: (value: User[]) =>
+      Validation.checkIsEmptyValue(value) || 'Участники не выбраны',
   },
   initialValues: {
     ...props.team,
