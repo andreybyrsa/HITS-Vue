@@ -26,6 +26,10 @@ import useUserStore from '@Store/user/userStore'
 import getRoles from '@Utils/getRoles'
 import Validation from '@Utils/Validation'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationsStore = useNotificationsStore()
+
 const users = defineModel<User[]>({
   required: true,
 })
@@ -66,7 +70,7 @@ const handleEditUser = handleSubmit(async (values) => {
     const response = await ManageUsersService.updateUserInfo(values, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     const currentUserIndex = users.value.findIndex((user) => user.id === response.id)
@@ -74,8 +78,11 @@ const handleEditUser = handleSubmit(async (values) => {
       users.value.splice(currentUserIndex, 1, response)
     }
 
-    // notification
     emit('close-modal')
+    return notificationsStore.createSystemNotification(
+      'Система',
+      'Пользователь успешно изменен',
+    )
   }
 })
 </script>
@@ -126,7 +133,8 @@ const handleEditUser = handleSubmit(async (values) => {
             id="editUserModalCollapse"
             class-name="w-100"
           >
-            <template
+            <div
+              class="d-flex"
               v-for="role in availableRoles.roles"
               :key="role"
             >
@@ -137,7 +145,7 @@ const handleEditUser = handleSubmit(async (values) => {
                 :label="availableRoles.translatedRoles[role]"
                 :value="role"
               />
-            </template>
+            </div>
           </Collapse>
         </div>
 

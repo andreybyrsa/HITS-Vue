@@ -14,9 +14,11 @@ import Team from '@Domain/Team'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const route = useRoute()
 
@@ -27,12 +29,12 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = route.params
+    const teamId = +route.params.id
 
-    const response = await TeamService.getTeam(id, token)
+    const response = await TeamService.getTeam(teamId, token)
 
     if (response instanceof Error) {
-      return
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     team.value = response

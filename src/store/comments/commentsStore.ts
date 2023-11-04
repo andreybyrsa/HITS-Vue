@@ -7,6 +7,8 @@ import Comment from '@Domain/Comment'
 
 import CommentService from '@Services/CommentService'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 const useCommentsStore = defineStore('comments', {
   state: (): InitialState => ({
     comments: null,
@@ -19,6 +21,10 @@ const useCommentsStore = defineStore('comments', {
         const response = await CommentService.getComments(ideaId, token)
 
         if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
           return response
         }
 
@@ -52,7 +58,10 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.createComment(comment, token)
 
       if (response instanceof Error) {
-        // notification
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
       } else {
         if (!this.rsocketIsConnected) {
           this.comments?.push(response)
@@ -64,13 +73,16 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
-        // notification
-      } else {
-        const currentCommentIndex = this.comments?.findIndex(
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
+      } else if (this.comments) {
+        const deletingCommentIndex = this.comments.findIndex(
           (comment) => comment.id === commentId,
         )
-        if (currentCommentIndex !== undefined && currentCommentIndex !== -1) {
-          this.comments?.splice(currentCommentIndex, 1)
+        if (deletingCommentIndex !== -1) {
+          this.comments.splice(deletingCommentIndex, 1)
         }
       }
     },
@@ -79,7 +91,10 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.checkComment(userId, commentId, token)
 
       if (response instanceof Error) {
-        // notification
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
       } else {
         const currentComment = this.comments?.find(
           (comment) => comment.id === commentId,

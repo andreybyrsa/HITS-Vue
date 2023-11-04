@@ -47,7 +47,7 @@ const getCurrentCommentDate = (createdAt: string) => {
   }
 
   if (dateDifference > 1) {
-    return `${date.value} ${time.value}`
+    return `${date.value} в ${time.value}`
   }
 
   return time.value

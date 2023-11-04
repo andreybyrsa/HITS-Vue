@@ -26,10 +26,15 @@ import useUserStore from '@Store/user/userStore'
 
 import getRoles from '@Utils/getRoles'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+
+const notificationsStore = useNotificationsStore()
+
 const props = defineProps<UsersGroupModalProps>()
 const emit = defineEmits<UsersGroupModalEmits>()
 
-const usersGroups = defineModel<UsersGroup[] | undefined>({
+const usersGroups = defineModel<UsersGroup[]>({
   required: true,
 })
 
@@ -53,7 +58,10 @@ onMounted(async () => {
     const responseUsers = await ManageUsersService.getUsers(token)
 
     if (responseUsers instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification(
+        'Система',
+        responseUsers.message,
+      )
     }
 
     users.value = responseUsers
@@ -83,7 +91,10 @@ onUpdated(async () => {
       const response = await UsersGroupsService.getUsersGroup(usersGroupId, token)
 
       if (response instanceof Error) {
-        return
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
 
       setValues({ ...response })
@@ -94,7 +105,7 @@ onUpdated(async () => {
 
       isLoadingGroup.value = false
     }
-  } else {
+  } else if (props.isOpened) {
     setValues({ name: '', users: [], roles: [] })
     unselectedUsers.value = [...users.value]
     usersGroupModalMode.value = 'CREATE'
@@ -121,12 +132,12 @@ const handleCreateGroup = handleSubmit(async (values) => {
     const response = await UsersGroupsService.createUsersGroup(values, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    usersGroups.value?.push(response)
+    usersGroups.value.push(response)
 
-    // notification
+    notificationsStore.createSystemNotification('Система', 'Группа успешно создана')
     emit('close-modal')
   }
 })
@@ -140,18 +151,19 @@ const handleUpdateGroup = handleSubmit(async (values) => {
     const response = await UsersGroupsService.updateUsersGroup(values, token, id)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    const editingGroupIndex = usersGroups.value?.findIndex(
+    const editingGroupIndex = usersGroups.value.findIndex(
       (group) => group.id === values.id,
     )
 
-    if (editingGroupIndex !== undefined && editingGroupIndex !== -1) {
-      usersGroups.value?.splice(editingGroupIndex, 1, values)
+    if (editingGroupIndex !== -1) {
+      usersGroups.value.splice(editingGroupIndex, 1, values)
     }
 
-    // notification
+    notificationsStore.createSystemNotification('Система', 'Группа успешно изменена')
+
     emit('close-modal')
   }
 })

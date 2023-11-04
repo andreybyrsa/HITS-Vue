@@ -12,16 +12,22 @@ import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCal
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { Idea, Rating } from '@Domain/Idea'
+import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Comment from '@Domain/Comment'
 
-import IdeasService from '@Services/IdeasService'
 import RatingService from '@Services/RatingService'
 
-import useCommentsStore from '@Store/comments/commentsStore'
 import useUserStore from '@Store/user/userStore'
+import useIdeasStore from '@Store/ideas/ideasStore'
+import useCommentsStore from '@Store/comments/commentsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+
+import IdeasService from '@Services/IdeasService'
+
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const notificationsStore = useNotificationsStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -30,12 +36,14 @@ const router = useRouter()
 const route = useRoute()
 
 const idea = ref<Idea>()
+const ideaSkills = ref<IdeaSkills>()
 const comments = ref<Comment[]>()
 const ratings = ref<Rating[]>()
 const rating = ref<Rating>()
 
 const isOpenedIdeaModal = ref(true)
 
+const ideasStore = useIdeasStore()
 const commentsStore = useCommentsStore()
 
 const ideaModalRef = ref<VueElement | null>(null)
@@ -47,7 +55,7 @@ function checkResponseStatus<T>(
   if (data.status === 'fulfilled') {
     refValue.value = data.value
   } else {
-    // notification
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
   }
 }
 
@@ -59,24 +67,25 @@ onMounted(async () => {
     const id = +route.params.id
 
     const ideaParallelRequests = [
-      () => IdeasService.getIdea(id, token),
+      () => ideasStore.getIdea(id, token),
+      () => IdeasService.getIdeaSkills(id, token),
       () => RatingService.getAllIdeaRatings(id, token),
       () => commentsStore.getComments(id, token),
     ]
 
-    await makeParallelRequests<Idea | Rating[] | Comment[] | Error>(
+    await makeParallelRequests<Idea | IdeaSkills | Rating[] | Comment[] | Error>(
       ideaParallelRequests,
     ).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
           checkResponseStatus(response, idea)
         } else if (response.id === 1) {
+          checkResponseStatus(response, ideaSkills)
+        } else if (response.id === 2) {
           checkResponseStatus(response, ratings)
         }
       })
     })
-
-    // await commentsStore.connectRsocket(id)
   }
 })
 
@@ -121,6 +130,7 @@ function handleCloseIdeaModal() {
       <div class="idea-modal__left-side w-75">
         <IdeaDescription
           :idea="idea"
+          :idea-skills="ideaSkills"
           @close-modal="handleCloseIdeaModal"
         />
 
@@ -131,7 +141,7 @@ function handleCloseIdeaModal() {
           v-model="ratings"
         />
 
-        <IdeaActions v-model="idea" />
+        <IdeaActions :idea="idea" />
 
         <IdeaComments
           :idea="idea"

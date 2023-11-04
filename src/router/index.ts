@@ -1,10 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
-import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
-import EditUsersForm from '@Components/Forms/EditUsersForm/EditUsersForm.vue'
-import UsersGroupsForm from '@Components/Forms/UsersGroupsForm/UsersGroupsForm.vue'
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
-import SkillsForm from '@Components/Forms/CompetenciesMenuForm/Skills.vue'
 
 import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
@@ -12,31 +8,31 @@ import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
-import AdminView from '@Views/AdminView.vue'
+import UsersView from '@Views/Admin/UsersView.vue'
+import AddUsersView from '@Views/Admin/AddUsersView.vue'
+import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
+import SkillsView from '@Views/Admin/SkillsView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
+import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
-import CommandView from '@Views/CommandView/CommandView.vue'
-
 import DevView from '@Views/DevView.vue'
 
-import IdeasMarket from '@Views/IdeasMarket.vue'
 import IdeasMarketViewVue from '@Views/IdeasMarket/IdeasMarketView.vue'
 
-import RoleMiddleware from '@Middlewares/RoleMiddleware.vue'
-import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+import RoleAndNotificationMiddleware from '@Middlewares/RoleAndNotificationMiddleware.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: NotificationMiddleware && RoleMiddleware,
+    component: RoleAndNotificationMiddleware,
     children: [
       {
         path: 'ideas',
@@ -49,7 +45,7 @@ const routes: RouteRecordRaw[] = [
             children: [
               {
                 path: ':id',
-                meta: { roles: ['INITIATOR', 'ADMIN'] },
+                meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
                 component: IdeaModal,
               },
             ],
@@ -61,7 +57,7 @@ const routes: RouteRecordRaw[] = [
           },
 
           {
-            path: 'edit/:id',
+            path: 'update/:id',
             meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
             component: EditIdeaView,
           },
@@ -81,10 +77,10 @@ const routes: RouteRecordRaw[] = [
             meta: {
               roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
             },
-            component: CommandView,
+            component: TeamsView,
           },
           {
-            path: 'edit/:id',
+            path: 'update/:id',
             meta: {
               roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
               isPageEdit: true,
@@ -103,26 +99,25 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'admin',
-        component: AdminView,
         children: [
           {
-            path: 'add-users',
-            component: AddUsersForm,
+            path: 'users',
+            component: UsersView,
             meta: { roles: ['ADMIN'] },
           },
           {
-            path: 'edit-users',
-            component: EditUsersForm,
+            path: 'add-users',
+            component: AddUsersView,
             meta: { roles: ['ADMIN'] },
           },
           {
             path: 'users-groups',
-            component: UsersGroupsForm,
+            component: UsersGroupsView,
             meta: { roles: ['ADMIN'] },
           },
           {
             path: 'skills',
-            component: SkillsForm,
+            component: SkillsView,
             meta: { roles: ['ADMIN'] },
           },
         ],

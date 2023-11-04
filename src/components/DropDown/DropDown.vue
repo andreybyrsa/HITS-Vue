@@ -5,7 +5,7 @@ import DropDownProps from '@Components/DropDown/DropDown.types'
 
 const props = defineProps<DropDownProps>()
 
-const DropDownClassName = computed(() => ['dropdown-menu p-2', props.className])
+const DropDownClassName = computed(() => ['dropdown-menu', props.className])
 </script>
 
 <template>

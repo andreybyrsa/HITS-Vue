@@ -9,6 +9,8 @@ import IdeasMarketStatusTypes from '@Domain/MarketStatus'
 import getMarketStatus from '@Utils/getMarketStatus'
 import Icon from '@Components/Icon/Icon.vue'
 import SingleIdeaCardProps from '@Views/IdeasMarket/IdeasMarketView.types'
+import Skills from '@Components/Skills/Skills.vue'
+
 const availableStatus = getMarketStatus()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -87,22 +89,8 @@ const handleRemoveIdeaFromFavorites = async () => {
         <Icon class-name="bi bi-person-circle fs-5" /> Инициатор:
         {{ idea.initiator }}
       </div>
-      <div class="idea-icons">
-        <div class="icon">
-          <i class="bi bi-icon-name">
-            <div class="oval-badge">{{ idea.stack[0].name }}</div>
-          </i>
-        </div>
-        <div class="icon">
-          <i class="bi bi-icon-name">
-            <div class="oval-badge">{{ idea.stack[0].name }}</div>
-          </i>
-        </div>
-        <div class="icon">
-          <i class="bi bi-icon-name">
-            <div class="oval-badge">{{ idea.stack[0].name }}</div>
-          </i>
-        </div>
+      <div class="idea-stacks">
+        <Skills :skills="idea?.stack" />
       </div>
     </div>
     <div class="idea-card-right">
@@ -181,7 +169,7 @@ const handleRemoveIdeaFromFavorites = async () => {
     display: flex;
     align-items: center;
   }
-  .idea-icons {
+  .idea-stacks {
     display: flex;
     margin-top: 35px;
     .icon {
