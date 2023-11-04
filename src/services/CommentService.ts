@@ -1,8 +1,11 @@
 import Comment from '@Domain/Comment'
 import Success from '@Domain/ResponseMessage'
 
+import useUserStore from '@Store/user/userStore'
+
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const commentAxios = defineAxios(getMocks().comments)
 
@@ -17,7 +20,10 @@ const getComments = async (
   return await commentAxios
     .get<Comment[]>(
       `/comment/all/${ideaId}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { formatter: (comments) => filterCommentsById(ideaId, comments) },
     )
     .then((response) => response.data)
@@ -34,6 +40,7 @@ const createComment = async (
   return await commentAxios
     .post('/comment/send', comment, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -49,7 +56,10 @@ const deleteComment = async (
   return await commentAxios
     .delete(
       `/comment/delete/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)
@@ -67,7 +77,10 @@ const checkComment = async (
   return await commentAxios
     .putNoRequestBody<void>(
       `/comment/check/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id }, requestData: { checkedBy: [userId] } },
     )
     .then((response) => response.data)

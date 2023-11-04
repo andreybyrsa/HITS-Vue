@@ -1,7 +1,10 @@
 import { Rating } from '@Domain/Idea'
 
+import useUserStore from '@Store/user/userStore'
+
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
 function filterRatingsById(ideaId: number, ratings: Rating[]) {
   return ratings.filter((rating) => rating.ideaId === ideaId)
@@ -16,7 +19,10 @@ const getAllIdeaRatings = async (
   return await ratingsAxios
     .get<Rating[]>(
       `/rating/all/${ideaId}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { formatter: (ratings) => filterRatingsById(ideaId, ratings) },
     )
     .then((response) => response.data)
@@ -33,7 +39,10 @@ const getExpertRating = async (
   return await ratingsAxios
     .get(
       `/rating/${ideaId}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { ideaId } },
     )
     .then((response) => response.data)
@@ -52,7 +61,10 @@ const saveExpertRating = async (
     .put<void>(
       '/rating/save',
       rating,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { ideaId } },
     )
     .then((response) => response.data)
@@ -71,7 +83,10 @@ const confirmExpertRating = async (
     .put<void>(
       '/rating/confirm',
       rating,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { ideaId }, requestData: { ...rating, confirmed: true } },
     )
     .then((response) => response.data)

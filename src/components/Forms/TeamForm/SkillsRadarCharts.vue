@@ -32,6 +32,8 @@ const skillsData = computed(() => [
   { data: devopsSkills.value },
 ])
 
+const ButtonClassName = computed(() => [props.className])
+
 function getSkillsData(skills: Skill[], type: SkillType) {
   const skillsByType = skills.filter((skill) => skill.type === type)
 
@@ -105,7 +107,7 @@ const intervalId = setInterval(() => {
 </script>
 
 <template>
-  <div class="radar-charts w-50">
+  <div :class="['radar-charts', ...ButtonClassName]">
     <div
       v-for="(skills, index) in skillsData"
       :key="index"

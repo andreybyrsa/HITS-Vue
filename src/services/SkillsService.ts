@@ -1,8 +1,11 @@
 import { Skill, SkillType } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
 
+import useUserStore from '@Store/user/userStore'
+
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const skillsAxios = defineAxios(getMocks().skills)
 
@@ -22,6 +25,7 @@ const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
   return await skillsAxios
     .get('/skill/all', {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -36,7 +40,10 @@ const getAllConfirmedOrCreatorSkills = async (
   return await skillsAxios
     .get<Record<SkillType, Skill[]>>(
       '/skill/all-confirmed-or-creator',
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { formatter: mockSkillsFormatter },
     )
     .then((response) => response.data)
@@ -53,7 +60,10 @@ const getSkillsByType = async (
   return await skillsAxios
     .get<Skill[]>(
       `/skill/${skillType}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { formatter: (data) => mockSkillsByTypeMather(data, skillType) },
     )
     .then((response) => response.data)
@@ -67,6 +77,7 @@ const createSkill = async (skill: Skill, token: string): Promise<Skill | Error> 
   return await skillsAxios
     .post('/skill/add', skill, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -82,6 +93,7 @@ const createNoConfirmedSkill = async (
   return await skillsAxios
     .post('/skill/add/no-confirmed', skill, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -99,7 +111,10 @@ const confirmSkill = async (
     .put(
       `/skill/confirm/${id}`,
       skill,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)
@@ -118,7 +133,10 @@ const updateSkill = async (
     .put(
       `/skill/update/${id}`,
       skill,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)
@@ -132,7 +150,10 @@ const deleteSkill = async (id: number, token: string): Promise<Success | Error> 
   return await skillsAxios
     .delete(
       `/skill/delete/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)

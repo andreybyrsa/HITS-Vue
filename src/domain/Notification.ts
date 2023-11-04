@@ -1,11 +1,12 @@
 interface Notification {
   id: number
+  userId: number
   title: string
   message: string
+  isShowed: boolean
   isReaded: boolean
-  // isShowed: boolean
   isFavourite: boolean
-  createdAt?: string
+  createdAt: string
 }
 
 export default Notification

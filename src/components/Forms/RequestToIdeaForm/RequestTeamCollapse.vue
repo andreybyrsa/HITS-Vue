@@ -76,13 +76,17 @@ function checkTeamRequest(teamProps: Team) {
 </script>
 
 <template>
+  <router-view />
   <div
     v-if="!checkTeamRequest(team)"
     class="team-request-collapse w-100"
   >
     <div class="border rounded-3 py-1 px-2 overflow-hidden w-100">
       <div class="team-request-collapse__button">
-        <Button class-name="btn-link">
+        <Button
+          class-name="btn-link"
+          @click="$router.push(`/market/${idea.id}/${team.id}`)"
+        >
           {{ team.name }}
         </Button>
         <Button

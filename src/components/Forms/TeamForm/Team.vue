@@ -3,12 +3,14 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useField, useFieldValue } from 'vee-validate'
 import { watchImmediate } from '@vueuse/core'
+import { useRoute } from 'vue-router'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
+import { TeamProps } from '@Components/Forms/TeamForm/TeamForm.types'
 
 import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
@@ -17,6 +19,10 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const props = defineProps<TeamProps>()
+
+const route = useRoute()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -38,27 +44,50 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await TeamService.getTeamMembers(token)
+    const { id, token } = currentUser
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
+    const teamId = +route.params.id
 
-    users.value = response
+    if (props.mode == 'editing') {
+      const response = await TeamService.getTeam(teamId, token)
 
-    if (!owner.value) {
-      const currentOwner = response.find((user) => user.email === currentUser.email)
-
-      if (currentOwner) {
-        owner.value = currentOwner
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
+
+      members.value = response.members
+
+      owner.value = response.owner
+
+      leader.value = response.leader
+
+      users.value = members.value
+
+      if (!users.value.find((member) => member.id == response.owner.id)) {
+        users.value.push(response.owner)
+      }
+    } else {
+      const response = await TeamService.getTeamProfile(id, token)
+
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+
+      users.value = [response]
+
+      owner.value = response
     }
   }
 })
 
 const teamUsers = computed(() => {
-  const currentUsers = [...members.value, leader.value, owner.value]
+  const currentUsers = [...members.value, leader.value]
   const uniqueUsers = new Map<string, TeamMember>()
   currentUsers.forEach((user) => user && uniqueUsers.set(user.email, user))
 
@@ -75,33 +104,6 @@ watchImmediate(teamUsers, (currentTeam) => {
   ]
   radarChartsSkills.value = membersSkills
 })
-
-watch(
-  owner,
-  (currenOwner, prevOwner) => {
-    if (currenOwner) {
-      const isExistOwner = members.value.find(
-        (member) => member.email === currenOwner.email,
-      )
-
-      if (!isExistOwner) {
-        const prevOwnerIndex = members.value.findIndex(
-          (member) => member.email === prevOwner?.email,
-        )
-        if (prevOwnerIndex !== -1) {
-          members.value.splice(prevOwnerIndex, 1)
-        }
-
-        if (prevOwner?.email == leader.value?.email) {
-          leader.value = undefined
-        }
-
-        members.value.push(currenOwner)
-      }
-    }
-  },
-  { immediate: true },
-)
 
 watch(
   leader,
@@ -132,9 +134,6 @@ watch(
 function onUnselectMember(unselectedMember: TeamMember) {
   if (unselectedMember.email === leader.value?.email) {
     leader.value = undefined
-  }
-  if (unselectedMember.email === owner.value?.email) {
-    owner.value = undefined
   }
 }
 
@@ -170,6 +169,7 @@ function getMemberColor(member: TeamMember) {
       :display-by="['firstName', 'lastName']"
       v-model="owner"
       placeholder="Выберите владельца"
+      :disabled="mode == 'creating'"
     />
 
     <Combobox
@@ -211,7 +211,10 @@ function getMemberColor(member: TeamMember) {
         </div>
       </div>
 
-      <SkillsRadarCharts :skills="radarChartsSkills" />
+      <SkillsRadarCharts
+        class-name="w-50"
+        :skills="radarChartsSkills"
+      />
     </div>
   </div>
 

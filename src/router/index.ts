@@ -22,143 +22,143 @@ import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
+import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
 import DevView from '@Views/DevView.vue'
 
-// import IdeasMarket from '@Views/IdeasMarket/IdeasMarketView.vue'
-
 import IdeasMarketViewVue from '@Views/IdeasMarket/IdeasMarketView.vue'
-
-import RoleAndNotificationMiddleware from '@Middlewares/RoleAndNotificationMiddleware.vue'
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
-    component: RoleAndNotificationMiddleware,
+    path: '/ideas',
     children: [
       {
-        path: 'ideas',
-        children: [
-          {
-            path: 'list',
-            name: 'ideas-list',
-            meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
-            component: IdeasView,
-            children: [
-              {
-                path: ':id',
-                meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
-                component: IdeaModal,
-              },
-            ],
-          },
-          {
-            path: 'create',
-            meta: { roles: ['INITIATOR', 'ADMIN'] },
-            component: NewIdeaView,
-          },
-
-          {
-            path: 'update/:id',
-            meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
-            component: EditIdeaView,
-          },
-        ],
-      },
-      {
-        path: 'teams',
-        children: [
-          {
-            path: 'create',
-            meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
-            component: NewTeamView,
-          },
-          {
-            path: 'list',
-            name: 'teams-list',
-            meta: {
-              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-            },
-            component: TeamsView,
-          },
-          {
-            path: 'update/:id',
-            meta: {
-              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-              isPageEdit: true,
-            },
-            component: EditTeamView,
-          },
-        ],
-      },
-      {
-        path: 'last-activity-note',
-        name: 'last-activity-note',
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        },
-        component: LastActivityNote,
-      },
-      {
-        path: 'admin',
-        children: [
-          {
-            path: 'users',
-            component: UsersView,
-            meta: { roles: ['ADMIN'] },
-          },
-          {
-            path: 'add-users',
-            component: AddUsersView,
-            meta: { roles: ['ADMIN'] },
-          },
-          {
-            path: 'users-groups',
-            component: UsersGroupsView,
-            meta: { roles: ['ADMIN'] },
-          },
-          {
-            path: 'skills',
-            component: SkillsView,
-            meta: { roles: ['ADMIN'] },
-          },
-        ],
-      },
-      {
-        path: 'change-email',
-        name: 'change-email',
-        component: ChangeEmailView,
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        },
-        children: [
-          {
-            path: ':slug',
-            name: 'change-email-confirmation',
-            meta: {
-              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-              isPageEmail: true,
-            },
-            component: NewEmail,
-          },
-        ],
-      },
-      {
-        path: 'error',
-        name: 'error',
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        },
-        component: ErrorView,
-      },
-      {
-        path: 'dev',
-        name: 'dev',
+        path: 'list',
+        name: 'ideas-list',
         meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
-        component: DevView,
+        component: IdeasView,
+        children: [
+          {
+            path: ':id',
+            meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+            component: IdeaModal,
+          },
+        ],
+      },
+      {
+        path: 'create',
+        meta: { roles: ['INITIATOR', 'ADMIN'] },
+        component: NewIdeaView,
+      },
+
+      {
+        path: 'update/:id',
+        meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
+        component: EditIdeaView,
       },
     ],
+  },
+  {
+    path: '/teams',
+    children: [
+      {
+        path: 'create',
+        meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+        component: NewTeamView,
+      },
+      {
+        path: 'list',
+        name: 'teams-list',
+        meta: {
+          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
+        component: TeamsView,
+        children: [
+          {
+            path: ':teamId',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: TeamModal,
+          },
+        ],
+      },
+      {
+        path: 'update/:id',
+        meta: {
+          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+          isPageEdit: true,
+        },
+        component: EditTeamView,
+      },
+    ],
+  },
+  {
+    path: '/last-activity-note',
+    name: 'last-activity-note',
+    meta: {
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    component: LastActivityNote,
+  },
+  {
+    path: '/admin',
+    children: [
+      {
+        path: 'users',
+        component: UsersView,
+        meta: { roles: ['ADMIN'] },
+      },
+      {
+        path: 'add-users',
+        component: AddUsersView,
+        meta: { roles: ['ADMIN'] },
+      },
+      {
+        path: 'users-groups',
+        component: UsersGroupsView,
+        meta: { roles: ['ADMIN'] },
+      },
+      {
+        path: 'skills',
+        component: SkillsView,
+        meta: { roles: ['ADMIN'] },
+      },
+    ],
+  },
+  {
+    path: '/change-email',
+    name: 'change-email',
+    component: ChangeEmailView,
+    meta: {
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    children: [
+      {
+        path: ':slug',
+        name: 'change-email-confirmation',
+        meta: {
+          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+          isPageEmail: true,
+        },
+        component: NewEmail,
+      },
+    ],
+  },
+  {
+    path: '/error',
+    name: 'error',
+    meta: {
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    component: ErrorView,
+  },
+  {
+    path: '/dev',
+    name: 'dev',
+    meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+    component: DevView,
   },
   {
     path: '/login',
@@ -185,6 +185,15 @@ const routes: RouteRecordRaw[] = [
         path: ':id',
         name: 'MarketModal',
         component: MarketModal,
+        children: [
+          {
+            path: ':teamId',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: TeamModal,
+          },
+        ],
       },
     ],
   },

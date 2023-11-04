@@ -1,4 +1,4 @@
-import { User } from '@Domain/User'
+import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
 
 interface RequestTeams {
@@ -12,10 +12,10 @@ interface RequestTeams {
   createdAt: string
   closed: boolean
   description: string
-  owner: User
-  leader: User
+  owner: TeamMember
+  leader: TeamMember
   membersCount: number
-  members: User[]
+  members: TeamMember[]
   skills: Skill[]
 }
 

@@ -23,6 +23,7 @@ import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
 
@@ -38,19 +39,30 @@ const stackTechnologies = ref<Skill[]>([])
 const { values, setFieldValue, setValues, handleSubmit, validateField } =
   useForm<Idea>({
     validationSchema: {
-      name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-      problem: (value: string) => value?.length > 0 || 'Поле не заполнено',
-      solution: (value: string) => value?.length > 0 || 'Поле не заполнено',
-      result: (value: string) => value?.length > 0 || 'Поле не заполнено',
-      description: (value: string) => value?.length > 0 || 'Поле не заполнено',
-      maxTeamSize: (value: string) => value || 'Поле не заполнено',
-      minTeamSize: (value: string) => value || 'Поле не заполнено',
+      name: (value: string) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      problem: (value: string) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      solution: (value: string) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      result: (value: string) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      description: (value: string) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      maxTeamSize: (value: string) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      minTeamSize: (value: string) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
 
-      customer: (value: string) => value?.length > 0 || 'Поле не заполнено',
-      contactPerson: (value: string) => value?.length > 0 || 'Поле не заполнено',
+      customer: (value: string) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      contactPerson: (value: string) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
 
-      suitability: (value: number) => (value && value > 0) || 'Поле не заполнено',
-      budget: (value: number) => (value && value > 0) || 'Поле не заполнено',
+      suitability: (value: number) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      budget: (value: number) =>
+        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     },
     initialValues: {
       customer: 'ВШЦТ',

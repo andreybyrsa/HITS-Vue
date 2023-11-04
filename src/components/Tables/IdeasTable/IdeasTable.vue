@@ -1,6 +1,6 @@
 <template>
   <Table
-    :columns="iedaTableColumns"
+    :columns="ideaTableColumns"
     :data="ideasData"
     search-by="name"
     :filters="ideasFilters"
@@ -38,6 +38,7 @@ import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
 import getStatus from '@Utils/getStatus'
+import mutableSort from '@Utils/mutableSort'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -55,11 +56,6 @@ const availableStatus = getStatus()
 const deletingIdeaId = ref<number | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
-const isSortedByCreatedAt = ref(false)
-const isSortedByModifiedAt = ref(false)
-const isSortedByPreAssessment = ref(false)
-const isSortedByRating = ref(false)
-
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
 
 watchImmediate(
@@ -69,7 +65,7 @@ watchImmediate(
   },
 )
 
-const iedaTableColumns: TableColumn<Idea>[] = [
+const ideaTableColumns: TableColumn<Idea>[] = [
   {
     key: 'name',
     label: 'Название',
@@ -158,67 +154,23 @@ const ideasFilters: Filter<Idea>[] = [
 ]
 
 function sortByCreatedAt() {
-  ideasData.value.sort((idea1, idea2) => {
-    const comparingDate1 = new Date(idea1.createdAt).getTime()
-    const comparingDate2 = new Date(idea2.createdAt).getTime()
-
-    if (isSortedByCreatedAt.value) {
-      return comparingDate1 - comparingDate2
-    } else {
-      return comparingDate2 - comparingDate1
-    }
-  })
-  isSortedByCreatedAt.value = !isSortedByCreatedAt.value
+  mutableSort(ideasData.value, (ideaData: Idea) =>
+    new Date(ideaData.createdAt).getTime(),
+  )
 }
 
 function sortByModifiedAt() {
-  ideasData.value.sort((idea1, idea2) => {
-    const comparingDate1 = new Date(idea1.modifiedAt).getTime()
-    const comparingDate2 = new Date(idea2.modifiedAt).getTime()
-
-    if (isSortedByModifiedAt.value) {
-      return comparingDate1 - comparingDate2
-    } else {
-      return comparingDate2 - comparingDate1
-    }
-  })
-  isSortedByModifiedAt.value = !isSortedByModifiedAt.value
+  mutableSort(ideasData.value, (ideaData: Idea) =>
+    new Date(ideaData.modifiedAt).getTime(),
+  )
 }
 
 function sortByPreAssessment() {
-  ideasData.value.sort((idea1, idea2) => {
-    const comparingPreAssessment1 = idea1.preAssessment
-    const comparingPreAssessment2 = idea2.preAssessment
-
-    if (comparingPreAssessment1 && comparingPreAssessment2) {
-      if (isSortedByPreAssessment.value) {
-        return comparingPreAssessment1 - comparingPreAssessment2
-      } else {
-        return comparingPreAssessment2 - comparingPreAssessment1
-      }
-    } else {
-      return -1
-    }
-  })
-  isSortedByPreAssessment.value = !isSortedByPreAssessment.value
+  mutableSort(ideasData.value, (ideaData: Idea) => ideaData.preAssessment)
 }
 
 function sortByRating() {
-  ideasData.value.sort((idea1, idea2) => {
-    const comparingRating1 = idea1.rating
-    const comparingRating2 = idea2.rating
-
-    if (comparingRating1 && comparingRating2) {
-      if (isSortedByRating.value) {
-        return comparingRating1 - comparingRating2
-      } else {
-        return comparingRating2 - comparingRating1
-      }
-    } else {
-      return -1
-    }
-  })
-  isSortedByRating.value = !isSortedByRating.value
+  mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
 }
 
 function getStatusStyle(status: IdeaStatusTypes) {

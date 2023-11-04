@@ -50,7 +50,7 @@ function checkUserRole(tab: LeftSideBarTabType) {
 }
 
 function handleLogout() {
-  userStore.removeUser()
+  userStore.logoutUser()
   router.push('/login')
 }
 
