@@ -2,18 +2,25 @@
 import { storeToRefs } from 'pinia'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import IdeasMarket from '@Domain/IdeasMarket'
-import useUserStore from '@Store/user/userStore'
-import IdeasMarketService from '@Services/IdeasMarketService'
-import IdeasMarketStatusTypes from '@Domain/MarketStatus'
-import getMarketStatus from '@Utils/getMarketStatus'
 import Icon from '@Components/Icon/Icon.vue'
-import SingleIdeaCardProps from '@Views/IdeasMarket/IdeasMarketView.types'
 import Skills from '@Components/Skills/Skills.vue'
 
+import SingleIdeaCardProps from '@Views/IdeasMarket/IdeasMarketView.types'
+
+import IdeasMarket from '@Domain/IdeasMarket'
+import IdeasMarketStatusTypes from '@Domain/MarketStatus'
+
+import IdeasMarketService from '@Services/IdeasMarketService'
+
+import useUserStore from '@Store/user/userStore'
+
+import getMarketStatus from '@Utils/getMarketStatus'
+
 const availableStatus = getMarketStatus()
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
 const props = defineProps<SingleIdeaCardProps>()
 const ideas = defineModel<IdeasMarket[]>({ required: true })
 
@@ -73,6 +80,7 @@ const handleRemoveIdeaFromFavorites = async () => {
   }
 }
 </script>
+
 <template>
   <div class="idea-card">
     <div class="idea-card-left">
@@ -137,6 +145,7 @@ const handleRemoveIdeaFromFavorites = async () => {
     </div>
   </div>
 </template>
+
 <style lang="scss">
 .idea-card {
   display: flex;
