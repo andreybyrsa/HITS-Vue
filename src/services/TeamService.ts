@@ -236,8 +236,8 @@ const getTeamRequest = async (
 }
 
 const sendRequest = async (
-  teamId: number,
   teamRequest: TeamAccession,
+  teamId: number,
   token: string,
 ): Promise<Success | Error> => {
   return await teamAccessions

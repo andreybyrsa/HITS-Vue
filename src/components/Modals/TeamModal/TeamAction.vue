@@ -85,8 +85,8 @@ const handleSendRequestToTheTeam = async (teamRequest: TeamAccession) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await TeamService.sendRequest(teamId.value, teamRequest, token)
-    console.log(response)
+    const response = await TeamService.sendRequest(teamRequest, teamId.value, token)
+    console.log('gwr')
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }

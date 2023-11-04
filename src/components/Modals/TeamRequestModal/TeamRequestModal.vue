@@ -50,7 +50,7 @@ const { value, errorMessage } = useField<string>('text', {
   syncVModel: true,
 })
 
-const handleSendRequest = handleSubmit(async (values) => {
+const handleSendRequest = handleSubmit(async (values: TeamAccession) => {
   const currentUser = user.value
   if (currentUser) {
     values.targetEmail = currentUser.email

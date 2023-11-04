@@ -35,6 +35,9 @@ const { handleSubmit } = useForm<TeamInviteRegisteredUsersForm>({
   validationSchema: {
     users: (value: TeamMember[]) => value?.length > 0 || 'Выберите пользователей',
   },
+  initialValues: {
+    users: [],
+  },
 })
 
 onMounted(async () => {
