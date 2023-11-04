@@ -372,7 +372,7 @@ function getMocks(): Mocks {
         {
           id: 0,
           name: 'ReactJS',
-          type: 'LANGUAGE',
+          type: 'FRAMEWORK',
           confirmed: true,
         },
       ],
@@ -393,8 +393,8 @@ function getMocks(): Mocks {
       stack: [
         {
           id: 0,
-          name: 'Django',
-          type: 'LANGUAGE',
+          name: 'PostgreSQL',
+          type: 'DATABASE',
           confirmed: true,
         },
       ],
