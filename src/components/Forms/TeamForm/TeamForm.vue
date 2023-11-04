@@ -18,14 +18,12 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import Validation from '@Utils/Validation'
 
 const props = defineProps<TeamFormProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
-
 const router = useRouter()
 
 const { handleSubmit } = useForm<Team>({
@@ -45,6 +43,8 @@ const handleCreateTeam = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+    values.members = []
+    values.createdAt = new Date().toJSON()
     const response = await TeamService.createTeam(values, token)
 
     if (response instanceof Error) {

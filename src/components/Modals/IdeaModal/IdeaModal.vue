@@ -37,7 +37,7 @@ const route = useRoute()
 
 const idea = ref<Idea>()
 const ideaSkills = ref<IdeaSkills>()
-const comments = ref<Comment[]>()
+
 const ratings = ref<Rating[]>()
 const rating = ref<Rating>()
 

@@ -1,27 +1,19 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
-import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import {
-  TeamDescriptionEmits,
-  TeamDescriptionProps,
-} from '@Components/Modals/TeamModal/TeamModal.types'
+import { TeamDescriptionEmits } from '@Components/Modals/TeamModal/TeamModal.types'
+import TeamProjects from '@Components/Modals/TeamModal/TeamProjects.vue'
+import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
 
-import useUserStore from '@Store/user/userStore'
-
-import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
 
-const props = defineProps<TeamDescriptionProps>()
+import Team from '@Domain/Team'
 
-const userStore = useUserStore()
-
-const { user } = storeToRefs(userStore)
+const team = defineModel<Team>({ required: true })
 
 const emit = defineEmits<TeamDescriptionEmits>()
 
@@ -30,14 +22,10 @@ const radarChartsSkills = ref<Skill[]>([])
 onMounted(() => {
   const membersSkills: Skill[] = []
 
-  props.team.members.forEach((member) => membersSkills.push(...member.skills))
+  team.value.members.forEach((member) => membersSkills.push(...member.skills))
 
   radarChartsSkills.value = membersSkills
 })
-
-const handleKick = async (member: TeamMember, teamId: number) => {
-  emit('handleKick', member, teamId)
-}
 </script>
 <template>
   <div class="header">
@@ -59,70 +47,18 @@ const handleKick = async (member: TeamMember, teamId: number) => {
     <li class="list-group-item p-0 overflow-hidden">
       <Button
         class-name="fs-4 collapse-controller btn-light w-100"
-        v-collapse="'teamDescription'"
+        v-collapse="'teamDescription' + team.id"
       >
         Описание команды
       </Button>
-      <Collapse id="teamDescription">
+      <Collapse :id="'teamDescription' + team.id">
         <div class="px-3">
           {{ team.description }}
         </div>
       </Collapse>
 
-      <Button
-        class-name="collapse-controller fs-4 btn-light w-100"
-        v-collapse="'teamMembers'"
-      >
-        Участники команды
-      </Button>
-      <Collapse
-        class-name="collapse-content overflow-y-scroll"
-        id="teamMembers"
-      >
-        <router-link
-          v-for="member in team.members"
-          :key="member.email"
-          class="field nav-route list-group-item list-group-item-light"
-          active-class="active"
-          :to="'profile/' + member.id"
-        >
-          <Icon class-name="bi bi-person" />
-          <Typography class="text-dark">{{
-            member.firstName + ' ' + member.lastName
-          }}</Typography>
-          <Icon
-            v-if="user?.email == team?.owner.email"
-            class-name="bi bi-person-dash text-danger"
-            @click="handleKick(member, team.id)"
-          />
-        </router-link>
-      </Collapse>
-      <div
-        v-if="team.projects"
-        class="bg-white rounded-3"
-      >
-        <Button
-          class-name="collapse-controller fs-4 btn-light w-100"
-          v-collapse="'teamProjects'"
-        >
-          Наши проекты
-        </Button>
-        <Collapse
-          class-name="collapse-content"
-          id="teamProjects"
-          ><div
-            class="field"
-            v-for="project in team.projects"
-            :key="project.id"
-          >
-            <Button class-name="project w-100">
-              <Typography class-name="fs-5 text-dark text-start"
-                >Проект: {{ project.name }}</Typography
-              >
-            </Button>
-          </div></Collapse
-        >
-      </div>
+      <TeamMembers v-model="team" />
+      <TeamProjects v-model="team" />
     </li>
   </ul>
   <div

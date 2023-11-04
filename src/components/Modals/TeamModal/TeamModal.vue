@@ -10,12 +10,11 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import TeamAction from '@Components/Modals/TeamModal/TeamAction.vue'
 import TeamModalPlaceholder from '@Components/Modals/TeamModal/TeamModalPlaceholder.vue'
 import TeamDescription from '@Components/Modals/TeamModal/TeamDescription.vue'
-import TeamStuff from '@Components/Modals/TeamModal/TeamStuff.vue'
+import TeamMainStuff from '@Components/Modals/TeamModal/TeamMainStuff.vue'
 
 import useUserStore from '@Store/user/userStore'
 
 import TeamService from '@Services/TeamService'
-import TeamMember from '@Domain/TeamMember'
 
 import Team from '@Domain/Team'
 
@@ -45,18 +44,6 @@ onMounted(async () => {
   }
 })
 
-const handleKick = async (member: TeamMember, teamId: number) => {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await TeamService.kickMember(member, teamId, token)
-
-    if (response instanceof Error) {
-      return
-    }
-  }
-}
-
 function closeTeamModal() {
   isOpened.value = false
   router.go(-1)
@@ -76,13 +63,12 @@ function closeTeamModal() {
     >
       <div class="team-modal__left-side w-75">
         <TeamDescription
-          :team="team"
-          @handle-kick="handleKick"
+          v-model="team"
           @close-modal="closeTeamModal"
         />
       </div>
       <div class="team-modal__right-side p-3 rounded w-25 bg-white">
-        <TeamStuff :team="team" />
+        <TeamMainStuff v-model="team" />
         <TeamAction :team="team" />
       </div>
     </div>

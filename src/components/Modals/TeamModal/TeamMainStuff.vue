@@ -1,10 +1,19 @@
 <script lang="ts" setup>
 import Typography from '@Components/Typography/Typography.vue'
-import { TeamStuffProps } from '@Components/Modals/TeamModal/TeamModal.types'
+import Team from '@Domain/Team'
+import { useDateFormat } from '@vueuse/core'
 
-defineProps<TeamStuffProps>()
+const team = defineModel<Team>({ required: true })
+
+function getFormattedDate(date: string) {
+  return useDateFormat(new Date(date), 'DD.MM.YYYY').value
+}
 </script>
 <template>
+  <Typography class-name="text-primary text-nowrap team-modal__single-field"
+    >Дата создания: {{ getFormattedDate(team.createdAt) }}
+  </Typography>
+
   <Typography class-name="text-primary text-nowrap team-modal__single-field"
     >Владелец команды:
     <router-link
