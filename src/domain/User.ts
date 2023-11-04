@@ -10,7 +10,7 @@ interface User {
 
   roles: RolesTypes[]
   role?: RolesTypes
-  lastActivity?: Date
+  lastLogin?: Date
 }
 
 interface LoginUser {

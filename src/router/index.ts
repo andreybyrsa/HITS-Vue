@@ -34,7 +34,6 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'ideas-list',
         meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
-        beforeEnter: () => true,
         component: IdeasView,
         children: [
           {
