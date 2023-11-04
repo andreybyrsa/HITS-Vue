@@ -77,25 +77,30 @@ async function handleReject() {
     @on-outside-close="closeRequestModal"
   >
     <div class="request-modal p-3">
-      <Typography class-name="text-primary d-flex justify-content-center">
-        {{ type == 'ENTER' ? 'Мотивационное письмо' : 'Причина ухода' }}</Typography
-      >
-      <div class="input-group h-50">
-        <textarea
-          name="text"
-          v-model="value"
-          :placeholder="mode == 'write' ? 'Опишите причину заявления' : ''"
-          :class="TextareaClassName"
-          :disabled="teamRequest ? true : false"
-        ></textarea>
-        <span class="invalid-feedback">
-          {{ errorMessage }}
-        </span>
-      </div>
-      <div></div>
+      <template v-if="teamRequest || mode == 'write'">
+        <Typography class-name="text-primary d-flex justify-content-center">
+          {{
+            type == 'ENTER' ? 'Мотивационное письмо' : 'Причина ухода'
+          }}</Typography
+        >
+        <div class="input-group h-50">
+          <textarea
+            name="text"
+            v-model="value"
+            :placeholder="mode == 'write' ? 'Опишите причину заявления' : ''"
+            :class="TextareaClassName"
+            :disabled="teamRequest ? true : false"
+          ></textarea>
+          <span class="invalid-feedback">
+            {{ errorMessage }}
+          </span>
+        </div>
+        <div></div>
 
-      <template v-if="teamRequest && mode == 'read'">
-        <div class="request-modal__buttons">
+        <div
+          v-if="mode == 'read'"
+          class="request-modal__buttons"
+        >
           <Button
             class-name="rounded-end btn-primary"
             @click="handleApprove"
@@ -108,20 +113,17 @@ async function handleReject() {
           >
             Отклонить
           </Button>
-        </div></template
-      >
-      <template v-else>
+        </div>
         <Button
+          v-else
           class-name="rounded-end btn-primary"
           @click="handleSendRequest"
         >
           Отправить заявку
         </Button></template
       >
+      <TeamRequestPlaceholder v-else></TeamRequestPlaceholder>
     </div>
-    <TeamRequestPlaceholder
-      v-if="mode == 'read' && !teamRequest"
-    ></TeamRequestPlaceholder>
   </ModalLayout>
 </template>
 <style lang="scss" scoped>

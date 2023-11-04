@@ -209,8 +209,8 @@ const handleUpdateGroup = handleSubmit(async (values) => {
           :display-by="['lastName', 'firstName']"
           :email="'email'"
           :unselected-users="unselectedUsers"
-          @select-user="selectUser"
-          @unselect-user="unselectUser"
+          @on-select="selectUser"
+          @on-unselect="unselectUser"
         />
 
         <Combobox

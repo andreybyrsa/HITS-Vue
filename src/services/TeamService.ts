@@ -81,7 +81,7 @@ const deleteTeam = async (id: number, token: string): Promise<Success | Error> =
       {
         headers: { Authorization: `Bearer ${token}` },
       },
-      { responseData: { success: 'Успешное приглашение новых пользователей' } },
+      { responseData: { success: 'Успешное удаление' } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -128,7 +128,7 @@ const deleteTeamAccession = async (
     })
 }
 
-const invitePortalUsers = async (
+const inviteRegisteredUsers = async (
   emails: string[],
   teamId: number,
   token: string,
@@ -147,7 +147,7 @@ const invitePortalUsers = async (
     })
 }
 
-const inviteOutsideUsers = async (
+const inviteUnregisteredUsers = async (
   emails: string[],
   teamId: number,
   token: string,
@@ -290,8 +290,8 @@ const TeamService = {
   getTeams,
   getTeam,
   createTeam,
-  invitePortalUsers,
-  inviteOutsideUsers,
+  inviteRegisteredUsers,
+  inviteUnregisteredUsers,
   deleteTeamAccession,
   fetchInvitationsAndRequestions,
   kickMember,

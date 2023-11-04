@@ -3,6 +3,11 @@ import { computed, onMounted, ref } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
+import useUserStore from '@Store/user/userStore'
+
+import TeamMember from '@Domain/TeamMember'
+import TeamService from '@Services/TeamService'
+
 import UsersColumns from '@Components/UserColumns/UsersColumns.vue'
 import {
   TeamInviteRegisteredUsersProps,
@@ -12,31 +17,24 @@ import {
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 
-import useUserStore from '@Store/user/userStore'
-
-import TeamMember from '@Domain/TeamMember'
-import TeamService from '@Services/TeamService'
-
 defineProps<TeamInviteRegisteredUsersProps>()
 
 const emit = defineEmits<TeamInviteRegisteredUsersEmits>()
 
 const userStore = useUserStore()
+
 const { user } = storeToRefs(userStore)
 
 const searchedValue = ref('')
 
-const profiles = ref<TeamMember[]>()
-
 const isSeachUsersBySkills = ref<boolean>(false)
+const profiles = ref<TeamMember[]>()
 
 const { handleSubmit } = useForm<TeamInviteRegisteredUsersForm>({
   validationSchema: {
     users: (value: TeamMember[]) => value?.length > 0 || 'Выберите пользователей',
   },
 })
-
-const { fields, push, remove } = useFieldArray<TeamMember>('profiles')
 
 onMounted(async () => {
   const currentUser = user.value
@@ -51,6 +49,8 @@ onMounted(async () => {
     profiles.value = response
   }
 })
+
+const { fields, push, remove } = useFieldArray<TeamMember>('profiles')
 
 const inviteUsers = handleSubmit(async (values: TeamInviteRegisteredUsersForm) => {
   emit(
@@ -83,11 +83,14 @@ const searchedOptions = computed(() => {
 })
 
 function selectUser(profile: TeamMember, index: number) {
+  searchedOptions.value?.splice(index, 1)
   profiles.value?.splice(
-    profiles.value.findIndex((currentProfile) => currentProfile.id == profile.id),
+    profiles.value.findIndex(
+      (currentProfile) => currentProfile.email == profile.email,
+    ),
     1,
   )
-  searchedOptions.value?.splice(index, 1)
+
   push(profile)
 }
 
@@ -98,7 +101,7 @@ function unselectUser(profile: TeamMember, index: number) {
 }
 
 function getUsersBySearchedValue(searchedValue: string) {
-  profiles.value?.reduce<TeamMember[]>((allProfiles, profile) => {
+  return profiles.value?.reduce<TeamMember[]>((allProfiles, profile) => {
     const profileContainsSkill = profile.skills.find((skill) =>
       skill.name.trim().toLocaleLowerCase().includes(searchedValue),
     )
@@ -109,6 +112,12 @@ function getUsersBySearchedValue(searchedValue: string) {
 
     return allProfiles
   }, [])
+}
+
+function changeSearchMode() {
+  isSeachUsersBySkills.value
+    ? (isSeachUsersBySkills.value = false)
+    : (isSeachUsersBySkills.value = true)
 }
 </script>
 <template>
@@ -124,14 +133,11 @@ function getUsersBySearchedValue(searchedValue: string) {
       placeholder="Найти пользователя"
     />
     <Button
-      v-if="isSeachUsersBySkills"
-      @click="isSeachUsersBySkills = false"
-      >Вернуть обычный поиск</Button
-    >
-    <Button
-      v-else
-      @click="isSeachUsersBySkills = true"
-      >Рассширенный поиск</Button
+      class-name="btn btn-link"
+      @click="changeSearchMode"
+      >{{
+        isSeachUsersBySkills ? 'Вернуть обычный поиск' : 'Искать по компетенциям'
+      }}</Button
     >
 
     <UsersColumns

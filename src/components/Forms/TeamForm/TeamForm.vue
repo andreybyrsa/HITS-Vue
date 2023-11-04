@@ -33,8 +33,6 @@ const { handleSubmit } = useForm<Team>({
     description: (value: string) => value?.length > 0 || 'Поле не заполнено',
     closed: (value: boolean) => value !== undefined || 'Тип команды не выбран',
     owner: (value: User) => value !== undefined || 'Поле не выбрано',
-    leader: (value: User) => value !== undefined || 'Поле не выбрано',
-    members: (value: User[]) => value?.length > 0 || 'Участники не выбраны',
   },
   initialValues: {
     ...props.team,

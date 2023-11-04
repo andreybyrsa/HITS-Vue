@@ -25,7 +25,6 @@ import { storeToRefs } from 'pinia'
 
 const userStore = useUserStore()
 const route = useRoute()
-
 const notificationsStore = useNotificationsStore()
 
 const { user } = storeToRefs(userStore)
@@ -41,8 +40,6 @@ onMounted(async () => {
     const requestId = +route.params.requestId
 
     const response = await TeamService.getTeamRequest(requestId, token)
-
-    console.log(response)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)

@@ -1,8 +1,14 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
+import TeamService from '@Services/TeamService'
+
+import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import {
   TeamInviteModalEmits,
@@ -12,9 +18,14 @@ import Button from '@Components/Button/Button.vue'
 import TeamInviteRegisteredUser from '@Components/Modals/TeamInviteModal/TeamInviteRegisteredUser.vue'
 import TeamInviteUnregisteredUser from '@Components/Modals/TeamInviteModal/TeamInviteUnregisteredUser.vue'
 
-defineProps<TeamInviteModalProps>()
+const props = defineProps<TeamInviteModalProps>()
 
 const emit = defineEmits<TeamInviteModalEmits>()
+
+const userStore = useUserStore()
+const notificationsStore = useNotificationsStore()
+
+const { user } = storeToRefs(userStore)
 
 const { enter } = useMagicKeys()
 
@@ -25,11 +36,39 @@ watch(enter, () => {
 })
 
 const inviteRegisteredUsers = async (users: string[]) => {
-  emit('inviteRegisteredUsers', users)
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await TeamService.inviteRegisteredUsers(
+      users,
+      props.team.id,
+      token,
+    )
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    return notificationsStore.createSystemNotification('Система', response.success)
+  }
 }
 
 const inviteUnRegisteredUsers = async (emails: string[]) => {
-  emit('inviteUnregisteredUsers', emails)
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await TeamService.inviteUnregisteredUsers(
+      emails,
+      props.team.id,
+      token,
+    )
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    return notificationsStore.createSystemNotification('Система', response.success)
+  }
 }
 </script>
 
@@ -77,8 +116,8 @@ const inviteUnRegisteredUsers = async (emails: string[]) => {
 
 <style lang="scss" scoped>
 .invite-modal {
-  width: 35%;
-  height: 48%;
+  width: 600px;
+  height: 450px;
   background-color: #e9e9e9;
 
   @include flexible(
@@ -89,6 +128,8 @@ const inviteUnRegisteredUsers = async (emails: string[]) => {
     $justify-self: center,
     $gap: 16px
   );
+
+  transition: all $default-transition-settings;
 
   &__switch-buttons {
     @include flexible(stretch, center, $flex-wrap: wrap, $gap: 4px);

@@ -19,7 +19,6 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import Input from '@Components/Inputs/Input/Input.vue'
 
 const props = defineProps<TeamProps>()
 

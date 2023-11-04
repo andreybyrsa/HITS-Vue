@@ -1,6 +1,8 @@
+import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 
 interface TeamInviteModalProps {
+  team: Team
   name: string
   isOpened: boolean
 }
