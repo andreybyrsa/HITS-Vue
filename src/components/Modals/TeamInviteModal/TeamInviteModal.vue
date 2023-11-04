@@ -48,12 +48,12 @@ const inviteRegisteredUsers = async (users: string[]) => {
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
-
+    closeModal()
     return notificationsStore.createSystemNotification('Система', response.success)
   }
 }
 
-const inviteUnRegisteredUsers = async (emails: string[]) => {
+const inviteUnregisteredUsers = async (emails: string[]) => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
@@ -66,22 +66,26 @@ const inviteUnRegisteredUsers = async (emails: string[]) => {
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
-
+    closeModal()
     return notificationsStore.createSystemNotification('Система', response.success)
   }
+}
+
+function closeModal() {
+  emit('close-modal')
 }
 </script>
 
 <template>
   <ModalLayout
     :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
+    @on-outside-close="closeModal"
   >
     <div class="invite-modal p-3 rounded bg-white">
       <div class="invite-modal__switch-buttons">
         <Button
           :class-name="
-            isFromPortal ? 'rounded btn-light btn-sm' : 'rounded btn-link btn-sm'
+            !isFromPortal ? 'rounded btn-light btn-sm' : 'rounded btn-link btn-sm'
           "
           v-model="isFromPortal"
           @click="() => (isFromPortal = true)"
@@ -91,7 +95,7 @@ const inviteUnRegisteredUsers = async (emails: string[]) => {
         >
         <Button
           :class-name="
-            !isFromPortal ? 'rounded btn-light btn-sm' : 'rounded btn-link btn-sm'
+            isFromPortal ? 'rounded btn-light btn-sm' : 'rounded btn-link btn-sm'
           "
           v-model="isFromPortal"
           @click="() => (isFromPortal = false)"
@@ -108,7 +112,7 @@ const inviteUnRegisteredUsers = async (emails: string[]) => {
       />
       <TeamInviteUnregisteredUser
         v-else
-        @invite-unregistered-users="inviteUnRegisteredUsers"
+        @invite-unregistered-users="inviteUnregisteredUsers"
       />
     </div>
   </ModalLayout>

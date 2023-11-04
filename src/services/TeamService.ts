@@ -81,7 +81,7 @@ const deleteTeam = async (id: number, token: string): Promise<Success | Error> =
       {
         headers: { Authorization: `Bearer ${token}` },
       },
-      { responseData: { success: 'Успешное удаление' } },
+      { responseData: { success: 'Успешное удаление' }, params: { id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -119,7 +119,7 @@ const deleteTeamAccession = async (
     .delete(
       `/teams/accession/delete/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
-      { responseData: { success: 'Успешное удаление' } },
+      { responseData: { success: 'Успешное удаление' }, params: { id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -221,37 +221,26 @@ const sendRequest = async (
     })
 }
 
-const rejectRequest = async (
-  requestId: number,
+const responseToRequest = async (
+  teamRequest: TeamAccession,
   token: string,
 ): Promise<Success | Error> => {
   return await teamAccessions
-    .delete(
-      `/teams/reject-request/${requestId}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id: `${requestId}` } },
+    .put<Success>(
+      `/teams/update/${teamRequest.id}`,
+      teamRequest,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      {
+        params: { id: teamRequest.id },
+        responseData: { success: 'Успешный ответ на заявку' },
+      },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Не удалось отклонить заявку'
-      return Error(error)
-    })
-}
-
-const acceptRequest = async (
-  requestId: number,
-  token: string,
-): Promise<Success | Error> => {
-  return await teamAccessions
-    .delete(
-      `/teams/accept-request/${requestId}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id: `${requestId}` } },
-    )
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Не удалось принять заявку'
-      return Error(error)
+      const error = response?.data?.error ?? 'Ошибка обновления команды'
+      return new Error(error)
     })
 }
 
@@ -299,8 +288,7 @@ const TeamService = {
   deleteTeam,
   sendRequest,
   getTeamRequest,
-  rejectRequest,
-  acceptRequest,
+  responseToRequest,
   getAllTeamProfiles,
   getTeamProfile,
 }

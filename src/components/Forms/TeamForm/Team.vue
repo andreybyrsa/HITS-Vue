@@ -64,7 +64,11 @@ onMounted(async () => {
 
       leader.value = response.leader
 
-      users.value = [...members.value, owner.value]
+      users.value = members.value
+
+      if (!users.value.find((member) => member.id == response.owner.id)) {
+        users.value.push(response.owner)
+      }
     } else {
       const response = await TeamService.getTeamProfile(id, token)
 
@@ -159,24 +163,14 @@ function getMemberColor(member: TeamMember) {
     class="team w-100"
   >
     <Combobox
-      v-if="mode == 'editing'"
       name="owner"
       label="Владелец команды*"
       :options="users"
       :display-by="['firstName', 'lastName']"
       v-model="owner"
       placeholder="Выберите владельца"
+      :disabled="mode == 'creating'"
     />
-
-    <div
-      class="d-flex flex-column"
-      v-else
-    >
-      <label class="form-label mb-2 text-primary"> Владелец команды: </label>
-      <Typography class-name="form-control">
-        {{ owner?.firstName + ' ' + owner?.lastName + ' (Вы)' }}</Typography
-      >
-    </div>
 
     <Combobox
       name="leader"
@@ -217,7 +211,10 @@ function getMemberColor(member: TeamMember) {
         </div>
       </div>
 
-      <SkillsRadarCharts :skills="radarChartsSkills" />
+      <SkillsRadarCharts
+        class-name="w-50"
+        :skills="radarChartsSkills"
+      />
     </div>
   </div>
 

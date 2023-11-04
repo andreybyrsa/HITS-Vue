@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useField, useForm } from 'vee-validate'
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { TeamAccession } from '@Domain/TeamAccession'
+import { TeamAccession, accessionStage } from '@Domain/TeamAccession'
 
 import {
   TeamRequestModalEmits,
@@ -15,10 +16,11 @@ import Typography from '@Components/Typography/Typography.vue'
 import TeamRequestPlaceholder from '@Components/Modals/TeamRequestModal/TeamRequestPlaceholder.vue'
 
 import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
 
 const props = defineProps<TeamRequestModalProps>()
 const emit = defineEmits<TeamRequestModalEmits>()
+
+const teamRequest = defineModel<TeamAccession>({ required: false })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -29,7 +31,7 @@ const TextareaClassName = computed(() => [
   'request-modal__textarea rounded',
 ])
 
-const { values, resetForm, handleSubmit } = useForm<TeamAccession>({
+const { resetForm, handleSubmit } = useForm<TeamAccession>({
   validationSchema: {
     text: (value: string) =>
       value?.length > 0 ||
@@ -38,7 +40,7 @@ const { values, resetForm, handleSubmit } = useForm<TeamAccession>({
         : 'Вы не указали причину'),
   },
   initialValues: {
-    text: props.teamRequest ? props.teamRequest.text : '',
+    text: teamRequest.value ? teamRequest.value.text : '',
     requestType: props.type,
   },
 })
@@ -48,13 +50,12 @@ const { value, errorMessage } = useField<string>('text', {
   syncVModel: true,
 })
 
-const handleSendRequest = handleSubmit(async () => {
+const handleSendRequest = handleSubmit(async (values) => {
   const currentUser = user.value
   if (currentUser) {
     values.targetEmail = currentUser.email
-    emit('sendRequest', values)
+    await emit('sendRequest', values)
     resetForm()
-    closeRequestModal()
   }
 })
 
@@ -62,12 +63,19 @@ function closeRequestModal() {
   emit('close-modal')
 }
 
-async function handleApprove() {
-  emit('accept')
+async function handleResponse(stage: accessionStage) {
+  const currentRequest = teamRequest.value
+  if (currentRequest) {
+    currentRequest.stage = stage
+    currentRequest.updatedAt = new Date().toJSON()
+    emit('response', currentRequest)
+  }
+  closeRequestModal()
 }
 
-async function handleReject() {
-  emit('reject')
+function getRequestTypeStyle() {
+  const className = props.type == 'LEAVE' ? ' bg-danger' : ' bg-success'
+  return 'px-3 d-flex justify-content-center rounded-3 text-light' + className
 }
 </script>
 
@@ -76,20 +84,34 @@ async function handleReject() {
     :is-opened="isOpened"
     @on-outside-close="closeRequestModal"
   >
-    <div class="request-modal p-3">
+    <div class="request-modal rounded-3 p-3">
       <template v-if="teamRequest || mode == 'write'">
-        <Typography class-name="text-primary d-flex justify-content-center">
+        <Typography
+          v-if="mode == 'write'"
+          class-name="text-primary d-flex justify-content-center"
+        >
           {{
             type == 'ENTER' ? 'Мотивационное письмо' : 'Причина ухода'
+          }}</Typography
+        >
+        <Typography
+          v-if="mode == 'read'"
+          :class-name="getRequestTypeStyle()"
+          >{{
+            type == 'ENTER'
+              ? 'Заявление на присоединение в команду'
+              : 'Заявление на выход с команды'
           }}</Typography
         >
         <div class="input-group h-50">
           <textarea
             name="text"
             v-model="value"
-            :placeholder="mode == 'write' ? 'Опишите причину заявления' : ''"
+            :placeholder="
+              mode == 'write' ? 'Опишите причину заявления' : teamRequest?.text
+            "
             :class="TextareaClassName"
-            :disabled="teamRequest ? true : false"
+            :disabled="mode == 'read' ? true : false"
           ></textarea>
           <span class="invalid-feedback">
             {{ errorMessage }}
@@ -102,14 +124,14 @@ async function handleReject() {
           class="request-modal__buttons"
         >
           <Button
-            class-name="rounded-end btn-primary"
-            @click="handleApprove"
+            class-name="rounded-end btn-success"
+            @click="handleResponse('ACCEPTED')"
           >
             Одобрить
           </Button>
           <Button
-            class-name="rounded-end btn-primary"
-            @click="handleReject"
+            class-name="rounded-end btn-danger"
+            @click="handleResponse('REJECTED')"
           >
             Отклонить
           </Button>
@@ -133,7 +155,7 @@ async function handleReject() {
   background-color: #e9e9e9;
 
   @include flexible(
-    stretch,
+    center,
     space-between,
     column,
     $align-self: center,

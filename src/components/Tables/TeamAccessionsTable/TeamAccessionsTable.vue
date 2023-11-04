@@ -1,4 +1,5 @@
 <template>
+  <router-view></router-view>
   <Table
     :columns="columns"
     :data="teamAccessions"
@@ -11,12 +12,20 @@
     @delete="handleDeleteTeamAccession"
     @close-modal="closeDeleteModal"
   />
+
+  <TeamRequestModal
+    :is-opened="isOpenedTeamRequestModal"
+    v-model="responsingRequest"
+    mode="read"
+    :type="responsingRequest?.requestType"
+    @close-modal="closeTeamRequestModal"
+    @response="handleResponse"
+  ></TeamRequestModal>
 </template>
 
 <script lang="ts" setup>
 import { useDateFormat } from '@vueuse/core'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
@@ -34,18 +43,19 @@ import {
 import TeamMember from '@Domain/TeamMember'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import mutableSort from '@Utils/mutableSort'
 
 import TeamService from '@Services/TeamService'
+import TeamRequestModal from '@Components/Modals/TeamRequestModal/TeamRequestModal.vue'
 
 const teamAccessions = defineModel<TeamAccession[]>({ required: true })
 
 const props = defineProps<TeamAccessionsTableProps>()
 
-const router = useRouter()
-
 const userStore = useUserStore()
+const notificationsStore = useNotificationsStore()
 
 const { user } = storeToRefs(userStore)
 
@@ -54,7 +64,10 @@ const filterByRequestType = ref<requestType>()
 const filterByAccessionStage = ref<accessionStage[]>([])
 
 const deletingAccessionId = ref<number | null>(null)
-const isOpenedDeleteModal = ref(false)
+const isOpenedDeleteModal = ref<boolean>(false)
+
+const responsingRequest = ref<TeamAccession>()
+const isOpenedTeamRequestModal = ref<boolean>(false)
 
 const columns: TableColumn<TeamAccession>[] = [
   {
@@ -123,8 +136,9 @@ const teamAccessionsFilters: Filter<TeamAccession>[] = [
 const dropdownTeamAccessionsActions: DropdownMenuAction<TeamAccession>[] = [
   {
     label: 'Просмотреть заявку',
+    className: 'text-primary',
     statement: checkNavigateToRequestAction,
-    click: navigateToRequest,
+    click: openTeamRequestModal,
   },
   {
     label: 'Удалить',
@@ -157,7 +171,7 @@ function getStatusFormat(stage: accessionStage) {
     : stage == 'REQUEST'
     ? 'Заявка'
     : stage == 'ACCEPTED'
-    ? 'Принят'
+    ? 'Принято'
     : 'Отклонено'
 }
 
@@ -195,10 +209,6 @@ function checkNavigateToRequestAction(teamAccession: TeamAccession) {
   return teamAccession.stage === 'REQUEST'
 }
 
-function navigateToRequest(teamAccession: TeamAccession) {
-  router.push(`/teams/list/${props.team.id}/request/${teamAccession.id}`)
-}
-
 function checkDeleteTeamAccession(teamAccession: TeamAccession) {
   const currentUser = user.value
   if (currentUser) {
@@ -231,8 +241,51 @@ async function handleDeleteTeamAccession() {
     )
 
     if (response instanceof Error) {
-      return
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
+
+    const deletingTeamIndex = teamAccessions.value.findIndex(
+      (teamAccession) => teamAccession.id === deletingAccessionId.value,
+    )
+
+    if (deletingTeamIndex !== -1) {
+      teamAccessions.value.splice(deletingTeamIndex, 1)
+    }
+
+    return notificationsStore.createSystemNotification('Система', response.success)
+  }
+}
+
+function openTeamRequestModal(teamAccession: TeamAccession) {
+  responsingRequest.value = teamAccession
+  isOpenedTeamRequestModal.value = true
+}
+
+function closeTeamRequestModal() {
+  isOpenedTeamRequestModal.value = false
+}
+
+async function handleResponse(teamRequest: TeamAccession) {
+  const currentUser = user.value
+  if (currentUser?.token && responsingRequest.value) {
+    const { token } = currentUser
+
+    const response = await TeamService.responseToRequest(teamRequest, token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    const responsingTeamIndex = teamAccessions.value.findIndex(
+      (teamAccession) => teamAccession.id == responsingRequest.value?.id,
+    )
+
+    if (responsingTeamIndex !== -1) {
+      teamAccessions.value.splice(responsingTeamIndex, 1)
+      teamAccessions.value.push(responsingRequest.value)
+    }
+
+    return notificationsStore.createSystemNotification('Система', response.success)
   }
 }
 </script>

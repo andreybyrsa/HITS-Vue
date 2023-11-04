@@ -16,6 +16,7 @@ import {
 } from '@Components/Modals/TeamInviteModal/TeamInviteModal.types'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import TeamInviteRegisteredUserPlaceholder from '@Components/Modals/TeamInviteModal/TeamInviteRegisteredUserPlaceholder.vue'
 
 defineProps<TeamInviteRegisteredUsersProps>()
 
@@ -50,7 +51,7 @@ onMounted(async () => {
   }
 })
 
-const { fields, push, remove } = useFieldArray<TeamMember>('profiles')
+const { fields, push, remove } = useFieldArray<TeamMember>('users')
 
 const inviteUsers = handleSubmit(async (values: TeamInviteRegisteredUsersForm) => {
   emit(
@@ -121,43 +122,62 @@ function changeSearchMode() {
 }
 </script>
 <template>
-  <div
-    v-if="profiles"
-    class="invite-registered h-100"
-  >
-    <Input
-      :name="`search-${name}`"
-      class-name="rounded-end"
-      v-model="searchedValue"
-      no-form-controlled
-      placeholder="Найти пользователя"
-    />
-    <Button
-      class-name="btn btn-link"
-      @click="changeSearchMode"
-      >{{
-        isSeachUsersBySkills ? 'Вернуть обычный поиск' : 'Искать по компетенциям'
-      }}</Button
+  <div class="invite-registered h-100">
+    <template v-if="profiles"
+      ><Input
+        :name="`search-${name}`"
+        class-name="rounded-end"
+        v-model="searchedValue"
+        no-form-controlled
+        placeholder="Найти пользователя"
+      />
+      <div class="invite-registered__form-controller">
+        <Button
+          :class-name="
+            !isSeachUsersBySkills
+              ? 'rounded btn-light btn-sm'
+              : 'rounded btn-link btn-sm'
+          "
+          v-model="isSeachUsersBySkills"
+          @click="changeSearchMode()"
+          :disabled="isSeachUsersBySkills"
+        >
+          Искать по компетенциям</Button
+        >
+        <Button
+          :class-name="
+            isSeachUsersBySkills
+              ? 'rounded btn-light btn-sm'
+              : 'rounded btn-link btn-sm'
+          "
+          v-model="isSeachUsersBySkills"
+          @click="changeSearchMode()"
+          :disabled="!isSeachUsersBySkills"
+        >
+          Вернуть обычный поиск</Button
+        >
+      </div>
+
+      <UsersColumns
+        v-if="searchedOptions"
+        :users="fields"
+        :unselected-users="searchedOptions"
+        v-model="searchedOptions"
+        :display-by="['firstName', 'lastName']"
+        :email="'email'"
+        @on-select="selectUser"
+        @on-unselect="unselectUser"
+      />
+
+      <div class="invite-registered__form-controller">
+        <Button
+          class-name="btn-primary w-100"
+          @click="inviteUsers"
+          >Пригласить</Button
+        >
+      </div></template
     >
-
-    <UsersColumns
-      v-if="searchedOptions"
-      :users="fields"
-      :unselected-users="searchedOptions"
-      v-model="searchedOptions"
-      :display-by="['firstName', 'lastName']"
-      :email="'email'"
-      @on-select="selectUser"
-      @on-unselect="unselectUser"
-    />
-
-    <div class="invite-registered__form-controller">
-      <Button
-        class-name="btn-primary w-100"
-        @click="inviteUsers"
-        >Пригласить</Button
-      >
-    </div>
+    <TeamInviteRegisteredUserPlaceholder v-else />
   </div>
 </template>
 
@@ -166,7 +186,7 @@ function changeSearchMode() {
   @include flexible(stretch, space-between, column);
 
   &__form-controller {
-    @include flexible(stretch, center, $gap: 16px);
+    @include flexible(stretch, center, $flex-wrap: wrap, $gap: 16px);
   }
 }
 </style>

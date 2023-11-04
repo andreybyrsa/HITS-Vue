@@ -1,7 +1,10 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
+import { onMounted, ref } from 'vue'
+
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
-import ProfileSkillCharts from '@Components/Modals/TeamModal/ProfileSkillCharts.vue'
+import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import {
@@ -10,16 +13,27 @@ import {
 } from '@Components/Modals/TeamModal/TeamModal.types'
 
 import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
-import TeamMember from '@Domain/TeamMember'
 
-defineProps<TeamDescriptionProps>()
+import TeamMember from '@Domain/TeamMember'
+import { Skill } from '@Domain/Skill'
+
+const props = defineProps<TeamDescriptionProps>()
 
 const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
 
 const emit = defineEmits<TeamDescriptionEmits>()
+
+const radarChartsSkills = ref<Skill[]>([])
+
+onMounted(() => {
+  const membersSkills: Skill[] = []
+
+  props.team.members.forEach((member) => membersSkills.push(...member.skills))
+
+  radarChartsSkills.value = membersSkills
+})
 
 const handleKick = async (member: TeamMember, teamId: number) => {
   emit('handleKick', member, teamId)
@@ -112,12 +126,15 @@ const handleKick = async (member: TeamMember, teamId: number) => {
     </li>
   </ul>
   <div
-    class="w-100 p-3 bg-white rounded-3 text-primary text-nowrap overflow-x-scroll"
+    class="w-100 p-3 bg-white rounded-3 text-primary text-nowrap overflow-y-scroll"
   >
     <Typography class="fs-4 py-2 d-flex justify-content-center"
       >Наши компетенции</Typography
     >
-    <ProfileSkillCharts :team="team" />
+    <SkillsRadarCharts
+      class-name="w-100"
+      :skills="radarChartsSkills"
+    />
   </div>
 </template>
 

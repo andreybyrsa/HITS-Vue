@@ -14,14 +14,17 @@ import TeamAccessionsModal from '../TeamAccessionsModal/TeamAccessionsModal..vue
 import TeamActionButtons from '@Components/Modals/TeamModal/TeamActionButtons.vue'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import TeamService from '@Services/TeamService'
 
 import { TeamAccession } from '@Domain/TeamAccession'
 
 const userStore = useUserStore()
+const notificationsStore = useNotificationsStore()
+
 const { user } = storeToRefs(userStore)
-const { deleteTeam, invitePortalUsers, inviteOutsideUsers, sendRequest } =
+const { deleteTeam, inviteRegisteredUsers, inviteUnregisteredUsers, sendRequest } =
   TeamService
 
 defineProps<TeamActionProps>()
@@ -38,37 +41,37 @@ const handleDeleteTeam = async () => {
     const { token } = currentUser
     const response = await deleteTeam(teamId.value, token)
     if (response instanceof Error) {
-      return // уведомление об ошибке
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
-    // уведомление об успехе
     closeModal()
     router.push('/teams/list')
+    return notificationsStore.createSystemNotification('Система', response.success)
   }
 }
 const handleInviteFromPortal = async (users: string[]) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await invitePortalUsers(users, teamId.value, token)
+    const response = await inviteRegisteredUsers(users, teamId.value, token)
     if (response instanceof Error) {
-      return // уведомление об ошибке
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
-    // уведомление об успехе
+    closeModal()
+    return notificationsStore.createSystemNotification('Система', response.success)
   }
-  closeModal()
 }
 
 const handleInviteFromOutside = async (emails: string[]) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await inviteOutsideUsers(emails, teamId.value, token)
+    const response = await inviteUnregisteredUsers(emails, teamId.value, token)
     if (response instanceof Error) {
-      return // уведомление об ошибке
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
-    // уведомление об успехе
+    closeModal()
+    return notificationsStore.createSystemNotification('Система', response.success)
   }
-  closeModal()
 }
 
 const handleSendRequestToTheTeam = async (teamRequest: TeamAccession) => {
@@ -76,11 +79,12 @@ const handleSendRequestToTheTeam = async (teamRequest: TeamAccession) => {
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
     const response = await sendRequest(teamId.value, teamRequest, token)
+
     if (response instanceof Error) {
-      return // уведомление об ошибке
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
-    // уведомление об успехе
     closeModal()
+    return notificationsStore.createSystemNotification('Система', response.success)
   }
 }
 
@@ -111,8 +115,7 @@ function closeModal() {
       @delete="handleDeleteTeam"
     />
     <TeamInviteModal
-      :display-by="['firstName', 'lastName']"
-      :email="'email'"
+      :team="team"
       name="teamMembers"
       :is-opened="modalName === inviteModal"
       @close-modal="closeModal"

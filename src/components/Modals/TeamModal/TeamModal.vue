@@ -66,28 +66,27 @@ function closeTeamModal() {
 <template>
   <ModalLayout
     :is-opened="isOpened"
+    appear-on-render
     @on-outside-close="closeTeamModal"
   >
     <div
-      class="team-modal p-3 overflow-y-scroll"
+      v-if="team"
+      class="team-modal p-3 h-100 overflow-y-scroll"
       ref="teamModalRef"
     >
-      <template v-if="team">
-        <div class="team-modal__left-side w-75">
-          <TeamDescription
-            :team="team"
-            @handle-kick="handleKick"
-            @close-modal="closeTeamModal"
-          />
-        </div>
-        <div class="team-modal__right-side p-3 rounded w-25 bg-white">
-          <TeamStuff :team="team" />
-          <TeamAction :team="team" /></div
-      ></template>
-      <template v-else>
-        <TeamModalPlaceholder />
-      </template>
+      <div class="team-modal__left-side w-75">
+        <TeamDescription
+          :team="team"
+          @handle-kick="handleKick"
+          @close-modal="closeTeamModal"
+        />
+      </div>
+      <div class="team-modal__right-side p-3 rounded w-25 bg-white">
+        <TeamStuff :team="team" />
+        <TeamAction :team="team" />
+      </div>
     </div>
+    <TeamModalPlaceholder v-else />
   </ModalLayout>
 </template>
 
@@ -108,14 +107,6 @@ function closeTeamModal() {
   );
 
   transition: all 0.3s ease-out;
-
-  &__single-field {
-    border-radius: 0;
-    background-color: $white-color;
-
-    color: $primary-color;
-    @include flexible(stretch, flex-start, $gap: 16px);
-  }
 
   &__left-side {
     height: fit-content;

@@ -9,6 +9,7 @@ interface ComboboxProps<OptionType> {
   label?: string
   placeholder?: string
   multiselectPlaceholder?: string
+  disabled?: boolean
 }
 
 interface ComboboxEmits<OptionType> {
