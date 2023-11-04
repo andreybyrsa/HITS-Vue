@@ -1,5 +1,5 @@
 import { createApp, markRaw } from 'vue'
-import { createPinia } from 'pinia'
+import { createPinia, storeToRefs } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
@@ -71,6 +71,40 @@ router.beforeEach((to) => {
     )
   ) {
     return { name: 'login' }
+  }
+})
+
+const { currentUser } = storeToRefs(userStore)
+
+// router.beforeEach((to, from, next) => {
+//   // const currentRole = currentUser.value?.role
+
+//   // if (to.name === 'login') {
+//   //   next({ name: 'ideas-list' })
+//   // } else
+//   if (
+//     !to.meta.roles ||
+//     (currentUser.value?.role &&
+//       ((role: string) => (to.meta.roles as string[]).includes(role)))
+//   ) {
+//     next()
+//   } else {
+//     next({ name: 'error' })
+//   }
+// })
+
+router.beforeEach((to, from, next) => {
+  const currentRole = currentUser.value?.role
+
+  if (to.name === 'login' && currentUser) {
+    next({ name: 'ideas-list' })
+  } else if (
+    !to.meta.roles ||
+    (currentRole && (to.meta.roles as string[]).includes(currentRole))
+  ) {
+    next()
+  } else {
+    next({ name: 'error' })
   }
 })
 

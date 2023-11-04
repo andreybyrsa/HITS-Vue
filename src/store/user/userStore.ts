@@ -15,6 +15,11 @@ const useUserStore = defineStore('user', {
   state: (): InitialState => ({
     user: null,
   }),
+  getters: {
+    currentUser(): User | null {
+      return this.user
+    },
+  },
   actions: {
     async loginUser(user: LoginUser) {
       const response = await AuthService.loginUser(user)
