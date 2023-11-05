@@ -27,7 +27,7 @@ interface Mocks {
   teamAccessions: TeamAccession[]
   teamRequests: TeamAccession[]
   teamInvitations: TeamAccession[]
-  profiles: TeamMember[]
+  teamMember: TeamMember[]
   notifications: Notification[]
 }
 
@@ -187,8 +187,8 @@ function getMocks(): Mocks {
     {
       email: 'andrey@mail.com',
       id: 33,
-      firstName: 'Админ',
-      lastName: 'Адмиг',
+      firstName: 'Андрей',
+      lastName: 'Бырса',
 
       skills: [...skills],
     },
@@ -757,37 +757,6 @@ function getMocks(): Mocks {
     },
   ]
 
-  const profiles: TeamMember[] = [
-    {
-      id: 0,
-      email: 'test1@gmail.com',
-      firstName: 'Админ',
-      lastName: 'Админ',
-      skills: skills,
-    },
-    {
-      id: 1,
-      email: 'test2@gmail.com',
-      firstName: 'Пользователь',
-      lastName: 'Пользователь',
-      skills: skills,
-    },
-    {
-      id: 2,
-      email: 'test3@gmail.com',
-      firstName: 'Менеджер',
-      lastName: 'Менеджер',
-      skills: skills,
-    },
-    {
-      id: 3,
-      email: 'test4@gmail.com',
-      firstName: 'Владелец',
-      lastName: 'Владелец',
-      skills: skills,
-    },
-  ]
-
   return {
     users,
     usersEmails,
@@ -805,7 +774,7 @@ function getMocks(): Mocks {
     unregisteredInvitations,
     registeredInvitations,
     teamAccessions,
-    profiles,
+    teamMember,
     notifications,
   }
 }

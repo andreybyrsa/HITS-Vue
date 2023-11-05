@@ -27,7 +27,9 @@ function getFormattedDate(date: string) {
     </router-link>
   </Typography>
 
-  <Typography class-name="text-primary text-nowrap team-modal__single-field"
+  <Typography
+    v-if="team.leader"
+    class-name="text-primary text-nowrap team-modal__single-field"
     >Лидер команды:
     <router-link
       class="nav-route list-group-item list-group-item-light"

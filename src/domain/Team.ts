@@ -11,7 +11,7 @@ interface Team {
   closed: boolean
   membersCount: number
   owner: TeamMember
-  leader: TeamMember
+  leader?: TeamMember
   members: TeamMember[]
   skills: Skill[]
   projects?: Project[]

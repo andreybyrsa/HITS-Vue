@@ -35,3 +35,9 @@ const team = defineModel<Team>({ required: true })
     >
   </div>
 </template>
+
+<style lang="scss" scoped>
+.project {
+  @include flexible(flex-start, flex-end, column, $gap: 16px);
+}
+</style>

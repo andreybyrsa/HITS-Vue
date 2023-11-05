@@ -43,7 +43,7 @@ const handleCreateTeam = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    values.members = []
+    values.membersCount = values.members.length
     values.createdAt = new Date().toJSON()
     const response = await TeamService.createTeam(values, token)
 

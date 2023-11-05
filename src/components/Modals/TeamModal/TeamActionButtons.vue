@@ -32,20 +32,20 @@ function shareButton(id: number) {
 </script>
 <template>
   <Button
-    v-if="team.leader.id == user?.id"
+    v-if="team.leader?.id == user?.id"
     class-name="bi bi-pencil-square btn-primary w-100"
     @click="router.push(`/teams/edit/${team.id}`)"
     >Редактировать</Button
   >
   <Button
-    v-if="team.leader.id == user?.id || team.owner.email == user?.email"
+    v-if="team.leader?.id == user?.id || team.owner.email == user?.email"
     class-name="bi bi-envelope-plus-fill btn-primary w-100"
     @click="emits('openModal', team.id, inviteModal)"
     >Пригласить в команду</Button
   >
   <Button
     v-if="
-      team.leader.id != user?.id &&
+      team.leader?.id != user?.id &&
       team.owner.id != user?.id &&
       !team.members.find((member) => member.id == user?.id)
     "
@@ -54,7 +54,7 @@ function shareButton(id: number) {
     >Подать заявку на вступление</Button
   >
   <Button
-    v-if="team.leader.id == user?.id || team.owner.id == user?.id"
+    v-if="team.leader?.id == user?.id || team.owner.id == user?.id"
     class-name="bi bi-card-checklist btn-primary w-100"
     @click="emits('openModal', team.id, teamAccessionsModal)"
     >Заявки и приглашения</Button

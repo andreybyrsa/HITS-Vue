@@ -1,5 +1,11 @@
+import TeamMember from '@Domain/TeamMember'
+
 interface TeamDescriptionEmits {
   (event: 'closeModal'): void
 }
 
-export { TeamDescriptionEmits }
+interface TeamMemberInfoProps {
+  member: TeamMember
+}
+
+export { TeamDescriptionEmits, TeamMemberInfoProps }

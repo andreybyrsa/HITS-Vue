@@ -62,6 +62,7 @@ onMounted(() => {
     </li>
   </ul>
   <div
+    v-if="team.membersCount != 0 && radarChartsSkills.length != 0"
     class="w-100 p-3 bg-white rounded-3 text-primary text-nowrap overflow-y-scroll"
   >
     <Typography class="fs-4 py-2 d-flex justify-content-center"
@@ -84,9 +85,6 @@ onMounted(() => {
 
   color: $primary-color;
   @include flexible(stretch, flex-start, $gap: 16px);
-}
-.project {
-  @include flexible(flex-start, flex-end, column, $gap: 16px);
 }
 
 .collapse-controller {

@@ -33,10 +33,7 @@ onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TeamService.fetchInvitationsAndRequestions(
-      props.team.id,
-      token,
-    )
+    const response = await TeamService.getAllTeamAccessions(props.team.id, token)
 
     if (response instanceof Error) {
       return //уведомление об ошибке
