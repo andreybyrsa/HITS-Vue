@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -17,10 +17,11 @@ import RequestTeamsServise from '@Services/RequestTeamsServise'
 
 import Team from '@Domain/Team'
 import RequestTeams from '@Domain/RequestTeams'
+import IdeasMarket from '@Domain/IdeasMarket'
 
 const props = defineProps<RequestTeamCollapseProps>()
 
-const route = useRoute()
+const router = useRouter()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -73,6 +74,10 @@ function checkSendTeamRequest() {
 function checkTeamRequest(teamProps: Team) {
   return requestTeams.value?.find((team) => team.teamId == teamProps.id)
 }
+
+function navigateToTeamModal(team: Team, idea: IdeasMarket) {
+  return router.push(`/market/${idea.id}/${team.id}`)
+}
 </script>
 
 <template>
@@ -85,7 +90,7 @@ function checkTeamRequest(teamProps: Team) {
       <div class="team-request-collapse__button">
         <Button
           class-name="btn-link"
-          @click="$router.push(`/market/${idea.id}/${team.id}`)"
+          @click="navigateToTeamModal(team, idea)"
         >
           {{ team.name }}
         </Button>
@@ -146,7 +151,10 @@ function checkTeamRequest(teamProps: Team) {
     :key="index"
     class="team-request-collapse__button py-1 px-2 border rounded w-100"
   >
-    <Button class-name="btn-link">
+    <Button
+      class-name="btn-link"
+      @click="navigateToTeamModal(team, idea)"
+    >
       {{ team.name }}
     </Button>
     <Button

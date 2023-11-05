@@ -7,6 +7,7 @@ import { RequestToIdeaProps } from '@Components/Forms/RequestToIdeaForm/RequestT
 import Button from '@Components/Button/Button.vue'
 import RequestTeamCollapse from '@Components/Forms/RequestToIdeaForm/RequestTeamCollapse.vue'
 import useUserStore from '@Store/user/userStore'
+import Typography from '@Components/Typography/Typography.vue'
 
 import RequestTeams from '@Domain/RequestTeams'
 import Team from '@Domain/Team'
@@ -32,21 +33,26 @@ function sendOnPageCreateTeam() {
 
 <template>
   <div
-    v-if="user?.email != idea.initiator"
-    class="request-form bg-white p-3 rounded-3"
+    v-if="user?.email != idea.initiator.email"
+    class="d-flex w-100 bg-white rounded-3"
   >
     <div
       v-if="filterTeamOwner().length"
-      class="d-flex flex-column w-100 gap-2"
+      class="w-100 d-flex flex-column"
     >
-      <RequestTeamCollapse
-        v-for="(team, index) in filterTeamOwner()"
-        :key="index"
-        :team="team"
-        :idea="idea"
-        v-model:teams="teams"
-        v-model:requestTeams="requestTeams"
-      />
+      <Typography class-name="fs-6 py-2 px-3 border-bottom">
+        Ваши команды
+      </Typography>
+      <div class="d-flex flex-column gap-2 p-3">
+        <RequestTeamCollapse
+          v-for="(team, index) in filterTeamOwner()"
+          :key="index"
+          :team="team"
+          :idea="idea"
+          v-model:teams="teams"
+          v-model:requestTeams="requestTeams"
+        />
+      </div>
     </div>
 
     <div
@@ -66,7 +72,7 @@ function sendOnPageCreateTeam() {
 
 <style lang="scss" scoped>
 .request-form {
-  @include flexible(flex-start, flex-start, column, $gap: 16px);
+  @include flexible(flex-start, flex-start);
   width: 100%;
 }
 </style>

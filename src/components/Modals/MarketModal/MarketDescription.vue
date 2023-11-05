@@ -48,7 +48,7 @@ function closeModal() {
     </div>
 
     <ul
-      v-if="user?.email != idea?.initiator"
+      v-if="user?.email != idea?.initiator.email"
       class="list-group rounded-3"
     >
       <li

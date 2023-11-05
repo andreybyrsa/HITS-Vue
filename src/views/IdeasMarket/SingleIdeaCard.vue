@@ -126,6 +126,10 @@ function openRequestToIdeaModal() {
 function closeRequestToIdeaModal() {
   isOpenRequestToIdeaModal.value = false
 }
+
+function filterTeams(teams: RequestTeams[]) {
+  return teams.filter((team) => team.accepted == true)
+}
 </script>
 
 <template>
@@ -142,7 +146,7 @@ function closeRequestToIdeaModal() {
       </div>
       <div class="idea-creator">
         <Icon class-name="bi bi-person-circle fs-5" /> Инициатор:
-        {{ idea.initiator }}
+        {{ idea.initiator.firstName }} {{ idea.initiator.lastName }}
       </div>
       <div class="idea-stacks">
         <Skills :skills="idea?.stack" />
@@ -157,11 +161,14 @@ function closeRequestToIdeaModal() {
       </div>
       <div class="idea-applications">
         <Icon class-name="bi bi-envelope-open fs-5" />
-        Подано заявок: {{ idea.requests }}
+        Подано заявок: {{ requestTeams?.length }}
       </div>
-      <div class="idea-accepted-applications">
+      <div
+        class="idea-accepted-applications"
+        v-if="requestTeams"
+      >
         <Icon class-name="bi bi-people-fill fs-5" />
-        Команда: {{ idea.acceptedRequests }} / {{ idea.maxTeamSize }}
+        Команда: {{ filterTeams(requestTeams).length }} / {{ idea.maxTeamSize }}
       </div>
       <div class="idea-applications">
         <Icon class-name="bi bi-check2-all fs-5" />
@@ -169,7 +176,7 @@ function closeRequestToIdeaModal() {
       </div>
       <div class="idea-buttons">
         <Button
-          v-if="user?.email != idea.initiator"
+          v-if="user?.email != idea.initiator.email"
           class="apply-button"
           prepend-icon-name="bi bi-send-fill"
           @click="openRequestToIdeaModal"

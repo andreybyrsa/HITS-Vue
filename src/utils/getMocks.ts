@@ -51,25 +51,67 @@ function getMocks(): Mocks {
     },
     {
       id: 1,
+      name: 'C++',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 2,
+      name: 'Python',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 3,
+      name: 'TypeScript',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 4,
+      name: 'Java',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 5,
+      name: 'C#',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 6,
       name: 'ReactJS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
-      id: 2,
-      name: 'C++',
-      type: 'LANGUAGE',
-      confirmed: false,
+      id: 7,
+      name: 'Django',
+      type: 'FRAMEWORK',
+      confirmed: true,
     },
     {
-      id: 3,
+      id: 8,
+      name: 'VueJS',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: 9,
       name: 'Docker',
       type: 'DEVOPS',
       confirmed: true,
     },
     {
-      id: 4,
+      id: 10,
       name: 'MongoDB',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: 11,
+      name: 'NodeJS',
       type: 'DATABASE',
       confirmed: true,
     },
@@ -187,10 +229,18 @@ function getMocks(): Mocks {
     {
       email: 'andrey@mail.com',
       id: 33,
-      firstName: 'Админ',
-      lastName: 'Адмиг',
+      firstName: 'Андрей',
+      lastName: 'Бырса',
 
-      skills: [...skills],
+      skills: [
+        skills[0],
+        skills[3],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
     },
     {
       email: 'timyr@mail.com',
@@ -198,7 +248,15 @@ function getMocks(): Mocks {
       firstName: 'Тимур',
       lastName: 'Минязев',
 
-      skills: [...skills],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[4],
+        skills[7],
+        skills[8],
+        skills[9],
+      ],
     },
     {
       email: 'kirill.vlasov.05@inbox.ru',
@@ -206,20 +264,7 @@ function getMocks(): Mocks {
       firstName: 'Кирилл',
       lastName: 'Власов',
 
-      skills: [
-        {
-          id: 0,
-          name: 'JavaScript',
-          type: 'LANGUAGE',
-          confirmed: true,
-        },
-        {
-          id: 1,
-          name: 'React JS',
-          type: 'FRAMEWORK',
-          confirmed: true,
-        },
-      ],
+      skills: [skills[0], skills[3], skills[6], skills[7], skills[8], skills[9]],
     },
     {
       email: 'maga@mail.com',
@@ -227,7 +272,7 @@ function getMocks(): Mocks {
       firstName: 'Мамедага',
       lastName: 'Байрамов',
 
-      skills: [...skills],
+      skills: [skills[0], skills[3], skills[7], skills[8], skills[9], skills[11]],
     },
   ]
 
@@ -408,10 +453,13 @@ function getMocks(): Mocks {
   ]
 
   const ideasSkills: IdeaSkills[] = [
-    { ideaId: 0, skills: [...skills] },
+    {
+      ideaId: 0,
+      skills: [skills[0], skills[2], skills[3], skills[6], skills[9], skills[11]],
+    },
     {
       ideaId: 1,
-      skills: [skills[0], skills[2]],
+      skills: [...skills],
     },
   ]
 
@@ -427,7 +475,17 @@ function getMocks(): Mocks {
       owner: teamMember[0],
       leader: teamMember[1],
       members: [...teamMember],
-      skills: [...skills],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
     },
     {
       id: 11,
@@ -439,8 +497,17 @@ function getMocks(): Mocks {
       membersCount: 3,
       owner: teamMember[2],
       leader: teamMember[2],
-      members: [teamMember[3], teamMember[2]],
-      skills: [...skills],
+      members: [teamMember[1], teamMember[3]],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[4],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
     },
     {
       id: 12,
@@ -452,8 +519,16 @@ function getMocks(): Mocks {
       membersCount: 4,
       owner: teamMember[2],
       leader: teamMember[1],
-      members: [teamMember[3]],
-      skills: [skills[0]],
+      members: [teamMember[0], teamMember[1]],
+      skills: [
+        skills[0],
+        skills[3],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
     },
     {
       id: 13,
@@ -485,7 +560,7 @@ function getMocks(): Mocks {
       owner: teamMember[1],
       leader: teamMember[2],
       members: [...teamMember],
-      skills: [...skills],
+      skills: [skills[0], skills[2], skills[4], skills[6], skills[8], skills[11]],
       createdAt: '2023-10-20T11:02:17Z',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
@@ -505,7 +580,15 @@ function getMocks(): Mocks {
       owner: teamMember[1],
       leader: teamMember[2],
       members: [...teamMember],
-      skills: [...skills],
+      skills: [
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -524,14 +607,24 @@ function getMocks(): Mocks {
       owner: teamMember[1],
       leader: teamMember[2],
       members: [...teamMember],
-      skills: [...skills],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
       id: 3,
       ideaId: 1,
-      accepted: true,
+      accepted: false,
       teamId: 3,
 
       name: 'Молодцы',
@@ -543,7 +636,17 @@ function getMocks(): Mocks {
       owner: teamMember[1],
       leader: teamMember[2],
       members: [...teamMember],
-      skills: [...skills],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -562,7 +665,17 @@ function getMocks(): Mocks {
       leader: teamMember[2],
       membersCount: 4,
       members: [...teamMember],
-      skills: [...skills],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -581,7 +694,17 @@ function getMocks(): Mocks {
       leader: teamMember[2],
       membersCount: 4,
       members: [...teamMember],
-      skills: [...skills],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -600,7 +723,17 @@ function getMocks(): Mocks {
       owner: teamMember[1],
       leader: teamMember[2],
       members: [...teamMember],
-      skills: [...skills],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -619,7 +752,17 @@ function getMocks(): Mocks {
       owner: teamMember[1],
       leader: teamMember[2],
       members: [...teamMember],
-      skills: [...skills],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
@@ -630,7 +773,7 @@ function getMocks(): Mocks {
       id: 1,
       position: 1,
       name: 'BaccaratHelper',
-      initiator: 'kirill.vlasov.05@inbox.ru',
+      initiator: teamMember[2],
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -639,14 +782,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      stack: [
-        {
-          id: 0,
-          name: 'JavaScript',
-          type: 'LANGUAGE',
-          confirmed: true,
-        },
-      ],
+      stack: [skills[0], skills[2], skills[3], skills[6], skills[9], skills[11]],
       customer: 'ВШЦТ',
       createdAt: '2023-10-21T11:02:17Z',
       maxTeamSize: 10,
@@ -659,7 +795,7 @@ function getMocks(): Mocks {
       id: 2,
       position: 2,
       name: 'Vaccarat',
-      initiator: 'andrey@mail.com',
+      initiator: teamMember[0],
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -668,14 +804,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
-      stack: [
-        {
-          id: 0,
-          name: 'ReactJS',
-          type: 'FRAMEWORK',
-          confirmed: true,
-        },
-      ],
+      stack: [skills[1], skills[2], skills[4], skills[9], skills[10]],
       customer: 'ВШЦТ',
       createdAt: '2023-10-21T11:02:17Z',
       maxTeamSize: 10,
@@ -688,7 +817,7 @@ function getMocks(): Mocks {
       id: 3,
       position: 3,
       name: 'Insensible',
-      initiator: 'Тимур Минязев',
+      initiator: teamMember[1],
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -697,14 +826,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      stack: [
-        {
-          id: 0,
-          name: 'PostgreSQL',
-          type: 'DATABASE',
-          confirmed: true,
-        },
-      ],
+      stack: [skills[1], skills[2], skills[4], skills[9], skills[10]],
       customer: 'ВШЦТ',
       createdAt: '2023-10-21T11:02:17Z',
       maxTeamSize: 10,

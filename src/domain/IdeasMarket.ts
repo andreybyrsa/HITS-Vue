@@ -1,5 +1,6 @@
 import { Skill } from './Skill'
 import IdeasMarketStatusTypes from './MarketStatus'
+import TeamMember from './TeamMember'
 
 interface IdeasMarket {
   id: number
@@ -9,7 +10,7 @@ interface IdeasMarket {
   solution: string
   result: string
   customer: string
-  initiator: string
+  initiator: TeamMember
   description: string
   stack: Skill[]
   createdAt: string

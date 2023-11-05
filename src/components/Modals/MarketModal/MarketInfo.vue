@@ -26,7 +26,8 @@ function valueTab(name: string) {
     return (value.value = props.idea.customer)
   }
   if (name == 'Инициатор') {
-    return (value.value = props.idea.initiator)
+    return (value.value =
+      props.idea.initiator.firstName + ' ' + props.idea.initiator.lastName)
   }
   if (name == 'Дата старта') {
     return (value.value = dateStart.value)
@@ -62,7 +63,7 @@ function valueTab(name: string) {
       </div>
 
       <Button
-        v-if="user?.email == idea.initiator"
+        v-if="user?.email == idea.initiator.email"
         class-name="btn-danger"
       >
         Закрыть набор

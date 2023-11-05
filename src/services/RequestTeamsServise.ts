@@ -3,6 +3,8 @@ import Success from '@Domain/ResponseMessage'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import RequestTeams from '@Domain/RequestTeams'
+import getAbortedSignal from '@Utils/getAbortedSignal'
+import useUserStore from '@Store/user/userStore'
 
 const RequestTeamsAxios = defineAxios(getMocks().RequestTeams)
 
@@ -42,17 +44,17 @@ const postRequest = async (
     })
 }
 
-const addRequestTeams = async (
-  id: number,
+const putRequestTeams = async (
+  team: RequestTeams,
   token: string,
 ): Promise<Success | Error> => {
-  return await RequestTeamsAxios.putNoRequestBody<Success>(
-    `/application/add/${id}`,
+  return await RequestTeamsAxios.put<Success>(
+    `/application/add/${team.id}`,
+    team,
     { headers: { Authorization: `Bearer ${token}` } },
     {
-      params: { id },
-      requestData: { accepted: true },
-      responseData: { success: 'Успешная отправка идеи' },
+      params: { id: team.id },
+      responseData: { success: 'Успешное принятие команды' },
     },
   )
     .then((response) => response.data)
@@ -62,11 +64,33 @@ const addRequestTeams = async (
     })
 }
 
+const deleteRequestTeams = async (
+  id: number,
+  token: string,
+): Promise<Success | Error> => {
+  return await RequestTeamsAxios.delete(
+    `/application/delete/${id}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    },
+    {
+      params: { id },
+    },
+  )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка удаления команды'
+      return new Error(error)
+    })
+}
+
 const RequestTeamsServise = {
   getRequestAll,
   postRequest,
+  deleteRequestTeams,
 
-  addRequestTeams,
+  putRequestTeams,
 }
 
 export default RequestTeamsServise

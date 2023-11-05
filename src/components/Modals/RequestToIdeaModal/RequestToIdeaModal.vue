@@ -29,26 +29,28 @@ function closeModal() {
     :is-opened="isOpened"
   >
     <div class="request-idea-modal bg-white rounded">
-      <div class="request-idea-modal-header">
-        <Button
-          class-name="btn-primary"
-          prepend-icon-name="bi bi-backspace-fill"
-          @click="closeModal"
-        >
-          Назад
-        </Button>
+      <div class="d-flex flex-column w-100">
+        <div class="d-flex w-100 gap-2 p-2">
+          <Button
+            class-name="btn-primary"
+            prepend-icon-name="bi bi-backspace-fill"
+            @click="closeModal"
+          >
+            Назад
+          </Button>
 
-        <Typography
-          class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap"
-        >
-          {{ idea?.name }}
-        </Typography>
+          <Typography
+            class-name="p-2 w-100 border bg-white rounded-3 fs-4 text-primary text-nowrap"
+          >
+            {{ idea?.name }}
+          </Typography>
+        </div>
+        <RequestToIdeaForm
+          v-model:teams="teams"
+          :idea="idea"
+          v-model:requestTeams="requestTeams"
+        />
       </div>
-      <RequestToIdeaForm
-        v-model:teams="teams"
-        :idea="idea"
-        v-model:requestTeams="requestTeams"
-      />
     </div>
   </ModalLayout>
 </template>
