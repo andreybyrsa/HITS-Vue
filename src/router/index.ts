@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import { storeToRefs } from 'pinia'
 
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 
@@ -30,6 +29,11 @@ import DevView from '@Views/DevView.vue'
 import RoleAndNotificationMiddleware from '@Middlewares/RoleAndNotificationMiddleware.vue'
 
 const routes: RouteRecordRaw[] = [
+  {
+    path: '/home',
+    redirect: '/login',
+  },
+
   {
     path: '/',
     component: RoleAndNotificationMiddleware,

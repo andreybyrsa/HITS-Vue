@@ -76,35 +76,21 @@ router.beforeEach((to) => {
 
 const { currentUser } = storeToRefs(userStore)
 
-// router.beforeEach((to, from, next) => {
-//   // const currentRole = currentUser.value?.role
-
-//   // if (to.name === 'login') {
-//   //   next({ name: 'ideas-list' })
-//   // } else
-//   if (
-//     !to.meta.roles ||
-//     (currentUser.value?.role &&
-//       ((role: string) => (to.meta.roles as string[]).includes(role)))
-//   ) {
-//     next()
-//   } else {
-//     next({ name: 'error' })
-//   }
-// })
-
 router.beforeEach((to) => {
   const currentRole = currentUser.value?.role
 
-  if (to.name === 'login' && currentUser) {
+  if (currentUser?.value && to.name === 'login') {
     return { name: 'ideas-list' }
-  } else if (
-    !to.meta.roles ||
-    (currentRole && (to.meta.roles as string[]).includes(currentRole))
-  ) {
+  } else if (currentRole) {
+    if ((to.meta.roles as string[]).includes(currentRole)) {
+      return true
+    } else {
+      return { name: 'error' }
+    }
+  } else if (to.name === 'login') {
     return true
   } else {
-    return { name: 'error' }
+    return { name: 'login' }
   }
 })
 
