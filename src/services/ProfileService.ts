@@ -3,89 +3,47 @@ import axios from 'axios'
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 import { Idea } from '@Domain/Idea'
-import Success from '@Domain/ResponseMessage'
-import { API_URL } from '../main'
+import Project from '@Domain/Project'
 
-const PROFILE_URL = '/profile'
+import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
-import { Project } from '@Domain/Project'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
+const profileUserAxios = defineAxios(getMocks().users)
 const profileIdeasAxios = defineAxios(getMocks().profileIdeas)
 const profileProjectsAxios = defineAxios(getMocks().profileProjects)
 const profileSkillsAxios = defineAxios(getMocks().profileSkills)
 
-// const getProfile = async (token: string): Promise<User[] | Error> => {
-//   return await axios
-//     .get(`${PROFILE_URL}/all`, {
-//       headers: { Authorization: `Bearer ${token}` },
-//     })
-//     .then((response) => response.data)
-//     .catch(({ response }) => {
-//       const error = response?.data?.error ?? 'Ошибка получения профиля'
-//       return new Error(error)
-//     })
-// }
-
-const getUserIdeas = async (token: string): Promise<Idea[] | Error> => {
-  return await profileIdeasAxios
-    .get(`${PROFILE_URL}/ideas/get`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идей'
-      return new Error(error)
-    })
-}
-
-const getUserProjects = async (token: string): Promise<Project[] | Error> => {
-  return await profileProjectsAxios
-    .get(`${PROFILE_URL}/projects/get`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки проектов'
-      return new Error(error)
-    })
-}
-
-const getAvatar = async (token: string): Promise<string | Error> => {
-  return await axios
-    .get(`${PROFILE_URL}/avatar/get`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки аватара'
-      return new Error(error)
-    })
-}
-
-const uploadAvatar = async (
-  formData: FormData,
+const getUserProfile = async (
+  email: string,
   token: string,
-): Promise<FormData | Error> => {
-  return await axios
-    .post(`${PROFILE_URL}/avatar/upload`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
+): Promise<User | Error> => {
+  return await profileUserAxios
+    .get(
+      `/profile/${email}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-    })
+      { params: { email } },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка обновления аватара'
+      const error = response?.data?.error ?? 'Ошибка загрузки пользователя'
       return new Error(error)
     })
 }
 
-const getSkills = async (token: string): Promise<Skill[] | Error> => {
+const getProfileSkills = async (
+  email: string,
+  token: string,
+): Promise<Skill[] | Error> => {
   return await profileSkillsAxios
-    .get(`${PROFILE_URL}/skills/get`, {
+    .get(`/profile/${email}/skills`, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -94,10 +52,63 @@ const getSkills = async (token: string): Promise<Skill[] | Error> => {
     })
 }
 
-const saveSkills = async (skill: Skill[], token: string): Promise<Skill | Error> => {
-  return await axios
-    .post(`${API_URL}/profile/skills/save`, skill, {
+const getProfileIdeas = async (
+  email: string,
+  token: string,
+): Promise<Idea[] | Error> => {
+  return await profileIdeasAxios
+    .get(`/profile/${email}/ideas`, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки идей'
+      return new Error(error)
+    })
+}
+
+const getProfileProjects = async (
+  email: string,
+  token: string,
+): Promise<Project[] | Error> => {
+  return await profileProjectsAxios
+    .get(`/profile/${email}/projects`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки проектов'
+      return new Error(error)
+    })
+}
+
+const getProfileAvatar = async (
+  email: string,
+  token: string,
+): Promise<string | Error> => {
+  return await axios
+    .get(`/profile/${email}/avatar`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки аватара'
+      return new Error(error)
+    })
+}
+
+const saveProfileSkills = async (
+  email: string,
+  skill: Skill[],
+  token: string,
+): Promise<Skill[] | Error> => {
+  return await profileSkillsAxios
+    .post(`/profile/${email}/skills/save`, skill, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -106,13 +117,35 @@ const saveSkills = async (skill: Skill[], token: string): Promise<Skill | Error>
     })
 }
 
+const uploadProfileAvatar = async (
+  email: string,
+  formData: FormData,
+  token: string,
+): Promise<FormData | Error> => {
+  return await axios
+    .post(`/profile/${email}/avatar/upload`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка обновления аватара'
+      return new Error(error)
+    })
+}
+
 const ProfileService = {
-  getUserIdeas,
-  getUserProjects,
-  getAvatar,
-  uploadAvatar,
-  getSkills,
-  saveSkills,
+  getUserProfile,
+  getProfileSkills,
+  getProfileIdeas,
+  getProfileProjects,
+  getProfileAvatar,
+
+  saveProfileSkills,
+  uploadProfileAvatar,
 }
 
 export default ProfileService

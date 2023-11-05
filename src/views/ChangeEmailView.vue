@@ -1,16 +1,13 @@
 <script lang="ts" setup>
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
-import useCommentsStore from '@Store/comments/commentsStore'
 
 import { ChangeEmailProps, ChangeEmailEmits } from '@Views/ChangeEmailView.types'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { NewEmailForm } from '@Domain/Invitation'
@@ -25,9 +22,6 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 defineProps<ChangeEmailProps>()
 const emit = defineEmits<ChangeEmailEmits>()
-
-const commentStore = useCommentsStore()
-const { rsocketIsConnected, closeRsocket } = storeToRefs(commentStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -62,13 +56,6 @@ const sendChangingUrl = handleSubmit(async (values) => {
     )
   }
 })
-
-function closeChangeEmail() {
-  emit('close-modal')
-  if (rsocketIsConnected.value) {
-    closeRsocket.value()
-  }
-}
 </script>
 
 <template>

@@ -17,14 +17,14 @@ import RolesTypes from '@Domain/Roles'
 import useUserStore from '@Store/user/userStore'
 
 import getRoles from '@Utils/getRoles'
-import ProfileView from '@Views/Profile/ProfileView.vue'
-import { User } from '@Domain/User'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const router = useRouter()
-const isOpenedModal = ref(false)
+
+const isOpenedRoleModal = ref(false)
+const isOpenedNotificationsModal = ref(false)
 
 const userRoles = getRoles()
 
@@ -34,9 +34,6 @@ const LeftSideBarClassName = ref<string[]>()
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
 })
-
-const isOpenedProfile = ref(false)
-const currentOpenedProfile = ref<User>()
 
 watchImmediate(isHovered, (value, prevValue) => {
   const opendAnimationClass = value ? 'left-side-bar--opened' : ''
@@ -63,30 +60,24 @@ function getTranslatedRole(currentRole: RolesTypes) {
   return userRoles.translatedRoles[currentRole]
 }
 
-function handleOpenModal() {
-  isOpenedModal.value = true
+function navigateToProfile() {
+  router.push(`/profile/${user.value?.email}`)
 }
 
-function handleCloseModal() {
-  isOpenedModal.value = false
+function handleOpenRoleModal() {
+  isOpenedRoleModal.value = true
 }
 
-function handleOpenProfile(user?: User) {
-  currentOpenedProfile.value = user
-  isOpenedProfile.value = true
-}
-
-function handleCloseProfile() {
-  isOpenedProfile.value = false
-  const isOpenedNotificationModal = ref(false)
+function handleCloseRoleModal() {
+  isOpenedRoleModal.value = false
 }
 
 function handleOpenNotificationModal() {
-  isOpenedNotificationModal.value = true
+  isOpenedNotificationsModal.value = true
 }
 
 function handleCloseNotificationModal() {
-  isOpenedNotificationModal.value = false
+  isOpenedNotificationsModal.value = false
 }
 </script>
 
@@ -117,8 +108,7 @@ function handleCloseNotificationModal() {
       <Button
         class-name="left-side-bar__role-button btn-light w-100 text-black"
         prepend-icon-name="bi bi-person-circle fs-5"
-        @click="handleOpenProfile"
-        :disabled="user?.roles.length === 1"
+        @click="navigateToProfile"
       >
         {{ isHovered ? 'Профиль' : '' }}
       </Button>
@@ -126,18 +116,10 @@ function handleCloseNotificationModal() {
       <Button
         class-name="left-side-bar__role-button btn-light w-100 text-success"
         prepend-icon-name="bi bi-circle-fill fs-6"
-        @click="handleOpenModal"
+        @click="handleOpenRoleModal"
         :disabled="user?.roles.length === 1"
       >
         {{ isHovered ? getTranslatedRole(user.role) : '' }}
-      </Button>
-
-      <Button
-        class-name="left-side-bar__logout-button btn-light w-100"
-        @click="handleLogout"
-        prepend-icon-name="bi bi-box-arrow-left"
-      >
-        {{ isHovered ? 'Выйти' : '' }}
       </Button>
 
       <Button
@@ -147,18 +129,23 @@ function handleCloseNotificationModal() {
       >
         {{ isHovered ? 'Уведомления' : '' }}
       </Button>
+
+      <Button
+        class-name="left-side-bar__logout-button btn-light w-100"
+        @click="handleLogout"
+        prepend-icon-name="bi bi-box-arrow-left"
+      >
+        {{ isHovered ? 'Выйти' : '' }}
+      </Button>
     </div>
 
     <RoleModal
-      :is-opened="isOpenedModal"
-      @close-modal="handleCloseModal"
+      :is-opened="isOpenedRoleModal"
+      @close-modal="handleCloseRoleModal"
     />
-    <ProfileView
-      :isOpened="isOpenedProfile"
-      @close-modal="handleCloseProfile"
-    />
+
     <NotificationModalWindow
-      :is-opened="isOpenedNotificationModal"
+      :is-opened="isOpenedNotificationsModal"
       @close-modal="handleCloseNotificationModal"
     />
   </div>

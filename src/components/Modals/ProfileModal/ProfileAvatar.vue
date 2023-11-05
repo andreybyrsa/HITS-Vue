@@ -3,14 +3,14 @@ import RolesTypes from '@Domain/Roles'
 
 import Typography from '@Components/Typography/Typography.vue'
 
-import ProfileUserProps from '@Views/Profile/User.types'
+import { ProfileInfoProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import { useDateFormat } from '@vueuse/core'
 import { Ref, ref } from 'vue'
 import ProfileService from '@Services/ProfileService'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 
-const props = defineProps<ProfileUserProps>()
+const props = defineProps<ProfileInfoProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

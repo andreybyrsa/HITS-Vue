@@ -5,7 +5,10 @@ import { watchImmediate } from '@vueuse/core'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import comboboxStackCategories from '@Components/StackCategories/StackCategories'
+import {
+  StackCategoriesProps,
+  comboboxStackCategories,
+} from '@Components/StackCategories/StackCategories'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import Skills from '@Components/Skills/Skills.vue'
 
@@ -15,6 +18,8 @@ import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const props = defineProps<StackCategoriesProps>()
 
 const stackValue = defineModel<Skill[]>('stack', {
   required: false,
@@ -47,20 +52,23 @@ onMounted(async () => {
     }
 
     skills.value = response
+  }
+})
 
-    if (stackValue.value) {
+watchImmediate(
+  () => props.skills,
+  () => {
+    if (props.skills) {
       Object.keys(choosenSkills.value).forEach((key) => {
-        if (stackValue.value) {
-          choosenSkills.value[key as SkillType] = stackValue.value.filter(
+        if (props.skills) {
+          choosenSkills.value[key as SkillType] = props.skills.filter(
             (skill) => skill.type === key,
           )
         }
       })
-    } else if (stackByTypes.value) {
-      choosenSkills.value = stackByTypes.value
     }
-  }
-})
+  },
+)
 
 watchImmediate(
   choosenSkills,
@@ -101,8 +109,8 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
     }
 
     if (skills.value) {
-      skills.value[type].push(response)
-      choosenSkills.value[type].push(response)
+      skills.value[type] = [...skills.value[type], response]
+      choosenSkills.value[type] = [...choosenSkills.value[type], response]
     }
   }
 }

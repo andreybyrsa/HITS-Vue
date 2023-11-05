@@ -1,32 +1,34 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { watchImmediate } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 
+import { ProfileSkillProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
-
-import ProfileSkillProps from '@Views/Profile/Skills.types'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
-import { Skill, SkillType } from '@Domain/Skill'
-import { storeToRefs } from 'pinia'
-import useUserStore from '@Store/user/userStore'
+import Skills from '@Components/Skills/Skills.vue'
+
+import { Skill } from '@Domain/Skill'
+
 import ProfileService from '@Services/ProfileService'
-import { watchImmediate } from '@vueuse/core'
+
+import useUserStore from '@Store/user/userStore'
 
 const props = defineProps<ProfileSkillProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const profileSkills = ref<Skill[]>()
 const selectedSkills = ref<Skill[]>([])
 
 const editSkills = ref(false)
 
-const skills = ref<Skill[]>()
-
 watchImmediate(
   () => props.skills,
-  (profileSkills) => {
-    skills.value = profileSkills
+  (skills) => {
+    profileSkills.value = skills
   },
 )
 
@@ -45,62 +47,61 @@ function editSkillsClose() {
   editSkills.value = false
 }
 
-function getTechnologyClassName(key: SkillType) {
-  const clasName = 'px-2 py-1 d-flex gap-1 bg-opacity-75 rounded text-white'
-
-  switch (key) {
-    case 'LANGUAGE':
-      return clasName + ' bg-success'
-    case 'FRAMEWORK':
-      return clasName + ' bg-info'
-    case 'DATABASE':
-      return clasName + ' bg-warning'
-    default:
-      return clasName + ' bg-danger'
-  }
-}
-
-const handleSaveSkills = async (selectedSkills: Skill[]) => {
+const handleSaveSkills = async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await ProfileService.saveSkills(skills.value, token)
-    console.log(response)
+    const { token, email } = currentUser
+    const response = await ProfileService.saveProfileSkills(
+      email,
+      selectedSkills.value,
+      token,
+    )
 
     if (response instanceof Error) {
       return // notification
     }
 
-    //skills.value?.push(response)
     editSkills.value = false
+    profileSkills.value = selectedSkills.value
   }
+}
+
+function handleCancelUpdating() {
+  editSkills.value = false
 }
 </script>
 
 <template>
   <div class="w-100 bg-white border p-3 rounded-4">
     <div class="header border-bottom pb-1">
-      {{ skills }}
-      {{ selectedSkills }}
       <Typography class-name="fs-4 text-primary">Мои компетенции</Typography>
       <Button
         v-if="editSkills === false"
         class-name="border bg-light "
         @click="editSkillsHandler"
-        >Изменить стек</Button
       >
+        Изменить стек
+      </Button>
       <Button
         v-if="editSkills === true"
         class-name="border bg-primary text-light "
-        @click="handleSaveSkills(selectedSkills)"
-        >Сохранить</Button
+        @click="handleSaveSkills"
       >
+        Сохранить
+      </Button>
+      <Button
+        v-if="editSkills === true"
+        class-name="border bg-primary text-light "
+        @click="handleCancelUpdating"
+      >
+        Отменить
+      </Button>
     </div>
 
     <div
       class="content p-2"
-      v-if="editSkills == false"
+      v-if="editSkills === false"
     >
       <div class="content__categories flex-wrap">
         <div
@@ -113,27 +114,20 @@ const handleSaveSkills = async (selectedSkills: Skill[]) => {
           </div>
 
           <div class="content__technologies mt-2">
-            <template
-              v-for="technology in skills"
-              :key="technology"
-            >
-              <div
-                v-if="technology.type === category.type"
-                :class="getTechnologyClassName(technology.type)"
-              >
-                <Typography>{{ technology.name }}</Typography>
-              </div>
-            </template>
+            <Skills :skills="profileSkills" />
           </div>
         </div>
       </div>
     </div>
 
     <div
+      v-if="editSkills === true"
       class="content p-2"
-      v-if="editSkills == true"
     >
-      <StackCategories v-model:stack="skills" />
+      <StackCategories
+        :skills="profileSkills"
+        v-model:stack="selectedSkills"
+      />
     </div>
   </div>
 </template>

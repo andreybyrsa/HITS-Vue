@@ -4,4 +4,4 @@ interface Project {
   description: string
 }
 
-export { Project }
+export default Project

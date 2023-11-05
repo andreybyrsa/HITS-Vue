@@ -1,18 +1,18 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import RolesTypes from '@Domain/Roles'
+import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
+import RolesTypes from '@Domain/Roles'
 
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
-import ProfileInfoProps from '@Views/Profile/Info.types'
+import { ProfileInfoProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
 
 import Validation from '@Utils/Validation'
 import { User } from '@Domain/User'
-import { storeToRefs } from 'pinia'
 import useUserStore from '@Store/user/userStore'
 import ManageUsersService from '@Services/ManageUsersService'
 

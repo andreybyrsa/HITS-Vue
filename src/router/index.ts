@@ -1,12 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
-import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
-
 import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
-import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
+import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import UsersView from '@Views/Admin/UsersView.vue'
 import AddUsersView from '@Views/Admin/AddUsersView.vue'
@@ -23,6 +22,8 @@ import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
+
+import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import DevView from '@Views/DevView.vue'
 
@@ -83,14 +84,6 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/last-activity-note',
-    name: 'last-activity-note',
-    meta: {
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-    component: LastActivityNote,
-  },
-  {
     path: '/admin',
     children: [
       {
@@ -116,6 +109,11 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/profile/:email',
+    component: ProfileModal,
+    meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+  },
+  {
     path: '/change-email',
     name: 'change-email',
     component: ChangeEmailView,
@@ -133,6 +131,14 @@ const routes: RouteRecordRaw[] = [
         component: NewEmail,
       },
     ],
+  },
+  {
+    path: '/last-activity-note',
+    name: 'last-activity-note',
+    meta: {
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    component: LastActivityNote,
   },
   {
     path: '/error',

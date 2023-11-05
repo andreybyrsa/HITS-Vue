@@ -1,21 +1,17 @@
 <script lang="ts" setup>
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
-import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPlaceholder.vue'
 </script>
 
 <template>
-  <div class="profile-placeholder p-3 w-100 overflow-y-scroll">
-    <div class="w-100">
+  <div class="profile-placeholder w-100">
+    <div class="w-75">
       <LoadingPlaceholder />
     </div>
-    <div class="profile-placeholder__container">
-      <div class="profile-placeholder__left-side bg-white rounded p-2">
-        <div class="w-50">
-          <LoadingPlaceholder />
-        </div>
 
+    <div class="profile-placeholder__container">
+      <div class="profile-placeholder__left-side bg-white rounded p-3">
         <div class="w-100 d-flex justify-content-center">
-          <div class="w-50">
+          <div class="profile-placeholder__avatar rounded-circle overflow-hidden">
             <LoadingPlaceholder height="second" />
           </div>
         </div>
@@ -30,28 +26,25 @@ import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPl
           </div>
         </div>
       </div>
+
       <div class="profile-placeholder__right-side">
         <div class="bg-white rounded p-3">
-          <div class="profile-placeholder__right-side_header border-bottom">
-            <div
-              class="w-25 m-2"
-              v-for="value in 2"
-              :key="value"
-            >
+          <div class="profile-placeholder__right-side-header border-bottom">
+            <div class="w-25 mb-1">
               <LoadingPlaceholder />
             </div>
           </div>
 
-          <div class="profile-placeholder__right-side_content p-2">
+          <div class="profile-placeholder__right-side-content">
             <div
-              class="w-50"
+              class="w-75"
               v-for="value in 4"
               :key="value"
             >
-              <div class="w-25">
+              <div class="w-50">
                 <LoadingPlaceholder />
               </div>
-              <div class="w-50">
+              <div class="w-75">
                 <LoadingPlaceholder />
               </div>
             </div>
@@ -59,7 +52,7 @@ import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPl
         </div>
 
         <div class="bg-white rounded p-3">
-          <div class="profile-placeholder__right-side_header border-bottom">
+          <div class="profile-placeholder__right-side-header border-bottom">
             <div
               class="w-25 m-2"
               v-for="value in 2"
@@ -69,7 +62,7 @@ import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPl
             </div>
           </div>
 
-          <div class="profile-placeholder__right-side_content p-2">
+          <div class="profile-placeholder__right-side-content p-2">
             <div
               class="w-50"
               v-for="value in 3"
@@ -83,29 +76,26 @@ import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPl
         </div>
 
         <div
-          class="bg-white rounded p-3"
+          class="d-flex flex-column gap-3 bg-white rounded-3 p-3"
           v-for="value in 2"
           :key="value"
         >
-          <div class="profile-placeholder__right-side_header border-bottom">
-            <div
-              class="w-25 m-2"
-              v-for="value in 1"
-              :key="value"
-            >
+          <div class="profile-placeholder__right-side-header border-bottom">
+            <div class="w-25 mb-1">
               <LoadingPlaceholder />
             </div>
           </div>
 
-          <div class="profile-placeholder__right-side_content p-2">
-            <div
-              class="w-100"
-              v-for="value in 3"
-              :key="value"
-            >
-              <div class="w-100">
-                <LoadingPlaceholder height="medium" />
-              </div>
+          <div
+            v-for="index in 3"
+            :key="index"
+            class="w-100 p-2 d-flex flex-column border rounded"
+          >
+            <div class="w-75">
+              <LoadingPlaceholder />
+            </div>
+            <div class="w-50">
+              <LoadingPlaceholder />
             </div>
           </div>
         </div>
@@ -117,6 +107,11 @@ import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPl
 <style lang="scss" scoped>
 .profile-placeholder {
   @include flexible(flex-start, flex-start, column, $gap: 16px);
+
+  &__avatar {
+    @include fixedHeight(200px);
+    @include fixedWidth(200px);
+  }
 
   &__container {
     height: fit-content;
@@ -135,12 +130,12 @@ import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPl
     width: 65%;
     @include flexible(stretch, flex-start, column, $gap: 16px);
 
-    &_header {
+    &-header {
       width: 100%;
       @include flexible(stretch, space-between);
     }
 
-    &_content {
+    &-content {
       width: 100%;
       @include flexible(stretch, flex-start, column, $gap: 16px);
     }
