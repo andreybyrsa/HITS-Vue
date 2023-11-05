@@ -19,7 +19,7 @@ class Validation {
     return emailRegExp.test(email)
   }
 
-  checkName(name?: string | undefined) {
+  checkName(name: string) {
     const nameRegExp = /^[а-я a-z ,.'-]+$/i
     return name && nameRegExp.test(name) && name.length > 0
   }

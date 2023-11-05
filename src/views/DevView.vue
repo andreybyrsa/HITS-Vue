@@ -13,7 +13,6 @@ import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
-import ExchangeModal from '@Components/Modals/ExchangeModal/ExchangeModal.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -34,10 +33,6 @@ const fieldSubmit = handleSubmit((values) => console.log(values))
 
 function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
-}
-
-function handleCloseModal() {
-  isOpenedModal.value = false
 }
 </script>
 
@@ -100,11 +95,6 @@ function handleCloseModal() {
           Перейти на Ideas
         </NavTab>
       </div>
-
-      <ExchangeModal
-        :is-opened="isOpenedModal"
-        @close-modal="handleCloseModal"
-      />
 
       <Button
         class-name="btn-primary"
