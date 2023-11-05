@@ -1,19 +1,20 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { onBeforeMount, ref } from 'vue'
+import { ref } from 'vue'
 
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 
 import useUserStore from '@Store/user/userStore'
+import { watchImmediate } from '@vueuse/core'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
 
-onBeforeMount(() => {
-  if (user.value) {
-    const { roles, role } = user.value
+watchImmediate(user, (currentUser) => {
+  if (currentUser) {
+    const { roles, role } = currentUser
 
     if (roles.length == 1 && !role) {
       userStore.setRole(roles[0])
@@ -29,7 +30,6 @@ function handleCloseModal() {
 </script>
 
 <template>
-  <router-view />
   <RoleModal
     :is-opened="isOpenedModal"
     @close-modal="handleCloseModal"

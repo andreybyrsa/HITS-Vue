@@ -9,20 +9,15 @@ import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
-import { User } from '@Domain/User'
-import ProfileView from './Profile/ProfileView.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
-import ExchangeModal from '@Components/Modals/ExchangeModal/ExchangeModal.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
-
-userStore.checkLastActivity()
 
 const { values, handleSubmit } = useForm({
   validationSchema: {
@@ -38,19 +33,6 @@ const fieldSubmit = handleSubmit((values) => console.log(values))
 
 function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
-}
-
-function handleCloseModal() {
-  isOpenedModal.value = false
-}
-
-function handleOpenProfile(user?: User) {
-  currentOpenedProfile.value = user
-  isOpenedProfile.value = true
-}
-
-function handleCloseProfile() {
-  isOpenedProfile.value = false
 }
 </script>
 
@@ -114,11 +96,6 @@ function handleCloseProfile() {
         </NavTab>
       </div>
 
-      <ExchangeModal
-        :is-opened="isOpenedModal"
-        @close-modal="handleCloseModal"
-      />
-
       <Button
         class-name="btn-primary"
         @click="isOpenedModal = true"
@@ -127,17 +104,6 @@ function handleCloseProfile() {
       </Button>
 
       <pre class="sss">Пользователь из userStore - {{ user }}</pre>
-
-      <Button
-        class="w-100 fs-3 p-4 text-white bg-primary"
-        @click="handleOpenProfile"
-      >
-        Профиль
-      </Button>
-      <ProfileView
-        :isOpened="isOpenedProfile"
-        @close-modal="handleCloseProfile"
-      />
     </template>
   </PageLayout>
 </template>

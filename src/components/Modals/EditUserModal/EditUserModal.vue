@@ -22,11 +22,10 @@ import { User } from '@Domain/User'
 import ManageUsersService from '@Services/ManageUsersService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import getRoles from '@Utils/getRoles'
 import Validation from '@Utils/Validation'
-
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const notificationsStore = useNotificationsStore()
 
@@ -49,7 +48,7 @@ const { errors, setValues, handleSubmit } = useForm<User>({
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
-    roles: (value: RolesTypes[]) => value?.length,
+    roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
   },
 })
 

@@ -31,7 +31,6 @@ const { rsocketIsConnected, closeRsocket } = storeToRefs(commentStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const notificationsStore = useNotificationsStore()
 
 const { handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {

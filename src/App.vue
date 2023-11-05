@@ -1,15 +1,13 @@
 <script lang="ts" setup>
-import useUserStore from '@Store/user/userStore'
-
-const userStore = useUserStore()
-
-window.addEventListener('click', () => {
-  userStore.checkLastActivity()
-})
+import NotificationsWrapper from '@Components/NotificationsWrapper/NotificationsWrapper.vue'
+import UserRolesWrapper from '@Components/UserRolesWrapper/UserRolesWrapper.vue'
 </script>
 
 <template>
   <router-view />
+
+  <NotificationsWrapper />
+  <UserRolesWrapper />
 </template>
 
 <style lang="scss">

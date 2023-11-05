@@ -40,7 +40,8 @@ const getCurrentCommentDate = (createdAt: string) => {
   const time = useDateFormat(currentDateCreated, 'HH:mm')
   const date = useDateFormat(currentDateCreated, 'DD.MM.YYYY')
 
-  const dateDifference = currentDate.getDate() - currentDateCreated.getDate()
+  const dateDifference =
+    (currentDate.getTime() - currentDateCreated.getTime()) / (1000 * 60 * 60 * 24)
 
   if (dateDifference === 1) {
     return `вчера в ${time.value}`

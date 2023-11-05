@@ -28,7 +28,7 @@ function getTranslatedRole(currentRole: RolesTypes) {
   return userRoles.translatedRoles[currentRole]
 }
 
-function handleRole(currentRole: RolesTypes) {
+function handleChooseRole(currentRole: RolesTypes) {
   userStore.setRole(currentRole)
   emit('close-modal')
 }
@@ -44,7 +44,7 @@ function handleRole(currentRole: RolesTypes) {
         class="w-100"
       >
         <Button
-          @click="handleRole(role)"
+          @click="handleChooseRole(role)"
           class-name="btn-primary w-100"
         >
           {{ getTranslatedRole(role) }}

@@ -27,7 +27,7 @@ import useUserStore from '@Store/user/userStore'
 import getRoles from '@Utils/getRoles'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import NotificationMiddleware from '@Middlewares/NotificationMiddleware.vue'
+import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
 
@@ -70,9 +70,12 @@ onMounted(async () => {
 
 const { setValues, handleSubmit } = useForm<UsersGroup>({
   validationSchema: {
-    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    users: (value: User[]) => value?.length > 0 || 'Выберите пользователей',
-    roles: (value: RolesTypes[]) => value?.length > 0 || 'Выберите тип группы',
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    users: (value: User[]) =>
+      Validation.checkIsEmptyValue(value) || 'Выберите пользователей',
+    roles: (value: RolesTypes[]) =>
+      Validation.checkIsEmptyValue(value) || 'Выберите тип группы',
   },
   initialValues: { roles: [] },
 })

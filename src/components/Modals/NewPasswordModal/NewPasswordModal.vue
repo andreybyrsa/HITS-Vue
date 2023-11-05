@@ -26,9 +26,10 @@ const router = useRouter()
 
 const { setValues, handleSubmit } = useForm<UpdateUserPassword>({
   validationSchema: {
-    key: (value: string) => value?.length,
+    key: (value: string) => Validation.checkIsEmptyValue(value),
     email: (value: string) => Validation.checkEmail(value),
-    code: (value: string) => value?.length || 'Неверно введен код',
+    code: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Неверно введен код',
     password: (value: string) => Validation.checkPassword(value),
   },
 })

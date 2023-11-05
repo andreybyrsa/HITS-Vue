@@ -2,8 +2,11 @@ import { Idea, IdeaSkills } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 
+import useUserStore from '@Store/user/userStore'
+
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const ideasAxios = defineAxios(getMocks().ideas)
 const ideaSkillsAxios = defineAxios(getMocks().ideasSkills)
@@ -12,6 +15,7 @@ const getIdeas = async (token: string): Promise<Idea[] | Error> => {
   return await ideasAxios
     .get('/idea/all', {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -24,6 +28,7 @@ const getInitiatorIdeas = async (token: string): Promise<Idea[] | Error> => {
   return await ideasAxios
     .get('/idea/initiator/all', {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -36,7 +41,10 @@ const getIdea = async (id: number, token: string): Promise<Idea | Error> => {
   return await ideasAxios
     .get(
       `/idea/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)
@@ -53,7 +61,10 @@ const getIdeaSkills = async (
   return await ideaSkillsAxios
     .get(
       `/idea/skills/${ideaId}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { ideaId } },
     )
     .then((response) => response.data)
@@ -70,6 +81,7 @@ const createIdeaSkills = async (
   return await ideaSkillsAxios
     .post('/idea/skills/add', ideaSkills, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -83,7 +95,10 @@ const saveAndSendIdeaOnApproval = async (
   token: string,
 ): Promise<Idea | Error> => {
   return await ideasAxios
-    .post('/idea/add', idea, { headers: { Authorization: `Bearer ${token}` } })
+    .post('/idea/add', idea, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка добавления идеи'
@@ -93,7 +108,10 @@ const saveAndSendIdeaOnApproval = async (
 
 const saveIdeaDraft = async (idea: Idea, token: string): Promise<Idea | Error> => {
   return await ideasAxios
-    .post('/idea/draft/add', idea, { headers: { Authorization: `Bearer ${token}` } })
+    .post('/idea/draft/add', idea, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка добавления идеи'
@@ -110,7 +128,10 @@ const updateIdea = async (
     .put<Success>(
       `/idea/initiator/update/${id}`,
       idea,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id }, responseData: { success: 'Успешное обновление идеи' } },
     )
     .then((response) => response.data)
@@ -129,7 +150,10 @@ const updateIdeaSkills = async (
     .put(
       '/idea/skills/update',
       ideaSkills,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { ideaId } },
     )
     .then((response) => response.data)
@@ -146,7 +170,10 @@ const sendIdeaOnApproval = async (
   return await ideasAxios
     .putNoRequestBody<Success>(
       `/idea/initiator/send/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       {
         params: { id },
         requestData: { status: 'ON_APPROVAL' },
@@ -169,7 +196,10 @@ const updateIdeaStatus = async (
     .put<Success>(
       `/idea/status/update/${id}`,
       { status: status },
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id }, responseData: { success: 'Статус идеи изменен' } },
     )
     .then((response) => response.data)
@@ -188,7 +218,10 @@ const updateIdeaByAdmin = async (
     .put(
       `/idea/admin/update/${id}`,
       idea,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)
@@ -205,7 +238,10 @@ const deleteIdeaByAdmin = async (
   return await ideasAxios
     .delete(
       `/idea/admin/delete/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)
@@ -219,7 +255,10 @@ const deleteIdea = async (id: number, token: string): Promise<Success | Error> =
   return await ideasAxios
     .delete(
       `/idea/delete/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
       { params: { id } },
     )
     .then((response) => response.data)

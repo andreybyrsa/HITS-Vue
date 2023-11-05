@@ -22,6 +22,7 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import getSkills from '@Utils/getSkills'
+import Validation from '@Utils/Validation'
 
 const skills = defineModel<Skill[]>({ required: true })
 const props = defineProps<SkillModalProps>()
@@ -44,9 +45,9 @@ const skillTypeOptions = availableSkills.skills.map((skillType) => ({
 const { handleSubmit, setValues } = useForm<Skill>({
   validationSchema: {
     name: (value: string) =>
-      value?.length > 0 || 'Неверно введено название компетенции',
+      Validation.checkIsEmptyValue(value) || 'Неверно введено название компетенции',
     type: (value: SkillType) =>
-      value?.length > 0 || 'Неверно выбран тип компетенции',
+      Validation.checkIsEmptyValue(value) || 'Неверно выбран тип компетенции',
   },
   initialValues: {
     confirmed: true,
