@@ -73,7 +73,7 @@ watchImmediate(
 )
 
 watchImmediate(checkedData, () => {
-  if (data.value.length === checkedData.value.length) {
+  if (data.value.length && data.value.length === checkedData.value.length) {
     isCheckedAll.value = true
   } else {
     isCheckedAll.value = false

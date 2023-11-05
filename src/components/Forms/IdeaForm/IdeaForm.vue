@@ -23,6 +23,7 @@ import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
@@ -35,6 +36,7 @@ const { user } = storeToRefs(userStore)
 const router = useRouter()
 
 const stackTechnologies = ref<Skill[]>([])
+const ideaSkills = ref<Skill[]>()
 
 const { values, setFieldValue, setValues, handleSubmit, validateField } =
   useForm<Idea>({
@@ -91,7 +93,7 @@ watchImmediate(
           )
         }
 
-        stackTechnologies.value = response.skills
+        ideaSkills.value = response.skills
       }
     } else {
       const currentUser = user.value
@@ -218,7 +220,10 @@ async function saveIdeaSkills(
     <div class="w-75 d-flex flex-column gap-3">
       <IdeaFormInputs @set-value="setFieldValue" />
 
-      <StackCategories v-model:stack="stackTechnologies" />
+      <StackCategories
+        :skills="ideaSkills"
+        v-model:stack="stackTechnologies"
+      />
 
       <CustomerAndContact
         :idea="values"
