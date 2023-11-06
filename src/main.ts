@@ -31,11 +31,10 @@ app.use(pinia)
 const userStore = useUserStore()
 
 router.beforeEach((to) => {
-  userStore.checkLastActivity()
   const localStorageUser = LocalStorageUser.getLocalStorageUser()
 
   if (localStorageUser?.token && !userStore.user) {
-    userStore.setUserFromLocalStorage(localStorageUser)
+    userStore.setUser(localStorageUser)
   }
 
   const currentRouteName = to.name?.toString() ?? ''

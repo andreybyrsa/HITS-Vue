@@ -21,7 +21,6 @@ import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const notificationsStore = useNotificationsStore()
 
 const { handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {

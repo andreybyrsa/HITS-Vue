@@ -39,7 +39,7 @@ const { setFieldValue, handleSubmit } = useForm<NewEmailForm>({
     oldEmail: (value: string) => Validation.checkEmail(value),
     code: (value: string) => value?.length === 6 || 'Неверно введен код',
     newEmail: (value: string) => Validation.checkEmail(value),
-    url: (value: string) => value?.length,
+    url: (value: string) => Validation.checkIsEmptyValue(value),
   },
   initialValues: { url: slug },
 })

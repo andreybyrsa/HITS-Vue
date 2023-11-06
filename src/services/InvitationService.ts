@@ -9,8 +9,11 @@ import {
   RecoveryData,
   NewEmailForm,
 } from '@Domain/Invitation'
-
 import Success from '@Domain/ResponseMessage'
+
+import useUserStore from '@Store/user/userStore'
+
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const getInvitationInfo = async (
   slug: string | string[],
@@ -40,6 +43,7 @@ const inviteUserByEmail = async (
   return await axios
     .post(`${API_URL}/profile/send/email`, userData, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -55,6 +59,7 @@ const inviteUsers = async (
   return await axios
     .post(`${API_URL}/profile/send/emails`, usersData, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {

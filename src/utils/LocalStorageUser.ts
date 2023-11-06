@@ -1,18 +1,18 @@
 import { User } from '@Domain/User'
 
 class LocalStorageUser {
-  getLocalStorageUser(): User {
+  getLocalStorageUser(): User | null {
     const localStorageUser = localStorage.getItem('user') ?? '{}'
 
     return JSON.parse(localStorageUser, (key: string, value: string) => {
-      return key === 'lastActivity' ? new Date(value) : value
+      return key === 'lastLogin' ? new Date(value) : value
     })
   }
 
   setLocalStorageUser(user: User) {
     const localStorageUser: User = {
       ...user,
-      lastActivity: new Date(),
+      lastLogin: new Date(),
     }
 
     localStorage.setItem('user', JSON.stringify(localStorageUser))

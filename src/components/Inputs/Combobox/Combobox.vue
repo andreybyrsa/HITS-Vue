@@ -203,7 +203,7 @@ function checkNewOptionButton() {
         <div
           v-for="{ label, option } in searchedOptions"
           :key="label"
-          class="combobox__choice list-group-item list-group-item-action"
+          class="combobox__choice d-flex list-group-item list-group-item-action"
           @click="selectOption(option)"
         >
           <Checkbox
@@ -228,9 +228,13 @@ function checkNewOptionButton() {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .combobox {
   position: relative;
+
+  &__search::placeholder {
+    color: $black-color !important;
+  }
 
   &__icon {
     @include position(absolute, $top: 11px, $right: 12px, $z-index: 5);

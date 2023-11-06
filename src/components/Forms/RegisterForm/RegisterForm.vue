@@ -47,7 +47,7 @@ const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
     password: (value: string) => Validation.checkPassword(value),
-    roles: (value: RolesTypes[]) => value?.length,
+    roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
   },
 })
 
