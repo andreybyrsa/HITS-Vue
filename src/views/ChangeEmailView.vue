@@ -48,7 +48,7 @@ const sendChangingUrl = handleSubmit(async (values) => {
 
     useNotificationsStore().createSystemNotification(
       'Система',
-      'Ссылка изменения почты отправлена на новую почту',
+      'Ссылка для изменения почты отправлена на новую почту',
     )
   }
 })

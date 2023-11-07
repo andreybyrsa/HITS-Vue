@@ -13,7 +13,7 @@
           prepend-icon-name="bi bi-plus-lg"
           @click="openCreatingSkillModal"
         >
-          Добавить компетеницю
+          Добавить компетенцию
         </Button>
       </div>
 

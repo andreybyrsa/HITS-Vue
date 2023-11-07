@@ -53,7 +53,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
     <template #content>
       <FormLayout class-name="text-center">
         <Typography class-name="fs-3 text-primary">
-          Востановление пароля
+          Восстановление пароля
         </Typography>
 
         <Input
