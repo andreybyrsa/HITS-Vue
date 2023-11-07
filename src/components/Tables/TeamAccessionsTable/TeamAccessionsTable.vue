@@ -6,6 +6,7 @@
     :data="teamAccessions"
     :filters="teamAccessionsFilters"
     :dropdown-actions-menu="dropdownTeamAccessionsActions"
+    :search-by="searchBy"
   ></Table>
 
   <TablePlaceholder v-else />
@@ -22,7 +23,8 @@
     mode="read"
     :type="accession?.requestType"
     @close-modal="closeTeamRequestModal"
-    @response="handleResponse"
+    @response-to-request="handleResponseToRequest"
+    @response-to-invitation="handleResponseToInvitation"
     @invite="handleSendInviteAgain"
   />
 </template>
@@ -182,13 +184,38 @@ function closeTeamRequestModal() {
   isOpenedTeamAccessionModal.value = false
 }
 
-async function handleResponse() {
+async function handleResponseToRequest() {
   const currentUser = user.value
   const currentRequest = accession.value
   if (currentUser?.token && currentRequest) {
     const { token } = currentUser
 
     const response = await TeamService.responseToRequest(currentRequest, token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    const responsingTeamRequestIndex = teamAccessions.value?.findIndex(
+      (teamAccession) => teamAccession.id == currentRequest.id,
+    )
+
+    if (responsingTeamRequestIndex !== -1 && responsingTeamRequestIndex) {
+      teamAccessions.value?.splice(responsingTeamRequestIndex, 1)
+      teamAccessions.value?.push(currentRequest)
+    }
+
+    return notificationsStore.createSystemNotification('Система', response.success)
+  }
+}
+
+async function handleResponseToInvitation() {
+  const currentUser = user.value
+  const currentRequest = accession.value
+  if (currentUser?.token && currentRequest) {
+    const { token } = currentUser
+
+    const response = await TeamService.responseToInvitation(currentRequest, token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)

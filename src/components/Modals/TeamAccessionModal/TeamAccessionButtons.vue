@@ -23,17 +23,18 @@ const { user } = storeToRefs(userStore)
         mode == 'read' &&
         teamRequest?.stage == 'REQUEST' &&
         (teamRequest.team.owner.id == user?.id ||
-          teamRequest.team.leader?.id == user?.id)
+          teamRequest.team.leader?.id == user?.id) &&
+        teamRequest.targetEmail != user?.email
       "
       ><Button
         class-name="rounded-end btn-success"
-        @click="emit('response', 'ACCEPTED')"
+        @click="emit('responseToRequest', 'ACCEPTED')"
       >
         Одобрить
       </Button>
       <Button
         class-name="rounded-end btn-danger"
-        @click="emit('response', 'REJECTED')"
+        @click="emit('responseToRequest', 'REJECTED')"
       >
         Отклонить
       </Button></template
@@ -50,7 +51,8 @@ const { user } = storeToRefs(userStore)
       v-if="
         mode == 'read' &&
         !teamRequest?.requestType &&
-        teamRequest?.requestType == 'ENTER'
+        teamRequest?.requestType == 'ENTER' &&
+        user?.email != teamRequest.targetEmail
       "
       class-name="rounded-end btn-primary"
       @click="emit('invite')"
@@ -58,16 +60,21 @@ const { user } = storeToRefs(userStore)
       Отправить приглашение заново
     </Button>
 
-    <template v-if="mode == 'read' && teamRequest?.stage == 'INVITATION'"
+    <template
+      v-if="
+        mode == 'read' &&
+        teamRequest?.stage == 'INVITATION' &&
+        user?.email == teamRequest.targetEmail
+      "
       ><Button
         class-name="rounded-end btn-success"
-        @click="emit('response', 'ACCEPTED')"
+        @click="emit('responseToInvitation', 'ACCEPTED')"
       >
         Принять
       </Button>
       <Button
         class-name="rounded-end btn-danger"
-        @click="emit('response', 'REJECTED')"
+        @click="emit('responseToInvitation', 'REJECTED')"
       >
         Отклонить
       </Button></template

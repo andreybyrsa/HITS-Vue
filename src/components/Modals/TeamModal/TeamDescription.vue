@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue'
 
 import Button from '@Components/Button/Button.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
 import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import { TeamDescriptionEmits } from '@Components/Modals/TeamModal/TeamModal.types'
@@ -45,17 +44,12 @@ onMounted(() => {
   </div>
   <ul class="list-group rounded-3">
     <li class="list-group-item p-0 overflow-hidden">
-      <Button
-        class-name="fs-4 collapse-controller btn-light w-100"
-        v-collapse="'teamDescription' + team.id"
-      >
+      <Typography class-name="fs-2 p-2 text-primary w-100">
         Описание команды
-      </Button>
-      <Collapse :id="'teamDescription' + team.id">
-        <div class="px-3">
-          {{ team.description }}
-        </div>
-      </Collapse>
+      </Typography>
+      <div class="px-4">
+        {{ team.description }}
+      </div>
 
       <TeamMembers v-model="team" />
       <TeamProjects v-model="team" />

@@ -64,12 +64,22 @@ function closeRequestModal() {
   emit('closeModal')
 }
 
-async function handleResponse(stage: accessionStage) {
+async function handleResponseToRequest(stage: accessionStage) {
   const currentRequest = teamAccession.value
   if (currentRequest) {
     currentRequest.stage = stage
     currentRequest.updatedAt = new Date().toJSON()
-    emit('response')
+    emit('responseToRequest', currentRequest)
+  }
+  closeRequestModal()
+}
+
+async function handleResponseToInvitation(stage: accessionStage) {
+  const currentRequest = teamAccession.value
+  if (currentRequest) {
+    currentRequest.stage = stage
+    currentRequest.updatedAt = new Date().toJSON()
+    emit('responseToRequest', currentRequest)
   }
   closeRequestModal()
 }
@@ -127,7 +137,8 @@ function getRequestTypeStyle() {
           </span>
         </div>
         <TeamAccessionButtons
-          @response="handleResponse"
+          @response-to-request="handleResponseToRequest"
+          @response-to-invitation="handleResponseToInvitation"
           @send-request="handleSendRequest"
           @invite="emit('invite')"
           :team-request="teamAccession"

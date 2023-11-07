@@ -17,8 +17,12 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import TeamService from '@Services/TeamService'
+import InvitationService from '@Services/InvitationService'
 
 import { TeamAccession } from '@Domain/TeamAccession'
+import Success from '@Domain/ResponseMessage'
+
+import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
 
 const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
@@ -51,6 +55,7 @@ const handleInviteFromPortal = async (users: string[]) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
+
     const response = await TeamService.inviteRegisteredUsers(
       users,
       teamId.value,
@@ -60,7 +65,6 @@ const handleInviteFromPortal = async (users: string[]) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
     closeModal()
-    return notificationsStore.createSystemNotification('Система', response.success)
   }
 }
 
@@ -68,16 +72,24 @@ const handleInviteFromOutside = async (emails: string[]) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await TeamService.inviteUnregisteredUsers(
-      emails,
-      teamId.value,
-      token,
+    const currentTeamId = teamId.value
+
+    const teamParallelRequests = [
+      () => TeamService.inviteRegisteredUsers(emails, currentTeamId, token),
+      () => InvitationService.inviteUsers({ emails, roles: ['INITIATOR'] }, token),
+    ]
+    await makeParallelRequests<Error | Success>(teamParallelRequests).then(
+      (responses) => {
+        responses.forEach((response) => {
+          if (response.id === 0) {
+            checkResponseStatus(response)
+          } else if (response.id === 1) {
+            checkResponseStatus(response)
+          }
+        })
+      },
     )
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
     closeModal()
-    return notificationsStore.createSystemNotification('Система', response.success)
   }
 }
 
@@ -102,6 +114,12 @@ function openModal(id: number, modal: string) {
 
 function closeModal() {
   modalName.value = null
+}
+
+function checkResponseStatus<T>(data: RequestResult<T>) {
+  if (data.status !== 'fulfilled') {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
 }
 </script>
 <template>

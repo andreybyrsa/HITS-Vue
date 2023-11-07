@@ -58,6 +58,7 @@ const columns: TableColumn<TeamAccession>[] = [
     key: 'stage',
     label: 'Этап',
     getRowCellFormat: getStatusFormat,
+    getRowCellStyle: getStageStyle,
   },
   {
     key: 'inviter',
@@ -89,6 +90,29 @@ function getStatusFormat(stage: accessionStage) {
     : stage == 'ACCEPTED'
     ? 'Принято'
     : 'Отклонено'
+}
+
+function getStageStyle(stage: accessionStage) {
+  const initialClass = ['px-2', 'py-1', 'rounded-4']
+  if (stage === 'INVITATION') {
+    initialClass.push('bg-primary-subtle', 'text-primary')
+    return initialClass
+  }
+
+  if (stage === 'REQUEST' || status === 'ON_APPROVAL') {
+    initialClass.push('bg-warning-subtle', 'text-warning')
+    return initialClass
+  }
+
+  if (stage === 'REJECTED') {
+    initialClass.push('bg-danger-subtle', 'text-danger')
+    return initialClass
+  }
+
+  if (stage === 'ACCEPTED') {
+    initialClass.push('bg-success-subtle', 'text-success')
+    return initialClass
+  }
 }
 
 function getInviterFormat(inviter?: TeamMember) {

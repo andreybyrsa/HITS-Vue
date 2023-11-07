@@ -3,7 +3,8 @@ import { TeamAccession, accessionStage, requestType } from '@Domain/TeamAccessio
 interface TeamAccessionModalEmits {
   (event: 'closeModal'): void
   (event: 'sendRequest', request: TeamAccession): void
-  (event: 'response'): void
+  (event: 'responseToRequest', teamAccession: TeamAccession): void
+  (event: 'responseToInvitation', teamAccession: TeamAccession): void
   (event: 'invite'): void
 }
 
@@ -15,7 +16,8 @@ interface TeamAccessionModalProps {
 
 interface TeamAccessionButtonsEmits {
   (event: 'sendRequest'): void
-  (event: 'response', stage: accessionStage): void
+  (event: 'responseToRequest', stage: accessionStage): void
+  (event: 'responseToInvitation', stage: accessionStage): void
   (event: 'invite'): void
 }
 

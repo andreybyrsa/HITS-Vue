@@ -29,14 +29,14 @@ function getFormattedDate(date: string) {
 
   <Typography
     v-if="team.leader"
-    class-name="text-primary text-nowrap team-modal__single-field"
+    class-name="text-danger text-nowrap team-modal__single-field"
     >Лидер команды:
     <router-link
-      class="nav-route list-group-item list-group-item-light"
+      class="nav-route list-group-item list-group-item-light text-danger"
       active-class="active"
       :to="'profile/' + team.leader.id"
     >
-      <Typography class="text-primary">{{
+      <Typography>{{
         team.leader.firstName + ' ' + team.leader.lastName
       }}</Typography>
     </router-link>

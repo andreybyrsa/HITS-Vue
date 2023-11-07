@@ -58,13 +58,13 @@ onMounted(async () => {
         )
       }
 
-      members.value = response.members
+      members.value = [...response.members]
 
       owner.value = response.owner
 
       leader.value = response.leader
 
-      users.value = members.value
+      users.value = [...response.members]
 
       if (!users.value.find((member) => member.id == response.owner.id)) {
         users.value.push(response.owner)
@@ -87,7 +87,8 @@ onMounted(async () => {
 })
 
 const teamUsers = computed(() => {
-  const currentUsers = [...members.value, leader.value]
+  const currentUsers = members.value
+
   const uniqueUsers = new Map<string, TeamMember>()
   currentUsers.forEach((user) => user && uniqueUsers.set(user.email, user))
 
@@ -135,6 +136,8 @@ function onUnselectMember(unselectedMember: TeamMember) {
   if (unselectedMember.email === leader.value?.email) {
     leader.value = undefined
   }
+  console.log(users.value)
+  console.log(members.value)
 }
 
 function unselectMember(unselectedMember: TeamMember) {

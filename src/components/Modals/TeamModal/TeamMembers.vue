@@ -29,16 +29,10 @@ function getMemberButtonClassName(member: TeamMember) {
 </script>
 
 <template>
-  <Button
-    class-name="collapse-controller fs-4 btn-light w-100"
-    v-collapse="'teamMembers' + team.id"
-  >
+  <Typography class-name="p-2 fs-2 text-primary w-100">
     Участники команды
-  </Button>
-  <Collapse
-    class-name="collapse-content overflow-y-scroll"
-    :id="'teamMembers' + team.id"
-  >
+  </Typography>
+  <div class="content overflow-y-scroll">
     <template v-if="team.membersCount > 0">
       <template
         v-for="member in team.members"
@@ -69,7 +63,7 @@ function getMemberButtonClassName(member: TeamMember) {
       </Typography>
       <Icon class-name="bi bi-emoji-frown fs-1"></Icon>
     </div>
-  </Collapse>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -82,7 +76,7 @@ function getMemberButtonClassName(member: TeamMember) {
   @include flexible(stretch, flex-start, $gap: 16px);
 }
 
-.collapse-content {
+.content {
   max-height: 600px;
 }
 </style>
