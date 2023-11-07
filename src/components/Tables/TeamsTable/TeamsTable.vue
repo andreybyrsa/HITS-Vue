@@ -211,7 +211,7 @@ function checkUpdateTeamAction(team: Team) {
   return (
     currentUser?.role === 'ADMIN' ||
     currentUser?.email === owner.email ||
-    currentUser?.email === leader.email
+    currentUser?.email === leader?.email
   )
 }
 

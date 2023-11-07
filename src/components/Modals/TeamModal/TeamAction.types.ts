@@ -21,7 +21,7 @@ interface TeamActionButtonsEmits {
 const modalNames = {
   deleteModal: 'deleteModal',
   inviteModal: 'inviteModal',
-  requestModal: 'requestModal',
+  accessionModal: 'requestModal',
   teamAccessionsModal: 'teamAccessionsModal',
 }
 

@@ -1,7 +1,8 @@
-import Team from '@Domain/Team'
+import { TableColumn } from '@Components/Table/Table.types'
+import { TeamAccession } from '@Domain/TeamAccession'
 
 interface TeamAccessionsTableProps {
-  team: Team
+  columns: TableColumn<TeamAccession>[]
 }
 
 export default TeamAccessionsTableProps

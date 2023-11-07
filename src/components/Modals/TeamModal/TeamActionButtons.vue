@@ -16,7 +16,7 @@ defineProps<TeamActionButtonsProps>()
 
 const emits = defineEmits<TeamActionButtonsEmits>()
 
-const { deleteModal, inviteModal, requestModal, teamAccessionsModal } = modalNames
+const { deleteModal, inviteModal, accessionModal, teamAccessionsModal } = modalNames
 
 const router = useRouter()
 
@@ -32,13 +32,17 @@ function shareButton(id: number) {
 </script>
 <template>
   <Button
-    v-if="team.leader?.id == user?.id"
+    v-if="team.owner?.id == user?.id || user?.role == 'ADMIN'"
     class-name="bi bi-pencil-square btn-primary w-100"
     @click="router.push(`/teams/edit/${team.id}`)"
     >Редактировать</Button
   >
   <Button
-    v-if="team.leader?.id == user?.id || team.owner.email == user?.email"
+    v-if="
+      team.leader?.id == user?.id ||
+      team.owner.id == user?.id ||
+      user?.role == 'ADMIN'
+    "
     class-name="bi bi-envelope-plus-fill btn-primary w-100"
     @click="emits('openModal', team.id, inviteModal)"
     >Пригласить в команду</Button
@@ -50,11 +54,15 @@ function shareButton(id: number) {
       !team.members.find((member) => member.id == user?.id)
     "
     class-name="bi bi-card-text btn-primary w-100"
-    @click="emits('openModal', team.id, requestModal)"
+    @click="emits('openModal', team.id, accessionModal)"
     >Подать заявку на вступление</Button
   >
   <Button
-    v-if="team.leader?.id == user?.id || team.owner.id == user?.id"
+    v-if="
+      team.leader?.id == user?.id ||
+      team.owner.id == user?.id ||
+      user?.role == 'ADMIN'
+    "
     class-name="bi bi-card-checklist btn-primary w-100"
     @click="emits('openModal', team.id, teamAccessionsModal)"
     >Заявки и приглашения</Button
@@ -66,7 +74,7 @@ function shareButton(id: number) {
     >{{ disabled ? 'Ссылка скопирована!' : 'Скопировать ссылку' }}</Button
   >
   <Button
-    v-if="team.owner.id == user?.id"
+    v-if="team.owner.id == user?.id || user?.role == 'ADMIN'"
     class-name="bi bi-trash3-fill btn-danger w-100"
     @click="emits('openModal', team.id, deleteModal)"
     >Удалить команду</Button
@@ -77,7 +85,7 @@ function shareButton(id: number) {
       !team.members.find((member) => member.id == user?.id)
     "
     class-name="bi bi-box-arrow-left btn-danger w-100"
-    @click="emits('openModal', team.id, requestModal)"
+    @click="emits('openModal', team.id, accessionModal)"
     >Подать заявку на выход</Button
   >
 </template>

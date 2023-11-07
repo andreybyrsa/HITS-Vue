@@ -23,6 +23,7 @@ import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
+import UserTeamAccessions from '@Views/Teams/UserTeamAccessions.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
 import DevView from '@Views/DevView.vue'
@@ -91,6 +92,20 @@ const routes: RouteRecordRaw[] = [
           isPageEdit: true,
         },
         component: EditTeamView,
+      },
+      {
+        path: 'accessions',
+        meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
+        component: UserTeamAccessions,
+        children: [
+          {
+            path: ':teamId',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: TeamModal,
+          },
+        ],
       },
     ],
   },

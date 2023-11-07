@@ -75,62 +75,6 @@ function getMocks(): Mocks {
     },
   ]
 
-  const teamInvitations: TeamAccession[] = [
-    {
-      id: 0,
-      teamId: 0,
-      targetEmail: '1wgwrgw2@mail.com',
-      targetUserType: 'UNREGISTERED',
-      inviter: {
-        id: 0,
-        email: 'test1@gmail.com',
-        firstName: 'Админ',
-        lastName: 'Админ',
-        skills: [...skills],
-      },
-      updatedAt: '2021-11-20T14:02:17Z',
-      stage: 'INVITATION',
-    },
-    {
-      id: 1,
-      targetEmail: 'test451@gmail.com',
-      targetUserType: 'UNREGISTERED',
-      teamId: 0,
-      inviter: {
-        id: 0,
-        email: 'test1@gmail.com',
-        firstName: 'Админ',
-        lastName: 'Админ',
-        skills: [...skills],
-      },
-      updatedAt: '2022-11-20T14:02:17Z',
-      stage: 'INVITATION',
-    },
-  ]
-  const teamRequests: TeamAccession[] = [
-    {
-      id: 3,
-      teamId: 0,
-      targetEmail: 'admin@mail.com',
-      targetUserType: 'REGISTERED',
-      text: 'Выпустите',
-      requestType: 'LEAVE',
-      updatedAt: '2022-11-20T11:02:17Z',
-      stage: 'REQUEST',
-    },
-    {
-      id: 4,
-      teamId: 0,
-      targetEmail: 'admin@mail.com',
-      targetUserType: 'REGISTERED',
-      text: 'Впустите',
-      requestType: 'ENTER',
-      updatedAt: '2023-10-20T11:02:17Z',
-      stage: 'REQUEST',
-    },
-  ]
-  const teamAccessions: TeamAccession[] = [...teamInvitations, ...teamRequests]
-
   const users: User[] = [
     {
       id: 0,
@@ -417,7 +361,7 @@ function getMocks(): Mocks {
 
   const teams: Team[] = [
     {
-      id: 10,
+      id: 0,
       name: 'Фронтендеры',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
@@ -430,7 +374,7 @@ function getMocks(): Mocks {
       skills: [...skills],
     },
     {
-      id: 11,
+      id: 1,
       name: 'Бэккендеры',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
@@ -443,7 +387,7 @@ function getMocks(): Mocks {
       skills: [...skills],
     },
     {
-      id: 12,
+      id: 2,
       name: 'Мушкетеры',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
@@ -452,11 +396,11 @@ function getMocks(): Mocks {
       membersCount: 4,
       owner: teamMember[2],
       leader: teamMember[1],
-      members: [teamMember[3]],
+      members: [teamMember[3], teamMember[1]],
       skills: [skills[0]],
     },
     {
-      id: 13,
+      id: 3,
       name: 'Смешарики',
       closed: true,
       createdAt: '2023-10-20T11:02:17Z',
@@ -465,7 +409,7 @@ function getMocks(): Mocks {
       membersCount: 4,
       owner: teamMember[2],
       leader: teamMember[1],
-      members: [teamMember[3]],
+      members: [teamMember[3], teamMember[1]],
       skills: [skills[0]],
     },
   ]
@@ -756,6 +700,62 @@ function getMocks(): Mocks {
       createdAt: '2023-10-30T11:02:17Z',
     },
   ]
+
+  const teamInvitations: TeamAccession[] = [
+    {
+      id: 0,
+      team: teams[0],
+      targetEmail: '1wgwrgw2@mail.com',
+      targetRegistered: true,
+      inviter: {
+        id: 0,
+        email: 'test1@gmail.com',
+        firstName: 'Админ',
+        lastName: 'Админ',
+        skills: [...skills],
+      },
+      updatedAt: '2021-11-20T14:02:17Z',
+      stage: 'INVITATION',
+    },
+    {
+      id: 1,
+      targetEmail: 'test451@gmail.com',
+      targetRegistered: false,
+      team: teams[0],
+      inviter: {
+        id: 0,
+        email: 'test1@gmail.com',
+        firstName: 'Админ',
+        lastName: 'Админ',
+        skills: [...skills],
+      },
+      updatedAt: '2022-11-20T14:02:17Z',
+      stage: 'INVITATION',
+    },
+  ]
+  const teamRequests: TeamAccession[] = [
+    {
+      id: 3,
+      team: teams[0],
+      targetEmail: 'admin@mail.com',
+      targetRegistered: true,
+      text: 'Выпустите',
+      requestType: 'LEAVE',
+      updatedAt: '2022-11-20T11:02:17Z',
+      stage: 'REQUEST',
+    },
+    {
+      id: 4,
+      team: teams[0],
+      targetEmail: 'admin@mail.com',
+      targetRegistered: true,
+      text: 'Впустите',
+      requestType: 'ENTER',
+      updatedAt: '2023-10-20T11:02:17Z',
+      stage: 'REQUEST',
+    },
+  ]
+  const teamAccessions: TeamAccession[] = [...teamInvitations, ...teamRequests]
 
   return {
     users,

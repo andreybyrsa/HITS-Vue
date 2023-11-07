@@ -61,7 +61,6 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
 
     return new Promise((resolve, reject) =>
       setTimeout(() => {
-        console.log
         if (mockConfig?.params) {
           const { key, value } = getMockConfigParams(mockConfig)
           const currentMockData = mockArray.value.find((mock) => mock[key] === value)

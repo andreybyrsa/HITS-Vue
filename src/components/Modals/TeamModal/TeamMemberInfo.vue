@@ -56,10 +56,10 @@ function navigateToProfile(id: number) {
       v-if="member.skills.length > 0"
       class="d-flex flex-column"
     >
-      <Typography class-name="py-1">Компетенции:</Typography>
+      <Typography class-name="">Компетенции:</Typography>
       <Skills :skills="member.skills" />
     </div>
-    <div class="d-flex flex-column">
+    <div class="member-info__buttons">
       <Button
         class-name="btn-primary my-2"
         @click="navigateToProfile(member.id)"
@@ -77,5 +77,9 @@ function navigateToProfile(id: number) {
 <style lang="scss" scoped>
 .member-info {
   @include flexible(flex-start, space-between, $gap: 16px);
+
+  &__buttons {
+    @include flexible(center, flex-start, $gap: 16px);
+  }
 }
 </style>

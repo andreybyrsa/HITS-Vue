@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-
+import { useRouter } from 'vue-router'
+import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
+import mutableSort from '@Utils/mutableSort'
+
 import useUserStore from '@Store/user/userStore'
+
+import TeamService from '@Services/TeamService'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
@@ -12,22 +17,51 @@ import {
 } from '@Components/Modals/TeamAccessionsModal/TeamAccessionsModal.types'
 import TeamAccessionsHeader from '@Components/Modals/TeamAccessionsModal/TeamAccessionsHeader.vue'
 import TeamAccessionsTable from '@Components/Tables/TeamAccessionsTable/TeamAccessionsTable.vue'
+import { TableColumn } from '@Components/Table/Table.types'
 
-import TeamService from '@Services/TeamService'
-import { TeamAccession } from '@Domain/TeamAccession'
+import { TeamAccession, accessionStage } from '@Domain/TeamAccession'
+import TeamMember from '@Domain/TeamMember'
 
 const props = defineProps<TeamAccessionsModalProps>()
 
 const emits = defineEmits<TeamAccessionsModalEmits>()
+
+const router = useRouter()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const allAccessions = ref<TeamAccession[]>()
 
-function closeTeamModal() {
-  emits('close-modal')
-}
+const columns: TableColumn<TeamAccession>[] = [
+  {
+    key: 'targetRegistered',
+    label: 'Тип основного лица',
+    getRowCellFormat: getTargetUserTypeFormat,
+    getRowCellStyle: getTargetUserTypeStyle,
+  },
+  {
+    key: 'targetEmail',
+    label: 'Основное лицо',
+  },
+  {
+    key: 'stage',
+    label: 'Этап',
+    getRowCellFormat: getStatusFormat,
+  },
+  {
+    key: 'inviter',
+    label: 'Отправитель приглашения',
+    getRowCellFormat: getInviterFormat,
+    rowCellClick: navigateToInviterProfile,
+  },
+  {
+    key: 'updatedAt',
+    label: 'Последнее обновление',
+    getRowCellFormat: getFormattedDate,
+    headerCellClick: sortByUpdatedAt,
+  },
+]
 
 onMounted(async () => {
   const currentUser = user.value
@@ -42,26 +76,79 @@ onMounted(async () => {
     allAccessions.value = response
   }
 })
+
+function getTargetUserTypeFormat(targetRegistered: boolean) {
+  return targetRegistered ? 'Пользователь с портала' : 'Внешний пользователь'
+}
+
+function getTargetUserTypeStyle(targetRegistered: boolean) {
+  const initialClass = ['px-2', 'py-1', 'rounded-4']
+  if (!targetRegistered) {
+    initialClass.push('bg-danger-subtle', 'text-danger')
+    return initialClass
+  }
+
+  initialClass.push('bg-success-subtle', 'text-success')
+  return initialClass
+}
+
+function getStatusFormat(stage: accessionStage) {
+  return stage == 'INVITATION'
+    ? 'Приглашение'
+    : stage == 'REQUEST'
+    ? 'Заявка'
+    : stage == 'ACCEPTED'
+    ? 'Принято'
+    : 'Отклонено'
+}
+
+function getInviterFormat(inviter?: TeamMember) {
+  if (inviter) {
+    return inviter.firstName + ' ' + inviter.lastName
+  }
+  return ''
+}
+
+function navigateToInviterProfile(teamAccession: TeamAccession) {
+  if (teamAccession.inviter) {
+    router.push(`profile/${teamAccession.inviter.id}`)
+  }
+}
+
+function getFormattedDate(date: string) {
+  const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+  return formattedDate.value
+}
+
+function sortByUpdatedAt() {
+  if (allAccessions.value) {
+    mutableSort(allAccessions.value, (teamAccession: TeamAccession) =>
+      new Date(teamAccession.updatedAt).getTime(),
+    )
+  }
+}
+
+function closeTeamModal() {
+  emits('close-modal')
+}
 </script>
 
 <template>
   <ModalLayout
     :is-opened="isOpened"
     @on-outside-close="closeTeamModal"
-    ><div
-      v-if="allAccessions"
-      class="list-modal p-3"
-    >
+    ><div class="list-modal p-3">
       <TeamAccessionsHeader
         :team="team"
         @close-team-modal="closeTeamModal"
       />
       <TeamAccessionsTable
+        v-if="allAccessions"
+        :columns="columns"
         :team="team"
         v-model="allAccessions"
       />
     </div>
-    <div v-else></div>
   </ModalLayout>
 </template>
 

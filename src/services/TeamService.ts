@@ -83,7 +83,23 @@ const getAllTeamAccessions = async (
   token: string,
 ): Promise<TeamAccession[] | Error> => {
   return await teamAccessions
-    .get(`/team/invitations/${teamId}`, {
+    .get(`/team/accessions/${teamId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки приглашений и заявок'
+      return new Error(error)
+    })
+}
+
+const getUserTeamAccessions = async (
+  email: string,
+  token: string,
+): Promise<TeamAccession[] | Error> => {
+  return await teamAccessions
+    .get(`/team/user-accessions/${email}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -310,6 +326,7 @@ const TeamService = {
   getTeamProfile,
   getAllTeamProfiles,
   getAllTeamAccessions,
+  getUserTeamAccessions,
 
   createTeam,
   inviteRegisteredUsers,

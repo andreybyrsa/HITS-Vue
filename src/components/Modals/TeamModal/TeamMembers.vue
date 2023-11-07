@@ -52,7 +52,7 @@ function getMemberButtonClassName(member: TeamMember) {
           {{ member.firstName + ' ' + member.lastName }}
         </Button>
         <Collapse
-          class-name="p-3"
+          class-name="p-2"
           :id="member.id.toString()"
           ><TeamMemberInfo
             :member="member"

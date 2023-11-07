@@ -8,7 +8,7 @@ import {
   modalNames,
 } from '@Components/Modals/TeamModal/TeamAction.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import TeamRequestModal from '@Components/Modals/TeamRequestModal/TeamRequestModal.vue'
+import TeamAccessionModal from '@Components/Modals/TeamAccessionModal/TeamAccessionModal.vue'
 import TeamInviteModal from '@Components/Modals/TeamInviteModal/TeamInviteModal.vue'
 import TeamAccessionsModal from '../TeamAccessionsModal/TeamAccessionsModal..vue'
 import TeamActionButtons from '@Components/Modals/TeamModal/TeamActionButtons.vue'
@@ -28,7 +28,7 @@ const { user } = storeToRefs(userStore)
 defineProps<TeamActionProps>()
 const router = useRouter()
 
-const { deleteModal, inviteModal, requestModal, teamAccessionsModal } = modalNames
+const { deleteModal, inviteModal, accessionModal, teamAccessionsModal } = modalNames
 
 const teamId = ref<number | null>(null)
 const modalName = ref<string | null>(null)
@@ -86,7 +86,7 @@ const handleSendRequestToTheTeam = async (teamRequest: TeamAccession) => {
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
     const response = await TeamService.sendRequest(teamRequest, teamId.value, token)
-    console.log('gwr')
+
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
@@ -130,7 +130,7 @@ function closeModal() {
       @invite-unregistered-users="handleInviteFromOutside"
     />
 
-    <TeamRequestModal
+    <TeamAccessionModal
       mode="write"
       :type="
         team.members.find((member) => member.email == user?.email)
@@ -138,7 +138,7 @@ function closeModal() {
           : 'ENTER'
       "
       :sender="user"
-      :is-opened="modalName === requestModal"
+      :is-opened="modalName === accessionModal"
       @close-modal="closeModal"
       @send-request="handleSendRequestToTheTeam"
     />

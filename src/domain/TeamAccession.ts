@@ -1,15 +1,15 @@
 import TeamMember from '@Domain/TeamMember'
+import Team from '@Domain/Team'
 
-type targetUserType = 'REGISTERED' | 'UNREGISTERED'
 type accessionStage = 'INVITATION' | 'REQUEST' | 'ACCEPTED' | 'REJECTED'
 type requestType = 'ENTER' | 'LEAVE'
 
 interface TeamAccession {
   id: number
-  teamId: number
+  team: Team
   targetEmail: string
 
-  targetUserType: targetUserType
+  targetRegistered: boolean
   stage: accessionStage
   text?: string
   requestType?: requestType
@@ -22,4 +22,4 @@ interface InvitedUsers {
   emails: string[]
 }
 
-export { TeamAccession, accessionStage, targetUserType, requestType, InvitedUsers }
+export { TeamAccession, accessionStage, requestType, InvitedUsers }
