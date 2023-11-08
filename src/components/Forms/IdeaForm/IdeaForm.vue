@@ -23,6 +23,7 @@ import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
@@ -36,7 +37,7 @@ const router = useRouter()
 
 const stackTechnologies = ref<Skill[]>([])
 
-const { values, setFieldValue, setValues, handleSubmit, validateField } =
+const { values, setFieldValue, setValues, validateField, handleSubmit } =
   useForm<Idea>({
     validationSchema: {
       name: (value: string) =>
@@ -49,10 +50,10 @@ const { values, setFieldValue, setValues, handleSubmit, validateField } =
         Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       description: (value: string) =>
         Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-      maxTeamSize: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-      minTeamSize: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      maxTeamSize: (value: number) =>
+        (value && value >= 3 && value <= 7) || 'Значение должно быть от 3 до 7',
+      minTeamSize: (value: number) =>
+        (value && value >= 3 && value <= 7) || 'Значение должно быть от 3 до 7',
 
       customer: (value: string) =>
         Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
@@ -216,7 +217,7 @@ async function saveIdeaSkills(
     </Typography>
 
     <div class="w-75 d-flex flex-column gap-3">
-      <IdeaFormInputs @set-value="setFieldValue" />
+      <IdeaFormInputs />
 
       <StackCategories v-model:stack="stackTechnologies" />
 

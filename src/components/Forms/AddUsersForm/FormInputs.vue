@@ -35,6 +35,8 @@ const DBUsersEmails = ref<string[]>([])
 const inputsWrapperRef = ref<VueElement | null>(null)
 const { focused } = useFocusWithin(inputsWrapperRef)
 
+const fileIsLoaded = ref(false)
+
 onMounted(async () => {
   const currentUser = user.value
 
@@ -55,22 +57,32 @@ const handleFileLoad = async (event: HTMLTargetEvent) => {
 
   if (rawFile) {
     const fileURL = URL.createObjectURL(rawFile)
-
     await fetch(fileURL)
       .then((response) => response.text())
       .then((text) => {
-        const regExpPattern = /[a-zA-Z_.-{0,9}]+@[a-zA-Z_]+\.[a-zA-Z]{2,10}/gm
         const emails = text.split('\n')
-
-        const formattedEmails = text.match(regExpPattern) ?? []
-        if (formattedEmails) {
-          formattedEmails.forEach((email) => emit('push-email', email))
-        }
-
-        notificationsStore.createSystemNotification(
-          'Система',
-          `Загружено ${emails.length} почт`,
+        const validEmails = emails.reduce(
+          (validAmount, email) =>
+            Validation.checkEmail(email) ? (validAmount += 1) : validAmount,
+          0,
         )
+        const notificationMessage = `Валидацию прошло ${validEmails} из ${emails.length}.`
+
+        if (props.fileds[0].value === '') {
+          emit('remove-email', 0)
+        }
+        emails.forEach((email) => emit('push-email', email))
+
+        fileIsLoaded.value = true
+
+        if (validEmails !== emails.length) {
+          notificationsStore.createSystemNotification(
+            'Система',
+            notificationMessage + ' Некорректные почты добавлены на верх списка.',
+          )
+        } else {
+          notificationsStore.createSystemNotification('Система', notificationMessage)
+        }
       })
       .catch(({ response }) => {
         const error = response?.data?.error ?? 'Ошибка загрузки файла'
@@ -93,11 +105,14 @@ const moveErrorEmail = async (index: number) => {
 }
 
 function getError(email: string, index: number) {
-  if (props.submitCount && !Validation.checkEmail(email)) {
+  if ((props.submitCount || fileIsLoaded.value) && !Validation.checkEmail(email)) {
     moveErrorEmail(index)
     return 'Неверно введена почта'
   }
-  if (props.submitCount && DBUsersEmails.value.includes(email)) {
+  if (
+    (props.submitCount || fileIsLoaded.value) &&
+    DBUsersEmails.value.includes(email)
+  ) {
     moveErrorEmail(index)
     return 'Почта уже зарегистрирована'
   }

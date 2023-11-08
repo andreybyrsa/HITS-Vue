@@ -1,14 +1,3 @@
-import { Idea } from '@Domain/Idea'
-
-interface IdeaFormInputsEmits {
-  (
-    event: 'set-value',
-    field: keyof Idea,
-    value: number | string,
-    shouldValidate?: boolean,
-  ): void
-}
-
 const textareas = [
   {
     name: 'problem',
@@ -32,4 +21,4 @@ const textareas = [
   },
 ]
 
-export { IdeaFormInputsEmits, textareas }
+export default textareas
