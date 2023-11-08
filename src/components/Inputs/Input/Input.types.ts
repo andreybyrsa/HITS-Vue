@@ -11,6 +11,8 @@ interface InputProps {
   validation?: ValidationMethods
   validateOnUpdate?: boolean
   noFormControlled?: boolean
+  max?: number
+  min?: number
 
   label?: string
   placeholder?: string
