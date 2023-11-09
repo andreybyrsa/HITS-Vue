@@ -213,7 +213,7 @@ function getMemberColor(member: TeamMember) {
 
       <SkillsRadarCharts
         class-name="w-50"
-        :skills="radarChartsSkills"
+        :skills-team="radarChartsSkills"
       />
     </div>
   </div>

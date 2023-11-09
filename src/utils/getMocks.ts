@@ -560,7 +560,15 @@ function getMocks(): Mocks {
       owner: teamMember[1],
       leader: teamMember[2],
       members: [...teamMember],
-      skills: [skills[0], skills[2], skills[4], skills[6], skills[8], skills[11]],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[4],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[11],
+      ],
       createdAt: '2023-10-20T11:02:17Z',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
@@ -782,7 +790,15 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      stack: [skills[0], skills[2], skills[3], skills[6], skills[9], skills[11]],
+      stack: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[6],
+        skills[8],
+        skills[9],
+        skills[11],
+      ],
       customer: 'ВШЦТ',
       createdAt: '2023-10-21T11:02:17Z',
       maxTeamSize: 10,

@@ -9,7 +9,8 @@ interface TeamFormProps {
 }
 
 interface SkillsRadarChartsProps {
-  skills: Skill[]
+  skills?: Skill[]
+  skillsTeam?: Skill[]
   className?: string
 }
 

@@ -23,6 +23,11 @@ const frameworkSkills = ref<SkillsRadarChartType>()
 const databaseSkills = ref<SkillsRadarChartType>()
 const devopsSkills = ref<SkillsRadarChartType>()
 
+const languageSkillsTeam = ref<SkillsRadarChartType>()
+const frameworkSkillsTeam = ref<SkillsRadarChartType>()
+const databaseSkillsTeam = ref<SkillsRadarChartType>()
+const devopsSkillsTeam = ref<SkillsRadarChartType>()
+
 const radarChartPlaceholder = ref('Вычисление диаграм')
 
 const skillsData = computed(() => [
@@ -30,6 +35,40 @@ const skillsData = computed(() => [
   { data: frameworkSkills.value },
   { data: databaseSkills.value },
   { data: devopsSkills.value },
+])
+
+const skillsDataTeam = computed(() => [
+  { data: languageSkillsTeam.value },
+  { data: frameworkSkillsTeam.value },
+  { data: databaseSkillsTeam.value },
+  { data: devopsSkillsTeam.value },
+])
+
+const allSkills = computed(() => [
+  {
+    data:
+      languageSkills.value && languageSkillsTeam.value
+        ? getAllSkillsData(languageSkills.value, languageSkillsTeam.value)
+        : languageSkills.value,
+  },
+  {
+    data:
+      frameworkSkills.value && frameworkSkillsTeam.value
+        ? getAllSkillsData(frameworkSkills.value, frameworkSkillsTeam.value)
+        : frameworkSkills.value,
+  },
+  {
+    data:
+      databaseSkills.value && databaseSkillsTeam.value
+        ? getAllSkillsData(databaseSkills.value, databaseSkillsTeam.value)
+        : databaseSkills.value,
+  },
+  {
+    data:
+      devopsSkills.value && devopsSkillsTeam.value
+        ? getAllSkillsData(devopsSkills.value, devopsSkillsTeam.value)
+        : devopsSkills.value,
+  },
 ])
 
 const ButtonClassName = computed(() => [props.className])
@@ -60,13 +99,13 @@ function getSkillsData(skills: Skill[], type: SkillType) {
   const getOptionsBySkillType = (type: SkillType) => {
     switch (type) {
       case 'LANGUAGE':
-        return { label: 'Языки разработки', backgroundColor: '#19865380' }
+        return { label: 'Языки разработки идеи', backgroundColor: '#19865380' }
       case 'FRAMEWORK':
-        return { label: 'Фреймворки', backgroundColor: '#0dcaf080' }
+        return { label: 'Фреймворки идеи', backgroundColor: '#0dcaf080' }
       case 'DATABASE':
-        return { label: 'Базы данных', backgroundColor: '#ffc10780' }
+        return { label: 'Базы данных идеи', backgroundColor: '#ffc10780' }
       default:
-        return { label: 'Девопс технологии', backgroundColor: '#dc354580' }
+        return { label: 'Девопс технологии идеи', backgroundColor: '#dc354580' }
     }
   }
 
@@ -83,13 +122,125 @@ function getSkillsData(skills: Skill[], type: SkillType) {
   }
 }
 
+function getSkillsDataTeam(skills: Skill[], type: SkillType) {
+  const skillsByType = skills.filter((skill) => skill.type === type)
+
+  if (skillsByType.length === 0) {
+    return undefined
+  }
+
+  const uniqueSkills = [
+    ...new Map(skillsByType.map((skill) => [skill.id, skill])).values(),
+  ]
+
+  const skillsLabels = uniqueSkills.map((skill) => skill.name)
+  const skillsValues: number[] = []
+
+  uniqueSkills.forEach((currentSkill) => {
+    const skillAmount = skillsByType.reduce(
+      (amount, skill) => (skill.id === currentSkill.id ? (amount += 1) : amount),
+      0,
+    )
+
+    skillsValues.push(skillAmount)
+  })
+
+  const getOptionsBySkillType = (type: SkillType) => {
+    switch (type) {
+      case 'LANGUAGE':
+        return { label: 'Языки разработки команды', backgroundColor: '#0038FF80' }
+      case 'FRAMEWORK':
+        return { label: 'Фреймворки команды', backgroundColor: '#00FF6680' }
+      case 'DATABASE':
+        return { label: 'Базы данных команды', backgroundColor: '#AD00FF80' }
+      default:
+        return { label: 'Девопс технологии команды', backgroundColor: '#FFD60080' }
+    }
+  }
+
+  return {
+    labels: skillsLabels,
+    datasets: [
+      {
+        data: skillsValues,
+        ...getOptionsBySkillType(type),
+        borderColor: '#000000',
+        borderWidth: 1,
+      },
+    ],
+  }
+}
+
+function changeDatasetsData(data: SkillsRadarChartType, labels: string[]) {
+  const newDatasetsData = ref<number[]>([])
+  const currentDatasetsData = ref<number[]>([])
+
+  newDatasetsData.value.length = labels.length
+
+  data.datasets.forEach((elem) =>
+    elem.data.forEach((el) => el && currentDatasetsData.value.push(el)),
+  )
+
+  for (let index = 0; index < labels.length; index++) {
+    const label = labels[index]
+
+    if (data.labels?.includes(labels[index])) {
+      const indexData = data.labels.indexOf(label)
+      if (currentDatasetsData.value[index]) {
+        newDatasetsData.value.splice(index, 1, currentDatasetsData.value[index])
+      } else
+        newDatasetsData.value.splice(index, 1, currentDatasetsData.value[indexData])
+    } else newDatasetsData.value.splice(index, 1, 0)
+  }
+
+  data.datasets[0].data = newDatasetsData.value
+
+  return data.datasets
+}
+
+function getAllSkillsData(
+  skills: SkillsRadarChartType,
+  skillsTeam: SkillsRadarChartType,
+) {
+  const labelsSkills = ref<string[]>([])
+  const labelsSkillsTeam = ref<string[]>([])
+
+  if (skills?.labels) labelsSkills.value = skills.labels
+  if (skillsTeam.labels) labelsSkillsTeam.value = skillsTeam.labels
+
+  const arr = ref<string[]>([...labelsSkills.value, ...labelsSkillsTeam.value])
+  const label = [...new Set(arr.value)]
+
+  return {
+    labels: label,
+    datasets: [
+      changeDatasetsData(skills, label)[0],
+      changeDatasetsData(skillsTeam, label)[0],
+    ],
+  }
+}
+
 watchImmediate(
   () => props.skills,
   (currentSkills) => {
-    languageSkills.value = getSkillsData(currentSkills, 'LANGUAGE')
-    frameworkSkills.value = getSkillsData(currentSkills, 'FRAMEWORK')
-    databaseSkills.value = getSkillsData(currentSkills, 'DATABASE')
-    devopsSkills.value = getSkillsData(currentSkills, 'DEVOPS')
+    if (currentSkills) {
+      languageSkills.value = getSkillsData(currentSkills, 'LANGUAGE')
+      frameworkSkills.value = getSkillsData(currentSkills, 'FRAMEWORK')
+      databaseSkills.value = getSkillsData(currentSkills, 'DATABASE')
+      devopsSkills.value = getSkillsData(currentSkills, 'DEVOPS')
+    }
+  },
+)
+
+watchImmediate(
+  () => props.skillsTeam,
+  (currentSkills) => {
+    if (currentSkills) {
+      languageSkillsTeam.value = getSkillsDataTeam(currentSkills, 'LANGUAGE')
+      frameworkSkillsTeam.value = getSkillsDataTeam(currentSkills, 'FRAMEWORK')
+      databaseSkillsTeam.value = getSkillsDataTeam(currentSkills, 'DATABASE')
+      devopsSkillsTeam.value = getSkillsDataTeam(currentSkills, 'DEVOPS')
+    }
   },
 )
 
@@ -109,13 +260,12 @@ const intervalId = setInterval(() => {
 <template>
   <div :class="['radar-charts', ...ButtonClassName]">
     <div
-      v-for="(skills, index) in skillsData"
+      v-for="(skill, index) in props.skills ? allSkills : skillsDataTeam"
       :key="index"
-      class="radar-charts__chart w-50"
     >
       <RadarChart
-        v-if="skills.data"
-        :chart-data="skills.data"
+        v-if="skill.data"
+        :chart-data="skill.data"
         :height="300"
       />
 
@@ -124,13 +274,17 @@ const intervalId = setInterval(() => {
         class="radar-charts__placeholder-wrapper"
       >
         <div class="radar-charts__placeholder placeholder-glow">
-          <div class="placeholder col-12 h-100 rounded-3"></div>
+          <div class="placeholder col-12 h-100 rounded" />
         </div>
       </div>
     </div>
 
     <Typography
-      v-if="skillsData.every((skill) => skill.data === undefined)"
+      v-if="
+        props.skills
+          ? skillsData.every((skill) => skill.data === undefined)
+          : skillsDataTeam.every((skill) => skill.data === undefined)
+      "
       class-name="w-100 text-center"
     >
       {{ radarChartPlaceholder }}
@@ -140,15 +294,13 @@ const intervalId = setInterval(() => {
 
 <style lang="scss" scoped>
 .radar-charts {
-  @include flexible(flex-start, flex-start, $flex-wrap: wrap);
+  @include flexible(center, center, $flex-wrap: wrap, $gap: 16px);
 
   &__chart {
     @include flexible(center, center);
   }
 
   &__placeholder {
-    margin-bottom: 16px;
-
     width: 130px;
     height: 130px;
 

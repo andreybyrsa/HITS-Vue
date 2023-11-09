@@ -92,6 +92,14 @@ function closeMarketModal() {
 
   useCommentsStore().disconnectRsocket()
 }
+
+import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
+import Button from '@Components/Button/Button.vue'
+
+const change = ref(true)
+function bittn() {
+  change.value = !change.value
+}
 </script>
 
 <template>
@@ -116,6 +124,12 @@ function closeMarketModal() {
           v-model="requestTeams"
         />
 
+        <Button
+          class-name="btn-primary"
+          @click="bittn"
+          >Смена технологий</Button
+        >
+
         <RequestToIdeaForm
           v-model:teams="teams"
           :idea="idea"
@@ -129,6 +143,14 @@ function closeMarketModal() {
       </div>
 
       <div class="market-modal__right-side w-25 rounded">
+        <div class="bg-white p-2 rounded">
+          <SkillsRadarCharts
+            class-name="w-100"
+            :skills="idea.stack"
+            :skills-team="change ? requestTeams[0].skills : requestTeams[1].skills"
+          />
+        </div>
+
         <MarketInfo :idea="idea" />
 
         <MarketAcceptTeam v-model="requestTeams" />

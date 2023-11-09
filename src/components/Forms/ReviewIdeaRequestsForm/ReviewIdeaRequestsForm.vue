@@ -40,7 +40,7 @@ function filterTeamsAccepted(teams: RequestTeams[]) {
   position: relative;
   @include flexible(flex-start, flex-start, column, $gap: 6px);
   width: 100%;
-  height: 500px;
+  height: 800px;
   overflow: hidden;
   overflow-y: scroll;
 }
