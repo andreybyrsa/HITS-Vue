@@ -1,13 +1,18 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
 
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+import { develop } from '@Assets/images'
+
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 
-import { develop } from '@Assets/images'
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 const router = useRouter()
+
+function navigateToHomePage() {
+  router.push({ name: 'home' })
+}
 </script>
 
 <template>
@@ -20,17 +25,17 @@ const router = useRouter()
           class="error-page__img"
         />
         <Typography class-name="fs-2">Ошибка 404</Typography>
-        <Typography class-name="error-page__text fs-5 w-100 text-center"
-          >Кажется что-то пошло не так! Страница, которую вы запрашиваете, не
+        <Typography class-name="error-page__text fs-5 w-100 text-center">
+          Кажется что-то пошло не так! Страница, которую вы запрашиваете, не
           существует. Возможна она устарела, была удалена, или был введен неверный
           адрес в поисковой строке
         </Typography>
         <Button
           type="submit"
           class-name="btn-primary"
-          @click="router.go(-1)"
+          @click="navigateToHomePage"
         >
-          Вернуться назад
+          Вернуться на главную страницу
         </Button>
       </div>
     </template>
