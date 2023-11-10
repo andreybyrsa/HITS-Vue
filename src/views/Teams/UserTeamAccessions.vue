@@ -124,7 +124,7 @@ function getInviterFormat(inviter?: TeamMember) {
 
 function navigateToInviterProfile(teamAccession: TeamAccession) {
   if (teamAccession.inviter) {
-    router.push(`profile/${teamAccession.inviter.id}`)
+    router.push(`profile/${teamAccession.inviter.userId}`)
   }
 }
 

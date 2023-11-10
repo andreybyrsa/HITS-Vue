@@ -43,6 +43,7 @@ const columns: TableColumn<TeamAccession>[] = [
   {
     key: 'targetEmail',
     label: 'Основное лицо',
+    rowCellClick: navigateToTargetProfile,
   },
   {
     key: 'stage',
@@ -93,6 +94,12 @@ function getTargetUserTypeStyle(targetRegistered: boolean) {
   return initialClass
 }
 
+function navigateToTargetProfile(teamAccession: TeamAccession) {
+  if (teamAccession.targetRegistered && teamAccession.targetId) {
+    router.push(`profile/${teamAccession.targetId}`)
+  }
+}
+
 function getStatusFormat(stage: accessionStage) {
   return stage == 'INVITATION'
     ? 'Приглашение'
@@ -135,7 +142,7 @@ function getInviterFormat(inviter?: TeamMember) {
 
 function navigateToInviterProfile(teamAccession: TeamAccession) {
   if (teamAccession.inviter) {
-    router.push(`profile/${teamAccession.inviter.id}`)
+    router.push(`profile/${teamAccession.inviter.userId}`)
   }
 }
 

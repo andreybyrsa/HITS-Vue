@@ -36,7 +36,7 @@ const handleKick = async (member: TeamMember, teamId: number) => {
     }
 
     const kickingIndexMember = team.value.members.findIndex(
-      (member) => props.member.id == member.id,
+      (member) => props.member.userId == member.userId,
     )
 
     if (kickingIndexMember != -1) {
@@ -62,11 +62,11 @@ function navigateToProfile(id: number) {
     <div class="member-info__buttons">
       <Button
         class-name="btn-primary my-2"
-        @click="navigateToProfile(member.id)"
+        @click="navigateToProfile(member.userId)"
         >Перейти в профиль</Button
       >
       <Button
-        v-if="user?.id == team.owner.id && user.id != member.id"
+        v-if="user?.id == team.owner.userId && user.id != member.userId"
         class-name="btn-danger"
         @click="handleKick(member, team.id)"
         >Кикнуть</Button

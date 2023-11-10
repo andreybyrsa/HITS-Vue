@@ -19,7 +19,7 @@ function getMemberButtonClassName(member: TeamMember) {
     'list-group-item-light',
     'w-100',
   ]
-  if (member.id == team.value.leader?.id) {
+  if (member.userId == team.value.leader?.userId) {
     buttonClassName.push('text-danger')
     return buttonClassName.join(' ')
   }
@@ -41,13 +41,13 @@ function getMemberButtonClassName(member: TeamMember) {
         <Button
           :class-name="getMemberButtonClassName(member)"
           prepend-icon-name="bi bi-person"
-          v-collapse="member.id"
+          v-collapse="member.userId"
         >
           {{ member.firstName + ' ' + member.lastName }}
         </Button>
         <Collapse
           class-name="p-2"
-          :id="member.id.toString()"
+          :id="member.userId.toString()"
           ><TeamMemberInfo
             :member="member"
             v-model="team"

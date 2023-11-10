@@ -22,8 +22,8 @@ const { user } = storeToRefs(userStore)
       v-if="
         mode == 'read' &&
         teamRequest?.stage == 'REQUEST' &&
-        (teamRequest.team.owner.id == user?.id ||
-          teamRequest.team.leader?.id == user?.id) &&
+        (teamRequest.team.owner.userId == user?.id ||
+          teamRequest.team.leader?.userId == user?.id) &&
         teamRequest.targetEmail != user?.email
       "
       ><Button

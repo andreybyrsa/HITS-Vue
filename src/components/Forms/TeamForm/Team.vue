@@ -66,7 +66,7 @@ onMounted(async () => {
 
       users.value = [...response.members]
 
-      if (!users.value.find((member) => member.id == response.owner.id)) {
+      if (!users.value.find((member) => member.userId == response.owner.userId)) {
         users.value.push(response.owner)
       }
     } else {

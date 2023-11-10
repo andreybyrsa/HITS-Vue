@@ -32,15 +32,15 @@ function shareButton(id: number) {
 </script>
 <template>
   <Button
-    v-if="team.owner?.id == user?.id || user?.role == 'ADMIN'"
+    v-if="team.owner?.userId == user?.id || user?.role == 'ADMIN'"
     class-name="bi bi-pencil-square btn-primary w-100"
     @click="router.push(`/teams/edit/${team.id}`)"
     >Редактировать</Button
   >
   <Button
     v-if="
-      team.leader?.id == user?.id ||
-      team.owner.id == user?.id ||
+      team.leader?.userId == user?.id ||
+      team.owner.userId == user?.id ||
       user?.role == 'ADMIN'
     "
     class-name="bi bi-envelope-plus-fill btn-primary w-100"
@@ -49,9 +49,9 @@ function shareButton(id: number) {
   >
   <Button
     v-if="
-      team.leader?.id != user?.id &&
-      team.owner.id != user?.id &&
-      !team.members.find((member) => member.id == user?.id)
+      team.leader?.userId != user?.id &&
+      team.owner.userId != user?.id &&
+      !team.members.find((member) => member.userId == user?.id)
     "
     class-name="bi bi-card-text btn-primary w-100"
     @click="emits('openModal', team.id, accessionModal)"
@@ -59,8 +59,8 @@ function shareButton(id: number) {
   >
   <Button
     v-if="
-      team.leader?.id == user?.id ||
-      team.owner.id == user?.id ||
+      team.leader?.userId == user?.id ||
+      team.owner.userId == user?.id ||
       user?.role == 'ADMIN'
     "
     class-name="bi bi-card-checklist btn-primary w-100"
@@ -74,15 +74,15 @@ function shareButton(id: number) {
     >{{ disabled ? 'Ссылка скопирована!' : 'Скопировать ссылку' }}</Button
   >
   <Button
-    v-if="team.owner.id == user?.id || user?.role == 'ADMIN'"
+    v-if="team.owner.userId == user?.id || user?.role == 'ADMIN'"
     class-name="bi bi-trash3-fill btn-danger w-100"
     @click="emits('openModal', team.id, deleteModal)"
     >Удалить команду</Button
   >
   <Button
     v-if="
-      team.owner.id != user?.id &&
-      !team.members.find((member) => member.id == user?.id)
+      team.owner.userId != user?.id &&
+      !team.members.find((member) => member.userId == user?.id)
     "
     class-name="bi bi-box-arrow-left btn-danger w-100"
     @click="emits('openModal', team.id, accessionModal)"
