@@ -13,6 +13,7 @@ import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
+import LoadingSpinner from '@Components/LoadingSpinner/LoadingSpinner.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

@@ -60,7 +60,7 @@ const handleFileLoad = async (event: HTMLTargetEvent) => {
     await fetch(fileURL)
       .then((response) => response.text())
       .then((text) => {
-        const emails = text.split('\n')
+        const emails = text.replace(/(\r\n|\r|\n)/g, ' ').split(' ')
         const validEmails = emails.reduce(
           (validAmount, email) =>
             Validation.checkEmail(email) ? (validAmount += 1) : validAmount,

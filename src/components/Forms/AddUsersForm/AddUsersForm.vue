@@ -30,6 +30,7 @@ const { user } = storeToRefs(userStore)
 
 const currentRoles = getRoles()
 const fileInputRef = ref<VueElement | null>(null)
+const isLoading = ref(false)
 
 const { errors, resetForm, submitCount, handleSubmit } = useForm<InviteUsersForm>({
   validationSchema: {
@@ -51,13 +52,19 @@ const handleInvite = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
+    isLoading.value = true
     const response = await InvitationService.inviteUsers(values, token)
+    isLoading.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     resetForm()
+    notificationsStore.createSystemNotification(
+      'Система',
+      'Приглашения успешно отправлены.',
+    )
   }
 })
 </script>
@@ -105,6 +112,7 @@ const handleInvite = handleSubmit(async (values) => {
     <Button
       type="submit"
       class-name="btn-primary w-100"
+      :is-loading="isLoading"
       @click="handleInvite"
     >
       Добавить
