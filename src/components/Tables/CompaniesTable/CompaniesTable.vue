@@ -1,26 +1,32 @@
 <template>
   <Table
-    :columns="companyTableColumns"
+    :columns="companiesTableColumns"
     :data="companies"
     :search-by="['name']"
+    :filters="companiesFilters"
     :dropdown-actions-menu="dropdownCompaniesActions"
   ></Table>
 
+  <CompanyModal
+    :isOpened="isOpenedUpdatingCompanyModal"
+    :company-id="currentCompanyId"
+    v-model="companies"
+    @close-modal="closeUpdatingCompanyModal"
+  />
   <DeleteModal
-    :is-opened="isOpenedCompanyDeleteModal"
-    @close-modal="handleCloseDeleteModal"
+    :is-opened="isOpenedDeletingCompanyModal"
     @delete="handleDeleteCompany"
+    @close-modal="closeDeletingCompanyModal"
   />
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
 
 import Table from '@Components/Table/Table.vue'
-import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
+import CompanyModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
 import Company from '@Domain/Company'
@@ -30,26 +36,27 @@ import CompanyService from '@Services/CompanyService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-const router = useRouter()
+const companies = defineModel<Company[]>({ required: true })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
-const companies = defineModel<Company[]>({ required: true })
+const currentCompanyId = ref()
+const currentDeleteCompanyId = ref<number | null>(null)
 
-const deletingCompanyId = ref<number | null>(null)
-const isOpenedCompanyDeleteModal = ref(false)
+const isOpenedUpdatingCompanyModal = ref(false)
+const isOpenedDeletingCompanyModal = ref(false)
 
 const isSortedByMembersCount = ref(false)
 const isSortedByCreatedAt = ref(false)
 
-const companyTableColumns: TableColumn<Company>[] = [
+const companiesTableColumns: TableColumn<Company>[] = [
   {
     key: 'name',
     label: 'Название',
-    size: 'col-3',
-    rowCellClick: navigateToCompanyModal,
+    rowCellClick: openUpdatingCompanyModal,
+    getRowCellStyle: getCompanyNameStyle,
   },
   {
     key: 'membersCount',
@@ -68,19 +75,13 @@ const companyTableColumns: TableColumn<Company>[] = [
 
 const dropdownCompaniesActions: DropdownMenuAction<Company>[] = [
   {
-    label: 'Просмотреть',
-    click: navigateToCompanyModal,
-  },
-  {
     label: 'Редактировать',
-    statement: checkUpdateCompanyAction,
-    click: navigateToCompanyForm,
+    click: openUpdatingCompanyModal,
   },
   {
     label: 'Удалить',
     className: 'text-danger',
-    statement: checkDeleteCompanyAction,
-    click: handleOpenDeleteModal,
+    click: openDeletingCompanyModal,
   },
 ]
 
@@ -99,9 +100,9 @@ function sortByCreatedAt() {
 }
 
 function sortByMembersCount() {
-  companies.value.sort((team1, team2) => {
-    const comparingDate1 = new Date(team1.membersCount).getTime()
-    const comparingDate2 = new Date(team2.membersCount).getTime()
+  teams.value.sort((company1, company2) => {
+    const comparingDate1 = new Date(company1.membersCount).getTime()
+    const comparingDate2 = new Date(company2.membersCount).getTime()
 
     if (isSortedByMembersCount.value) {
       return comparingDate1 - comparingDate2
@@ -119,31 +120,33 @@ function getFormattedDate(date: string) {
   }
 }
 
-function navigateToCompanyModal(company: Company) {
-  router.push(`/companies/list/${company.id}`)
+function getCompanyNameStyle() {
+  return 'text-primary'
 }
 
-function navigateToCompanyForm(company: Company) {
-  router.push(`/companies/update/${company.id}`)
+function openUpdatingCompanyModal(company: Company) {
+  currentComapnyId.value = company.id
+  isOpenedUpdatingcompanyModal.value = true
+}
+function closeUpdatingCompanyModal() {
+  isOpenedUpdatingCompanyModal.value = false
 }
 
-function handleOpenDeleteModal(company: Company) {
-  deletingCompanyId.value = company.id
-  isOpenedCompanyDeleteModal.value = true
+function openDeletingCompanyModal(company: Company) {
+  isOpenedDeletingCompanyModal.value = true
+  currentDeleteCompanyId.value = company.id
+}
+function closeDeletingCompanyModal() {
+  isOpenedDeletingCompanyModal.value = false
 }
 
-function handleCloseDeleteModal() {
-  isOpenedCompanyDeleteModal.value = false
-}
-
-async function handleDeleteCompany() {
+const handleDeleteCompany = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && deletingCompanyId.value !== null) {
+  if (currentUser?.token && currentDeleteCompanyId.value !== null) {
     const { token } = currentUser
-
     const response = await CompanyService.deleteCompany(
-      deletingCompanyId.value,
+      currentDeleteCompanyId.value,
       token,
     )
 
@@ -151,27 +154,9 @@ async function handleDeleteCompany() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    const deletingCompanyIndex = companies.value.findIndex(
-      (team) => team.id === deletingCompanyId.value,
+    company.value = companies.value.filter(
+      (company) => company.id !== currentDeleteGroupId.value,
     )
-
-    if (deletingCompanyIndex !== -1) {
-      companies.value.splice(deletingCompanyIndex, 1)
-    }
   }
-}
-
-function checkDeleteCompanyAction(company: Company) {
-  const currentUser = user.value
-
-  const { owner } = company
-  return currentUser?.role === 'ADMIN' || currentUser?.email === owner.email
-}
-
-function checkUpdateCompanyAction(company: Company) {
-  const currentUser = user.value
-
-  const { owner } = company
-  return currentUser?.role === 'ADMIN' || currentUser?.email === owner.email
 }
 </script>

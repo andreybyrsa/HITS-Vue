@@ -12,6 +12,7 @@ import UsersView from '@Views/Admin/UsersView.vue'
 import AddUsersView from '@Views/Admin/AddUsersView.vue'
 import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
 import SkillsView from '@Views/Admin/SkillsView.vue'
+import CompaniesView from '@Views/Admin/CompaniesView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
@@ -21,10 +22,6 @@ import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
-
-import CompaniesView from '@Views/Companies/CompaniesView.vue'
-import NewCompanyView from '@Views/Companies/NewCompanyView.vue'
-import EditCompanyView from '@Views/Companies/EditCompanyView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
 
@@ -119,27 +116,8 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'companies',
-        children: [
-          {
-            path: 'create',
-            meta: { roles: ['ADMIN'] },
-            component: NewCompanyView,
-          },
-          {
-            path: 'list',
-            name: 'companies-list',
-            meta: { roles: ['ADMIN'] },
-            component: CompaniesView,
-          },
-          {
-            path: 'update/:id',
-            meta: {
-              roles: ['ADMIN'],
-              isPageEdit: true,
-            },
-            component: EditCompanyView,
-          },
-        ],
+        component: CompaniesView,
+        meta: { roles: ['ADMIN'] },
       },
     ],
   },

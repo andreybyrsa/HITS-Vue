@@ -91,7 +91,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
       {
         id: 12,
-        to: '/admin/companies/list',
+        to: '/admin/companies',
         text: 'Компании',
         iconName: 'bi bi-building',
         roles: ['ADMIN'],
