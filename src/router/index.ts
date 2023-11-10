@@ -22,6 +22,10 @@ import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 
+import CompaniesView from '@Views/Companies/CompaniesView.vue'
+import NewCompanyView from '@Views/Companies/NewCompanyView.vue'
+import EditCompanyView from '@Views/Companies/EditCompanyView.vue'
+
 import ErrorView from '@Views/ErrorView.vue'
 
 import DevView from '@Views/DevView.vue'
@@ -112,6 +116,30 @@ const routes: RouteRecordRaw[] = [
         path: 'skills',
         component: SkillsView,
         meta: { roles: ['ADMIN'] },
+      },
+      {
+        path: 'companies',
+        children: [
+          {
+            path: 'create',
+            meta: { roles: ['ADMIN'] },
+            component: NewCompanyView,
+          },
+          {
+            path: 'list',
+            name: 'companies-list',
+            meta: { roles: ['ADMIN'] },
+            component: CompaniesView,
+          },
+          {
+            path: 'update/:id',
+            meta: {
+              roles: ['ADMIN'],
+              isPageEdit: true,
+            },
+            component: EditCompanyView,
+          },
+        ],
       },
     ],
   },

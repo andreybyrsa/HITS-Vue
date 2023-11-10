@@ -6,6 +6,7 @@ import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 import Notification from '@Domain/Notification'
+import Company from '@Domain/Company'
 
 interface Mocks {
   users: User[]
@@ -19,6 +20,7 @@ interface Mocks {
   ideasSkills: IdeaSkills[]
   teams: Team[]
   notifications: Notification[]
+  companies: Company[]
 }
 
 function getMocks(): Mocks {
@@ -378,6 +380,24 @@ function getMocks(): Mocks {
       createdAt: '2023-10-30T11:02:17Z',
     },
   ]
+  const companies: Company[] = [
+    {
+      id: 0,
+      name: 'Газпром',
+      createdAt: '2023-10-23T11:02:17Z',
+      membersCount: 3,
+      owner: users[0],
+      members: [users[3]],
+    },
+    {
+      id: 1,
+      name: 'Роснефть',
+      createdAt: '2023-10-23T11:02:17Z',
+      membersCount: 1,
+      owner: users[2],
+      members: [users[1]],
+    },
+  ]
 
   return {
     users,
@@ -391,6 +411,7 @@ function getMocks(): Mocks {
     ideasSkills,
     teams,
     notifications,
+    companies,
   }
 }
 
