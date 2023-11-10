@@ -3,6 +3,7 @@ interface ButtonProps {
   className?: string
   prependIconName?: string
   appendIconName?: string
+  isLoading?: boolean
 }
 
 export default ButtonProps
