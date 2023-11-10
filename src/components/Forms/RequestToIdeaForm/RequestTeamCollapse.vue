@@ -18,6 +18,7 @@ import RequestTeamsServise from '@Services/RequestTeamsServise'
 import Team from '@Domain/Team'
 import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
+import { Skill } from '@Domain/Skill'
 
 const props = defineProps<RequestTeamCollapseProps>()
 
@@ -27,6 +28,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const requestTeams = defineModel<RequestTeams[]>('requestTeams', { required: true })
+const compareTeam = defineModel<Skill[]>('compareTeam')
 
 const letter = ref<string>('')
 
@@ -77,6 +79,10 @@ function checkTeamRequest(teamProps: Team) {
 
 function navigateToTeamModal(team: Team, idea: IdeasMarket) {
   return router.push(`/market/${idea.id}/${team.id}`)
+}
+
+function compareSkills(skills: Skill[]) {
+  compareTeam.value = skills
 }
 </script>
 
@@ -134,12 +140,21 @@ function navigateToTeamModal(team: Team, idea: IdeasMarket) {
             v-model="letter"
           />
 
-          <Button
-            class-name="btn-success"
-            @click="sendRequestTeam()"
-          >
-            Подать заявку
-          </Button>
+          <div class="d-flex gap-2">
+            <Button
+              class-name="btn-success"
+              @click="sendRequestTeam()"
+            >
+              Подать заявку
+            </Button>
+            <Button
+              v-if="!isDisabledButtonSkills"
+              class-name="btn-primary"
+              @click="compareSkills(team.skills)"
+            >
+              Сравнить компетенции
+            </Button>
+          </div>
         </div>
       </Collapse>
     </div>

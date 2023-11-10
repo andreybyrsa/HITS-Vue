@@ -9,13 +9,15 @@ import ReviewIdeaRequestTable from '@Components/Tables/ReviewIdeaRequestTable/Re
 import Typography from '@Components/Typography/Typography.vue'
 
 import RequestTeams from '@Domain/RequestTeams'
+import { Skill } from '@Domain/Skill'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 defineProps<ReviewIdeaRequestsFormProps>()
 
-const teams = defineModel<RequestTeams[]>({ required: true })
+const teams = defineModel<RequestTeams[]>('requestTeams', { required: true })
+const compareTeam = defineModel<Skill[]>('compareTeam')
 
 function filterTeamsAccepted(teams: RequestTeams[]) {
   return teams.filter((elem) => elem.accepted === false)
@@ -31,7 +33,12 @@ function filterTeamsAccepted(teams: RequestTeams[]) {
       >Заявившиеся команды
     </Typography>
 
-    <ReviewIdeaRequestTable v-model="teams" />
+    <div class="review-request-form__table">
+      <ReviewIdeaRequestTable
+        v-model:teams="teams"
+        v-model:compareTeam="compareTeam"
+      />
+    </div>
   </div>
 </template>
 
@@ -41,7 +48,10 @@ function filterTeamsAccepted(teams: RequestTeams[]) {
   @include flexible(flex-start, flex-start, column, $gap: 6px);
   width: 100%;
   height: 800px;
-  overflow: hidden;
-  overflow-y: scroll;
+
+  &__table {
+    overflow: hidden;
+    overflow-y: scroll;
+  }
 }
 </style>

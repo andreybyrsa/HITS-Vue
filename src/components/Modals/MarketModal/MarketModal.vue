@@ -10,6 +10,7 @@ import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.vue'
 import MarketAcceptTeam from '@Components/Modals/MarketModal/MarketAcceptTeam.vue'
 import MarketPlaceholder from '@Components/Modals/MarketModal/MarketPlaceholder.vue'
+import MarketSkillsRadarCharts from '@Components/Modals/MarketModal/MarketSkillsRadarCharts.vue'
 
 import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
 import ReviewIdeaRequestsForm from '@Components/Forms/ReviewIdeaRequestsForm/ReviewIdeaRequestsForm.vue'
@@ -28,6 +29,7 @@ import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import { Skill } from '@Domain/Skill'
 
 defineProps<MarketModalProps>()
 
@@ -93,13 +95,7 @@ function closeMarketModal() {
   useCommentsStore().disconnectRsocket()
 }
 
-import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
-import Button from '@Components/Button/Button.vue'
-
-const change = ref(true)
-function bittn() {
-  change.value = !change.value
-}
+const compareTeam = ref<Skill[]>()
 </script>
 
 <template>
@@ -121,39 +117,36 @@ function bittn() {
 
         <ReviewIdeaRequestsForm
           :idea="idea"
-          v-model="requestTeams"
+          v-model:requestTeams="requestTeams"
+          v-model:compareTeam="compareTeam"
         />
-
-        <Button
-          class-name="btn-primary"
-          @click="bittn"
-          >Смена технологий</Button
-        >
 
         <RequestToIdeaForm
           v-model:teams="teams"
           :idea="idea"
           v-model:requestTeams="requestTeams"
+          v-model:compareTeam="compareTeam"
+        />
+
+        <MarketAcceptTeam
+          v-model="requestTeams"
+          :idea="idea"
         />
 
         <IdeaComments
+          news
           :idea="idea"
           :idea-modal-ref="MarketModalRef"
         />
       </div>
 
       <div class="market-modal__right-side w-25 rounded">
-        <div class="bg-white p-2 rounded">
-          <SkillsRadarCharts
-            class-name="w-100"
-            :skills="idea.stack"
-            :skills-team="change ? requestTeams[0].skills : requestTeams[1].skills"
-          />
-        </div>
+        <MarketSkillsRadarCharts
+          :skills="idea.stack"
+          :skills-team="compareTeam"
+        />
 
         <MarketInfo :idea="idea" />
-
-        <MarketAcceptTeam v-model="requestTeams" />
       </div>
     </div>
     <MarketPlaceholder v-else />

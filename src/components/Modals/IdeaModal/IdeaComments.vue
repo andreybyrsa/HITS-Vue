@@ -93,7 +93,9 @@ const onIntersectionObserver = async (
 <template>
   <div class="bg-white rounded-3">
     <div class="py-2 w-100 border-bottom">
-      <Typography class-name="fs-6 px-3">Комментарии</Typography>
+      <Typography class-name="fs-6 px-3">
+        {{ news ? 'Объявления' : 'Комментарии' }}
+      </Typography>
     </div>
 
     <div

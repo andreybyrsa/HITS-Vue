@@ -49,6 +49,7 @@ function closeModal() {
           v-model:teams="teams"
           :idea="idea"
           v-model:requestTeams="requestTeams"
+          isDisabledButtonSkills
         />
       </div>
     </div>

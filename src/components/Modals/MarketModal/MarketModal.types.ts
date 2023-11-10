@@ -1,5 +1,6 @@
 import IdeasMarket from '@Domain/IdeasMarket'
 import ApplicationTeams from '@Domain/RequestTeams'
+import { Skill } from '@Domain/Skill'
 
 interface MarketModalProps {
   isOpened: boolean
@@ -15,10 +16,16 @@ interface MarketModalEmits {
 
 interface MarketAcceptTeamProps {
   teams?: ApplicationTeams[]
+  idea?: IdeasMarket
 }
 
 interface MarketInfoProps {
   idea: IdeasMarket
+}
+
+interface MarketSkillsradarChartsProps {
+  skills?: Skill[]
+  skillsTeam?: Skill[]
 }
 
 export {
@@ -27,4 +34,5 @@ export {
   MarketModalEmits,
   MarketAcceptTeamProps,
   MarketInfoProps,
+  MarketSkillsradarChartsProps,
 }

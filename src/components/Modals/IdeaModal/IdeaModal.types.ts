@@ -14,6 +14,7 @@ interface IdeaActionsProps {
 
 interface IdeaCommentsProps {
   idea: Idea | IdeasMarket
+  news?: boolean
 
   ideaModalRef: VueElement | null
 }

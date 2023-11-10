@@ -19,7 +19,8 @@ import { Skill } from '@Domain/Skill'
 import getSkillsStyle from '@Utils/getSkillsStyle'
 import RequestTeamsServise from '@Services/RequestTeamsServise'
 
-const teams = defineModel<RequestTeams[]>({ required: true })
+const teams = defineModel<RequestTeams[]>('teams', { required: true })
+const compareTeam = defineModel<Skill[]>('compareTeam')
 
 const router = useRouter()
 const route = useRoute()
@@ -134,6 +135,18 @@ function openLetterTeam(team: RequestTeams) {
 function closeLetterTeam() {
   isOpenedModal.value = false
 }
+
+const checkedIdeasActions: CheckedDataAction<RequestTeams>[] = [
+  {
+    label: 'Сравнить компетенции',
+    className: 'btn-primary',
+    click: sendIdeasToMarket,
+  },
+]
+
+function sendIdeasToMarket(teams: RequestTeams[]) {
+  compareTeam.value = teams[0].skills
+}
 </script>
 
 <template>
@@ -143,6 +156,7 @@ function closeLetterTeam() {
     :data="teams"
     search-by="name"
     :dropdown-actions-menu="dropdownIdeasActions"
+    :checked-data-actions="checkedIdeasActions"
   />
   <LetterModal
     v-if="currentTeam"

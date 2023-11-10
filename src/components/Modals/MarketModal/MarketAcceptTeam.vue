@@ -4,7 +4,6 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import RequestTeams from '@Domain/RequestTeams'
-import { watch } from 'vue'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 import RequestTeamsServise from '@Services/RequestTeamsServise'
@@ -44,8 +43,8 @@ async function deleteRequestTeams(team: RequestTeams) {
 
 <template>
   <div class="market-info bg-white rounded w-100 p-3">
-    <Typography class-name="border-bottom text-secondary d-block"
-      >Принятые заявки
+    <Typography class-name="border-bottom text-secondary d-block">
+      Принятые заявки
     </Typography>
     <div
       v-for="team in filterTeams(teams)"
@@ -57,6 +56,7 @@ async function deleteRequestTeams(team: RequestTeams) {
         <Icon class-name="bi bi-eye" />
       </Button>
       <Button
+        v-if="user?.email == idea?.initiator.email"
         class="btn-outline-danger"
         append-icon-name="bi bi-x"
         @click="deleteRequestTeams(team)"

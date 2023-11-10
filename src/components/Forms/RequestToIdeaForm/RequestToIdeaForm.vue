@@ -11,6 +11,7 @@ import Typography from '@Components/Typography/Typography.vue'
 
 import RequestTeams from '@Domain/RequestTeams'
 import Team from '@Domain/Team'
+import { Skill } from '@Domain/Skill'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -21,6 +22,7 @@ defineProps<RequestToIdeaProps>()
 
 const requestTeams = defineModel<RequestTeams[]>('requestTeams', { required: true })
 const teams = defineModel<Team[]>('teams', { required: true })
+const compareTeam = defineModel<Skill[]>('compareTeam')
 
 function filterTeamOwner() {
   return teams.value.filter((team) => team.owner.email == user.value?.email)
@@ -51,6 +53,8 @@ function sendOnPageCreateTeam() {
           :idea="idea"
           v-model:teams="teams"
           v-model:requestTeams="requestTeams"
+          v-model:compareTeam="compareTeam"
+          :isDisabledButtonSkills="isDisabledButtonSkills"
         />
       </div>
     </div>
