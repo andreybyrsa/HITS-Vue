@@ -8,8 +8,16 @@ interface TeamFormProps {
   mode: mode
 }
 
+interface SkillsForRadar {
+  label: string
+  skills: Skill[]
+}
+
 interface SkillsRadarChartsProps {
-  skills?: Skill[]
+  skills: SkillsForRadar[]
+  isNotPlaceholder?: boolean
+
+  skillsIdea?: Skill[]
   skillsTeam?: Skill[]
   className?: string
 }
@@ -18,4 +26,4 @@ interface TeamProps {
   mode: mode
 }
 
-export { TeamFormProps, SkillsRadarChartsProps, TeamProps }
+export { TeamFormProps, SkillsRadarChartsProps, TeamProps, SkillsForRadar }

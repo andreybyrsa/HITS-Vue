@@ -25,14 +25,20 @@ const { user } = storeToRefs(userStore)
 
 const emit = defineEmits<TeamDescriptionEmits>()
 
-const radarChartsSkills = ref<Skill[]>([])
+const radarChartsSkills = ref<SkillsForRadar[]>([
+  { label: 'Компетенции идеи', skills: [] },
+  {
+    label: 'Компетенции команды',
+    skills: [],
+  },
+])
 
 onMounted(() => {
   const membersSkills: Skill[] = []
 
   props.team.members.forEach((member) => membersSkills.push(...member.skills))
 
-  radarChartsSkills.value = membersSkills
+  radarChartsSkills.value[1].skills = [...membersSkills]
 })
 
 const handleKick = async (member: TeamMember, teamId: number) => {

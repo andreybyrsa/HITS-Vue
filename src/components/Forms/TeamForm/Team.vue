@@ -10,7 +10,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
-import { TeamProps } from '@Components/Forms/TeamForm/TeamForm.types'
+import { SkillsForRadar, TeamProps } from '@Components/Forms/TeamForm/TeamForm.types'
 
 import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
@@ -33,7 +33,15 @@ const owner = ref<TeamMember | undefined>(useFieldValue<TeamMember>('owner').val
 const leader = ref<TeamMember | undefined>(useFieldValue<TeamMember>('leader').value)
 const members = ref<TeamMember[]>(useFieldValue<TeamMember[]>('members').value ?? [])
 
-const radarChartsSkills = ref<Skill[]>([])
+// const radarChartsSkills = ref<Skill[]>([])
+
+const radarChartsSkills = ref<SkillsForRadar[]>([
+  { label: 'Компетенции идеи', skills: [] },
+  {
+    label: 'Компетенции команды',
+    skills: [],
+  },
+])
 
 const { value: teamSkills } = useField<Skill[]>('skills', undefined, {
   validateOnMount: false,
@@ -102,7 +110,7 @@ watchImmediate(teamUsers, (currentTeam) => {
   teamSkills.value = [
     ...new Map(membersSkills.map((skill) => [skill.id, skill])).values(),
   ]
-  radarChartsSkills.value = membersSkills
+  radarChartsSkills.value[1].skills = [...membersSkills]
 })
 
 watch(
@@ -213,7 +221,7 @@ function getMemberColor(member: TeamMember) {
 
       <SkillsRadarCharts
         class-name="w-50"
-        :skills-team="radarChartsSkills"
+        :skills="radarChartsSkills"
       />
     </div>
   </div>

@@ -23,9 +23,16 @@ interface MarketInfoProps {
   idea: IdeasMarket
 }
 
-interface MarketSkillsradarChartsProps {
-  skills?: Skill[]
+interface MarketRightSideProps {
+  idea: IdeasMarket
+  skills: Skill[]
   skillsTeam?: Skill[]
+}
+
+interface MarketSkillsradarChartsProps {
+  skills: Skill[]
+  skillsTeam?: Skill[]
+  idea: IdeasMarket
 }
 
 export {
@@ -35,4 +42,5 @@ export {
   MarketAcceptTeamProps,
   MarketInfoProps,
   MarketSkillsradarChartsProps,
+  MarketRightSideProps,
 }

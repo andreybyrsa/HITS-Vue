@@ -18,7 +18,6 @@ import RequestTeamsServise from '@Services/RequestTeamsServise'
 import Team from '@Domain/Team'
 import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
-import { Skill } from '@Domain/Skill'
 
 const props = defineProps<RequestTeamCollapseProps>()
 
@@ -28,7 +27,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const requestTeams = defineModel<RequestTeams[]>('requestTeams', { required: true })
-const compareTeam = defineModel<Skill[]>('compareTeam')
+const skillsTeam = defineModel<Team[]>('skillsTeam', { required: true })
 
 const letter = ref<string>('')
 
@@ -81,8 +80,8 @@ function navigateToTeamModal(team: Team, idea: IdeasMarket) {
   return router.push(`/market/${idea.id}/${team.id}`)
 }
 
-function compareSkills(skills: Skill[]) {
-  compareTeam.value = skills
+function compareSkills(team: Team) {
+  skillsTeam.value = [team]
 }
 </script>
 
@@ -112,7 +111,16 @@ function compareSkills(skills: Skill[]) {
         <div class="team-request-collapse__info py-1">
           <div class="w-100 d-flex p-2">
             <div class="w-50">
-              <div class="text-primary pb-1">Состав:</div>
+              <div class="d-flex align-items-center text-primary pb-1">
+                <div>Состав:</div>
+                <Button
+                  class-name="btn-link"
+                  @click="navigateToTeamModal(team, idea)"
+                  v-if="!isDisabledButtonSkills"
+                >
+                  Профиль
+                </Button>
+              </div>
               <div class="d-flex flex-wrap gap-2">
                 <div
                   class="p-1 rounded bg-light border"
@@ -124,7 +132,16 @@ function compareSkills(skills: Skill[]) {
               </div>
             </div>
             <div class="w-50 border-start ps-3 pb-1">
-              <div class="text-primary pb-1">Компетенции:</div>
+              <div class="d-flex align-items-center text-primary pb-1">
+                <div>Компетенции:</div>
+                <Button
+                  v-if="!isDisabledButtonSkills"
+                  class-name="btn-link"
+                  @click="compareSkills(team)"
+                >
+                  Cравнить
+                </Button>
+              </div>
               <div class="d-flex flex-wrap gap-2">
                 <Skills :skills="team.skills" />
               </div>
@@ -146,13 +163,6 @@ function compareSkills(skills: Skill[]) {
               @click="sendRequestTeam()"
             >
               Подать заявку
-            </Button>
-            <Button
-              v-if="!isDisabledButtonSkills"
-              class-name="btn-primary"
-              @click="compareSkills(team.skills)"
-            >
-              Сравнить компетенции
             </Button>
           </div>
         </div>

@@ -23,6 +23,11 @@ const frameworkSkills = ref<SkillsRadarChartType>()
 const databaseSkills = ref<SkillsRadarChartType>()
 const devopsSkills = ref<SkillsRadarChartType>()
 
+const languageSkillsIdea = ref<SkillsRadarChartType>()
+const frameworkSkillsIdea = ref<SkillsRadarChartType>()
+const databaseSkillsIdea = ref<SkillsRadarChartType>()
+const devopsSkillsIdea = ref<SkillsRadarChartType>()
+
 const languageSkillsTeam = ref<SkillsRadarChartType>()
 const frameworkSkillsTeam = ref<SkillsRadarChartType>()
 const databaseSkillsTeam = ref<SkillsRadarChartType>()
@@ -31,10 +36,10 @@ const devopsSkillsTeam = ref<SkillsRadarChartType>()
 const radarChartPlaceholder = ref('Вычисление диаграм')
 
 const skillsData = computed(() => [
-  { data: languageSkills.value },
-  { data: frameworkSkills.value },
-  { data: databaseSkills.value },
-  { data: devopsSkills.value },
+  { data: languageSkillsIdea.value },
+  { data: frameworkSkillsIdea.value },
+  { data: databaseSkillsIdea.value },
+  { data: devopsSkillsIdea.value },
 ])
 
 const skillsDataTeam = computed(() => [
@@ -47,27 +52,35 @@ const skillsDataTeam = computed(() => [
 const allSkills = computed(() => [
   {
     data:
-      languageSkills.value && languageSkillsTeam.value
-        ? getAllSkillsData(languageSkills.value, languageSkillsTeam.value)
-        : languageSkills.value,
+      languageSkillsIdea.value && languageSkillsTeam.value
+        ? getAllSkillsData(languageSkillsIdea.value, languageSkillsTeam.value)
+        : languageSkillsIdea.value
+        ? languageSkillsIdea.value
+        : languageSkillsTeam.value,
   },
   {
     data:
-      frameworkSkills.value && frameworkSkillsTeam.value
-        ? getAllSkillsData(frameworkSkills.value, frameworkSkillsTeam.value)
-        : frameworkSkills.value,
+      frameworkSkillsIdea.value && frameworkSkillsTeam.value
+        ? getAllSkillsData(frameworkSkillsIdea.value, frameworkSkillsTeam.value)
+        : frameworkSkillsIdea.value
+        ? frameworkSkillsIdea.value
+        : frameworkSkillsTeam.value,
   },
   {
     data:
-      databaseSkills.value && databaseSkillsTeam.value
-        ? getAllSkillsData(databaseSkills.value, databaseSkillsTeam.value)
-        : databaseSkills.value,
+      databaseSkillsIdea.value && databaseSkillsTeam.value
+        ? getAllSkillsData(databaseSkillsIdea.value, databaseSkillsTeam.value)
+        : databaseSkillsIdea.value
+        ? databaseSkillsIdea.value
+        : databaseSkillsTeam.value,
   },
   {
     data:
-      devopsSkills.value && devopsSkillsTeam.value
-        ? getAllSkillsData(devopsSkills.value, devopsSkillsTeam.value)
-        : devopsSkills.value,
+      devopsSkillsIdea.value && devopsSkillsTeam.value
+        ? getAllSkillsData(devopsSkillsIdea.value, devopsSkillsTeam.value)
+        : devopsSkillsIdea.value
+        ? devopsSkillsIdea.value
+        : devopsSkillsTeam.value,
   },
 ])
 
@@ -202,13 +215,13 @@ function getAllSkillsData(
   skills: SkillsRadarChartType,
   skillsTeam: SkillsRadarChartType,
 ) {
-  const labelsSkills = ref<string[]>([])
+  const labelsSkillsIdea = ref<string[]>([])
   const labelsSkillsTeam = ref<string[]>([])
 
-  if (skills?.labels) labelsSkills.value = skills.labels
+  if (skills?.labels) labelsSkillsIdea.value = skills.labels
   if (skillsTeam.labels) labelsSkillsTeam.value = skillsTeam.labels
 
-  const arr = ref<string[]>([...labelsSkills.value, ...labelsSkillsTeam.value])
+  const arr = ref<string[]>([...labelsSkillsIdea.value, ...labelsSkillsTeam.value])
   const label = [...new Set(arr.value)]
 
   return {
@@ -223,11 +236,31 @@ function getAllSkillsData(
 watchImmediate(
   () => props.skills,
   (currentSkills) => {
+    console.log(currentSkills[1].skills)
+    languageSkillsIdea.value = getSkillsData(currentSkills[0].skills, 'LANGUAGE')
+    frameworkSkillsIdea.value = getSkillsData(currentSkills[0].skills, 'FRAMEWORK')
+    databaseSkillsIdea.value = getSkillsData(currentSkills[0].skills, 'DATABASE')
+    devopsSkillsIdea.value = getSkillsData(currentSkills[0].skills, 'DEVOPS')
+
+    languageSkillsTeam.value = getSkillsDataTeam(currentSkills[1].skills, 'LANGUAGE')
+    frameworkSkillsTeam.value = getSkillsDataTeam(
+      currentSkills[1].skills,
+      'FRAMEWORK',
+    )
+    databaseSkillsTeam.value = getSkillsDataTeam(currentSkills[1].skills, 'DATABASE')
+    devopsSkillsTeam.value = getSkillsDataTeam(currentSkills[1].skills, 'DEVOPS')
+  },
+  { deep: true },
+)
+
+watchImmediate(
+  () => props.skillsIdea,
+  (currentSkills) => {
     if (currentSkills) {
-      languageSkills.value = getSkillsData(currentSkills, 'LANGUAGE')
-      frameworkSkills.value = getSkillsData(currentSkills, 'FRAMEWORK')
-      databaseSkills.value = getSkillsData(currentSkills, 'DATABASE')
-      devopsSkills.value = getSkillsData(currentSkills, 'DEVOPS')
+      languageSkillsIdea.value = getSkillsData(currentSkills, 'LANGUAGE')
+      frameworkSkillsIdea.value = getSkillsData(currentSkills, 'FRAMEWORK')
+      databaseSkillsIdea.value = getSkillsData(currentSkills, 'DATABASE')
+      devopsSkillsIdea.value = getSkillsData(currentSkills, 'DEVOPS')
     }
   },
 )
@@ -260,7 +293,7 @@ const intervalId = setInterval(() => {
 <template>
   <div :class="['radar-charts', ...ButtonClassName]">
     <div
-      v-for="(skill, index) in props.skills ? allSkills : skillsDataTeam"
+      v-for="(skill, index) in allSkills"
       :key="index"
     >
       <RadarChart
@@ -273,18 +306,17 @@ const intervalId = setInterval(() => {
         v-else
         class="radar-charts__placeholder-wrapper"
       >
-        <div class="radar-charts__placeholder placeholder-glow">
+        <div
+          v-if="!isNotPlaceholder"
+          class="radar-charts__placeholder placeholder-glow"
+        >
           <div class="placeholder col-12 h-100 rounded" />
         </div>
       </div>
     </div>
 
     <Typography
-      v-if="
-        props.skills
-          ? skillsData.every((skill) => skill.data === undefined)
-          : skillsDataTeam.every((skill) => skill.data === undefined)
-      "
+      v-if="allSkills.every((skill) => skill.data === undefined)"
       class-name="w-100 text-center"
     >
       {{ radarChartPlaceholder }}

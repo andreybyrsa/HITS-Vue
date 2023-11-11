@@ -9,7 +9,6 @@ import ReviewIdeaRequestTable from '@Components/Tables/ReviewIdeaRequestTable/Re
 import Typography from '@Components/Typography/Typography.vue'
 
 import RequestTeams from '@Domain/RequestTeams'
-import { Skill } from '@Domain/Skill'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -17,7 +16,7 @@ const { user } = storeToRefs(userStore)
 defineProps<ReviewIdeaRequestsFormProps>()
 
 const teams = defineModel<RequestTeams[]>('requestTeams', { required: true })
-const compareTeam = defineModel<Skill[]>('compareTeam')
+const skillsRequestTeam = defineModel<RequestTeams[]>('skillsRequestTeam')
 
 function filterTeamsAccepted(teams: RequestTeams[]) {
   return teams.filter((elem) => elem.accepted === false)
@@ -36,7 +35,7 @@ function filterTeamsAccepted(teams: RequestTeams[]) {
     <div class="review-request-form__table">
       <ReviewIdeaRequestTable
         v-model:teams="teams"
-        v-model:compareTeam="compareTeam"
+        v-model:skillsRequestTeam="skillsRequestTeam"
       />
     </div>
   </div>

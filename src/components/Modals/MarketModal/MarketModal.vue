@@ -5,12 +5,11 @@ import { storeToRefs } from 'pinia'
 
 import { MarketModalProps } from '@Components/Modals/MarketModal/MarketModal.types'
 
-import MarketInfo from '@Components/Modals/MarketModal/MarketInfo.vue'
 import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.vue'
 import MarketAcceptTeam from '@Components/Modals/MarketModal/MarketAcceptTeam.vue'
 import MarketPlaceholder from '@Components/Modals/MarketModal/MarketPlaceholder.vue'
-import MarketSkillsRadarCharts from '@Components/Modals/MarketModal/MarketSkillsRadarCharts.vue'
+import MarketRightSide from '@Components/Modals/MarketModal/MarketRightSide.vue'
 
 import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
 import ReviewIdeaRequestsForm from '@Components/Forms/ReviewIdeaRequestsForm/ReviewIdeaRequestsForm.vue'
@@ -29,7 +28,6 @@ import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
-import { Skill } from '@Domain/Skill'
 
 defineProps<MarketModalProps>()
 
@@ -44,6 +42,8 @@ const router = useRouter()
 const idea = ref<IdeasMarket>()
 const requestTeams = ref<RequestTeams[]>()
 const teams = ref<Team[]>()
+const skillsRequestTeam = ref<RequestTeams[]>()
+const skillsTeam = ref<Team[]>([])
 
 function checkResponseStatus<T>(
   data: RequestResult<T>,
@@ -94,8 +94,6 @@ function closeMarketModal() {
 
   useCommentsStore().disconnectRsocket()
 }
-
-const compareTeam = ref<Skill[]>()
 </script>
 
 <template>
@@ -118,19 +116,14 @@ const compareTeam = ref<Skill[]>()
         <ReviewIdeaRequestsForm
           :idea="idea"
           v-model:requestTeams="requestTeams"
-          v-model:compareTeam="compareTeam"
+          v-model:skillsRequestTeam="skillsRequestTeam"
         />
 
         <RequestToIdeaForm
           v-model:teams="teams"
           :idea="idea"
           v-model:requestTeams="requestTeams"
-          v-model:compareTeam="compareTeam"
-        />
-
-        <MarketAcceptTeam
-          v-model="requestTeams"
-          :idea="idea"
+          v-model:skillsTeam="skillsTeam"
         />
 
         <IdeaComments
@@ -141,12 +134,17 @@ const compareTeam = ref<Skill[]>()
       </div>
 
       <div class="market-modal__right-side w-25 rounded">
-        <MarketSkillsRadarCharts
+        <MarketRightSide
+          :idea="idea"
           :skills="idea.stack"
-          :skills-team="compareTeam"
+          v-model:skillsRequestTeam="skillsRequestTeam"
+          v-model:skillsTeam="skillsTeam"
         />
 
-        <MarketInfo :idea="idea" />
+        <MarketAcceptTeam
+          v-model="requestTeams"
+          :idea="idea"
+        />
       </div>
     </div>
     <MarketPlaceholder v-else />

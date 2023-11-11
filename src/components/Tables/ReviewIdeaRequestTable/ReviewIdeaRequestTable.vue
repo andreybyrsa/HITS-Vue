@@ -3,11 +3,7 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 
-import {
-  TableColumn,
-  CheckedDataAction,
-  DropdownMenuAction,
-} from '@Components/Table/Table.types'
+import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
 
 import Table from '@Components/Table/Table.vue'
 import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
@@ -20,7 +16,7 @@ import getSkillsStyle from '@Utils/getSkillsStyle'
 import RequestTeamsServise from '@Services/RequestTeamsServise'
 
 const teams = defineModel<RequestTeams[]>('teams', { required: true })
-const compareTeam = defineModel<Skill[]>('compareTeam')
+const skillsRequestTeam = defineModel<RequestTeams[]>('skillsRequestTeam')
 
 const router = useRouter()
 const route = useRoute()
@@ -28,9 +24,8 @@ const route = useRoute()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-function filterTeamsAccepted(teams: RequestTeams[]) {
-  return teams.filter((elem) => elem.accepted === true)
-}
+const isOpenedModal = ref<boolean>(false)
+const currentTeam = ref<RequestTeams>()
 
 const requestsTableColumns: TableColumn<RequestTeams>[] = [
   {
@@ -125,8 +120,6 @@ async function acceptRequestTeam(team: RequestTeams) {
   }
 }
 
-const isOpenedModal = ref<boolean>(false)
-const currentTeam = ref<RequestTeams>()
 function openLetterTeam(team: RequestTeams) {
   isOpenedModal.value = true
   currentTeam.value = team
@@ -134,18 +127,6 @@ function openLetterTeam(team: RequestTeams) {
 
 function closeLetterTeam() {
   isOpenedModal.value = false
-}
-
-const checkedIdeasActions: CheckedDataAction<RequestTeams>[] = [
-  {
-    label: 'Сравнить компетенции',
-    className: 'btn-primary',
-    click: sendIdeasToMarket,
-  },
-]
-
-function sendIdeasToMarket(teams: RequestTeams[]) {
-  compareTeam.value = teams[0].skills
 }
 </script>
 
@@ -156,7 +137,7 @@ function sendIdeasToMarket(teams: RequestTeams[]) {
     :data="teams"
     search-by="name"
     :dropdown-actions-menu="dropdownIdeasActions"
-    :checked-data-actions="checkedIdeasActions"
+    v-model="skillsRequestTeam"
   />
   <LetterModal
     v-if="currentTeam"
