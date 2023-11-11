@@ -116,7 +116,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
         </Typography>
 
         <Button
-          class-name="btn-close"
+          variant="close"
           @click="emit('close-modal')"
         ></Button>
       </div>
@@ -141,7 +141,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
         <Button
           v-if="skillModalMode === 'CREATE'"
           type="submit"
-          class-name="btn-primary w-100"
+          variant="primary"
           @click="handleCreateSkill"
         >
           Создать
@@ -149,7 +149,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
         <Button
           v-if="skillModalMode === 'UPDATE'"
           type="submit"
-          class-name="btn-primary w-100"
+          variant="primary"
           @click="handleUpdateSkill"
         >
           Сохранить
@@ -179,7 +179,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
     @include flexible(center, space-between);
   }
   &__inputs {
-    @include flexible(center, flex-start, column, $gap: 12px);
+    @include flexible(stretch, flex-start, column, $gap: 12px);
   }
 }
 

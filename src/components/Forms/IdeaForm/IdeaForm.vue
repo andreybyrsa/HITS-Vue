@@ -13,8 +13,6 @@ import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
 import IdeaFormSubmit from '@Components/Forms/IdeaForm/IdeaFormSubmit.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
 
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
-
 import { Idea, IdeaSkills } from '@Domain/Idea'
 import { Skill } from '@Domain/Skill'
 
@@ -211,7 +209,7 @@ async function saveIdeaSkills(
 </script>
 
 <template>
-  <FormLayout class-name="w-100 h-100 overflow-auto">
+  <form class="idea-form p-3 bg-white w-100 h-100 overflow-auto">
     <Typography class-name="fs-2 text-primary">
       {{ title }}
     </Typography>
@@ -234,5 +232,11 @@ async function saveIdeaSkills(
         @on-save-draft="handleSaveDraftIdea"
       />
     </div>
-  </FormLayout>
+  </form>
 </template>
+
+<style lang="scss" scoped>
+.idea-form {
+  @include flexible(center, flex-start, column, $gap: 12px);
+}
+</style>

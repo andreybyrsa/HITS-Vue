@@ -146,13 +146,13 @@ const routes: RouteRecordRaw[] = [
     component: DevView,
   },
   {
-    path: '/:pathMatch(.*)*',
-    redirect: { name: 'error' },
-  },
-  {
     path: '/error',
     name: 'error',
     component: ErrorView,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: { name: 'error' },
   },
 ]
 

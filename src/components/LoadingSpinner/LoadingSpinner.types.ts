@@ -2,7 +2,7 @@ interface LoadingSpinnerProps {
   isLoading: boolean
 
   className?: string
-  type?:
+  variant?:
     | 'primary'
     | 'secondary'
     | 'success'

@@ -7,7 +7,7 @@ const props = defineProps<LoadingSpinnerProps>()
 
 const SpinnerClassName = computed(() => [
   'spinner-border',
-  { [`text-${props.type}`]: props.type },
+  { [`text-${props.variant}`]: props.variant },
   { [`spinner-border-${props.size}`]: props.size },
   props.className,
 ])

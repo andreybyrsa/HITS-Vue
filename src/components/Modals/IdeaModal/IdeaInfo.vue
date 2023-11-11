@@ -122,7 +122,7 @@ function getIdeaStatus() {
     </div>
 
     <Button
-      class-name="btn-primary w-100"
+      variant="primary"
       @click="copyLink"
     >
       {{ isCopiedLink ? 'Ссылка скопирована!' : 'Поделиться идеей' }}

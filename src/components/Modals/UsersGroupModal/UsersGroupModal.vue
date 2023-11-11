@@ -195,7 +195,7 @@ const handleUpdateGroup = handleSubmit(async (values) => {
             }}
           </Typography>
           <Button
-            class-name="btn-close"
+            variant="close"
             @click="emit('close-modal')"
           ></Button>
         </div>
@@ -225,14 +225,14 @@ const handleUpdateGroup = handleSubmit(async (values) => {
 
         <Button
           v-if="usersGroupModalMode === 'CREATE'"
-          class-name="btn-primary w-100"
+          variant="primary"
           @click="handleCreateGroup"
         >
           Добавить
         </Button>
         <Button
           v-else
-          class-name="btn-primary"
+          variant="primary"
           @click="handleUpdateGroup"
         >
           Сохранить изменения

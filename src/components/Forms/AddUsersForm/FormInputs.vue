@@ -141,7 +141,8 @@ function getError(email: string, index: number) {
 
       <Button
         v-if="fileds.length > 1"
-        class-name="btn-close mt-2"
+        variant="close"
+        class-name="mt-2"
         @click="emit('remove-email', index)"
       ></Button>
     </div>

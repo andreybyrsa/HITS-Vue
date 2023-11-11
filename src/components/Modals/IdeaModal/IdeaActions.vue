@@ -96,7 +96,7 @@ const handleSendToConfirmation = async () => {
   >
     <Button
       v-if="getAccessToEditByInitiator()"
-      class-name="btn-light"
+      variant="light"
       @click="router.push(`/ideas/update/${idea.id}`)"
     >
       Редактировать
@@ -104,7 +104,7 @@ const handleSendToConfirmation = async () => {
 
     <Button
       v-if="getAccessToEditByInitiator()"
-      class-name="btn-success"
+      variant="success"
       @click="handleSendToApproval"
     >
       Отправить на согласование
@@ -112,7 +112,7 @@ const handleSendToConfirmation = async () => {
 
     <Button
       v-if="getAccessToApproval()"
-      class-name="btn-danger"
+      variant="danger"
       @click="handleSendToEditing"
     >
       Отправить на доработку
@@ -120,7 +120,7 @@ const handleSendToConfirmation = async () => {
 
     <Button
       v-if="getAccessToApproval()"
-      class-name="btn-success"
+      variant="success"
       @click="handleSendToConfirmation"
     >
       Отправить на утверждение

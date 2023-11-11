@@ -7,7 +7,11 @@ import LoadingSpinner from '@Components/LoadingSpinner/LoadingSpinner.vue'
 
 const props = defineProps<ButtonProps>()
 
-const ButtonClassName = computed(() => ['btn d-flex', props.className])
+const ButtonClassName = computed(() => [
+  'btn d-flex',
+  { [`btn-${props.variant}`]: props.variant },
+  props.className,
+])
 </script>
 
 <template>

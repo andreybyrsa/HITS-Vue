@@ -180,14 +180,14 @@ function getCurrentTooltip(select: RatingSelect) {
     >
       <Button
         type="submit"
-        class-name="btn-primary"
+        variant="primary"
         @click="handleConfirmRating"
       >
         Утвердить
       </Button>
       <Button
         type="submit"
-        :class-name="isSavedRating ? 'btn-success' : 'btn-primary'"
+        :variant="isSavedRating ? 'success' : 'primary'"
         @click="handleSaveRating"
       >
         Сохранить форму

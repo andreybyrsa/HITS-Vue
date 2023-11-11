@@ -10,17 +10,17 @@ const emit = defineEmits<IdeaFormSubmitEmits>()
 </script>
 
 <template>
-  <div class="d-flex justify-content-center align-items-center">
+  <div class="d-flex justify-content-center align-items-center gap-3">
     <Button
       v-if="idea.status !== 'ON_EDITING'"
-      class-name="btn-primary px-5 d-block mx-2"
+      variant="primary"
       @click="emit('on-save-draft')"
     >
-      Сохранить
+      Сохранить черновик
     </Button>
 
     <Button
-      class-name="btn-success d-block mx-2"
+      variant="success"
       @click="emit('on-send-on-approval')"
     >
       Отправить на согласование

@@ -59,7 +59,9 @@ const handleUpdatePassword = handleSubmit(async (values) => {
       v-if="isOpened"
       class="new-password-modal p-3 rounded"
     >
-      <Typography class-name="fs-3 text-primary">Новый пароль</Typography>
+      <Typography class-name="fs-3 text-primary text-center">
+        Новый пароль
+      </Typography>
 
       <Input
         v-for="input in newPasswordModalInputs"
@@ -75,7 +77,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
       </Input>
 
       <Button
-        class-name="btn-primary w-100"
+        variant="primary"
         @click="handleUpdatePassword"
       >
         Изменить пароль
@@ -90,7 +92,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
   background-color: $white-color;
 
   @include flexible(
-    center,
+    stretch,
     flex-start,
     column,
     $align-self: center,

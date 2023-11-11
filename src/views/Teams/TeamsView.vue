@@ -57,7 +57,7 @@ function navigateToCreateTeamPage() {
       <div class="teams-page__header w-100">
         <Typography class-name="fs-2 text-primary">Список команд</Typography>
         <Button
-          class-name="btn-primary"
+          variant="primary"
           prepend-icon-name="bi bi-plus-lg"
           @click="navigateToCreateTeamPage"
         >
@@ -76,13 +76,15 @@ function navigateToCreateTeamPage() {
   </PageLayout>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .teams-page {
   &__header {
     @include flexible(center, space-between);
   }
 
   &__content {
+    overflow-y: scroll;
+
     @include flexible(stretch, flex-start, column);
   }
 }

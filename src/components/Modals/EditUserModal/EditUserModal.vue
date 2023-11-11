@@ -99,7 +99,7 @@ const handleEditUser = handleSubmit(async (values) => {
         <Typography class-name="fs-3 text-primary">Редактировать</Typography>
 
         <Button
-          class-name="btn-close"
+          variant="close"
           @click="emit('close-modal')"
         ></Button>
       </div>
@@ -122,7 +122,8 @@ const handleEditUser = handleSubmit(async (values) => {
           </Input>
 
           <Button
-            :class-name="errors.roles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'"
+            class-name="px-2 py-0"
+            :variant="errors.roles ? 'outline-danger' : 'mute'"
             append-icon-name="bi bi-chevron-down"
             v-collapse="'editUserModalCollapse'"
           >
@@ -150,7 +151,7 @@ const handleEditUser = handleSubmit(async (values) => {
 
         <Button
           type="submit"
-          class-name="btn-primary w-100"
+          variant="primary"
           @click="handleEditUser"
         >
           Сохранить изменения
@@ -166,7 +167,7 @@ const handleEditUser = handleSubmit(async (values) => {
   background-color: $white-color;
 
   @include flexible(
-    flex-end,
+    stretch,
     flex-start,
     column,
     $align-self: center,

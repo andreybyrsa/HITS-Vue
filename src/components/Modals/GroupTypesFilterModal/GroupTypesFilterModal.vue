@@ -59,7 +59,7 @@ function handleSetFilters() {
       <div class="filter-modal__header">
         <Typography class-name="fs-3 text-primary">Сортировать по ролям </Typography>
         <Button
-          class-name="btn-close"
+          variant="close"
           @click="emit('close-modal')"
         ></Button>
       </div>
@@ -80,7 +80,8 @@ function handleSetFilters() {
       </ul>
 
       <Button
-        class-name="btn-primary w-100"
+        variant="primary"
+        class-name="w-100"
         @click="handleSetFilters"
       >
         Применить

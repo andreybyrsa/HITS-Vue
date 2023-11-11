@@ -60,7 +60,7 @@ const handleRegister = handleSubmit(async (values) => {
 
 <template>
   <FormLayout>
-    <Typography class-name="fs-3 text-primary">Регистрация</Typography>
+    <Typography class-name="fs-3 text-primary text-center">Регистрация</Typography>
 
     <Input
       v-for="input in registerInputs"
@@ -79,7 +79,8 @@ const handleRegister = handleSubmit(async (values) => {
 
     <Button
       type="submit"
-      class-name="btn-primary w-100"
+      variant="primary"
+      class-name="w-100"
       @click="handleRegister"
     >
       Зарегистрироваться
