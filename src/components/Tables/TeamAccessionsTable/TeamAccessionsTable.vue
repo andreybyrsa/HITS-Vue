@@ -132,9 +132,9 @@ function checkDeleteTeamAccession(teamAccession: TeamAccession) {
   const currentUser = user.value
   if (currentUser) {
     return (
-      currentUser.id == teamAccession.team.owner.id ||
+      currentUser.id == teamAccession.team.owner.userId ||
       currentUser.role == 'ADMIN' ||
-      teamAccession.inviter?.id == currentUser.id
+      teamAccession.inviter?.userId == currentUser.id
     )
   }
   return false
@@ -257,7 +257,7 @@ async function handleSendInviteAgain() {
     if (responsingTeamRequestIndex !== -1 && responsingTeamRequestIndex) {
       teamAccessions.value?.splice(responsingTeamRequestIndex, 1)
       const inviter =
-        currentRequest.team.leader && currentRequest.team.leader.id == id
+        currentRequest.team.leader && currentRequest.team.leader.userId == id
           ? currentRequest.team.leader
           : currentRequest.team.owner
       currentRequest.inviter = inviter

@@ -82,7 +82,7 @@ function shareButton(id: number) {
   <Button
     v-if="
       team.owner.userId != user?.id &&
-      !team.members.find((member) => member.userId == user?.id)
+      team.members.find((member) => member.userId == user?.id)
     "
     class-name="bi bi-box-arrow-left btn-danger w-100"
     @click="emits('openModal', team.id, accessionModal)"

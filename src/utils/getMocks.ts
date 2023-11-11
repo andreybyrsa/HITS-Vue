@@ -130,7 +130,7 @@ function getMocks(): Mocks {
   const teamMember: TeamMember[] = [
     {
       email: 'andrey@mail.com',
-      id: 33,
+      userId: 33,
       firstName: 'Андрей',
       lastName: 'Бырса',
 
@@ -138,7 +138,7 @@ function getMocks(): Mocks {
     },
     {
       email: 'timyr@mail.com',
-      id: 343,
+      userId: 343,
       firstName: 'Тимур',
       lastName: 'Минязев',
 
@@ -146,7 +146,7 @@ function getMocks(): Mocks {
     },
     {
       email: 'kirill.vlasov.05@inbox.ru',
-      id: 3,
+      userId: 3,
       firstName: 'Кирилл',
       lastName: 'Власов',
 
@@ -167,7 +167,7 @@ function getMocks(): Mocks {
     },
     {
       email: 'maga@mail.com',
-      id: 345,
+      userId: 345,
       firstName: 'Мамедага',
       lastName: 'Байрамов',
 
@@ -708,7 +708,7 @@ function getMocks(): Mocks {
       targetEmail: '1wgwrgw2@mail.com',
       targetRegistered: true,
       inviter: {
-        id: 0,
+        userId: 0,
         email: 'test1@gmail.com',
         firstName: 'Админ',
         lastName: 'Админ',
@@ -723,7 +723,7 @@ function getMocks(): Mocks {
       targetRegistered: false,
       team: teams[0],
       inviter: {
-        id: 0,
+        userId: 0,
         email: 'test1@gmail.com',
         firstName: 'Админ',
         lastName: 'Админ',

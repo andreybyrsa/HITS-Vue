@@ -201,18 +201,14 @@ function checkDeleteTeamAction(team: Team) {
   const currentUser = user.value
 
   const { owner } = team
-  return currentUser?.role === 'ADMIN' || currentUser?.email === owner.email
+  return currentUser?.role === 'ADMIN' || currentUser?.id === owner.userId
 }
 
 function checkUpdateTeamAction(team: Team) {
   const currentUser = user.value
 
-  const { owner, leader } = team
-  return (
-    currentUser?.role === 'ADMIN' ||
-    currentUser?.email === owner.email ||
-    currentUser?.email === leader?.email
-  )
+  const { owner } = team
+  return currentUser?.role === 'ADMIN' || currentUser?.id === owner.userId
 }
 
 function checkTeamStatus(team: Team, status: FilterValue) {

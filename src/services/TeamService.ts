@@ -59,17 +59,17 @@ const getAllTeamProfiles = async (token: string): Promise<TeamMember[] | Error> 
 }
 
 const getTeamProfile = async (
-  id: number,
+  userId: number,
   token: string,
 ): Promise<TeamMember | Error> => {
   return teamMemberAxios
     .get(
-      `/team/profile/${id}`,
+      `/team/profile/${userId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { id } },
+      { params: { userId } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -274,7 +274,7 @@ const kickMember = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { id: teamId } },
+      { params: { userId: teamId } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
