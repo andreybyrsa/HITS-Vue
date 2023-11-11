@@ -9,7 +9,7 @@
         <Typography class-name="fs-2 text-primary">Список компаний</Typography>
 
         <Button
-          class-name="btn-primary"
+          variant="primary"
           prepend-icon-name="bi bi-plus-lg"
           @click="openCreatingCompanyModal"
         >

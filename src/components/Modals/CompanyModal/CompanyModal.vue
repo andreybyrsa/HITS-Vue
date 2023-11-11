@@ -42,6 +42,8 @@ const users = ref<User[]>([])
 const unselectedUsers = ref<User[]>([])
 
 const isLoadingCompany = ref(true)
+const isCreating = ref(false)
+const isUpdating = ref(false)
 
 const companyModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
@@ -129,7 +131,10 @@ const handleCreateCompany = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isCreating.value = true
     const response = await CompanyService.createCompany(values, token)
+    isCreating.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -148,7 +153,10 @@ const handleUpdateCompany = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
     const { id } = values
+
+    isUpdating.value = true
     const response = await CompanyService.updateCompany(values, id, token)
+    isUpdating.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -192,7 +200,7 @@ const handleUpdateCompany = handleSubmit(async (values) => {
             }}
           </Typography>
           <Button
-            class-name="btn-close"
+            variant="close"
             @click="emit('close-modal')"
           ></Button>
         </div>
@@ -222,14 +230,16 @@ const handleUpdateCompany = handleSubmit(async (values) => {
 
         <Button
           v-if="companyModalMode === 'CREATE'"
-          class-name="btn-primary w-100"
+          variant="primary"
+          :is-loading="isCreating"
           @click="handleCreateCompany"
         >
           Добавить
         </Button>
         <Button
           v-else
-          class-name="btn-primary"
+          variant="primary"
+          :is-loading="isUpdating"
           @click="handleUpdateCompany"
         >
           Сохранить изменения
