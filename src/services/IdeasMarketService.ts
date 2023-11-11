@@ -40,8 +40,8 @@ const fetchFavoritesIdeas = async (
 }
 
 const getIdeaMarket = async (
-  token: string,
   id: number,
+  token: string,
 ): Promise<IdeasMarket | Error> => {
   return await ideasMarketAxios
     .get(

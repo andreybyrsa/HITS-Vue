@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
+import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
@@ -16,9 +17,15 @@ import IdeasMarket from '@Domain/IdeasMarket'
 import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
+import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const ideasMarketStore = useIdeasMarketStore()
+
+const notificationsStore = useNotificationsStore()
 
 const ideas = ref<IdeasMarket[] | null>(null)
 const isAllIdeas = ref(true)
@@ -37,6 +44,28 @@ const filteredIdeas = computed(() => {
 })
 
 onMounted(getIdeas)
+
+watchImmediate(
+  () => user.value?.role,
+  async (currentRole) => {
+    const currentUser = user.value
+
+    if (currentUser?.token && currentRole) {
+      const { token } = currentUser
+
+      const response = await ideasMarketStore.getMarketIdeas(currentRole, token)
+
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+
+      ideas.value = response
+    }
+  },
+)
 
 async function getIdeas() {
   const currentUser = user.value
