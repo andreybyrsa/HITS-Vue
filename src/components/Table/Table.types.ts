@@ -47,7 +47,7 @@ interface TableColumn<DataType> {
 interface TableProps<DataType> {
   columns: TableColumn<DataType>[]
   data: DataType[]
-  searchBy?: keyof DataType
+  searchBy?: (keyof DataType)[]
   filters?: Filter<DataType>[]
   checkedDataActions?: CheckedDataAction<DataType>[]
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]

@@ -16,16 +16,14 @@ import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Comment from '@Domain/Comment'
 
 import RatingService from '@Services/RatingService'
+import IdeasService from '@Services/IdeasService'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 import useCommentsStore from '@Store/comments/commentsStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
-
-import IdeasService from '@Services/IdeasService'
-
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const notificationsStore = useNotificationsStore()
 

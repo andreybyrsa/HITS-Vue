@@ -51,9 +51,9 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
 <template>
   <PageLayout content-class-name="forgot-password-page__content">
     <template #content>
-      <FormLayout class-name="text-center">
-        <Typography class-name="fs-3 text-primary">
-          Востановление пароля
+      <FormLayout>
+        <Typography class-name="fs-3 text-primary text-center">
+          Восстановление пароля
         </Typography>
 
         <Input
@@ -66,7 +66,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
 
         <Button
           type="submit"
-          class-name="btn-primary w-100"
+          variant="primary"
           @click="sendRevoveryEmail"
         >
           Отправить

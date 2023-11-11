@@ -53,6 +53,8 @@ const LabelClassName = computed(() => [
         :class="InputClassName"
         :type="type ?? 'text'"
         v-model="value"
+        :max="max"
+        :min="min"
         @input="(event) => emit('input', event as HTMLTargetEvent)"
         @change="(event) => emit('change', event as HTMLTargetEvent)"
         @focus="emit('focus')"

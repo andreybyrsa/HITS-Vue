@@ -155,6 +155,10 @@ onClickOutside(comboboxRef, () => {
 })
 
 function checkNewOptionButton() {
+  if (searchedValue.value.trim() === '') {
+    return false
+  }
+
   const isExistNewOption = props.options.find(
     (option) => getCurrentOption(option).label === searchedValue.value,
   )

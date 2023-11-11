@@ -173,7 +173,8 @@ const removeAllFromFavorites = () => {
     >
       <div class="notification-window-modal__top-btn">
         <Button
-          class-name="btn-primary mb-3"
+          variant="primary"
+          class-name="mb-3"
           prepend-icon-name="bi bi-backspace-fill"
           @click="emit('close-modal')"
         >
@@ -182,7 +183,8 @@ const removeAllFromFavorites = () => {
         <Typography class-name="fs-3 text-primary">Уведомления</Typography>
         <Button
           v-if="showAllTab && hasNewNotifications"
-          class="notification-window-modal__all-check-btn btn-primary mb-3"
+          variant="primary"
+          class-name="notification-window-modal__all-check-btn mb-3"
           prepend-icon-name="bi bi-check-all fs-3"
           @click="markAllAsRead"
         >
@@ -190,15 +192,17 @@ const removeAllFromFavorites = () => {
         </Button>
         <Button
           v-if="showAllTab && !hasNewNotifications"
-          class="notification-window-modal__all-check-btn btn-mute mb-3"
+          variant="mute"
+          class-name="notification-window-modal__all-check-btn mb-3"
           prepend-icon-name="bi bi-check-all fs-3"
           @click="markAllAsRead"
         >
           Прочитать все
         </Button>
         <Button
+          variant="primary"
           v-if="!showAllTab && hasFavoriteNotifications"
-          class="notification-window-modal__all-check-btn btn-primary mb-3"
+          class="notification-window-modal__all-check-btn mb-3"
           prepend-icon-name="bi bi-check-all fs-3"
           @click="removeAllFromFavorites"
         >
@@ -206,7 +210,8 @@ const removeAllFromFavorites = () => {
         </Button>
         <Button
           v-if="!showAllTab && !hasFavoriteNotifications"
-          class="notification-window-modal__all-check-btn btn-mute mb-3"
+          variant="mute"
+          class-name="notification-window-modal__all-check-btn mb-3"
           prepend-icon-name="bi bi-check-all fs-3"
           @click="removeAllFromFavorites"
         >

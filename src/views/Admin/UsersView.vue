@@ -1,5 +1,5 @@
 <template>
-  <PageLayout content-class-name="p-3 bg-white">
+  <PageLayout content-class-name="users-page__content p-3 bg-white">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
@@ -55,3 +55,11 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style lang="scss">
+.users-page {
+  &__content {
+    overflow-y: scroll;
+  }
+}
+</style>

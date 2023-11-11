@@ -27,9 +27,10 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const searchedValue = ref('')
-
 const isSeachUsersBySkills = ref<boolean>(false)
+
 const profiles = ref<TeamMember[]>()
+const isLoading = ref<boolean>(false)
 
 const { handleSubmit } = useForm<TeamInviteRegisteredUsersForm>({
   validationSchema: {
@@ -57,6 +58,7 @@ onMounted(async () => {
 const { fields, push, remove } = useFieldArray<TeamMember>('users')
 
 const inviteUsers = handleSubmit(async (values: TeamInviteRegisteredUsersForm) => {
+  isLoading.value = false
   emit(
     'inviteRegisteredUsers',
     values.users.reduce<string[]>((emails, currentUser) => {
@@ -64,6 +66,7 @@ const inviteUsers = handleSubmit(async (values: TeamInviteRegisteredUsersForm) =
       return emails
     }, []),
   )
+  isLoading.value = true
 })
 
 const searchedOptions = computed(() => {
@@ -175,6 +178,7 @@ function changeSearchMode() {
       <div class="invite-registered__form-controller">
         <Button
           class-name="btn-primary w-100"
+          :is-loading="isLoading"
           @click="inviteUsers"
           >Пригласить</Button
         >

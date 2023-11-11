@@ -20,6 +20,10 @@ const router = useRouter()
 
 const ideaActionsButtons = ref<VueElement | null>()
 
+const isSendingOnApproval = ref(false)
+const isSendingOnEditing = ref(false)
+const isSendingOnConfirmation = ref(false)
+
 onMounted(() => checkComponentContent())
 onUpdated(() => checkComponentContent())
 
@@ -62,7 +66,9 @@ const handleSendToApproval = async () => {
     const { token } = currentUser
     const { id } = props.idea
 
+    isSendingOnApproval.value = true
     await ideasStore.updateIdeaStatus(id, 'ON_APPROVAL', token)
+    isSendingOnApproval.value = false
   }
 }
 
@@ -73,7 +79,9 @@ const handleSendToEditing = async () => {
     const { token } = currentUser
     const { id } = props.idea
 
+    isSendingOnEditing.value = true
     await ideasStore.updateIdeaStatus(id, 'ON_EDITING', token)
+    isSendingOnEditing.value = false
   }
 }
 
@@ -84,7 +92,9 @@ const handleSendToConfirmation = async () => {
     const { token } = currentUser
     const { id } = props.idea
 
+    isSendingOnConfirmation.value = true
     await ideasStore.updateIdeaStatus(id, 'ON_CONFIRMATION', token)
+    isSendingOnConfirmation.value = false
   }
 }
 </script>
@@ -96,7 +106,7 @@ const handleSendToConfirmation = async () => {
   >
     <Button
       v-if="getAccessToEditByInitiator()"
-      class-name="btn-light"
+      variant="light"
       @click="router.push(`/ideas/update/${idea.id}`)"
     >
       Редактировать
@@ -104,7 +114,8 @@ const handleSendToConfirmation = async () => {
 
     <Button
       v-if="getAccessToEditByInitiator()"
-      class-name="btn-success"
+      variant="success"
+      :is-loading="isSendingOnApproval"
       @click="handleSendToApproval"
     >
       Отправить на согласование
@@ -112,7 +123,8 @@ const handleSendToConfirmation = async () => {
 
     <Button
       v-if="getAccessToApproval()"
-      class-name="btn-danger"
+      variant="danger"
+      :is-loading="isSendingOnEditing"
       @click="handleSendToEditing"
     >
       Отправить на доработку
@@ -120,7 +132,8 @@ const handleSendToConfirmation = async () => {
 
     <Button
       v-if="getAccessToApproval()"
-      class-name="btn-success"
+      variant="success"
+      :is-loading="isSendingOnConfirmation"
       @click="handleSendToConfirmation"
     >
       Отправить на утверждение

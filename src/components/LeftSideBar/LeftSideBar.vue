@@ -102,7 +102,8 @@ function handleCloseNotificationModal() {
 
     <div class="d-flex flex-column gap-2">
       <Button
-        class-name="left-side-bar__button btn-light w-100 text-success"
+        variant="light"
+        class-name="left-side-bar__button text-success"
         prepend-icon-name="bi bi-circle-fill fs-6"
         @click="handleOpenModal"
         :disabled="user?.roles.length === 1"
@@ -111,7 +112,8 @@ function handleCloseNotificationModal() {
       </Button>
 
       <Button
-        class-name="left-side-bar__button btn-light w-100"
+        variant="light"
+        class-name="left-side-bar__button"
         @click="handleLogout"
         prepend-icon-name="bi bi-box-arrow-left"
       >
@@ -119,7 +121,8 @@ function handleCloseNotificationModal() {
       </Button>
 
       <Button
-        class-name="left-side-bar__button btn-light w-100"
+        variant="light"
+        class-name="left-side-bar__button"
         @click="handleOpenNotificationModal"
         prepend-icon-name="bi bi-bell"
       >

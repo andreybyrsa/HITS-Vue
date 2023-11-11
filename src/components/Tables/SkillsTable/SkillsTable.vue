@@ -2,7 +2,7 @@
   <Table
     :columns="skillTableColumns"
     :data="skills"
-    search-by="name"
+    :search-by="['name']"
     :filters="skillsFilters"
     :dropdown-actions-menu="dropdownSkillsActions"
   ></Table>

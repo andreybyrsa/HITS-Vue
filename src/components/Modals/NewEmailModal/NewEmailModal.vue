@@ -76,13 +76,9 @@ const handleChangeEmail = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    userStore.removeUser()
+    userStore.logoutUser()
   }
 })
-
-function handleCloseCodeModal() {
-  isOpenedCodeModal.value = false
-}
 </script>
 
 <template>
@@ -91,7 +87,7 @@ function handleCloseCodeModal() {
       v-if="true"
       class="new-email-modal p-3 rounded"
     >
-      <Typography class-name="fs-3 text-primary">Новая почта</Typography>
+      <Typography class-name="fs-3 text-primary text-center">Новая почта</Typography>
 
       <Input
         type="text"
@@ -105,20 +101,12 @@ function handleCloseCodeModal() {
       </Input>
 
       <Button
-        class-name="btn-primary w-100"
+        variant="primary"
         @click="handleChangeEmail"
       >
         Подтвердить
       </Button>
     </div>
-
-    <NotificationModal
-      type="success"
-      :is-opened="isOpenedCodeModal"
-      @close-modal="handleCloseCodeModal"
-    >
-      Код отправлен на старую почту, время действия кода: {{ expiredTime }}
-    </NotificationModal>
   </ModalLayout>
 </template>
 
@@ -128,7 +116,7 @@ function handleCloseCodeModal() {
   background-color: $white-color;
 
   @include flexible(
-    center,
+    stretch,
     flex-start,
     column,
     $gap: 12px,

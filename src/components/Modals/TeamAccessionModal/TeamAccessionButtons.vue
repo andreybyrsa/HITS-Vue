@@ -5,16 +5,45 @@ import {
   TeamAccessionButtonsProps,
 } from '@Components/Modals/TeamAccessionModal/TeamAccessionModal.types'
 
+import { accessionStage } from '@Domain/TeamAccession'
+
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
 
 const emit = defineEmits<TeamAccessionButtonsEmits>()
+
+const isLoading = ref<boolean>(false)
 
 defineProps<TeamAccessionButtonsProps>()
 
 const userStore = useUserStore()
 
 const { user } = storeToRefs(userStore)
+
+function responseToRequest(accessionStage: accessionStage) {
+  isLoading.value = true
+  emit('responseToRequest', accessionStage)
+  isLoading.value = false
+}
+
+function sendRequest() {
+  isLoading.value = true
+  emit('sendRequest')
+  isLoading.value = false
+}
+
+function invite() {
+  isLoading.value = true
+  emit('invite')
+  isLoading.value = false
+}
+
+function responseToInvitation(accessionStage: accessionStage) {
+  isLoading.value = true
+  emit('responseToInvitation', accessionStage)
+  isLoading.value = false
+}
 </script>
 <template>
   <div class="buttons">
@@ -27,22 +56,25 @@ const { user } = storeToRefs(userStore)
         teamRequest.targetEmail != user?.email
       "
       ><Button
-        class-name="rounded-end btn-success"
-        @click="emit('responseToRequest', 'ACCEPTED')"
+        variant="success"
+        :isLoading="isLoading"
+        @click="responseToRequest('ACCEPTED')"
       >
         Одобрить
       </Button>
       <Button
-        class-name="rounded-end btn-danger"
-        @click="emit('responseToRequest', 'REJECTED')"
+        variant="danger"
+        :isLoading="isLoading"
+        @click="responseToRequest('REJECTED')"
       >
         Отклонить
       </Button></template
     >
     <Button
       v-if="mode == 'write'"
-      class-name="rounded-end btn-primary"
-      @click="emit('sendRequest')"
+      variant="primary"
+      :isLoading="isLoading"
+      @click="sendRequest()"
     >
       Отправить заявку
     </Button>
@@ -54,8 +86,9 @@ const { user } = storeToRefs(userStore)
         teamRequest?.requestType == 'ENTER' &&
         user?.email != teamRequest.targetEmail
       "
-      class-name="rounded-end btn-primary"
-      @click="emit('invite')"
+      variant="primary"
+      :isLoading="isLoading"
+      @click="invite()"
     >
       Отправить приглашение заново
     </Button>
@@ -67,14 +100,16 @@ const { user } = storeToRefs(userStore)
         user?.email == teamRequest.targetEmail
       "
       ><Button
-        class-name="rounded-end btn-success"
-        @click="emit('responseToInvitation', 'ACCEPTED')"
+        variant="success"
+        :isLoading="isLoading"
+        @click="responseToInvitation('ACCEPTED')"
       >
         Принять
       </Button>
       <Button
-        class-name="rounded-end btn-danger"
-        @click="emit('responseToInvitation', 'REJECTED')"
+        variant="danger"
+        :isLoading="isLoading"
+        @click="responseToInvitation('REJECTED')"
       >
         Отклонить
       </Button></template

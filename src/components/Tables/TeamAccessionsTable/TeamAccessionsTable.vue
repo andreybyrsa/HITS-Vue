@@ -6,7 +6,7 @@
     :data="teamAccessions"
     :filters="teamAccessionsFilters"
     :dropdown-actions-menu="dropdownTeamAccessionsActions"
-    :search-by="searchBy"
+    :searchBy="searchBy ? [searchBy] : []"
   ></Table>
 
   <TablePlaceholder v-else />

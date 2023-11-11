@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -20,6 +21,8 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<TeamFormProps>()
+
+const isLoading = ref<boolean>(false)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -45,7 +48,10 @@ const handleCreateTeam = handleSubmit(async (values) => {
     const { token } = currentUser
     values.membersCount = values.members.length
     values.createdAt = new Date().toJSON()
+
+    isLoading.value = true
     const response = await TeamService.createTeam(values, token)
+    isLoading.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -61,7 +67,10 @@ const handleUpdateTeam = handleSubmit(async (values) => {
   if (currentUser?.token && props.team) {
     const { token } = currentUser
     const { id } = props.team
+
+    isLoading.value = true
     const response = await TeamService.updateTeam(values, id, token)
+    isLoading.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -73,8 +82,8 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <div class="team-form bg-white p-3">
-    <div class="team-form__content w-75 h-100">
+  <div class="team-form w-100 h-100 bg-white p-3 overflow-auto">
+    <div class="team-form__content w-75">
       <Typography class-name="fs-2 text-primary">
         {{ props.team ? 'Редактирование команды' : 'Создание команды' }}
       </Typography>
@@ -101,14 +110,16 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 
       <Button
         v-if="props.team"
-        class-name="btn-primary px-4"
+        variant="primary"
+        :isLoading="isLoading"
         @click="handleUpdateTeam"
       >
         Сохранить изменения
       </Button>
       <Button
         v-else
-        class-name="btn-primary px-4"
+        variant="success"
+        :isLoading="isLoading"
         @click="handleCreateTeam"
       >
         Создать команду
