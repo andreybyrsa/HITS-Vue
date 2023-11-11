@@ -34,6 +34,7 @@ import CompanyService from '@Services/CompanyService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { User } from '@Domain/User'
 
 const companies = defineModel<Company[]>({ required: true })
 
@@ -54,6 +55,11 @@ const companiesTableColumns: TableColumn<Company>[] = [
     rowCellClick: openUpdatingCompanyModal,
     getRowCellStyle: getCompanyNameStyle,
   },
+  {
+    key: 'owner',
+    label: 'Владелец',
+    getRowCellFormat: getCompanyOwnerFormat,
+  },
 ]
 
 const dropdownCompaniesActions: DropdownMenuAction<Company>[] = [
@@ -70,6 +76,10 @@ const dropdownCompaniesActions: DropdownMenuAction<Company>[] = [
 
 function getCompanyNameStyle() {
   return 'text-primary'
+}
+
+function getCompanyOwnerFormat(owner: User) {
+  return `${owner.firstName} ${owner.lastName}`
 }
 
 function openUpdatingCompanyModal(company: Company) {

@@ -22,8 +22,8 @@ import CompanyService from '@Services/CompanyService'
 import ManageUsersService from '@Services/ManageUsersService'
 
 import useUserStore from '@Store/user/userStore'
-
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
@@ -72,6 +72,9 @@ const { setValues, handleSubmit } = useForm<Company>({
     users: (value: User[]) =>
       Validation.checkIsEmptyValue(value) || 'Выберите пользователей',
   },
+  initialValues: {
+    users: [],
+  },
 })
 
 const { fields, push, remove } = useFieldArray<User>('users')
@@ -96,14 +99,14 @@ onUpdated(async () => {
 
       setValues({ ...response })
       unselectedUsers.value = users.value.filter((user) =>
-        response.members.every((companyUser) => companyUser.id !== user.id),
+        response.users.every((companyUser) => companyUser.id !== user.id),
       )
       companyModalMode.value = 'UPDATE'
 
       isLoadingCompany.value = false
     }
   } else if (props.isOpened) {
-    setValues({ name: '', members: [] })
+    setValues({ name: '', users: [] })
     unselectedUsers.value = [...users.value]
     companyModalMode.value = 'CREATE'
 
@@ -206,6 +209,7 @@ const handleUpdateCompany = handleSubmit(async (values) => {
           name="owner"
           label="Выберите владельца компании:"
           :options="users"
+          :display-by="['firstName', 'lastName']"
           placeholder="Владелец компании"
         />
 
@@ -255,8 +259,8 @@ const handleUpdateCompany = handleSubmit(async (values) => {
   }
 }
 
-.modal-layout-enter-from .users-group-modal,
-.modal-layout-leave-to .users-group-modal {
+.modal-layout-enter-from .company-modal,
+.modal-layout-leave-to .company-modal {
   transform: scale(0.9);
 }
 </style>

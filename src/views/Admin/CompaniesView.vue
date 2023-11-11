@@ -1,12 +1,12 @@
 <template>
-  <PageLayout content-class-name="p-3 bg-white">
+  <PageLayout content-class-name="companies-page__content p-3 bg-white">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
 
     <template #content>
       <div class="companies-page__header">
-        <Typography class-name="fs-2 text-primary">Компании</Typography>
+        <Typography class-name="fs-2 text-primary">Список компаний</Typography>
 
         <Button
           class-name="btn-primary"
@@ -90,6 +90,10 @@ function closeCreatingCompanyModal() {
 .companies-page {
   &__header {
     @include flexible(center, space-between);
+  }
+
+  &__content {
+    overflow-y: scroll;
   }
 }
 </style>

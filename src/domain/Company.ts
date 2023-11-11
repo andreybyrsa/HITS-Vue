@@ -4,7 +4,7 @@ interface Company {
   id: number
   name: string
   owner: User
-  members: User[]
+  users: User[]
 }
 
 export default Company

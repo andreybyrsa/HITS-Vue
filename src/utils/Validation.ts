@@ -11,7 +11,11 @@ class Validation {
       return data.length > 0
     }
 
-    return isNonNullable(data) && !isNaN(Number(data))
+    if (typeof data === 'number') {
+      return isNonNullable(data) && !isNaN(Number(data))
+    }
+
+    return isNonNullable(data)
   }
 
   checkEmail(email: string) {

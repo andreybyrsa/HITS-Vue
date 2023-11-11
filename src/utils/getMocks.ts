@@ -385,13 +385,13 @@ function getMocks(): Mocks {
       id: 0,
       name: 'Газпром',
       owner: users[0],
-      members: [users[3]],
+      users: [users[3]],
     },
     {
       id: 1,
       name: 'Роснефть',
       owner: users[2],
-      members: [users[1]],
+      users: [users[1]],
     },
   ]
 
