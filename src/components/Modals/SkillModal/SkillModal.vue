@@ -37,6 +37,9 @@ const skillModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
 const availableSkills = getSkills()
 
+const isCreating = ref(false)
+const isUpdating = ref(false)
+
 const skillTypeOptions = availableSkills.skills.map((skillType) => ({
   value: skillType,
   label: availableSkills.translatedSkills[skillType],
@@ -68,7 +71,10 @@ const handleCreateSkill = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isCreating.value = true
     const response = await SkillsService.createSkill(values, token)
+    isCreating.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -84,7 +90,10 @@ const handleUpdateSkill = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isUpdating.value = true
     const response = await SkillsService.updateSkill(values, values.id, token)
+    isUpdating.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -142,6 +151,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
           v-if="skillModalMode === 'CREATE'"
           type="submit"
           variant="primary"
+          :is-loading="isCreating"
           @click="handleCreateSkill"
         >
           Создать
@@ -150,6 +160,7 @@ const handleUpdateSkill = handleSubmit(async (values) => {
           v-if="skillModalMode === 'UPDATE'"
           type="submit"
           variant="primary"
+          :is-loading="isUpdating"
           @click="handleUpdateSkill"
         >
           Сохранить

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
 
@@ -24,6 +24,8 @@ const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
 
 const route = useRoute()
+
+const isLoading = ref(false)
 
 onMounted(async () => {
   const { slug } = route.params
@@ -54,7 +56,9 @@ const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
 const handleRegister = handleSubmit(async (values) => {
   const slug = route.params.slug.toString()
 
+  isLoading.value = true
   await userStore.registerUser(values, slug)
+  isLoading.value = false
 })
 </script>
 
@@ -80,7 +84,7 @@ const handleRegister = handleSubmit(async (values) => {
     <Button
       type="submit"
       variant="primary"
-      class-name="w-100"
+      :is-loading="isLoading"
       @click="handleRegister"
     >
       Зарегистрироваться

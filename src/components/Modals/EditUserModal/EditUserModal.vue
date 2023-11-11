@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -34,6 +34,7 @@ const users = defineModel<User[]>({
 })
 const props = defineProps<EditUserModalProps>()
 const emit = defineEmits<EditUserModalEmits>()
+const isLoading = ref(false)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -66,7 +67,10 @@ const handleEditUser = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isLoading.value = true
     const response = await ManageUsersService.updateUserInfo(values, token)
+    isLoading.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -152,6 +156,7 @@ const handleEditUser = handleSubmit(async (values) => {
         <Button
           type="submit"
           variant="primary"
+          :is-loading="isLoading"
           @click="handleEditUser"
         >
           Сохранить изменения
