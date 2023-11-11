@@ -14,6 +14,7 @@ import { Skill } from '@Domain/Skill'
 import ProfileService from '@Services/ProfileService'
 
 import useUserStore from '@Store/user/userStore'
+import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 
 const props = defineProps<ProfileSkillProps>()
 
@@ -77,33 +78,36 @@ function handleCancelUpdating() {
     <div class="header border-bottom pb-1">
       <Typography class-name="fs-4 text-primary">Мои компетенции</Typography>
       <Button
-        v-if="editSkills === false"
+        v-if="editSkills === false && props.status == true"
         class-name="border bg-light "
         @click="editSkillsHandler"
       >
         Изменить стек
       </Button>
-      <Button
+      <div
+        class="d-flex"
         v-if="editSkills === true"
-        class-name="border bg-primary text-light "
-        @click="handleSaveSkills"
       >
-        Сохранить
-      </Button>
-      <Button
-        v-if="editSkills === true"
-        class-name="border bg-primary text-light "
-        @click="handleCancelUpdating"
-      >
-        Отменить
-      </Button>
+        <Button
+          class-name="border bg-primary text-light "
+          @click="handleSaveSkills"
+        >
+          Сохранить
+        </Button>
+        <Button
+          class-name="border bg-danger text-light "
+          @click="handleCancelUpdating"
+        >
+          Отменить
+        </Button>
+      </div>
     </div>
 
     <div
       class="content p-2"
       v-if="editSkills === false"
     >
-      <div class="content__categories flex-wrap">
+      <!-- <div class="content__categories flex-wrap">
         <div
           class="w-50 p-3"
           v-for="(category, index) in skillsCategories"
@@ -117,7 +121,13 @@ function handleCancelUpdating() {
             <Skills :skills="profileSkills" />
           </div>
         </div>
-      </div>
+      </div> -->
+
+      <SkillsRadarCharts
+        v-if="profileSkills"
+        :skills="profileSkills"
+        class="w-100"
+      ></SkillsRadarCharts>
     </div>
 
     <div

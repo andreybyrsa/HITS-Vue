@@ -7,6 +7,7 @@ import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 import Project from '@Domain/Project'
 import Notification from '@Domain/Notification'
+import Profile from '@Domain/Profile'
 
 interface Mocks {
   users: User[]
@@ -23,6 +24,8 @@ interface Mocks {
   profileIdeas: Idea[]
   profileProjects: Project[]
   notifications: Notification[]
+  profileUser: User
+  profile: Profile[]
 }
 
 function getMocks(): Mocks {
@@ -68,21 +71,93 @@ function getMocks(): Mocks {
 
   const skills: Skill[] = [
     {
-      id: 21446,
+      id: 0,
       name: 'JavaScript',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
-      id: 18764,
+      id: 1,
       name: 'React JS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
-      id: 265345,
+      id: 2,
       name: 'C++',
       type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 3,
+      name: 'C#',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 4,
+      name: 'Vue Js',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: 5,
+      name: 'mySQL',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: 6,
+      name: 'Docker',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: 7,
+      name: 'PHP',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 8,
+      name: 'Svelte',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: 9,
+      name: 'Oracle',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: 10,
+      name: 'GitLab',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: 11,
+      name: 'Rast',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 12,
+      name: 'Angular',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: 13,
+      name: 'Mongo',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: 14,
+      name: 'Git',
+      type: 'DEVOPS',
       confirmed: true,
     },
   ]
@@ -226,7 +301,7 @@ function getMocks(): Mocks {
     {
       id: 0,
       initiator: '0',
-      name: 'Идея по созданию идеи Идея по созданию идеи Идея по созданию идеи Идея по созданию идеи',
+      name: 'Идея которая улучшит мир',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -252,7 +327,7 @@ function getMocks(): Mocks {
     {
       id: 1,
       initiator: '1',
-      name: 'Идея 1',
+      name: 'Как побороть прокрастенацию',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -278,7 +353,7 @@ function getMocks(): Mocks {
     {
       id: 2,
       initiator: '2',
-      name: 'Идея 2',
+      name: 'Высокоуровневый язык верстки',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -339,8 +414,9 @@ function getMocks(): Mocks {
       skills: [...skills],
     },
   ]
+  const profileUser: User = users[1]
 
-  const profileSkills: Skill[] = [skills[0], skills[2]]
+  const profileSkills: Skill[] = [skills[0], skills[2], skills[6], skills[5]]
 
   const profileIdeas: Idea[] = [ideas[0], ideas[1]]
 
@@ -359,6 +435,80 @@ function getMocks(): Mocks {
       id: 733,
       name: 'Важный проект',
       description: 'Очень важный проект',
+    },
+  ]
+
+  const profile: Profile[] = [
+    {
+      ...users[0],
+      skills: [
+        skills[1],
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[5],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[10],
+        skills[11],
+        skills[12],
+        skills[13],
+        skills[14],
+      ],
+      ideas: [ideas[0], ideas[1]],
+      projects: [
+        {
+          id: 3565634,
+          name: 'Деление на 0',
+          description: 'Очень важно',
+        },
+        {
+          id: 2434465,
+          name: 'Спасение экосистемы',
+          description: 'Технология эффективного спасения',
+        },
+        {
+          id: 876544,
+          name: 'Важный проект',
+          description: 'Очень важный проект',
+        },
+      ],
+    },
+    {
+      ...users[1],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[6],
+        skills[5],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[10],
+        skills[11],
+        skills[12],
+        skills[13],
+        skills[14],
+      ],
+      ideas: [ideas[2], ideas[1]],
+      projects: [
+        {
+          id: 954543,
+          name: 'Поднятие уровня моря',
+          description: 'Надо бы поднять уровень моря',
+        },
+        {
+          id: 346535,
+          name: 'Еда экспресс',
+          description: 'Технология эффективного питания',
+        },
+        {
+          id: 975452,
+          name: 'Создание квантового компьютера',
+          description: 'Очень важный проект',
+        },
+      ],
     },
   ]
 
@@ -420,6 +570,8 @@ function getMocks(): Mocks {
     profileIdeas,
     profileProjects,
     notifications,
+    profileUser,
+    profile,
   }
 }
 

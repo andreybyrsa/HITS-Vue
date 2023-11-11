@@ -25,6 +25,7 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import Profile from '@Domain/Profile'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -34,10 +35,21 @@ const notificationsStore = useNotificationsStore()
 const router = useRouter()
 const route = useRoute()
 
-const profileUser = ref<User>()
+const profileUser = ref<Profile>()
 const profileSkills = ref<Skill[]>()
 const profileIdeas = ref<Idea[]>()
 const profileProjects = ref<Project[]>()
+
+const currentUser = user.value
+const profileEmail = route.params.email.toString()
+
+let status
+
+if (profileEmail === currentUser?.email) {
+  status = true
+} else {
+  status = false
+}
 
 const isOpenedProfileModal = ref(true)
 
@@ -105,26 +117,27 @@ onMounted(async () => {
 
     const profileParallelRequests = [
       () => ProfileService.getUserProfile(userEmail, token),
-      () => ProfileService.getProfileSkills(userEmail, token),
-      () => ProfileService.getProfileIdeas(userEmail, token),
-      () => ProfileService.getProfileProjects(userEmail, token),
+      // () => ProfileService.getProfileSkills(userEmail, token),
+      // () => ProfileService.getProfileIdeas(userEmail, token),
+      // () => ProfileService.getProfileProjects(userEmail, token),
     ]
 
-    await makeParallelRequests<User | Skill[] | Idea[] | Project[] | Error>(
-      profileParallelRequests,
-    ).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, profileUser)
-        } else if (response.id === 1) {
-          checkResponseStatus(response, profileSkills)
-        } else if (response.id === 2) {
-          checkResponseStatus(response, profileIdeas)
-        } else if (response.id === 3) {
-          checkResponseStatus(response, profileProjects)
-        }
-      })
-    })
+    await makeParallelRequests<Profile | Error>(profileParallelRequests).then(
+      (responses) => {
+        responses.forEach((response) => {
+          if (response.id === 0) {
+            checkResponseStatus(response, profileUser)
+          }
+          // else if (response.id === 1) {
+          //   checkResponseStatus(response, profileSkills)
+          // } else if (response.id === 2) {
+          //   checkResponseStatus(response, profileIdeas)
+          // } else if (response.id === 3) {
+          //   checkResponseStatus(response, profileProjects)
+          // }
+        })
+      },
+    )
   }
 })
 
@@ -132,6 +145,10 @@ function handleCloseProfileModal() {
   isOpenedProfileModal.value = false
   router.go(-1)
 }
+
+console.log(currentUser?.email)
+console.log(profileEmail)
+console.log(profileUser)
 </script>
 
 <template>
@@ -141,8 +158,11 @@ function handleCloseProfileModal() {
     @on-outside-close="handleCloseProfileModal"
   >
     <div class="profile-modal p-3 overflow-y-scroll">
-      <div v-if="profileUser">
-        <div class="profile-modal__header">
+      <div
+        v-if="profileUser"
+        class="w-100"
+      >
+        <div class="profile-modal__header mb-3">
           <Button
             class-name="btn-primary"
             prepend-icon-name="bi bi-backspace-fill"
@@ -159,16 +179,25 @@ function handleCloseProfileModal() {
         </div>
 
         <div class="profile-modal__content">
-          <ProfileAvatar />
+          <ProfileAvatar
+            :user="profileUser"
+            :status="status"
+          />
 
           <div class="profile-modal__info">
-            <ProfileInfo :user="profileUser" />
+            <ProfileInfo
+              :user="profileUser"
+              :status="status"
+            />
 
-            <ProfileSkills :skills="profileSkills" />
+            <ProfileSkills
+              :skills="profileUser.skills"
+              :status="status"
+            />
 
-            <ProfileIdeas :ideas="profileIdeas" />
+            <ProfileIdeas :ideas="profileUser.ideas" />
 
-            <ProfileProjects :projects="profileProjects" />
+            <ProfileProjects :projects="profileUser.projects" />
           </div>
         </div>
       </div>

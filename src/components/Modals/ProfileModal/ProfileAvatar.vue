@@ -64,7 +64,7 @@ function getFormattedDate(date: Date) {
 
 //   if (user.value?.token) {
 //     const { token } = user.value
-//     ProfileService.uploadAvatar(formData, token)
+//     ProfileService.uploadProfileAvatar(email, formData, token)
 //     console.log(formData)
 //   }
 // }
@@ -84,12 +84,12 @@ function getFormattedDate(date: Date) {
 
 <template>
   <div class="user bg-white border p-3 rounded-4">
-    <div class="user__head mb-2">
-      <!-- <Typography class-name="text-secondary">НЕ В СЕТИ</Typography> -->
+    <!--  <div class="user__head mb-2">
+   <Typography class-name="text-secondary">НЕ В СЕТИ</Typography>
       <Typography class-name="text-secondary"
-        >Был в сети {{ getFormattedDate(props.lastActivity) }}</Typography
+        >Был в сети {{ getFormattedDate(props.user.) }}</Typography
       >
-    </div>
+    </div>  -->
     <div class="d-flex justify-content-center w-100 mb-2">
       <img
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"
@@ -100,12 +100,12 @@ function getFormattedDate(date: Date) {
     <div class="user__roles w-100 flex-wrap">
       <div
         class="w-auto"
-        v-for="role in props.roles"
+        v-for="role in props.user.roles"
         :key="role"
       >
         <div
           class="text-center border rounded-pill p-2 bg-primary text-light"
-          v-if="role === props.role"
+          v-if="role === props.user.role"
         >
           {{ getCurrentRoleRus(role) }}
         </div>

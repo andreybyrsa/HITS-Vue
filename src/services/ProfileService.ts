@@ -10,8 +10,9 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import Profile from '@Domain/Profile'
 
-const profileUserAxios = defineAxios(getMocks().users)
+const profileUserAxios = defineAxios(getMocks().profile)
 const profileIdeasAxios = defineAxios(getMocks().profileIdeas)
 const profileProjectsAxios = defineAxios(getMocks().profileProjects)
 const profileSkillsAxios = defineAxios(getMocks().profileSkills)
@@ -19,7 +20,7 @@ const profileSkillsAxios = defineAxios(getMocks().profileSkills)
 const getUserProfile = async (
   email: string,
   token: string,
-): Promise<User | Error> => {
+): Promise<Profile | Error> => {
   return await profileUserAxios
     .get(
       `/profile/${email}`,

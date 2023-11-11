@@ -99,6 +99,7 @@ const handleEditUser = handleSubmit(async (values) => {
     <div class="header border-bottom pb-1">
       <Typography class-name="fs-4 text-primary">Информация</Typography>
       <Button
+        v-if="props.status == true"
         class-name="border bg-light "
         @click="handleOpenChangeInfo"
         >Изменить</Button
@@ -108,17 +109,18 @@ const handleEditUser = handleSubmit(async (values) => {
     <div class="content p-2">
       <div class="d-grid">
         <Typography class-name=" text-secondary">Имя</Typography>
-        <Typography class-name="fs-5 ms-1">{{ props.firstName }}</Typography>
+        <Typography class-name="fs-5 ms-1">{{ props.user.firstName }}</Typography>
       </div>
       <div class="d-grid">
         <Typography class-name=" text-secondary">Фамилия</Typography>
-        <Typography class-name="fs-5 ms-1">{{ props.lastName }}</Typography>
+        <Typography class-name="fs-5 ms-1">{{ props.user.lastName }}</Typography>
       </div>
       <div class="d-grid w-100">
         <Typography class-name=" text-secondary">Почта</Typography>
         <div class="w-100 d-flex justify-content-between">
-          <Typography class-name="fs-5 ms-1">{{ props.email }}</Typography>
+          <Typography class-name="fs-5 ms-1">{{ props.user.email }}</Typography>
           <Button
+            v-if="props.status == true"
             class-name="border bg-mutend"
             @click="handleOpenChangeEmail"
             >Изменить почту</Button
@@ -140,11 +142,18 @@ const handleEditUser = handleSubmit(async (values) => {
   >
     <div class="header border-bottom pb-1">
       <Typography class-name="fs-4 text-primary">Информация</Typography>
-      <Button
-        class-name="border bg-primary text-light "
-        @click="handleEditUser"
-        >Сохнарить</Button
-      >
+      <div class="d-flex">
+        <Button
+          class-name="border bg-primary text-light "
+          @click="handleEditUser"
+          >Сохнарить</Button
+        >
+        <Button
+          class-name="border bg-danger text-light "
+          @click="handleCloseChangeInfo"
+          >Отменить</Button
+        >
+      </div>
     </div>
 
     <div class="content p-2">
@@ -153,7 +162,7 @@ const handleEditUser = handleSubmit(async (values) => {
         <Input
           name="firstName"
           class-name="rounded-end w-100"
-          :model-value="props.firstName"
+          :model-value="props.user.firstName"
           placeholder="Введите ваше имя"
           validate-on-update
         >
@@ -164,7 +173,7 @@ const handleEditUser = handleSubmit(async (values) => {
         <Input
           name="lastName"
           class-name="rounded-end"
-          :model-value="props.lastName"
+          :model-value="props.user.lastName"
           placeholder="Введите вашу фамилию"
           validate-on-update
         >
@@ -173,20 +182,21 @@ const handleEditUser = handleSubmit(async (values) => {
       <div class="d-grid w-100">
         <Typography class-name=" text-secondary">Почта</Typography>
         <div class="w-100 d-flex justify-content-between">
-          <Typography class-name="fs-5 ms-1">{{ props.email }}</Typography>
+          <Typography class-name="fs-5 ms-1">{{ props.user.email }}</Typography>
           <Button
+            v-if="props.status == true"
             class-name="border bg-mutend"
             @click="handleOpenChangeEmail"
             >Изменить почту</Button
           >
         </div>
       </div>
-      <div class="d-grid">
+      <!-- <div class="d-grid">
         <Typography class-name=" text-secondary">Главная роль</Typography>
         <Typography class-name="fs-5 ms-1">{{
           getCurrentRoleRus(props.role)
         }}</Typography>
-      </div>
+      </div> -->
     </div>
   </div>
   <ChangeEmailView
