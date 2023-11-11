@@ -20,6 +20,8 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 <style lang="scss">
 .add-users-page {
   &__content {
+    overflow-y: scroll;
+
     @include flexible(center, center);
   }
 }

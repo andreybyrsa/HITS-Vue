@@ -36,6 +36,8 @@ const notificationsStore = useNotificationsStore()
 const overallRatingPlaceholder = ref('Вычисление')
 
 const isSavedRating = ref(false)
+const isSaving = ref(false)
+const isConfirming = ref(false)
 
 const { values, setFieldValue, setValues, handleSubmit } = useForm<Rating>({
   validationSchema: {
@@ -93,7 +95,10 @@ const handleConfirmRating = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
     const { id } = props.idea
+
+    isConfirming.value = true
     const response = await RatingService.confirmExpertRating(values, id, token)
+    isConfirming.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -113,7 +118,10 @@ const handleSaveRating = async () => {
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
+
+    isSaving.value = true
     const response = await RatingService.saveExpertRating(values, id, token)
+    isSaving.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -180,14 +188,16 @@ function getCurrentTooltip(select: RatingSelect) {
     >
       <Button
         type="submit"
-        class-name="btn-primary"
+        variant="primary"
+        :is-loading="isConfirming"
         @click="handleConfirmRating"
       >
         Утвердить
       </Button>
       <Button
         type="submit"
-        :class-name="isSavedRating ? 'btn-success' : 'btn-primary'"
+        :variant="isSavedRating ? 'success' : 'primary'"
+        :is-loading="isSaving"
         @click="handleSaveRating"
       >
         Сохранить форму

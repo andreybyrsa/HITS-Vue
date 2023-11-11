@@ -16,7 +16,7 @@ const emit = defineEmits<IdeaDescriptionEmits>()
 <template>
   <div class="idea-description-header">
     <Button
-      class-name="btn-primary"
+      variant="primary"
       prepend-icon-name="bi bi-backspace-fill"
       @click="emit('close-modal')"
     >
@@ -37,7 +37,8 @@ const emit = defineEmits<IdeaDescriptionEmits>()
       class="list-group-item p-0 overflow-hidden"
     >
       <Button
-        class-name="collapse-controller btn-light w-100"
+        variant="light"
+        class-name="collapse-controller w-100"
         v-collapse="collapse.id"
       >
         {{ collapse.text }}
@@ -51,7 +52,8 @@ const emit = defineEmits<IdeaDescriptionEmits>()
 
     <li class="list-group-item p-0 overflow-hidden">
       <Button
-        class-name="collapse-controller btn-light w-100"
+        variant="light"
+        class-name="collapse-controller w-100"
         v-collapse="'idea-skills'"
       >
         Стек технологий

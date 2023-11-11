@@ -8,7 +8,6 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import IdeaFormPlaceholder from '@Components/Forms/IdeaForm/IdeaFormPlaceholder.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
@@ -50,18 +49,12 @@ onMounted(async () => {
     </template>
 
     <template #content>
-      <FormLayout
-        v-if="!currentIdea"
-        class-name="w-100 h-100"
-      >
-        <IdeaFormPlaceholder />
-      </FormLayout>
-
       <IdeaForm
-        v-else
+        v-if="currentIdea"
         title="Редактирование идеи"
         :idea="currentIdea"
       />
+      <IdeaFormPlaceholder v-else />
     </template>
   </PageLayout>
 </template>

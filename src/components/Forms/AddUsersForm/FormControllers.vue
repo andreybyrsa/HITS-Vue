@@ -13,7 +13,7 @@ const emit = defineEmits<FormControllersEmits>()
   <div class="form-controllers">
     <Button
       type="button"
-      class-name="btn-primary fs-6"
+      variant="primary"
       prepend-icon-name="bi bi-plus-lg"
       @click="emit('push-email', '')"
     >
@@ -22,7 +22,7 @@ const emit = defineEmits<FormControllersEmits>()
 
     <Button
       type="button"
-      class-name="btn-primary fs-6"
+      variant="primary"
       prepend-icon-name="bi bi-file-earmark"
       @click="fileInputRef?.click()"
     >
@@ -31,7 +31,7 @@ const emit = defineEmits<FormControllersEmits>()
 
     <Button
       type="button"
-      :class-name="rolesError ? 'btn-danger fs-6' : 'btn-primary fs-6'"
+      :variant="rolesError ? 'danger' : 'primary'"
       prepend-icon-name="bi bi-plus-lg"
       v-collapse="'addUsersFromCollapse'"
     >

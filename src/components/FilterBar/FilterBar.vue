@@ -98,7 +98,7 @@ function resetFilters() {
 
     <div class="w-100 d-flex justify-content-center">
       <Button
-        class-name="btn-danger"
+        variant="danger"
         prepend-icon-name="bi bi-x-lg"
         @click="resetFilters"
       >

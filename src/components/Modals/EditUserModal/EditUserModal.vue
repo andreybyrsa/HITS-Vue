@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -34,6 +34,7 @@ const users = defineModel<User[]>({
 })
 const props = defineProps<EditUserModalProps>()
 const emit = defineEmits<EditUserModalEmits>()
+const isLoading = ref(false)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -66,7 +67,10 @@ const handleEditUser = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isLoading.value = true
     const response = await ManageUsersService.updateUserInfo(values, token)
+    isLoading.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -99,7 +103,7 @@ const handleEditUser = handleSubmit(async (values) => {
         <Typography class-name="fs-3 text-primary">Редактировать</Typography>
 
         <Button
-          class-name="btn-close"
+          variant="close"
           @click="emit('close-modal')"
         ></Button>
       </div>
@@ -122,7 +126,8 @@ const handleEditUser = handleSubmit(async (values) => {
           </Input>
 
           <Button
-            :class-name="errors.roles ? 'btn-outline-danger px-2 py-0' : 'px-2 py-0'"
+            class-name="px-2 py-0"
+            :variant="errors.roles ? 'outline-danger' : 'mute'"
             append-icon-name="bi bi-chevron-down"
             v-collapse="'editUserModalCollapse'"
           >
@@ -150,7 +155,8 @@ const handleEditUser = handleSubmit(async (values) => {
 
         <Button
           type="submit"
-          class-name="btn-primary w-100"
+          variant="primary"
+          :is-loading="isLoading"
           @click="handleEditUser"
         >
           Сохранить изменения
@@ -166,7 +172,7 @@ const handleEditUser = handleSubmit(async (values) => {
   background-color: $white-color;
 
   @include flexible(
-    flex-end,
+    stretch,
     flex-start,
     column,
     $align-self: center,

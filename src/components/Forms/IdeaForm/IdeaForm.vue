@@ -10,10 +10,8 @@ import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.vu
 import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.types'
 import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCalculator.vue'
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
-import IdeaFormSubmit from '@Components/Forms/IdeaForm/IdeaFormSubmit.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
-
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+import Button from '@Components/Button/Button.vue'
 
 import { Idea, IdeaSkills } from '@Domain/Idea'
 import { Skill } from '@Domain/Skill'
@@ -36,6 +34,9 @@ const { user } = storeToRefs(userStore)
 const router = useRouter()
 
 const stackTechnologies = ref<Skill[]>([])
+
+const isSavingDraft = ref(false)
+const isSendingOnApproval = ref(false)
 
 const { values, setFieldValue, setValues, validateField, handleSubmit } =
   useForm<Idea>({
@@ -133,6 +134,8 @@ const handleSaveAndSendOnApproval = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isSendingOnApproval.value = true
     const ideaResponse = await IdeasService.saveAndSendIdeaOnApproval(
       { ...values, status: 'ON_APPROVAL' },
       token,
@@ -146,6 +149,7 @@ const handleSaveAndSendOnApproval = handleSubmit(async (values) => {
     }
 
     await saveIdeaSkills(ideaResponse.id, token, props.idea)
+    isSendingOnApproval.value = false
 
     router.push({ name: 'ideas-list' })
   }
@@ -159,6 +163,7 @@ const handleSaveDraftIdea = async () => {
     const { valid } = await validateField('name')
 
     if (valid) {
+      isSavingDraft.value = true
       const response = await IdeasService.saveIdeaDraft(values, token)
 
       if (response instanceof Error) {
@@ -169,6 +174,7 @@ const handleSaveDraftIdea = async () => {
       }
 
       await saveIdeaSkills(response.id, token, props.idea)
+      isSavingDraft.value = false
 
       router.push({ name: 'ideas-list' })
     }
@@ -211,7 +217,7 @@ async function saveIdeaSkills(
 </script>
 
 <template>
-  <FormLayout class-name="w-100 h-100 overflow-auto">
+  <form class="idea-form p-3 bg-white w-100 h-100 overflow-auto">
     <Typography class-name="fs-2 text-primary">
       {{ title }}
     </Typography>
@@ -228,11 +234,34 @@ async function saveIdeaSkills(
 
       <PreAssessmentCalculator :idea="values" />
 
-      <IdeaFormSubmit
-        :idea="values"
-        @on-send-on-approval="handleSaveAndSendOnApproval"
-        @on-save-draft="handleSaveDraftIdea"
-      />
+      <div class="idea-form__submit-buttons">
+        <Button
+          v-if="values.status !== 'ON_EDITING'"
+          variant="primary"
+          :is-loading="isSavingDraft"
+          @click="handleSaveDraftIdea"
+        >
+          Сохранить черновик
+        </Button>
+
+        <Button
+          variant="success"
+          :is-loading="isSendingOnApproval"
+          @click="handleSaveAndSendOnApproval"
+        >
+          Отправить на согласование
+        </Button>
+      </div>
     </div>
-  </FormLayout>
+  </form>
 </template>
+
+<style lang="scss" scoped>
+.idea-form {
+  @include flexible(center, flex-start, column, $gap: 12px);
+
+  &__submit-buttons {
+    @include flexible(center, center, $gap: 16px);
+  }
+}
+</style>

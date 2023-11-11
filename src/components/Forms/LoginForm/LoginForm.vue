@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { useForm } from 'vee-validate'
 
 import Typography from '@Components/Typography/Typography.vue'
@@ -16,6 +17,8 @@ import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
 
+const isLoading = ref(false)
+
 const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {
     email: (value: string) =>
@@ -25,13 +28,15 @@ const { handleSubmit } = useForm<LoginUser>({
 })
 
 const handleLogin = handleSubmit(async (values) => {
+  isLoading.value = true
   await userStore.loginUser(values)
+  isLoading.value = false
 })
 </script>
 
 <template>
   <FormLayout>
-    <Typography class-name="fs-3 text-primary">Авторизация</Typography>
+    <Typography class-name="fs-3 text-primary text-center">Авторизация</Typography>
 
     <Input
       v-for="input in loginInputs"
@@ -47,11 +52,17 @@ const handleLogin = handleSubmit(async (values) => {
       </template>
     </Input>
 
-    <router-link to="/forgot-password">Забыли пароль?</router-link>
+    <router-link
+      to="/forgot-password"
+      class="text-center"
+    >
+      Забыли пароль?
+    </router-link>
 
     <Button
       type="submit"
-      class-name="btn-primary w-100"
+      variant="primary"
+      :is-loading="isLoading"
       @click="handleLogin"
     >
       Войти
