@@ -71,14 +71,14 @@ const createCompany = async (
 }
 
 const updateCompany = async (
-  team: Company,
+  company: Company,
   id: number,
   token: string,
 ): Promise<Success | Error> => {
   return await companiesAxios
     .put<Success>(
       `/company/update/${id}`,
-      team,
+      company,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

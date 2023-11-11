@@ -384,16 +384,12 @@ function getMocks(): Mocks {
     {
       id: 0,
       name: 'Газпром',
-      createdAt: '2023-10-23T11:02:17Z',
-      membersCount: 3,
       owner: users[0],
       members: [users[3]],
     },
     {
       id: 1,
       name: 'Роснефть',
-      createdAt: '2023-10-23T11:02:17Z',
-      membersCount: 1,
       owner: users[2],
       members: [users[1]],
     },

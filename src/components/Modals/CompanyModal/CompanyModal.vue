@@ -77,7 +77,7 @@ const { setValues, handleSubmit } = useForm<Company>({
 const { fields, push, remove } = useFieldArray<User>('users')
 
 onUpdated(async () => {
-  if (props.usersGroupId !== undefined && props.isOpened) {
+  if (props.companyId !== undefined && props.isOpened) {
     const currentUser = user.value
 
     if (currentUser?.token) {
@@ -96,14 +96,14 @@ onUpdated(async () => {
 
       setValues({ ...response })
       unselectedUsers.value = users.value.filter((user) =>
-        response.users.every((companyUser) => companyUser.id !== user.id),
+        response.members.every((companyUser) => companyUser.id !== user.id),
       )
       companyModalMode.value = 'UPDATE'
 
       isLoadingCompany.value = false
     }
   } else if (props.isOpened) {
-    setValues({ name: '', users: [], roles: [] })
+    setValues({ name: '', members: [] })
     unselectedUsers.value = [...users.value]
     companyModalMode.value = 'CREATE'
 
@@ -145,7 +145,7 @@ const handleUpdateCompany = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
     const { id } = values
-    const response = await CompanyService.updateCompany(values, token, id)
+    const response = await CompanyService.updateCompany(values, id, token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -175,7 +175,7 @@ const handleUpdateCompany = handleSubmit(async (values) => {
       v-if="isOpened"
       class="company-modal p-3 bg-white rounded-3"
     >
-      <template v-if="isLoadingGroup">
+      <template v-if="isLoadingCompany">
         <CompanyModalPlaceholder />
       </template>
 

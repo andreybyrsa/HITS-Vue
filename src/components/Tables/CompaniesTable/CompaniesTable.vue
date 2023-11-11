@@ -3,7 +3,6 @@
     :columns="companiesTableColumns"
     :data="companies"
     :search-by="['name']"
-    :filters="companiesFilters"
     :dropdown-actions-menu="dropdownCompaniesActions"
   ></Table>
 
@@ -26,7 +25,7 @@ import { storeToRefs } from 'pinia'
 
 import Table from '@Components/Table/Table.vue'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
-import CompanyModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
+import CompanyModal from '@Components/Modals/CompanyModal/CompanyModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
 import Company from '@Domain/Company'
@@ -48,28 +47,12 @@ const currentDeleteCompanyId = ref<number | null>(null)
 const isOpenedUpdatingCompanyModal = ref(false)
 const isOpenedDeletingCompanyModal = ref(false)
 
-const isSortedByMembersCount = ref(false)
-const isSortedByCreatedAt = ref(false)
-
 const companiesTableColumns: TableColumn<Company>[] = [
   {
     key: 'name',
     label: 'Название',
     rowCellClick: openUpdatingCompanyModal,
     getRowCellStyle: getCompanyNameStyle,
-  },
-  {
-    key: 'membersCount',
-    label: 'Участники',
-    contentClassName: 'justify-content-center align-items-center text-center',
-    headerCellClick: sortByMembersCount,
-  },
-  {
-    key: 'createdAt',
-    label: 'Дата создания',
-    contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellFormat: getFormattedDate,
-    headerCellClick: sortByCreatedAt,
   },
 ]
 
@@ -85,48 +68,13 @@ const dropdownCompaniesActions: DropdownMenuAction<Company>[] = [
   },
 ]
 
-function sortByCreatedAt() {
-  companies.value.sort((company1, company2) => {
-    const comparingDate1 = new Date(company1.createdAt).getTime()
-    const comparingDate2 = new Date(company2.createdAt).getTime()
-
-    if (isSortedByCreatedAt.value) {
-      return comparingDate1 - comparingDate2
-    } else {
-      return comparingDate2 - comparingDate1
-    }
-  })
-  isSortedByCreatedAt.value = !isSortedByCreatedAt.value
-}
-
-function sortByMembersCount() {
-  teams.value.sort((company1, company2) => {
-    const comparingDate1 = new Date(company1.membersCount).getTime()
-    const comparingDate2 = new Date(company2.membersCount).getTime()
-
-    if (isSortedByMembersCount.value) {
-      return comparingDate1 - comparingDate2
-    } else {
-      return comparingDate2 - comparingDate1
-    }
-  })
-  isSortedByMembersCount.value = !isSortedByMembersCount.value
-}
-
-function getFormattedDate(date: string) {
-  if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
-    return formattedDate.value
-  }
-}
-
 function getCompanyNameStyle() {
   return 'text-primary'
 }
 
 function openUpdatingCompanyModal(company: Company) {
-  currentComapnyId.value = company.id
-  isOpenedUpdatingcompanyModal.value = true
+  currentCompanyId.value = company.id
+  isOpenedUpdatingCompanyModal.value = true
 }
 function closeUpdatingCompanyModal() {
   isOpenedUpdatingCompanyModal.value = false
@@ -154,8 +102,8 @@ const handleDeleteCompany = async () => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    company.value = companies.value.filter(
-      (company) => company.id !== currentDeleteGroupId.value,
+    companies.value = companies.value.filter(
+      (company) => company.id !== currentDeleteCompanyId.value,
     )
   }
 }
