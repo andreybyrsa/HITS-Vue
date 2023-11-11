@@ -180,7 +180,7 @@ const handleUpdateCompany = handleSubmit(async (values) => {
       </template>
 
       <template v-else>
-        <div class="users-group-modal__header">
+        <div class="company-modal__header">
           <Typography class-name="fs-2 text-primary">
             {{
               companyModalMode === 'CREATE'
