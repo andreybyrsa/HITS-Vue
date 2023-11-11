@@ -134,7 +134,6 @@ function checkResponseStatus<T>(data: RequestResult<T>) {
     />
 
     <DeleteModal
-      v-if="user?.email == team.owner.email"
       :is-opened="modalName === deleteModal"
       @close-modal="closeModal"
       @delete="handleDeleteTeam"
@@ -151,9 +150,7 @@ function checkResponseStatus<T>(data: RequestResult<T>) {
     <TeamAccessionModal
       mode="write"
       :type="
-        team.members.find((member) => member.email == user?.email)
-          ? 'LEAVE'
-          : 'ENTER'
+        team.members.find((member) => member.userId == user?.id) ? 'LEAVE' : 'ENTER'
       "
       :sender="user"
       :is-opened="modalName === accessionModal"
