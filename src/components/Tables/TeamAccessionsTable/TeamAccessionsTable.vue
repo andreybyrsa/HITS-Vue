@@ -152,7 +152,7 @@ function closeDeleteModal() {
 async function handleDeleteTeamAccession() {
   const currentUser = user.value
 
-  if (currentUser?.token && deletingAccessionId.value) {
+  if (currentUser?.token && deletingAccessionId.value && teamAccessions.value) {
     const { token } = currentUser
     const response = await TeamService.deleteTeamAccession(
       deletingAccessionId.value,
@@ -163,14 +163,13 @@ async function handleDeleteTeamAccession() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    const deletingTeamIndex = teamAccessions.value?.findIndex(
-      (teamAccession) => teamAccession.id === deletingAccessionId.value,
+    const deletingTeamIndex = teamAccessions.value.findIndex(
+      (teamAccession) => teamAccession.id == deletingAccessionId.value,
     )
 
-    if (deletingTeamIndex !== -1 && deletingTeamIndex) {
+    if (deletingTeamIndex != -1) {
       teamAccessions.value?.splice(deletingTeamIndex, 1)
     }
-
     return notificationsStore.createSystemNotification('Система', response.success)
   }
 }

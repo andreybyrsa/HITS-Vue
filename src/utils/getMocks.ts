@@ -25,8 +25,6 @@ interface Mocks {
   RequestTeams: RequestTeams[]
   IdeasMarket: IdeasMarket[]
   teamAccessions: TeamAccession[]
-  teamRequests: TeamAccession[]
-  teamInvitations: TeamAccession[]
   teamMember: TeamMember[]
   notifications: Notification[]
 }
@@ -701,11 +699,12 @@ function getMocks(): Mocks {
     },
   ]
 
-  const teamInvitations: TeamAccession[] = [
+  const teamAccessions: TeamAccession[] = [
     {
-      id: 0,
+      id: 1,
       team: teams[0],
       targetEmail: '1wgwrgw2@mail.com',
+      targetId: 1,
       targetRegistered: true,
       inviter: {
         userId: 0,
@@ -718,7 +717,7 @@ function getMocks(): Mocks {
       stage: 'INVITATION',
     },
     {
-      id: 1,
+      id: 2,
       targetEmail: 'test451@gmail.com',
       targetRegistered: false,
       team: teams[0],
@@ -732,8 +731,6 @@ function getMocks(): Mocks {
       updatedAt: '2022-11-20T14:02:17Z',
       stage: 'INVITATION',
     },
-  ]
-  const teamRequests: TeamAccession[] = [
     {
       id: 3,
       team: teams[0],
@@ -755,7 +752,6 @@ function getMocks(): Mocks {
       stage: 'REQUEST',
     },
   ]
-  const teamAccessions: TeamAccession[] = [...teamInvitations, ...teamRequests]
 
   return {
     users,
@@ -769,8 +765,6 @@ function getMocks(): Mocks {
     teams,
     RequestTeams,
     IdeasMarket,
-    teamRequests,
-    teamInvitations,
     unregisteredInvitations,
     registeredInvitations,
     teamAccessions,

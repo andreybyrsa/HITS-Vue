@@ -311,7 +311,7 @@ const deleteTeamAccession = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { responseData: { success: 'Успешное удаление' }, params: { id } },
+      { params: { id }, responseData: { success: 'Успешное удаление' } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
