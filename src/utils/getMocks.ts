@@ -185,7 +185,7 @@ function getMocks(): Mocks {
       ideaId: 0,
       expertId: 0,
       budget: 1,
-      technicalRealizability: 1,
+      technicalRealizability: null,
       suitability: 2,
       rating: 8 / 5,
       originality: 3,
@@ -202,7 +202,7 @@ function getMocks(): Mocks {
       rating: 14 / 5,
       originality: 1,
       marketValue: 2,
-      confirmed: false,
+      confirmed: true,
     },
     {
       id: 2,

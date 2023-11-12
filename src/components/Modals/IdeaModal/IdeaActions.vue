@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, VueElement, onMounted, onUpdated } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
@@ -18,20 +18,9 @@ const ideasStore = useIdeasStore()
 
 const router = useRouter()
 
-const ideaActionsButtons = ref<VueElement | null>()
-
 const isSendingOnApproval = ref(false)
 const isSendingOnEditing = ref(false)
 const isSendingOnConfirmation = ref(false)
-
-onMounted(() => checkComponentContent())
-onUpdated(() => checkComponentContent())
-
-function checkComponentContent() {
-  if (ideaActionsButtons.value && ideaActionsButtons.value.childElementCount === 0) {
-    ideaActionsButtons.value.remove()
-  }
-}
 
 function getAccessToEditByInitiator() {
   if (user.value) {
@@ -101,7 +90,7 @@ const handleSendToConfirmation = async () => {
 
 <template>
   <div
-    ref="ideaActionsButtons"
+    v-if="getAccessToEditByInitiator() || getAccessToApproval()"
     class="rounded-3 bg-white p-3 d-flex flex-wrap gap-3"
   >
     <Button

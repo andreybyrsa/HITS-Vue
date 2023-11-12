@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
-import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
 import {
@@ -18,20 +17,18 @@ import ExpertRatingCalculatorPlaceholder from '@Components/Modals/IdeaModal/Expe
 
 import { Rating } from '@Domain/Idea'
 
-import RatingService from '@Services/RatingService'
-
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useRatingsStore from '@Store/ratings/ratingsStore'
 
 import Validation from '@Utils/Validation'
 
 const props = defineProps<ExperCalculatorProps>()
-const ratings = defineModel<Rating[]>({ required: false })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const notificationsStore = useNotificationsStore()
+const ratingsStore = useRatingsStore()
+const rating = ref<Rating>()
 
 const overallRatingPlaceholder = ref('Вычисление')
 
@@ -56,14 +53,21 @@ const { values, setFieldValue, setValues, handleSubmit } = useForm<Rating>({
   },
 })
 
-watchImmediate(
-  () => props.rating,
-  (currentRating) => {
+onMounted(() => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { idea } = props
+    const { id } = currentUser
+
+    const currentRating = ratingsStore.getRatingByIdeaIdAndExpertId(idea.id, id)
+
     if (currentRating) {
-      setValues({ ...currentRating })
+      setValues({ ...currentRating }, false)
+      rating.value = currentRating
     }
-  },
-)
+  }
+})
 
 const overallRating = computed(() => {
   const { marketValue, originality, technicalRealizability, suitability, budget } =
@@ -97,18 +101,8 @@ const handleConfirmRating = handleSubmit(async (values) => {
     const { id } = props.idea
 
     isConfirming.value = true
-    const response = await RatingService.confirmExpertRating(values, id, token)
+    await ratingsStore.confirmRating(values, id, token)
     isConfirming.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    ratings.value?.forEach((rating) => {
-      if (rating.id === values.id) {
-        rating.confirmed = true
-      }
-    })
   }
 })
 
@@ -120,12 +114,8 @@ const handleSaveRating = async () => {
     const { id } = props.idea
 
     isSaving.value = true
-    const response = await RatingService.saveExpertRating(values, id, token)
+    await ratingsStore.saveRating(values, id, token)
     isSaving.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
 
     isSavedRating.value = true
   }
