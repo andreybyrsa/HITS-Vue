@@ -104,7 +104,7 @@ const createNoConfirmedSkill = async (
 
 const confirmSkill = async (
   skill: Skill,
-  id: number,
+  id: string,
   token: string,
 ): Promise<Skill | Error> => {
   return await skillsAxios
@@ -126,7 +126,7 @@ const confirmSkill = async (
 
 const updateSkill = async (
   skill: Skill,
-  id: number,
+  id: string,
   token: string,
 ): Promise<Skill | Error> => {
   return await skillsAxios
@@ -146,7 +146,7 @@ const updateSkill = async (
     })
 }
 
-const deleteSkill = async (id: number, token: string): Promise<Success | Error> => {
+const deleteSkill = async (id: string, token: string): Promise<Success | Error> => {
   return await skillsAxios
     .delete(
       `/skill/delete/${id}`,

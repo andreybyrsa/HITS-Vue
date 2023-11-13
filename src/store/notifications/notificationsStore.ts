@@ -29,7 +29,7 @@ const useNotificationsStore = defineStore('notification', {
         this.notifications.push(notification)
       }
     },
-    async readNotificationNotification(id: number, token: string) {
+    async readNotificationNotification(id: string, token: string) {
       const response = await NotificatonsService.checkNotification(id, token)
 
       if (response instanceof Error) {
@@ -44,7 +44,7 @@ const useNotificationsStore = defineStore('notification', {
         }
       }
     },
-    async closeNotification(id: number, token: string) {
+    async closeNotification(id: string, token: string) {
       const response = await NotificatonsService.closeNotification(id, token)
 
       if (response instanceof Error) {
@@ -65,7 +65,7 @@ const useNotificationsStore = defineStore('notification', {
     },
 
     createSystemNotification(title: string, message: string) {
-      const id = Math.random() * 1000000
+      const id = (Math.random() * 1000000).toString()
       const systemNotification = {
         id,
         title,
@@ -77,7 +77,7 @@ const useNotificationsStore = defineStore('notification', {
       } as Notification
       this.systemNotifications.push(systemNotification)
     },
-    closeSystemNotification(id: number) {
+    closeSystemNotification(id: string) {
       const currentNotification = this.systemNotifications.find(
         (notification) => notification.id === id,
       )

@@ -2,7 +2,7 @@ import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 
 interface Team {
-  id: number
+  id: string
   name: string
   createdAt: string
   description: string

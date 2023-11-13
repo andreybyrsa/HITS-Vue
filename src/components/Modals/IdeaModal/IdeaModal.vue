@@ -62,7 +62,7 @@ onMounted(async () => {
 
   if (currentUser?.token && currentUser?.role) {
     const { token, role } = currentUser
-    const id = +route.params.id
+    const id = route.params.id.toString()
 
     const ideaParallelRequests = [
       () => ideasStore.getIdea(id, role, token),

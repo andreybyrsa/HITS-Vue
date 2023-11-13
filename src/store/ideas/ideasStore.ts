@@ -39,7 +39,7 @@ const useIdeasStore = defineStore('ideas', {
     },
 
     getIdea() {
-      return async (id: number, role: RolesTypes, token: string) => {
+      return async (id: string, role: RolesTypes, token: string) => {
         const idea = await IdeasService.getIdea(id, token)
 
         if (idea instanceof Error) {
@@ -63,7 +63,7 @@ const useIdeasStore = defineStore('ideas', {
     },
   },
   actions: {
-    async updateIdeaStatus(id: number, status: IdeaStatusTypes, token: string) {
+    async updateIdeaStatus(id: string, status: IdeaStatusTypes, token: string) {
       const response = await IdeasService.updateIdeaStatus(id, status, token)
 
       if (response instanceof Error) {
@@ -77,7 +77,7 @@ const useIdeasStore = defineStore('ideas', {
       }
     },
 
-    setIdeaRating(id: number, rating: number) {
+    setIdeaRating(id: string, rating: number) {
       const currentIdea = this.ideas.find((idea) => idea.id === id)
 
       if (currentIdea) {
@@ -86,7 +86,7 @@ const useIdeasStore = defineStore('ideas', {
       }
     },
 
-    async deleteIdea(id: number, token: string) {
+    async deleteIdea(id: string, token: string) {
       const response = await IdeasService.deleteIdea(id, token)
 
       if (response instanceof Error) {

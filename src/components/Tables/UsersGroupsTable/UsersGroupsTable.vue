@@ -48,7 +48,7 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const currentGroupId = ref()
-const currentDeleteGroupId = ref<number | null>(null)
+const currentDeleteGroupId = ref<string | null>(null)
 
 const isOpenedUpdatingGroupModal = ref(false)
 const isOpenedDeletingGroupModal = ref(false)
