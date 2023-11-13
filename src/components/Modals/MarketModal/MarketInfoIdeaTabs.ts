@@ -11,12 +11,12 @@ const MarketInfoTabs = [
   },
   {
     id: 2,
-    name: 'Дата старта',
+    name: 'Дата старта проекта',
     icon: 'bi bi-calendar',
   },
   {
     id: 3,
-    name: 'Дата окончания',
+    name: 'Дата окончания проекта',
     icon: 'bi bi-calendar',
   },
 ]

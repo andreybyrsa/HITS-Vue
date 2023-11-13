@@ -19,6 +19,9 @@ interface IdeasMarket {
   requests: number
   acceptedRequests: number
   isFavorite?: boolean
+
+  startDate: string
+  finishDate: string
 }
 
 export default IdeasMarket

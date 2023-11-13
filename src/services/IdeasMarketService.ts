@@ -60,14 +60,14 @@ const getIdeaMarket = async (
 
 const postIdeaOnMarket = async (
   ideas: IdeasMarket,
-  token: string,
+  token: string, //
 ): Promise<Success | Error> => {
   return await ideasMarketAxios
     .post<Success>(
       '/ideas/market/add',
       ideas,
       { headers: { Authorization: `Bearer ${token}` } },
-      { responseData: { success: 'Успешное добавление идеи' } },
+      { responseData: { success: 'Успешная отправка идей на биржу' } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

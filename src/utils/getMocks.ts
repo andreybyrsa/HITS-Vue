@@ -806,6 +806,8 @@ function getMocks(): Mocks {
       requests: 111,
       acceptedRequests: 4,
       isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
     },
     {
       id: 2,
@@ -828,6 +830,8 @@ function getMocks(): Mocks {
       requests: 222,
       acceptedRequests: 5,
       isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
     },
     {
       id: 3,
@@ -850,6 +854,8 @@ function getMocks(): Mocks {
       requests: 0,
       acceptedRequests: 0,
       isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
     },
   ]
   const notifications: Notification[] = [

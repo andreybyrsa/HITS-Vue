@@ -17,8 +17,6 @@ interface SkillsRadarChartsProps {
   skills: SkillsForRadar[]
   isNotPlaceholder?: boolean
 
-  skillsIdea?: Skill[]
-  skillsTeam?: Skill[]
   className?: string
 }
 
