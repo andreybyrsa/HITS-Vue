@@ -4,22 +4,22 @@ import TeamMember from './TeamMember'
 
 interface IdeasMarket {
   id: number
-  position: number
+  initiator: TeamMember
+  createdAt: string
   name: string
   problem: string
+  description: string
   solution: string
   result: string
-  customer: string
-  initiator: TeamMember
-  description: string
-  stack: Skill[]
-  createdAt: string
   maxTeamSize: number
+  customer: string
+
+  position: number
+  stack: Skill[]
   status: IdeasMarketStatusTypes
   requests: number
   acceptedRequests: number
-  isFavorite?: boolean
-
+  isFavorite: boolean
   startDate: string
   finishDate: string
 }

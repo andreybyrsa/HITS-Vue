@@ -1,10 +1,11 @@
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 import UsersGroup from '@Domain/UsersGroup'
 import { Skill } from '@Domain/Skill'
+import TeamMember from '@Domain/TeamMember'
 
 interface Idea {
   id: number
-  initiator: string
+  initiator: TeamMember
   createdAt: string
   modifiedAt: string
 

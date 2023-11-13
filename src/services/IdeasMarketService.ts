@@ -2,6 +2,8 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import Success from '@Domain/ResponseMessage'
 import IdeasMarket from '@Domain/IdeasMarket'
+import getAbortedSignal from '@Utils/getAbortedSignal'
+import useUserStore from '@Store/user/userStore'
 
 function formatFavoriteIdea(ideasMarket: IdeasMarket[]) {
   return ideasMarket.filter((ideaMarket) => ideaMarket.isFavorite)
@@ -72,23 +74,26 @@ const getAllInitiatorMarketIdeas = async (
     })
 }
 
-const postIdeaOnMarket = async (
-  ideas: IdeasMarket,
-  token: string,
-): Promise<Success | Error> => {
-  return await ideasMarketAxios
-    .post<Success>(
-      '/ideas/market/add',
-      ideas,
-      { headers: { Authorization: `Bearer ${token}` } },
-      { responseData: { success: 'Успешная отправка идей на биржу' } },
-    )
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка отправки идей на биржу'
-      return new Error(error)
-    })
-}
+// const postIdeaOnMarket = async (
+//   ideas: IdeasMarket[],
+//   token: string,
+// ): Promise<IdeasMarket[] | Error> => {
+//   return await ideasMarketAxios
+//     .post(
+//       '/ideas/market/add',
+//       ideas,
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//       },
+//       { responseData: { success: 'Успешная отправка идей на биржу' } },
+//     )
+//     .then((response) => response.data)
+//     .catch(({ response }) => {
+//       const error = response?.data?.error ?? 'Ошибка отправки идей на биржу'
+//       return new Error(error)
+//     })
+// }
 
 const addIdeaToFavorites = async (
   id: number,
@@ -127,7 +132,7 @@ const removeIdeaFromFavorites = async (
 const IdeasMarketService = {
   fetchIdeasMarket,
   getIdeaMarket,
-  postIdeaOnMarket,
+  // postIdeaOnMarket,
   fetchFavoritesIdeas,
   addIdeaToFavorites,
   removeIdeaFromFavorites,

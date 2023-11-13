@@ -39,6 +39,7 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 
 import getStatus from '@Utils/getStatus'
 import mutableSort from '@Utils/mutableSort'
+import IdeasMarket from '@Domain/IdeasMarket'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -222,7 +223,49 @@ function getRatingColor(rating: number) {
 }
 
 function sendIdeasToMarket(ideas: Idea[]) {
-  console.log(ideas)
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    ideas.forEach((idea) => {
+      const {
+        id,
+        initiator,
+        createdAt,
+        name,
+        problem,
+        description,
+        solution,
+        result,
+        maxTeamSize,
+        customer,
+      } = idea
+      //     const ideaMarket: IdeasMarket = {
+      //       id: id,
+      // initiator: initiator,
+      // createdAt: createdAt,
+      // name: name,
+      // problem: problem,
+      // description: description,
+      // solution: solution,
+      // result: result,
+      // maxTeamSize: maxTeamSize,
+      // customer: customer,
+
+      // position: number,
+      // stack: Skill[],
+      // status: 'RECRUITMENT_IS_OPEN',
+      // requests: 0,
+      // acceptedRequests: 0,
+      // isFavorite: false,
+      // startDate: '1',
+      // finishDate: '1',
+      //     }
+    })
+
+    // teams.value.forEach((elem) =>
+    //   elem.id == team.id ? (elem.accepted = true) : null,
+    // )
+  }
 }
 
 function navigateToIdeaModal(idea: Idea) {
@@ -260,7 +303,7 @@ function checkDeleteIdeaAction(idea: Idea) {
       status === 'NEW' || status === 'ON_EDITING' || status === 'ON_APPROVAL'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === `${currentUser.id}` && requiredIdeaStatus
+      return initiator.id === currentUser.id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
@@ -276,7 +319,7 @@ function checkUpdateIdeaAction(idea: Idea) {
     const requiredIdeaStatus = status === 'NEW' || status === 'ON_EDITING'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === `${currentUser.id}` && requiredIdeaStatus
+      return initiator.id === currentUser.id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
