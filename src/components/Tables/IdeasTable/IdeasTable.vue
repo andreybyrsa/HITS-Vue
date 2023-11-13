@@ -52,7 +52,7 @@ const ideasData = ref<Idea[]>([])
 
 const availableStatus = getStatus()
 
-const deletingIdeaId = ref<number | null>(null)
+const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
 const isSortedByCreatedAt = ref(false)

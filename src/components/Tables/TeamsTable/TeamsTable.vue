@@ -40,13 +40,13 @@ const notificationsStore = useNotificationsStore()
 
 const teams = defineModel<Team[]>({ required: true })
 
-const deletingTeamId = ref<number | null>(null)
-const isOpenedTeamDeleteModal = ref(false)
+const deletingTeamId = ref<string | null>(null)
 
 const filterByIsClosed = ref<boolean>()
 
 const isSortedByMembersCount = ref(false)
 const isSortedByCreatedAt = ref(false)
+const isOpenedTeamDeleteModal = ref(false)
 
 const teamTableColumns: TableColumn<Team>[] = [
   {

@@ -1,6 +1,6 @@
 interface Notification {
-  id: number
-  userId: number
+  id: string
+  userId: string
   title: string
   message: string
   isShowed: boolean

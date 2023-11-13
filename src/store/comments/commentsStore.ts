@@ -17,7 +17,7 @@ const useCommentsStore = defineStore('comments', {
   }),
   getters: {
     getComments() {
-      return async (ideaId: number, token: string) => {
+      return async (ideaId: string, token: string) => {
         const response = await CommentService.getComments(ideaId, token)
 
         if (response instanceof Error) {
@@ -34,7 +34,7 @@ const useCommentsStore = defineStore('comments', {
     },
   },
   actions: {
-    async connectRsocket(ideaId: number) {
+    async connectRsocket(ideaId: string) {
       if (this.comments) {
         const { isConnected, closeConnection } = await useWebSocket<Comment[]>(
           `comment.${ideaId}.receive`,
@@ -69,7 +69,7 @@ const useCommentsStore = defineStore('comments', {
       }
     },
 
-    async deleteComment(commentId: number, token: string) {
+    async deleteComment(commentId: string, token: string) {
       const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
@@ -87,7 +87,7 @@ const useCommentsStore = defineStore('comments', {
       }
     },
 
-    async checkComment(userId: number, commentId: number, token: string) {
+    async checkComment(userId: string, commentId: string, token: string) {
       const response = await CommentService.checkComment(userId, commentId, token)
 
       if (response instanceof Error) {

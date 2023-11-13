@@ -9,12 +9,12 @@ import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const commentAxios = defineAxios(getMocks().comments)
 
-function filterCommentsById(ideaId: number, comments: Comment[]) {
+function filterCommentsById(ideaId: string, comments: Comment[]) {
   return comments.filter((comment) => comment.ideaId === ideaId)
 }
 
 const getComments = async (
-  ideaId: number,
+  ideaId: string,
   token: string,
 ): Promise<Comment[] | Error> => {
   return await commentAxios
@@ -50,7 +50,7 @@ const createComment = async (
 }
 
 const deleteComment = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await commentAxios
@@ -70,8 +70,8 @@ const deleteComment = async (
 }
 
 const checkComment = async (
-  userId: number,
-  id: number,
+  userId: string,
+  id: string,
   token: string,
 ): Promise<void | Error> => {
   return await commentAxios
