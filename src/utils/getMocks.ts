@@ -312,7 +312,7 @@ function getMocks(): Mocks {
       ideaId: 0,
       expertId: 0,
       budget: 1,
-      technicalRealizability: 1,
+      technicalRealizability: null,
       suitability: 2,
       rating: 8 / 5,
       originality: 3,
@@ -329,7 +329,7 @@ function getMocks(): Mocks {
       rating: 14 / 5,
       originality: 1,
       marketValue: 2,
-      confirmed: false,
+      confirmed: true,
     },
     {
       id: 2,
@@ -806,6 +806,8 @@ function getMocks(): Mocks {
       requests: 111,
       acceptedRequests: 4,
       isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
     },
     {
       id: 2,
@@ -828,6 +830,8 @@ function getMocks(): Mocks {
       requests: 222,
       acceptedRequests: 5,
       isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
     },
     {
       id: 3,
@@ -850,6 +854,8 @@ function getMocks(): Mocks {
       requests: 0,
       acceptedRequests: 0,
       isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
     },
   ]
   const notifications: Notification[] = [

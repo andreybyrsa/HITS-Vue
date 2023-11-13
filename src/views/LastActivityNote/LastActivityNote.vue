@@ -45,8 +45,9 @@ onMounted(() => {
   changes.value = data
 })
 </script>
+
 <template>
-  <PageLayout content-class-name="dev-page__content p-3">
+  <PageLayout content-class-name="last-activity-page__content p-3">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
@@ -57,9 +58,12 @@ onMounted(() => {
     </template>
   </PageLayout>
 </template>
+
 <style lang="scss" scoped>
-.dev-page {
+.last-activity-page {
   &__content {
+    overflow-y: scroll;
+
     @include flexible(flex-start, flex-start, column, $gap: 16px);
   }
 }

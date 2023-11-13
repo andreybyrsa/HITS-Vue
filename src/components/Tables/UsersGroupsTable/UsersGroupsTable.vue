@@ -2,7 +2,7 @@
   <Table
     :columns="usersGroupsTableColumns"
     :data="usersGroups"
-    search-by="name"
+    :search-by="['name']"
     :filters="usersGroupsFilters"
     :dropdown-actions-menu="dropdownUsersGroupsActions"
   ></Table>

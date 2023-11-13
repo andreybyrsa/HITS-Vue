@@ -2,10 +2,16 @@
 import { computed } from 'vue'
 
 import ButtonProps from '@Components/Button/Button.types'
+import Icon from '@Components/Icon/Icon.vue'
+import LoadingSpinner from '@Components/LoadingSpinner/LoadingSpinner.vue'
 
 const props = defineProps<ButtonProps>()
 
-const ButtonClassName = computed(() => ['btn d-flex', props.className])
+const ButtonClassName = computed(() => [
+  'btn d-flex',
+  { [`btn-${props.variant}`]: props.variant },
+  props.className,
+])
 </script>
 
 <template>
@@ -13,17 +19,23 @@ const ButtonClassName = computed(() => ['btn d-flex', props.className])
     type="button"
     :class="ButtonClassName"
   >
-    <i
+    <Icon
       v-if="prependIconName"
-      :class="`${prependIconName} fs-5`"
-    ></i>
+      :class-name="`${prependIconName} fs-5`"
+    />
+
+    <LoadingSpinner
+      v-if="isLoading"
+      :is-loading="isLoading"
+      size="sm"
+    />
 
     <slot></slot>
 
-    <i
+    <Icon
       v-if="appendIconName"
-      :class="`${appendIconName} fs-5`"
-    ></i>
+      :class-name="`${appendIconName} fs-5`"
+    />
   </button>
 </template>
 

@@ -36,8 +36,8 @@ async function handleDelete() {
         Вы действительно хотите удалить?
       </Typography>
       <Button
+        variant="danger"
         @click="handleDelete"
-        class-name="btn-danger w-100"
       >
         Удалить
       </Button>
@@ -48,8 +48,8 @@ async function handleDelete() {
 <style lang="scss">
 .delete-modal {
   @include flexible(
-    center,
-    flex-end,
+    stretch,
+    stretch,
     column,
     $gap: 16px,
     $align-self: center,

@@ -65,22 +65,17 @@ const useUserStore = defineStore('user', {
       const currentActivity = new Date()
       const currentUser = LocalStorageUser.getLocalStorageUser()
 
-      if (currentUser?.lastActivity) {
+      if (currentUser?.lastLogin) {
         const activityDifference =
-          (currentActivity.getTime() - currentUser.lastActivity.getTime()) /
+          (currentActivity.getTime() - currentUser.lastLogin.getTime()) /
           (1000 * 60 * 60)
 
         if (activityDifference > 24) {
           this.logoutUser()
-          LocalStorageUser.removeLocalStorageUser()
 
           return true
-        } else if (this.user) {
-          this.user.lastActivity = new Date()
-          LocalStorageUser.setLocalStorageUser(this.user)
-
-          return false
         }
+        return false
       }
       return true
     },

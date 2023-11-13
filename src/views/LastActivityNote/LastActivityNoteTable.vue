@@ -80,6 +80,6 @@ function sortName(changes: Change[]) {
   <Table
     :columns="columns"
     :data="props.changes"
-    search-by="name"
+    :search-by="['name']"
   ></Table>
 </template>

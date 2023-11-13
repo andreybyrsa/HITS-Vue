@@ -44,7 +44,7 @@ const postRequest = async (
     })
 }
 
-const putRequestTeams = async (
+const putRequestTeam = async (
   team: RequestTeams,
   token: string,
 ): Promise<Success | Error> => {
@@ -63,6 +63,26 @@ const putRequestTeams = async (
       return new Error(error)
     })
 }
+
+// const putRequestTeams = async (
+//   teams: RequestTeams[],
+//   token: string,
+// ): Promise<Success | Error> => {
+//   return await RequestTeamsAxios.put<Success>(
+//     `/application/add/${teams}`,
+//     teams,
+//     { headers: { Authorization: `Bearer ${token}` } },
+//     {
+//       params: { id: team.id },
+//       responseData: { success: 'Успешное принятие команды' },
+//     },
+//   )
+//     .then((response) => response.data)
+//     .catch(({ response }) => {
+//       const error = response?.data?.error ?? 'Ошибка принятия команды'
+//       return new Error(error)
+//     })
+// }
 
 const deleteRequestTeams = async (
   id: number,
@@ -90,7 +110,7 @@ const RequestTeamsServise = {
   postRequest,
   deleteRequestTeams,
 
-  putRequestTeams,
+  putRequestTeam,
 }
 
 export default RequestTeamsServise

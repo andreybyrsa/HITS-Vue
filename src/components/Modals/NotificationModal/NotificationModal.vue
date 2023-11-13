@@ -37,7 +37,7 @@ const NotificationClassName = computed(() => ['card', 'text-primary'])
           <Typography>{{ notification.title }}</Typography>
 
           <Button
-            class-name="btn-close"
+            variant="close"
             @click="emits('close-notification', props.notification)"
           ></Button>
         </div>

@@ -152,7 +152,7 @@ function handleCloseJoinModal() {
       ></Select>
       <Button
         type="submit"
-        class-name="btn-primary"
+        variant="primary"
         @click="fieldSubmit"
       >
         Submit
@@ -174,7 +174,7 @@ function handleCloseJoinModal() {
       />
 
       <Button
-        class-name="btn-primary"
+        variant="primary"
         append-icon-name="bi bi-plus-lg"
         @click="handleLogin"
       >
@@ -192,6 +192,12 @@ function handleCloseJoinModal() {
       </div>
 
       <Button class-name="btn-primary"> Открыть окно </Button>
+      <Button
+        variant="primary"
+        @click="isOpenedModal = true"
+      >
+        Открыть окно
+      </Button>
 
       <pre>Пользователь из userStore - {{ user }}</pre>
     </template>

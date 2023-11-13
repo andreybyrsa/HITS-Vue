@@ -81,7 +81,7 @@ const postIdeaOnMarket = async (
       '/ideas/market/add',
       ideas,
       { headers: { Authorization: `Bearer ${token}` } },
-      { responseData: { success: 'Успешное добавление идеи' } },
+      { responseData: { success: 'Успешная отправка идей на биржу' } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

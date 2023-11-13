@@ -37,34 +37,28 @@ function handleChooseRole(currentRole: RolesTypes) {
 <template>
   <ModalLayout :is-opened="isOpened">
     <div class="role-modal p-3 rounded bg-white">
-      <Typography class-name="fs-3 text-primary">Доступные роли</Typography>
-      <div
+      <Typography class-name="fs-3 text-primary text-center">
+        Доступные роли
+      </Typography>
+      <Button
         v-for="role in user?.roles"
         :key="role"
-        class="w-100"
+        variant="primary"
+        @click="handleChooseRole(role)"
       >
-        <Button
-          @click="handleChooseRole(role)"
-          class-name="btn-primary w-100"
-        >
-          {{ getTranslatedRole(role) }}
-        </Button>
-      </div>
+        {{ getTranslatedRole(role) }}
+      </Button>
     </div>
   </ModalLayout>
 </template>
 
 <style lang="scss">
 .role-modal {
-  &__header {
-    @include flexible(center, space-between);
-  }
-
   width: 400px;
 
   @include flexible(
-    center,
-    flex-start,
+    stretch,
+    stretch,
     column,
     $align-self: center,
     $justify-self: center,

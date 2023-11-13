@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useDateFormat } from '@vueuse/core'
 
 import { MarketInfoProps } from '@Components/Modals/MarketModal/MarketModal.types'
 
@@ -17,23 +17,25 @@ const props = defineProps<MarketInfoProps>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const dateStart = ref('12.12.2023')
-const dateFinish = ref('16.05.2023')
-const value = ref()
+function getFormattedDate(date: string) {
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
+  }
+}
 
 function valueTab(name: string) {
   if (name == 'Заказчик') {
-    return (value.value = props.idea.customer)
+    return props.idea.customer
   }
   if (name == 'Инициатор') {
-    return (value.value =
-      props.idea.initiator.firstName + ' ' + props.idea.initiator.lastName)
+    return props.idea.initiator.firstName + ' ' + props.idea.initiator.lastName
   }
-  if (name == 'Дата старта') {
-    return (value.value = dateStart.value)
+  if (name == 'Дата старта проекта') {
+    return getFormattedDate(props.idea.startDate)
   }
-  if (name == 'Дата окончания') {
-    return (value.value = dateFinish.value)
+  if (name == 'Дата окончания проекта') {
+    return getFormattedDate(props.idea.finishDate)
   }
 }
 </script>

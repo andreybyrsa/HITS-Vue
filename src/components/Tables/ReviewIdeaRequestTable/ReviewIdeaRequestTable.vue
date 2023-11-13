@@ -69,8 +69,23 @@ const dropdownIdeasActions: DropdownMenuAction<RequestTeams>[] = [
     label: 'Принять',
     className: 'text-success',
     click: acceptRequestTeam,
+    statement: isAcceptedFalse,
+  },
+  {
+    label: 'Отклонить',
+    className: 'text-danger',
+    click: rejectRequestTeam,
+    statement: isAcceptedTrue,
   },
 ]
+
+function isAcceptedFalse(team: RequestTeams) {
+  return team.accepted === false
+}
+
+function isAcceptedTrue(team: RequestTeams) {
+  return team.accepted === true
+}
 
 function getStatusStyle(accepted: boolean) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
@@ -105,7 +120,7 @@ async function acceptRequestTeam(team: RequestTeams) {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await RequestTeamsServise.putRequestTeams(
+    const response = await RequestTeamsServise.putRequestTeam(
       { ...team, accepted: true },
       token,
     )
@@ -116,6 +131,27 @@ async function acceptRequestTeam(team: RequestTeams) {
 
     teams.value.forEach((elem) =>
       elem.id == team.id ? (elem.accepted = true) : null,
+    )
+  }
+}
+
+async function rejectRequestTeam(team: RequestTeams) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await RequestTeamsServise.putRequestTeam(
+      { ...team, accepted: false },
+      token,
+    )
+
+    if (response instanceof Error) {
+      return
+    }
+
+    teams.value.forEach((elem) =>
+      elem.id == team.id ? (elem.accepted = false) : null,
     )
   }
 }
@@ -135,7 +171,7 @@ function closeLetterTeam() {
   <Table
     :columns="requestsTableColumns"
     :data="teams"
-    search-by="name"
+    :search-by="['name']"
     :dropdown-actions-menu="dropdownIdeasActions"
     v-model="skillsRequestTeam"
   />
