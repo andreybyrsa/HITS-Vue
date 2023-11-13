@@ -13,7 +13,6 @@ import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
-import LoadingSpinner from '@Components/LoadingSpinner/LoadingSpinner.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -58,7 +57,7 @@ function handleLogin() {
       ></Select>
       <Button
         type="submit"
-        class-name="btn-primary"
+        variant="primary"
         @click="fieldSubmit"
       >
         Submit
@@ -80,7 +79,7 @@ function handleLogin() {
       />
 
       <Button
-        class-name="btn-primary"
+        variant="primary"
         append-icon-name="bi bi-plus-lg"
         @click="handleLogin"
       >
@@ -98,7 +97,7 @@ function handleLogin() {
       </div>
 
       <Button
-        class-name="btn-primary"
+        variant="primary"
         @click="isOpenedModal = true"
       >
         Открыть окно

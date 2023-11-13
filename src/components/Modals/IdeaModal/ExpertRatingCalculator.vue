@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
-import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
 import {
@@ -18,24 +17,24 @@ import ExpertRatingCalculatorPlaceholder from '@Components/Modals/IdeaModal/Expe
 
 import { Rating } from '@Domain/Idea'
 
-import RatingService from '@Services/RatingService'
-
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useRatingsStore from '@Store/ratings/ratingsStore'
 
 import Validation from '@Utils/Validation'
 
 const props = defineProps<ExperCalculatorProps>()
-const ratings = defineModel<Rating[]>({ required: false })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const notificationsStore = useNotificationsStore()
+const ratingsStore = useRatingsStore()
+const rating = ref<Rating>()
 
 const overallRatingPlaceholder = ref('Вычисление')
 
 const isSavedRating = ref(false)
+const isSaving = ref(false)
+const isConfirming = ref(false)
 
 const { values, setFieldValue, setValues, handleSubmit } = useForm<Rating>({
   validationSchema: {
@@ -54,14 +53,21 @@ const { values, setFieldValue, setValues, handleSubmit } = useForm<Rating>({
   },
 })
 
-watchImmediate(
-  () => props.rating,
-  (currentRating) => {
+onMounted(() => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { idea } = props
+    const { id } = currentUser
+
+    const currentRating = ratingsStore.getRatingByIdeaIdAndExpertId(idea.id, id)
+
     if (currentRating) {
-      setValues({ ...currentRating })
+      setValues({ ...currentRating }, false)
+      rating.value = currentRating
     }
-  },
-)
+  }
+})
 
 const overallRating = computed(() => {
   const { marketValue, originality, technicalRealizability, suitability, budget } =
@@ -93,17 +99,10 @@ const handleConfirmRating = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
     const { id } = props.idea
-    const response = await RatingService.confirmExpertRating(values, id, token)
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    ratings.value?.forEach((rating) => {
-      if (rating.id === values.id) {
-        rating.confirmed = true
-      }
-    })
+    isConfirming.value = true
+    await ratingsStore.confirmRating(values, id, token)
+    isConfirming.value = false
   }
 })
 
@@ -113,11 +112,10 @@ const handleSaveRating = async () => {
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
-    const response = await RatingService.saveExpertRating(values, id, token)
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
+    isSaving.value = true
+    await ratingsStore.saveRating(values, id, token)
+    isSaving.value = false
 
     isSavedRating.value = true
   }
@@ -180,14 +178,16 @@ function getCurrentTooltip(select: RatingSelect) {
     >
       <Button
         type="submit"
-        class-name="btn-primary"
+        variant="primary"
+        :is-loading="isConfirming"
         @click="handleConfirmRating"
       >
         Утвердить
       </Button>
       <Button
         type="submit"
-        :class-name="isSavedRating ? 'btn-success' : 'btn-primary'"
+        :variant="isSavedRating ? 'success' : 'primary'"
+        :is-loading="isSaving"
         @click="handleSaveRating"
       >
         Сохранить форму

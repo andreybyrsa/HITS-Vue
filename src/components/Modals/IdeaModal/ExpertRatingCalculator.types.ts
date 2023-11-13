@@ -1,6 +1,6 @@
 import { OptionType } from '@Components/Inputs/Select/Select.types'
 
-import { Idea, Rating } from '@Domain/Idea'
+import { Idea } from '@Domain/Idea'
 
 interface RatingSelect {
   name:
@@ -15,7 +15,6 @@ interface RatingSelect {
 
 interface ExperCalculatorProps {
   idea: Idea
-  rating?: Rating
 }
 
 const marketValueOptions = [

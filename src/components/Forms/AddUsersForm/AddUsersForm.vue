@@ -71,7 +71,7 @@ const handleInvite = handleSubmit(async (values) => {
 
 <template>
   <FormLayout class-name="add-users-form">
-    <Typography class-name="fs-3 text-primary">
+    <Typography class-name="fs-3 text-primary text-center">
       Добавление пользователей
     </Typography>
 
@@ -111,7 +111,7 @@ const handleInvite = handleSubmit(async (values) => {
 
     <Button
       type="submit"
-      class-name="btn-primary w-100"
+      variant="primary"
       :is-loading="isLoading"
       @click="handleInvite"
     >

@@ -31,8 +31,7 @@ function navigateToHomePage() {
           адрес в поисковой строке
         </Typography>
         <Button
-          type="submit"
-          class-name="btn-primary"
+          variant="primary"
           @click="navigateToHomePage"
         >
           Вернуться на главную страницу
@@ -45,6 +44,7 @@ function navigateToHomePage() {
 <style lang="scss">
 .error-page {
   height: 80%;
+
   @include flexible(center, center, column, $gap: 8px);
 
   &__img {

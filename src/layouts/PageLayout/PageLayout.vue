@@ -32,14 +32,14 @@ const PageLayoutContentClassName = computed(() => [
   @include flexible(flex-start, flex-start);
 
   &__leftsidebar {
-    @include fixedWidth(85px);
     height: 100vh;
+
+    @include fixedWidth(85px);
   }
 
   &__content {
     width: 100%;
     height: 100vh;
-    overflow-y: scroll;
   }
 }
 </style>

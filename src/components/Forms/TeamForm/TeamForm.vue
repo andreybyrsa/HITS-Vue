@@ -80,8 +80,8 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <div class="team-form bg-white p-3">
-    <div class="team-form__content w-75 h-100">
+  <div class="team-form w-100 h-100 bg-white p-3 overflow-auto">
+    <div class="team-form__content w-75">
       <Typography class-name="fs-2 text-primary">
         {{ props.team ? 'Редактирование команды' : 'Создание команды' }}
       </Typography>
@@ -108,14 +108,14 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 
       <Button
         v-if="props.team"
-        class-name="btn-primary px-4"
+        variant="primary"
         @click="handleUpdateTeam"
       >
         Сохранить изменения
       </Button>
       <Button
         v-else
-        class-name="btn-primary px-4"
+        variant="success"
         @click="handleCreateTeam"
       >
         Создать команду
