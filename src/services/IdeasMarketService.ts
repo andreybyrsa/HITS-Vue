@@ -40,8 +40,8 @@ const fetchFavoritesIdeas = async (
 }
 
 const getIdeaMarket = async (
-  token: string,
   id: number,
+  token: string,
 ): Promise<IdeasMarket | Error> => {
   return await ideasMarketAxios
     .get(
@@ -54,6 +54,20 @@ const getIdeaMarket = async (
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки идеи'
+      return new Error(error)
+    })
+}
+
+const getAllInitiatorMarketIdeas = async (
+  token: string,
+): Promise<IdeasMarket[] | Error> => {
+  return await ideasMarketAxios
+    .get('/ideas/market/initiator/all', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки идей'
       return new Error(error)
     })
 }
@@ -117,6 +131,7 @@ const IdeasMarketService = {
   fetchFavoritesIdeas,
   addIdeaToFavorites,
   removeIdeaFromFavorites,
+  getAllInitiatorMarketIdeas,
 }
 
 export default IdeasMarketService
