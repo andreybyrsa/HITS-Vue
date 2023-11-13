@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="DataType">
-import { ref, Ref, computed, onMounted } from 'vue'
+import { ref, Ref, onMounted, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 
 import {
@@ -25,13 +25,6 @@ const checkedData = ref<DataType[]>([]) as Ref<DataType[]>
 const searchedValue = ref('')
 const isCheckedAll = ref(false)
 
-watchImmediate(
-  () => props.data,
-  () => {
-    data.value = props.data
-  },
-)
-
 onMounted(() => {
   if (props.filters) {
     filtersRefs.value = props.filters.map((filter) => filter.refValue)
@@ -39,42 +32,21 @@ onMounted(() => {
 })
 
 watchImmediate(
-  filtersRefs,
-  (filters) => {
-    if (filters.length) {
-      const isSelectedFilters = filters.some((filter) => {
-        if (filter.value instanceof Array) {
-          return filter.value.length
-        }
-        return filter.value !== undefined
-      })
-
-      if (isSelectedFilters) {
-        data.value = props.data.filter((dataValue) => {
-          return filters.every((filter, index) => {
-            if (filter.value instanceof Array) {
-              return filter.value.length
-                ? filter.value.some((value) =>
-                    props.filters?.[index].checkFilter(dataValue, value),
-                  )
-                : true
-            }
-
-            return filter.value !== undefined
-              ? props.filters?.[index].checkFilter(dataValue, filter.value)
-              : true
-          })
-        })
-      } else {
-        data.value = props.data
-      }
-    }
+  () => props.data,
+  () => {
+    data.value = props.data
+    searchDataByKeys()
+    filterData(filtersRefs.value)
   },
   { deep: true },
 )
 
+watchImmediate(filtersRefs, (filters) => filterData(filters), { deep: true })
+
+watchImmediate(searchedValue, () => searchDataByKeys())
+
 watchImmediate(checkedData, () => {
-  if (data.value.length === checkedData.value.length) {
+  if (data.value.length && data.value.length === checkedData.value.length) {
     isCheckedAll.value = true
   } else {
     isCheckedAll.value = false
@@ -82,20 +54,59 @@ watchImmediate(checkedData, () => {
   compareTeam.value = checkedData.value
 })
 
-const searchedData = computed(() => {
+const searchedData = computed(() => searchDataByKeys())
+
+function searchDataByKeys() {
   if (props.searchBy) {
-    const currentDataKey = props.searchBy
+    const searchKeys = props.searchBy
 
     return data.value.filter((value) => {
-      const currentData = `${value[currentDataKey]}`.toLocaleLowerCase().trim()
-      const currentSearchedValue = searchedValue.value.toLocaleLowerCase().trim()
-      const isIncludesSearcheValue = currentData.includes(currentSearchedValue)
+      const currentDataByKeys = searchKeys.map((key) =>
+        `${value[key]}`.toLocaleLowerCase().trim(),
+      )
+      const currentSearchedValue = searchedValue.value
+        .toLocaleLowerCase()
+        .trim()
+        .split(' ')
 
-      return isIncludesSearcheValue
+      return currentSearchedValue.every((searchWord) =>
+        currentDataByKeys.some((dataByKey) => dataByKey.includes(searchWord)),
+      )
     })
   }
   return data.value
-})
+}
+
+function filterData(filters: Ref<FilterValue | FilterValue[] | undefined>[]) {
+  if (filters.length) {
+    const isSelectedFilters = filters.some((filter) => {
+      if (filter.value instanceof Array) {
+        return filter.value.length
+      }
+      return filter.value !== undefined
+    })
+
+    if (isSelectedFilters) {
+      data.value = props.data.filter((dataValue) => {
+        return filters.every((filter, index) => {
+          if (filter.value instanceof Array) {
+            return filter.value.length
+              ? filter.value.some((value) =>
+                  props.filters?.[index].checkFilter(dataValue, value),
+                )
+              : true
+          }
+
+          return filter.value !== undefined
+            ? props.filters?.[index].checkFilter(dataValue, filter.value)
+            : true
+        })
+      })
+    } else {
+      data.value = props.data
+    }
+  }
+}
 
 function checkAllRows() {
   if (data.value.length !== checkedData.value.length) {

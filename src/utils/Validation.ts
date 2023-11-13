@@ -15,11 +15,11 @@ class Validation {
   }
 
   checkEmail(email: string) {
-    const emailRegExp = /[a-zA-Z_.-{0,9}]+@[a-zA-Z_]+\.[a-zA-Z]{2,10}$/
+    const emailRegExp = /[a-zA-Z_.-{0,9}-]+@[a-zA-Z_.-{0,9}-]+\.[a-zA-Z]{2,10}$/
     return emailRegExp.test(email)
   }
 
-  checkName(name?: string | undefined) {
+  checkName(name: string) {
     const nameRegExp = /^[а-я a-z ,.'-]+$/i
     return name && nameRegExp.test(name) && name.length > 0
   }

@@ -126,7 +126,7 @@ const onIntersectionObserver = async (
 
       <Button
         type="submit"
-        class-name="btn-primary"
+        variant="primary"
         @click="handleSendComment"
       >
         Отправить

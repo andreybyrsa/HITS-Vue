@@ -60,7 +60,7 @@ const getIdeaMarket = async (
 
 const postIdeaOnMarket = async (
   ideas: IdeasMarket,
-  token: string, //
+  token: string,
 ): Promise<Success | Error> => {
   return await ideasMarketAxios
     .post<Success>(

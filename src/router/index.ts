@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 
@@ -28,10 +29,19 @@ import ErrorView from '@Views/ErrorView.vue'
 import DevView from '@Views/DevView.vue'
 
 import IdeasMarketViewVue from '@Views/IdeasMarket/IdeasMarketView.vue'
+import useUserStore from '@Store/user/userStore'
+
+import LocalStorageUser from '@Utils/LocalStorageUser'
 
 const routes: RouteRecordRaw[] = [
   {
+    path: '/',
+    name: 'home',
+    redirect: { name: 'ideas-list' },
+  },
+  {
     path: '/ideas',
+    redirect: { name: 'ideas-list' },
     children: [
       {
         path: 'list',
@@ -41,7 +51,6 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: ':id',
-            meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
             component: IdeaModal,
           },
         ],
@@ -51,28 +60,20 @@ const routes: RouteRecordRaw[] = [
         meta: { roles: ['INITIATOR', 'ADMIN'] },
         component: NewIdeaView,
       },
-
       {
         path: 'update/:id',
-        meta: { roles: ['INITIATOR', 'ADMIN'], isPageEdit: true },
+        meta: { roles: ['INITIATOR', 'ADMIN'] },
         component: EditIdeaView,
       },
     ],
   },
   {
     path: '/teams',
+    redirect: { name: 'teams-list' },
     children: [
-      {
-        path: 'create',
-        meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
-        component: NewTeamView,
-      },
       {
         path: 'list',
         name: 'teams-list',
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-        },
         component: TeamsView,
         children: [
           {
@@ -85,25 +86,19 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: 'create',
+        component: NewTeamView,
+      },
+      {
         path: 'update/:id',
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-          isPageEdit: true,
-        },
         component: EditTeamView,
       },
     ],
   },
   {
-    path: '/last-activity-note',
-    name: 'last-activity-note',
-    meta: {
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-    component: LastActivityNote,
-  },
-  {
     path: '/admin',
+    redirect: { path: '/admin/users' },
+    meta: { roles: ['ADMIN'] },
     children: [
       {
         path: 'users',
@@ -131,34 +126,17 @@ const routes: RouteRecordRaw[] = [
     path: '/change-email',
     name: 'change-email',
     component: ChangeEmailView,
-    meta: {
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
     children: [
       {
         path: ':slug',
         name: 'change-email-confirmation',
-        meta: {
-          roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-          isPageEmail: true,
-        },
         component: NewEmail,
       },
     ],
   },
   {
-    path: '/error',
-    name: 'error',
-    meta: {
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-    component: ErrorView,
-  },
-  {
-    path: '/dev',
-    name: 'dev',
-    meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
-    component: DevView,
+    path: '/last-activity-note',
+    component: LastActivityNote,
   },
   {
     path: '/login',
@@ -168,7 +146,6 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/register/:slug',
     name: 'register',
-    meta: { isPageRegister: true },
     component: RegisterView,
   },
   {
@@ -197,11 +174,52 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/dev',
+    name: 'dev',
+    component: DevView,
+  },
+  {
+    path: '/error',
+    name: 'error',
+    component: ErrorView,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: { name: 'error' },
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+})
+
+router.beforeEach((to) => {
+  const userStore = useUserStore()
+
+  const { user } = storeToRefs(userStore)
+  const localStorageUser = LocalStorageUser.getLocalStorageUser()
+
+  const currentRouteName = to.name?.toString() ?? ''
+  const requiredRouteRoles = to.meta?.roles ?? []
+  const authRouteNames = ['login', 'register', 'forgot-password']
+
+  if (localStorageUser?.token && !user.value?.token) {
+    useUserStore().setUser(localStorageUser)
+  }
+
+  if (!user.value && !authRouteNames.includes(currentRouteName)) {
+    return { name: 'login' }
+  }
+  if (user.value && authRouteNames.includes(currentRouteName)) {
+    return { name: 'ideas-list' }
+  }
+  if (requiredRouteRoles.length && user.value?.role) {
+    const { role } = user.value
+
+    return requiredRouteRoles.includes(role) ? true : { name: 'error' }
+  }
 })
 
 export default router

@@ -10,10 +10,8 @@ import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.vu
 import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.types'
 import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCalculator.vue'
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
-import IdeaFormSubmit from '@Components/Forms/IdeaForm/IdeaFormSubmit.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
-
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+import Button from '@Components/Button/Button.vue'
 
 import { Idea, IdeaSkills } from '@Domain/Idea'
 import { Skill } from '@Domain/Skill'
@@ -23,6 +21,7 @@ import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
@@ -36,7 +35,10 @@ const router = useRouter()
 
 const stackTechnologies = ref<Skill[]>([])
 
-const { values, setFieldValue, setValues, handleSubmit, validateField } =
+const isSavingDraft = ref(false)
+const isSendingOnApproval = ref(false)
+
+const { values, setFieldValue, setValues, validateField, handleSubmit } =
   useForm<Idea>({
     validationSchema: {
       name: (value: string) =>
@@ -49,10 +51,10 @@ const { values, setFieldValue, setValues, handleSubmit, validateField } =
         Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       description: (value: string) =>
         Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-      maxTeamSize: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-      minTeamSize: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      maxTeamSize: (value: number) =>
+        (value && value >= 3 && value <= 7) || 'Значение должно быть от 3 до 7',
+      minTeamSize: (value: number) =>
+        (value && value >= 3 && value <= 7) || 'Значение должно быть от 3 до 7',
 
       customer: (value: string) =>
         Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
@@ -132,6 +134,8 @@ const handleSaveAndSendOnApproval = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isSendingOnApproval.value = true
     const ideaResponse = await IdeasService.saveAndSendIdeaOnApproval(
       { ...values, status: 'ON_APPROVAL' },
       token,
@@ -145,6 +149,7 @@ const handleSaveAndSendOnApproval = handleSubmit(async (values) => {
     }
 
     await saveIdeaSkills(ideaResponse.id, token, props.idea)
+    isSendingOnApproval.value = false
 
     router.push({ name: 'ideas-list' })
   }
@@ -158,6 +163,7 @@ const handleSaveDraftIdea = async () => {
     const { valid } = await validateField('name')
 
     if (valid) {
+      isSavingDraft.value = true
       const response = await IdeasService.saveIdeaDraft(values, token)
 
       if (response instanceof Error) {
@@ -168,6 +174,7 @@ const handleSaveDraftIdea = async () => {
       }
 
       await saveIdeaSkills(response.id, token, props.idea)
+      isSavingDraft.value = false
 
       router.push({ name: 'ideas-list' })
     }
@@ -210,13 +217,13 @@ async function saveIdeaSkills(
 </script>
 
 <template>
-  <FormLayout class-name="w-100 h-100 overflow-auto">
+  <form class="idea-form p-3 bg-white w-100 h-100 overflow-auto">
     <Typography class-name="fs-2 text-primary">
       {{ title }}
     </Typography>
 
     <div class="w-75 d-flex flex-column gap-3">
-      <IdeaFormInputs @set-value="setFieldValue" />
+      <IdeaFormInputs />
 
       <StackCategories v-model:stack="stackTechnologies" />
 
@@ -227,11 +234,34 @@ async function saveIdeaSkills(
 
       <PreAssessmentCalculator :idea="values" />
 
-      <IdeaFormSubmit
-        :idea="values"
-        @on-send-on-approval="handleSaveAndSendOnApproval"
-        @on-save-draft="handleSaveDraftIdea"
-      />
+      <div class="idea-form__submit-buttons">
+        <Button
+          v-if="values.status !== 'ON_EDITING'"
+          variant="primary"
+          :is-loading="isSavingDraft"
+          @click="handleSaveDraftIdea"
+        >
+          Сохранить черновик
+        </Button>
+
+        <Button
+          variant="success"
+          :is-loading="isSendingOnApproval"
+          @click="handleSaveAndSendOnApproval"
+        >
+          Отправить на согласование
+        </Button>
+      </div>
     </div>
-  </FormLayout>
+  </form>
 </template>
+
+<style lang="scss" scoped>
+.idea-form {
+  @include flexible(center, flex-start, column, $gap: 12px);
+
+  &__submit-buttons {
+    @include flexible(center, center, $gap: 16px);
+  }
+}
+</style>

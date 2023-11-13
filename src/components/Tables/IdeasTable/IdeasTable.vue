@@ -2,7 +2,7 @@
   <Table
     :columns="ideaTableColumns"
     :data="ideasData"
-    search-by="name"
+    :search-by="['name', 'description']"
     :filters="ideasFilters"
     :checked-data-actions="checkedIdeasActions"
     :dropdown-actions-menu="dropdownIdeasActions"
@@ -245,7 +245,7 @@ function handleCloseDeleteModal() {
 async function handleDeleteIdea() {
   const currentUser = user.value
 
-  if (currentUser?.token && deletingIdeaId.value) {
+  if (currentUser?.token && deletingIdeaId.value !== null) {
     const { token } = currentUser
     await ideaStore.deleteIdea(deletingIdeaId.value, token)
   }

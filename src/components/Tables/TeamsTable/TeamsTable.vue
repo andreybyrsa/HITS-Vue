@@ -2,7 +2,7 @@
   <Table
     :columns="teamTableColumns"
     :data="teams"
-    search-by="name"
+    :search-by="['name']"
     :filters="teamsFilters"
     :dropdown-actions-menu="dropdownTeamsActions"
   ></Table>

@@ -1,14 +1,18 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
+import { watchImmediate } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
+import { useRouter, useRoute } from 'vue-router'
 
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 
 import useUserStore from '@Store/user/userStore'
-import { watchImmediate } from '@vueuse/core'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const router = useRouter()
+const route = useRoute()
 
 const isOpenedModal = ref(false)
 
@@ -23,6 +27,19 @@ watchImmediate(user, (currentUser) => {
     }
   }
 })
+
+watchImmediate(
+  () => user.value?.role,
+  (currentRole) => {
+    const requiredRouteRoles = route.meta?.roles ?? []
+
+    if (requiredRouteRoles.length && currentRole) {
+      if (!requiredRouteRoles.includes(currentRole)) {
+        router.push({ name: 'error' })
+      }
+    }
+  },
+)
 
 function handleCloseModal() {
   isOpenedModal.value = false

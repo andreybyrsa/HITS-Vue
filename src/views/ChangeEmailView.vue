@@ -21,7 +21,6 @@ import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const notificationsStore = useNotificationsStore()
 
 const { handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
@@ -49,7 +48,7 @@ const sendChangingUrl = handleSubmit(async (values) => {
 
     useNotificationsStore().createSystemNotification(
       'Система',
-      'Ссылка изменения почты отправлена на новую почту',
+      'Ссылка для изменения почты отправлена на новую почту',
     )
   }
 })
@@ -65,7 +64,9 @@ const sendChangingUrl = handleSubmit(async (values) => {
       <router-view></router-view>
 
       <FormLayout>
-        <Typography class-name="fs-3 text-primary">Изменение почты</Typography>
+        <Typography class-name="fs-3 text-primary text-center">
+          Изменение почты
+        </Typography>
         <Input
           type="email"
           name="newEmail"
@@ -75,7 +76,7 @@ const sendChangingUrl = handleSubmit(async (values) => {
         />
         <Button
           type="submit"
-          class-name="btn-primary w-100"
+          variant="primary"
           @click="sendChangingUrl"
         >
           Отправить
@@ -84,6 +85,7 @@ const sendChangingUrl = handleSubmit(async (values) => {
     </template>
   </PageLayout>
 </template>
+
 <style lang="scss">
 .change-email-page {
   &__content {

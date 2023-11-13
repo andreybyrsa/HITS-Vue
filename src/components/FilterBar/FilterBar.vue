@@ -98,7 +98,7 @@ function resetFilters() {
 
     <div class="w-100 d-flex justify-content-center">
       <Button
-        class-name="btn-danger"
+        variant="danger"
         prepend-icon-name="bi bi-x-lg"
         @click="resetFilters"
       >
@@ -113,7 +113,7 @@ function resetFilters() {
   @include flexible(stretch, flex-start, column, $gap: 8px);
 
   &__choices {
-    max-height: 150px;
+    max-height: 160px;
 
     overflow-y: scroll;
   }
