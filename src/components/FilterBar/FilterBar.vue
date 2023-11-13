@@ -113,7 +113,7 @@ function resetFilters() {
   @include flexible(stretch, flex-start, column, $gap: 8px);
 
   &__choices {
-    max-height: 150px;
+    max-height: 160px;
 
     overflow-y: scroll;
   }

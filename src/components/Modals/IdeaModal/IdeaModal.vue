@@ -15,11 +15,11 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Comment from '@Domain/Comment'
 
-import RatingService from '@Services/RatingService'
 import IdeasService from '@Services/IdeasService'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import useRatingsStore from '@Store/ratings/ratingsStore'
 import useCommentsStore from '@Store/comments/commentsStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
@@ -37,11 +37,11 @@ const idea = ref<Idea>()
 const ideaSkills = ref<IdeaSkills>()
 
 const ratings = ref<Rating[]>()
-const rating = ref<Rating>()
 
 const isOpenedIdeaModal = ref(true)
 
 const ideasStore = useIdeasStore()
+const ratingsStore = useRatingsStore()
 const commentsStore = useCommentsStore()
 
 const ideaModalRef = ref<VueElement | null>(null)
@@ -60,14 +60,14 @@ function checkResponseStatus<T>(
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  if (currentUser?.token && currentUser?.role) {
+    const { token, role } = currentUser
     const id = +route.params.id
 
     const ideaParallelRequests = [
-      () => ideasStore.getIdea(id, token),
+      () => ideasStore.getIdea(id, role, token),
       () => IdeasService.getIdeaSkills(id, token),
-      () => RatingService.getAllIdeaRatings(id, token),
+      () => ratingsStore.getIdeaRatings(id, token),
       () => commentsStore.getComments(id, token),
     ]
 
@@ -87,6 +87,7 @@ onMounted(async () => {
   }
 })
 
+const rating = ref()
 function getAccessToConfirmation() {
   if (user.value && idea.value) {
     const { id, role } = user.value
@@ -94,13 +95,8 @@ function getAccessToConfirmation() {
 
     if (status === 'ON_CONFIRMATION') {
       if (role && ['EXPERT', 'ADMIN'].includes(role)) {
-        const currentRating = ratings.value?.find((rating) => rating.expertId === id)
-
-        if (currentRating) {
-          rating.value = currentRating
-
-          return currentRating
-        }
+        rating.value = ratings.value?.find((rating) => rating.expertId === id)
+        return ratings.value?.find((rating) => rating.expertId === id)
       }
     }
   }
@@ -135,8 +131,6 @@ function handleCloseIdeaModal() {
         <ExpertRatingCalculator
           v-if="getAccessToConfirmation()"
           :idea="idea"
-          :rating="rating"
-          v-model="ratings"
         />
 
         <IdeaActions :idea="idea" />
