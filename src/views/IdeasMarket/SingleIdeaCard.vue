@@ -168,7 +168,7 @@ function filterTeams(teams: RequestTeams[]) {
         v-if="requestTeams"
       >
         <Icon class-name="bi bi-people-fill fs-5" />
-        Команда: {{ filterTeams(requestTeams).length }} / {{ idea.maxTeamSize }}
+        Участники: {{ filterTeams(requestTeams).length }} / {{ idea.maxTeamSize }}
       </div>
       <div class="idea-applications">
         <Icon class-name="bi bi-check2-all fs-5" />

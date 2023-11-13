@@ -115,7 +115,7 @@ function getNavTabClass(isAllIdeas: boolean) {
 </script>
 
 <template>
-  <PageLayout content-class-name="command-page__content p-3 bg-white">
+  <PageLayout content-class-name="market-page__content p-3 bg-white">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
@@ -177,5 +177,16 @@ function getNavTabClass(isAllIdeas: boolean) {
   display: flex;
   justify-content: center;
   padding-bottom: 16px;
+}
+.market-page {
+  &__header {
+    @include flexible(center, space-between);
+  }
+
+  &__content {
+    overflow-y: scroll;
+
+    @include flexible(stretch, flex-start, column);
+  }
 }
 </style>
