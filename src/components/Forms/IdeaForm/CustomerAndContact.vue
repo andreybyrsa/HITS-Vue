@@ -8,27 +8,25 @@ import {
 } from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
+import { User } from '@Domain/User'
+import Company from '@Domain/Company'
+
 const props = defineProps<CustomerAndContact>()
 const emit = defineEmits<CustomerAndContactEmits>()
 
-const customers = ref([
-  { contacts: ['ВШЦТ'], company: 'ВШЦТ' },
-  { contacts: ['Человек 1', 'Человек 2'], company: 'Роснефть' },
-  { contacts: ['Человек 3', 'Человек 4', 'Человек 5'], company: 'Газпром' },
-  {
-    contacts: ['Человек 6', 'Человек 7', 'Человек 8', 'Человек 9'],
-    company: 'Лукойл',
-  },
-])
-const currentCompanies = ref(customers.value.map((option) => option.company))
-const currentCompanyContacts = ref<string[]>([])
+const companies = defineModel<Company[]>({
+  required: true,
+})
 
-function getContactPersonsByCompany(company: string) {
-  return customers.value.find((option) => option.company === company)
+const currentCompanies = ref(companies.value.map((option) => option.name))
+const currentCompanyContacts = ref<User[]>([])
+
+function getContactPersonsByCompany(company: Company) {
+  return companies.value.find((option) => option.name === company.name)
 }
 
-function handleCustomerChange(selectedCompany: string) {
-  const currentContacts = getContactPersonsByCompany(selectedCompany)?.contacts
+function handleCustomerChange(selectedCompany: Company) {
+  const currentContacts = getContactPersonsByCompany(selectedCompany)?.users
   if (currentContacts) {
     currentCompanyContacts.value = currentContacts
     const { contactPerson } = props.idea

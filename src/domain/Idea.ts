@@ -1,6 +1,8 @@
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 import UsersGroup from '@Domain/UsersGroup'
 import { Skill } from '@Domain/Skill'
+import { User } from '@Domain/User'
+import Company from '@Domain/Company'
 
 interface Idea {
   id: number
@@ -19,8 +21,8 @@ interface Idea {
 
   projectOffice: UsersGroup | null
   experts: UsersGroup | null
-  customer: string
-  contactPerson: string
+  customer: Company
+  contactPerson: User
 
   suitability: number
   budget: number

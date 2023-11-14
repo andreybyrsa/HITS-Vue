@@ -220,6 +220,27 @@ function getMocks(): Mocks {
     },
   ]
 
+  const companies: Company[] = [
+    {
+      id: 0,
+      name: 'ВШЦТ',
+      owner: users[0],
+      users: [users[0]],
+    },
+    {
+      id: 1,
+      name: 'Газпром',
+      owner: users[0],
+      users: [users[3]],
+    },
+    {
+      id: 2,
+      name: 'Роснефть',
+      owner: users[2],
+      users: [users[1]],
+    },
+  ]
+
   const ideas: Idea[] = [
     {
       id: 0,
@@ -238,8 +259,8 @@ function getMocks(): Mocks {
       status: 'ON_CONFIRMATION',
       maxTeamSize: 7,
       minTeamSize: 3,
-      customer: 'ВШЦТ',
-      contactPerson: 'ВШЦТ',
+      customer: companies[0],
+      contactPerson: users[0],
       experts: null,
       projectOffice: null,
       budget: 1,
@@ -264,8 +285,8 @@ function getMocks(): Mocks {
       status: 'NEW',
       maxTeamSize: 4,
       minTeamSize: 3,
-      customer: 'ВШЦТ',
-      contactPerson: 'ВШЦТ',
+      customer: companies[0],
+      contactPerson: users[0],
       experts: null,
       projectOffice: null,
       budget: 4,
@@ -290,8 +311,8 @@ function getMocks(): Mocks {
       status: 'NEW',
       maxTeamSize: 5,
       minTeamSize: 5,
-      customer: 'ВШЦТ',
-      contactPerson: 'ВШЦТ',
+      customer: companies[0],
+      contactPerson: users[0],
       experts: null,
       projectOffice: null,
       budget: 4,
@@ -378,20 +399,6 @@ function getMocks(): Mocks {
       isReaded: true,
       isFavourite: false,
       createdAt: '2023-10-30T11:02:17Z',
-    },
-  ]
-  const companies: Company[] = [
-    {
-      id: 0,
-      name: 'Газпром',
-      owner: users[0],
-      users: [users[3]],
-    },
-    {
-      id: 1,
-      name: 'Роснефть',
-      owner: users[2],
-      users: [users[1]],
     },
   ]
 
