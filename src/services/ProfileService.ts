@@ -90,7 +90,7 @@ const getProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return await axios
-    .get(`/profile/${email}/avatar`, {
+    .get(`/profile/avatar/get/${email}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -102,12 +102,11 @@ const getProfileAvatar = async (
 }
 
 const saveProfileSkills = async (
-  email: string,
   skill: Skill[],
   token: string,
 ): Promise<Skill[] | Error> => {
   return await profileSkillsAxios
-    .post(`/profile/${email}/skills/save`, skill, {
+    .post(`/profile/skills/save`, skill, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -119,12 +118,11 @@ const saveProfileSkills = async (
 }
 
 const uploadProfileAvatar = async (
-  email: string,
   formData: FormData,
   token: string,
 ): Promise<FormData | Error> => {
   return await axios
-    .post(`/profile/${email}/avatar/upload`, formData, {
+    .post(`/profile/avatar/upload`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',

@@ -15,11 +15,15 @@ import ProfileService from '@Services/ProfileService'
 
 import useUserStore from '@Store/user/userStore'
 import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps<ProfileSkillProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const router = useRouter()
+const route = useRoute()
 
 const profileSkills = ref<Skill[]>()
 const selectedSkills = ref<Skill[]>([])
@@ -52,9 +56,8 @@ const handleSaveSkills = async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token, email } = currentUser
+    const { token } = currentUser
     const response = await ProfileService.saveProfileSkills(
-      email,
       selectedSkills.value,
       token,
     )

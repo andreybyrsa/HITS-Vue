@@ -5,6 +5,7 @@ import Project from '@Domain/Project'
 
 interface ProfileAvatarProps {
   user: User
+  avatar: FormData
   status: boolean
 }
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import RolesTypes from '@Domain/Roles'
@@ -15,8 +15,11 @@ import Validation from '@Utils/Validation'
 import { User } from '@Domain/User'
 import useUserStore from '@Store/user/userStore'
 import ManageUsersService from '@Services/ManageUsersService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<ProfileInfoProps>()
+
+const notificationsStore = useNotificationsStore()
 
 // const users = defineModel<User[]>({
 //   required: true,
@@ -26,11 +29,17 @@ const isOpenedChangeEmail = ref(false)
 
 const isOpenedChangeInfo = ref(false)
 
+const users = defineModel<User[]>({
+  required: true,
+})
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const { errors, setValues, handleSubmit } = useForm<User>({
   validationSchema: {
+    email: (value: string) =>
+      Validation.checkEmail(value) || 'Неверно введена почта',
     firstName: (value: string) =>
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
@@ -69,6 +78,15 @@ function handleCloseChangeEmail() {
   isOpenedChangeEmail.value = false
 }
 
+watch(
+  () => props.user,
+  () => {
+    if (props.user) {
+      setValues({ ...props.user })
+    }
+  },
+)
+
 const handleEditUser = handleSubmit(async (values) => {
   const currentUser = user.value
 
@@ -78,7 +96,7 @@ const handleEditUser = handleSubmit(async (values) => {
     isOpenedChangeInfo.value = false
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     // const currentUserIndex = users.value.findIndex((user) => user.id === response.id)
@@ -87,6 +105,16 @@ const handleEditUser = handleSubmit(async (values) => {
     // }
 
     // notification
+
+    const currentUserIndex = users.value.findIndex((user) => user.id === response.id)
+    if (currentUserIndex !== -1) {
+      users.value.splice(currentUserIndex, 1, response)
+    }
+
+    return notificationsStore.createSystemNotification(
+      'Система',
+      'Пользователь успешно изменен',
+    )
   }
 })
 </script>
@@ -182,10 +210,16 @@ const handleEditUser = handleSubmit(async (values) => {
       <div class="d-grid w-100">
         <Typography class-name=" text-secondary">Почта</Typography>
         <div class="w-100 d-flex justify-content-between">
-          <Typography class-name="fs-5 ms-1">{{ props.user.email }}</Typography>
+          <Input
+            name="email"
+            class-name="rounded-end me-4"
+            :model-value="props.user.email"
+            disabled
+          >
+          </Input>
           <Button
             v-if="props.status == true"
-            class-name="border bg-mutend"
+            class-name="border bg-mutend "
             @click="handleOpenChangeEmail"
             >Изменить почту</Button
           >

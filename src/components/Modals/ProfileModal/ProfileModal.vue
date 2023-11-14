@@ -36,6 +36,7 @@ const router = useRouter()
 const route = useRoute()
 
 const profileUser = ref<Profile>()
+const profileAvatar = ref<FormData>()
 const profileSkills = ref<Skill[]>()
 const profileIdeas = ref<Idea[]>()
 const profileProjects = ref<Project[]>()
@@ -117,6 +118,7 @@ onMounted(async () => {
 
     const profileParallelRequests = [
       () => ProfileService.getUserProfile(userEmail, token),
+      //() => ProfileService.getProfileAvatar(userEmail, token),
       // () => ProfileService.getProfileSkills(userEmail, token),
       // () => ProfileService.getProfileIdeas(userEmail, token),
       // () => ProfileService.getProfileProjects(userEmail, token),
@@ -128,6 +130,9 @@ onMounted(async () => {
           if (response.id === 0) {
             checkResponseStatus(response, profileUser)
           }
+          // else if (response.id === 1) {
+          //   checkResponseStatus(response, profileAvatar)
+          // }
           // else if (response.id === 1) {
           //   checkResponseStatus(response, profileSkills)
           // } else if (response.id === 2) {
@@ -146,9 +151,9 @@ function handleCloseProfileModal() {
   router.go(-1)
 }
 
-console.log(currentUser?.email)
-console.log(profileEmail)
-console.log(profileUser)
+// console.log(currentUser?.email)
+// console.log(profileEmail)
+// console.log(profileUser)
 </script>
 
 <template>

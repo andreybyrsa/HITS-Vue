@@ -1,19 +1,29 @@
 <script lang="ts" setup>
 import RolesTypes from '@Domain/Roles'
+import { useRoute, useRouter } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
 
 import { ProfileInfoProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import { useDateFormat } from '@vueuse/core'
-import { Ref, ref } from 'vue'
+import { Ref, ref, onMounted } from 'vue'
 import ProfileService from '@Services/ProfileService'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
+import Button from '@Components/Button/Button.vue'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<ProfileInfoProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const notificationsStore = useNotificationsStore()
+
+const router = useRouter()
+const route = useRoute()
+
+const userAvatar = ref<FormData>()
 
 function getCurrentRoleRus(role: RolesTypes) {
   if (role === 'ADMIN') {
@@ -37,37 +47,26 @@ function getFormattedDate(date: Date) {
   }
 }
 
-// const fileInputRef: Ref<HTMLInputElement | null> = ref(null)
-// const imageUrl: Ref<string | null> = ref(null)
-// const selectedFile = ref<File | null>(null)
+const fileInputRef: Ref<HTMLInputElement | null> = ref(null)
+const imageUrl: Ref<string | null> = ref(null)
+const selectedFile = ref<File | null>(null)
 
-// const openFileInput = (): void => {
-//   if (fileInputRef.value) {
-//     fileInputRef.value.value = ''
-//     fileInputRef.value.click()
-//   }
-// }
+const openFileInput = (): void => {
+  if (fileInputRef.value) {
+    fileInputRef.value.value = ''
+    fileInputRef.value.click()
+  }
+}
 
-// const handleFileChange = (event: Event): void => {
-//   const formData = new FormData()
-//   const file = (event.target as HTMLInputElement).files?.[0]
-
-//   formData.append('file', file.toBlob(), file?.name)
-
-//   const input = event.target as HTMLInputElement
-//   selectedFile.value = input.files[0]
-//   const formData = new FormData()
-//   formData.append('file', selectedFile.value)
-//   if (selectedFile.value) {
-//     imageUrl.value = URL.createObjectURL(selectedFile.value)
-//   }
-
-//   if (user.value?.token) {
-//     const { token } = user.value
-//     ProfileService.uploadProfileAvatar(email, formData, token)
-//     console.log(formData)
-//   }
-// }
+const handleFileChange = (event: Event): void => {
+  const input = event.target as HTMLInputElement
+  selectedFile.value = input.files[0]
+  const formData = new FormData()
+  formData.append('file', selectedFile.value)
+  if (selectedFile.value) {
+    imageUrl.value = URL.createObjectURL(selectedFile.value)
+  }
+}
 
 // const handleFileChange = handleSubmit(async (event: Event) => {
 //   const file = (event.target as HTMLInputElement).files?.[0]
@@ -76,10 +75,28 @@ function getFormattedDate(date: Date) {
 
 //     if (user.value?.token) {
 //       const { token } = user.value
-//       await ProfileService.uploadAvatar(file, token)
+//       await ProfileService.uploadProfileAvatar(file, token)
 //     }
 //   }
 // })
+
+// onMounted(async () => {
+//   const currentUser = user.value
+
+//   if (currentUser?.token) {
+//     const { token } = currentUser
+//     const email = route.params.email.toString()
+//     const response = await ProfileService.getProfileAvatar(email, token)
+
+//     if (response instanceof Error) {
+//       return notificationsStore.createSystemNotification('Система', 'Ошибка')
+//     }
+
+//     userAvatar.value = response
+//   }
+// })
+
+console.log(userAvatar)
 </script>
 
 <template>
@@ -90,12 +107,25 @@ function getFormattedDate(date: Date) {
         >Был в сети {{ getFormattedDate(props.user.) }}</Typography
       >
     </div>  -->
+    <input
+      ref="fileInputRef"
+      type="file"
+      style="display: none"
+      @input="handleFileChange"
+      enctype="multipart/form-data"
+    />
     <div class="d-flex justify-content-center w-100 mb-2">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"
-        alt="Avatar"
-        class="avatar border"
-      />
+      <Button
+        @click="openFileInput"
+        class="avatar-button p-0"
+      >
+        <img
+          id="imgAva"
+          :src="imageUrl"
+          alt="Avatar"
+          class="avatar border"
+        />
+      </Button>
     </div>
     <div class="user__roles w-100 flex-wrap">
       <div
@@ -138,5 +168,9 @@ function getFormattedDate(date: Date) {
   border-radius: 50%;
   width: 250px;
   height: 250px;
+}
+
+.avatar-button {
+  border-radius: 50%;
 }
 </style>
