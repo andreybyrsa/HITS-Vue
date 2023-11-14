@@ -5,8 +5,6 @@ import { storeToRefs } from 'pinia'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import TeamService from '@Services/TeamService'
-
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
@@ -17,6 +15,7 @@ import {
 import Button from '@Components/Button/Button.vue'
 import TeamInviteRegisteredUser from '@Components/Modals/TeamInviteModal/TeamInviteRegisteredUser.vue'
 import TeamInviteUnregisteredUser from '@Components/Modals/TeamInviteModal/TeamInviteUnregisteredUser.vue'
+import TeamAccessionsService from '@Services/TeamAccessionsService'
 
 const props = defineProps<TeamInviteModalProps>()
 
@@ -39,7 +38,7 @@ const inviteRegisteredUsers = async (users: string[]) => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TeamService.inviteRegisteredUsers(
+    const response = await TeamAccessionsService.inviteRegisteredUsers(
       users,
       props.team.id,
       token,
@@ -57,7 +56,7 @@ const inviteUnregisteredUsers = async (emails: string[]) => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TeamService.inviteUnregisteredUsers(
+    const response = await TeamAccessionsService.inviteUnregisteredUsers(
       emails,
       props.team.id,
       token,

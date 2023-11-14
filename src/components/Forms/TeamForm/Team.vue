@@ -19,6 +19,7 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import TeamAccessionsService from '@Services/TeamAccessionsService'
 
 const props = defineProps<TeamProps>()
 
@@ -70,7 +71,7 @@ onMounted(async () => {
         users.value.push(response.owner)
       }
     } else {
-      const response = await TeamService.getTeamProfile(id, token)
+      const response = await TeamAccessionsService.getTeamProfile(id, token)
 
       if (response instanceof Error) {
         return notificationsStore.createSystemNotification(

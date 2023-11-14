@@ -34,7 +34,7 @@ function shareButton(id: number) {
   <Button
     v-if="team.owner?.userId == user?.id || user?.role == 'ADMIN'"
     class-name="bi bi-pencil-square btn-primary w-100"
-    @click="router.push(`/teams/edit/${team.id}`)"
+    @click="router.push(`/teams/update/${team.id}`)"
     >Редактировать</Button
   >
   <Button

@@ -23,7 +23,7 @@ const frameworkSkills = ref<SkillsRadarChartType>()
 const databaseSkills = ref<SkillsRadarChartType>()
 const devopsSkills = ref<SkillsRadarChartType>()
 
-const radarChartPlaceholder = ref('Вычисление диаграм')
+const radarChartPlaceholder = ref('Вычисление диаграмм')
 
 const skillsData = computed(() => [
   { data: languageSkills.value },

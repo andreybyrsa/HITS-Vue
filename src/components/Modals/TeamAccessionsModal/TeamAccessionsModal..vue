@@ -8,8 +8,6 @@ import mutableSort from '@Utils/mutableSort'
 
 import useUserStore from '@Store/user/userStore'
 
-import TeamService from '@Services/TeamService'
-
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
   TeamAccessionsModalEmits,
@@ -21,6 +19,7 @@ import { TableColumn } from '@Components/Table/Table.types'
 
 import { TeamAccession, accessionStage } from '@Domain/TeamAccession'
 import TeamMember from '@Domain/TeamMember'
+import TeamAccessionsService from '@Services/TeamAccessionsService'
 
 const props = defineProps<TeamAccessionsModalProps>()
 
@@ -69,7 +68,10 @@ onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TeamService.getAllTeamAccessions(props.team.id, token)
+    const response = await TeamAccessionsService.getAllTeamAccessions(
+      props.team.id,
+      token,
+    )
 
     if (response instanceof Error) {
       return //уведомление об ошибке

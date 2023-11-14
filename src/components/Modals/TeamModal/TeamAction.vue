@@ -15,14 +15,17 @@ import TeamActionButtons from '@Components/Modals/TeamModal/TeamActionButtons.vu
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useTeamStore from '@Store/teams/teamsStore'
 
-import TeamService from '@Services/TeamService'
 import InvitationService from '@Services/InvitationService'
 
 import { TeamAccession } from '@Domain/TeamAccession'
 import Success from '@Domain/ResponseMessage'
 
 import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+import TeamAccessionsService from '@Services/TeamAccessionsService'
+
+const teamStore = useTeamStore()
 
 const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
@@ -41,14 +44,10 @@ const handleDeleteTeam = async () => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await TeamService.deleteTeam(teamId.value, token)
-    console.log(response)
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
+    await teamStore.deleteTeam(teamId.value, token)
+
     closeModal()
-    router.push('/teams/list')
-    return notificationsStore.createSystemNotification('Система', response.success)
+    router.go(-1)
   }
 }
 const handleInviteFromPortal = async (users: string[]) => {
@@ -56,7 +55,7 @@ const handleInviteFromPortal = async (users: string[]) => {
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
 
-    const response = await TeamService.inviteRegisteredUsers(
+    const response = await TeamAccessionsService.inviteRegisteredUsers(
       users,
       teamId.value,
       token,
@@ -75,7 +74,8 @@ const handleInviteFromOutside = async (emails: string[]) => {
     const currentTeamId = teamId.value
 
     const teamParallelRequests = [
-      () => TeamService.inviteRegisteredUsers(emails, currentTeamId, token),
+      () =>
+        TeamAccessionsService.inviteRegisteredUsers(emails, currentTeamId, token),
       () => InvitationService.inviteUsers({ emails, roles: ['INITIATOR'] }, token),
     ]
     await makeParallelRequests<Error | Success>(teamParallelRequests).then(
@@ -97,7 +97,11 @@ const handleSendRequestToTheTeam = async (teamRequest: TeamAccession) => {
   const currentUser = user.value
   if (currentUser?.token && teamId.value) {
     const { token } = currentUser
-    const response = await TeamService.sendRequest(teamRequest, teamId.value, token)
+    const response = await TeamAccessionsService.sendRequest(
+      teamRequest,
+      teamId.value,
+      token,
+    )
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -150,7 +154,7 @@ function checkResponseStatus<T>(data: RequestResult<T>) {
     <TeamAccessionModal
       mode="write"
       :type="
-        team.members.find((member) => member.userId == user?.id) ? 'LEAVE' : 'ENTER'
+        team.members.find((member) => member.userId === user?.id) ? 'LEAVE' : 'ENTER'
       "
       :sender="user"
       :is-opened="modalName === accessionModal"

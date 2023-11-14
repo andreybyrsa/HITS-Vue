@@ -46,7 +46,7 @@ import { TeamAccession, accessionStage, requestType } from '@Domain/TeamAccessio
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import TeamService from '@Services/TeamService'
+import TeamAccessionsService from '@Services/TeamAccessionsService'
 
 const teamAccessions = defineModel<TeamAccession[]>()
 
@@ -154,7 +154,7 @@ async function handleDeleteTeamAccession() {
 
   if (currentUser?.token && deletingAccessionId.value && teamAccessions.value) {
     const { token } = currentUser
-    const response = await TeamService.deleteTeamAccession(
+    const response = await TeamAccessionsService.deleteTeamAccession(
       deletingAccessionId.value,
       token,
     )
@@ -189,7 +189,10 @@ async function handleResponseToRequest() {
   if (currentUser?.token && currentRequest) {
     const { token } = currentUser
 
-    const response = await TeamService.responseToRequest(currentRequest, token)
+    const response = await TeamAccessionsService.responseToRequest(
+      currentRequest,
+      token,
+    )
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -214,7 +217,10 @@ async function handleResponseToInvitation() {
   if (currentUser?.token && currentRequest) {
     const { token } = currentUser
 
-    const response = await TeamService.responseToInvitation(currentRequest, token)
+    const response = await TeamAccessionsService.responseToInvitation(
+      currentRequest,
+      token,
+    )
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -239,7 +245,7 @@ async function handleSendInviteAgain() {
   if (currentUser?.token && currentRequest) {
     const { token, id } = currentUser
 
-    const response = await TeamService.inviteRegisteredUsers(
+    const response = await TeamAccessionsService.inviteRegisteredUsers(
       [currentRequest.targetEmail],
       currentRequest.id,
       token,

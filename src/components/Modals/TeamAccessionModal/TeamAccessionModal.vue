@@ -103,16 +103,14 @@ function getRequestTypeStyle() {
           class-name="text-primary d-flex justify-content-center"
         >
           {{
-            teamAccession?.requestType == 'ENTER'
-              ? 'Мотивационное письмо'
-              : 'Причина ухода'
+            type == 'ENTER' ? 'Мотивационное письмо' : 'Причина ухода'
           }}</Typography
         >
         <Typography
           v-if="mode == 'read' && teamAccession?.stage == 'REQUEST'"
           :class-name="getRequestTypeStyle()"
           >{{
-            teamAccession?.requestType == 'ENTER'
+            type == 'ENTER'
               ? 'Заявление на присоединение в команду'
               : 'Заявление на выход с команды'
           }}</Typography
@@ -127,7 +125,11 @@ function getRequestTypeStyle() {
             name="text"
             v-model="value"
             :placeholder="
-              mode == 'write' ? 'Опишите причину заявления' : teamAccession?.text
+              mode == 'write'
+                ? type == 'ENTER'
+                  ? 'Опишите причину вступления'
+                  : 'Опишите причину выхода'
+                : teamAccession?.text
             "
             :class="TextareaClassName"
             :disabled="mode == 'read' ? true : false"

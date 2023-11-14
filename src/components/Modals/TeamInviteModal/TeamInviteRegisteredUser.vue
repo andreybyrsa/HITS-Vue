@@ -6,7 +6,6 @@ import { storeToRefs } from 'pinia'
 import useUserStore from '@Store/user/userStore'
 
 import TeamMember from '@Domain/TeamMember'
-import TeamService from '@Services/TeamService'
 
 import UsersColumns from '@Components/UserColumns/UsersColumns.vue'
 import {
@@ -17,6 +16,7 @@ import {
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import TeamInviteRegisteredUserPlaceholder from '@Components/Modals/TeamInviteModal/TeamInviteRegisteredUserPlaceholder.vue'
+import TeamAccessionsService from '@Services/TeamAccessionsService'
 
 defineProps<TeamInviteRegisteredUsersProps>()
 
@@ -45,7 +45,7 @@ onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TeamService.getAllTeamProfiles(token)
+    const response = await TeamAccessionsService.getAllTeamProfiles(token)
 
     if (response instanceof Error) {
       return //уведомление

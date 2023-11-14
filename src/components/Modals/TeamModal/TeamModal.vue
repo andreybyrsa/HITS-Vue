@@ -13,10 +13,11 @@ import TeamDescription from '@Components/Modals/TeamModal/TeamDescription.vue'
 import TeamMainStuff from '@Components/Modals/TeamModal/TeamMainStuff.vue'
 
 import useUserStore from '@Store/user/userStore'
-
-import TeamService from '@Services/TeamService'
+import useTeamStore from '@Store/teams/teamsStore'
 
 import Team from '@Domain/Team'
+
+const teamStore = useTeamStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -34,7 +35,7 @@ onMounted(async () => {
   if (currentUser?.token) {
     const id = +route.params.teamId
     const { token } = currentUser
-    const response = await TeamService.getTeam(id, token)
+    const response = await teamStore.getTeam(id, token)
 
     if (response instanceof Error) {
       return

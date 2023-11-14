@@ -49,13 +49,13 @@ function getMocks(): Mocks {
     },
     {
       id: 1,
-      name: 'ReactJS',
+      name: 'VueJS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
       id: 2,
-      name: 'C++',
+      name: 'Java',
       type: 'LANGUAGE',
       confirmed: false,
     },
@@ -69,6 +69,48 @@ function getMocks(): Mocks {
       id: 4,
       name: 'MongoDB',
       type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: 5,
+      name: 'MySQL',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: 6,
+      name: 'PostgreSQL',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: 7,
+      name: 'Python',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: 8,
+      name: 'Spring',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: 9,
+      name: 'Django',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: 10,
+      name: 'Git',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: 11,
+      name: 'VSCode',
+      type: 'DEVOPS',
       confirmed: true,
     },
   ]
@@ -148,20 +190,7 @@ function getMocks(): Mocks {
       firstName: 'Кирилл',
       lastName: 'Власов',
 
-      skills: [
-        {
-          id: 0,
-          name: 'JavaScript',
-          type: 'LANGUAGE',
-          confirmed: true,
-        },
-        {
-          id: 1,
-          name: 'React JS',
-          type: 'FRAMEWORK',
-          confirmed: true,
-        },
-      ],
+      skills: [...skills],
     },
     {
       email: 'maga@mail.com',
