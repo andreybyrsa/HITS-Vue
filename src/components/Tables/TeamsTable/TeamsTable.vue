@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -26,8 +26,10 @@ import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
 import Team from '@Domain/Team'
+import { Skill } from '@Domain/Skill'
 
 import TeamService from '@Services/TeamService'
+import SkillsService from '@Services/SkillsService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -39,14 +41,32 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const teams = defineModel<Team[]>({ required: true })
+const skills = ref<Skill[]>([])
 
 const deletingTeamId = ref<string | null>(null)
 
 const filterByIsClosed = ref<boolean>()
+const filterBySkills = ref<string[]>([])
+
+const searchBySkills = ref('')
 
 const isSortedByMembersCount = ref(false)
 const isSortedByCreatedAt = ref(false)
 const isOpenedTeamDeleteModal = ref(false)
+
+onMounted(async () => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await SkillsService.getAllSkills(token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    skills.value = response
+  }
+})
 
 const teamTableColumns: TableColumn<Team>[] = [
   {
@@ -95,7 +115,7 @@ const dropdownTeamsActions: DropdownMenuAction<Team>[] = [
   },
 ]
 
-const teamsFilters: Filter<Team>[] = [
+const teamsFilters = computed<Filter<Team>[]>(() => [
   {
     category: 'Статус',
     choices: [
@@ -106,7 +126,15 @@ const teamsFilters: Filter<Team>[] = [
     isUniqueChoice: true,
     checkFilter: checkTeamStatus,
   },
-]
+  {
+    category: 'Стек технологий',
+    choices: skills.value.map(({ name }) => ({ label: name, value: name })),
+    refValue: filterBySkills,
+    isUniqueChoice: false,
+    searchValue: searchBySkills,
+    checkFilter: checkTeamSkill,
+  },
+])
 
 function sortByCreatedAt() {
   teams.value.sort((team1, team2) => {
@@ -217,5 +245,12 @@ function checkUpdateTeamAction(team: Team) {
 
 function checkTeamStatus(team: Team, status: FilterValue) {
   return team.closed === status
+}
+
+function checkTeamSkill(team: Team, skill: FilterValue) {
+  return (
+    team.skills.some(({ name }) => name === skill) ||
+    team.wantedSkills.some(({ name }) => name === skill)
+  )
 }
 </script>

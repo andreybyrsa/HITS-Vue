@@ -71,15 +71,99 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
+      name: 'Python',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '2',
+      name: 'Rust',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '3',
+      name: 'Swift',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '4',
+      name: 'Kotlin',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '5',
+      name: 'Go',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '6',
       name: 'React JS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
-      id: '2',
+      id: '7',
       name: 'C++',
       type: 'LANGUAGE',
       confirmed: false,
+    },
+    {
+      id: '8',
+      name: 'Java',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '9',
+      name: 'Vue 3',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: '10',
+      name: 'NodeJS',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: '11',
+      name: 'Docker',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: '12',
+      name: 'Grafana',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: '13',
+      name: 'Git',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: '14',
+      name: 'Mongo',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '15',
+      name: 'NySQL',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '16',
+      name: 'PostgreSQL',
+      type: 'DATABASE',
+      confirmed: true,
     },
   ]
 
@@ -243,7 +327,7 @@ function getMocks(): Mocks {
       budget: 1,
       suitability: 1,
       preAssessment: 1,
-      rating: 3,
+      rating: null,
     },
     {
       id: '1',
@@ -319,7 +403,8 @@ function getMocks(): Mocks {
       owner: users[0],
       leader: users[1],
       members: [...users],
-      skills: [],
+      skills: [skills[0], skills[5], skills[10], skills[11]],
+      wantedSkills: [skills[0], skills[4], skills[5], skills[6], skills[10]],
     },
     {
       id: '1',
@@ -332,7 +417,8 @@ function getMocks(): Mocks {
       owner: users[1],
       leader: users[2],
       members: [users[3]],
-      skills: [...skills],
+      skills: [skills[1], skills[2], skills[5]],
+      wantedSkills: [skills[1], skills[3], skills[10]],
     },
   ]
 

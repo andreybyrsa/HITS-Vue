@@ -1,11 +1,16 @@
 <script lang="ts" setup generic="DataType">
 import { Ref, computed } from 'vue'
 
-import { FilterBarProps, FilterValue } from '@Components/FilterBar/FilterBar.types'
+import {
+  FilterBarProps,
+  FilterValue,
+  FilterChoice,
+} from '@Components/FilterBar/FilterBar.types'
 import Button from '@Components/Button/Button.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 
 const props = defineProps<FilterBarProps<DataType>>()
 
@@ -51,6 +56,19 @@ function resetFilters() {
     }
   })
 }
+
+function searchByCategory(value: string | undefined, choices: FilterChoice[]) {
+  if (value) {
+    const searchValue = value.toLowerCase().trim()
+
+    return choices.filter(({ label }) => {
+      const choiceLabel = label.toLowerCase().trim()
+      return choiceLabel.includes(searchValue)
+    })
+  }
+
+  return choices
+}
 </script>
 
 <template>
@@ -68,10 +86,20 @@ function resetFilters() {
       :key="index"
     >
       <Typography class-name="fw-semibold">{{ filter.category }}</Typography>
+      <Input
+        v-if="filter.searchValue"
+        :name="`search-${filter.category}`"
+        class-name="my-1 rounded-end"
+        placeholder="Найти"
+        v-model="filter.searchValue.value"
+      />
 
       <div class="filter__choices">
         <div
-          v-for="(choice, index) in filter.choices"
+          v-for="(choice, index) in searchByCategory(
+            filter.searchValue?.value,
+            filter.choices,
+          )"
           :key="index"
           class="filter__choice ps-2 py-1 rounded-1"
           @click="chooseFilter(choice.value, filter.refValue)"
@@ -113,7 +141,7 @@ function resetFilters() {
   @include flexible(stretch, flex-start, column, $gap: 8px);
 
   &__choices {
-    max-height: 160px;
+    max-height: 192px;
 
     overflow-y: scroll;
   }

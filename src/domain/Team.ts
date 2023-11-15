@@ -12,6 +12,7 @@ interface Team {
   leader: User
   members: User[]
   skills: Skill[]
+  wantedSkills: Skill[]
 }
 
 export default Team
