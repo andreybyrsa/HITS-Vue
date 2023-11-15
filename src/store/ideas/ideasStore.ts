@@ -7,6 +7,7 @@ import IdeaStatusTypes from '@Domain/IdeaStatus'
 import IdeasService from '@Services/IdeasService'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
 
 const useIdeasStore = defineStore('ideas', {
@@ -40,7 +41,10 @@ const useIdeasStore = defineStore('ideas', {
 
     getIdea() {
       return async (id: string, role: RolesTypes, token: string) => {
-        const idea = await IdeasService.getIdea(id, token)
+        const currentIdeaServiceKey =
+          role === 'INITIATOR' ? 'getInitiatorIdea' : 'getIdea'
+
+        const idea = await IdeasService[currentIdeaServiceKey](id, token)
 
         if (idea instanceof Error) {
           useNotificationsStore().createSystemNotification('Система', idea.message)

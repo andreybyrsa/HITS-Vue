@@ -54,6 +54,26 @@ const getIdea = async (id: string, token: string): Promise<Idea | Error> => {
     })
 }
 
+const getInitiatorIdea = async (
+  id: string,
+  token: string,
+): Promise<Idea | Error> => {
+  return await ideasAxios
+    .get(
+      `/idea/initiator/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки идеи'
+      return new Error(error)
+    })
+}
+
 const getIdeaSkills = async (
   ideaId: string,
   token: string,
@@ -272,6 +292,7 @@ const IdeasService = {
   getIdeas,
   getInitiatorIdeas,
   getIdea,
+  getInitiatorIdea,
   getIdeaSkills,
 
   saveIdeaDraft,
