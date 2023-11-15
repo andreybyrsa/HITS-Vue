@@ -8,7 +8,7 @@ interface TeamAccession {
   id: string
   team: Team
   targetEmail: string
-  targetId?: number
+  targetId?: string
 
   targetRegistered: boolean
   stage: accessionStage

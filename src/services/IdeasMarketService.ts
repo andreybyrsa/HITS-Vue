@@ -41,7 +41,7 @@ const fetchFavoritesIdeas = async (
 
 const getIdeaMarket = async (
   token: string,
-  id: number,
+  id: string,
 ): Promise<IdeasMarket | Error> => {
   return await ideasMarketAxios
     .get(
@@ -77,7 +77,7 @@ const postIdeaOnMarket = async (
 }
 
 const addIdeaToFavorites = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasMarketAxios
@@ -94,7 +94,7 @@ const addIdeaToFavorites = async (
 }
 
 const removeIdeaFromFavorites = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasMarketAxios

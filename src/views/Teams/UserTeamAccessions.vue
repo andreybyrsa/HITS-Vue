@@ -9,8 +9,7 @@ import { TeamAccession, accessionStage } from '@Domain/TeamAccession'
 import TeamMember from '@Domain/TeamMember'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
-import TeamService from '@Services/TeamService'
+import TeamAccessionsService from '@Services/TeamAccessionsService'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useUserStore from '@Store/user/userStore'
@@ -35,9 +34,9 @@ const allAccessions = ref<TeamAccession[]>()
 onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
-    const { email, token } = currentUser
+    const { token } = currentUser
 
-    const response = await TeamService.getUserTeamAccessions(email, token)
+    const response = await TeamAccessionsService.getUserTeamAccessions(token)
 
     if (response instanceof Error) {
       return notificationStore.createSystemNotification('Система', response.message)

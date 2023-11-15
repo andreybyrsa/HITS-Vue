@@ -13,7 +13,7 @@ interface RequestTeams {
   closed: boolean
   description: string
   owner: TeamMember
-  leader: TeamMember
+  leader?: TeamMember
   membersCount: number
   members: TeamMember[]
   skills: Skill[]

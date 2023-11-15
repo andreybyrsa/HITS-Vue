@@ -99,7 +99,7 @@ function closeLetterTeam() {
   <Table
     :columns="requestsTableColumns"
     :data="filterTeamsAccepted(teams)"
-    search-by="name"
+    :search-by="['name']"
     :dropdown-actions-menu="dropdownIdeasActions"
   />
   <LetterModal

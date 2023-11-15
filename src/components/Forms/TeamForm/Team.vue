@@ -47,7 +47,7 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { id, token } = currentUser
 
-    const teamId = +route.params.id
+    const teamId = route.params.id.toString()
 
     if (props.mode == 'editing') {
       const response = await TeamService.getTeam(teamId, token)
