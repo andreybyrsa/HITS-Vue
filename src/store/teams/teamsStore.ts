@@ -58,18 +58,21 @@ const useTeamStore = defineStore('teams', {
       const response = await TeamService.kickMember(teamMember, id, token)
 
       if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentTeam = this.teams.find((team) => team.id === id)
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+      const currentTeam = this.teams.find((team) => team.id === id)
 
-        if (currentTeam) {
-          const kickingTeamMemberIndex = currentTeam.members.findIndex(
-            (member) => member.userId === teamMember.userId,
-          )
+      if (currentTeam) {
+        const kickingTeamMemberIndex = currentTeam.members.findIndex(
+          (member) => member.userId === teamMember.userId,
+        )
 
-          if (kickingTeamMemberIndex != -1) {
-            currentTeam.members.splice(kickingTeamMemberIndex, 1)
-          }
+        if (kickingTeamMemberIndex != -1) {
+          currentTeam.members.splice(kickingTeamMemberIndex, 1)
+          currentTeam.membersCount--
         }
       }
     },
@@ -78,13 +81,15 @@ const useTeamStore = defineStore('teams', {
       const response = await TeamService.deleteTeam(id, token)
 
       if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const deletingIdeaIndex = this.teams.findIndex((idea) => idea.id === id)
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+      const deletingIdeaIndex = this.teams.findIndex((idea) => idea.id === id)
 
-        if (deletingIdeaIndex !== -1) {
-          this.teams.splice(deletingIdeaIndex, 1)
-        }
+      if (deletingIdeaIndex !== -1) {
+        this.teams.splice(deletingIdeaIndex, 1)
       }
     },
   },

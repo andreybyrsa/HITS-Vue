@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import TeamService from '@Services/TeamService'
+import useTeamStore from '@Store/teams/teamsStore'
 
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
@@ -23,26 +23,15 @@ const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
 const router = useRouter()
 
+const teamStore = useTeamStore()
+
 const { user } = storeToRefs(userStore)
 
 const handleKick = async (member: TeamMember, teamId: string) => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TeamService.kickMember(member, teamId, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    const kickingIndexMember = team.value.members.findIndex(
-      (member) => props.member.userId == member.userId,
-    )
-
-    if (kickingIndexMember != -1) {
-      team.value.members.splice(kickingIndexMember, 1)
-    }
-    return notificationsStore.createSystemNotification('Система', response.success)
+    await teamStore.kickMember(member, teamId, token)
   }
 }
 
