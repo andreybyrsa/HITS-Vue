@@ -61,7 +61,7 @@ const filterByTargetType = ref<boolean>()
 const filterByRequestType = ref<requestType>()
 const filterByAccessionStage = ref<accessionStage[]>([])
 
-const deletingAccessionId = ref<number | null>(null)
+const deletingAccessionId = ref<string | null>(null)
 const isOpenedDeleteModal = ref<boolean>(false)
 
 const accession = ref<TeamAccession>()

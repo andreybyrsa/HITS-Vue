@@ -29,7 +29,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const teamId = +route.params.id
+    const teamId = route.params.id.toString()
 
     const response = await TeamService.getTeam(teamId, token)
 

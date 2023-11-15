@@ -6,12 +6,12 @@ import RequestTeams from '@Domain/RequestTeams'
 
 const RequestTeamsAxios = defineAxios(getMocks().RequestTeams)
 
-function filterApplicationsById(ideaId: number, request: RequestTeams[]) {
+function filterApplicationsById(ideaId: string, request: RequestTeams[]) {
   return request.filter((request) => request.ideaId === ideaId)
 }
 
 const getRequestAll = async (
-  ideaId: number,
+  ideaId: string,
   token: string,
 ): Promise<RequestTeams[] | Error> => {
   return await RequestTeamsAxios.get<RequestTeams[]>(

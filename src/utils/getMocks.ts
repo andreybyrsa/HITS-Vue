@@ -38,11 +38,44 @@ function getMocks(): Mocks {
   const registeredInvitations: InvitedUsers[] = [
     {
       emails: ['fourth@mail.com', 'fifth@fg.dc'],
+      id: '0',
+      token: '10296538',
+      email: 'admin@mail.com',
+      firstName: 'Админ',
+      lastName: 'Админ',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+
+    {
+      id: '1',
+      token: '613098',
+      email: '1@mail.com',
+      firstName: 'Пользователь',
+      lastName: 'Пользователь',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+
+    {
+      id: '2',
+      token: '059182',
+      email: '2@mail.com',
+      firstName: 'Менеджер',
+      lastName: 'Менеджер',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+
+    {
+      id: '3',
+      token: '163097',
+      email: '3@mail.com',
+      firstName: 'Владелец',
+      lastName: 'Владелец',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
   ]
   const skills: Skill[] = [
     {
-      id: 0,
+      id: '0',
       name: 'JavaScript',
       type: 'LANGUAGE',
       confirmed: true,
@@ -154,13 +187,13 @@ function getMocks(): Mocks {
 
   const usersGroups: UsersGroup[] = [
     {
-      id: 0,
+      id: '0',
       name: 'Группа разработчиков',
       users: [...users],
       roles: ['INITIATOR'],
     },
     {
-      id: 1,
+      id: '1',
       name: 'Группа экспертов',
       users: [],
       roles: ['ADMIN', 'EXPERT'],
@@ -204,8 +237,8 @@ function getMocks(): Mocks {
 
   const comments: Comment[] = [
     {
-      id: 0,
-      ideaId: 0,
+      id: '0',
+      ideaId: '0',
       createdAt: '2023-10-20T11:02:17Z',
 
       senderEmail: 'andrey@mail.com',
@@ -213,17 +246,17 @@ function getMocks(): Mocks {
       checkedBy: [],
     },
     {
-      id: 1,
-      ideaId: 0,
+      id: '1',
+      ideaId: '0',
       createdAt: '2023-10-21T11:02:17Z',
 
       senderEmail: 'timyr@mail.com',
       text: 'Комментарий 2',
-      checkedBy: [0, 1],
+      checkedBy: ['0', '1'],
     },
     {
-      id: 2,
-      ideaId: 1,
+      id: '2',
+      ideaId: '1',
       createdAt: '2023-10-21T11:02:17Z',
 
       senderEmail: 'kirill.vlasov.05@inbox.ru',
@@ -234,9 +267,9 @@ function getMocks(): Mocks {
 
   const ratings: Rating[] = [
     {
-      id: 0,
-      ideaId: 0,
-      expertId: 0,
+      id: '0',
+      ideaId: '0',
+      expertId: '0',
       budget: 1,
       technicalRealizability: null,
       suitability: 2,
@@ -246,9 +279,9 @@ function getMocks(): Mocks {
       confirmed: false,
     },
     {
-      id: 1,
-      ideaId: 0,
-      expertId: 1,
+      id: '1',
+      ideaId: '0',
+      expertId: '1',
       budget: 2,
       technicalRealizability: 4,
       suitability: 5,
@@ -258,9 +291,9 @@ function getMocks(): Mocks {
       confirmed: true,
     },
     {
-      id: 2,
-      ideaId: 1,
-      expertId: 2,
+      id: '2',
+      ideaId: '1',
+      expertId: '2',
       budget: 1,
       technicalRealizability: 1,
       suitability: 5,
@@ -325,7 +358,7 @@ function getMocks(): Mocks {
       rating: 2,
     },
     {
-      id: 2,
+      id: '2',
       initiator: '2',
       name: 'Идея 2',
       problem:
@@ -379,9 +412,9 @@ function getMocks(): Mocks {
   ]
 
   const ideasSkills: IdeaSkills[] = [
-    { ideaId: 0, skills: [...skills] },
+    { ideaId: '0', skills: [...skills] },
     {
-      ideaId: 1,
+      ideaId: '1',
       skills: [skills[0], skills[2]],
     },
   ]
@@ -687,8 +720,8 @@ function getMocks(): Mocks {
   ]
   const notifications: Notification[] = [
     {
-      id: 0,
-      userId: 0,
+      id: '0',
+      userId: '0',
       title: 'Чат 1',
       message: 'Попов(менеджер, проект 1): дедлайн завтра',
       isShowed: true,
@@ -697,8 +730,8 @@ function getMocks(): Mocks {
       createdAt: '2023-10-25T11:02:17Z',
     },
     {
-      id: 1,
-      userId: 1,
+      id: '1',
+      userId: '1',
       title: 'Чат 2',
       message: 'Петров(менеджер, проект 2): завтра',
       isShowed: false,
@@ -707,8 +740,8 @@ function getMocks(): Mocks {
       createdAt: '2023-10-28T11:02:17Z',
     },
     {
-      id: 2,
-      userId: 2,
+      id: '2',
+      userId: '2',
       title: 'Чат 1',
       message: 'Попов(менеджер, проект 1): дедлайн завтра',
       isShowed: false,
@@ -717,8 +750,8 @@ function getMocks(): Mocks {
       createdAt: '2023-10-20T11:02:17Z',
     },
     {
-      id: 3,
-      userId: 2,
+      id: '3',
+      userId: '2',
       title: 'Чат 2',
       message: 'Петров(менеджер, проект 2): дедлайн завтра',
       isShowed: true,

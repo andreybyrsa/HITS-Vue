@@ -37,7 +37,7 @@ const router = useRouter()
 
 const { deleteModal, inviteModal, accessionModal, teamAccessionsModal } = modalNames
 
-const teamId = ref<number | null>(null)
+const teamId = ref<string | null>(null)
 const modalName = ref<string | null>(null)
 
 const handleDeleteTeam = async () => {
@@ -111,7 +111,7 @@ const handleSendRequestToTheTeam = async (teamRequest: TeamAccession) => {
   }
 }
 
-function openModal(id: number, modal: string) {
+function openModal(id: string, modal: string) {
   teamId.value = id
   modalName.value = modal
 }

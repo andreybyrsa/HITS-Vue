@@ -30,7 +30,7 @@ const useTeamStore = defineStore('teams', {
     },
 
     getTeam() {
-      return async (id: number, token: string) => {
+      return async (id: string, token: string) => {
         const team = await TeamService.getTeam(id, token)
 
         if (team instanceof Error) {
@@ -54,7 +54,7 @@ const useTeamStore = defineStore('teams', {
     },
   },
   actions: {
-    async kickMember(teamMember: TeamMember, id: number, token: string) {
+    async kickMember(teamMember: TeamMember, id: string, token: string) {
       const response = await TeamService.kickMember(teamMember, id, token)
 
       if (response instanceof Error) {
@@ -74,7 +74,7 @@ const useTeamStore = defineStore('teams', {
       }
     },
 
-    async deleteTeam(id: number, token: string) {
+    async deleteTeam(id: string, token: string) {
       const response = await TeamService.deleteTeam(id, token)
 
       if (response instanceof Error) {

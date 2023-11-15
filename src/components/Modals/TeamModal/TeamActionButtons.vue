@@ -25,7 +25,7 @@ const { user } = storeToRefs(userStore)
 
 const disabled = ref<boolean>(false)
 
-function shareButton(id: number) {
+function shareButton(id: string) {
   navigator.clipboard.writeText('http://localhost:8080/team/' + id)
   disabled.value = true
 }

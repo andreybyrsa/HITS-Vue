@@ -3,7 +3,7 @@ import TeamMember from '@Domain/TeamMember'
 import { Project } from '@Components/Modals/TeamModal/TeamAction.types'
 
 interface Team {
-  id: number
+  id: string
   name: string
   createdAt: string
 

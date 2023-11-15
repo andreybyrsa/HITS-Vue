@@ -58,7 +58,7 @@ const handleSendComment = handleSubmit(async (values) => {
   }
 })
 
-const handleDeleteComment = async (commentId: number) => {
+const handleDeleteComment = async (commentId: string) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -67,7 +67,7 @@ const handleDeleteComment = async (commentId: number) => {
   }
 }
 
-const handleCheckComment = async (commentId: number) => {
+const handleCheckComment = async (commentId: string) => {
   const currentUser = user.value
 
   if (currentUser?.token) {

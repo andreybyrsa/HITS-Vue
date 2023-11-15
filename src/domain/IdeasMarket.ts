@@ -2,7 +2,7 @@ import { Skill } from './Skill'
 import IdeasMarketStatusTypes from './MarketStatus'
 
 interface IdeasMarket {
-  id: number
+  id: string
   position: number
   name: string
   problem: string

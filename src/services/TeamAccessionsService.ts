@@ -25,7 +25,7 @@ const getAllTeamProfiles = async (token: string): Promise<TeamMember[] | Error> 
 }
 
 const getTeamProfile = async (
-  userId: number,
+  userId: string,
   token: string,
 ): Promise<TeamMember | Error> => {
   return teamMemberAxios
@@ -45,7 +45,7 @@ const getTeamProfile = async (
 }
 
 const getAllTeamAccessions = async (
-  teamId: number,
+  teamId: string,
   token: string,
 ): Promise<TeamAccession[] | Error> => {
   return await teamAccessions
@@ -77,7 +77,7 @@ const getUserTeamAccessions = async (
 
 const inviteRegisteredUsers = async (
   emails: string[],
-  teamId: number,
+  teamId: string,
   token: string,
 ): Promise<Success | Error> => {
   return await registeredInvitations
@@ -99,7 +99,7 @@ const inviteRegisteredUsers = async (
 
 const inviteUnregisteredUsers = async (
   emails: string[],
-  teamId: number,
+  teamId: string,
   token: string,
 ): Promise<Success | Error> => {
   return await unregisteredInvitations
@@ -123,7 +123,7 @@ const inviteUnregisteredUsers = async (
 
 const sendRequest = async (
   teamRequest: TeamAccession,
-  teamId: number,
+  teamId: string,
   token: string,
 ): Promise<Success | Error> => {
   return await teamAccessions
@@ -192,7 +192,7 @@ const responseToInvitation = async (
 }
 
 const deleteTeamAccession = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await teamAccessions

@@ -36,7 +36,7 @@ const useRatingsStore = defineStore('ratings', {
   }),
   getters: {
     getIdeaRatings() {
-      return async (ideaId: number, token: string) => {
+      return async (ideaId: string, token: string) => {
         const response = await RatingService.getAllIdeaRatings(ideaId, token)
 
         if (response instanceof Error) {
@@ -53,7 +53,7 @@ const useRatingsStore = defineStore('ratings', {
     },
 
     getRatingByIdeaIdAndExpertId() {
-      return (ideaId: number, expertId: number) => {
+      return (ideaId: string, expertId: string) => {
         const currentRatings = this.ratings.find(
           (ideaRating) => ideaRating.ideaId === ideaId,
         )?.ideaRatings
@@ -63,7 +63,7 @@ const useRatingsStore = defineStore('ratings', {
     },
   },
   actions: {
-    async saveRating(rating: Rating, ideaId: number, token: string) {
+    async saveRating(rating: Rating, ideaId: string, token: string) {
       const response = await RatingService.saveExpertRating(rating, ideaId, token)
 
       if (response instanceof Error) {
@@ -82,7 +82,7 @@ const useRatingsStore = defineStore('ratings', {
       }
     },
 
-    async confirmRating(rating: Rating, ideaId: number, token: string) {
+    async confirmRating(rating: Rating, ideaId: string, token: string) {
       const response = await RatingService.confirmExpertRating(rating, ideaId, token)
 
       if (response instanceof Error) {

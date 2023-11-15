@@ -1,7 +1,7 @@
 import { Skill } from '@Domain/Skill'
 
 interface TeamMember {
-  userId: number
+  userId: string
   email: string
   firstName: string
   lastName: string

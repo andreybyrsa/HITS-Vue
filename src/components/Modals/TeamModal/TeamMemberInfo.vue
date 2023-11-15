@@ -25,7 +25,7 @@ const router = useRouter()
 
 const { user } = storeToRefs(userStore)
 
-const handleKick = async (member: TeamMember, teamId: number) => {
+const handleKick = async (member: TeamMember, teamId: string) => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
@@ -46,7 +46,7 @@ const handleKick = async (member: TeamMember, teamId: number) => {
   }
 }
 
-function navigateToProfile(id: number) {
+function navigateToProfile(id: string) {
   router.push(`profile/${id}`)
 }
 </script>

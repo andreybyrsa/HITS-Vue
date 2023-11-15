@@ -114,7 +114,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
         if (mockData instanceof Array) {
           const values: MocksType[] = []
           mockData.forEach((value) => {
-            const id = Math.random() * 100000000
+            const id = (Math.random() * 100000000).toString()
             const data = { ...value, id } as MocksType
             values.push(data)
             mockArray.value.push(data)
@@ -132,7 +132,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
             resolve(createMockResponse(values))
           }
         } else {
-          const id = Math.random() * 100000000
+          const id = (Math.random() * 100000000).toString()
           const data = { ...mockData, id } as MocksType
           mockArray.value.push(data)
 

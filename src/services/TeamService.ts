@@ -24,7 +24,7 @@ const getTeams = async (token: string): Promise<Team[] | Error> => {
     })
 }
 
-const getTeam = async (id: number, token: string): Promise<Team | Error> => {
+const getTeam = async (id: string, token: string): Promise<Team | Error> => {
   return await teamsAxios
     .get(
       `/team/${id}`,
@@ -56,7 +56,7 @@ const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
 
 const updateTeam = async (
   team: Team,
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await teamsAxios
@@ -78,7 +78,7 @@ const updateTeam = async (
 
 const kickMember = async (
   member: TeamMember,
-  teamId: number,
+  teamId: string,
   token: string,
 ): Promise<Success | Error> => {
   return await teamMemberAxios
@@ -98,7 +98,7 @@ const kickMember = async (
     })
 }
 
-const deleteTeam = async (id: number, token: string): Promise<Success | Error> => {
+const deleteTeam = async (id: string, token: string): Promise<Success | Error> => {
   return await teamsAxios
     .delete(
       `/team/delete/${id}`,

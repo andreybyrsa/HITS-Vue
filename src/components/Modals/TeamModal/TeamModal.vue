@@ -33,7 +33,7 @@ const isOpened = ref<boolean>(true)
 onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
-    const id = +route.params.teamId
+    const id = route.params.teamId.toString()
     const { token } = currentUser
     const response = await teamStore.getTeam(id, token)
 

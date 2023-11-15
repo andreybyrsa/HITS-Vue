@@ -5,7 +5,7 @@ type accessionStage = 'INVITATION' | 'REQUEST' | 'ACCEPTED' | 'REJECTED'
 type requestType = 'ENTER' | 'LEAVE'
 
 interface TeamAccession {
-  id: number
+  id: string
   team: Team
   targetEmail: string
   targetId?: number

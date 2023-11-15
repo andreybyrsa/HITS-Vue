@@ -182,7 +182,7 @@ const handleSaveDraftIdea = async () => {
 }
 
 async function saveIdeaSkills(
-  ideaId: number,
+  ideaId: string,
   token: string,
   idea: Idea | undefined,
 ) {

@@ -6,14 +6,14 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 
-function filterRatingsById(ideaId: number, ratings: Rating[]) {
+function filterRatingsById(ideaId: string, ratings: Rating[]) {
   return ratings.filter((rating) => rating.ideaId === ideaId)
 }
 
 const ratingsAxios = defineAxios(getMocks().ratings)
 
 const getAllIdeaRatings = async (
-  ideaId: number,
+  ideaId: string,
   token: string,
 ): Promise<Rating[] | Error> => {
   return await ratingsAxios
@@ -33,7 +33,7 @@ const getAllIdeaRatings = async (
 }
 
 const getExpertRating = async (
-  ideaId: number,
+  ideaId: string,
   token: string,
 ): Promise<Rating | Error> => {
   return await ratingsAxios
@@ -54,7 +54,7 @@ const getExpertRating = async (
 
 const saveExpertRating = async (
   rating: Rating,
-  ideaId: number,
+  ideaId: string,
   token: string,
 ): Promise<void | Error> => {
   return await ratingsAxios
@@ -76,7 +76,7 @@ const saveExpertRating = async (
 
 const confirmExpertRating = async (
   rating: Rating,
-  ideaId: number,
+  ideaId: string,
   token: string,
 ): Promise<void | Error> => {
   return await ratingsAxios
