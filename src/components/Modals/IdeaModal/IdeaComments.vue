@@ -32,7 +32,7 @@ const { handleSubmit, resetForm } = useForm<Comment>({
     ideaId: props.idea.id,
     text: '',
     senderEmail: user.value?.email,
-    checkedBy: user.value ? [user.value.id] : [],
+    checkedBy: user.value ? [user.value.email] : [],
   },
 })
 
@@ -71,8 +71,8 @@ const handleCheckComment = async (commentId: string) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token, id } = currentUser
-    await commentsStore.checkComment(id, commentId, token)
+    const { token, email } = currentUser
+    await commentsStore.checkComment(commentId, email, token)
   }
 }
 
@@ -81,9 +81,9 @@ const onIntersectionObserver = async (
   comment: Comment,
 ) => {
   if (user.value) {
-    const { id } = user.value
+    const { email } = user.value
 
-    if (!comment.checkedBy.includes(id) && isIntersecting) {
+    if (!comment.checkedBy.includes(email) && isIntersecting) {
       await handleCheckComment(comment.id)
     }
   }

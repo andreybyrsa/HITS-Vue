@@ -22,7 +22,7 @@ const isSendingOnApproval = ref(false)
 const isSendingOnEditing = ref(false)
 const isSendingOnConfirmation = ref(false)
 
-function getAccessToEditByInitiator() {
+function getAccessToEdit() {
   if (user.value) {
     const { email, role } = user.value
     const { status, initiator } = props.idea
@@ -48,64 +48,68 @@ function getAccessToApproval() {
   }
 }
 
-const handleSendToApproval = async () => {
+const handleSendOnApproval = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  if (currentUser?.token && currentUser.role) {
+    const { token, role } = currentUser
     const { id } = props.idea
 
     isSendingOnApproval.value = true
-    await ideasStore.updateIdeaStatus(id, 'ON_APPROVAL', token)
+    await ideasStore.updateIdeaStatus(id, 'ON_APPROVAL', role, token)
     isSendingOnApproval.value = false
   }
 }
 
-const handleSendToEditing = async () => {
+const handleSendOnEditing = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  if (currentUser?.token && currentUser.role) {
+    const { token, role } = currentUser
     const { id } = props.idea
 
     isSendingOnEditing.value = true
-    await ideasStore.updateIdeaStatus(id, 'ON_EDITING', token)
+    await ideasStore.updateIdeaStatus(id, 'ON_EDITING', role, token)
     isSendingOnEditing.value = false
   }
 }
 
-const handleSendToConfirmation = async () => {
+const handleSendOnConfirmation = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  if (currentUser?.token && currentUser.role) {
+    const { token, role } = currentUser
     const { id } = props.idea
 
     isSendingOnConfirmation.value = true
-    await ideasStore.updateIdeaStatus(id, 'ON_CONFIRMATION', token)
+    await ideasStore.updateIdeaStatus(id, 'ON_CONFIRMATION', role, token)
     isSendingOnConfirmation.value = false
   }
+}
+
+function navigateToUpdateIdeaForm() {
+  router.push(`/ideas/update/${props.idea.id}`)
 }
 </script>
 
 <template>
   <div
-    v-if="getAccessToEditByInitiator() || getAccessToApproval()"
+    v-if="getAccessToEdit() || getAccessToApproval()"
     class="rounded-3 bg-white p-3 d-flex flex-wrap gap-3"
   >
     <Button
-      v-if="getAccessToEditByInitiator()"
+      v-if="getAccessToEdit()"
       variant="light"
-      @click="router.push(`/ideas/update/${idea.id}`)"
+      @click="navigateToUpdateIdeaForm"
     >
       Редактировать
     </Button>
 
     <Button
-      v-if="getAccessToEditByInitiator()"
+      v-if="getAccessToEdit()"
       variant="success"
       :is-loading="isSendingOnApproval"
-      @click="handleSendToApproval"
+      @click="handleSendOnApproval"
     >
       Отправить на согласование
     </Button>
@@ -114,7 +118,7 @@ const handleSendToConfirmation = async () => {
       v-if="getAccessToApproval()"
       variant="danger"
       :is-loading="isSendingOnEditing"
-      @click="handleSendToEditing"
+      @click="handleSendOnEditing"
     >
       Отправить на доработку
     </Button>
@@ -123,7 +127,7 @@ const handleSendToConfirmation = async () => {
       v-if="getAccessToApproval()"
       variant="success"
       :is-loading="isSendingOnConfirmation"
-      @click="handleSendToConfirmation"
+      @click="handleSendOnConfirmation"
     >
       Отправить на утверждение
     </Button>
