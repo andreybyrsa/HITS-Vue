@@ -1,7 +1,7 @@
 import { Ref } from 'vue'
 
 type FilterValue = string | number | boolean | object
-type FilterChoice = { label: string; value: FilterValue }
+type FilterChoice = { label: string; value: FilterValue; isMarked?: boolean }
 
 interface Filter<DataType> {
   category: string
@@ -10,6 +10,7 @@ interface Filter<DataType> {
   refValue: Ref<FilterValue | FilterValue[] | undefined>
   searchValue?: Ref<string>
   checkFilter: (data: DataType, filter: FilterValue) => void
+  statement?: boolean
 }
 
 interface FilterBarProps<DataType> {

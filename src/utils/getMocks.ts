@@ -6,11 +6,13 @@ import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 import Notification from '@Domain/Notification'
+import { ProfileSkills } from '@Domain/Profile'
 
 interface Mocks {
   users: User[]
   usersEmails: string[]
   skills: Skill[]
+  profileSkills: ProfileSkills[]
   usersGroups: UsersGroup[]
   teamMember: TeamMember[]
   comments: Comment[]
@@ -149,13 +151,13 @@ function getMocks(): Mocks {
     },
     {
       id: '14',
-      name: 'Mongo',
+      name: 'MongoDB',
       type: 'DATABASE',
       confirmed: true,
     },
     {
       id: '15',
-      name: 'NySQL',
+      name: 'MySQL',
       type: 'DATABASE',
       confirmed: true,
     },
@@ -164,6 +166,14 @@ function getMocks(): Mocks {
       name: 'PostgreSQL',
       type: 'DATABASE',
       confirmed: true,
+    },
+  ]
+
+  const profileSkills: ProfileSkills[] = [
+    {
+      id: '0',
+      userId: '0',
+      skills: [skills[0], skills[6], skills[9], skills[11], skills[13]],
     },
   ]
 
@@ -403,8 +413,8 @@ function getMocks(): Mocks {
       owner: users[0],
       leader: users[1],
       members: [...users],
-      skills: [skills[0], skills[5], skills[10], skills[11]],
-      wantedSkills: [skills[0], skills[4], skills[5], skills[6], skills[10]],
+      skills: [skills[0], skills[4], skills[6], skills[9]],
+      wantedSkills: [skills[0], skills[11], skills[16]],
     },
     {
       id: '1',
@@ -417,8 +427,22 @@ function getMocks(): Mocks {
       owner: users[1],
       leader: users[2],
       members: [users[3]],
-      skills: [skills[1], skills[2], skills[5]],
-      wantedSkills: [skills[1], skills[3], skills[10]],
+      skills: [skills[1], skills[5], skills[7], skills[14]],
+      wantedSkills: [skills[1], skills[5], skills[10], skills[13], skills[16]],
+    },
+    {
+      id: '2',
+      name: 'Команда 3',
+      closed: false,
+      createdAt: '2023-10-30T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 11,
+      owner: users[1],
+      leader: users[2],
+      members: [users[3]],
+      skills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
+      wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
     },
   ]
 
@@ -468,6 +492,7 @@ function getMocks(): Mocks {
   return {
     users,
     usersEmails,
+    profileSkills,
     teamMember,
     skills,
     usersGroups,
