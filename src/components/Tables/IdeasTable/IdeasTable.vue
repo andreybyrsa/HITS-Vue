@@ -13,6 +13,14 @@
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
   />
+
+  <SendIdeasOnMarketModal
+    :ideas="ideasForSendOnMarket"
+    :is-opened="isOpenSendIdeasModal"
+    @close-modal="closeSendIdeasModal"
+    v-model:dateStart="dateStart"
+    v-model:dateFinish="dateFinish"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -30,6 +38,7 @@ import {
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
 import { Idea } from '@Domain/Idea'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
@@ -40,6 +49,8 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 import getStatus from '@Utils/getStatus'
 import mutableSort from '@Utils/mutableSort'
 import IdeasMarket from '@Domain/IdeasMarket'
+import SkillsService from '@Services/SkillsService'
+import IdeasService from '@Services/IdeasService'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -56,6 +67,9 @@ const availableStatus = getStatus()
 
 const deletingIdeaId = ref<number | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
+
+const dateStart = ref<string>('')
+const dateFinish = ref<string>('')
 
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
 
@@ -118,8 +132,8 @@ const checkedIdeasActions: CheckedDataAction<Idea>[] = [
   {
     label: 'Отправить на биржу',
     className: 'btn-primary',
-    statement: user.value?.role === 'PROJECT_OFFICE',
-    click: sendIdeasToMarket,
+    statement: user.value?.role == 'PROJECT_OFFICE',
+    click: openSendIdeasModal,
   },
 ]
 
@@ -222,50 +236,14 @@ function getRatingColor(rating: number) {
   return 'text-danger'
 }
 
-function sendIdeasToMarket(ideas: Idea[]) {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    ideas.forEach((idea) => {
-      const {
-        id,
-        initiator,
-        createdAt,
-        name,
-        problem,
-        description,
-        solution,
-        result,
-        maxTeamSize,
-        customer,
-      } = idea
-      //     const ideaMarket: IdeasMarket = {
-      //       id: id,
-      // initiator: initiator,
-      // createdAt: createdAt,
-      // name: name,
-      // problem: problem,
-      // description: description,
-      // solution: solution,
-      // result: result,
-      // maxTeamSize: maxTeamSize,
-      // customer: customer,
-
-      // position: number,
-      // stack: Skill[],
-      // status: 'RECRUITMENT_IS_OPEN',
-      // requests: 0,
-      // acceptedRequests: 0,
-      // isFavorite: false,
-      // startDate: '1',
-      // finishDate: '1',
-      //     }
-    })
-
-    // teams.value.forEach((elem) =>
-    //   elem.id == team.id ? (elem.accepted = true) : null,
-    // )
-  }
+const isOpenSendIdeasModal = ref<boolean>(false)
+const ideasForSendOnMarket = ref<Idea[]>([])
+function openSendIdeasModal(ideas: Idea[]) {
+  isOpenSendIdeasModal.value = true
+  ideasForSendOnMarket.value = ideas
+}
+function closeSendIdeasModal() {
+  isOpenSendIdeasModal.value = false
 }
 
 function navigateToIdeaModal(idea: Idea) {

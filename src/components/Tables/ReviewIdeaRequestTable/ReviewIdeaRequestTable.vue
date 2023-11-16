@@ -124,7 +124,7 @@ async function acceptRequestTeam(team: RequestTeams) {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await RequestTeamsServise.putRequestTeam(
+    const response = await RequestTeamsServise.acceptRequestTeam(
       { ...team, accepted: true },
       token,
     )
@@ -133,9 +133,7 @@ async function acceptRequestTeam(team: RequestTeams) {
       return
     }
 
-    teams.value.forEach((elem) =>
-      elem.id == team.id ? (elem.accepted = true) : null,
-    )
+    teams.value.forEach((elem) => elem.id == team.id && (elem.accepted = true))
   }
 }
 
@@ -145,7 +143,7 @@ async function rejectRequestTeam(team: RequestTeams) {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await RequestTeamsServise.putRequestTeam(
+    const response = await RequestTeamsServise.acceptRequestTeam(
       { ...team, accepted: false },
       token,
     )
@@ -173,9 +171,30 @@ const checkedIdeasMarketActions: CheckedDataAction<RequestTeams>[] = [
   {
     label: 'Принять заявки',
     className: 'btn-primary',
-    click: () => null,
+    click: acceptRequestTeams,
   },
 ]
+
+function acceptRequestTeams(requestsTeams: RequestTeams[]) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = RequestTeamsServise.acceptRequestTeams(
+      requestsTeams.filter((team) => (team.accepted = true)),
+      token,
+    )
+
+    if (response instanceof Error) {
+      return
+    }
+
+    teams.value.forEach((elem) =>
+      requestsTeams.forEach((team) => elem.id === team.id && (elem.accepted = true)),
+    )
+  }
+}
 </script>
 
 <template>

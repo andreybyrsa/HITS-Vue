@@ -512,6 +512,10 @@ function getMocks(): Mocks {
       ideaId: 1,
       skills: [...skills],
     },
+    {
+      ideaId: 3,
+      skills: [...skills],
+    },
   ]
 
   const teams: Team[] = [
