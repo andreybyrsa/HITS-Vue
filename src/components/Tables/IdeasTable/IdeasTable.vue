@@ -1,6 +1,6 @@
 <template>
   <Table
-    :columns="iedaTableColumns"
+    :columns="ideaTableColumns"
     :data="ideasData"
     :search-by="['name', 'description']"
     :filters="ideasFilters"
@@ -12,6 +12,14 @@
     :is-opened="isOpenedIdeaDeleteModal"
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
+  />
+
+  <SendIdeasOnMarketModal
+    :ideas="ideasForSendOnMarket"
+    :is-opened="isOpenSendIdeasModal"
+    @close-modal="closeSendIdeasModal"
+    v-model:dateStart="dateStart"
+    v-model:dateFinish="dateFinish"
   />
 </template>
 
@@ -30,6 +38,7 @@ import {
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
 import { Idea } from '@Domain/Idea'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
@@ -38,6 +47,10 @@ import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
 import getStatus from '@Utils/getStatus'
+import mutableSort from '@Utils/mutableSort'
+import IdeasMarket from '@Domain/IdeasMarket'
+import SkillsService from '@Services/SkillsService'
+import IdeasService from '@Services/IdeasService'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -55,10 +68,8 @@ const availableStatus = getStatus()
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
-const isSortedByCreatedAt = ref(false)
-const isSortedByModifiedAt = ref(false)
-const isSortedByPreAssessment = ref(false)
-const isSortedByRating = ref(false)
+const dateStart = ref<string>('')
+const dateFinish = ref<string>('')
 
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
 
@@ -69,7 +80,7 @@ watchImmediate(
   },
 )
 
-const iedaTableColumns: TableColumn<Idea>[] = [
+const ideaTableColumns: TableColumn<Idea>[] = [
   {
     key: 'name',
     label: 'Название',
@@ -121,8 +132,8 @@ const checkedIdeasActions: CheckedDataAction<Idea>[] = [
   {
     label: 'Отправить на биржу',
     className: 'btn-primary',
-    statement: user.value?.role === 'PROJECT_OFFICE',
-    click: sendIdeasToMarket,
+    statement: user.value?.role == 'PROJECT_OFFICE',
+    click: openSendIdeasModal,
   },
 ]
 
@@ -158,67 +169,23 @@ const ideasFilters: Filter<Idea>[] = [
 ]
 
 function sortByCreatedAt() {
-  ideasData.value.sort((idea1, idea2) => {
-    const comparingDate1 = new Date(idea1.createdAt).getTime()
-    const comparingDate2 = new Date(idea2.createdAt).getTime()
-
-    if (isSortedByCreatedAt.value) {
-      return comparingDate1 - comparingDate2
-    } else {
-      return comparingDate2 - comparingDate1
-    }
-  })
-  isSortedByCreatedAt.value = !isSortedByCreatedAt.value
+  mutableSort(ideasData.value, (ideaData: Idea) =>
+    new Date(ideaData.createdAt).getTime(),
+  )
 }
 
 function sortByModifiedAt() {
-  ideasData.value.sort((idea1, idea2) => {
-    const comparingDate1 = new Date(idea1.modifiedAt).getTime()
-    const comparingDate2 = new Date(idea2.modifiedAt).getTime()
-
-    if (isSortedByModifiedAt.value) {
-      return comparingDate1 - comparingDate2
-    } else {
-      return comparingDate2 - comparingDate1
-    }
-  })
-  isSortedByModifiedAt.value = !isSortedByModifiedAt.value
+  mutableSort(ideasData.value, (ideaData: Idea) =>
+    new Date(ideaData.modifiedAt).getTime(),
+  )
 }
 
 function sortByPreAssessment() {
-  ideasData.value.sort((idea1, idea2) => {
-    const comparingPreAssessment1 = idea1.preAssessment
-    const comparingPreAssessment2 = idea2.preAssessment
-
-    if (comparingPreAssessment1 && comparingPreAssessment2) {
-      if (isSortedByPreAssessment.value) {
-        return comparingPreAssessment1 - comparingPreAssessment2
-      } else {
-        return comparingPreAssessment2 - comparingPreAssessment1
-      }
-    } else {
-      return -1
-    }
-  })
-  isSortedByPreAssessment.value = !isSortedByPreAssessment.value
+  mutableSort(ideasData.value, (ideaData: Idea) => ideaData.preAssessment)
 }
 
 function sortByRating() {
-  ideasData.value.sort((idea1, idea2) => {
-    const comparingRating1 = idea1.rating
-    const comparingRating2 = idea2.rating
-
-    if (comparingRating1 && comparingRating2) {
-      if (isSortedByRating.value) {
-        return comparingRating1 - comparingRating2
-      } else {
-        return comparingRating2 - comparingRating1
-      }
-    } else {
-      return -1
-    }
-  })
-  isSortedByRating.value = !isSortedByRating.value
+  mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
 }
 
 function getStatusStyle(status: IdeaStatusTypes) {
@@ -269,8 +236,14 @@ function getRatingColor(rating: number) {
   return 'text-danger'
 }
 
-function sendIdeasToMarket(ideas: Idea[]) {
-  console.log(ideas)
+const isOpenSendIdeasModal = ref<boolean>(false)
+const ideasForSendOnMarket = ref<Idea[]>([])
+function openSendIdeasModal(ideas: Idea[]) {
+  isOpenSendIdeasModal.value = true
+  ideasForSendOnMarket.value = ideas
+}
+function closeSendIdeasModal() {
+  isOpenSendIdeasModal.value = false
 }
 
 function navigateToIdeaModal(idea: Idea) {
@@ -308,7 +281,7 @@ function checkDeleteIdeaAction(idea: Idea) {
       status === 'NEW' || status === 'ON_EDITING' || status === 'ON_APPROVAL'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === `${currentUser.id}` && requiredIdeaStatus
+      return initiator.id === currentUser.id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
@@ -324,7 +297,7 @@ function checkUpdateIdeaAction(idea: Idea) {
     const requiredIdeaStatus = status === 'NEW' || status === 'ON_EDITING'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === `${currentUser.id}` && requiredIdeaStatus
+      return initiator.id === currentUser.id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'

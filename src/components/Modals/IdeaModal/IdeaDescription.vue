@@ -8,6 +8,7 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Skills from '@Components/Skills/Skills.vue'
+import { Idea } from '@Domain/Idea'
 
 defineProps<IdeaDescriptionProps>()
 const emit = defineEmits<IdeaDescriptionEmits>()
@@ -45,7 +46,7 @@ const emit = defineEmits<IdeaDescriptionEmits>()
       </Button>
       <Collapse :id="collapse.id">
         <div class="p-2">
-          {{ idea[collapse.ideaKey] }}
+          {{ idea[collapse.ideaKey as keyof Idea] }}
         </div>
       </Collapse>
     </li>

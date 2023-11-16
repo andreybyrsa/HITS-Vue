@@ -30,17 +30,10 @@ const router = useRouter()
 
 const { handleSubmit } = useForm<Team>({
   validationSchema: {
-    name: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    description: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    closed: (value: boolean) =>
-      Validation.checkIsEmptyValue(value) || 'Тип команды не выбран',
-    owner: (value: User) => Validation.checkIsEmptyValue(value) || 'Поле не выбрано',
-    leader: (value: User) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не выбрано',
-    members: (value: User[]) =>
-      Validation.checkIsEmptyValue(value) || 'Участники не выбраны',
+    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
+    description: (value: string) => value?.length > 0 || 'Поле не заполнено',
+    closed: (value: boolean) => value !== undefined || 'Тип команды не выбран',
+    owner: (value: User) => value !== undefined || 'Поле не выбрано',
   },
   initialValues: {
     ...props.team,
@@ -104,7 +97,7 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 
       <TeamType />
 
-      <TeamVue />
+      <TeamVue :mode="mode" />
 
       <Button
         v-if="props.team"

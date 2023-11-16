@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -13,11 +13,76 @@ import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
+import RequestTeamForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
+
+import Input from '@Components/Inputs/Input/Input.vue'
+import TeamService from '@Services/TeamService'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await TeamService.getTeams(token)
+
+    console.log(response)
+  }
+})
+
+const columns = [
+  { key: 'number', label: '#' },
+  { key: 'date', label: 'Дата' },
+  { key: 'who', label: 'Кто' },
+  { key: 'doing', label: 'Что сделал' },
+  { key: 'name', label: 'Где' },
+]
+
+const data = [
+  {
+    number: 1,
+    date: '11-11-2001',
+    who: 'Victor',
+    doing: 'сломався',
+    name: 'в идее номер 1338 в идее номер 1338 в идее номер 1338 в идее номер 1338 в идее номер 1338 в идее номер 1338',
+  },
+  {
+    number: 2,
+    date: '11-11-2001',
+    who: 'Victor',
+    doing: 'сломався',
+    name: 'в идее номер 1338',
+  },
+  {
+    number: 3,
+    date: '11-11-2001',
+    who: 'Victor',
+    doing: 'сломався',
+    name: 'в идее номер 1338',
+  },
+  {
+    number: 4,
+    date: '11-11-2001',
+    who: 'Victor',
+    doing: 'сломався',
+    name: 'в идее номер 1338',
+  },
+]
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
+const isOpenedJoinModal = ref(false)
+
+const switchButton = ref<boolean>(false)
+
+function switchContent() {
+  switchButton.value ? (switchButton.value = false) : (switchButton.value = true)
+}
 
 const { values, handleSubmit } = useForm({
   validationSchema: {
@@ -34,6 +99,14 @@ const fieldSubmit = handleSubmit((values) => console.log(values))
 function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
 }
+
+function handleCloseModal() {
+  isOpenedModal.value = false
+}
+
+function handleCloseJoinModal() {
+  isOpenedJoinModal.value = false
+}
 </script>
 
 <template>
@@ -43,6 +116,28 @@ function handleLogin() {
     </template>
 
     <template #content>
+      <router-view></router-view>
+      <Button @click="switchContent"> Проверка KeepAlive </Button>
+      <KeepAlive>
+        <Input
+          v-if="switchButton"
+          name="первый"
+        >
+        </Input>
+      </KeepAlive>
+      <Input
+        v-if="!switchButton"
+        name="второй"
+      >
+      </Input>
+
+      <Button
+        @click="router.push('/teams/list/1')"
+        class-name="btn-primary"
+        append-icon-name="bi bi-plus-lg"
+        >Открыть команду</Button
+      >
+
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
       <div class="table-responsive"></div>
 
@@ -96,6 +191,7 @@ function handleLogin() {
         </NavTab>
       </div>
 
+      <Button class-name="btn-primary"> Открыть окно </Button>
       <Button
         variant="primary"
         @click="isOpenedModal = true"

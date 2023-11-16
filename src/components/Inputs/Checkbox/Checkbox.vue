@@ -20,12 +20,13 @@ const { value, errorMessage } = useField(() => props.name, undefined, {
 })
 
 const BoxInputClassName = computed(() => [
-  'form-check-input',
+  'form-check-input m-1',
   { 'is-invalid': errorMessage.value || props.error },
   props.className,
 ])
 
-const BoxLabelClassName = computed(() => ['form-check-label', props.className])
+const BoxLabelClassName = computed(() => ['form-check-label ms-1', props.className])
+const WrapperClassName = computed(() => ['d-flex gap-2', props.wrapperClassName])
 </script>
 
 <template>

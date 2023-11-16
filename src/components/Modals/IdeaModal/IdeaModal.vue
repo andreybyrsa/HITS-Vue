@@ -137,7 +137,6 @@ function handleCloseIdeaModal() {
 
         <IdeaComments
           :idea="idea"
-          :comments="comments"
           :idea-modal-ref="ideaModalRef"
         />
       </div>

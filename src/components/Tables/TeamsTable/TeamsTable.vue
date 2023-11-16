@@ -50,17 +50,17 @@ const isOpenedTeamDeleteModal = ref(false)
 
 const teamTableColumns: TableColumn<Team>[] = [
   {
-    key: 'name',
-    label: 'Название',
-    size: 'col-3',
-    rowCellClick: navigateToTeamModal,
-  },
-  {
     key: 'closed',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusStyle,
     getRowCellFormat: getTranslatedStatus,
+  },
+  {
+    key: 'name',
+    label: 'Название',
+    size: 'col-3',
+    rowCellClick: navigateToTeamModal,
   },
   {
     key: 'membersCount',

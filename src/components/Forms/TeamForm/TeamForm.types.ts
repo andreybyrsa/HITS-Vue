@@ -1,12 +1,27 @@
 import { Skill } from '@Domain/Skill'
 import Team from '@Domain/Team'
 
+type mode = 'creating' | 'editing'
+
 interface TeamFormProps {
   team?: Team
+  mode: mode
 }
 
-interface SkillsRadarChartsProps {
+interface SkillsForRadar {
+  label: string
   skills: Skill[]
 }
 
-export { TeamFormProps, SkillsRadarChartsProps }
+interface SkillsRadarChartsProps {
+  skills: SkillsForRadar[]
+  isNotPlaceholder?: boolean
+
+  className?: string
+}
+
+interface TeamProps {
+  mode: mode
+}
+
+export { TeamFormProps, SkillsRadarChartsProps, TeamProps, SkillsForRadar }
