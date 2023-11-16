@@ -185,6 +185,7 @@ const updateIdeaSkills = async (
 
 const sendIdeaOnApproval = async (
   id: string,
+  status: IdeaStatusTypes,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios
@@ -196,7 +197,7 @@ const sendIdeaOnApproval = async (
       },
       {
         params: { id },
-        requestData: { status: 'ON_APPROVAL' },
+        requestData: { status },
         responseData: { success: 'Успешная отправка идеи' },
       },
     )

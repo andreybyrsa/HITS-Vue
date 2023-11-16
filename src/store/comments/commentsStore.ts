@@ -58,10 +58,7 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.createComment(comment, token)
 
       if (response instanceof Error) {
-        return useNotificationsStore().createSystemNotification(
-          'Система',
-          response.message,
-        )
+        useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         if (!this.rsocketIsConnected) {
           this.comments?.push(response)
@@ -73,10 +70,7 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
-        return useNotificationsStore().createSystemNotification(
-          'Система',
-          response.message,
-        )
+        useNotificationsStore().createSystemNotification('Система', response.message)
       } else if (this.comments) {
         const deletingCommentIndex = this.comments.findIndex(
           (comment) => comment.id === commentId,
@@ -87,19 +81,16 @@ const useCommentsStore = defineStore('comments', {
       }
     },
 
-    async checkComment(userId: string, commentId: string, token: string) {
-      const response = await CommentService.checkComment(userId, commentId, token)
+    async checkComment(commentId: string, email: string, token: string) {
+      const response = await CommentService.checkComment(commentId, email, token)
 
       if (response instanceof Error) {
-        return useNotificationsStore().createSystemNotification(
-          'Система',
-          response.message,
-        )
+        useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         const currentComment = this.comments?.find(
           (comment) => comment.id === commentId,
         )
-        currentComment?.checkedBy.push(userId)
+        currentComment?.checkedBy.push(email)
       }
     },
   },

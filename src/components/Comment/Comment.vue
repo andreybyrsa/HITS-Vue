@@ -26,7 +26,7 @@ const CommentClassName = computed(() => [
 const CommentHeaderClassName = computed(() => [
   'comment__header card-header',
   {
-    'bg-primary bg-opacity-50': user.value && !checkedBy.includes(user.value.id),
+    'bg-primary bg-opacity-50': user.value && !checkedBy.includes(user.value.email),
   },
 ])
 
