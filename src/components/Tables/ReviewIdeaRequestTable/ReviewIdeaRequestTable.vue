@@ -3,7 +3,11 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 
-import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import {
+  TableColumn,
+  DropdownMenuAction,
+  CheckedDataAction,
+} from '@Components/Table/Table.types'
 
 import Table from '@Components/Table/Table.vue'
 import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
@@ -164,6 +168,14 @@ function openLetterTeam(team: RequestTeams) {
 function closeLetterTeam() {
   isOpenedModal.value = false
 }
+
+const checkedIdeasMarketActions: CheckedDataAction<RequestTeams>[] = [
+  {
+    label: 'Принять заявки',
+    className: 'btn-primary',
+    click: () => null,
+  },
+]
 </script>
 
 <template>
@@ -173,6 +185,7 @@ function closeLetterTeam() {
     :data="teams"
     :search-by="['name']"
     :dropdown-actions-menu="dropdownIdeasActions"
+    :checked-data-actions="checkedIdeasMarketActions"
     v-model="skillsRequestTeam"
   />
   <LetterModal
