@@ -38,39 +38,6 @@ function getMocks(): Mocks {
   const registeredInvitations: InvitedUsers[] = [
     {
       emails: ['fourth@mail.com', 'fifth@fg.dc'],
-      id: '0',
-      token: '10296538',
-      email: 'admin@mail.com',
-      firstName: 'Админ',
-      lastName: 'Админ',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '1',
-      token: '613098',
-      email: '1@mail.com',
-      firstName: 'Пользователь',
-      lastName: 'Пользователь',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '2',
-      token: '059182',
-      email: '2@mail.com',
-      firstName: 'Менеджер',
-      lastName: 'Менеджер',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '3',
-      token: '163097',
-      email: '3@mail.com',
-      firstName: 'Владелец',
-      lastName: 'Владелец',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
   ]
   const skills: Skill[] = [
@@ -81,67 +48,67 @@ function getMocks(): Mocks {
       confirmed: true,
     },
     {
-      id: 1,
+      id: '1',
       name: 'VueJS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
-      id: 2,
+      id: '2',
       name: 'Java',
       type: 'LANGUAGE',
       confirmed: false,
     },
     {
-      id: 3,
+      id: '3',
       name: 'Docker',
       type: 'DEVOPS',
       confirmed: true,
     },
     {
-      id: 4,
+      id: '4',
       name: 'MongoDB',
       type: 'DATABASE',
       confirmed: true,
     },
     {
-      id: 5,
+      id: '5',
       name: 'MySQL',
       type: 'DATABASE',
       confirmed: true,
     },
     {
-      id: 6,
+      id: '6',
       name: 'PostgreSQL',
       type: 'DATABASE',
       confirmed: true,
     },
     {
-      id: 7,
+      id: '7',
       name: 'Python',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
-      id: 8,
+      id: '8',
       name: 'Spring',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
-      id: 9,
+      id: '9',
       name: 'Django',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
-      id: 10,
+      id: '10',
       name: 'Git',
       type: 'DEVOPS',
       confirmed: true,
     },
     {
-      id: 11,
+      id: '11',
       name: 'VSCode',
       type: 'DEVOPS',
       confirmed: true,
@@ -150,7 +117,7 @@ function getMocks(): Mocks {
 
   const users: User[] = [
     {
-      id: 0,
+      id: '0',
       token: '10296538',
       email: 'andrey@mail.com',
       firstName: 'Андрей',
@@ -158,7 +125,7 @@ function getMocks(): Mocks {
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
     {
-      id: 343,
+      id: '343',
       token: '613098',
       email: 'timyr@mail.com',
       firstName: 'Тимур',
@@ -166,7 +133,7 @@ function getMocks(): Mocks {
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
     {
-      id: 2,
+      id: '2',
       token: '059182',
       email: 'kirill.vlasov.05@inbox.ru',
       firstName: 'Кирилл',
@@ -174,7 +141,7 @@ function getMocks(): Mocks {
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
     {
-      id: 3,
+      id: '3',
       token: '163097',
       email: 'maga@mail.com',
       firstName: 'Мамедага',
@@ -203,7 +170,7 @@ function getMocks(): Mocks {
   const teamMember: TeamMember[] = [
     {
       email: 'andrey@mail.com',
-      userId: 33,
+      userId: '33',
       firstName: 'Андрей',
       lastName: 'Бырса',
 
@@ -211,7 +178,7 @@ function getMocks(): Mocks {
     },
     {
       email: 'timyr@mail.com',
-      userId: 343,
+      userId: '343',
       firstName: 'Тимур',
       lastName: 'Минязев',
 
@@ -219,7 +186,7 @@ function getMocks(): Mocks {
     },
     {
       email: 'kirill.vlasov.05@inbox.ru',
-      userId: 3,
+      userId: '3',
       firstName: 'Кирилл',
       lastName: 'Власов',
 
@@ -227,7 +194,7 @@ function getMocks(): Mocks {
     },
     {
       email: 'maga@mail.com',
-      userId: 345,
+      userId: '345',
       firstName: 'Мамедага',
       lastName: 'Байрамов',
 
@@ -306,7 +273,7 @@ function getMocks(): Mocks {
 
   const ideas: Idea[] = [
     {
-      id: 0,
+      id: '0',
       initiator: 'andrey@mail.com',
       name: 'Рефактор кода',
       problem:
@@ -332,7 +299,7 @@ function getMocks(): Mocks {
       rating: 3,
     },
     {
-      id: 1,
+      id: '1',
       initiator: 'kirill.vlasov.05@inbox.ru',
       name: 'Реактор железного человека',
       problem:
@@ -384,7 +351,7 @@ function getMocks(): Mocks {
       rating: 4,
     },
     {
-      id: 3,
+      id: '3',
       initiator: '2',
       name: 'Раскладушка',
       problem:
@@ -421,7 +388,7 @@ function getMocks(): Mocks {
 
   const teams: Team[] = [
     {
-      id: 0,
+      id: '0',
       name: 'Фронтендеры',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
@@ -434,7 +401,7 @@ function getMocks(): Mocks {
       skills: [...skills],
     },
     {
-      id: 1,
+      id: '1',
       name: 'Бэккендеры',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
@@ -447,7 +414,7 @@ function getMocks(): Mocks {
       skills: [...skills],
     },
     {
-      id: 2,
+      id: '2',
       name: 'Мушкетеры',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
@@ -460,7 +427,7 @@ function getMocks(): Mocks {
       skills: [skills[0]],
     },
     {
-      id: 3,
+      id: '3',
       name: 'Смешарики',
       closed: true,
       createdAt: '2023-10-20T11:02:17Z',
@@ -476,10 +443,10 @@ function getMocks(): Mocks {
 
   const RequestTeams: RequestTeams[] = [
     {
-      id: 0,
-      ideaId: 1,
+      id: '0',
+      ideaId: '1',
       accepted: false,
-      teamId: 0,
+      teamId: '0',
 
       name: 'Первые разрабы мира',
       closed: false,
@@ -495,10 +462,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 1,
-      ideaId: 1,
+      id: '1',
+      ideaId: '1',
       accepted: false,
-      teamId: 1,
+      teamId: '1',
 
       name: 'Программисты из apple',
       closed: false,
@@ -514,10 +481,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 2,
-      ideaId: 1,
+      id: '2',
+      ideaId: '1',
       accepted: true,
-      teamId: 2,
+      teamId: '2',
 
       name: 'Удальцы',
       closed: false,
@@ -533,10 +500,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 3,
-      ideaId: 1,
+      id: '3',
+      ideaId: '1',
       accepted: true,
-      teamId: 3,
+      teamId: '3',
 
       name: 'Молодцы',
       closed: false,
@@ -552,10 +519,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 4,
-      ideaId: 2,
+      id: '4',
+      ideaId: '2',
       accepted: false,
-      teamId: 4,
+      teamId: '4',
 
       name: 'Хорошая компания',
       closed: false,
@@ -571,10 +538,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 5,
-      ideaId: 2,
+      id: '5',
+      ideaId: '2',
       accepted: false,
-      teamId: 5,
+      teamId: '5',
 
       name: 'Негатив',
       closed: false,
@@ -590,10 +557,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 6,
-      ideaId: 2,
+      id: '6',
+      ideaId: '2',
       accepted: true,
-      teamId: 6,
+      teamId: '6',
 
       name: 'Позитив',
       closed: false,
@@ -609,10 +576,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 7,
-      ideaId: 2,
+      id: '7',
+      ideaId: '2',
       accepted: false,
-      teamId: 13,
+      teamId: '13',
 
       name: 'Смешарики',
       closed: false,
@@ -631,7 +598,7 @@ function getMocks(): Mocks {
 
   const IdeasMarket: IdeasMarket[] = [
     {
-      id: 1,
+      id: '1',
       position: 1,
       name: 'BaccaratHelper',
       initiator: 'kirill.vlasov.05@inbox.ru',
@@ -645,7 +612,7 @@ function getMocks(): Mocks {
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
       stack: [
         {
-          id: 0,
+          id: '0',
           name: 'JavaScript',
           type: 'LANGUAGE',
           confirmed: true,
@@ -660,7 +627,7 @@ function getMocks(): Mocks {
       isFavorite: false,
     },
     {
-      id: 2,
+      id: '2',
       position: 2,
       name: 'Vaccarat',
       initiator: 'andrey@mail.com',
@@ -674,7 +641,7 @@ function getMocks(): Mocks {
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
       stack: [
         {
-          id: 0,
+          id: '0',
           name: 'ReactJS',
           type: 'FRAMEWORK',
           confirmed: true,
@@ -689,7 +656,7 @@ function getMocks(): Mocks {
       isFavorite: false,
     },
     {
-      id: 3,
+      id: '3',
       position: 3,
       name: 'Insensible',
       initiator: 'Тимур Минязев',
@@ -703,7 +670,7 @@ function getMocks(): Mocks {
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
       stack: [
         {
-          id: 0,
+          id: '0',
           name: 'PostgreSQL',
           type: 'DATABASE',
           confirmed: true,
@@ -763,13 +730,13 @@ function getMocks(): Mocks {
 
   const teamAccessions: TeamAccession[] = [
     {
-      id: 1,
+      id: '1',
       team: teams[0],
       targetEmail: '1wgwrgw2@mail.com',
-      targetId: 1,
+      targetId: '1',
       targetRegistered: true,
       inviter: {
-        userId: 0,
+        userId: '0',
         email: 'test1@gmail.com',
         firstName: 'Админ',
         lastName: 'Админ',
@@ -779,12 +746,12 @@ function getMocks(): Mocks {
       stage: 'INVITATION',
     },
     {
-      id: 2,
+      id: '2',
       targetEmail: 'test451@gmail.com',
       targetRegistered: false,
       team: teams[0],
       inviter: {
-        userId: 0,
+        userId: '0',
         email: 'test1@gmail.com',
         firstName: 'Админ',
         lastName: 'Админ',
@@ -794,7 +761,7 @@ function getMocks(): Mocks {
       stage: 'INVITATION',
     },
     {
-      id: 3,
+      id: '3',
       team: teams[0],
       targetEmail: 'admin@mail.com',
       targetRegistered: true,
@@ -804,7 +771,7 @@ function getMocks(): Mocks {
       stage: 'REQUEST',
     },
     {
-      id: 4,
+      id: '4',
       team: teams[0],
       targetEmail: 'admin@mail.com',
       targetRegistered: true,
