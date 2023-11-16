@@ -2,7 +2,7 @@
   <Table
     :columns="skillTableColumns"
     :data="skills"
-    search-by="name"
+    :search-by="['name']"
     :filters="skillsFilters"
     :dropdown-actions-menu="dropdownSkillsActions"
   ></Table>
@@ -47,7 +47,7 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const updatingSkill = ref<Skill | null>(null)
-const currentDeleteSkillId = ref<number | null>(null)
+const currentDeleteSkillId = ref<string | null>(null)
 
 const isOpenedDeletingModal = ref(false)
 const isOpenUpdatingSkillModal = ref(false)

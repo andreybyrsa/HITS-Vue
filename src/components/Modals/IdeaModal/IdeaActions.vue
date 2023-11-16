@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, VueElement, onMounted, onUpdated } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
@@ -18,18 +18,11 @@ const ideasStore = useIdeasStore()
 
 const router = useRouter()
 
-const ideaActionsButtons = ref<VueElement | null>()
+const isSendingOnApproval = ref(false)
+const isSendingOnEditing = ref(false)
+const isSendingOnConfirmation = ref(false)
 
-onMounted(() => checkComponentContent())
-onUpdated(() => checkComponentContent())
-
-function checkComponentContent() {
-  if (ideaActionsButtons.value && ideaActionsButtons.value.childElementCount === 0) {
-    ideaActionsButtons.value.remove()
-  }
-}
-
-function getAccessToEditByInitiator() {
+function getAccessToEdit() {
   if (user.value) {
     const { email, role } = user.value
     const { status, initiator } = props.idea
@@ -55,73 +48,86 @@ function getAccessToApproval() {
   }
 }
 
-const handleSendToApproval = async () => {
+const handleSendOnApproval = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  if (currentUser?.token && currentUser.role) {
+    const { token, role } = currentUser
     const { id } = props.idea
 
-    await ideasStore.updateIdeaStatus(id, 'ON_APPROVAL', token)
+    isSendingOnApproval.value = true
+    await ideasStore.updateIdeaStatus(id, 'ON_APPROVAL', role, token)
+    isSendingOnApproval.value = false
   }
 }
 
-const handleSendToEditing = async () => {
+const handleSendOnEditing = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  if (currentUser?.token && currentUser.role) {
+    const { token, role } = currentUser
     const { id } = props.idea
 
-    await ideasStore.updateIdeaStatus(id, 'ON_EDITING', token)
+    isSendingOnEditing.value = true
+    await ideasStore.updateIdeaStatus(id, 'ON_EDITING', role, token)
+    isSendingOnEditing.value = false
   }
 }
 
-const handleSendToConfirmation = async () => {
+const handleSendOnConfirmation = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  if (currentUser?.token && currentUser.role) {
+    const { token, role } = currentUser
     const { id } = props.idea
 
-    await ideasStore.updateIdeaStatus(id, 'ON_CONFIRMATION', token)
+    isSendingOnConfirmation.value = true
+    await ideasStore.updateIdeaStatus(id, 'ON_CONFIRMATION', role, token)
+    isSendingOnConfirmation.value = false
   }
+}
+
+function navigateToUpdateIdeaForm() {
+  router.push(`/ideas/update/${props.idea.id}`)
 }
 </script>
 
 <template>
   <div
-    ref="ideaActionsButtons"
+    v-if="getAccessToEdit() || getAccessToApproval()"
     class="rounded-3 bg-white p-3 d-flex flex-wrap gap-3"
   >
     <Button
-      v-if="getAccessToEditByInitiator()"
-      class-name="btn-light"
-      @click="router.push(`/ideas/update/${idea.id}`)"
+      v-if="getAccessToEdit()"
+      variant="light"
+      @click="navigateToUpdateIdeaForm"
     >
       Редактировать
     </Button>
 
     <Button
-      v-if="getAccessToEditByInitiator()"
-      class-name="btn-success"
-      @click="handleSendToApproval"
+      v-if="getAccessToEdit()"
+      variant="success"
+      :is-loading="isSendingOnApproval"
+      @click="handleSendOnApproval"
     >
       Отправить на согласование
     </Button>
 
     <Button
       v-if="getAccessToApproval()"
-      class-name="btn-danger"
-      @click="handleSendToEditing"
+      variant="danger"
+      :is-loading="isSendingOnEditing"
+      @click="handleSendOnEditing"
     >
       Отправить на доработку
     </Button>
 
     <Button
       v-if="getAccessToApproval()"
-      class-name="btn-success"
-      @click="handleSendToConfirmation"
+      variant="success"
+      :is-loading="isSendingOnConfirmation"
+      @click="handleSendOnConfirmation"
     >
       Отправить на утверждение
     </Button>

@@ -51,7 +51,7 @@ function copyLink() {
   const link =
     MODE === 'DEVELOPMENT'
       ? `http://localhost:8080${route.fullPath}`
-      : `http://hits1${route.fullPath}`
+      : `https://hits.tyuiu.ru${route.fullPath}`
 
   navigator.clipboard.writeText(link)
   isCopiedLink.value = true
@@ -122,7 +122,7 @@ function getIdeaStatus() {
     </div>
 
     <Button
-      class-name="btn-primary w-100"
+      variant="primary"
       @click="copyLink"
     >
       {{ isCopiedLink ? 'Ссылка скопирована!' : 'Поделиться идеей' }}

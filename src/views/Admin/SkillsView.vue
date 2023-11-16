@@ -1,5 +1,5 @@
 <template>
-  <PageLayout content-class-name="p-3 bg-white">
+  <PageLayout content-class-name="skills-page__content p-3 bg-white">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
@@ -9,11 +9,11 @@
         <Typography class-name="fs-2 text-primary">Список компетенций</Typography>
 
         <Button
-          class-name="btn-primary"
+          variant="primary"
           prepend-icon-name="bi bi-plus-lg"
           @click="openCreatingSkillModal"
         >
-          Добавить компетеницю
+          Добавить компетенцию
         </Button>
       </div>
 
@@ -89,6 +89,10 @@ function closeCreatingSkillModal() {
 .skills-page {
   &__header {
     @include flexible(center, space-between);
+  }
+
+  &__content {
+    overflow-y: scroll;
   }
 }
 </style>

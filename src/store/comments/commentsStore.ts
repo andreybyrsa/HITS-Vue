@@ -17,7 +17,7 @@ const useCommentsStore = defineStore('comments', {
   }),
   getters: {
     getComments() {
-      return async (ideaId: number, token: string) => {
+      return async (ideaId: string, token: string) => {
         const response = await CommentService.getComments(ideaId, token)
 
         if (response instanceof Error) {
@@ -34,7 +34,7 @@ const useCommentsStore = defineStore('comments', {
     },
   },
   actions: {
-    async connectRsocket(ideaId: number) {
+    async connectRsocket(ideaId: string) {
       if (this.comments) {
         const { isConnected, closeConnection } = await useWebSocket<Comment[]>(
           `comment.${ideaId}.receive`,
@@ -58,10 +58,7 @@ const useCommentsStore = defineStore('comments', {
       const response = await CommentService.createComment(comment, token)
 
       if (response instanceof Error) {
-        return useNotificationsStore().createSystemNotification(
-          'Система',
-          response.message,
-        )
+        useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         if (!this.rsocketIsConnected) {
           this.comments?.push(response)
@@ -69,14 +66,11 @@ const useCommentsStore = defineStore('comments', {
       }
     },
 
-    async deleteComment(commentId: number, token: string) {
+    async deleteComment(commentId: string, token: string) {
       const response = await CommentService.deleteComment(commentId, token)
 
       if (response instanceof Error) {
-        return useNotificationsStore().createSystemNotification(
-          'Система',
-          response.message,
-        )
+        useNotificationsStore().createSystemNotification('Система', response.message)
       } else if (this.comments) {
         const deletingCommentIndex = this.comments.findIndex(
           (comment) => comment.id === commentId,
@@ -87,19 +81,16 @@ const useCommentsStore = defineStore('comments', {
       }
     },
 
-    async checkComment(userId: number, commentId: number, token: string) {
-      const response = await CommentService.checkComment(userId, commentId, token)
+    async checkComment(commentId: string, email: string, token: string) {
+      const response = await CommentService.checkComment(commentId, email, token)
 
       if (response instanceof Error) {
-        return useNotificationsStore().createSystemNotification(
-          'Система',
-          response.message,
-        )
+        useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         const currentComment = this.comments?.find(
           (comment) => comment.id === commentId,
         )
-        currentComment?.checkedBy.push(userId)
+        currentComment?.checkedBy.push(email)
       }
     },
   },

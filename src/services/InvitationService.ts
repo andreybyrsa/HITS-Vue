@@ -75,7 +75,7 @@ const sendRecoveryEmail = async (
     .post(`${API_URL}/profile/send/change/password`, recoveryData)
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка отпрваки почты'
+      const error = response?.data?.error ?? 'Ошибка отправки почты'
       return new Error(error)
     })
 }

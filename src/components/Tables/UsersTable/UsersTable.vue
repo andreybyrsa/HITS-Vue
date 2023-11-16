@@ -2,7 +2,7 @@
   <Table
     :columns="usersTableColumns"
     :data="users"
-    search-by="email"
+    :search-by="['email', 'firstName', 'lastName']"
     :filters="usersFilters"
     :dropdown-actions-menu="dropdownUsersActions"
   ></Table>

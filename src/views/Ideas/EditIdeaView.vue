@@ -8,7 +8,6 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import IdeaFormPlaceholder from '@Components/Forms/IdeaForm/IdeaFormPlaceholder.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { Idea } from '@Domain/Idea'
 
@@ -28,11 +27,13 @@ const currentIdea = ref<Idea>()
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const id = +router.params.id
-    const { token } = currentUser
+  if (currentUser?.token && currentUser.role) {
+    const id = router.params.id.toString()
+    const { token, role } = currentUser
+    const currentIdeaServiceKey =
+      role === 'INITIATOR' ? 'getInitiatorIdea' : 'getIdea'
 
-    const response = await IdeasService.getIdea(id, token)
+    const response = await IdeasService[currentIdeaServiceKey](id, token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -50,18 +51,12 @@ onMounted(async () => {
     </template>
 
     <template #content>
-      <FormLayout
-        v-if="!currentIdea"
-        class-name="w-100 h-100"
-      >
-        <IdeaFormPlaceholder />
-      </FormLayout>
-
       <IdeaForm
-        v-else
+        v-if="currentIdea"
         title="Редактирование идеи"
         :idea="currentIdea"
       />
+      <IdeaFormPlaceholder v-else />
     </template>
   </PageLayout>
 </template>

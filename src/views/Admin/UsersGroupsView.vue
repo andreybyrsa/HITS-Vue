@@ -1,5 +1,5 @@
 <template>
-  <PageLayout content-class-name="p-3 bg-white">
+  <PageLayout content-class-name="users-groups-page__content p-3 bg-white">
     <template #leftSideBar>
       <LeftSideBar />
     </template>
@@ -9,7 +9,7 @@
         <Typography class-name="fs-2 text-primary">Группы пользователей</Typography>
 
         <Button
-          class-name="btn-primary"
+          variant="primary"
           prepend-icon-name="bi bi-plus-lg"
           @click="openCreatingGroupModal"
         >
@@ -90,6 +90,10 @@ function closeCreatingGroupModal() {
 .users-groups-page {
   &__header {
     @include flexible(center, space-between);
+  }
+
+  &__content {
+    overflow-y: scroll;
   }
 }
 </style>

@@ -2,7 +2,7 @@
   <Table
     :columns="iedaTableColumns"
     :data="ideasData"
-    search-by="name"
+    :search-by="['name', 'description']"
     :filters="ideasFilters"
     :checked-data-actions="checkedIdeasActions"
     :dropdown-actions-menu="dropdownIdeasActions"
@@ -52,7 +52,7 @@ const ideasData = ref<Idea[]>([])
 
 const availableStatus = getStatus()
 
-const deletingIdeaId = ref<number | null>(null)
+const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
 const isSortedByCreatedAt = ref(false)
@@ -293,7 +293,7 @@ function handleCloseDeleteModal() {
 async function handleDeleteIdea() {
   const currentUser = user.value
 
-  if (currentUser?.token && deletingIdeaId.value) {
+  if (currentUser?.token && deletingIdeaId.value !== null) {
     const { token } = currentUser
     await ideaStore.deleteIdea(deletingIdeaId.value, token)
   }

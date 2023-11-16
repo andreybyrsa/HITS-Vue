@@ -155,6 +155,10 @@ onClickOutside(comboboxRef, () => {
 })
 
 function checkNewOptionButton() {
+  if (searchedValue.value.trim() === '') {
+    return false
+  }
+
   const isExistNewOption = props.options.find(
     (option) => getCurrentOption(option).label === searchedValue.value,
   )
@@ -233,7 +237,7 @@ function checkNewOptionButton() {
   position: relative;
 
   &__search::placeholder {
-    color: #000000 !important;
+    color: $black-color !important;
   }
 
   &__icon {
@@ -243,7 +247,7 @@ function checkNewOptionButton() {
   }
 
   &__choices {
-    @include position(absolute, $top: 42px, $z-index: 5);
+    @include position(absolute, $top: 42px, $z-index: 6);
 
     max-height: 173px;
 

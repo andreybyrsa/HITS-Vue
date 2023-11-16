@@ -45,6 +45,8 @@ const users = ref<User[]>([])
 const unselectedUsers = ref<User[]>([])
 
 const isLoadingGroup = ref(true)
+const isCreating = ref(false)
+const isUpdating = ref(false)
 
 const groupRoles = getRoles().roles
 
@@ -132,7 +134,10 @@ const handleCreateGroup = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isCreating.value = true
     const response = await UsersGroupsService.createUsersGroup(values, token)
+    isCreating.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -151,7 +156,10 @@ const handleUpdateGroup = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
     const { id } = values
+
+    isUpdating.value = true
     const response = await UsersGroupsService.updateUsersGroup(values, token, id)
+    isUpdating.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -195,7 +203,7 @@ const handleUpdateGroup = handleSubmit(async (values) => {
             }}
           </Typography>
           <Button
-            class-name="btn-close"
+            variant="close"
             @click="emit('close-modal')"
           ></Button>
         </div>
@@ -225,14 +233,16 @@ const handleUpdateGroup = handleSubmit(async (values) => {
 
         <Button
           v-if="usersGroupModalMode === 'CREATE'"
-          class-name="btn-primary w-100"
+          variant="primary"
+          :is-loading="isCreating"
           @click="handleCreateGroup"
         >
           Добавить
         </Button>
         <Button
           v-else
-          class-name="btn-primary"
+          variant="primary"
+          :is-loading="isUpdating"
           @click="handleUpdateGroup"
         >
           Сохранить изменения

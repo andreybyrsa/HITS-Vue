@@ -57,7 +57,7 @@ function handleLogin() {
       ></Select>
       <Button
         type="submit"
-        class-name="btn-primary"
+        variant="primary"
         @click="fieldSubmit"
       >
         Submit
@@ -79,7 +79,7 @@ function handleLogin() {
       />
 
       <Button
-        class-name="btn-primary"
+        variant="primary"
         append-icon-name="bi bi-plus-lg"
         @click="handleLogin"
       >
@@ -97,7 +97,7 @@ function handleLogin() {
       </div>
 
       <Button
-        class-name="btn-primary"
+        variant="primary"
         @click="isOpenedModal = true"
       >
         Открыть окно

@@ -2,7 +2,7 @@
   <Table
     :columns="usersGroupsTableColumns"
     :data="usersGroups"
-    search-by="name"
+    :search-by="['name']"
     :filters="usersGroupsFilters"
     :dropdown-actions-menu="dropdownUsersGroupsActions"
   ></Table>
@@ -48,7 +48,7 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const currentGroupId = ref()
-const currentDeleteGroupId = ref<number | null>(null)
+const currentDeleteGroupId = ref<string | null>(null)
 
 const isOpenedUpdatingGroupModal = ref(false)
 const isOpenedDeletingGroupModal = ref(false)

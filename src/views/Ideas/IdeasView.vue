@@ -66,7 +66,7 @@ function navigateToCreateIdeaPage() {
       <div class="ideas-page__header w-100">
         <Typography class-name="fs-2 text-primary">Список идей</Typography>
         <Button
-          class-name="btn-primary"
+          variant="primary"
           prepend-icon-name="bi bi-plus-lg"
           @click="navigateToCreateIdeaPage"
         >
@@ -85,13 +85,15 @@ function navigateToCreateIdeaPage() {
   </PageLayout>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .ideas-page {
   &__header {
     @include flexible(center, space-between);
   }
 
   &__content {
+    overflow-y: scroll;
+
     @include flexible(stretch, flex-start, column);
   }
 }

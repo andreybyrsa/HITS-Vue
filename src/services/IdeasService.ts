@@ -37,7 +37,7 @@ const getInitiatorIdeas = async (token: string): Promise<Idea[] | Error> => {
     })
 }
 
-const getIdea = async (id: number, token: string): Promise<Idea | Error> => {
+const getIdea = async (id: string, token: string): Promise<Idea | Error> => {
   return await ideasAxios
     .get(
       `/idea/${id}`,
@@ -54,8 +54,28 @@ const getIdea = async (id: number, token: string): Promise<Idea | Error> => {
     })
 }
 
+const getInitiatorIdea = async (
+  id: string,
+  token: string,
+): Promise<Idea | Error> => {
+  return await ideasAxios
+    .get(
+      `/idea/initiator/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки идеи'
+      return new Error(error)
+    })
+}
+
 const getIdeaSkills = async (
-  ideaId: number,
+  ideaId: string,
   token: string,
 ): Promise<IdeaSkills | Error> => {
   return await ideaSkillsAxios
@@ -121,7 +141,7 @@ const saveIdeaDraft = async (idea: Idea, token: string): Promise<Idea | Error> =
 
 const updateIdea = async (
   idea: Idea,
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios
@@ -142,7 +162,7 @@ const updateIdea = async (
 }
 
 const updateIdeaSkills = async (
-  ideaId: number,
+  ideaId: string,
   ideaSkills: IdeaSkills,
   token: string,
 ): Promise<IdeaSkills | Error> => {
@@ -164,7 +184,8 @@ const updateIdeaSkills = async (
 }
 
 const sendIdeaOnApproval = async (
-  id: number,
+  id: string,
+  status: IdeaStatusTypes,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios
@@ -176,7 +197,7 @@ const sendIdeaOnApproval = async (
       },
       {
         params: { id },
-        requestData: { status: 'ON_APPROVAL' },
+        requestData: { status },
         responseData: { success: 'Успешная отправка идеи' },
       },
     )
@@ -188,7 +209,7 @@ const sendIdeaOnApproval = async (
 }
 
 const updateIdeaStatus = async (
-  id: number,
+  id: string,
   status: IdeaStatusTypes,
   token: string,
 ): Promise<Success | Error> => {
@@ -211,7 +232,7 @@ const updateIdeaStatus = async (
 
 const updateIdeaByAdmin = async (
   idea: Idea,
-  id: number,
+  id: string,
   token: string,
 ): Promise<Idea | Error> => {
   return await ideasAxios
@@ -232,7 +253,7 @@ const updateIdeaByAdmin = async (
 }
 
 const deleteIdeaByAdmin = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios
@@ -251,7 +272,7 @@ const deleteIdeaByAdmin = async (
     })
 }
 
-const deleteIdea = async (id: number, token: string): Promise<Success | Error> => {
+const deleteIdea = async (id: string, token: string): Promise<Success | Error> => {
   return await ideasAxios
     .delete(
       `/idea/delete/${id}`,
@@ -272,6 +293,7 @@ const IdeasService = {
   getIdeas,
   getInitiatorIdeas,
   getIdea,
+  getInitiatorIdea,
   getIdeaSkills,
 
   saveIdeaDraft,

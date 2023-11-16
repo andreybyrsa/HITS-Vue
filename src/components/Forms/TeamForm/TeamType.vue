@@ -64,7 +64,7 @@ function getTeamTypeClassName(isClosed: boolean) {
         <div class="team-type__text">
           <Typography class-name="fs-4">Закрытая</Typography>
           <Typography class-name="text-secondary">
-            Пользователь портала может присоедениться в команду только по приглашению
+            Пользователь портала может присоединиться в команду только по приглашению
           </Typography>
         </div>
       </div>

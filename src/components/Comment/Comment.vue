@@ -26,7 +26,7 @@ const CommentClassName = computed(() => [
 const CommentHeaderClassName = computed(() => [
   'comment__header card-header',
   {
-    'bg-primary bg-opacity-50': user.value && !checkedBy.includes(user.value.id),
+    'bg-primary bg-opacity-50': user.value && !checkedBy.includes(user.value.email),
   },
 ])
 
@@ -67,17 +67,20 @@ const getCurrentCommentDate = (createdAt: string) => {
 
         <Button
           v-if="senderEmail === user?.email"
-          class-name="btn-primary p-1"
+          class-name="p-1"
+          variant="primary"
           prepend-icon-name="bi bi-list fs-5"
           v-dropdown="'commentVue'"
         ></Button>
         <DropDown id="commentVue">
-          <button
-            class="w-100"
-            @click="emit('delete-comment')"
-          >
-            Удалить
-          </button>
+          <ul class="list-group list-group-flush">
+            <li
+              class="list-group-item list-group-item-action comment__dropdown-button px-2 py-1"
+              @click="emit('delete-comment')"
+            >
+              Удалить
+            </li>
+          </ul>
         </DropDown>
       </div>
     </div>
@@ -100,6 +103,10 @@ const getCurrentCommentDate = (createdAt: string) => {
 
   &__info {
     @include flexible(center, center, $gap: 8px);
+  }
+
+  &__dropdown-button {
+    cursor: pointer;
   }
 }
 </style>
