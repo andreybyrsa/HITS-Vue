@@ -34,6 +34,17 @@ const notificationsStore = useNotificationsStore()
 
 const customers = ref<Company[]>([])
 
+const currentCompanies = computed(() =>
+  customers.value.map((company) => company.name),
+)
+
+const currentCompanyContacts = computed(() => {
+  const selectedCompany = customers.value.find(
+    (company) => company.name === props.idea.customer,
+  )
+  return selectedCompany ? getContactPersonsByCompany(props.idea.customer) : []
+})
+
 onMounted(async () => {
   const currentUser = user.value
   // if (currentUser?.token) {
@@ -65,23 +76,12 @@ onMounted(async () => {
   }
 })
 
-const currentCompanies = computed(() =>
-  customers.value.map((company) => company.name),
-)
-
 const getContactPersonsByCompany = (company: string): string[] => {
   const selectedCompany = customers.value.find((option) => option.name === company)
   return selectedCompany
-    ? selectedCompany.users.map((user) => user.firstName && user.lastName)
+    ? selectedCompany.users.map((user) => `${user.firstName} ${user.lastName}`)
     : []
 }
-
-const currentCompanyContacts = computed(() => {
-  const selectedCompany = customers.value.find(
-    (company) => company.name === props.idea.customer,
-  )
-  return selectedCompany ? getContactPersonsByCompany(props.idea.customer) : []
-})
 
 function handleCustomerChange(selectedCompany: string) {
   const currentContacts = getContactPersonsByCompany(selectedCompany)
