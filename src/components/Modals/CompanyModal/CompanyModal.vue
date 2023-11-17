@@ -70,9 +70,9 @@ const { setValues, handleSubmit } = useForm<Company>({
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     owner: (value: User) =>
-      Validation.checkIsEmptyValue(value) || 'Выберите владельца компании',
+      Validation.checkIsEmptyValue(value) || 'Выберите руководителя компании',
     users: (value: User[]) =>
-      Validation.checkIsEmptyValue(value) || 'Выберите пользователей',
+      Validation.checkIsEmptyValue(value) || 'Выберите представителей',
   },
   initialValues: {
     users: [],
@@ -142,7 +142,10 @@ const handleCreateCompany = handleSubmit(async (values) => {
 
     companies.value.push(response)
 
-    notificationsStore.createSystemNotification('Система', 'Группа успешно создана')
+    notificationsStore.createSystemNotification(
+      'Система',
+      'Компания успешно создана',
+    )
     emit('close-modal')
   }
 })
@@ -170,7 +173,10 @@ const handleUpdateCompany = handleSubmit(async (values) => {
       companies.value.splice(editingCompanyIndex, 1, values)
     }
 
-    notificationsStore.createSystemNotification('Система', 'Группа успешно изменена')
+    notificationsStore.createSystemNotification(
+      'Система',
+      'Компания успешно изменена',
+    )
 
     emit('close-modal')
   }
@@ -215,10 +221,10 @@ const handleUpdateCompany = handleSubmit(async (values) => {
 
         <Combobox
           name="owner"
-          label="Выберите владельца компании:"
+          label="Выберите руководителя компании:"
           :options="users"
           :display-by="['firstName', 'lastName']"
-          placeholder="Владелец компании"
+          placeholder="Руководитель компании"
         />
 
         <UsersColumns

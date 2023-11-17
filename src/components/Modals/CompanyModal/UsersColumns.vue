@@ -12,7 +12,7 @@ const emit = defineEmits<UsersColumnsEmits>()
 <template>
   <div class="d-flex justify-content-between gap-3">
     <div class="users-column w-50">
-      <Typography class-name="text-primary">Пользователи не в компании:</Typography>
+      <Typography class-name="text-primary">Пользователи:</Typography>
 
       <div
         class="users-column__unselected-users p-2 h-100 overflow-scroll border rounded-3"
@@ -29,7 +29,7 @@ const emit = defineEmits<UsersColumnsEmits>()
     </div>
 
     <div class="users-column w-50">
-      <Typography class-name="text-primary">Пользователи в компании:</Typography>
+      <Typography class-name="text-primary">Представители компании:</Typography>
 
       <div
         class="users-column__selected-users p-2 h-100 overflow-scroll border rounded-3"
