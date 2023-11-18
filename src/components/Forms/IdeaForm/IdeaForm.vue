@@ -66,8 +66,6 @@ const { values, setFieldValue, setValues, validateField, handleSubmit } =
         Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     },
     initialValues: {
-      customer: 'ВШЦТ',
-      contactPerson: 'ВШЦТ',
       status: 'NEW',
     },
   })
