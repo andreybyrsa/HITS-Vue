@@ -18,16 +18,6 @@ import Company from '@Domain/Company'
 const props = defineProps<CustomerAndContact>()
 const emit = defineEmits<CustomerAndContactEmits>()
 
-// const customers = ref([
-//   { contacts: ['ВШЦТ'], company: 'ВШЦТ' },
-//   { contacts: ['Человек 1', 'Человек 2'], company: 'Роснефть' },
-//   { contacts: ['Человек 3', 'Человек 4', 'Человек 5'], company: 'Газпром' },
-//   {
-//     contacts: ['Человек 6', 'Человек 7', 'Человек 8', 'Человек 9'],
-//     company: 'Лукойл',
-//   },
-// ])
-
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
@@ -47,17 +37,6 @@ const currentCompanyContacts = computed(() => {
 
 onMounted(async () => {
   const currentUser = user.value
-  // if (currentUser?.token) {
-  //   const { token } = currentUser
-  //   const response = await CompanyService.getCompanies(token)
-
-  //     if (response instanceof Error) {
-  //       notificationsStore.createSystemNotification('Система', response.message)
-  //     } else {
-  //       customers.value = response
-  //     }
-  //   }
-  // })
   if (currentUser?.token) {
     const { token } = currentUser
     const response = await CompanyService.getCompanies(token)
@@ -68,7 +47,11 @@ onMounted(async () => {
       customers.value = response
 
       customers.value.forEach((company) => {
-        if (company.users.some((user) => user.id === currentUser.id)) {
+        if (
+          customers.value.find((company) =>
+            company.users.some((user) => user.id === currentUser.id),
+          )?.name
+        ) {
           emit('set-value', 'customer', company.name)
         }
       })
@@ -106,50 +89,6 @@ watchImmediate(
     }
   },
 )
-
-// const currentCompanies = ref<string[]>([])
-// const currentCompanyContacts = ref<string[]>([])
-
-// const currentCompanyContacts = computed(() => {
-//   return customers.value.flatMap((company) =>
-//     company.users.map((user) => user.firstName && user.lastName),
-//   )
-// })
-
-// // const currentCompanyContacts = ref<string[]>([])
-// // const currentCompanies = ref(customers.value.map((option) => option.name))
-
-// function getContactPersonsByCompany(company: string) {
-//   return customers.value.find((option) => option.name === company)
-// }
-
-// // function handleCustomerChange(selectedCompany: string) {
-// //   const currentContacts = getContactPersonsByCompany(selectedCompany)?.users
-// //   if (currentContacts) {
-// //     const { contactPerson } = props.idea
-
-// //     const currentContactPerson = currentCompanyContacts.value.includes(contactPerson)
-// //       ? contactPerson
-// //       : currentContacts[0]
-
-// //     emit('set-value', 'contactPerson', currentContactPerson)
-// //   }
-// // }
-
-// function handleCustomerChange(selectedCompany: string) {
-//   const currentContacts = getContactPersonsByCompany(selectedCompany)?.users
-//   if (currentContacts) {
-//     const { contactPerson } = props.idea
-
-//     const currentContactPerson = currentCompanyContacts.value.includes(contactPerson)
-//       ? contactPerson
-//       : currentContacts[0]
-
-//     if (typeof currentContactPerson === 'string') {
-//       emit('set-value', 'contactPerson', currentContactPerson)
-//     }
-//   }
-// }
 </script>
 
 <template>
