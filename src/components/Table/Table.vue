@@ -362,6 +362,7 @@ function checkDropdownActionStatement(
     @include fixedWidth(24px);
     @include fixedHeight(24px);
     border-radius: 50%;
+    width: 100%;
 
     cursor: pointer;
 

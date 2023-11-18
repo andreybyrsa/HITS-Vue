@@ -77,13 +77,20 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
       {
         id: 10,
+        to: '/admin/companies',
+        text: 'Компании',
+        iconName: 'bi bi-building',
+        roles: ['ADMIN'],
+      },
+      {
+        id: 11,
         to: '/admin/users-groups',
         text: 'Группы пользователей',
         iconName: 'bi bi-people',
         roles: ['ADMIN'],
       },
       {
-        id: 11,
+        id: 12,
         to: '/admin/skills',
         text: 'Справочник компетенций',
         iconName: 'bi bi-person-badge',
