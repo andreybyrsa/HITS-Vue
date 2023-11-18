@@ -160,6 +160,12 @@ function getMocks(): Mocks {
       type: 'DATABASE',
       confirmed: true,
     },
+    {
+      id: '19',
+      name: 'Kotlin',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
   ]
 
   const profileSkills: ProfileSkills[] = [
@@ -541,8 +547,8 @@ function getMocks(): Mocks {
       owner: teamMember[0],
       leader: teamMember[1],
       members: [...teamMember],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
-      wantedSkills: [skills[0], skills[11], skills[16]],
+      skills: [skills[0], skills[1], skills[2], skills[3]],
+      wantedSkills: [skills[4], skills[5], skills[19]],
     },
     {
       id: '11',

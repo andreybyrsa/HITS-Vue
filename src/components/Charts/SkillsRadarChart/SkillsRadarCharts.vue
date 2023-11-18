@@ -50,11 +50,13 @@ function findMissingSkillAndAdd(
   skillsDataSet: SkillData[],
   data: { label: string; value: number },
 ) {
-  skillsDataSet.forEach((dataSet) => {
-    const currentData = dataSet.skills.find(({ label }) => label === data.label)
+  skillsDataSet.forEach((dataSet, index) => {
+    const currentDataIndex = dataSet.skills.findIndex(
+      ({ label }) => label === data.label,
+    )
 
-    if (!currentData) {
-      dataSet.skills.push({ label: data.label, value: 0 })
+    if (currentDataIndex === -1) {
+      dataSet.skills.splice(index, 0, { label: data.label, value: 0 })
     }
   })
 }
@@ -88,24 +90,22 @@ function getSkillsDataSet(skillsDataSet: SkillData[]): SkillsRadarChartType {
 watchImmediate(
   () => props.skills,
   (currentSkills) => {
-    if (currentSkills.length) {
-      const languageDataSet: SkillData[] = []
-      const frameworkDataSet: SkillData[] = []
-      const databaseDataSet: SkillData[] = []
-      const devopsDataSet: SkillData[] = []
+    const languageDataSet: SkillData[] = []
+    const frameworkDataSet: SkillData[] = []
+    const databaseDataSet: SkillData[] = []
+    const devopsDataSet: SkillData[] = []
 
-      currentSkills.forEach(({ label, skills }) => {
-        languageDataSet.push(getSkillsData(label, skills, 'LANGUAGE'))
-        frameworkDataSet.push(getSkillsData(label, skills, 'FRAMEWORK'))
-        databaseDataSet.push(getSkillsData(label, skills, 'FRAMEWORK'))
-        devopsDataSet.push(getSkillsData(label, skills, 'DEVOPS'))
-      })
+    currentSkills.forEach(({ label, skills }) => {
+      languageDataSet.push(getSkillsData(label, skills, 'LANGUAGE'))
+      frameworkDataSet.push(getSkillsData(label, skills, 'FRAMEWORK'))
+      databaseDataSet.push(getSkillsData(label, skills, 'FRAMEWORK'))
+      devopsDataSet.push(getSkillsData(label, skills, 'DEVOPS'))
+    })
 
-      languageSkills.value = getSkillsDataSet(languageDataSet)
-      frameworkSkills.value = getSkillsDataSet(frameworkDataSet)
-      databaseSkills.value = getSkillsDataSet(databaseDataSet)
-      devopsSkills.value = getSkillsDataSet(devopsDataSet)
-    }
+    languageSkills.value = getSkillsDataSet(languageDataSet)
+    frameworkSkills.value = getSkillsDataSet(frameworkDataSet)
+    databaseSkills.value = getSkillsDataSet(databaseDataSet)
+    devopsSkills.value = getSkillsDataSet(devopsDataSet)
   },
   { deep: true },
 )

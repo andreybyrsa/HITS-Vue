@@ -5,6 +5,7 @@ import { onMounted, ref } from 'vue'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarCharts.vue'
+import { SkillsForRadar } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import {
@@ -26,20 +27,12 @@ const { user } = storeToRefs(userStore)
 const emit = defineEmits<TeamDescriptionEmits>()
 
 const radarChartsSkills = ref<SkillsForRadar[]>([
-  { label: 'Компетенции идеи', skills: [] },
+  { label: 'Фактические компетенции', skills: props.team.skills },
   {
-    label: 'Компетенции команды',
-    skills: [],
+    label: 'Желаемые компетенции',
+    skills: props.team.wantedSkills,
   },
 ])
-
-onMounted(() => {
-  const membersSkills: Skill[] = []
-
-  props.team.members.forEach((member) => membersSkills.push(...member.skills))
-
-  radarChartsSkills.value[1].skills = [...membersSkills]
-})
 
 const handleKick = async (member: TeamMember, teamId: number) => {
   emit('handleKick', member, teamId)
@@ -134,9 +127,9 @@ const handleKick = async (member: TeamMember, teamId: number) => {
   <div
     class="w-100 p-3 bg-white rounded-3 text-primary text-nowrap overflow-y-scroll"
   >
-    <Typography class="fs-4 py-2 d-flex justify-content-center"
-      >Наши компетенции</Typography
-    >
+    <Typography class="fs-4 py-2 d-flex justify-content-center">
+      Наши компетенции
+    </Typography>
     <SkillsRadarCharts
       class-name="w-100"
       :skills="radarChartsSkills"
