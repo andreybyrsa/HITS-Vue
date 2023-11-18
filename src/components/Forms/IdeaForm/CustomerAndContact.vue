@@ -37,24 +37,34 @@ const currentCompanyContacts = computed(() => {
 
 onMounted(async () => {
   const currentUser = user.value
+
   if (currentUser?.token) {
-    const { token } = currentUser
+    const { token, id, role } = currentUser
+
     const response = await CompanyService.getCompanies(token)
 
     if (response instanceof Error) {
       notificationsStore.createSystemNotification('Система', response.message)
     } else {
-      customers.value = response
+      if (role !== 'ADMIN') {
+        const currentCompany = response.find(
+          (company) =>
+            company.owner.id === id ||
+            company.users.find((contactPerson) => contactPerson.id === id),
+        )
 
-      customers.value.forEach((company) => {
-        if (
-          customers.value.find((company) =>
-            company.users.some((user) => user.id === currentUser.id),
-          )?.name
-        ) {
-          emit('set-value', 'customer', company.name)
+        if (currentCompany) {
+          customers.value = response.filter(
+            (company) => company.name === currentCompany.name,
+          )
+          emit('set-value', 'customer', currentCompany.name)
+        } else {
+          customers.value = response.filter((company) => company.name === 'ВШЦТ')
+          emit('set-value', 'contactPerson', 'ВШЦТ')
         }
-      })
+      } else {
+        customers.value = response
+      }
     }
   }
 })
@@ -75,9 +85,7 @@ function handleCustomerChange(selectedCompany: string) {
       ? contactPerson
       : currentContacts[0]
 
-    if (typeof currentContactPerson === 'string') {
-      emit('set-value', 'contactPerson', currentContactPerson)
-    }
+    emit('set-value', 'contactPerson', currentContactPerson)
   }
 }
 
