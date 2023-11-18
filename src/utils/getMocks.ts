@@ -9,6 +9,7 @@ import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
 import Notification from '@Domain/Notification'
 import { TeamAccession, InvitedUsers } from '@Domain/TeamAccession'
+import { ProfileSkills } from '@Domain/Profile'
 
 interface Mocks {
   users: User[]
@@ -16,12 +17,14 @@ interface Mocks {
   unregisteredInvitations: InvitedUsers[]
   registeredInvitations: InvitedUsers[]
   skills: Skill[]
+  profileSkills: ProfileSkills[]
   usersGroups: UsersGroup[]
   comments: Comment[]
   ideas: Idea[]
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
+  teamMember: TeamMember[]
   RequestTeams: RequestTeams[]
   IdeasMarket: IdeasMarket[]
   teamAccessions: TeamAccession[]
@@ -156,6 +159,14 @@ function getMocks(): Mocks {
       name: 'SQLite',
       type: 'DATABASE',
       confirmed: true,
+    },
+  ]
+
+  const profileSkills: ProfileSkills[] = [
+    {
+      id: '0',
+      userId: '0',
+      skills: [skills[0], skills[6], skills[9], skills[11], skills[13]],
     },
   ]
 
@@ -421,7 +432,7 @@ function getMocks(): Mocks {
       budget: 1,
       suitability: 1,
       preAssessment: 1,
-      rating: 3,
+      rating: null,
     },
     {
       id: '1',
@@ -530,17 +541,8 @@ function getMocks(): Mocks {
       owner: teamMember[0],
       leader: teamMember[1],
       members: [...teamMember],
-      skills: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-      ],
+      skills: [skills[0], skills[4], skills[6], skills[9]],
+      wantedSkills: [skills[0], skills[11], skills[16]],
     },
     {
       id: '11',
@@ -553,37 +555,8 @@ function getMocks(): Mocks {
       owner: teamMember[2],
       leader: teamMember[2],
       members: [teamMember[1], teamMember[3]],
-      skills: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[4],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-      ],
-    },
-    {
-      id: '12',
-      name: 'Мушкетеры',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 4,
-      owner: teamMember[2],
-      leader: teamMember[1],
-      members: [teamMember[0], teamMember[1]],
-      skills: [
-        skills[0],
-        skills[3],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-      ],
+      skills: [skills[1], skills[2], skills[6], skills[9], skills[10]],
+      wantedSkills: [skills[1], skills[6], skills[12]],
     },
     {
       id: '13',
@@ -596,7 +569,8 @@ function getMocks(): Mocks {
       owner: teamMember[2],
       leader: teamMember[1],
       members: [teamMember[3]],
-      skills: [skills[0]],
+      skills: [skills[0], skills[8], skills[11], skills[12], skills[16]],
+      wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
     },
   ]
 
@@ -1015,6 +989,8 @@ function getMocks(): Mocks {
   return {
     users,
     usersEmails,
+    profileSkills,
+    teamMember,
     skills,
     usersGroups,
     comments,

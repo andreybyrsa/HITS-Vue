@@ -15,6 +15,7 @@ interface Team {
   members: TeamMember[]
   skills: Skill[]
   projects?: Project[]
+  wantedSkills: Skill[]
 }
 
 export default Team

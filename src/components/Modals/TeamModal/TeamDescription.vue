@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
-import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
+import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarCharts.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import {

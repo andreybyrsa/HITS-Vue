@@ -10,7 +10,7 @@ function getRolesStyle(roles: RolesTypes[], index: number) {
     'align-self-start',
   ]
 
-  if (currentRole === 'INITIATOR') {
+  if (currentRole === 'INITIATOR' || currentRole === 'MEMBER') {
     initialClass.push('bg-primary-subtle', 'text-primary')
     return initialClass
   }

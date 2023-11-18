@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { SkillsForRadar } from '@Components/Forms/TeamForm/TeamForm.types'
+import { SkillsForRadar } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
-import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
+import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarCharts.vue'
 import { MarketSkillsradarChartsProps } from '@Components/Modals/MarketModal/MarketModal.types'
 
 import useUserStore from '@Store/user/userStore'
@@ -21,10 +21,13 @@ const skillsTeam = defineModel<Team[]>('skillsTeam')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const skillsRequestTeamsData = computed<SkillsForRadar[]>(() => [
-  { label: 'Компетенции идеи', skills: props.skills },
-  { label: 'Компетенции команды', skills: filterSkillsRequestTeams() },
-])
+const skillsRequestTeamsData = computed<SkillsForRadar[]>(() => {
+  const a = [{ label: 'Компетенции идеи', skills: props.skills }]
+  if (skillsRequestTeam.value?.length) {
+    a.push({ label: 'Компетенции команды', skills: filterSkillsRequestTeams() })
+  }
+  return a
+})
 
 const skillsTeamsData = computed<SkillsForRadar[]>(() => [
   { label: 'Компетенции идеи', skills: props.skills },
@@ -33,25 +36,19 @@ const skillsTeamsData = computed<SkillsForRadar[]>(() => [
 
 function filterSkillsRequestTeams() {
   if (skillsRequestTeam.value) {
-    const skills = ref<Skill[]>([])
-    skillsRequestTeam.value.forEach((team) =>
-      team.skills.forEach((skill) => skills.value?.push(skill)),
-    )
+    const skills: Skill[] = []
+    skillsRequestTeam.value.forEach((team) => skills.push(...team.skills))
 
-    const filterSkills: Skill[] = [...new Set(skills.value)]
-    return filterSkills
+    return skills
   } else return []
 }
 
 function filterSkillsTeams() {
   if (skillsTeam.value) {
-    const skills = ref<Skill[]>([])
-    skillsTeam.value.forEach((team) =>
-      team.skills.forEach((skill) => skills.value?.push(skill)),
-    )
+    const skills: Skill[] = []
+    skillsTeam.value.forEach((team) => skills.push(...team.skills))
 
-    const filterSkills: Skill[] = [...new Set(skills.value)]
-    return filterSkills
+    return skills
   } else return []
 }
 </script>
