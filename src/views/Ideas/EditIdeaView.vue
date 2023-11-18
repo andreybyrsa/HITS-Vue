@@ -27,11 +27,13 @@ const currentIdea = ref<Idea>()
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const id = +router.params.id
-    const { token } = currentUser
+  if (currentUser?.token && currentUser.role) {
+    const id = router.params.id.toString()
+    const { token, role } = currentUser
+    const currentIdeaServiceKey =
+      role === 'INITIATOR' ? 'getInitiatorIdea' : 'getIdea'
 
-    const response = await IdeasService.getIdea(id, token)
+    const response = await IdeasService[currentIdeaServiceKey](id, token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)

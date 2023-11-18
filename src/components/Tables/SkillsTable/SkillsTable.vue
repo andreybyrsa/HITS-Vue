@@ -47,7 +47,7 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const updatingSkill = ref<Skill | null>(null)
-const currentDeleteSkillId = ref<number | null>(null)
+const currentDeleteSkillId = ref<string | null>(null)
 
 const isOpenedDeletingModal = ref(false)
 const isOpenUpdatingSkillModal = ref(false)

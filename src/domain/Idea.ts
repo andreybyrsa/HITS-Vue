@@ -3,7 +3,7 @@ import UsersGroup from '@Domain/UsersGroup'
 import { Skill } from '@Domain/Skill'
 
 interface Idea {
-  id: number
+  id: string
   initiator: string
   createdAt: string
   modifiedAt: string
@@ -29,9 +29,9 @@ interface Idea {
 }
 
 interface Rating {
-  id: number
-  ideaId: number
-  expertId: number
+  id: string
+  ideaId: string
+  expertId: string
 
   marketValue: number | null
   originality: number | null
@@ -43,7 +43,7 @@ interface Rating {
 }
 
 interface IdeaSkills {
-  ideaId: number
+  ideaId: string
   skills: Skill[]
 }
 

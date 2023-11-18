@@ -1,16 +1,10 @@
+import Colors from '@Domain/Colors'
+
 interface LoadingSpinnerProps {
   isLoading: boolean
 
   className?: string
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | 'success'
-    | 'warning'
-    | 'danger'
-    | 'info'
-    | 'light'
-    | 'dark'
+  variant?: Colors
   size?: 'sm' | 'md'
 }
 

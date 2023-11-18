@@ -53,7 +53,7 @@ const createNotification = async (
 }
 
 const markAsFavoriteNotification = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Notification | Error> => {
   return await notificationsAxios
@@ -77,7 +77,7 @@ const markAsFavoriteNotification = async (
 }
 
 const unMarkAsFavoriteNotification = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Notification | Error> => {
   return await notificationsAxios
@@ -101,7 +101,7 @@ const unMarkAsFavoriteNotification = async (
 }
 
 const checkNotification = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<void | Error> => {
   return await notificationsAxios
@@ -121,7 +121,7 @@ const checkNotification = async (
 }
 
 const closeNotification = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<void | Error> => {
   return await notificationsAxios

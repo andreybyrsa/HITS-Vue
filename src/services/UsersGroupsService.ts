@@ -23,7 +23,7 @@ const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
 }
 
 const getUsersGroup = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<UserGroup | Error> => {
   return await usersGroupsAxios
@@ -61,7 +61,7 @@ const createUsersGroup = async (
 const updateUsersGroup = async (
   usersGroup: UserGroup,
   token: string,
-  id: number,
+  id: string,
 ): Promise<UserGroup | Error> => {
   return await usersGroupsAxios
     .put(
@@ -82,7 +82,7 @@ const updateUsersGroup = async (
 }
 
 const deleteUsersGroup = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await usersGroupsAxios
