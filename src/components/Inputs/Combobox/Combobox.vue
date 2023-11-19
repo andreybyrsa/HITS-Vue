@@ -164,6 +164,10 @@ function checkNewOptionButton() {
   )
   return !isExistNewOption && searchedValue.value.length && isOpenedChoices.value
 }
+
+function checkOpenComboboxButton() {
+  return searchedOptions.value.length && !isOpenedChoices.value && !props.disabled
+}
 </script>
 
 <template>
@@ -187,10 +191,11 @@ function checkNewOptionButton() {
         no-form-controlled
         :placeholder="getComboboxPlaceholder()"
         @focus="focusCombobox"
+        :disabled="disabled"
       />
 
       <Icon
-        v-if="searchedOptions.length && !isOpenedChoices"
+        v-if="checkOpenComboboxButton()"
         class-name="combobox__icon bi bi-chevron-down"
         @click="focusCombobox"
       />

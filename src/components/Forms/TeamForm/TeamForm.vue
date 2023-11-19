@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -18,29 +19,22 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import Validation from '@Utils/Validation'
 
 const props = defineProps<TeamFormProps>()
+
+const isLoading = ref<boolean>(false)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
-
 const router = useRouter()
 
 const { handleSubmit } = useForm<Team>({
   validationSchema: {
-    name: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    description: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    closed: (value: boolean) =>
-      Validation.checkIsEmptyValue(value) || 'Тип команды не выбран',
-    owner: (value: User) => Validation.checkIsEmptyValue(value) || 'Поле не выбрано',
-    leader: (value: User) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не выбрано',
-    members: (value: User[]) =>
-      Validation.checkIsEmptyValue(value) || 'Участники не выбраны',
+    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
+    description: (value: string) => value?.length > 0 || 'Поле не заполнено',
+    closed: (value: boolean) => value !== undefined || 'Тип команды не выбран',
+    owner: (value: User) => value !== undefined || 'Поле не выбрано',
   },
   initialValues: {
     ...props.team,
@@ -52,7 +46,12 @@ const handleCreateTeam = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+    values.membersCount = values.members.length
+    values.createdAt = new Date().toJSON()
+
+    isLoading.value = true
     const response = await TeamService.createTeam(values, token)
+    isLoading.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -68,7 +67,10 @@ const handleUpdateTeam = handleSubmit(async (values) => {
   if (currentUser?.token && props.team) {
     const { token } = currentUser
     const { id } = props.team
+
+    isLoading.value = true
     const response = await TeamService.updateTeam(values, id, token)
+    isLoading.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -104,11 +106,12 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 
       <TeamType />
 
-      <TeamVue />
+      <TeamVue :mode="mode" />
 
       <Button
         v-if="props.team"
         variant="primary"
+        :isLoading="isLoading"
         @click="handleUpdateTeam"
       >
         Сохранить изменения
@@ -116,6 +119,7 @@ const handleUpdateTeam = handleSubmit(async (values) => {
       <Button
         v-else
         variant="success"
+        :isLoading="isLoading"
         @click="handleCreateTeam"
       >
         Создать команду
