@@ -47,16 +47,10 @@ onMounted(async () => {
       notificationsStore.createSystemNotification('Система', response.message)
     } else {
       if (role !== 'ADMIN') {
-        const currentCompany = response.find(
-          (company) =>
-            company.owner.id === id ||
-            company.users.find((contactPerson) => contactPerson.id === id),
-        )
+        const currentCompany = response.find((company) => company.owner.id === id)
 
         if (currentCompany) {
-          customers.value = response.filter(
-            (company) => company.name === currentCompany.name,
-          )
+          customers.value = [currentCompany]
           emit('set-value', 'customer', currentCompany.name)
         } else {
           customers.value = response.filter((company) => company.name === 'ВШЦТ')
