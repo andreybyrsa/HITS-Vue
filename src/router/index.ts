@@ -17,20 +17,23 @@ import CompaniesView from '@Views/Admin/CompaniesView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
 import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
+import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
-
 import DevView from '@Views/DevView.vue'
 
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
+
+import IdeasMarketViewVue from '@Views/IdeasMarket/IdeasMarketView.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -73,6 +76,15 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
+        children: [
+          {
+            path: ':teamId',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: TeamModal,
+          },
+        ],
       },
       {
         path: 'create',
@@ -159,6 +171,27 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/:pathMatch(.*)*',
     redirect: { name: 'error' },
+  },
+  {
+    path: '/market',
+    name: 'market',
+    component: IdeasMarketViewVue,
+    children: [
+      {
+        path: ':id',
+        name: 'MarketModal',
+        component: MarketModal,
+        children: [
+          {
+            path: ':teamId',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: TeamModal,
+          },
+        ],
+      },
+    ],
   },
 ]
 

@@ -5,6 +5,8 @@ import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
+import RequestTeams from '@Domain/RequestTeams'
+import IdeasMarket from '@Domain/IdeasMarket'
 import Notification from '@Domain/Notification'
 import Company from '@Domain/Company'
 
@@ -13,57 +15,20 @@ interface Mocks {
   usersEmails: string[]
   skills: Skill[]
   usersGroups: UsersGroup[]
-  teamMember: TeamMember[]
   comments: Comment[]
   ideas: Idea[]
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
+  RequestTeams: RequestTeams[]
+  IdeasMarket: IdeasMarket[]
+
+  teamMember: TeamMember[]
   notifications: Notification[]
   companies: Company[]
 }
 
 function getMocks(): Mocks {
-  const users: User[] = [
-    {
-      id: '0',
-      token: '10296538',
-      email: 'admin@mail.com',
-      firstName: 'Админ',
-      lastName: 'Админ',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '1',
-      token: '613098',
-      email: '1@mail.com',
-      firstName: 'Пользователь',
-      lastName: 'Пользователь',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '2',
-      token: '059182',
-      email: '2@mail.com',
-      firstName: 'Менеджер',
-      lastName: 'Менеджер',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '3',
-      token: '163097',
-      email: '3@mail.com',
-      firstName: 'Владелец',
-      lastName: 'Владелец',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-  ]
-
-  const usersEmails: string[] = users.map((user) => user.email)
-
   const skills: Skill[] = [
     {
       id: '0',
@@ -73,17 +38,108 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      name: 'React JS',
+      name: 'VueJS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
       id: '2',
-      name: 'C++',
+      name: 'Java',
       type: 'LANGUAGE',
       confirmed: false,
     },
+    {
+      id: '3',
+      name: 'Docker',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: '4',
+      name: 'MongoDB',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '5',
+      name: 'MySQL',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '6',
+      name: 'PostgreSQL',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '7',
+      name: 'Python',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '8',
+      name: 'Spring',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: '9',
+      name: 'Django',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: '10',
+      name: 'Git',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: '11',
+      name: 'VSCode',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
   ]
+
+  const users: User[] = [
+    {
+      id: '33',
+      token: '10296538',
+      email: 'andrey@mail.com',
+      firstName: 'Андрей',
+      lastName: 'Бырса',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '343',
+      token: '613098',
+      email: 'timyr@mail.com',
+      firstName: 'Тимур',
+      lastName: 'Минязев',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '3',
+      token: '059182',
+      email: 'kirill.vlasov.05@inbox.ru',
+      firstName: 'Кирилл',
+      lastName: 'Власов',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '345',
+      token: '163097',
+      email: 'maga@mail.com',
+      firstName: 'Мамедага',
+      lastName: 'Байрамов',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+  ]
+
+  const usersEmails: string[] = users.map((user) => user.email)
 
   const usersGroups: UsersGroup[] = [
     {
@@ -102,52 +158,28 @@ function getMocks(): Mocks {
 
   const teamMember: TeamMember[] = [
     {
-      email: 'admin@mail.com',
-      firstName: 'Админ',
-      lastName: 'Адмиг',
-
-      skills: [...skills],
+      email: 'andrey@mail.com',
+      id: '33',
+      firstName: 'Андрей',
+      lastName: 'Бырса',
     },
     {
-      email: '1@mail.com',
-      firstName: 'Пользователь',
-      lastName: 'Пользователь',
-
-      skills: [
-        {
-          id: '2',
-          name: 'C++',
-          type: 'LANGUAGE',
-          confirmed: false,
-        },
-      ],
+      email: 'timyr@mail.com',
+      id: '343',
+      firstName: 'Тимур',
+      lastName: 'Минязев',
     },
     {
-      email: '2@mail.com',
-      firstName: 'Менеджер',
-      lastName: 'Менеджер',
-
-      skills: [
-        {
-          id: '0',
-          name: 'JavaScript',
-          type: 'LANGUAGE',
-          confirmed: true,
-        },
-        {
-          id: '1',
-          name: 'React JS',
-          type: 'FRAMEWORK',
-          confirmed: true,
-        },
-      ],
+      email: 'kirill.vlasov.05@inbox.ru',
+      id: '3',
+      firstName: 'Кирилл',
+      lastName: 'Власов',
     },
     {
-      email: '3@mail.com',
-      firstName: 'Владелец',
-      lastName: 'Владелец',
-
-      skills: [...skills],
+      email: 'maga@mail.com',
+      id: '345',
+      firstName: 'Мамедага',
+      lastName: 'Байрамов',
     },
   ]
 
@@ -157,7 +189,7 @@ function getMocks(): Mocks {
       ideaId: '0',
       createdAt: '2023-10-20T11:02:17Z',
 
-      senderEmail: 'admin@mail.com',
+      senderEmail: 'andrey@mail.com',
       text: 'Комментарий 1',
       checkedBy: [],
     },
@@ -166,7 +198,7 @@ function getMocks(): Mocks {
       ideaId: '0',
       createdAt: '2023-10-21T11:02:17Z',
 
-      senderEmail: '1@mail.com',
+      senderEmail: 'timyr@mail.com',
       text: 'Комментарий 2',
       checkedBy: ['0', '1'],
     },
@@ -175,8 +207,17 @@ function getMocks(): Mocks {
       ideaId: '1',
       createdAt: '2023-10-21T11:02:17Z',
 
-      senderEmail: '2@mail.com',
-      text: 'Комментарий 3',
+      senderEmail: 'kirill.vlasov.05@inbox.ru',
+      text: 'Требуются Frontend разработчики!',
+      checkedBy: [],
+    },
+    {
+      id: '2',
+      ideaId: '2',
+      createdAt: '2023-10-21T11:02:17Z',
+
+      senderEmail: 'kirill.vlasov.05@inbox.ru',
+      text: 'Скоро закроется набор!',
       checkedBy: [],
     },
   ]
@@ -223,8 +264,8 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
-      initiator: '0',
-      name: 'Идея по созданию идеи Идея по созданию идеи Идея по созданию идеи Идея по созданию идеи',
+      initiator: teamMember[3],
+      name: 'Рефактор кода',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -249,8 +290,8 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      initiator: '1',
-      name: 'Идея 1',
+      initiator: teamMember[2],
+      name: 'Реактор железного человека',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -275,7 +316,7 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
-      initiator: '2',
+      initiator: teamMember[3],
       name: 'Идея 2',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -288,6 +329,32 @@ function getMocks(): Mocks {
       createdAt: '2023-10-25T11:02:17Z',
       modifiedAt: '2023-10-25T11:02:17Z',
       status: 'NEW',
+      maxTeamSize: 5,
+      minTeamSize: 5,
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: null,
+      projectOffice: null,
+      budget: 4,
+      suitability: 3,
+      preAssessment: 4,
+      rating: 4,
+    },
+    {
+      id: '3',
+      initiator: teamMember[0],
+      name: 'Раскладушка',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: '2023-10-25T11:02:17Z',
+      modifiedAt: '2023-10-25T11:02:17Z',
+      status: 'CONFIRMED',
       maxTeamSize: 5,
       minTeamSize: 5,
       customer: 'ВШЦТ',
@@ -312,32 +379,287 @@ function getMocks(): Mocks {
   const teams: Team[] = [
     {
       id: '0',
-      name: 'Команда 1',
+      name: 'Фронтендеры',
       closed: false,
-      createdAt: '2023-10-23T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 4,
-      owner: users[0],
-      leader: users[1],
-      members: [...users],
-      skills: [],
+      owner: teamMember[0],
+      leader: teamMember[1],
+      members: [...teamMember],
+      skills: [...skills],
     },
     {
       id: '1',
-      name: 'Команда 2',
-      closed: true,
-      createdAt: '2023-10-25T11:02:17Z',
+      name: 'Бэккендеры',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 3,
-      owner: users[1],
-      leader: users[2],
-      members: [users[3]],
+      owner: teamMember[2],
+      leader: teamMember[2],
+      members: [teamMember[3], teamMember[2]],
       skills: [...skills],
+    },
+    {
+      id: '2',
+      name: 'Мушкетеры',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 4,
+      owner: teamMember[2],
+      leader: teamMember[1],
+      members: [teamMember[3], teamMember[1]],
+      skills: [skills[0]],
+    },
+    {
+      id: '3',
+      name: 'Смешарики',
+      closed: true,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 4,
+      owner: teamMember[2],
+      leader: teamMember[1],
+      members: [teamMember[3], teamMember[1]],
+      skills: [skills[0]],
     },
   ]
 
+  const RequestTeams: RequestTeams[] = [
+    {
+      id: '0',
+      ideaId: '1',
+      accepted: false,
+      teamId: '0',
+
+      name: 'Первые разрабы мира',
+      closed: false,
+      membersCount: 4,
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      owner: teamMember[1],
+      leader: teamMember[2],
+      members: [...teamMember],
+      skills: [...skills],
+      createdAt: '2023-10-20T11:02:17Z',
+      letter:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+    },
+    {
+      id: '1',
+      ideaId: '1',
+      accepted: false,
+      teamId: '1',
+
+      name: 'Программисты из apple',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      owner: teamMember[1],
+      leader: teamMember[2],
+      members: [...teamMember],
+      skills: [...skills],
+      letter:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+    },
+    {
+      id: '2',
+      ideaId: '1',
+      accepted: true,
+      teamId: '2',
+
+      name: 'Удальцы',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      owner: teamMember[1],
+      leader: teamMember[2],
+      members: [...teamMember],
+      skills: [...skills],
+      letter:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+    },
+    {
+      id: '3',
+      ideaId: '1',
+      accepted: true,
+      teamId: '3',
+
+      name: 'Молодцы',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      owner: teamMember[1],
+      leader: teamMember[2],
+      members: [...teamMember],
+      skills: [...skills],
+      letter:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+    },
+    {
+      id: '4',
+      ideaId: '2',
+      accepted: false,
+      teamId: '4',
+
+      name: 'Хорошая компания',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      owner: teamMember[1],
+      leader: teamMember[2],
+      membersCount: 4,
+      members: [...teamMember],
+      skills: [...skills],
+      letter:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+    },
+    {
+      id: '5',
+      ideaId: '2',
+      accepted: false,
+      teamId: '5',
+
+      name: 'Негатив',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      owner: teamMember[1],
+      leader: teamMember[2],
+      membersCount: 4,
+      members: [...teamMember],
+      skills: [...skills],
+      letter:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+    },
+    {
+      id: '6',
+      ideaId: '2',
+      accepted: true,
+      teamId: '6',
+
+      name: 'Позитив',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      owner: teamMember[1],
+      leader: teamMember[2],
+      members: [...teamMember],
+      skills: [...skills],
+      letter:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+    },
+    {
+      id: '7',
+      ideaId: '2',
+      accepted: false,
+      teamId: '13',
+
+      name: 'Смешарики',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      membersCount: 4,
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      owner: teamMember[1],
+      leader: teamMember[2],
+      members: [...teamMember],
+      skills: [...skills],
+      letter:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+    },
+  ]
+
+  const IdeasMarket: IdeasMarket[] = [
+    {
+      id: '1',
+      position: 1,
+      name: 'Создать электрический самолет',
+      initiator: teamMember[2],
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
+      stack: [skills[0], skills[2], skills[3], skills[6], skills[7]],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 111,
+      acceptedRequests: 4,
+      isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
+    },
+    {
+      id: '2',
+      position: 2,
+      name: 'Создать машину времени',
+      initiator: teamMember[0],
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
+      stack: [skills[0], skills[2], skills[3], skills[6], skills[7], skills[8]],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 222,
+      acceptedRequests: 5,
+      isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
+    },
+    {
+      id: '3',
+      position: 3,
+      name: 'Создать киборга',
+      initiator: teamMember[1],
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
+      stack: [skills[1], skills[2], skills[4], skills[9], skills[10]],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 0,
+      acceptedRequests: 0,
+      isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
+    },
+  ]
   const notifications: Notification[] = [
     {
       id: '0',
@@ -405,7 +727,6 @@ function getMocks(): Mocks {
   return {
     users,
     usersEmails,
-    teamMember,
     skills,
     usersGroups,
     comments,
@@ -413,6 +734,9 @@ function getMocks(): Mocks {
     ideas,
     ideasSkills,
     teams,
+    RequestTeams,
+    IdeasMarket,
+    teamMember,
     notifications,
     companies,
   }

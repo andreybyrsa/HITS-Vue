@@ -1,5 +1,6 @@
 interface CheckboxProps {
   className?: string
+
   name: string
 
   validateOnUpdate?: boolean
