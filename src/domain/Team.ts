@@ -1,6 +1,5 @@
 import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
-
 interface Team {
   id: string
   name: string
@@ -11,7 +10,11 @@ interface Team {
   owner: User
   leader: User
   members: User[]
-  skills: Skill[]
+  wantedSkills: Skill[]
+  totalSkills: Skill[]
 }
-
-export default Team
+interface TeamSkills {
+  teamId: string
+  teamSkills: Skill[]
+}
+export { Team, TeamSkills }

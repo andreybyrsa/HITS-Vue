@@ -3,15 +3,15 @@ import { Skill } from '@Domain/Skill'
 import UsersGroup from '@Domain/UsersGroup'
 import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
-import Team from '@Domain/Team'
+import { Team, TeamSkills } from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 import Notification from '@Domain/Notification'
 import Company from '@Domain/Company'
-
 interface Mocks {
   users: User[]
   usersEmails: string[]
   skills: Skill[]
+  teamSkills: TeamSkills[]
   usersGroups: UsersGroup[]
   teamMember: TeamMember[]
   comments: Comment[]
@@ -22,7 +22,6 @@ interface Mocks {
   notifications: Notification[]
   companies: Company[]
 }
-
 function getMocks(): Mocks {
   const users: User[] = [
     {
@@ -33,7 +32,6 @@ function getMocks(): Mocks {
       lastName: 'Админ',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
-
     {
       id: '1',
       token: '613098',
@@ -42,7 +40,6 @@ function getMocks(): Mocks {
       lastName: 'Пользователь',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
-
     {
       id: '2',
       token: '059182',
@@ -51,7 +48,6 @@ function getMocks(): Mocks {
       lastName: 'Менеджер',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
-
     {
       id: '3',
       token: '163097',
@@ -61,9 +57,7 @@ function getMocks(): Mocks {
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
   ]
-
   const usersEmails: string[] = users.map((user) => user.email)
-
   const skills: Skill[] = [
     {
       id: '0',
@@ -83,8 +77,19 @@ function getMocks(): Mocks {
       type: 'LANGUAGE',
       confirmed: false,
     },
+    {
+      id: '2',
+      name: 'PostgreSQL',
+      type: 'DATABASE',
+      confirmed: false,
+    },
+    {
+      id: '2',
+      name: 'MongoDB',
+      type: 'DATABASE',
+      confirmed: false,
+    },
   ]
-
   const usersGroups: UsersGroup[] = [
     {
       id: '0',
@@ -99,20 +104,17 @@ function getMocks(): Mocks {
       roles: ['ADMIN', 'EXPERT'],
     },
   ]
-
   const teamMember: TeamMember[] = [
     {
       email: 'admin@mail.com',
       firstName: 'Админ',
       lastName: 'Адмиг',
-
       skills: [...skills],
     },
     {
       email: '1@mail.com',
       firstName: 'Пользователь',
       lastName: 'Пользователь',
-
       skills: [
         {
           id: '2',
@@ -126,7 +128,6 @@ function getMocks(): Mocks {
       email: '2@mail.com',
       firstName: 'Менеджер',
       lastName: 'Менеджер',
-
       skills: [
         {
           id: '0',
@@ -146,17 +147,14 @@ function getMocks(): Mocks {
       email: '3@mail.com',
       firstName: 'Владелец',
       lastName: 'Владелец',
-
       skills: [...skills],
     },
   ]
-
   const comments: Comment[] = [
     {
       id: '0',
       ideaId: '0',
       createdAt: '2023-10-20T11:02:17Z',
-
       senderEmail: 'admin@mail.com',
       text: 'Комментарий 1',
       checkedBy: [],
@@ -165,7 +163,6 @@ function getMocks(): Mocks {
       id: '1',
       ideaId: '0',
       createdAt: '2023-10-21T11:02:17Z',
-
       senderEmail: '1@mail.com',
       text: 'Комментарий 2',
       checkedBy: ['0', '1'],
@@ -174,13 +171,11 @@ function getMocks(): Mocks {
       id: '2',
       ideaId: '1',
       createdAt: '2023-10-21T11:02:17Z',
-
       senderEmail: '2@mail.com',
       text: 'Комментарий 3',
       checkedBy: [],
     },
   ]
-
   const ratings: Rating[] = [
     {
       id: '0',
@@ -219,7 +214,6 @@ function getMocks(): Mocks {
       confirmed: false,
     },
   ]
-
   const ideas: Idea[] = [
     {
       id: '0',
@@ -300,7 +294,6 @@ function getMocks(): Mocks {
       rating: 4,
     },
   ]
-
   const ideasSkills: IdeaSkills[] = [
     { ideaId: '0', skills: [...skills] },
     {
@@ -308,7 +301,13 @@ function getMocks(): Mocks {
       skills: [skills[0], skills[2]],
     },
   ]
-
+  const teamSkills: TeamSkills[] = [
+    { teamId: '0', teamSkills: [...skills] },
+    {
+      teamId: '1',
+      teamSkills: [skills[0], skills[2]],
+    },
+  ]
   const teams: Team[] = [
     {
       id: '0',
@@ -321,7 +320,8 @@ function getMocks(): Mocks {
       owner: users[0],
       leader: users[1],
       members: [...users],
-      skills: [],
+      wantedSkills: [...skills],
+      totalSkills: [...skills],
     },
     {
       id: '1',
@@ -334,10 +334,10 @@ function getMocks(): Mocks {
       owner: users[1],
       leader: users[2],
       members: [users[3]],
-      skills: [...skills],
+      wantedSkills: [...skills],
+      totalSkills: [...skills],
     },
   ]
-
   const notifications: Notification[] = [
     {
       id: '0',
@@ -380,7 +380,6 @@ function getMocks(): Mocks {
       createdAt: '2023-10-30T11:02:17Z',
     },
   ]
-
   const companies: Company[] = [
     {
       id: 0,
@@ -401,12 +400,12 @@ function getMocks(): Mocks {
       users: [users[1]],
     },
   ]
-
   return {
     users,
     usersEmails,
     teamMember,
     skills,
+    teamSkills,
     usersGroups,
     comments,
     ratings,
@@ -417,5 +416,4 @@ function getMocks(): Mocks {
     companies,
   }
 }
-
 export default getMocks
