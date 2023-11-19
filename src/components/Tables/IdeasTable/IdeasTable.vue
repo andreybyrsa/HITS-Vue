@@ -48,9 +48,6 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 
 import getStatus from '@Utils/getStatus'
 import mutableSort from '@Utils/mutableSort'
-import IdeasMarket from '@Domain/IdeasMarket'
-import SkillsService from '@Services/SkillsService'
-import IdeasService from '@Services/IdeasService'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -281,7 +278,7 @@ function checkDeleteIdeaAction(idea: Idea) {
       status === 'NEW' || status === 'ON_EDITING' || status === 'ON_APPROVAL'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator.id === currentUser.id && requiredIdeaStatus
+      return initiator === currentUser.email && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
@@ -297,7 +294,7 @@ function checkUpdateIdeaAction(idea: Idea) {
     const requiredIdeaStatus = status === 'NEW' || status === 'ON_EDITING'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator.id === currentUser.id && requiredIdeaStatus
+      return initiator === currentUser.email && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'

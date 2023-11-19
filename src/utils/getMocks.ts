@@ -8,6 +8,7 @@ import TeamMember from '@Domain/TeamMember'
 import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
 import Notification from '@Domain/Notification'
+import Company from '@Domain/Company'
 
 interface Mocks {
   users: User[]
@@ -24,6 +25,7 @@ interface Mocks {
 
   teamMember: TeamMember[]
   notifications: Notification[]
+  companies: Company[]
 }
 
 function getMocks(): Mocks {
@@ -701,6 +703,27 @@ function getMocks(): Mocks {
     },
   ]
 
+  const companies: Company[] = [
+    {
+      id: 0,
+      name: 'ВШЦТ',
+      owner: users[1],
+      users: [users[2]],
+    },
+    {
+      id: 1,
+      name: 'Газпром',
+      owner: users[3],
+      users: [users[0]],
+    },
+    {
+      id: 2,
+      name: 'Роснефть',
+      owner: users[2],
+      users: [users[1]],
+    },
+  ]
+
   return {
     users,
     usersEmails,
@@ -715,6 +738,7 @@ function getMocks(): Mocks {
     IdeasMarket,
     teamMember,
     notifications,
+    companies,
   }
 }
 
