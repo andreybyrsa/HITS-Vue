@@ -13,6 +13,14 @@
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
   />
+
+  <SendIdeasOnMarketModal
+    :ideas="ideasForSendOnMarket"
+    :is-opened="isOpenSendIdeasModal"
+    @close-modal="closeSendIdeasModal"
+    v-model:dateStart="dateStart"
+    v-model:dateFinish="dateFinish"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -30,6 +38,7 @@ import {
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
 import { Idea } from '@Domain/Idea'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
@@ -39,6 +48,9 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 
 import getStatus from '@Utils/getStatus'
 import mutableSort from '@Utils/mutableSort'
+import IdeasMarket from '@Domain/IdeasMarket'
+import SkillsService from '@Services/SkillsService'
+import IdeasService from '@Services/IdeasService'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -55,6 +67,9 @@ const availableStatus = getStatus()
 
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
+
+const dateStart = ref<string>('')
+const dateFinish = ref<string>('')
 
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
 
@@ -117,8 +132,8 @@ const checkedIdeasActions: CheckedDataAction<Idea>[] = [
   {
     label: 'Отправить на биржу',
     className: 'btn-primary',
-    statement: user.value?.role === 'PROJECT_OFFICE',
-    click: sendIdeasToMarket,
+    statement: user.value?.role == 'PROJECT_OFFICE',
+    click: openSendIdeasModal,
   },
 ]
 
@@ -221,8 +236,14 @@ function getRatingColor(rating: number) {
   return 'text-danger'
 }
 
-function sendIdeasToMarket(ideas: Idea[]) {
-  console.log(ideas)
+const isOpenSendIdeasModal = ref<boolean>(false)
+const ideasForSendOnMarket = ref<Idea[]>([])
+function openSendIdeasModal(ideas: Idea[]) {
+  isOpenSendIdeasModal.value = true
+  ideasForSendOnMarket.value = ideas
+}
+function closeSendIdeasModal() {
+  isOpenSendIdeasModal.value = false
 }
 
 function navigateToIdeaModal(idea: Idea) {
@@ -260,7 +281,7 @@ function checkDeleteIdeaAction(idea: Idea) {
       status === 'NEW' || status === 'ON_EDITING' || status === 'ON_APPROVAL'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === `${currentUser.id}` && requiredIdeaStatus
+      return initiator.id === currentUser.id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
@@ -276,7 +297,7 @@ function checkUpdateIdeaAction(idea: Idea) {
     const requiredIdeaStatus = status === 'NEW' || status === 'ON_EDITING'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === `${currentUser.id}` && requiredIdeaStatus
+      return initiator.id === currentUser.id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'

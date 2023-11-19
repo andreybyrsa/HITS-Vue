@@ -252,7 +252,7 @@ function checkOpenComboboxButton() {
   }
 
   &__choices {
-    @include position(absolute, $top: 42px, $z-index: 5);
+    @include position(absolute, $top: 42px, $z-index: 6);
 
     max-height: 173px;
 

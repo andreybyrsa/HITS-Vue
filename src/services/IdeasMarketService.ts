@@ -2,6 +2,8 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import Success from '@Domain/ResponseMessage'
 import IdeasMarket from '@Domain/IdeasMarket'
+import getAbortedSignal from '@Utils/getAbortedSignal'
+import useUserStore from '@Store/user/userStore'
 
 function formatFavoriteIdea(ideasMarket: IdeasMarket[]) {
   return ideasMarket.filter((ideaMarket) => ideaMarket.isFavorite)
@@ -58,17 +60,29 @@ const getIdeaMarket = async (
     })
 }
 
-const postIdeaOnMarket = async (
-  ideas: IdeasMarket,
+const getAllInitiatorMarketIdeas = async (
   token: string,
-): Promise<Success | Error> => {
+): Promise<IdeasMarket[] | Error> => {
   return await ideasMarketAxios
-    .post<Success>(
-      '/ideas/market/add',
-      ideas,
-      { headers: { Authorization: `Bearer ${token}` } },
-      { responseData: { success: 'Успешное добавление идеи' } },
-    )
+    .get('/ideas/market/initiator/all', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки идей'
+      return new Error(error)
+    })
+}
+
+const sendIdeasOnMarket = async (
+  ideas: IdeasMarket[],
+  token: string,
+): Promise<IdeasMarket[] | Error> => {
+  return await ideasMarketAxios
+    .post('/ideas/market/add', ideas, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка отправки идей на биржу'
@@ -113,7 +127,7 @@ const removeIdeaFromFavorites = async (
 const IdeasMarketService = {
   fetchIdeasMarket,
   getIdeaMarket,
-  postIdeaOnMarket,
+  sendIdeasOnMarket,
   fetchFavoritesIdeas,
   addIdeaToFavorites,
   removeIdeaFromFavorites,

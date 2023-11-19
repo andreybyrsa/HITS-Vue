@@ -1,6 +1,5 @@
 import Team from '@Domain/Team'
 import Success from '@Domain/ResponseMessage'
-import TeamMember from '@Domain/TeamMember'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -9,7 +8,6 @@ import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const teamsAxios = defineAxios(getMocks().teams)
-const teamMemberAxios = defineAxios(getMocks().teamMember)
 
 const getTeams = async (token: string): Promise<Team[] | Error> => {
   return await teamsAxios
@@ -76,27 +74,27 @@ const updateTeam = async (
     })
 }
 
-const kickMember = async (
-  member: TeamMember,
-  teamId: string,
-  token: string,
-): Promise<Success | Error> => {
-  return await teamMemberAxios
-    .put<Success>(
-      `/team/kick/${teamId}`,
-      member,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { userId: teamId } },
-    )
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка кика пользователя'
-      return new Error(error)
-    })
-}
+// const kickMember = async (
+//   member: TeamMember,
+//   teamId: string,
+//   token: string,
+// ): Promise<Success | Error> => {
+//   return await teamMemberAxios
+//     .put<Success>(
+//       `/team/kick/${teamId}`,
+//       member,
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//       },
+//       { params: { userId: teamId } },
+//     )
+//     .then((response) => response.data)
+//     .catch(({ response }) => {
+//       const error = response?.data?.error ?? 'Ошибка кика пользователя'
+//       return new Error(error)
+//     })
+// }
 
 const deleteTeam = async (id: string, token: string): Promise<Success | Error> => {
   return await teamsAxios
@@ -121,7 +119,6 @@ const TeamService = {
 
   createTeam,
 
-  kickMember,
   updateTeam,
 
   deleteTeam,

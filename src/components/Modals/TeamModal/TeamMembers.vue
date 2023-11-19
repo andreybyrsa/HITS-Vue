@@ -5,8 +5,6 @@ import TeamMember from '@Domain/TeamMember'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
-import TeamMemberInfo from '@Components/Modals/TeamModal/TeamMemberInfo.vue'
 
 const team = defineModel<Team>({ required: true })
 
@@ -19,7 +17,7 @@ function getMemberButtonClassName(member: TeamMember) {
     'list-group-item-light',
     'w-100',
   ]
-  if (member.userId == team.value.leader?.userId) {
+  if (member.id == team.value.leader?.id) {
     buttonClassName.push('text-danger')
     return buttonClassName.join(' ')
   }
@@ -41,17 +39,9 @@ function getMemberButtonClassName(member: TeamMember) {
         <Button
           :class-name="getMemberButtonClassName(member)"
           prepend-icon-name="bi bi-person"
-          v-collapse="member.userId"
         >
           {{ member.firstName + ' ' + member.lastName }}
         </Button>
-        <Collapse
-          class-name="p-2"
-          :id="member.userId.toString()"
-          ><TeamMemberInfo
-            :member="member"
-            v-model="team"
-        /></Collapse>
       </template>
     </template>
     <div
@@ -67,6 +57,10 @@ function getMemberButtonClassName(member: TeamMember) {
 </template>
 
 <style lang="scss" scoped>
+.team-member {
+  @include flexible(flex-start, space-between, $gap: 16px);
+}
+
 .collapse-controller {
   border-radius: 0;
   background-color: $white-color;

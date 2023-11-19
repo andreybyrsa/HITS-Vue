@@ -1,23 +1,27 @@
 import { Skill } from './Skill'
 import IdeasMarketStatusTypes from './MarketStatus'
+import TeamMember from '@Domain/TeamMember'
 
 interface IdeasMarket {
   id: string
-  position: number
+  initiator: TeamMember
+  createdAt: string
   name: string
   problem: string
+  description: string
   solution: string
   result: string
-  customer: string
-  initiator: string
-  description: string
-  stack: Skill[]
-  createdAt: string
   maxTeamSize: number
+  customer: string
+
+  position: number
+  stack: Skill[]
   status: IdeasMarketStatusTypes
   requests: number
   acceptedRequests: number
-  isFavorite?: boolean
+  isFavorite: boolean
+  startDate: string
+  finishDate: string
 }
 
 export default IdeasMarket

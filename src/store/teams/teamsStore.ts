@@ -5,7 +5,6 @@ import findOneAndUpdate from '@Utils/findOneAndUpdate'
 import InitialState from '@Store/teams/initialState'
 import TeamService from '@Services/TeamService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import TeamMember from '@Domain/TeamMember'
 
 const useTeamStore = defineStore('teams', {
   state: (): InitialState => ({
@@ -54,29 +53,6 @@ const useTeamStore = defineStore('teams', {
     },
   },
   actions: {
-    async kickMember(teamMember: TeamMember, id: string, token: string) {
-      const response = await TeamService.kickMember(teamMember, id, token)
-
-      if (response instanceof Error) {
-        return useNotificationsStore().createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-      const currentTeam = this.teams.find((team) => team.id === id)
-
-      if (currentTeam) {
-        const kickingTeamMemberIndex = currentTeam.members.findIndex(
-          (member) => member.userId === teamMember.userId,
-        )
-
-        if (kickingTeamMemberIndex != -1) {
-          currentTeam.members.splice(kickingTeamMemberIndex, 1)
-          currentTeam.membersCount--
-        }
-      }
-    },
-
     async deleteTeam(id: string, token: string) {
       const response = await TeamService.deleteTeam(id, token)
 

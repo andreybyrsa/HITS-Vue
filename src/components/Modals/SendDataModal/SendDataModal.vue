@@ -4,14 +4,6 @@ import SendDataModalProps from '@Components/Modals/SendDataModal/SendDataModal.t
 import Button from '@Components/Button/Button.vue'
 
 defineProps<SendDataModalProps<DataType>>()
-
-// function checkIdeaCONFIRMED(data: DataType[]) {
-//   if (data.length) {
-//     if (data.find((elem) => elem.status != 'CONFIRMED')) {
-//       return false
-//     } else return true
-//   }
-// }
 </script>
 
 <template>

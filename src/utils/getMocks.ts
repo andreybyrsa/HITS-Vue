@@ -8,13 +8,10 @@ import TeamMember from '@Domain/TeamMember'
 import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
 import Notification from '@Domain/Notification'
-import { TeamAccession, InvitedUsers } from '@Domain/TeamAccession'
 
 interface Mocks {
   users: User[]
   usersEmails: string[]
-  unregisteredInvitations: InvitedUsers[]
-  registeredInvitations: InvitedUsers[]
   skills: Skill[]
   usersGroups: UsersGroup[]
   comments: Comment[]
@@ -24,22 +21,12 @@ interface Mocks {
   teams: Team[]
   RequestTeams: RequestTeams[]
   IdeasMarket: IdeasMarket[]
-  teamAccessions: TeamAccession[]
+
   teamMember: TeamMember[]
   notifications: Notification[]
 }
 
 function getMocks(): Mocks {
-  const unregisteredInvitations: InvitedUsers[] = [
-    {
-      emails: ['first@mail.com', 'second@mail.com', 'third@mail.com'],
-    },
-  ]
-  const registeredInvitations: InvitedUsers[] = [
-    {
-      emails: ['fourth@mail.com', 'fifth@fg.dc'],
-    },
-  ]
   const skills: Skill[] = [
     {
       id: '0',
@@ -117,7 +104,7 @@ function getMocks(): Mocks {
 
   const users: User[] = [
     {
-      id: '0',
+      id: '33',
       token: '10296538',
       email: 'andrey@mail.com',
       firstName: 'Андрей',
@@ -133,7 +120,7 @@ function getMocks(): Mocks {
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
     {
-      id: '2',
+      id: '3',
       token: '059182',
       email: 'kirill.vlasov.05@inbox.ru',
       firstName: 'Кирилл',
@@ -141,7 +128,7 @@ function getMocks(): Mocks {
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
     {
-      id: '3',
+      id: '345',
       token: '163097',
       email: 'maga@mail.com',
       firstName: 'Мамедага',
@@ -170,35 +157,27 @@ function getMocks(): Mocks {
   const teamMember: TeamMember[] = [
     {
       email: 'andrey@mail.com',
-      userId: '33',
+      id: '33',
       firstName: 'Андрей',
       lastName: 'Бырса',
-
-      skills: [...skills],
     },
     {
       email: 'timyr@mail.com',
-      userId: '343',
+      id: '343',
       firstName: 'Тимур',
       lastName: 'Минязев',
-
-      skills: [...skills],
     },
     {
       email: 'kirill.vlasov.05@inbox.ru',
-      userId: '3',
+      id: '3',
       firstName: 'Кирилл',
       lastName: 'Власов',
-
-      skills: [...skills],
     },
     {
       email: 'maga@mail.com',
-      userId: '345',
+      id: '345',
       firstName: 'Мамедага',
       lastName: 'Байрамов',
-
-      skills: [...skills],
     },
   ]
 
@@ -227,7 +206,16 @@ function getMocks(): Mocks {
       createdAt: '2023-10-21T11:02:17Z',
 
       senderEmail: 'kirill.vlasov.05@inbox.ru',
-      text: 'Комментарий 3',
+      text: 'Требуются Frontend разработчики!',
+      checkedBy: [],
+    },
+    {
+      id: '2',
+      ideaId: '2',
+      createdAt: '2023-10-21T11:02:17Z',
+
+      senderEmail: 'kirill.vlasov.05@inbox.ru',
+      text: 'Скоро закроется набор!',
       checkedBy: [],
     },
   ]
@@ -274,7 +262,7 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
-      initiator: 'andrey@mail.com',
+      initiator: teamMember[3],
       name: 'Рефактор кода',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -300,7 +288,7 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      initiator: 'kirill.vlasov.05@inbox.ru',
+      initiator: teamMember[2],
       name: 'Реактор железного человека',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -326,7 +314,7 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
-      initiator: '2',
+      initiator: teamMember[3],
       name: 'Идея 2',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -352,7 +340,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
-      initiator: '2',
+      initiator: teamMember[0],
       name: 'Раскладушка',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -600,8 +588,8 @@ function getMocks(): Mocks {
     {
       id: '1',
       position: 1,
-      name: 'BaccaratHelper',
-      initiator: 'kirill.vlasov.05@inbox.ru',
+      name: 'Создать электрический самолет',
+      initiator: teamMember[2],
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -610,14 +598,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      stack: [
-        {
-          id: '0',
-          name: 'JavaScript',
-          type: 'LANGUAGE',
-          confirmed: true,
-        },
-      ],
+      stack: [skills[0], skills[2], skills[3], skills[6], skills[7]],
       customer: 'ВШЦТ',
       createdAt: '2023-10-21T11:02:17Z',
       maxTeamSize: 10,
@@ -625,12 +606,14 @@ function getMocks(): Mocks {
       requests: 111,
       acceptedRequests: 4,
       isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
     },
     {
       id: '2',
       position: 2,
-      name: 'Vaccarat',
-      initiator: 'andrey@mail.com',
+      name: 'Создать машину времени',
+      initiator: teamMember[0],
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -639,14 +622,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
-      stack: [
-        {
-          id: '0',
-          name: 'ReactJS',
-          type: 'FRAMEWORK',
-          confirmed: true,
-        },
-      ],
+      stack: [skills[0], skills[2], skills[3], skills[6], skills[7], skills[8]],
       customer: 'ВШЦТ',
       createdAt: '2023-10-21T11:02:17Z',
       maxTeamSize: 10,
@@ -654,12 +630,14 @@ function getMocks(): Mocks {
       requests: 222,
       acceptedRequests: 5,
       isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
     },
     {
       id: '3',
       position: 3,
-      name: 'Insensible',
-      initiator: 'Тимур Минязев',
+      name: 'Создать киборга',
+      initiator: teamMember[1],
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -668,14 +646,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      stack: [
-        {
-          id: '0',
-          name: 'PostgreSQL',
-          type: 'DATABASE',
-          confirmed: true,
-        },
-      ],
+      stack: [skills[1], skills[2], skills[4], skills[9], skills[10]],
       customer: 'ВШЦТ',
       createdAt: '2023-10-21T11:02:17Z',
       maxTeamSize: 10,
@@ -683,6 +654,8 @@ function getMocks(): Mocks {
       requests: 0,
       acceptedRequests: 0,
       isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
     },
   ]
   const notifications: Notification[] = [
@@ -728,60 +701,6 @@ function getMocks(): Mocks {
     },
   ]
 
-  const teamAccessions: TeamAccession[] = [
-    {
-      id: '1',
-      team: teams[0],
-      targetEmail: '1wgwrgw2@mail.com',
-      targetId: '1',
-      targetRegistered: true,
-      inviter: {
-        userId: '0',
-        email: 'test1@gmail.com',
-        firstName: 'Админ',
-        lastName: 'Админ',
-        skills: [...skills],
-      },
-      updatedAt: '2021-11-20T14:02:17Z',
-      stage: 'INVITATION',
-    },
-    {
-      id: '2',
-      targetEmail: 'test451@gmail.com',
-      targetRegistered: false,
-      team: teams[0],
-      inviter: {
-        userId: '0',
-        email: 'test1@gmail.com',
-        firstName: 'Админ',
-        lastName: 'Админ',
-        skills: [...skills],
-      },
-      updatedAt: '2022-11-20T14:02:17Z',
-      stage: 'INVITATION',
-    },
-    {
-      id: '3',
-      team: teams[0],
-      targetEmail: 'admin@mail.com',
-      targetRegistered: true,
-      text: 'Выпустите',
-      requestType: 'LEAVE',
-      updatedAt: '2022-11-20T11:02:17Z',
-      stage: 'REQUEST',
-    },
-    {
-      id: '4',
-      team: teams[0],
-      targetEmail: 'admin@mail.com',
-      targetRegistered: true,
-      text: 'Впустите',
-      requestType: 'ENTER',
-      updatedAt: '2023-10-20T11:02:17Z',
-      stage: 'REQUEST',
-    },
-  ]
-
   return {
     users,
     usersEmails,
@@ -794,9 +713,6 @@ function getMocks(): Mocks {
     teams,
     RequestTeams,
     IdeasMarket,
-    unregisteredInvitations,
-    registeredInvitations,
-    teamAccessions,
     teamMember,
     notifications,
   }

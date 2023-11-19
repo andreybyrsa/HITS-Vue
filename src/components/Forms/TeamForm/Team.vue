@@ -1,25 +1,21 @@
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useField, useFieldValue } from 'vee-validate'
-import { watchImmediate } from '@vueuse/core'
+import { useFieldValue } from 'vee-validate'
 import { useRoute } from 'vue-router'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
 import { TeamProps } from '@Components/Forms/TeamForm/TeamForm.types'
 
 import TeamMember from '@Domain/TeamMember'
-import { Skill } from '@Domain/Skill'
 
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import TeamAccessionsService from '@Services/TeamAccessionsService'
 
 const props = defineProps<TeamProps>()
 
@@ -34,22 +30,14 @@ const owner = ref<TeamMember | undefined>(useFieldValue<TeamMember>('owner').val
 const leader = ref<TeamMember | undefined>(useFieldValue<TeamMember>('leader').value)
 const members = ref<TeamMember[]>(useFieldValue<TeamMember[]>('members').value ?? [])
 
-const radarChartsSkills = ref<Skill[]>([])
-
-const { value: teamSkills } = useField<Skill[]>('skills', undefined, {
-  validateOnMount: false,
-  validateOnValueUpdate: true,
-})
-
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { id, token } = currentUser
-
-    const teamId = route.params.id.toString()
+    const { id, email, firstName, lastName, token } = currentUser
 
     if (props.mode == 'editing') {
+      const teamId = route.params.id.toString()
       const response = await TeamService.getTeam(teamId, token)
 
       if (response instanceof Error) {
@@ -67,44 +55,15 @@ onMounted(async () => {
 
       users.value = [...response.members]
 
-      if (!users.value.find((member) => member.userId == response.owner.userId)) {
+      if (!users.value.find((member) => member.id == response.owner.id)) {
         users.value.push(response.owner)
       }
     } else {
-      const response = await TeamAccessionsService.getTeamProfile(id, token)
+      owner.value = { id, email, firstName, lastName }
 
-      if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-
-      users.value = [response]
-
-      owner.value = response
+      users.value = [owner.value]
     }
   }
-})
-
-const teamUsers = computed(() => {
-  const currentUsers = members.value
-
-  const uniqueUsers = new Map<string, TeamMember>()
-  currentUsers.forEach((user) => user && uniqueUsers.set(user.email, user))
-
-  return [...uniqueUsers.values()]
-})
-
-watchImmediate(teamUsers, (currentTeam) => {
-  const membersSkills: Skill[] = []
-
-  currentTeam.forEach((member) => membersSkills.push(...member.skills))
-
-  teamSkills.value = [
-    ...new Map(membersSkills.map((skill) => [skill.id, skill])).values(),
-  ]
-  radarChartsSkills.value = membersSkills
 })
 
 watch(
@@ -137,8 +96,6 @@ function onUnselectMember(unselectedMember: TeamMember) {
   if (unselectedMember.email === leader.value?.email) {
     leader.value = undefined
   }
-  console.log(users.value)
-  console.log(members.value)
 }
 
 function unselectMember(unselectedMember: TeamMember) {
@@ -214,11 +171,6 @@ function getMemberColor(member: TeamMember) {
           </div>
         </div>
       </div>
-
-      <SkillsRadarCharts
-        class-name="w-50"
-        :skills="radarChartsSkills"
-      />
     </div>
   </div>
 

@@ -12,8 +12,10 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
       const error = response?.data?.error ?? 'Ошибка авторизации'
       return {
         ...user,
-        id: 33,
+        id: '33',
         token: '1',
+        firstName: 'Timur',
+        lastName: 'Minyazeff',
         roles: ['ADMIN', 'INITIATOR', 'PROJECT_OFFICE', 'EXPERT'],
       }
     })

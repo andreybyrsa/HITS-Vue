@@ -142,7 +142,7 @@ function closeRequestToIdeaModal() {
       </div>
       <div class="idea-creator">
         <Icon class-name="bi bi-person-circle fs-5" /> Инициатор:
-        {{ idea.initiator }}
+        {{ idea.initiator.firstName + ' ' + idea.initiator.lastName }}
       </div>
       <div class="idea-stacks">
         <Skills :skills="idea?.stack" />
@@ -169,7 +169,7 @@ function closeRequestToIdeaModal() {
       </div>
       <div class="idea-buttons">
         <Button
-          v-if="user?.email != idea.initiator"
+          v-if="user?.id != idea.initiator.userId"
           class="apply-button"
           prepend-icon-name="bi bi-send-fill"
           @click="openRequestToIdeaModal"
