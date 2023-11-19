@@ -169,7 +169,7 @@ function closeRequestToIdeaModal() {
       </div>
       <div class="idea-buttons">
         <Button
-          v-if="user?.id != idea.initiator.userId"
+          v-if="user?.id != idea.initiator.id"
           class="apply-button"
           prepend-icon-name="bi bi-send-fill"
           @click="openRequestToIdeaModal"

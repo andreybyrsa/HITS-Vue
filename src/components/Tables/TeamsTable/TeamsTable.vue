@@ -82,17 +82,6 @@ const dropdownTeamsActions: DropdownMenuAction<Team>[] = [
     label: 'Просмотреть',
     click: navigateToTeamModal,
   },
-  {
-    label: 'Редактировать',
-    statement: checkUpdateTeamAction,
-    click: navigateToTeamForm,
-  },
-  {
-    label: 'Удалить',
-    className: 'text-danger',
-    statement: checkDeleteTeamAction,
-    click: handleOpenDeleteModal,
-  },
 ]
 
 const teamsFilters: Filter<Team>[] = [
@@ -162,15 +151,6 @@ function navigateToTeamModal(team: Team) {
   router.push(`/teams/list/${team.id}`)
 }
 
-function navigateToTeamForm(team: Team) {
-  router.push(`/teams/update/${team.id}`)
-}
-
-function handleOpenDeleteModal(team: Team) {
-  deletingTeamId.value = team.id
-  isOpenedTeamDeleteModal.value = true
-}
-
 function handleCloseDeleteModal() {
   isOpenedTeamDeleteModal.value = false
 }
@@ -195,20 +175,6 @@ async function handleDeleteTeam() {
       teams.value.splice(deletingTeamIndex, 1)
     }
   }
-}
-
-function checkDeleteTeamAction(team: Team) {
-  const currentUser = user.value
-
-  const { owner } = team
-  return currentUser?.role === 'ADMIN' || currentUser?.id === owner.userId
-}
-
-function checkUpdateTeamAction(team: Team) {
-  const currentUser = user.value
-
-  const { owner } = team
-  return currentUser?.role === 'ADMIN' || currentUser?.id === owner.userId
 }
 
 function checkTeamStatus(team: Team, status: FilterValue) {

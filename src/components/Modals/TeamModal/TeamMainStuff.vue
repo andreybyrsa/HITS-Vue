@@ -19,7 +19,7 @@ function getFormattedDate(date: string) {
     <router-link
       class="nav-route list-group-item list-group-item-light"
       active-class="active"
-      :to="'profile/' + team?.owner.userId"
+      :to="'profile/' + team?.owner.id"
     >
       <Typography class="text-primary">{{
         team.owner.firstName + ' ' + team.owner.lastName
@@ -34,7 +34,7 @@ function getFormattedDate(date: string) {
     <router-link
       class="nav-route list-group-item list-group-item-light text-danger"
       active-class="active"
-      :to="'profile/' + team.leader.userId"
+      :to="'profile/' + team.leader.id"
     >
       <Typography>{{
         team.leader.firstName + ' ' + team.leader.lastName
