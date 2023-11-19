@@ -11,12 +11,36 @@ import getAbortedSignal from '@Utils/getAbortedSignal'
 const companiesAxios = defineAxios(getMocks().companies)
 const usersAxios = defineAxios(getMocks().users)
 
+function formatOwnerCompanies(owenId: string, companies: Company[]) {
+  return companies.filter((company) => company.owner.id === owenId)
+}
+
 const getCompanies = async (token: string): Promise<Company[] | Error> => {
   return await companiesAxios
     .get('/company/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения компаний'
+      return new Error(error)
+    })
+}
+
+const getOwnerCompanies = async (
+  id: string,
+  token: string,
+): Promise<Company[] | Error> => {
+  return await companiesAxios
+    .get<Company[]>(
+      '/company/owner',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { formatter: (companies) => formatOwnerCompanies(id, companies) },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения компаний'
@@ -114,6 +138,7 @@ const deleteCompany = async (
 
 const TeamService = {
   getCompanies,
+  getOwnerCompanies,
   getCompany,
   getCompanyMembers,
 

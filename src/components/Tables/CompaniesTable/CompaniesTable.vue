@@ -57,7 +57,7 @@ const companiesTableColumns: TableColumn<Company>[] = [
   },
   {
     key: 'owner',
-    label: 'Владелец',
+    label: 'Руководитель',
     getRowCellFormat: getCompanyOwnerFormat,
   },
 ]

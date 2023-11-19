@@ -264,7 +264,7 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
-      initiator: 'rg3rg3rg3@g3rg3.erg3er',
+      initiator: '1@mail.com',
       name: 'Рефактор кода',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -290,7 +290,7 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      initiator: 'grgrh35th#t4g35@rgerbg.rg',
+      initiator: '2@mail.com',
       name: 'Реактор железного человека',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -316,7 +316,7 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
-      initiator: 'grgrh35th#t4g35@rgerbg.rg',
+      initiator: '3@mail.com',
       name: 'Идея 2',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -342,7 +342,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
-      initiator: 'grgrh35th#t4g35@rgerbg.rg',
+      initiator: 'admin@mail.com',
       name: 'Раскладушка',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -713,8 +713,8 @@ function getMocks(): Mocks {
     {
       id: '1',
       name: 'Газпром',
-      owner: users[3],
-      users: [users[0]],
+      owner: users[1],
+      users: [users[1]],
     },
     {
       id: '2',
