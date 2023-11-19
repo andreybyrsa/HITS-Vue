@@ -23,9 +23,9 @@ import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
+import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
-
 import DevView from '@Views/DevView.vue'
 
 import useUserStore from '@Store/user/userStore'
@@ -73,6 +73,15 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
+        children: [
+          {
+            path: ':teamId',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: TeamModal,
+          },
+        ],
       },
       {
         path: 'create',

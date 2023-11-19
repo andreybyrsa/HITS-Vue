@@ -11,6 +11,7 @@ type OptionalMocksDataType<MocksType> = Partial<
 
 interface AxiosMockConfig<RequestMocksType, ResponseMocksType = unknown> {
   params?: OptionalMocksDataType<RequestMocksType>
+  comparingKey?: keyof RequestMocksType
   requestData?: OptionalMocksDataType<RequestMocksType>
   responseData?: ResponseMocksType
   formatter?: (data: RequestMocksType[]) => ResponseMocksType
@@ -61,7 +62,6 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
 
     return new Promise((resolve, reject) =>
       setTimeout(() => {
-        console.log
         if (mockConfig?.params) {
           const { key, value } = getMockConfigParams(mockConfig)
           const currentMockData = mockArray.value.find((mock) => mock[key] === value)
@@ -155,6 +155,12 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
 
   function put(
     endPoint: string,
+    newMockData: MocksType[],
+    config: AxiosRequestConfig<MocksType[]>,
+    mockConfig: AxiosMockConfig<MocksType>,
+  ): Promise<AxiosResponse<MocksType[]>>
+  function put(
+    endPoint: string,
     newMockData: MocksType | OptionalMocksDataType<MocksType>,
     config: AxiosRequestConfig<MocksType>,
     mockConfig: AxiosMockConfig<MocksType>,
@@ -167,47 +173,77 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
   ): Promise<AxiosResponse<ResponseType>>
   function put<ResponseType>(
     endPoint: string,
-    newMockData: MocksType | OptionalMocksDataType<MocksType>,
-    config: AxiosRequestConfig<MocksType>,
+    newMockData: MocksType | MocksType[] | OptionalMocksDataType<MocksType>,
+    config: AxiosRequestConfig<MocksType | MocksType[]>,
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
-  ): Promise<AxiosResponse<MocksType | ResponseType>> {
+  ): Promise<AxiosResponse<MocksType | MocksType[] | ResponseType>> {
     if (MODE === 'PRODUCTION') {
       return axios.put(`${API_URL}${endPoint}`, newMockData, config)
     }
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (mockConfig.params) {
-          const { key, value } = getMockConfigParams(mockConfig)
-          const currentMockDataIndex = mockArray.value.findIndex(
-            (mock) => mock[key] === value,
-          )
+        if (newMockData instanceof Array) {
+          if (mockConfig.comparingKey) {
+            const comparingKey = mockConfig.comparingKey
+            const responseMockData: MocksType[] = []
 
-          if (currentMockDataIndex !== -1) {
-            const currentMockData = mockArray.value[currentMockDataIndex]
-            const { requestData } = mockConfig
-
-            mockArray.value[currentMockDataIndex] = {
-              ...currentMockData,
-              ...newMockData,
-              ...(requestData ?? {}),
-            }
-
-            const { responseData } = mockConfig
-            if (responseData) {
-              resolve(createMockResponse(responseData))
-            } else {
-              resolve(
-                createMockResponse(
-                  structuredClone(mockArray.value[currentMockDataIndex]),
-                ),
+            newMockData.forEach((value) => {
+              const currentMockIndex = mockArray.value.findIndex(
+                (mockValue) => mockValue[comparingKey] === value[comparingKey],
               )
-            }
+
+              if (currentMockIndex !== -1) {
+                const currentMockValue = mockArray.value[currentMockIndex]
+                const newMockValue = {
+                  ...currentMockValue,
+                  ...value,
+                }
+                responseMockData.push(newMockValue)
+
+                mockArray.value[currentMockIndex] = newMockValue
+              } else {
+                reject(createMockResponse('Искомые данные не найдены'))
+              }
+            })
+
+            resolve(createMockResponse(structuredClone(responseMockData)))
           } else {
             reject(createMockResponse('Искомые данные не найдены'))
           }
         } else {
-          reject(createMockResponse('Искомые данные не найдены'))
+          if (mockConfig.params) {
+            const { key, value } = getMockConfigParams(mockConfig)
+            const currentMockDataIndex = mockArray.value.findIndex(
+              (mock) => mock[key] === value,
+            )
+
+            if (currentMockDataIndex !== -1) {
+              const currentMockData = mockArray.value[currentMockDataIndex]
+              const { requestData } = mockConfig
+
+              mockArray.value[currentMockDataIndex] = {
+                ...currentMockData,
+                ...newMockData,
+                ...(requestData ?? {}),
+              }
+
+              const { responseData } = mockConfig
+              if (responseData) {
+                resolve(createMockResponse(responseData))
+              } else {
+                resolve(
+                  createMockResponse(
+                    structuredClone(mockArray.value[currentMockDataIndex]),
+                  ),
+                )
+              }
+            } else {
+              reject(createMockResponse('Искомые данные не найдены'))
+            }
+          } else {
+            reject(createMockResponse('Искомые данные не найдены'))
+          }
         }
       }, 500)
     })
