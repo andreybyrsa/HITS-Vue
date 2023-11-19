@@ -278,7 +278,7 @@ function checkDeleteIdeaAction(idea: Idea) {
       status === 'NEW' || status === 'ON_EDITING' || status === 'ON_APPROVAL'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === currentUser.email && requiredIdeaStatus
+      return initiator.email === currentUser.email && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
@@ -294,7 +294,7 @@ function checkUpdateIdeaAction(idea: Idea) {
     const requiredIdeaStatus = status === 'NEW' || status === 'ON_EDITING'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === currentUser.email && requiredIdeaStatus
+      return initiator.email === currentUser.email && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'

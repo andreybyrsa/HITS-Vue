@@ -130,6 +130,7 @@ async function sendIdeasToMarket(ideas: Idea[]) {
       </div>
       <div class="d-flex gap-2">
         <Button
+          v-if="ideas"
           variant="primary"
           @click="sendIdeasToMarket(ideas)"
         >
