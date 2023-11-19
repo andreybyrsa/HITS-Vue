@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 
 import {
   CustomerAndContact,
@@ -8,71 +9,79 @@ import {
 } from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
+import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+import CompanyService from '@Services/CompanyService'
+import Company from '@Domain/Company'
+
 const props = defineProps<CustomerAndContact>()
 const emit = defineEmits<CustomerAndContactEmits>()
 
-const customers = ref([
-  { contacts: ['ВШЦТ'], company: 'ВШЦТ' },
-  { contacts: ['Красильников Сергей Владимирович'], company: 'ГК АВТОГРАД' },
-  { contacts: ['Зайко Антон Алексеевич'], company: 'Студия дизайна PavlovaWeb' },
-  { contacts: ['Красильников Сергей Владимирович'], company: 'ГК АВТОГРАД' },
-  {
-    contacts: [
-      'Андрей Дрыгни (HR)',
-      'Асташова Ксения (портфель проектов)',
-      'Качанова Яна (проектный офис) ',
-    ],
-    company: 'ООО Цифровое строительство',
-  },
-  {
-    contacts: ['Томилов Алексей Александрович'],
-    company: 'ООО "Ребренди Консалтинг"',
-  },
-  { contacts: ['Громов Игорь Сергеевич'], company: 'ЗапСибНИИГГ' },
-  {
-    contacts: ['Беляков Дмитрий Константинович'],
-    company: 'Базис-моторс',
-  },
-  {
-    contacts: ['Беляков Дмитрий Константинович'],
-    company: 'ООО "Бизнес-Аудит"',
-  },
-  {
-    contacts: ['Букреев Павел Александрович'],
-    company: '1C-Медицина-Регион',
-  },
-  {
-    contacts: ['Золотов Анатолий Леонидович'],
-    company: 'Tip-Top Studio',
-  },
-  {
-    contacts: ['Николаев Алексей Андреевич', 'Исаев Сергей Викторович'],
-    company: 'ООО "Зуммер"',
-  },
-  {
-    contacts: ['Галагуш Артем Василич'],
-    company: 'ООО Бизнес Технологии',
-  },
-  {
-    contacts: ['Калашников Вячеслав Сергеевич'],
-    company: 'ООО "ВОК"',
-  },
-])
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
-const currentCompanies = ref(customers.value.map((option) => option.company))
-const currentCompanyContacts = ref<string[]>([])
+const customers = ref<Company[]>([])
 
-function getContactPersonsByCompany(company: string) {
-  return customers.value.find((option) => option.company === company)
+const currentCompanies = computed(() =>
+  customers.value.map((company) => company.name),
+)
+
+const currentCompanyContacts = computed(() => {
+  const selectedCompany = customers.value.find(
+    (company) => company.name === props.idea.customer,
+  )
+  return selectedCompany ? getContactPersonsByCompany(props.idea.customer) : []
+})
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, id, role } = currentUser
+
+    const response = await CompanyService.getCompanies(token)
+
+    if (response instanceof Error) {
+      notificationsStore.createSystemNotification('Система', response.message)
+    } else {
+      if (role !== 'ADMIN') {
+        const currentCompany = response.find(
+          (company) =>
+            company.owner.id === id ||
+            company.users.find((contactPerson) => contactPerson.id === id),
+        )
+
+        if (currentCompany) {
+          customers.value = response.filter(
+            (company) => company.name === currentCompany.name,
+          )
+          emit('set-value', 'customer', currentCompany.name)
+        } else {
+          customers.value = response.filter((company) => company.name === 'ВШЦТ')
+          emit('set-value', 'contactPerson', 'ВШЦТ')
+        }
+      } else {
+        customers.value = response
+      }
+    }
+  }
+})
+
+const getContactPersonsByCompany = (company: string): string[] => {
+  const selectedCompany = customers.value.find((option) => option.name === company)
+  return selectedCompany
+    ? selectedCompany.users.map((user) => `${user.firstName} ${user.lastName}`)
+    : []
 }
 
 function handleCustomerChange(selectedCompany: string) {
-  const currentContacts = getContactPersonsByCompany(selectedCompany)?.contacts
+  const currentContacts = getContactPersonsByCompany(selectedCompany)
   if (currentContacts) {
-    currentCompanyContacts.value = currentContacts
     const { contactPerson } = props.idea
 
-    const currentContactPerson = currentContacts.includes(contactPerson)
+    const currentContactPerson = currentCompanyContacts.value.includes(contactPerson)
       ? contactPerson
       : currentContacts[0]
 

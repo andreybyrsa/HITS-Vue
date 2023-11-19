@@ -67,8 +67,6 @@ const { values, setFieldValue, setValues, validateField, handleSubmit } =
     },
     initialValues: {
       status: 'NEW',
-      customer: 'ВШЦТ',
-      contactPerson: 'ВШЦТ',
     },
   })
 
