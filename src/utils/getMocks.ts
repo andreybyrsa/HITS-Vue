@@ -264,7 +264,7 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
-      initiator: teamMember[3],
+      initiator: '1@mail.com',
       name: 'Рефактор кода',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -290,7 +290,7 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      initiator: teamMember[2],
+      initiator: '2@mail.com',
       name: 'Реактор железного человека',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -316,7 +316,7 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
-      initiator: teamMember[3],
+      initiator: '3@mail.com',
       name: 'Идея 2',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -342,7 +342,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
-      initiator: teamMember[0],
+      initiator: 'admin@mail.com',
       name: 'Раскладушка',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
