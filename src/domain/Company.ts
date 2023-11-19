@@ -1,7 +1,7 @@
 import { User } from '@Domain/User'
 
 interface Company {
-  id: number
+  id: string
   name: string
   owner: User
   users: User[]

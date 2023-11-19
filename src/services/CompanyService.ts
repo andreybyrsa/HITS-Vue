@@ -11,6 +11,10 @@ import getAbortedSignal from '@Utils/getAbortedSignal'
 const companiesAxios = defineAxios(getMocks().companies)
 const usersAxios = defineAxios(getMocks().users)
 
+function formatOwnerCompanies(owenId: string, companies: Company[]) {
+  return companies.filter((company) => company.owner.id === owenId)
+}
+
 const getCompanies = async (token: string): Promise<Company[] | Error> => {
   return await companiesAxios
     .get('/company/all', {
@@ -24,7 +28,27 @@ const getCompanies = async (token: string): Promise<Company[] | Error> => {
     })
 }
 
-const getCompany = async (id: number, token: string): Promise<Company | Error> => {
+const getOwnerCompanies = async (
+  id: string,
+  token: string,
+): Promise<Company[] | Error> => {
+  return await companiesAxios
+    .get<Company[]>(
+      '/company/owner',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { formatter: (companies) => formatOwnerCompanies(id, companies) },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения компаний'
+      return new Error(error)
+    })
+}
+
+const getCompany = async (id: string, token: string): Promise<Company | Error> => {
   return await companiesAxios
     .get(
       `/company/${id}`,
@@ -72,7 +96,7 @@ const createCompany = async (
 
 const updateCompany = async (
   company: Company,
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await companiesAxios
@@ -93,7 +117,7 @@ const updateCompany = async (
 }
 
 const deleteCompany = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await companiesAxios
@@ -114,6 +138,7 @@ const deleteCompany = async (
 
 const TeamService = {
   getCompanies,
+  getOwnerCompanies,
   getCompany,
   getCompanyMembers,
 

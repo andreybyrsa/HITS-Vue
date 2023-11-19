@@ -9,11 +9,13 @@ import {
 } from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
+import Company from '@Domain/Company'
+import RolesTypes from '@Domain/Roles'
+
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import CompanyService from '@Services/CompanyService'
-import Company from '@Domain/Company'
 
 const props = defineProps<CustomerAndContact>()
 const emit = defineEmits<CustomerAndContactEmits>()
@@ -23,7 +25,6 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const customers = ref<Company[]>([])
-
 const currentCompanies = computed(() =>
   customers.value.map((company) => company.name),
 )
@@ -35,36 +36,43 @@ const currentCompanyContacts = computed(() => {
   return selectedCompany ? getContactPersonsByCompany(props.idea.customer) : []
 })
 
+async function setCompaniesByRole(token: string, role: RolesTypes) {
+  const response = await CompanyService.getCompanies(token)
+
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
+  }
+
+  if (role === 'ADMIN') {
+    customers.value = response
+  } else {
+    customers.value = response.filter((company) => company.name === 'ВШЦТ')
+  }
+}
+
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && currentUser.role) {
     const { token, id, role } = currentUser
 
-    const response = await CompanyService.getCompanies(token)
+    if (role !== 'ADMIN') {
+      const response = await CompanyService.getOwnerCompanies(id, token)
 
-    if (response instanceof Error) {
-      notificationsStore.createSystemNotification('Система', response.message)
-    } else {
-      if (role !== 'ADMIN') {
-        const currentCompany = response.find(
-          (company) =>
-            company.owner.id === id ||
-            company.users.find((contactPerson) => contactPerson.id === id),
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
         )
-
-        if (currentCompany) {
-          customers.value = response.filter(
-            (company) => company.name === currentCompany.name,
-          )
-          emit('set-value', 'customer', currentCompany.name)
-        } else {
-          customers.value = response.filter((company) => company.name === 'ВШЦТ')
-          emit('set-value', 'contactPerson', 'ВШЦТ')
-        }
-      } else {
-        customers.value = response
       }
+
+      if (response.length) {
+        customers.value = response
+      } else {
+        setCompaniesByRole(token, role)
+      }
+    } else {
+      setCompaniesByRole(token, role)
     }
   }
 })

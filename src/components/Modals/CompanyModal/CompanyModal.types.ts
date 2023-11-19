@@ -4,7 +4,7 @@ import { User } from '@Domain/User'
 
 interface CompanyModalProps {
   isOpened: boolean
-  companyId?: number
+  companyId?: string
 }
 
 interface UsersColumnsProps {

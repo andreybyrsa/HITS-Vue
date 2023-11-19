@@ -383,19 +383,19 @@ function getMocks(): Mocks {
 
   const companies: Company[] = [
     {
-      id: 0,
+      id: '0',
       name: 'ВШЦТ',
       owner: users[1],
       users: [users[2]],
     },
     {
-      id: 1,
+      id: '1',
       name: 'Газпром',
-      owner: users[3],
-      users: [users[0]],
+      owner: users[1],
+      users: [users[1]],
     },
     {
-      id: 2,
+      id: '2',
       name: 'Роснефть',
       owner: users[2],
       users: [users[1]],
