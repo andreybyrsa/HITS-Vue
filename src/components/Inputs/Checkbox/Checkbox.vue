@@ -20,16 +20,16 @@ const { value, errorMessage } = useField(() => props.name, undefined, {
 })
 
 const BoxInputClassName = computed(() => [
-  'form-check-input m-1',
+  'form-check-input',
   { 'is-invalid': errorMessage.value || props.error },
   props.className,
 ])
 
-const BoxLabelClassName = computed(() => ['form-check-label ms-1', props.className])
+const BoxLabelClassName = computed(() => ['form-check-label ms-2', props.className])
 </script>
 
 <template>
-  <div class="form-check-wrapper">
+  <div class="d-flex">
     <input
       type="checkbox"
       :name="name"
@@ -45,9 +45,3 @@ const BoxLabelClassName = computed(() => ['form-check-label ms-1', props.classNa
     </span>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.form-check-wrapper {
-  @include flexible(center, center, $gap: 8px);
-}
-</style>
