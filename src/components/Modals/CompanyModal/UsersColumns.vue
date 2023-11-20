@@ -1,42 +1,89 @@
 <script lang="ts" setup>
+import { ref, computed } from 'vue'
+
 import Typography from '@Components/Typography/Typography.vue'
 import {
   UsersColumnsProps,
   UsersColumnsEmits,
 } from '@Components/Modals/CompanyModal/CompanyModal.types'
+import Input from '@Components/Inputs/Input/Input.vue'
 
-defineProps<UsersColumnsProps>()
+const props = defineProps<UsersColumnsProps>()
 const emit = defineEmits<UsersColumnsEmits>()
+
+const searchValueByUnselectedUsers = ref('')
+const searchValueBySelectedUsers = ref('')
+
+const searchedUnselectedUsers = computed(() => {
+  if (searchValueByUnselectedUsers.value) {
+    const currentSearchValue = searchValueByUnselectedUsers.value
+      .toLowerCase()
+      .trim()
+
+    return props.unselectedUsers.filter(({ firstName, lastName }) => {
+      const userName = `${firstName} ${lastName}`.toLowerCase().trim()
+
+      return userName.includes(currentSearchValue)
+    })
+  }
+  return props.unselectedUsers
+})
+
+const searchedSelectedUsers = computed(() => {
+  if (searchValueBySelectedUsers.value) {
+    const currentSearchValue = searchValueBySelectedUsers.value.toLowerCase().trim()
+
+    return props.users.filter((user) => {
+      const { firstName, lastName } = user.value
+      const userName = `${firstName} ${lastName}`.toLowerCase().trim()
+
+      return userName.includes(currentSearchValue)
+    })
+  }
+  return props.users
+})
 </script>
 
 <template>
   <div class="d-flex justify-content-between gap-3">
     <div class="users-column w-50">
-      <Typography class-name="text-primary">Пользователи:</Typography>
+      <Input
+        name="searchByUnselectedUsers"
+        class-name="rounded-end"
+        label="Пользователи:"
+        placeholder="Найти"
+        v-model="searchValueByUnselectedUsers"
+      />
 
       <div
         class="users-column__unselected-users p-2 h-100 overflow-scroll border rounded-3"
       >
         <div
           class="users-column__user px-1 rounded border"
-          v-for="(user, index) in unselectedUsers"
+          v-for="(user, index) in searchedUnselectedUsers"
           :key="index"
-          @click="emit('selectUser', user, index)"
+          @click="emit('selectUser', user)"
         >
-          <Typography>{{ user.lastName }} {{ user.firstName }}</Typography>
+          <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
         </div>
       </div>
     </div>
 
     <div class="users-column w-50">
-      <Typography class-name="text-primary">Представители компании:</Typography>
+      <Input
+        name="searchBySelectedUsers"
+        class-name="rounded-end"
+        label="Представители компании:"
+        placeholder="Найти"
+        v-model="searchValueBySelectedUsers"
+      />
 
       <div
         class="users-column__selected-users p-2 h-100 overflow-scroll border rounded-3"
       >
         <div
           class="users-column__user px-1 rounded border"
-          v-for="(user, index) in users"
+          v-for="(user, index) in searchedSelectedUsers"
           :key="index"
           @click="emit('unselectUser', user.value, index)"
         >
