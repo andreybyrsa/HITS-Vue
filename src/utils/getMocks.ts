@@ -5,8 +5,6 @@ import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
-import RequestTeams from '@Domain/RequestTeams'
-import IdeasMarket from '@Domain/IdeasMarket'
 import Notification from '@Domain/Notification'
 import Company from '@Domain/Company'
 
@@ -20,8 +18,6 @@ interface Mocks {
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
-  RequestTeams: RequestTeams[]
-  IdeasMarket: IdeasMarket[]
 
   teamMember: TeamMember[]
   notifications: Notification[]
@@ -264,7 +260,7 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
-      initiator: teamMember[0],
+      initiatorEmail: 'admin@mail.com',
       name: 'Рефактор кода',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -290,7 +286,7 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      initiator: teamMember[1],
+      initiatorEmail: '1@mail.com',
       name: 'Реактор железного человека',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -316,7 +312,7 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
-      initiator: teamMember[2],
+      initiatorEmail: '2@mail.com',
       name: 'Идея 2',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -342,7 +338,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
-      initiator: teamMember[3],
+      initiatorEmail: '3@mail.com',
       name: 'Раскладушка',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -431,235 +427,6 @@ function getMocks(): Mocks {
     },
   ]
 
-  const RequestTeams: RequestTeams[] = [
-    {
-      id: '0',
-      ideaId: '1',
-      accepted: false,
-      teamId: '0',
-
-      name: 'Первые разрабы мира',
-      closed: false,
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[1],
-      leader: teamMember[2],
-      members: [...teamMember],
-      skills: [...skills],
-      createdAt: '2023-10-20T11:02:17Z',
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '1',
-      ideaId: '1',
-      accepted: false,
-      teamId: '1',
-
-      name: 'Программисты из apple',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[1],
-      leader: teamMember[2],
-      members: [...teamMember],
-      skills: [...skills],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '2',
-      ideaId: '1',
-      accepted: true,
-      teamId: '2',
-
-      name: 'Удальцы',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[1],
-      leader: teamMember[2],
-      members: [...teamMember],
-      skills: [...skills],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '3',
-      ideaId: '1',
-      accepted: true,
-      teamId: '3',
-
-      name: 'Молодцы',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[1],
-      leader: teamMember[2],
-      members: [...teamMember],
-      skills: [...skills],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '4',
-      ideaId: '2',
-      accepted: false,
-      teamId: '4',
-
-      name: 'Хорошая компания',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[1],
-      leader: teamMember[2],
-      membersCount: 4,
-      members: [...teamMember],
-      skills: [...skills],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '5',
-      ideaId: '2',
-      accepted: false,
-      teamId: '5',
-
-      name: 'Негатив',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[1],
-      leader: teamMember[2],
-      membersCount: 4,
-      members: [...teamMember],
-      skills: [...skills],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '6',
-      ideaId: '2',
-      accepted: true,
-      teamId: '6',
-
-      name: 'Позитив',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[1],
-      leader: teamMember[2],
-      members: [...teamMember],
-      skills: [...skills],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '7',
-      ideaId: '2',
-      accepted: false,
-      teamId: '13',
-
-      name: 'Смешарики',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMember[1],
-      leader: teamMember[2],
-      members: [...teamMember],
-      skills: [...skills],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-  ]
-
-  const IdeasMarket: IdeasMarket[] = [
-    {
-      id: '1',
-      position: 1,
-      name: 'Создать электрический самолет',
-      initiator: teamMember[2],
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      stack: [skills[0], skills[2], skills[3], skills[6], skills[7]],
-      customer: 'ВШЦТ',
-      createdAt: '2023-10-21T11:02:17Z',
-      maxTeamSize: 10,
-      status: 'RECRUITMENT_IS_OPEN',
-      requests: 111,
-      acceptedRequests: 4,
-      isFavorite: false,
-      startDate: '2023-10-20T11:02:17Z',
-      finishDate: '2024-01-20T11:02:17Z',
-    },
-    {
-      id: '2',
-      position: 2,
-      name: 'Создать машину времени',
-      initiator: teamMember[0],
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
-      stack: [skills[0], skills[2], skills[3], skills[6], skills[7], skills[8]],
-      customer: 'ВШЦТ',
-      createdAt: '2023-10-21T11:02:17Z',
-      maxTeamSize: 10,
-      status: 'RECRUITMENT_IS_OPEN',
-      requests: 222,
-      acceptedRequests: 5,
-      isFavorite: false,
-      startDate: '2023-10-20T11:02:17Z',
-      finishDate: '2024-01-20T11:02:17Z',
-    },
-    {
-      id: '3',
-      position: 3,
-      name: 'Создать киборга',
-      initiator: teamMember[1],
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      stack: [skills[1], skills[2], skills[4], skills[9], skills[10]],
-      customer: 'ВШЦТ',
-      createdAt: '2023-10-21T11:02:17Z',
-      maxTeamSize: 10,
-      status: 'RECRUITMENT_IS_OPEN',
-      requests: 0,
-      acceptedRequests: 0,
-      isFavorite: false,
-      startDate: '2023-10-20T11:02:17Z',
-      finishDate: '2024-01-20T11:02:17Z',
-    },
-  ]
   const notifications: Notification[] = [
     {
       id: '0',
@@ -734,8 +501,6 @@ function getMocks(): Mocks {
     ideas,
     ideasSkills,
     teams,
-    RequestTeams,
-    IdeasMarket,
     teamMember,
     notifications,
     companies,

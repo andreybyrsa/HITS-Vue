@@ -13,7 +13,6 @@ import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
-import RequestTeamForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
 
 import Input from '@Components/Inputs/Input/Input.vue'
 import TeamService from '@Services/TeamService'
@@ -33,50 +32,10 @@ onMounted(async () => {
   }
 })
 
-const columns = [
-  { key: 'number', label: '#' },
-  { key: 'date', label: 'Дата' },
-  { key: 'who', label: 'Кто' },
-  { key: 'doing', label: 'Что сделал' },
-  { key: 'name', label: 'Где' },
-]
-
-const data = [
-  {
-    number: 1,
-    date: '11-11-2001',
-    who: 'Victor',
-    doing: 'сломався',
-    name: 'в идее номер 1338 в идее номер 1338 в идее номер 1338 в идее номер 1338 в идее номер 1338 в идее номер 1338',
-  },
-  {
-    number: 2,
-    date: '11-11-2001',
-    who: 'Victor',
-    doing: 'сломався',
-    name: 'в идее номер 1338',
-  },
-  {
-    number: 3,
-    date: '11-11-2001',
-    who: 'Victor',
-    doing: 'сломався',
-    name: 'в идее номер 1338',
-  },
-  {
-    number: 4,
-    date: '11-11-2001',
-    who: 'Victor',
-    doing: 'сломався',
-    name: 'в идее номер 1338',
-  },
-]
-
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
-const isOpenedJoinModal = ref(false)
 
 const switchButton = ref<boolean>(false)
 
@@ -98,14 +57,6 @@ const fieldSubmit = handleSubmit((values) => console.log(values))
 
 function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
-}
-
-function handleCloseModal() {
-  isOpenedModal.value = false
-}
-
-function handleCloseJoinModal() {
-  isOpenedJoinModal.value = false
 }
 </script>
 

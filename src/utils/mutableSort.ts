@@ -6,6 +6,7 @@ function mutableSort<DataType>(
   data: DataType[],
   getCompariedValue: (data: DataType) => number | null,
 ) {
+  console.log(isSorted.value)
   data.sort((data1, data2) => {
     const comparingValue1 = getCompariedValue(data1)
     const comparingValue2 = getCompariedValue(data2)
