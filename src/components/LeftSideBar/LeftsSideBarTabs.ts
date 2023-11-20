@@ -93,13 +93,6 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
   },
-  // {
-  //   id: 13,
-  //   text: 'Отчеты',
-  //   to: '/notes',
-  //   iconName: 'bi bi-file-earmark',
-  //   roles: ['EXPERT', 'ADMIN'],
-  // },
   {
     id: 14,
     text: 'Настройки',

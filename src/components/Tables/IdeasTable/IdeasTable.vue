@@ -13,14 +13,6 @@
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
   />
-
-  <SendIdeasOnMarketModal
-    :ideas="ideasForSendOnMarket"
-    :is-opened="isOpenSendIdeasModal"
-    @close-modal="closeSendIdeasModal"
-    v-model:dateStart="dateStart"
-    v-model:dateFinish="dateFinish"
-  />
 </template>
 
 <script lang="ts" setup>
@@ -38,7 +30,6 @@ import {
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
 import { Idea } from '@Domain/Idea'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
@@ -64,9 +55,6 @@ const availableStatus = getStatus()
 
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
-
-const dateStart = ref<string>('')
-const dateFinish = ref<string>('')
 
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
 
@@ -130,7 +118,7 @@ const checkedIdeasActions: CheckedDataAction<Idea>[] = [
     label: 'Отправить на биржу',
     className: 'btn-primary',
     statement: user.value?.role == 'PROJECT_OFFICE',
-    click: openSendIdeasModal,
+    click: () => console.log('market'),
   },
 ]
 
@@ -233,16 +221,6 @@ function getRatingColor(rating: number) {
   return 'text-danger'
 }
 
-const isOpenSendIdeasModal = ref<boolean>(false)
-const ideasForSendOnMarket = ref<Idea[]>([])
-function openSendIdeasModal(ideas: Idea[]) {
-  isOpenSendIdeasModal.value = true
-  ideasForSendOnMarket.value = ideas
-}
-function closeSendIdeasModal() {
-  isOpenSendIdeasModal.value = false
-}
-
 function navigateToIdeaModal(idea: Idea) {
   router.push(`/ideas/list/${idea.id}`)
 }
@@ -273,12 +251,13 @@ function checkDeleteIdeaAction(idea: Idea) {
   const currentUser = user.value
 
   if (currentUser) {
-    const { initiator, status } = idea
+    const { email } = currentUser
+    const { initiatorEmail, status } = idea
     const requiredIdeaStatus =
       status === 'NEW' || status === 'ON_EDITING' || status === 'ON_APPROVAL'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === currentUser.email && requiredIdeaStatus
+      return initiatorEmail === email && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
@@ -290,11 +269,12 @@ function checkUpdateIdeaAction(idea: Idea) {
   const currentUser = user.value
 
   if (currentUser) {
-    const { initiator, status } = idea
+    const { email } = currentUser
+    const { initiatorEmail, status } = idea
     const requiredIdeaStatus = status === 'NEW' || status === 'ON_EDITING'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiator === currentUser.email && requiredIdeaStatus
+      return initiatorEmail === email && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
