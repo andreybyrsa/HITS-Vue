@@ -106,20 +106,18 @@ function handleCloseNotificationModal() {
 
     <div class="d-flex flex-column gap-2">
       <Button
-        variant="light"
-        class-name="left-side-bar__button text-success"
-        prepend-icon-name="bi bi-circle-fill fs-6"
-        @click="handleOpenModal"
-        :disabled="user?.roles.length === 1"
+        class-name="left-side-bar__role-button btn-light w-100 text-black"
+        prepend-icon-name="bi bi-person-circle fs-5"
+        @click="navigateToProfile"
       >
         {{ isHovered ? 'Профиль' : '' }}
       </Button>
 
       <Button
-        variant="light"
-        class-name="left-side-bar__button"
-        @click="handleLogout"
-        prepend-icon-name="bi bi-box-arrow-left"
+        class-name="left-side-bar__role-button btn-light w-100 text-success"
+        prepend-icon-name="bi bi-circle-fill fs-6"
+        @click="handleOpenRoleModal"
+        :disabled="user?.roles.length === 1"
       >
         {{ isHovered ? getTranslatedRole(user.role) : '' }}
       </Button>

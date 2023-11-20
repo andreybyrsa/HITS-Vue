@@ -25,7 +25,7 @@ const { user } = storeToRefs(userStore)
 const router = useRouter()
 const route = useRoute()
 
-const profileSkills = ref<Skill[]>()
+const profileSkills = ref<Skill[] | undefined>()
 const selectedSkills = ref<Skill[]>([])
 
 const editSkills = ref(false)
@@ -74,10 +74,13 @@ const handleSaveSkills = async () => {
 function handleCancelUpdating() {
   editSkills.value = false
 }
+
+console.log(profileSkills)
 </script>
 
 <template>
   <div class="w-100 bg-white border p-3 rounded-4">
+    {{ profileSkills }}
     <div class="header border-bottom pb-1">
       <Typography class-name="fs-4 text-primary">Мои компетенции</Typography>
       <Button

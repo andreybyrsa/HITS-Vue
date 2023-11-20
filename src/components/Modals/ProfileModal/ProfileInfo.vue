@@ -21,29 +21,22 @@ const props = defineProps<ProfileInfoProps>()
 
 const notificationsStore = useNotificationsStore()
 
-// const users = defineModel<User[]>({
-//   required: true,
-// })
-
 const isOpenedChangeEmail = ref(false)
 
 const isOpenedChangeInfo = ref(false)
 
-const users = defineModel<User[]>({
-  required: true,
-})
+const actualUser = ref<User>(props.user)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const { errors, setValues, handleSubmit } = useForm<User>({
+const { setValues, handleSubmit } = useForm<User>({
   validationSchema: {
-    email: (value: string) =>
-      Validation.checkEmail(value) || 'Неверно введена почта',
     firstName: (value: string) =>
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
+    //roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
   },
 })
 
@@ -92,28 +85,21 @@ const handleEditUser = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+    values.roles = currentUser.roles
+    values.id = currentUser.id
+    values.email = currentUser.email
     const response = await ManageUsersService.updateUserInfo(values, token)
-    isOpenedChangeInfo.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    // const currentUserIndex = users.value.findIndex((user) => user.id === response.id)
-    // if (currentUserIndex !== -1) {
-    //   users.value.splice(currentUserIndex, 1, response)
-    // }
-
-    // notification
-
-    const currentUserIndex = users.value.findIndex((user) => user.id === response.id)
-    if (currentUserIndex !== -1) {
-      users.value.splice(currentUserIndex, 1, response)
-    }
+    isOpenedChangeInfo.value = false
+    actualUser.value = values
 
     return notificationsStore.createSystemNotification(
       'Система',
-      'Пользователь успешно изменен',
+      'Данные успешно изменены',
     )
   }
 })
@@ -137,16 +123,16 @@ const handleEditUser = handleSubmit(async (values) => {
     <div class="content p-2">
       <div class="d-grid">
         <Typography class-name=" text-secondary">Имя</Typography>
-        <Typography class-name="fs-5 ms-1">{{ props.user.firstName }}</Typography>
+        <Typography class-name="fs-5 ms-1">{{ actualUser.firstName }}</Typography>
       </div>
       <div class="d-grid">
         <Typography class-name=" text-secondary">Фамилия</Typography>
-        <Typography class-name="fs-5 ms-1">{{ props.user.lastName }}</Typography>
+        <Typography class-name="fs-5 ms-1">{{ actualUser.lastName }}</Typography>
       </div>
       <div class="d-grid w-100">
         <Typography class-name=" text-secondary">Почта</Typography>
         <div class="w-100 d-flex justify-content-between">
-          <Typography class-name="fs-5 ms-1">{{ props.user.email }}</Typography>
+          <Typography class-name="fs-5 ms-1">{{ actualUser.email }}</Typography>
           <Button
             v-if="props.status == true"
             class-name="border bg-mutend"
@@ -188,6 +174,7 @@ const handleEditUser = handleSubmit(async (values) => {
       <div class="d-grid w-100">
         <Typography class-name=" text-secondary">Имя</Typography>
         <Input
+          key="1"
           name="firstName"
           class-name="rounded-end w-100"
           :model-value="props.user.firstName"
@@ -199,6 +186,7 @@ const handleEditUser = handleSubmit(async (values) => {
       <div class="d-grid w-100">
         <Typography class-name=" text-secondary">Фамилия</Typography>
         <Input
+          key="2"
           name="lastName"
           class-name="rounded-end"
           :model-value="props.user.lastName"
@@ -210,21 +198,16 @@ const handleEditUser = handleSubmit(async (values) => {
       <div class="d-grid w-100">
         <Typography class-name=" text-secondary">Почта</Typography>
         <div class="w-100 d-flex justify-content-between">
-          <Input
-            name="email"
-            class-name="rounded-end me-4"
-            :model-value="props.user.email"
-            disabled
-          >
-          </Input>
+          <Typography class-name="fs-5 ms-1">{{ props.user.email }}</Typography>
           <Button
             v-if="props.status == true"
-            class-name="border bg-mutend "
+            class-name="border bg-mutend"
             @click="handleOpenChangeEmail"
             >Изменить почту</Button
           >
         </div>
       </div>
+
       <!-- <div class="d-grid">
         <Typography class-name=" text-secondary">Главная роль</Typography>
         <Typography class-name="fs-5 ms-1">{{

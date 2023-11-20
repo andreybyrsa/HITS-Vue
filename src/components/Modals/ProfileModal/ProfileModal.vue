@@ -36,15 +36,11 @@ const router = useRouter()
 const route = useRoute()
 
 const profileUser = ref<Profile>()
-const profileAvatar = ref<FormData>()
-const profileSkills = ref<Skill[]>()
-const profileIdeas = ref<Idea[]>()
-const profileProjects = ref<Project[]>()
 
 const currentUser = user.value
 const profileEmail = route.params.email.toString()
 
-let status
+let status = false
 
 if (profileEmail === currentUser?.email) {
   status = true
@@ -53,50 +49,6 @@ if (profileEmail === currentUser?.email) {
 }
 
 const isOpenedProfileModal = ref(true)
-
-// const fileInputRef: Ref<HTMLInputElement | null> = ref(null)
-//const imageUrl: Ref<string | null> = ref(null)
-// const selectedFile = ref<File | null>(null)
-
-// const openFileInput = (): void => {
-//   if (fileInputRef.value) {
-//     fileInputRef.value.value = ''
-//     fileInputRef.value.click()
-//   }
-// }
-
-// const handleFileChange = (event: Event): void => {
-// const formData = new FormData()
-// const file = (event.target as HTMLInputElement).files?.[0]
-
-// formData.append('file', file.toBlob(), file?.name)
-
-//   const input = event.target as HTMLInputElement
-//   selectedFile.value = input.files[0]
-//   const formData = new FormData()
-//   formData.append('file', selectedFile.value)
-//   if (selectedFile.value) {
-//     imageUrl.value = URL.createObjectURL(selectedFile.value)
-//   }
-
-//   if (user.value?.token) {
-//     const { token } = user.value
-//     ProfileService.uploadAvatar(formData, token)
-//     console.log(formData)
-//   }
-// }
-
-// const handleFileChange = handleSubmit(async (event: Event) => {
-//   const file = (event.target as HTMLInputElement).files?.[0]
-//   if (file) {
-//     imageUrl.value = URL.createObjectURL(file)
-
-//     if (user.value?.token) {
-//       const { token } = user.value
-//       await ProfileService.uploadAvatar(file, token)
-//     }
-//   }
-// })
 
 function checkResponseStatus<T>(
   data: RequestResult<T>,
@@ -118,10 +70,6 @@ onMounted(async () => {
 
     const profileParallelRequests = [
       () => ProfileService.getUserProfile(userEmail, token),
-      //() => ProfileService.getProfileAvatar(userEmail, token),
-      // () => ProfileService.getProfileSkills(userEmail, token),
-      // () => ProfileService.getProfileIdeas(userEmail, token),
-      // () => ProfileService.getProfileProjects(userEmail, token),
     ]
 
     await makeParallelRequests<Profile | Error>(profileParallelRequests).then(
@@ -130,16 +78,6 @@ onMounted(async () => {
           if (response.id === 0) {
             checkResponseStatus(response, profileUser)
           }
-          // else if (response.id === 1) {
-          //   checkResponseStatus(response, profileAvatar)
-          // }
-          // else if (response.id === 1) {
-          //   checkResponseStatus(response, profileSkills)
-          // } else if (response.id === 2) {
-          //   checkResponseStatus(response, profileIdeas)
-          // } else if (response.id === 3) {
-          //   checkResponseStatus(response, profileProjects)
-          // }
         })
       },
     )
@@ -150,10 +88,6 @@ function handleCloseProfileModal() {
   isOpenedProfileModal.value = false
   router.go(-1)
 }
-
-// console.log(currentUser?.email)
-// console.log(profileEmail)
-// console.log(profileUser)
 </script>
 
 <template>

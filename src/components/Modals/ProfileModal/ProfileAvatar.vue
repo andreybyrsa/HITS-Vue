@@ -58,11 +58,20 @@ const openFileInput = (): void => {
   }
 }
 
-const handleFileChange = (event: Event): void => {
+const handleFileChange = async (event: Event): Promise<void> => {
   const input = event.target as HTMLInputElement
   selectedFile.value = input.files[0]
+
   const formData = new FormData()
   formData.append('file', selectedFile.value)
+
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await ProfileService.uploadProfileAvatar(formData, token)
+  }
+
   if (selectedFile.value) {
     imageUrl.value = URL.createObjectURL(selectedFile.value)
   }
@@ -95,8 +104,6 @@ const handleFileChange = (event: Event): void => {
 //     userAvatar.value = response
 //   }
 // })
-
-console.log(userAvatar)
 </script>
 
 <template>
