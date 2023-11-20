@@ -25,7 +25,7 @@ async function deleteRequestTeams(team: RequestTeams) {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await RequestTeamsServise.putRequestTeam(
+    const response = await RequestTeamsServise.acceptRequestTeam(
       { ...team, accepted: false },
       token,
     )

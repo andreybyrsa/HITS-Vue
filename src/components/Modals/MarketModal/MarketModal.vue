@@ -61,7 +61,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const id = +route.params.id
+    const id = route.params.id.toString()
 
     const marketParallelRequests = [
       () => IdeasMarketService.getIdeaMarket(token, id),

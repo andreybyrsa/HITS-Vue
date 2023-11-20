@@ -20,7 +20,7 @@ const fetchIdeasMarket = async (token: string): Promise<IdeasMarket[] | Error> =
 
 const getIdeaMarket = async (
   token: string,
-  id: number,
+  id: string,
 ): Promise<IdeasMarket | Error> => {
   return await ideasMarketAxios
     .get(

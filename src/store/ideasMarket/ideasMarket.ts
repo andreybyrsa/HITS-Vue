@@ -38,7 +38,7 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
     },
 
     getMarketIdea() {
-      return async (id: number, token: string) => {
+      return async (id: string, token: string) => {
         const response = await IdeasMarketService.getIdeaMarket(id, token)
 
         if (response instanceof Error) {

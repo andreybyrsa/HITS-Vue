@@ -8,12 +8,12 @@ import useUserStore from '@Store/user/userStore'
 
 const RequestTeamsAxios = defineAxios(getMocks().RequestTeams)
 
-function filterApplicationsById(ideaId: number, request: RequestTeams[]) {
-  return request.filter((request) => request.ideaId === ideaId)
+function filterApplicationsById(ideaId: string, request: RequestTeams[]) {
+  return request.filter((request) => request.ideaId == ideaId)
 }
 
 const getRequestAll = async (
-  ideaId: number,
+  ideaId: string,
   token: string,
 ): Promise<RequestTeams[] | Error> => {
   return await RequestTeamsAxios.get<RequestTeams[]>(
@@ -85,7 +85,7 @@ const acceptRequestTeams = async (
 }
 
 const deleteRequestTeams = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await RequestTeamsAxios.delete(

@@ -3,7 +3,7 @@ import IdeasMarketStatusTypes from './MarketStatus'
 import TeamMember from './TeamMember'
 
 interface IdeasMarket {
-  id: number
+  id: string
   initiator: TeamMember
   createdAt: string
   name: string

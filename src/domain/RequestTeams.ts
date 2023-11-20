@@ -2,12 +2,12 @@ import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
 
 interface RequestTeams {
-  ideaId: number
+  ideaId: string
   accepted: boolean
   letter: string
-  teamId: number
+  teamId: string
 
-  id: number
+  id: string
   name: string
   createdAt: string
   closed: boolean

@@ -582,10 +582,10 @@ function getMocks(): Mocks {
 
   const RequestTeams: RequestTeams[] = [
     {
-      id: 0,
-      ideaId: 1,
+      id: '0',
+      ideaId: '1',
       accepted: false,
-      teamId: 0,
+      teamId: '0',
 
       name: 'Первые разрабы мира',
       closed: false,
@@ -611,10 +611,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 1,
-      ideaId: 1,
+      id: '1',
+      ideaId: '1',
       accepted: false,
-      teamId: 1,
+      teamId: '1',
 
       name: 'Программисты из apple',
       closed: false,
@@ -639,10 +639,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 2,
-      ideaId: 1,
+      id: '2',
+      ideaId: '1',
       accepted: true,
-      teamId: 2,
+      teamId: '2',
 
       name: 'Удальцы',
       closed: false,
@@ -668,10 +668,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 3,
-      ideaId: 1,
+      id: '3',
+      ideaId: '1',
       accepted: false,
-      teamId: 3,
+      teamId: '3',
 
       name: 'Молодцы',
       closed: false,
@@ -697,10 +697,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 4,
-      ideaId: 2,
+      id: '4',
+      ideaId: '2',
       accepted: false,
-      teamId: 4,
+      teamId: '4',
 
       name: 'Хорошая компания',
       closed: false,
@@ -726,10 +726,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 5,
-      ideaId: 2,
+      id: '5',
+      ideaId: '2',
       accepted: false,
-      teamId: 5,
+      teamId: '5',
 
       name: 'Негатив',
       closed: false,
@@ -755,10 +755,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 6,
-      ideaId: 2,
+      id: '6',
+      ideaId: '2',
       accepted: true,
-      teamId: 6,
+      teamId: '6',
 
       name: 'Позитив',
       closed: false,
@@ -784,10 +784,10 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: 7,
-      ideaId: 2,
+      id: '7',
+      ideaId: '2',
       accepted: false,
-      teamId: 13,
+      teamId: '13',
 
       name: 'Смешарики',
       closed: false,
@@ -816,7 +816,7 @@ function getMocks(): Mocks {
 
   const IdeasMarket: IdeasMarket[] = [
     {
-      id: 1,
+      id: '1',
       position: 1,
       name: 'Создать электрический самолет',
       initiator: teamMember[2],
@@ -855,7 +855,7 @@ function getMocks(): Mocks {
       finishDate: '2024-01-20T11:02:17Z',
     },
     {
-      id: 2,
+      id: '2',
       position: 2,
       name: 'Создать машину времени',
       initiator: teamMember[0],
@@ -894,7 +894,7 @@ function getMocks(): Mocks {
       finishDate: '2024-01-20T11:02:17Z',
     },
     {
-      id: 3,
+      id: '3',
       position: 3,
       name: 'Создать киборга',
       initiator: teamMember[1],
