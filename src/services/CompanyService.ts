@@ -65,15 +65,18 @@ const getCompany = async (id: string, token: string): Promise<Company | Error> =
     })
 }
 
-const getCompanyMembers = async (token: string): Promise<User[] | Error> => {
+const getCompanyStaff = async (
+  id: string,
+  token: string,
+): Promise<User[] | Error> => {
   return await usersAxios
-    .get('/users/all', {
+    .get(`/company/staff/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения компетенций'
+      const error = response?.data?.error ?? 'Ошибка получения контактных лиц'
       return new Error(error)
     })
 }
@@ -140,7 +143,7 @@ const TeamService = {
   getCompanies,
   getOwnerCompanies,
   getCompany,
-  getCompanyMembers,
+  getCompanyStaff,
 
   createCompany,
 

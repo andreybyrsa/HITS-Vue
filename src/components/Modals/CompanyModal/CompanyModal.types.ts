@@ -17,7 +17,7 @@ interface CompanyModalEmits {
 }
 
 interface UsersColumnsEmits {
-  (event: 'selectUser', user: User, index: number): void
+  (event: 'selectUser', user: User): void
   (event: 'unselectUser', user: User, index: number): void
 }
 
