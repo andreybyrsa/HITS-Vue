@@ -105,17 +105,17 @@ onMounted(async () => {
 
 const teamTableColumns: TableColumn<Team>[] = [
   {
-    key: 'name',
-    label: 'Название',
-    size: 'col-3',
-    rowCellClick: navigateToTeamModal,
-  },
-  {
     key: 'closed',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusStyle,
     getRowCellFormat: getTranslatedStatus,
+  },
+  {
+    key: 'name',
+    label: 'Название',
+    size: 'col-3',
+    rowCellClick: navigateToTeamModal,
   },
   {
     key: 'membersCount',
@@ -136,17 +136,6 @@ const dropdownTeamsActions: DropdownMenuAction<Team>[] = [
   {
     label: 'Просмотреть',
     click: navigateToTeamModal,
-  },
-  {
-    label: 'Редактировать',
-    statement: checkUpdateTeamAction,
-    click: navigateToTeamForm,
-  },
-  {
-    label: 'Удалить',
-    className: 'text-danger',
-    statement: checkDeleteTeamAction,
-    click: handleOpenDeleteModal,
   },
 ]
 
@@ -242,15 +231,6 @@ function navigateToTeamModal(team: Team) {
   router.push(`/teams/list/${team.id}`)
 }
 
-function navigateToTeamForm(team: Team) {
-  router.push(`/teams/update/${team.id}`)
-}
-
-function handleOpenDeleteModal(team: Team) {
-  deletingTeamId.value = team.id
-  isOpenedTeamDeleteModal.value = true
-}
-
 function handleCloseDeleteModal() {
   isOpenedTeamDeleteModal.value = false
 }
@@ -275,24 +255,6 @@ async function handleDeleteTeam() {
       teams.value.splice(deletingTeamIndex, 1)
     }
   }
-}
-
-function checkDeleteTeamAction(team: Team) {
-  const currentUser = user.value
-
-  const { owner } = team
-  return currentUser?.role === 'ADMIN' || currentUser?.email === owner.email
-}
-
-function checkUpdateTeamAction(team: Team) {
-  const currentUser = user.value
-
-  const { owner, leader } = team
-  return (
-    currentUser?.role === 'ADMIN' ||
-    currentUser?.email === owner.email ||
-    currentUser?.email === leader.email
-  )
 }
 
 function checkTeamStatus(team: Team, status: FilterValue) {

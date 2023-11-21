@@ -4,7 +4,7 @@ import { Skill } from '@Domain/Skill'
 
 interface Idea {
   id: string
-  initiator: string
+  initiatorEmail: string
   createdAt: string
   modifiedAt: string
 

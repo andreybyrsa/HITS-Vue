@@ -1,18 +1,18 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
-import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
-
 import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
-import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
+import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import UsersView from '@Views/Admin/UsersView.vue'
 import AddUsersView from '@Views/Admin/AddUsersView.vue'
 import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
 import SkillsView from '@Views/Admin/SkillsView.vue'
+import CompaniesView from '@Views/Admin/CompaniesView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
@@ -22,14 +22,23 @@ import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
+import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
+
+import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import DevView from '@Views/DevView.vue'
 
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
+
+const profileRoute = {
+  path: 'profile/:email',
+  component: ProfileModal,
+  alias: '/profile/:email',
+}
 
 const routes: RouteRecordRaw[] = [
   {
@@ -50,17 +59,20 @@ const routes: RouteRecordRaw[] = [
             path: ':id',
             component: IdeaModal,
           },
+          profileRoute,
         ],
       },
       {
         path: 'create',
         meta: { roles: ['INITIATOR', 'ADMIN'] },
         component: NewIdeaView,
+        children: [profileRoute],
       },
       {
         path: 'update/:id',
         meta: { roles: ['INITIATOR', 'ADMIN'] },
         component: EditIdeaView,
+        children: [profileRoute],
       },
     ],
   },
@@ -72,14 +84,26 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
+        children: [
+          {
+            path: ':teamId',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: TeamModal,
+          },
+          profileRoute,
+        ],
       },
       {
         path: 'create',
         component: NewTeamView,
+        children: [profileRoute],
       },
       {
         path: 'update/:id',
         component: EditTeamView,
+        children: [profileRoute],
       },
     ],
   },
@@ -92,23 +116,38 @@ const routes: RouteRecordRaw[] = [
         path: 'users',
         component: UsersView,
         meta: { roles: ['ADMIN'] },
+        children: [profileRoute],
       },
       {
         path: 'add-users',
         component: AddUsersView,
         meta: { roles: ['ADMIN'] },
+        children: [profileRoute],
       },
       {
         path: 'users-groups',
         component: UsersGroupsView,
         meta: { roles: ['ADMIN'] },
+        children: [profileRoute],
       },
       {
         path: 'skills',
         component: SkillsView,
         meta: { roles: ['ADMIN'] },
+        children: [profileRoute],
+      },
+      {
+        path: 'companies',
+        component: CompaniesView,
+        meta: { roles: ['ADMIN'] },
+        children: [profileRoute],
       },
     ],
+  },
+  {
+    path: '/profile/:email',
+    component: ProfileModal,
+    meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
   },
   {
     path: '/change-email',

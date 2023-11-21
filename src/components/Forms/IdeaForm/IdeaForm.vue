@@ -17,7 +17,6 @@ import { Idea, IdeaSkills } from '@Domain/Idea'
 import { Skill } from '@Domain/Skill'
 
 import IdeasService from '@Services/IdeasService'
-import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -34,6 +33,7 @@ const { user } = storeToRefs(userStore)
 const router = useRouter()
 
 const stackTechnologies = ref<Skill[]>([])
+const ideaSkills = ref<Skill[]>()
 
 const isSavingDraft = ref(false)
 const isSendingOnApproval = ref(false)
@@ -67,8 +67,6 @@ const { values, setFieldValue, setValues, validateField, handleSubmit } =
         Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     },
     initialValues: {
-      customer: 'ВШЦТ',
-      contactPerson: 'ВШЦТ',
       status: 'NEW',
     },
   })
@@ -93,37 +91,7 @@ watchImmediate(
           )
         }
 
-        stackTechnologies.value = response.skills
-      }
-    } else {
-      const currentUser = user.value
-
-      if (currentUser?.token) {
-        const { token } = currentUser
-        const response = await UsersGroupsService.getUsersGroups(token)
-
-        if (response instanceof Error) {
-          return notificationsStore.createSystemNotification(
-            'Система',
-            response.message,
-          )
-        }
-
-        const experts = response.find((userGroup) =>
-          userGroup.roles.includes('EXPERT'),
-        )
-        const projectOffice = response.find((userGroup) =>
-          userGroup.roles.includes('PROJECT_OFFICE'),
-        )
-        if (experts && projectOffice) {
-          setFieldValue('experts', experts)
-          setFieldValue('projectOffice', projectOffice)
-        } else {
-          return notificationsStore.createSystemNotification(
-            'Система',
-            'Группы не подгружены',
-          )
-        }
+        ideaSkills.value = response.skills
       }
     }
   },
@@ -225,7 +193,10 @@ async function saveIdeaSkills(
     <div class="w-75 d-flex flex-column gap-3">
       <IdeaFormInputs />
 
-      <StackCategories v-model:stack="stackTechnologies" />
+      <StackCategories
+        :skills="ideaSkills"
+        v-model:stack="stackTechnologies"
+      />
 
       <CustomerAndContact
         :idea="values"

@@ -1,12 +1,19 @@
 import { Skill } from '@Domain/Skill'
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
+
+type mode = 'creating' | 'editing'
 
 interface TeamFormProps {
   team?: Team
+  mode: mode
 }
-
 interface SkillsRadarChartsProps {
   skills: Skill[]
+  className?: string
 }
 
-export { TeamFormProps, SkillsRadarChartsProps }
+interface TeamProps {
+  mode: mode
+}
+
+export { TeamFormProps, SkillsRadarChartsProps, TeamProps }

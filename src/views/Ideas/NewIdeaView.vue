@@ -13,6 +13,8 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
     <template #content>
       <IdeaForm title="Создание идеи" />
+
+      <router-view />
     </template>
   </PageLayout>
 </template>

@@ -7,6 +7,7 @@ import IdeaStatusTypes from '@Domain/IdeaStatus'
 import IdeasService from '@Services/IdeasService'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
 
 const useIdeasStore = defineStore('ideas', {
@@ -16,31 +17,26 @@ const useIdeasStore = defineStore('ideas', {
   getters: {
     getIdeas() {
       return async (role: RolesTypes, token: string) => {
-        if (role === 'INITIATOR') {
-          const response = await IdeasService.getInitiatorIdeas(token)
+        const currentIdeaServiceKey =
+          role === 'INITIATOR' ? 'getInitiatorIdeas' : 'getIdeas'
 
-          if (response instanceof Error) {
-            return response
-          }
+        const response = await IdeasService[currentIdeaServiceKey](token)
 
-          this.ideas = response
-          return this.ideas
-        } else {
-          const response = await IdeasService.getIdeas(token)
-
-          if (response instanceof Error) {
-            return response
-          }
-
-          this.ideas = response
-          return this.ideas
+        if (response instanceof Error) {
+          return response
         }
+
+        this.ideas = response
+        return this.ideas
       }
     },
 
     getIdea() {
       return async (id: string, role: RolesTypes, token: string) => {
-        const idea = await IdeasService.getIdea(id, token)
+        const currentIdeaServiceKey =
+          role === 'INITIATOR' ? 'getInitiatorIdea' : 'getIdea'
+
+        const idea = await IdeasService[currentIdeaServiceKey](id, token)
 
         if (idea instanceof Error) {
           useNotificationsStore().createSystemNotification('Система', idea.message)
@@ -63,8 +59,15 @@ const useIdeasStore = defineStore('ideas', {
     },
   },
   actions: {
-    async updateIdeaStatus(id: string, status: IdeaStatusTypes, token: string) {
-      const response = await IdeasService.updateIdeaStatus(id, status, token)
+    async updateIdeaStatus(
+      id: string,
+      status: IdeaStatusTypes,
+      role: RolesTypes,
+      token: string,
+    ) {
+      const currentIdeaServiceKey =
+        role === 'INITIATOR' ? 'sendIdeaOnApproval' : 'updateIdeaStatus'
+      const response = await IdeasService[currentIdeaServiceKey](id, status, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)

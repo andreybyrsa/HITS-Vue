@@ -1,9 +1,12 @@
+import { User } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
+import { Idea } from '@Domain/Idea'
+import Project from '@Domain/Project'
 
-interface ProfileSkills {
-  id: string
-  userId: string
+interface Profile extends User {
   skills: Skill[]
+  ideas: Idea[]
+  projects: Project[]
 }
 
-export { ProfileSkills }
+export default Profile

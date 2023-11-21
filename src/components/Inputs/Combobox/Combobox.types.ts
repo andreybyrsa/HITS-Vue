@@ -3,12 +3,14 @@ interface ComboboxProps<OptionType> {
 
   options: OptionType[]
   displayBy?: (keyof OptionType)[]
+  comparingKey?: keyof OptionType
 
   noFormControlled?: boolean
 
   label?: string
   placeholder?: string
   multiselectPlaceholder?: string
+  disabled?: boolean
 }
 
 interface ComboboxEmits<OptionType> {

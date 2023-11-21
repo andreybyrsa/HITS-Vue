@@ -70,8 +70,8 @@ const deleteComment = async (
 }
 
 const checkComment = async (
-  userId: string,
   id: string,
+  email: string,
   token: string,
 ): Promise<void | Error> => {
   return await commentAxios
@@ -81,7 +81,7 @@ const checkComment = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { id }, requestData: { checkedBy: [userId] } },
+      { params: { id }, requestData: { checkedBy: [email] } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
