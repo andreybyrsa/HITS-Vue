@@ -183,7 +183,7 @@ function getMocks(): Mocks {
       targetEmail: '1wgwrgw2@mail.com',
       targetUserType: 'UNREGISTERED',
       inviter: {
-        id: 0,
+        id: '0',
         email: 'test1@gmail.com',
         firstName: 'Админ',
         lastName: 'Админ',
@@ -198,7 +198,7 @@ function getMocks(): Mocks {
       targetUserType: 'UNREGISTERED',
       teamId: 0,
       inviter: {
-        id: 0,
+        id: '0',
         email: 'test1@gmail.com',
         firstName: 'Админ',
         lastName: 'Админ',
@@ -287,7 +287,7 @@ function getMocks(): Mocks {
   const teamMember: TeamMember[] = [
     {
       email: 'andrey@mail.com',
-      id: 33,
+      id: '33',
       firstName: 'Андрей',
       lastName: 'Бырса',
 
@@ -303,7 +303,7 @@ function getMocks(): Mocks {
     },
     {
       email: 'timyr@mail.com',
-      id: 343,
+      id: '343',
       firstName: 'Тимур',
       lastName: 'Минязев',
 
@@ -319,7 +319,7 @@ function getMocks(): Mocks {
     },
     {
       email: 'kirill.vlasov.05@inbox.ru',
-      id: 3,
+      id: '3',
       firstName: 'Кирилл',
       lastName: 'Власов',
 
@@ -327,7 +327,7 @@ function getMocks(): Mocks {
     },
     {
       email: 'maga@mail.com',
-      id: 345,
+      id: '345',
       firstName: 'Мамедага',
       lastName: 'Байрамов',
 
@@ -518,6 +518,32 @@ function getMocks(): Mocks {
       preAssessment: 4,
       rating: 4,
     },
+    {
+      id: '4',
+      initiator: teamMember[1],
+      name: 'Зeмляника',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: '2023-10-25T11:02:17Z',
+      modifiedAt: '2023-10-25T11:02:17Z',
+      status: 'CONFIRMED',
+      maxTeamSize: 5,
+      minTeamSize: 5,
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: null,
+      projectOffice: null,
+      budget: 4,
+      suitability: 3,
+      preAssessment: 4,
+      rating: 4,
+    },
   ]
 
   const ideasSkills: IdeaSkills[] = [
@@ -531,6 +557,10 @@ function getMocks(): Mocks {
     },
     {
       ideaId: '3',
+      skills: [...skills],
+    },
+    {
+      ideaId: '4',
       skills: [...skills],
     },
   ]
@@ -963,28 +993,28 @@ function getMocks(): Mocks {
 
   const profiles: TeamMember[] = [
     {
-      id: 0,
+      id: '0',
       email: 'test1@gmail.com',
       firstName: 'Админ',
       lastName: 'Админ',
       skills: skills,
     },
     {
-      id: 1,
+      id: '1',
       email: 'test2@gmail.com',
       firstName: 'Пользователь',
       lastName: 'Пользователь',
       skills: skills,
     },
     {
-      id: 2,
+      id: '2',
       email: 'test3@gmail.com',
       firstName: 'Менеджер',
       lastName: 'Менеджер',
       skills: skills,
     },
     {
-      id: 3,
+      id: '3',
       email: 'test4@gmail.com',
       firstName: 'Владелец',
       lastName: 'Владелец',

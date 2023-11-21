@@ -45,13 +45,14 @@ const getIdeaMarket = async (
   id: string,
   token: string,
 ): Promise<IdeasMarket | Error> => {
+  console.log(id + ' сервис')
   return await ideasMarketAxios
-    .get(
+    .get<IdeasMarket>(
       `/ideas/market/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
-      { params: { id } },
+      { params: { id: id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -74,12 +75,12 @@ const getAllInitiatorMarketIdeas = async (
     })
 }
 
-const sendIdeasOnMarket = async (
-  ideas: IdeasMarket[],
+const sendIdeaOnMarket = async (
+  idea: IdeasMarket,
   token: string,
-): Promise<IdeasMarket[] | Error> => {
+): Promise<IdeasMarket | Error> => {
   return await ideasMarketAxios
-    .post('/ideas/market/add', ideas, {
+    .post('/ideas/market/add', idea, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -127,7 +128,7 @@ const removeIdeaFromFavorites = async (
 const IdeasMarketService = {
   fetchIdeasMarket,
   getIdeaMarket,
-  sendIdeasOnMarket,
+  sendIdeaOnMarket,
   fetchFavoritesIdeas,
   addIdeaToFavorites,
   removeIdeaFromFavorites,

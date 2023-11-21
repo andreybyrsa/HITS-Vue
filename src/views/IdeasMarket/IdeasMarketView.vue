@@ -17,8 +17,6 @@ import IdeasMarket from '@Domain/IdeasMarket'
 import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
-import RequestTeams from '@Domain/RequestTeams'
-import Team from '@Domain/Team'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 

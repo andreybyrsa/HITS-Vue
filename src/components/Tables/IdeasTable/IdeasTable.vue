@@ -6,7 +6,8 @@
     :filters="ideasFilters"
     :checked-data-actions="checkedIdeasActions"
     :dropdown-actions-menu="dropdownIdeasActions"
-  ></Table>
+    v-model="checkedIdeas"
+  />
 
   <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
@@ -15,16 +16,15 @@
   />
 
   <SendIdeasOnMarketModal
-    :ideas="ideasForSendOnMarket"
+    v-model:ideas="ideasData"
+    v-model:checkedIdeas="checkedIdeas"
     :is-opened="isOpenSendIdeasModal"
     @close-modal="closeSendIdeasModal"
-    v-model:dateStart="dateStart"
-    v-model:dateFinish="dateFinish"
   />
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -48,9 +48,6 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 
 import getStatus from '@Utils/getStatus'
 import mutableSort from '@Utils/mutableSort'
-import IdeasMarket from '@Domain/IdeasMarket'
-import SkillsService from '@Services/SkillsService'
-import IdeasService from '@Services/IdeasService'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -68,10 +65,10 @@ const availableStatus = getStatus()
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
-const dateStart = ref<string>('')
-const dateFinish = ref<string>('')
-
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
+
+const isOpenSendIdeasModal = ref<boolean>(false)
+const checkedIdeas = ref<Idea[]>([])
 
 watchImmediate(
   () => props.ideas,
@@ -128,14 +125,16 @@ const ideaTableColumns: TableColumn<Idea>[] = [
   },
 ]
 
-const checkedIdeasActions: CheckedDataAction<Idea>[] = [
+const checkedIdeasActions = computed<CheckedDataAction<Idea>[]>(() => [
   {
     label: 'Отправить на биржу',
     className: 'btn-primary',
-    statement: user.value?.role == 'PROJECT_OFFICE',
+    statement:
+      user.value?.role == 'PROJECT_OFFICE' &&
+      checkedIdeas.value.every((idea) => idea.status == 'CONFIRMED'),
     click: openSendIdeasModal,
   },
-]
+])
 
 const dropdownIdeasActions: DropdownMenuAction<Idea>[] = [
   {
@@ -236,11 +235,9 @@ function getRatingColor(rating: number) {
   return 'text-danger'
 }
 
-const isOpenSendIdeasModal = ref<boolean>(false)
-const ideasForSendOnMarket = ref<Idea[]>([])
 function openSendIdeasModal(ideas: Idea[]) {
   isOpenSendIdeasModal.value = true
-  ideasForSendOnMarket.value = ideas
+  checkedIdeas.value = ideas.filter((idea) => idea.status == 'CONFIRMED')
 }
 function closeSendIdeasModal() {
   isOpenSendIdeasModal.value = false

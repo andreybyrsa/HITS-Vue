@@ -107,7 +107,7 @@ function compareSkills(team: Team) {
         </Button>
       </div>
 
-      <Collapse :id="team.id">
+      <Collapse :id="+team.id">
         <div class="team-request-collapse__info py-1">
           <div class="w-100 d-flex p-2">
             <div class="w-50">

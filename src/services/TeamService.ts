@@ -295,7 +295,7 @@ const getAllTeamProfiles = async (token: string): Promise<TeamMember[] | Error> 
 }
 
 const getTeamProfile = async (
-  id: number,
+  id: string,
   token: string,
 ): Promise<TeamMember | Error> => {
   return teamMemberAxios

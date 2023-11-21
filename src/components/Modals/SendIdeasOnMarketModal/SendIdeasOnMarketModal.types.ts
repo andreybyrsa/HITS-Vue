@@ -1,8 +1,5 @@
-import { Idea } from '@Domain/Idea'
-
 interface SendIdeasOnMarketModalProps {
   isOpened: boolean
-  ideas: Idea[]
 }
 
 interface SendIdeasOnMarketModalEmits {

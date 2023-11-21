@@ -18,6 +18,7 @@ import useUserStore from '@Store/user/userStore'
 
 import { Idea } from '@Domain/Idea'
 import IdeasMarket from '@Domain/IdeasMarket'
+import IdeasMarketService from '@Services/IdeasMarketService'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -26,8 +27,13 @@ defineProps<SendIdeasOnMarketModalProps>()
 
 const emit = defineEmits<SendIdeasOnMarketModalEmits>()
 
+const checkedIdeas = defineModel<Idea[]>('checkedIdeas', { required: true })
+const ideas = defineModel<Idea[]>('ideas', { required: true })
+
 const dateStart = ref<string>('')
 const dateFinish = ref<string>('')
+
+const isLoading = ref(false)
 
 const { handleSubmit } = useForm({
   validationSchema: {
@@ -40,12 +46,14 @@ const { handleSubmit } = useForm({
   },
 })
 
-async function sendIdeasToMarket(ideas: Idea[]) {
+const sendIdeasToMarket = handleSubmit(async () => {
   const currentUser = user.value
+  isLoading.value = true
+
   if (currentUser?.token) {
     const { token } = currentUser
 
-    ideas.every(async (idea) => {
+    checkedIdeas.value.every(async (idea) => {
       const {
         id,
         initiator,
@@ -62,7 +70,7 @@ async function sendIdeasToMarket(ideas: Idea[]) {
       const responseSkillsIdea = await IdeasService.getIdeaSkills(id, token)
 
       if (responseSkillsIdea instanceof Error) {
-        return Error
+        return
       }
 
       const skills = responseSkillsIdea.skills
@@ -89,8 +97,30 @@ async function sendIdeasToMarket(ideas: Idea[]) {
         finishDate: dateFinish.value,
       }
 
-      console.log(ideaMarket)
+      const responseSendIdeaOnMarket = await IdeasMarketService.sendIdeaOnMarket(
+        ideaMarket,
+        token,
+      )
+      if (responseSendIdeaOnMarket instanceof Error) {
+        return
+      }
+
+      const responseDeleteIdea = await IdeasService.deleteIdea(id, token)
+      if (responseDeleteIdea instanceof Error) {
+        return
+      }
+
+      ideas.value = ideas.value.filter((elem) => elem.id != idea.id)
+      isLoading.value = false
+      emit('close-modal')
     })
+  }
+})
+
+function deleteIdea(ideaId: string) {
+  checkedIdeas.value = checkedIdeas.value.filter((elem) => elem.id != ideaId)
+  if (checkedIdeas.value.length == 1) {
+    emit('close-modal')
   }
 }
 </script>
@@ -101,42 +131,56 @@ async function sendIdeasToMarket(ideas: Idea[]) {
     @on-outside-close="emit('close-modal')"
   >
     <div class="send-ideas-on-market-modal bg-white rounded p-3">
+      <div class="send-ideas-on-market-modal__idea-date w-100">
+        <Typography class-name="fs-5 w-100 text-secondary border-bottom">
+          Укажите сроки набора команд
+        </Typography>
+        <Button
+          variant="close"
+          @click="emit('close-modal')"
+        />
+      </div>
+
+      <div class="d-flex gap-2 w-100">
+        <Input
+          name="dateStart"
+          type="date"
+          label="Дата старта*"
+          class-name="rounded"
+          v-model="dateStart"
+          placeholder="Дата старта"
+        />
+        <Input
+          name="dateFinish"
+          type="date"
+          label="Дата окончания*"
+          class-name="rounded"
+          v-model="dateFinish"
+          placeholder="Дата окончания"
+        />
+      </div>
       <div
-        v-for="(idea, index) in ideas"
+        v-for="(idea, index) in checkedIdeas"
         :key="index"
-        class="send-ideas-on-market-modal__idea-date border rounded p-2 w-100"
+        class="d-flex gap-2 w-100"
       >
-        <Typography class-name="fs-5 text-primary w-100">
+        <Typography class-name="text-primary w-100 border rounded p-2">
           {{ idea.name }}
         </Typography>
-        <div class="d-flex gap-2 w-100">
-          <Input
-            name="dateStart"
-            type="date"
-            label="Дата старта*"
-            class-name="rounded"
-            v-model="dateStart"
-            placeholder="Дата старта"
-          />
-          <Input
-            name="dateFinish"
-            type="date"
-            label="Дата окночания*"
-            class-name="rounded"
-            v-model="dateFinish"
-            placeholder="Дата окончания"
-          />
-        </div>
-      </div>
-      <div class="d-flex gap-2">
         <Button
-          variant="primary"
-          @click="sendIdeasToMarket(ideas)"
-        >
-          Отправить на биржу
-        </Button>
-        <Button variant="danger"> Закрыть окно </Button>
+          variant="outline-danger"
+          append-icon-name="bi bi-x"
+          @click="deleteIdea(idea.id)"
+        />
       </div>
+
+      <Button
+        variant="primary"
+        @click="sendIdeasToMarket"
+        :is-loading="isLoading"
+      >
+        Отправить на биржу
+      </Button>
     </div>
   </ModalLayout>
 </template>
@@ -144,7 +188,7 @@ async function sendIdeasToMarket(ideas: Idea[]) {
 <style lang="scss">
 .send-ideas-on-market-modal {
   width: 500px;
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: scroll;
 
   @include flexible(
@@ -159,7 +203,7 @@ async function sendIdeasToMarket(ideas: Idea[]) {
   transition: all $default-transition-settings;
 
   &__idea-date {
-    @include flexible(flex-start, flex-start, column, $gap: 8px);
+    @include flexible(center, space-between, $gap: 8px);
   }
 }
 

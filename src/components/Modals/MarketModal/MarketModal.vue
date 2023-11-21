@@ -18,7 +18,7 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
 import TeamService from '@Services/TeamService'
-import IdeasMarketService from '@Services/MarketServise'
+import IdeasMarketService from '@Services/IdeasMarketService'
 import RequestTeamsServise from '@Services/RequestTeamsServise'
 import useCommentsStore from '@Store/comments/commentsStore'
 
@@ -63,6 +63,7 @@ onMounted(async () => {
     const { token } = currentUser
     const id = route.params.id.toString()
 
+    console.log(id + ' парамс')
     const marketParallelRequests = [
       () => IdeasMarketService.getIdeaMarket(token, id),
       () => RequestTeamsServise.getRequestAll(id, token),
