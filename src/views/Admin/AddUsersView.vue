@@ -6,6 +6,8 @@
 
     <template #content>
       <AddUsersForm />
+
+      <router-view />
     </template>
   </PageLayout>
 </template>

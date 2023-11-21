@@ -39,6 +39,7 @@ const RadioLabelClassName = computed(() => [
       :class="RadioInputClassName"
       v-model="value"
       :value="props.value"
+      :checked="props.checked"
     />
     <span :class="RadioLabelClassName">
       {{ label }}

@@ -6,6 +6,7 @@ import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 import Notification from '@Domain/Notification'
+import Profile from '@Domain/Profile'
 import Company from '@Domain/Company'
 
 interface Mocks {
@@ -18,6 +19,8 @@ interface Mocks {
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
+  profiles: Profile[]
+  profileSkills: Skill[]
 
   teamMember: TeamMember[]
   notifications: Notification[]
@@ -42,7 +45,79 @@ function getMocks(): Mocks {
       id: '2',
       name: 'Java',
       type: 'LANGUAGE',
-      confirmed: false,
+      confirmed: true,
+    },
+    {
+      id: '3',
+      name: 'C#',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '4',
+      name: 'Vue Js',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: '5',
+      name: 'mySQL',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '6',
+      name: 'Docker',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: '7',
+      name: 'PHP',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '8',
+      name: 'Svelte',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: '9',
+      name: 'Oracle',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '10',
+      name: 'GitLab',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: '11',
+      name: 'Rast',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '12',
+      name: 'Angular',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: '13',
+      name: 'Mongo',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '14',
+      name: 'Git',
+      type: 'DEVOPS',
+      confirmed: true,
     },
     {
       id: '3',
@@ -427,6 +502,82 @@ function getMocks(): Mocks {
     },
   ]
 
+  const profileSkills: Skill[] = [skills[0], skills[2], skills[6], skills[5]]
+
+  const profiles: Profile[] = [
+    {
+      ...users[0],
+      skills: [
+        skills[1],
+        skills[3],
+        skills[4],
+        skills[6],
+        skills[5],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[10],
+        skills[11],
+        skills[12],
+        skills[13],
+        skills[14],
+      ],
+      ideas: [ideas[0], ideas[1]],
+      projects: [
+        {
+          id: '0',
+          name: 'Деление на 0',
+          description: 'Очень важно',
+        },
+        {
+          id: '1',
+          name: 'Спасение экосистемы',
+          description: 'Технология эффективного спасения',
+        },
+        {
+          id: '2',
+          name: 'Важный проект',
+          description: 'Очень важный проект',
+        },
+      ],
+    },
+    {
+      ...users[1],
+      skills: [
+        skills[0],
+        skills[2],
+        skills[6],
+        skills[5],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[10],
+        skills[11],
+        skills[12],
+        skills[13],
+        skills[14],
+      ],
+      ideas: [ideas[2], ideas[1]],
+      projects: [
+        {
+          id: '0',
+          name: 'Поднятие уровня моря',
+          description: 'Надо бы поднять уровень моря',
+        },
+        {
+          id: '1',
+          name: 'Еда экспресс',
+          description: 'Технология эффективного питания',
+        },
+        {
+          id: '2',
+          name: 'Создание квантового компьютера',
+          description: 'Очень важный проект',
+        },
+      ],
+    },
+  ]
+
   const notifications: Notification[] = [
     {
       id: '0',
@@ -501,6 +652,8 @@ function getMocks(): Mocks {
     ideas,
     ideasSkills,
     teams,
+    profileSkills,
+    profiles,
     teamMember,
     notifications,
     companies,

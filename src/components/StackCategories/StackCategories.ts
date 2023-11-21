@@ -1,4 +1,8 @@
-import { SkillType } from '@Domain/Skill'
+import { Skill, SkillType } from '@Domain/Skill'
+
+interface StackCategoriesProps {
+  skills?: Skill[]
+}
 
 interface StackCategories {
   id: string
@@ -34,4 +38,4 @@ const comboboxStackCategories: StackCategories[] = [
   },
 ]
 
-export default comboboxStackCategories
+export { StackCategoriesProps, comboboxStackCategories }

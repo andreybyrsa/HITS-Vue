@@ -3,6 +3,7 @@ interface ComboboxProps<OptionType> {
 
   options: OptionType[]
   displayBy?: (keyof OptionType)[]
+  comparingKey?: keyof OptionType
 
   noFormControlled?: boolean
 
