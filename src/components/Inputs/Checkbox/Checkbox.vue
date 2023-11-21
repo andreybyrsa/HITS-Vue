@@ -25,17 +25,18 @@ const BoxInputClassName = computed(() => [
   props.className,
 ])
 
-const BoxLabelClassName = computed(() => ['form-check-label', props.className])
+const BoxLabelClassName = computed(() => ['form-check-label ms-2', props.className])
 </script>
 
 <template>
-  <div class="form-check-wrapper">
+  <div class="d-flex">
     <input
       type="checkbox"
       :name="name"
       :class="BoxInputClassName"
       v-model="value"
       :value="props.value"
+      :checked="props.checked"
     />
     <span
       v-if="label"
@@ -45,9 +46,3 @@ const BoxLabelClassName = computed(() => ['form-check-label', props.className])
     </span>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.form-check-wrapper {
-  @include flexible(center, center, $gap: 8px);
-}
-</style>

@@ -13,10 +13,11 @@ import Team from '@Domain/Team'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
-import TeamService from '@Services/TeamService'
-
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useTeamStore from '@Store/teams/teamsStore'
+
+const teamStore = useTeamStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -32,7 +33,7 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await TeamService.getTeams(token)
+    const response = await teamStore.getTeams(token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)

@@ -35,7 +35,7 @@ const route = useRoute()
 
 const idea = ref<Idea>()
 const ideaSkills = ref<IdeaSkills>()
-const comments = ref<Comment[]>()
+
 const ratings = ref<Rating[]>()
 
 const isOpenedIdeaModal = ref(true)
@@ -137,7 +137,6 @@ function handleCloseIdeaModal() {
 
         <IdeaComments
           :idea="idea"
-          :comments="comments"
           :idea-modal-ref="ideaModalRef"
         />
       </div>

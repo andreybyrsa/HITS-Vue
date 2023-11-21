@@ -12,6 +12,7 @@ import UsersView from '@Views/Admin/UsersView.vue'
 import AddUsersView from '@Views/Admin/AddUsersView.vue'
 import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
 import SkillsView from '@Views/Admin/SkillsView.vue'
+import CompaniesView from '@Views/Admin/CompaniesView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
@@ -21,6 +22,7 @@ import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
+import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
 
@@ -73,6 +75,15 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
+        children: [
+          {
+            path: ':teamId',
+            meta: {
+              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
+            component: TeamModal,
+          },
+        ],
       },
       {
         path: 'create',
@@ -107,6 +118,11 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'skills',
         component: SkillsView,
+        meta: { roles: ['ADMIN'] },
+      },
+      {
+        path: 'companies',
+        component: CompaniesView,
         meta: { roles: ['ADMIN'] },
       },
     ],

@@ -92,10 +92,8 @@ const searchedOptions = computed(() => {
 
 function selectOption(currentOption: OptionType) {
   if (isMultiselect(selectedValue.value)) {
-    const selectedOptionIndex = selectedValue.value.findIndex(
-      (option) =>
-        option === currentOption ||
-        JSON.stringify(option) === JSON.stringify(currentOption),
+    const selectedOptionIndex = selectedValue.value.findIndex((option) =>
+      checkIsExistOption(currentOption, option),
     )
 
     if (selectedOptionIndex !== -1) {
@@ -111,14 +109,22 @@ function selectOption(currentOption: OptionType) {
   selectedValue.value = currentOption
 }
 
+function getCheckedValue(currentOption: OptionType) {
+  if (isMultiselect(selectedValue.value)) {
+    return !!selectedValue.value.find((option) =>
+      checkIsExistOption(currentOption, option),
+    )
+  }
+
+  return !!checkIsExistOption(currentOption, selectedValue.value)
+}
+
 function getComboboxPlaceholder() {
   if (isMultiselect(selectedValue.value)) {
     const selectedValueLength = selectedValue.value.reduce(
       (selectedAmount, currentValue) => {
-        const isExistInOptions = options.value.find(
-          (option) =>
-            option === currentValue ||
-            JSON.stringify(option) === JSON.stringify(currentValue),
+        const isExistInOptions = options.value.find((option) =>
+          checkIsExistOption(currentValue, option),
         )
 
         if (isExistInOptions) return (selectedAmount += 1)
@@ -154,6 +160,15 @@ onClickOutside(comboboxRef, () => {
   searchedValue.value = ''
 })
 
+function checkIsExistOption(currentOption: OptionType, comparingOption: OptionType) {
+  const { comparingKey } = props
+  return (
+    currentOption === comparingOption ||
+    JSON.stringify(currentOption) === JSON.stringify(comparingOption) ||
+    (comparingKey && currentOption[comparingKey] === comparingOption[comparingKey])
+  )
+}
+
 function checkNewOptionButton() {
   if (searchedValue.value.trim() === '') {
     return false
@@ -163,6 +178,10 @@ function checkNewOptionButton() {
     (option) => getCurrentOption(option).label === searchedValue.value,
   )
   return !isExistNewOption && searchedValue.value.length && isOpenedChoices.value
+}
+
+function checkOpenComboboxButton() {
+  return searchedOptions.value.length && !isOpenedChoices.value && !props.disabled
 }
 </script>
 
@@ -187,10 +206,11 @@ function checkNewOptionButton() {
         no-form-controlled
         :placeholder="getComboboxPlaceholder()"
         @focus="focusCombobox"
+        :disabled="disabled"
       />
 
       <Icon
-        v-if="searchedOptions.length && !isOpenedChoices"
+        v-if="checkOpenComboboxButton()"
         class-name="combobox__icon bi bi-chevron-down"
         @click="focusCombobox"
       />
@@ -215,6 +235,7 @@ function checkNewOptionButton() {
             :name="`checkbox-${label}`"
             :label="label"
             :value="option"
+            :checked="getCheckedValue(option)"
             v-model="selectedValue"
             no-form-controlled
           />
@@ -223,6 +244,7 @@ function checkNewOptionButton() {
             :name="`radio-${label}`"
             :label="label"
             :value="option"
+            :checked="getCheckedValue(option)"
             v-model="selectedValue"
             no-form-cotrolled
           />

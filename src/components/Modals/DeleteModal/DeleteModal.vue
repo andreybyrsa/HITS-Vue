@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
@@ -14,6 +14,8 @@ defineProps<DeleteModalProps>()
 
 const emit = defineEmits<DeleteModalEmits>()
 
+const isLoading = ref<boolean>(false)
+
 const { enter } = useMagicKeys()
 
 watch(enter, () => {
@@ -21,7 +23,9 @@ watch(enter, () => {
 })
 
 async function handleDelete() {
+  isLoading.value = true
   emit('delete')
+  isLoading.value = false
   emit('close-modal')
 }
 </script>
@@ -37,6 +41,7 @@ async function handleDelete() {
       </Typography>
       <Button
         variant="danger"
+        :isLoading="isLoading"
         @click="handleDelete"
       >
         Удалить

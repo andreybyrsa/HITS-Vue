@@ -8,13 +8,13 @@ import TeamMember from '@Domain/TeamMember'
 import Project from '@Domain/Project'
 import Notification from '@Domain/Notification'
 import Profile from '@Domain/Profile'
+import Company from '@Domain/Company'
 
 interface Mocks {
   users: User[]
   usersEmails: string[]
   skills: Skill[]
   usersGroups: UsersGroup[]
-  teamMember: TeamMember[]
   comments: Comment[]
   ideas: Idea[]
   ratings: Rating[]
@@ -23,52 +23,15 @@ interface Mocks {
   profileSkills: Skill[]
   profileIdeas: Idea[]
   profileProjects: Project[]
-  notifications: Notification[]
   profileUser: User
   profile: Profile[]
+
+  teamMember: TeamMember[]
+  notifications: Notification[]
+  companies: Company[]
 }
 
 function getMocks(): Mocks {
-  const users: User[] = [
-    {
-      id: '0',
-      token: '10296538',
-      email: 'admin@mail.com',
-      firstName: 'Админ',
-      lastName: 'Админ',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '1',
-      token: '613098',
-      email: '1@mail.com',
-      firstName: 'Пользователь',
-      lastName: 'Пользователь',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '2',
-      token: '059182',
-      email: '2@mail.com',
-      firstName: 'Менеджер',
-      lastName: 'Менеджер',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-
-    {
-      id: '3',
-      token: '163097',
-      email: '3@mail.com',
-      firstName: 'Владелец',
-      lastName: 'Владелец',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
-  ]
-
-  const usersEmails: string[] = users.map((user) => user.email)
-
   const skills: Skill[] = [
     {
       id: '0',
@@ -78,13 +41,13 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      name: 'React JS',
+      name: 'VueJS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
       id: '2',
-      name: 'C++',
+      name: 'Java',
       type: 'LANGUAGE',
       confirmed: true,
     },
@@ -160,7 +123,98 @@ function getMocks(): Mocks {
       type: 'DEVOPS',
       confirmed: true,
     },
+    {
+      id: '3',
+      name: 'Docker',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: '4',
+      name: 'MongoDB',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '5',
+      name: 'MySQL',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '6',
+      name: 'PostgreSQL',
+      type: 'DATABASE',
+      confirmed: true,
+    },
+    {
+      id: '7',
+      name: 'Python',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
+      id: '8',
+      name: 'Spring',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: '9',
+      name: 'Django',
+      type: 'FRAMEWORK',
+      confirmed: true,
+    },
+    {
+      id: '10',
+      name: 'Git',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
+    {
+      id: '11',
+      name: 'VSCode',
+      type: 'DEVOPS',
+      confirmed: true,
+    },
   ]
+
+  const users: User[] = [
+    {
+      id: '33',
+      token: '10296538',
+      email: 'andrey@mail.com',
+      firstName: 'Андрей',
+      lastName: 'Бырса',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '343',
+      token: '613098',
+      email: 'timyr@mail.com',
+      firstName: 'Тимур',
+      lastName: 'Минязев',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '3',
+      token: '059182',
+      email: 'kirill.vlasov.05@inbox.ru',
+      firstName: 'Кирилл',
+      lastName: 'Власов',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '345',
+      token: '163097',
+      email: 'maga@mail.com',
+      firstName: 'Мамедага',
+      lastName: 'Байрамов',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+  ]
+
+  const usersEmails: string[] = users.map((user) => user.email)
 
   const usersGroups: UsersGroup[] = [
     {
@@ -179,52 +233,28 @@ function getMocks(): Mocks {
 
   const teamMember: TeamMember[] = [
     {
-      email: 'admin@mail.com',
-      firstName: 'Админ',
-      lastName: 'Адмиг',
-
-      skills: [...skills],
+      email: 'andrey@mail.com',
+      id: '33',
+      firstName: 'Андрей',
+      lastName: 'Бырса',
     },
     {
-      email: '1@mail.com',
-      firstName: 'Пользователь',
-      lastName: 'Пользователь',
-
-      skills: [
-        {
-          id: '2',
-          name: 'C++',
-          type: 'LANGUAGE',
-          confirmed: false,
-        },
-      ],
+      email: 'timyr@mail.com',
+      id: '343',
+      firstName: 'Тимур',
+      lastName: 'Минязев',
     },
     {
-      email: '2@mail.com',
-      firstName: 'Менеджер',
-      lastName: 'Менеджер',
-
-      skills: [
-        {
-          id: '0',
-          name: 'JavaScript',
-          type: 'LANGUAGE',
-          confirmed: true,
-        },
-        {
-          id: '1',
-          name: 'React JS',
-          type: 'FRAMEWORK',
-          confirmed: true,
-        },
-      ],
+      email: 'kirill.vlasov.05@inbox.ru',
+      id: '3',
+      firstName: 'Кирилл',
+      lastName: 'Власов',
     },
     {
-      email: '3@mail.com',
-      firstName: 'Владелец',
-      lastName: 'Владелец',
-
-      skills: [...skills],
+      email: 'maga@mail.com',
+      id: '345',
+      firstName: 'Мамедага',
+      lastName: 'Байрамов',
     },
   ]
 
@@ -234,7 +264,7 @@ function getMocks(): Mocks {
       ideaId: '0',
       createdAt: '2023-10-20T11:02:17Z',
 
-      senderEmail: 'admin@mail.com',
+      senderEmail: 'andrey@mail.com',
       text: 'Комментарий 1',
       checkedBy: [],
     },
@@ -243,7 +273,7 @@ function getMocks(): Mocks {
       ideaId: '0',
       createdAt: '2023-10-21T11:02:17Z',
 
-      senderEmail: '1@mail.com',
+      senderEmail: 'timyr@mail.com',
       text: 'Комментарий 2',
       checkedBy: ['0', '1'],
     },
@@ -252,8 +282,17 @@ function getMocks(): Mocks {
       ideaId: '1',
       createdAt: '2023-10-21T11:02:17Z',
 
-      senderEmail: '2@mail.com',
-      text: 'Комментарий 3',
+      senderEmail: 'kirill.vlasov.05@inbox.ru',
+      text: 'Требуются Frontend разработчики!',
+      checkedBy: [],
+    },
+    {
+      id: '2',
+      ideaId: '2',
+      createdAt: '2023-10-21T11:02:17Z',
+
+      senderEmail: 'kirill.vlasov.05@inbox.ru',
+      text: 'Скоро закроется набор!',
       checkedBy: [],
     },
   ]
@@ -300,8 +339,8 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
-      initiator: '0',
-      name: 'Идея которая улучшит мир',
+      initiatorEmail: 'admin@mail.com',
+      name: 'Рефактор кода',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -326,8 +365,8 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      initiator: '1',
-      name: 'Как побороть прокрастенацию',
+      initiatorEmail: '1@mail.com',
+      name: 'Реактор железного человека',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -352,8 +391,8 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
-      initiator: '2',
-      name: 'Высокоуровневый язык верстки',
+      initiatorEmail: '2@mail.com',
+      name: 'Идея 2',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -365,6 +404,32 @@ function getMocks(): Mocks {
       createdAt: '2023-10-25T11:02:17Z',
       modifiedAt: '2023-10-25T11:02:17Z',
       status: 'NEW',
+      maxTeamSize: 5,
+      minTeamSize: 5,
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: null,
+      projectOffice: null,
+      budget: 4,
+      suitability: 3,
+      preAssessment: 4,
+      rating: 4,
+    },
+    {
+      id: '3',
+      initiatorEmail: '3@mail.com',
+      name: 'Раскладушка',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: '2023-10-25T11:02:17Z',
+      modifiedAt: '2023-10-25T11:02:17Z',
+      status: 'CONFIRMED',
       maxTeamSize: 5,
       minTeamSize: 5,
       customer: 'ВШЦТ',
@@ -389,29 +454,55 @@ function getMocks(): Mocks {
   const teams: Team[] = [
     {
       id: '0',
-      name: 'Команда 1',
+      name: 'Фронтендеры',
       closed: false,
-      createdAt: '2023-10-23T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 4,
-      owner: users[0],
-      leader: users[1],
-      members: [...users],
-      skills: [],
+      owner: teamMember[0],
+      leader: teamMember[1],
+      members: [...teamMember],
+      skills: [...skills],
     },
     {
       id: '1',
-      name: 'Команда 2',
-      closed: true,
-      createdAt: '2023-10-25T11:02:17Z',
+      name: 'Бэккендеры',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 3,
-      owner: users[1],
-      leader: users[2],
-      members: [users[3]],
+      owner: teamMember[2],
+      leader: teamMember[2],
+      members: [teamMember[3], teamMember[2]],
       skills: [...skills],
+    },
+    {
+      id: '2',
+      name: 'Мушкетеры',
+      closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 4,
+      owner: teamMember[2],
+      leader: teamMember[1],
+      members: [teamMember[3], teamMember[1]],
+      skills: [skills[0]],
+    },
+    {
+      id: '3',
+      name: 'Смешарики',
+      closed: true,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 4,
+      owner: teamMember[2],
+      leader: teamMember[1],
+      members: [teamMember[3], teamMember[1]],
+      skills: [skills[0]],
     },
   ]
   const profileUser: User = users[1]
@@ -555,10 +646,30 @@ function getMocks(): Mocks {
     },
   ]
 
+  const companies: Company[] = [
+    {
+      id: '0',
+      name: 'ВШЦТ',
+      owner: users[1],
+      users: [users[2]],
+    },
+    {
+      id: '1',
+      name: 'Газпром',
+      owner: users[1],
+      users: [users[1]],
+    },
+    {
+      id: '2',
+      name: 'Роснефть',
+      owner: users[2],
+      users: [users[1]],
+    },
+  ]
+
   return {
     users,
     usersEmails,
-    teamMember,
     skills,
     usersGroups,
     comments,
@@ -569,9 +680,11 @@ function getMocks(): Mocks {
     profileSkills,
     profileIdeas,
     profileProjects,
-    notifications,
     profileUser,
     profile,
+    teamMember,
+    notifications,
+    companies,
   }
 }
 

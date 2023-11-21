@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { watchImmediate } from '@vueuse/core'
+import { ref, onMounted, computed, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import {
   CustomerAndContact,
@@ -8,46 +8,94 @@ import {
 } from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
+import Company from '@Domain/Company'
+import RolesTypes from '@Domain/Roles'
+
+import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+import CompanyService from '@Services/CompanyService'
+
 const props = defineProps<CustomerAndContact>()
 const emit = defineEmits<CustomerAndContactEmits>()
 
-const customers = ref([
-  { contacts: ['ВШЦТ'], company: 'ВШЦТ' },
-  { contacts: ['Человек 1', 'Человек 2'], company: 'Роснефть' },
-  { contacts: ['Человек 3', 'Человек 4', 'Человек 5'], company: 'Газпром' },
-  {
-    contacts: ['Человек 6', 'Человек 7', 'Человек 8', 'Человек 9'],
-    company: 'Лукойл',
-  },
-])
-const currentCompanies = ref(customers.value.map((option) => option.company))
-const currentCompanyContacts = ref<string[]>([])
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
-function getContactPersonsByCompany(company: string) {
-  return customers.value.find((option) => option.company === company)
-}
+const companies = ref<Company[]>([])
+const companiesNames = computed(() => companies.value.map((company) => company.name))
 
-function handleCustomerChange(selectedCompany: string) {
-  const currentContacts = getContactPersonsByCompany(selectedCompany)?.contacts
-  if (currentContacts) {
-    currentCompanyContacts.value = currentContacts
-    const { contactPerson } = props.idea
+const companyContacts = ref<string[]>([])
 
-    const currentContactPerson = currentContacts.includes(contactPerson)
-      ? contactPerson
-      : currentContacts[0]
+async function getAllCompaniesByRole(token: string, role: RolesTypes) {
+  const response = await CompanyService.getCompanies(token)
 
-    emit('set-value', 'contactPerson', currentContactPerson)
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
+  }
+
+  if (role === 'ADMIN') {
+    companies.value = response
+  } else {
+    companies.value = response.filter((company) => company.name === 'ВШЦТ')
   }
 }
 
-watchImmediate(
-  () => props.idea.customer,
-  (newCustomer) => {
-    if (newCustomer) {
-      handleCustomerChange(newCustomer)
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token && currentUser.role) {
+    const { token, id, role } = currentUser
+
+    if (role !== 'ADMIN') {
+      const response = await CompanyService.getOwnerCompanies(id, token)
+
+      if (response instanceof Error) {
+        return getAllCompaniesByRole(token, role)
+      }
+
+      companies.value = response
+    } else {
+      getAllCompaniesByRole(token, role)
+    }
+  }
+})
+
+const getCompanyByName = (companyName: string) => {
+  return companies.value.find((company) => company.name === companyName)
+}
+
+async function handleCustomerChange(selectedCompany: string) {
+  const currentUser = user.value
+  const currentCompany = getCompanyByName(selectedCompany)
+
+  if (currentUser?.token && currentCompany) {
+    const response = await CompanyService.getCompany(
+      currentCompany.id,
+      currentUser.token,
+    )
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    companyContacts.value = response.users.map(
+      ({ firstName, lastName }) => `${firstName} ${lastName}`,
+    )
+
+    emit('set-value', 'contactPerson', companyContacts.value[0])
+  }
+}
+
+watch(
+  [() => props.idea.customer, companies],
+  ([choosenCompany]) => {
+    if (choosenCompany) {
+      handleCustomerChange(choosenCompany)
     }
   },
+  { immediate: true },
 )
 </script>
 
@@ -56,16 +104,19 @@ watchImmediate(
     <Combobox
       name="customer"
       label="Заказчик*"
-      :options="currentCompanies"
+      :options="companiesNames"
       placeholder="Выберите заказчика"
     />
   </div>
 
-  <div class="w-100">
+  <div
+    v-if="companyContacts.length"
+    class="w-100"
+  >
     <Combobox
       name="contactPerson"
       label="Контактное лицо*"
-      :options="currentCompanyContacts"
+      :options="companyContacts"
       placeholder="Выберите контактное лицо"
     />
   </div>

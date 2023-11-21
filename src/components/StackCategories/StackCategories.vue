@@ -133,6 +133,7 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
           :name="`stack-${category.key}`"
           :options="skills[category.key]"
           :display-by="['name']"
+          comparing-key="id"
           v-model="choosenSkills[category.key]"
           no-form-controlled
           :placeholder="category.placeholder"

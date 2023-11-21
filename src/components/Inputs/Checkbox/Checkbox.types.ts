@@ -1,5 +1,6 @@
 interface CheckboxProps {
   className?: string
+
   name: string
 
   validateOnUpdate?: boolean
@@ -8,6 +9,7 @@ interface CheckboxProps {
   label?: string
 
   value?: unknown
+  checked?: boolean
 
   error?: string
 }
