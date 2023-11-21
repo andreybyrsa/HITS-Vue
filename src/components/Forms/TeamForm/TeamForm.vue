@@ -18,6 +18,7 @@ import { Team, TeamSkills } from '@Domain/Team'
 import TeamService from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import Validation from '@Utils/Validation'
 import { Skill } from '@Domain/Skill'
 
 const props = defineProps<TeamFormProps>()
@@ -29,17 +30,23 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 const router = useRouter()
 const stackTechnologies = ref<Skill[]>([])
+
 const { handleSubmit, setValues } = useForm<Team>({
   validationSchema: {
-    name: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    description: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    closed: (value: boolean) => value !== undefined || 'Тип команды не выбран',
-    owner: (value: User) => value !== undefined || 'Поле не выбрано',
-  },
-  initialValues: {
-    ...props.team,
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    description: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    closed: (value: boolean) =>
+      Validation.checkIsEmptyValue(value) || 'Тип команды не выбран',
+    owner: (value: User) => Validation.checkIsEmptyValue(value) || 'Поле не выбрано',
+    leader: (value: User) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не выбрано',
+    members: (value: User[]) =>
+      Validation.checkIsEmptyValue(value) || 'Участники не выбраны',
   },
 })
+
 watchImmediate(
   () => props.team,
   async (team) => {
@@ -62,19 +69,6 @@ watchImmediate(
   },
 )
 
-watchImmediate(
-  () => stackTechnologies.value,
-  async () => {
-    const currentUser = user.value
-    if (currentUser?.token && props.team) {
-      const { token } = currentUser
-      const { id } = props.team
-
-      await saveTeamSkills(id, token, props.team)
-    }
-  },
-)
-
 const handleCreateTeam = handleSubmit(async (values) => {
   const currentUser = user.value
   if (currentUser?.token) {
@@ -84,13 +78,12 @@ const handleCreateTeam = handleSubmit(async (values) => {
 
     isLoading.value = true
     const response = await TeamService.createTeam(values, token)
-    isLoading.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    await saveTeamSkills(response.id, token, props.team)
+    await saveTeamSkills(response.id, token)
     isLoading.value = false
 
     router.push({ name: 'teams-list' })
@@ -104,19 +97,19 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 
     isLoading.value = true
     const response = await TeamService.updateTeam(values, id, token)
-    isLoading.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
+
+    await saveTeamSkills(response.id, token, props.team)
+    isLoading.value = false
+
     router.push({ name: 'teams-list' })
   }
 })
-async function saveTeamSkills(
-  teamId: string,
-  token: string,
-  team: Team | undefined,
-) {
+
+async function saveTeamSkills(teamId: string, token: string, team?: Team) {
   const teamSkills = {
     teamId,
     skills: stackTechnologies.value,
@@ -145,6 +138,7 @@ async function saveTeamSkills(
   }
 }
 </script>
+
 <template>
   <div class="team-form w-100 h-100 bg-white p-3 overflow-auto">
     <div class="team-form__content w-75">

@@ -102,9 +102,9 @@ const updateTeam = async (
   team: Team,
   id: string,
   token: string,
-): Promise<Success | Error> => {
+): Promise<Team | Error> => {
   return await teamsAxios
-    .put<Success>(
+    .put<Team>(
       `/team/update/${id}`,
       team,
       {
