@@ -176,10 +176,7 @@ function compareSkills(team: Team) {
     :key="index"
     class="team-request-collapse__button py-1 px-2 border rounded w-100"
   >
-    <Button
-      class-name="btn-link"
-      @click="navigateToTeamModal(team, idea)"
-    >
+    <Button class-name="btn-link">
       {{ team.name }}
     </Button>
     <Button

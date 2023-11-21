@@ -45,7 +45,6 @@ const getIdeaMarket = async (
   id: string,
   token: string,
 ): Promise<IdeasMarket | Error> => {
-  console.log(id + ' сервис')
   return await ideasMarketAxios
     .get<IdeasMarket>(
       `/ideas/market/${id}`,

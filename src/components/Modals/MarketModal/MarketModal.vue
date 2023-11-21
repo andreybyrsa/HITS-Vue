@@ -63,9 +63,8 @@ onMounted(async () => {
     const { token } = currentUser
     const id = route.params.id.toString()
 
-    console.log(id + ' парамс')
     const marketParallelRequests = [
-      () => IdeasMarketService.getIdeaMarket(token, id),
+      () => IdeasMarketService.getIdeaMarket(id, token),
       () => RequestTeamsServise.getRequestAll(id, token),
       () => TeamService.getTeams(token),
       () => useCommentsStore().getComments(id, token),

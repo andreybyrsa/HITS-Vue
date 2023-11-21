@@ -494,7 +494,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
-      initiator: teamMember[3],
+      initiator: teamMember[2],
       name: 'Раскладушка',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
