@@ -36,6 +36,7 @@ const BoxLabelClassName = computed(() => ['form-check-label ms-2', props.classNa
       :class="BoxInputClassName"
       v-model="value"
       :value="props.value"
+      :checked="props.checked"
     />
     <span
       v-if="label"

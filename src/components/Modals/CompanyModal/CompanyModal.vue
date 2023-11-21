@@ -230,6 +230,7 @@ const handleUpdateCompany = handleSubmit(async (values) => {
           label="Выберите руководителя компании:"
           :options="users"
           :display-by="['firstName', 'lastName']"
+          comparing-key="id"
           placeholder="Руководитель компании"
         />
 
