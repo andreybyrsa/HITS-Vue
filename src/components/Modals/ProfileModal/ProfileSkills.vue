@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
@@ -7,49 +7,37 @@ import { ProfileSkillProps } from '@Components/Modals/ProfileModal/ProfileModal.
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
-import Skills from '@Components/Skills/Skills.vue'
+import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 
 import { Skill } from '@Domain/Skill'
 
 import ProfileService from '@Services/ProfileService'
 
 import useUserStore from '@Store/user/userStore'
-import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
-import { useRoute, useRouter } from 'vue-router'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<ProfileSkillProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const router = useRouter()
-const route = useRoute()
+const notificationsStore = useNotificationsStore()
 
-const profileSkills = ref<Skill[] | undefined>()
+const profileSkills = ref<Skill[]>([])
 const selectedSkills = ref<Skill[]>([])
 
-const editSkills = ref(false)
+const isOwnProfile = computed(() => props.profile.email === user.value?.email)
+const isUpdatingSkills = ref(false)
 
 watchImmediate(
-  () => props.skills,
+  () => props.profile.skills,
   (skills) => {
     profileSkills.value = skills
   },
 )
 
-const skillsCategories = [
-  { name: 'Языки разработки', type: 'LANGUAGE' },
-  { name: 'Фреймворки', type: 'FRAMEWORK' },
-  { name: 'Базы данных', type: 'DATABASE' },
-  { name: 'DevOps технолгии', type: 'DEVOPS' },
-]
-
-function editSkillsHandler() {
-  editSkills.value = true
-}
-
-function editSkillsClose() {
-  editSkills.value = false
+function toogleUpdatingSkills(value: boolean) {
+  isUpdatingSkills.value = value
 }
 
 const handleSaveSkills = async () => {
@@ -57,92 +45,63 @@ const handleSaveSkills = async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+
     const response = await ProfileService.saveProfileSkills(
       selectedSkills.value,
       token,
     )
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    editSkills.value = false
+    toogleUpdatingSkills(false)
     profileSkills.value = selectedSkills.value
   }
 }
-
-function handleCancelUpdating() {
-  editSkills.value = false
-}
-
-console.log(profileSkills)
 </script>
 
 <template>
   <div class="w-100 bg-white border p-3 rounded-4">
-    {{ profileSkills }}
     <div class="header border-bottom pb-1">
-      <Typography class-name="fs-4 text-primary">Мои компетенции</Typography>
+      <Typography class-name="fs-4 text-primary">Компетенции</Typography>
       <Button
-        v-if="editSkills === false && props.status == true"
-        class-name="border bg-light "
-        @click="editSkillsHandler"
+        v-if="!isUpdatingSkills && isOwnProfile"
+        variant="light"
+        @click="toogleUpdatingSkills(true)"
       >
         Изменить стек
       </Button>
+
       <div
-        class="d-flex"
-        v-if="editSkills === true"
+        class="d-flex gap-2"
+        v-if="isUpdatingSkills"
       >
         <Button
-          class-name="border bg-primary text-light "
+          variant="primary"
           @click="handleSaveSkills"
         >
           Сохранить
         </Button>
         <Button
-          class-name="border bg-danger text-light "
-          @click="handleCancelUpdating"
+          variant="danger"
+          @click="toogleUpdatingSkills(false)"
         >
           Отменить
         </Button>
       </div>
     </div>
 
-    <div
-      class="content p-2"
-      v-if="editSkills === false"
-    >
-      <!-- <div class="content__categories flex-wrap">
-        <div
-          class="w-50 p-3"
-          v-for="(category, index) in skillsCategories"
-          :key="index"
-        >
-          <div class="w-100 border rounded p-3 text-center">
-            <Typography class-name="fs-5">{{ category.name }}</Typography>
-          </div>
-
-          <div class="content__technologies mt-2">
-            <Skills :skills="profileSkills" />
-          </div>
-        </div>
-      </div> -->
-
-      <SkillsRadarCharts
-        v-if="profileSkills"
-        :skills="profileSkills"
-        class="w-100"
-      ></SkillsRadarCharts>
-    </div>
-
-    <div
-      v-if="editSkills === true"
-      class="content p-2"
-    >
+    <div class="content p-2">
       <StackCategories
+        v-if="isUpdatingSkills"
         :skills="profileSkills"
         v-model:stack="selectedSkills"
+      />
+
+      <SkillsRadarCharts
+        v-else
+        :skills="profileSkills"
       />
     </div>
   </div>

@@ -1,34 +1,35 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-import RolesTypes from '@Domain/Roles'
+import { watchImmediate } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
-
-import { ProfileInfoProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Input from '@Components/Inputs/Input/Input.vue'
+
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
 
-import Validation from '@Utils/Validation'
 import { User } from '@Domain/User'
-import useUserStore from '@Store/user/userStore'
+import Profile from '@Domain/Profile'
+
 import ManageUsersService from '@Services/ManageUsersService'
+
+import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-const props = defineProps<ProfileInfoProps>()
+import Validation from '@Utils/Validation'
 
-const notificationsStore = useNotificationsStore()
-
-const isOpenedChangeEmail = ref(false)
-
-const isOpenedChangeInfo = ref(false)
-
-const actualUser = ref<User>(props.user)
+const profile = defineModel<Profile>({ required: true })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const notificationsStore = useNotificationsStore()
+
+const isOwnProfile = computed(() => profile.value.email === user.value?.email)
+const isUpdatingUserInfo = ref(false)
+const isOpenedChangeEmailModal = ref(false)
 
 const { setValues, handleSubmit } = useForm<User>({
   validationSchema: {
@@ -36,191 +37,114 @@ const { setValues, handleSubmit } = useForm<User>({
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
-    //roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
   },
 })
 
-function getCurrentRoleRus(role: RolesTypes) {
-  if (role === 'ADMIN') {
-    return 'Админ '
-  }
-  if (role === 'INITIATOR') {
-    return 'Инициатор '
-  }
-  if (role === 'PROJECT_OFFICE') {
-    return 'Проектный офис '
-  }
-  if (role === 'EXPERT') {
-    return 'Эксперт '
-  }
-}
-
-function handleOpenChangeInfo() {
-  isOpenedChangeInfo.value = true
-}
-
-function handleCloseChangeInfo() {
-  isOpenedChangeInfo.value = false
-}
-
-function handleOpenChangeEmail() {
-  isOpenedChangeEmail.value = true
-}
-
-function handleCloseChangeEmail() {
-  isOpenedChangeEmail.value = false
-}
-
-watch(
-  () => props.user,
-  () => {
-    if (props.user) {
-      setValues({ ...props.user })
-    }
-  },
-)
+watchImmediate(profile, () => setUserValues())
 
 const handleEditUser = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    values.roles = currentUser.roles
-    values.id = currentUser.id
-    values.email = currentUser.email
+
     const response = await ManageUsersService.updateUserInfo(values, token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    isOpenedChangeInfo.value = false
-    actualUser.value = values
+    const { firstName, lastName } = values
 
-    return notificationsStore.createSystemNotification(
-      'Система',
-      'Данные успешно изменены',
-    )
+    userStore.setUser({ ...currentUser, firstName, lastName })
+    profile.value.firstName = firstName
+    profile.value.lastName = lastName
+
+    toogleUpdatingUserInfo(false)
   }
 })
+
+function setUserValues() {
+  if (profile.value.email === user.value?.email) {
+    setValues({ ...user.value })
+  } else {
+    const { email, firstName, lastName } = profile.value
+    setValues({ email, firstName, lastName })
+  }
+}
+
+function toogleUpdatingUserInfo(value: boolean) {
+  isUpdatingUserInfo.value = value
+
+  if (!value) {
+    setUserValues()
+  }
+}
+
+function handleCloseChangeEmailModal() {
+  isOpenedChangeEmailModal.value = false
+}
 </script>
 
 <template>
-  <div
-    class="w-100 bg-white border p-3 rounded-4"
-    v-if="isOpenedChangeInfo == false"
-  >
+  <div class="w-100 bg-white border p-3 rounded-4">
     <div class="header border-bottom pb-1">
       <Typography class-name="fs-4 text-primary">Информация</Typography>
-      <Button
-        v-if="props.status == true"
-        class-name="border bg-light "
-        @click="handleOpenChangeInfo"
-        >Изменить</Button
-      >
-    </div>
-
-    <div class="content p-2">
-      <div class="d-grid">
-        <Typography class-name=" text-secondary">Имя</Typography>
-        <Typography class-name="fs-5 ms-1">{{ actualUser.firstName }}</Typography>
-      </div>
-      <div class="d-grid">
-        <Typography class-name=" text-secondary">Фамилия</Typography>
-        <Typography class-name="fs-5 ms-1">{{ actualUser.lastName }}</Typography>
-      </div>
-      <div class="d-grid w-100">
-        <Typography class-name=" text-secondary">Почта</Typography>
-        <div class="w-100 d-flex justify-content-between">
-          <Typography class-name="fs-5 ms-1">{{ actualUser.email }}</Typography>
-          <Button
-            v-if="props.status == true"
-            class-name="border bg-mutend"
-            @click="handleOpenChangeEmail"
-            >Изменить почту</Button
-          >
-        </div>
-      </div>
-      <!-- <div class="d-grid">
-        <Typography class-name=" text-secondary">Главная роль</Typography>
-        <Typography class-name="fs-5 ms-1">{{
-          getCurrentRoleRus(props.role)
-        }}</Typography>
-      </div> -->
-    </div>
-  </div>
-
-  <div
-    class="w-100 bg-white border p-3 rounded-4"
-    v-if="isOpenedChangeInfo == true"
-  >
-    <div class="header border-bottom pb-1">
-      <Typography class-name="fs-4 text-primary">Информация</Typography>
-      <div class="d-flex">
+      <div class="d-flex justify-content-end gap-2">
         <Button
-          class-name="border bg-primary text-light "
+          v-if="isOwnProfile && !isUpdatingUserInfo"
+          variant="light"
+          @click="toogleUpdatingUserInfo(true)"
+        >
+          Изменить
+        </Button>
+        <Button
+          v-if="isUpdatingUserInfo"
+          variant="primary"
           @click="handleEditUser"
-          >Сохнарить</Button
         >
+          Сохнарить
+        </Button>
         <Button
-          class-name="border bg-danger text-light "
-          @click="handleCloseChangeInfo"
-          >Отменить</Button
+          v-if="isUpdatingUserInfo"
+          variant="danger"
+          @click="toogleUpdatingUserInfo(false)"
         >
+          Отменить
+        </Button>
       </div>
     </div>
 
     <div class="content p-2">
-      <div class="d-grid w-100">
-        <Typography class-name=" text-secondary">Имя</Typography>
-        <Input
-          key="1"
-          name="firstName"
-          class-name="rounded-end w-100"
-          :model-value="props.user.firstName"
-          placeholder="Введите ваше имя"
-          validate-on-update
-        >
-        </Input>
-      </div>
-      <div class="d-grid w-100">
-        <Typography class-name=" text-secondary">Фамилия</Typography>
-        <Input
-          key="2"
-          name="lastName"
-          class-name="rounded-end"
-          :model-value="props.user.lastName"
-          placeholder="Введите вашу фамилию"
-          validate-on-update
-        >
-        </Input>
-      </div>
-      <div class="d-grid w-100">
-        <Typography class-name=" text-secondary">Почта</Typography>
-        <div class="w-100 d-flex justify-content-between">
-          <Typography class-name="fs-5 ms-1">{{ props.user.email }}</Typography>
-          <Button
-            v-if="props.status == true"
-            class-name="border bg-mutend"
-            @click="handleOpenChangeEmail"
-            >Изменить почту</Button
-          >
-        </div>
-      </div>
-
-      <!-- <div class="d-grid">
-        <Typography class-name=" text-secondary">Главная роль</Typography>
-        <Typography class-name="fs-5 ms-1">{{
-          getCurrentRoleRus(props.role)
-        }}</Typography>
-      </div> -->
+      <Input
+        name="email"
+        class-name="rounded-end w-100"
+        label="Почта"
+        :disabled="true"
+      />
+      <Input
+        name="firstName"
+        class-name="rounded-end w-100"
+        label="Имя"
+        placeholder="Введите ваше имя"
+        :disabled="!isUpdatingUserInfo"
+        validate-on-update
+      />
+      <Input
+        name="lastName"
+        class-name="rounded-end w-100"
+        label="Фамилия"
+        placeholder="Введите вашу Фамилия"
+        :disabled="!isUpdatingUserInfo"
+        validate-on-update
+      />
     </div>
   </div>
+
   <ChangeEmailView
-    :isOpened="isOpenedChangeEmail"
-    @close-modal="handleCloseChangeEmail"
-  >
-  </ChangeEmailView>
+    :isOpened="isOpenedChangeEmailModal"
+    @close-modal="handleCloseChangeEmailModal"
+  />
 </template>
 
 <style lang="scss" scoped>

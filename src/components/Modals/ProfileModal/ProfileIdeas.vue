@@ -6,12 +6,13 @@ import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+import getStatusStyle from '@Utils/getStatusStyle'
 
 const router = useRouter()
 
 defineProps<ProfileIdeasProps>()
 
-function navigateToIdeaModal(ideaId: number) {
+function navigateToIdeaModal(ideaId: string) {
   router.push(`/ideas/list/${ideaId}`)
 }
 </script>
@@ -23,13 +24,13 @@ function navigateToIdeaModal(ideaId: number) {
     </div>
 
     <div
-      v-if="ideas"
+      v-if="profile.ideas"
       class="profile-ideas__content mt-3"
     >
-      <template v-if="ideas.length > 0">
+      <template v-if="profile.ideas.length > 0">
         <div
           class="profile-ideas__idea w-100 p-2 bg-white border rounded"
-          v-for="idea in ideas"
+          v-for="idea in profile.ideas"
           :key="idea.id"
         >
           <div class="w-100 d-flex justify-content-between align-items-center gap-3">
@@ -38,6 +39,7 @@ function navigateToIdeaModal(ideaId: number) {
               @click="navigateToIdeaModal(idea.id)"
             >
               {{ idea.name }}
+              {{ getStatusStyle(idea.status) }}
             </div>
             <div
               class="profile-ideas__idea-open-button d-flex align-items-center gap-1"
@@ -98,6 +100,8 @@ function navigateToIdeaModal(ideaId: number) {
   }
 
   &__idea {
+    @include flexible(flex-start, center, column, $gap: 8px);
+
     &-link {
       cursor: pointer;
 

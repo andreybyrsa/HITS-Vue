@@ -1,7 +1,5 @@
 import { User } from '@Domain/User'
-import { Skill } from '@Domain/Skill'
-import { Idea } from '@Domain/Idea'
-import Project from '@Domain/Project'
+import Profile from '@Domain/Profile'
 
 interface ProfileAvatarProps {
   user: User
@@ -10,21 +8,19 @@ interface ProfileAvatarProps {
 }
 
 interface ProfileInfoProps {
-  user: User
-  status: boolean
+  profile: Profile
 }
 
 interface ProfileSkillProps {
-  skills?: Skill[]
-  status: boolean
+  profile: Profile
 }
 
 interface ProfileIdeasProps {
-  ideas?: Idea[]
+  profile: Profile
 }
 
 interface ProfileProjectsProps {
-  projects?: Project[]
+  profile: Profile
 }
 
 export {

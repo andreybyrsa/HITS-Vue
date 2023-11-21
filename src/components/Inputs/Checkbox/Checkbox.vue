@@ -16,7 +16,7 @@ const { value, errorMessage } = useField(() => props.name, undefined, {
   validateOnValueUpdate: props.validateOnUpdate ?? false,
   validateOnMount: false,
   controlled: props.noFormControlled ? false : true,
-  syncVModel: true,
+  syncVModel: props.checked ? false : true,
 })
 
 const BoxInputClassName = computed(() => [
@@ -34,9 +34,9 @@ const BoxLabelClassName = computed(() => ['form-check-label ms-2', props.classNa
       type="checkbox"
       :name="name"
       :class="BoxInputClassName"
+      :checked="props.checked"
       v-model="value"
       :value="props.value"
-      :checked="props.checked"
     />
     <span
       v-if="label"

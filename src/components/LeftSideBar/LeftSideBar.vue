@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, VueElement } from 'vue'
 import { watchImmediate, useElementHover } from '@vueuse/core'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import NavTab from '@Components/NavTab/NavTab.vue'
@@ -11,6 +11,7 @@ import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import LeftSideBarPlaceholder from '@Components/LeftSideBar/LeftSideBarPlaceholder.vue'
 import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import RolesTypes from '@Domain/Roles'
 
@@ -22,6 +23,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const router = useRouter()
+const route = useRoute()
 
 const isOpenedRoleModal = ref(false)
 const isOpenedNotificationsModal = ref(false)
@@ -61,7 +63,7 @@ function getTranslatedRole(currentRole: RolesTypes) {
 }
 
 function navigateToProfile() {
-  router.push(`/profile/${user.value?.email}`)
+  router.push({ path: `${route.fullPath}/profile/${user.value?.email}` })
 }
 
 function handleOpenRoleModal() {
@@ -106,7 +108,7 @@ function handleCloseNotificationModal() {
 
     <div class="d-flex flex-column gap-2">
       <Button
-        class-name="left-side-bar__role-button btn-light w-100 text-black"
+        class-name="left-side-bar__button btn-light w-100 text-black"
         prepend-icon-name="bi bi-person-circle fs-5"
         @click="navigateToProfile"
       >
@@ -114,7 +116,7 @@ function handleCloseNotificationModal() {
       </Button>
 
       <Button
-        class-name="left-side-bar__role-button btn-light w-100 text-success"
+        class-name="left-side-bar__button btn-light w-100 text-success"
         prepend-icon-name="bi bi-circle-fill fs-6"
         @click="handleOpenRoleModal"
         :disabled="user?.roles.length === 1"
@@ -122,17 +124,17 @@ function handleCloseNotificationModal() {
         {{ isHovered ? getTranslatedRole(user.role) : '' }}
       </Button>
 
-      <Button
+      <!-- <Button
         variant="light"
         class-name="left-side-bar__button"
         @click="handleOpenNotificationModal"
         prepend-icon-name="bi bi-bell"
       >
         {{ isHovered ? 'Уведомления' : '' }}
-      </Button>
+      </Button> -->
 
       <Button
-        class-name="left-side-bar__logout-button btn-light w-100"
+        class-name="left-side-bar__button btn-light w-100"
         @click="handleLogout"
         prepend-icon-name="bi bi-box-arrow-left"
       >

@@ -14,10 +14,7 @@ import Typography from '@Components/Typography/Typography.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { User } from '@Domain/User'
-import { Skill } from '@Domain/Skill'
-import { Idea } from '@Domain/Idea'
-import Project from '@Domain/Project'
+import Profile from '@Domain/Profile'
 
 import ProfileService from '@Services/ProfileService'
 
@@ -25,7 +22,6 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
-import Profile from '@Domain/Profile'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -35,20 +31,10 @@ const notificationsStore = useNotificationsStore()
 const router = useRouter()
 const route = useRoute()
 
-const profileUser = ref<Profile>()
-
-const currentUser = user.value
-const profileEmail = route.params.email.toString()
-
-let status = false
-
-if (profileEmail === currentUser?.email) {
-  status = true
-} else {
-  status = false
-}
+const profile = ref<Profile>()
 
 const isOpenedProfileModal = ref(true)
+const isOwnProfile = ref<boolean>()
 
 function checkResponseStatus<T>(
   data: RequestResult<T>,
@@ -66,7 +52,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const userEmail = route.params.email.toString()
-    const { token } = currentUser
+    const { token, email } = currentUser
 
     const profileParallelRequests = [
       () => ProfileService.getUserProfile(userEmail, token),
@@ -76,11 +62,13 @@ onMounted(async () => {
       (responses) => {
         responses.forEach((response) => {
           if (response.id === 0) {
-            checkResponseStatus(response, profileUser)
+            checkResponseStatus(response, profile)
           }
         })
       },
     )
+
+    isOwnProfile.value = email === profile.value?.email
   }
 })
 
@@ -98,7 +86,7 @@ function handleCloseProfileModal() {
   >
     <div class="profile-modal p-3 overflow-y-scroll">
       <div
-        v-if="profileUser"
+        v-if="profile"
         class="w-100"
       >
         <div class="profile-modal__header mb-3">
@@ -113,30 +101,21 @@ function handleCloseProfileModal() {
           <Typography
             class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-scroll-hidden"
           >
-            {{ profileUser.firstName }} {{ profileUser.lastName }}
+            {{ profile.firstName }} {{ profile.lastName }}
           </Typography>
         </div>
 
         <div class="profile-modal__content">
-          <ProfileAvatar
-            :user="profileUser"
-            :status="status"
-          />
+          <ProfileAvatar :profile="profile" />
 
           <div class="profile-modal__info">
-            <ProfileInfo
-              :user="profileUser"
-              :status="status"
-            />
+            <ProfileInfo v-model="profile" />
 
-            <ProfileSkills
-              :skills="profileUser.skills"
-              :status="status"
-            />
+            <ProfileSkills :profile="profile" />
 
-            <ProfileIdeas :ideas="profileUser.ideas" />
+            <ProfileIdeas :profile="profile" />
 
-            <ProfileProjects :projects="profileUser.projects" />
+            <ProfileProjects :profile="profile" />
           </div>
         </div>
       </div>

@@ -5,7 +5,6 @@ import Comment from '@Domain/Comment'
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Team from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
-import Project from '@Domain/Project'
 import Notification from '@Domain/Notification'
 import Profile from '@Domain/Profile'
 import Company from '@Domain/Company'
@@ -20,11 +19,8 @@ interface Mocks {
   ratings: Rating[]
   ideasSkills: IdeaSkills[]
   teams: Team[]
+  profiles: Profile[]
   profileSkills: Skill[]
-  profileIdeas: Idea[]
-  profileProjects: Project[]
-  profileUser: User
-  profile: Profile[]
 
   teamMember: TeamMember[]
   notifications: Notification[]
@@ -505,31 +501,10 @@ function getMocks(): Mocks {
       skills: [skills[0]],
     },
   ]
-  const profileUser: User = users[1]
 
   const profileSkills: Skill[] = [skills[0], skills[2], skills[6], skills[5]]
 
-  const profileIdeas: Idea[] = [ideas[0], ideas[1]]
-
-  const profileProjects: Project[] = [
-    {
-      id: 412,
-      name: 'Поднятие уровня моря',
-      description: 'Надо бы поднять уровень моря',
-    },
-    {
-      id: 445,
-      name: 'Еда экспресс',
-      description: 'Технология эффективного питания',
-    },
-    {
-      id: 733,
-      name: 'Важный проект',
-      description: 'Очень важный проект',
-    },
-  ]
-
-  const profile: Profile[] = [
+  const profiles: Profile[] = [
     {
       ...users[0],
       skills: [
@@ -550,17 +525,17 @@ function getMocks(): Mocks {
       ideas: [ideas[0], ideas[1]],
       projects: [
         {
-          id: 3565634,
+          id: '0',
           name: 'Деление на 0',
           description: 'Очень важно',
         },
         {
-          id: 2434465,
+          id: '1',
           name: 'Спасение экосистемы',
           description: 'Технология эффективного спасения',
         },
         {
-          id: 876544,
+          id: '2',
           name: 'Важный проект',
           description: 'Очень важный проект',
         },
@@ -585,17 +560,17 @@ function getMocks(): Mocks {
       ideas: [ideas[2], ideas[1]],
       projects: [
         {
-          id: 954543,
+          id: '0',
           name: 'Поднятие уровня моря',
           description: 'Надо бы поднять уровень моря',
         },
         {
-          id: 346535,
+          id: '1',
           name: 'Еда экспресс',
           description: 'Технология эффективного питания',
         },
         {
-          id: 975452,
+          id: '2',
           name: 'Создание квантового компьютера',
           description: 'Очень важный проект',
         },
@@ -678,10 +653,7 @@ function getMocks(): Mocks {
     ideasSkills,
     teams,
     profileSkills,
-    profileIdeas,
-    profileProjects,
-    profileUser,
-    profile,
+    profiles,
     teamMember,
     notifications,
     companies,

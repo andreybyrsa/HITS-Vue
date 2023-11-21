@@ -1,20 +1,15 @@
 import axios from 'axios'
 
-import { User } from '@Domain/User'
+import Profile from '@Domain/Profile'
 import { Skill } from '@Domain/Skill'
-import { Idea } from '@Domain/Idea'
-import Project from '@Domain/Project'
 
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import Profile from '@Domain/Profile'
 
-const profileUserAxios = defineAxios(getMocks().profile)
-const profileIdeasAxios = defineAxios(getMocks().profileIdeas)
-const profileProjectsAxios = defineAxios(getMocks().profileProjects)
+const profileUserAxios = defineAxios(getMocks().profiles)
 const profileSkillsAxios = defineAxios(getMocks().profileSkills)
 
 const getUserProfile = async (
@@ -32,55 +27,7 @@ const getUserProfile = async (
     )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки пользователя'
-      return new Error(error)
-    })
-}
-
-const getProfileSkills = async (
-  email: string,
-  token: string,
-): Promise<Skill[] | Error> => {
-  return await profileSkillsAxios
-    .get(`/profile/${email}/skills`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки компетенций'
-      return new Error(error)
-    })
-}
-
-const getProfileIdeas = async (
-  email: string,
-  token: string,
-): Promise<Idea[] | Error> => {
-  return await profileIdeasAxios
-    .get(`/profile/${email}/ideas`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идей'
-      return new Error(error)
-    })
-}
-
-const getProfileProjects = async (
-  email: string,
-  token: string,
-): Promise<Project[] | Error> => {
-  return await profileProjectsAxios
-    .get(`/profile/${email}/projects`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки проектов'
+      const error = response?.data?.error ?? 'Ошибка загрузки профиля'
       return new Error(error)
     })
 }
@@ -138,9 +85,6 @@ const uploadProfileAvatar = async (
 
 const ProfileService = {
   getUserProfile,
-  getProfileSkills,
-  getProfileIdeas,
-  getProfileProjects,
   getProfileAvatar,
 
   saveProfileSkills,

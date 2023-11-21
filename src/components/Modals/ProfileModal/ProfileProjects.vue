@@ -11,7 +11,7 @@ defineProps<ProfileProjectsProps>()
 
 const router = useRouter()
 
-function navigateToProjectModal(projectId: number) {
+function navigateToProjectModal(projectId: string) {
   router.push(`/projects/list/${projectId}`)
 }
 </script>
@@ -23,13 +23,13 @@ function navigateToProjectModal(projectId: number) {
     </div>
 
     <div
-      v-if="projects"
+      v-if="profile.projects"
       class="profile-projects__content mt-3"
     >
-      <template v-if="projects.length > 0">
+      <template v-if="profile.projects.length > 0">
         <div
           class="profile-projects__project w-100 p-2 bg-white border rounded"
-          v-for="project in projects"
+          v-for="project in profile.projects"
           :key="project.id"
         >
           <div class="w-100 d-flex justify-content-between align-items-center">
