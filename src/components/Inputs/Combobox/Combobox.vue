@@ -92,10 +92,8 @@ const searchedOptions = computed(() => {
 
 function selectOption(currentOption: OptionType) {
   if (isMultiselect(selectedValue.value)) {
-    const selectedOptionIndex = selectedValue.value.findIndex(
-      (option) =>
-        option === currentOption ||
-        JSON.stringify(option) === JSON.stringify(currentOption),
+    const selectedOptionIndex = selectedValue.value.findIndex((option) =>
+      checkIsExistOption(currentOption, option),
     )
 
     if (selectedOptionIndex !== -1) {
@@ -111,14 +109,22 @@ function selectOption(currentOption: OptionType) {
   selectedValue.value = currentOption
 }
 
+function getCheckedValue(currentOption: OptionType) {
+  if (isMultiselect(selectedValue.value)) {
+    return !!selectedValue.value.find((option) =>
+      checkIsExistOption(currentOption, option),
+    )
+  }
+
+  return !!checkIsExistOption(currentOption, selectedValue.value)
+}
+
 function getComboboxPlaceholder() {
   if (isMultiselect(selectedValue.value)) {
     const selectedValueLength = selectedValue.value.reduce(
       (selectedAmount, currentValue) => {
-        const isExistInOptions = options.value.find(
-          (option) =>
-            option === currentValue ||
-            JSON.stringify(option) === JSON.stringify(currentValue),
+        const isExistInOptions = options.value.find((option) =>
+          checkIsExistOption(currentValue, option),
         )
 
         if (isExistInOptions) return (selectedAmount += 1)
@@ -153,6 +159,15 @@ onClickOutside(comboboxRef, () => {
   isOpenedChoices.value = false
   searchedValue.value = ''
 })
+
+function checkIsExistOption(currentOption: OptionType, comparingOption: OptionType) {
+  const { comparingKey } = props
+  return (
+    currentOption === comparingOption ||
+    JSON.stringify(currentOption) === JSON.stringify(comparingOption) ||
+    (comparingKey && currentOption[comparingKey] === comparingOption[comparingKey])
+  )
+}
 
 function checkNewOptionButton() {
   if (searchedValue.value.trim() === '') {
@@ -220,6 +235,7 @@ function checkOpenComboboxButton() {
             :name="`checkbox-${label}`"
             :label="label"
             :value="option"
+            :checked="getCheckedValue(option)"
             v-model="selectedValue"
             no-form-controlled
           />
@@ -228,6 +244,7 @@ function checkOpenComboboxButton() {
             :name="`radio-${label}`"
             :label="label"
             :value="option"
+            :checked="getCheckedValue(option)"
             v-model="selectedValue"
             no-form-cotrolled
           />

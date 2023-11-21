@@ -116,9 +116,15 @@ onUpdated(async () => {
   }
 })
 
-function selectUser(user: User, index: number) {
-  push(user)
-  unselectedUsers.value.splice(index, 1)
+function selectUser(user: User) {
+  const selectedUserIndex = unselectedUsers.value.findIndex(
+    ({ id }) => id === user.id,
+  )
+
+  if (selectedUserIndex !== -1) {
+    push(user)
+    unselectedUsers.value.splice(selectedUserIndex, 1)
+  }
 }
 
 function unselectUser(user: User, index: number) {
@@ -224,6 +230,7 @@ const handleUpdateCompany = handleSubmit(async (values) => {
           label="Выберите руководителя компании:"
           :options="users"
           :display-by="['firstName', 'lastName']"
+          comparing-key="id"
           placeholder="Руководитель компании"
         />
 

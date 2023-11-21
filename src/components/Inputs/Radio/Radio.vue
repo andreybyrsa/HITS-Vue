@@ -25,17 +25,21 @@ const RadioInputClassName = computed(() => [
   props.className,
 ])
 
-const RadioLabelClassName = computed(() => ['form-check-label', props.className])
+const RadioLabelClassName = computed(() => [
+  'form-check-label ms-2',
+  props.className,
+])
 </script>
 
 <template>
-  <div class="d-flex gap-2">
+  <div class="d-flex">
     <input
       :name="name"
       type="radio"
       :class="RadioInputClassName"
       v-model="value"
       :value="props.value"
+      :checked="props.checked"
     />
     <span :class="RadioLabelClassName">
       {{ label }}

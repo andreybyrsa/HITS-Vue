@@ -57,6 +57,8 @@ onMounted(async () => {
         :idea="currentIdea"
       />
       <IdeaFormPlaceholder v-else />
+
+      <router-view />
     </template>
   </PageLayout>
 </template>

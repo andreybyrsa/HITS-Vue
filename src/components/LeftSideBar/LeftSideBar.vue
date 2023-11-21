@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, VueElement } from 'vue'
 import { watchImmediate, useElementHover } from '@vueuse/core'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import NavTab from '@Components/NavTab/NavTab.vue'
@@ -11,6 +11,7 @@ import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import LeftSideBarPlaceholder from '@Components/LeftSideBar/LeftSideBarPlaceholder.vue'
 import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import RolesTypes from '@Domain/Roles'
 
@@ -22,7 +23,10 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const router = useRouter()
-const isOpenedModal = ref(false)
+const route = useRoute()
+
+const isOpenedRoleModal = ref(false)
+const isOpenedNotificationsModal = ref(false)
 
 const userRoles = getRoles()
 
@@ -58,22 +62,24 @@ function getTranslatedRole(currentRole: RolesTypes) {
   return userRoles.translatedRoles[currentRole]
 }
 
-function handleOpenModal() {
-  isOpenedModal.value = true
+function navigateToProfile() {
+  router.push({ path: `${route.fullPath}/profile/${user.value?.email}` })
 }
 
-function handleCloseModal() {
-  isOpenedModal.value = false
+function handleOpenRoleModal() {
+  isOpenedRoleModal.value = true
 }
 
-const isOpenedNotificationModal = ref(false)
+function handleCloseRoleModal() {
+  isOpenedRoleModal.value = false
+}
 
 function handleOpenNotificationModal() {
-  isOpenedNotificationModal.value = true
+  isOpenedNotificationsModal.value = true
 }
 
 function handleCloseNotificationModal() {
-  isOpenedNotificationModal.value = false
+  isOpenedNotificationsModal.value = false
 }
 </script>
 
@@ -102,41 +108,47 @@ function handleCloseNotificationModal() {
 
     <div class="d-flex flex-column gap-2">
       <Button
-        variant="light"
-        class-name="left-side-bar__button text-success"
+        class-name="left-side-bar__button btn-light w-100 text-black"
+        prepend-icon-name="bi bi-person-circle fs-5"
+        @click="navigateToProfile"
+      >
+        {{ isHovered ? 'Профиль' : '' }}
+      </Button>
+
+      <Button
+        class-name="left-side-bar__button btn-light w-100 text-success"
         prepend-icon-name="bi bi-circle-fill fs-6"
-        @click="handleOpenModal"
+        @click="handleOpenRoleModal"
         :disabled="user?.roles.length === 1"
       >
         {{ isHovered ? getTranslatedRole(user.role) : '' }}
       </Button>
 
-      <Button
-        variant="light"
-        class-name="left-side-bar__button"
-        @click="handleLogout"
-        prepend-icon-name="bi bi-box-arrow-left"
-      >
-        {{ isHovered ? 'Выйти' : '' }}
-      </Button>
-
-      <Button
+      <!-- <Button
         variant="light"
         class-name="left-side-bar__button"
         @click="handleOpenNotificationModal"
         prepend-icon-name="bi bi-bell"
       >
         {{ isHovered ? 'Уведомления' : '' }}
+      </Button> -->
+
+      <Button
+        class-name="left-side-bar__button btn-light w-100"
+        @click="handleLogout"
+        prepend-icon-name="bi bi-box-arrow-left"
+      >
+        {{ isHovered ? 'Выйти' : '' }}
       </Button>
     </div>
 
     <RoleModal
-      :is-opened="isOpenedModal"
-      @close-modal="handleCloseModal"
+      :is-opened="isOpenedRoleModal"
+      @close-modal="handleCloseRoleModal"
     />
 
     <NotificationModalWindow
-      :is-opened="isOpenedNotificationModal"
+      :is-opened="isOpenedNotificationsModal"
       @close-modal="handleCloseNotificationModal"
     />
   </div>

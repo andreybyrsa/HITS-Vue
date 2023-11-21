@@ -8,6 +8,7 @@ interface RadioProps {
   label?: string
 
   value?: unknown
+  checked?: boolean
 
   error?: string
 }

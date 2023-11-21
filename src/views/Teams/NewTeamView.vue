@@ -13,6 +13,8 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
     <template #content>
       <TeamForm mode="creating" />
+
+      <router-view />
     </template>
   </PageLayout>
 </template>
