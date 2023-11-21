@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
-import { watchImmediate } from '@vueuse/core'
+import { ref, onMounted, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import {
@@ -89,13 +88,14 @@ async function handleCustomerChange(selectedCompany: string) {
   }
 }
 
-watchImmediate(
-  () => props.idea.customer,
-  (choosenCompany) => {
+watch(
+  [() => props.idea.customer, companies],
+  ([choosenCompany]) => {
     if (choosenCompany) {
       handleCustomerChange(choosenCompany)
     }
   },
+  { immediate: true },
 )
 </script>
 

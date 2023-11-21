@@ -56,6 +56,8 @@ onMounted(async () => {
       />
 
       <TeamFormPlaceholder v-else />
+
+      <router-view />
     </template>
   </PageLayout>
 </template>

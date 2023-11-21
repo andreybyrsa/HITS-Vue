@@ -28,6 +28,8 @@
       </template>
 
       <TablePlaceholder v-else />
+
+      <router-view />
     </template>
   </PageLayout>
 </template>

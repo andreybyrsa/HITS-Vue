@@ -33,6 +33,7 @@ const { user } = storeToRefs(userStore)
 const router = useRouter()
 
 const stackTechnologies = ref<Skill[]>([])
+const ideaSkills = ref<Skill[]>()
 
 const isSavingDraft = ref(false)
 const isSendingOnApproval = ref(false)
@@ -90,7 +91,7 @@ watchImmediate(
           )
         }
 
-        stackTechnologies.value = response.skills
+        ideaSkills.value = response.skills
       }
     }
   },
@@ -192,7 +193,10 @@ async function saveIdeaSkills(
     <div class="w-75 d-flex flex-column gap-3">
       <IdeaFormInputs />
 
-      <StackCategories v-model:stack="stackTechnologies" />
+      <StackCategories
+        :skills="ideaSkills"
+        v-model:stack="stackTechnologies"
+      />
 
       <CustomerAndContact
         :idea="values"
