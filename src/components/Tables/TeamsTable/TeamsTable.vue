@@ -25,8 +25,7 @@ import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
-import Team from '@Domain/Team'
-import { ProfileSkills } from '@Domain/Profile'
+import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 
 import TeamService from '@Services/TeamService'
@@ -37,6 +36,7 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import Profile from '@Domain/Profile'
 
 const router = useRouter()
 
@@ -46,7 +46,7 @@ const notificationsStore = useNotificationsStore()
 
 const teams = defineModel<Team[]>({ required: true })
 const skills = ref<Skill[]>([])
-const profileSkills = ref<ProfileSkills>()
+const profile = ref<Profile>()
 
 const deletingTeamId = ref<string | null>(null)
 
@@ -74,21 +74,21 @@ function checkResponseStatus<T>(
 onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
-    const { token, id } = currentUser
+    const { token, email } = currentUser
 
     const teamsTableParallelRequests = [
       () => SkillsService.getAllSkills(token),
-      () => ProfileService.getProfileSkills(id, token),
+      () => ProfileService.getUserProfile(email, token),
     ]
 
-    await makeParallelRequests<ProfileSkills | Skill[] | Error>(
+    await makeParallelRequests<Profile | Skill[] | Error>(
       teamsTableParallelRequests,
     ).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
           checkResponseStatus(response, skills)
         } else if (response.id === 1) {
-          checkResponseStatus(response, profileSkills)
+          checkResponseStatus(response, profile)
         }
       })
     })
@@ -105,7 +105,7 @@ onMounted(async () => {
 
 const teamTableColumns: TableColumn<Team>[] = [
   {
-    key: 'closed',
+    key: 'isClosed',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusStyle,
@@ -167,7 +167,7 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
       .map(({ name }) => ({
         label: name,
         value: name,
-        isMarked: !!profileSkills.value?.skills.find((skill) => skill.name === name),
+        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
       }))
       .sort((a, b) => +b.isMarked - +a.isMarked),
     refValue: filterBySkills,
@@ -258,7 +258,7 @@ async function handleDeleteTeam() {
 }
 
 function checkTeamStatus(team: Team, status: FilterValue) {
-  return team.closed === status
+  return team.isClosed === status
 }
 
 function checkTeamVacancies(team: Team, isFilteringByVacancies: FilterValue) {

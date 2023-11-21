@@ -178,12 +178,6 @@ function getMocks(): Mocks {
       type: 'DATABASE',
       confirmed: true,
     },
-    {
-      id: '19',
-      name: 'Kotlin',
-      type: 'LANGUAGE',
-      confirmed: true,
-    },
   ]
 
   const usersGroups: UsersGroup[] = [
@@ -480,11 +474,6 @@ function getMocks(): Mocks {
         skills[7],
         skills[8],
         skills[9],
-        skills[10],
-        skills[11],
-        skills[12],
-        skills[13],
-        skills[14],
       ],
       ideas: [ideas[0], ideas[1]],
       projects: [
