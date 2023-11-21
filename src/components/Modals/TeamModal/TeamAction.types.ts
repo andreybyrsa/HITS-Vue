@@ -1,4 +1,4 @@
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 
 interface TeamActionProps {
   team?: Team

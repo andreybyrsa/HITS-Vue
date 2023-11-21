@@ -5,7 +5,7 @@ import { TeamDescriptionEmits } from '@Components/Modals/TeamModal/TeamModal.typ
 import TeamProjects from '@Components/Modals/TeamModal/TeamProjects.vue'
 import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
 
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 
 const team = defineModel<Team>({ required: true })
 

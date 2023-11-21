@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Typography from '@Components/Typography/Typography.vue'
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 import { useDateFormat } from '@vueuse/core'
 
 const team = defineModel<Team>({ required: true })

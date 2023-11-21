@@ -15,7 +15,7 @@ import TeamMainStuff from '@Components/Modals/TeamModal/TeamMainStuff.vue'
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 
 const teamStore = useTeamStore()
 

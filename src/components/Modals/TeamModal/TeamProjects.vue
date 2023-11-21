@@ -2,7 +2,7 @@
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 
 const team = defineModel<Team>({ required: true })
 </script>

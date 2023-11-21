@@ -1,5 +1,3 @@
-import { Skill } from '@Domain/Skill'
-
 interface TeamMember {
   id: string
   email: string
