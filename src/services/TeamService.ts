@@ -1,16 +1,19 @@
 import { Team, TeamSkills } from '@Domain/Team'
 import Success from '@Domain/ResponseMessage'
 import TeamMember from '@Domain/TeamMember'
+
 import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+
 const teamsAxios = defineAxios(getMocks().teams)
 const teamMemberAxios = defineAxios(getMocks().teamMember)
 const teamSkillsAxios = defineAxios(getMocks().teamSkills)
+
 const getTeams = async (token: string): Promise<Team[] | Error> => {
   return await teamsAxios
-    .get('/team/all', {
+    .get(`/team/all `, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -67,9 +70,10 @@ const getTeamSkills = async (
       return new Error(error)
     })
 }
+
 const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
   return await teamsAxios
-    .post('/team/create', team, {
+    .post(`/team/add`, team, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -80,11 +84,11 @@ const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
     })
 }
 const createTeamSkills = async (
-  teamSkills: TeamSkills,
+  wantedSkills: TeamSkills,
   token: string,
 ): Promise<TeamSkills | Error> => {
   return await teamSkillsAxios
-    .post('/team/skills/add', teamSkills, {
+    .post('/team/skills/add', wantedSkills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -107,7 +111,7 @@ const updateTeam = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { id }, responseData: { success: 'Успешное обновление команды' } },
+      { params: { id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -117,13 +121,13 @@ const updateTeam = async (
 }
 const updateTeamSkills = async (
   teamId: string,
-  teamSkills: TeamSkills,
+  wantedSkills: TeamSkills,
   token: string,
 ): Promise<TeamSkills | Error> => {
   return await teamSkillsAxios
     .put(
       '/team/skills/update',
-      teamSkills,
+      wantedSkills,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -136,6 +140,29 @@ const updateTeamSkills = async (
       return new Error(error)
     })
 }
+
+// const kickMember = async (
+//   member: TeamMember,
+//   teamId: string,
+//   token: string,
+// ): Promise<Success | Error> => {
+//   return await teamMemberAxios
+//     .put<Success>(
+//       `/team/kick/${teamId}`,
+//       member,
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//       },
+//       { params: { userId: teamId } },
+//     )
+//     .then((response) => response.data)
+//     .catch(({ response }) => {
+//       const error = response?.data?.error ?? 'Ошибка кика пользователя'
+//       return new Error(error)
+//     })
+// }
+
 const deleteTeam = async (id: string, token: string): Promise<Success | Error> => {
   return await teamsAxios
     .delete(
@@ -144,7 +171,7 @@ const deleteTeam = async (id: string, token: string): Promise<Success | Error> =
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { id } },
+      { responseData: { success: 'Успешное удаление' }, params: { id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -157,6 +184,7 @@ const TeamService = {
   getTeam,
   getTeamMembers,
   getTeamSkills,
+
   createTeam,
   createTeamSkills,
   updateTeam,

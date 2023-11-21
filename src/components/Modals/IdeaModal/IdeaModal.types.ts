@@ -1,7 +1,6 @@
 import { VueElement } from 'vue'
 
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
-import Comment from '@Domain/Comment'
 
 interface IdeaDescriptionProps {
   idea: Idea
@@ -14,7 +13,6 @@ interface IdeaActionsProps {
 
 interface IdeaCommentsProps {
   idea: Idea
-  comments?: Comment[]
 
   ideaModalRef: VueElement | null
 }
@@ -29,8 +27,8 @@ interface IdeaDescriptionEmits {
 }
 
 interface IdeaModalCollapseType {
-  key: number
-  id: keyof Idea
+  key: string
+  id: string
   ideaKey: keyof Idea
   text: string
 }

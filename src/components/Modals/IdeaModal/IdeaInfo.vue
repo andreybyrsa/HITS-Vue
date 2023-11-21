@@ -32,14 +32,14 @@ function getModeButtonText() {
 
   if (currentUser && currentUser.role) {
     const { email, role } = currentUser
-    const { initiator, status } = props.idea
+    const { initiatorEmail, status } = props.idea
 
     const currentModeButton = modeButtons.find(
       (button) => button.roles.includes(role) && button.status.includes(status),
     )
     if (currentModeButton) return currentModeButton.text
 
-    if ((status === 'NEW' || status === 'ON_EDITING') && email === initiator) {
+    if ((status === 'NEW' || status === 'ON_EDITING') && email === initiatorEmail) {
       return 'Редактрирование'
     }
 
@@ -102,7 +102,7 @@ function getIdeaStatus() {
         <Icon class-name="bi bi-envelope text-secondary fs-3 opacity-25" />
 
         <Typography class-name="text-primary">
-          {{ idea.initiator }}
+          {{ idea.initiatorEmail }}
         </Typography>
       </div>
     </div>

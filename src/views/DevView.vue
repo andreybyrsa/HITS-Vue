@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -14,10 +14,34 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
 
+import Input from '@Components/Inputs/Input/Input.vue'
+import TeamService from '@Services/TeamService'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await TeamService.getTeams(token)
+
+    console.log(response)
+  }
+})
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref(false)
+
+const switchButton = ref<boolean>(false)
+
+function switchContent() {
+  switchButton.value ? (switchButton.value = false) : (switchButton.value = true)
+}
 
 const { values, handleSubmit } = useForm({
   validationSchema: {
@@ -43,6 +67,28 @@ function handleLogin() {
     </template>
 
     <template #content>
+      <router-view></router-view>
+      <Button @click="switchContent"> Проверка KeepAlive </Button>
+      <KeepAlive>
+        <Input
+          v-if="switchButton"
+          name="первый"
+        >
+        </Input>
+      </KeepAlive>
+      <Input
+        v-if="!switchButton"
+        name="второй"
+      >
+      </Input>
+
+      <Button
+        @click="router.push('/teams/list/1')"
+        class-name="btn-primary"
+        append-icon-name="bi bi-plus-lg"
+        >Открыть команду</Button
+      >
+
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
       <div class="table-responsive"></div>
 

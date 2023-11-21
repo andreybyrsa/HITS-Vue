@@ -49,13 +49,6 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     iconName: 'bi bi-people',
     roles: getRoles().roles,
   },
-  // {
-  //   id: 6,
-  //   text: 'Журнал изменений',
-  //   to: '/last-activity-note',
-  //   iconName: 'bi bi-book',
-  //   roles: getRoles().roles,
-  // },
   {
     id: 7,
     text: 'Админ панель',
@@ -100,20 +93,13 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
   },
-  // {
-  //   id: 12,
-  //   text: 'Отчеты',
-  //   to: '/notes',
-  //   iconName: 'bi bi-file-earmark',
-  //   roles: ['EXPERT', 'ADMIN'],
-  // },
   {
-    id: 13,
+    id: 14,
     text: 'Настройки',
     to: '/change-email',
     routes: [
       {
-        id: 14,
+        id: 15,
         to: '/change-email',
         text: 'Изменение почты',
         iconName: 'bi bi-pencil-square',

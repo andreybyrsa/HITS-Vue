@@ -42,8 +42,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
-const currentCompanyId = ref()
-const currentDeleteCompanyId = ref<number | null>(null)
+const currentCompanyId = ref<string>()
+const currentDeleteCompanyId = ref<string | null>(null)
 
 const isOpenedUpdatingCompanyModal = ref(false)
 const isOpenedDeletingCompanyModal = ref(false)
@@ -57,7 +57,7 @@ const companiesTableColumns: TableColumn<Company>[] = [
   },
   {
     key: 'owner',
-    label: 'Владелец',
+    label: 'Руководитель',
     getRowCellFormat: getCompanyOwnerFormat,
   },
 ]

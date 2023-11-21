@@ -9,7 +9,7 @@ import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 
 import TeamService from '@Services/TeamService'
 
@@ -52,6 +52,7 @@ onMounted(async () => {
       <TeamForm
         v-if="team"
         :team="team"
+        mode="editing"
       />
 
       <TeamFormPlaceholder v-else />
