@@ -291,19 +291,19 @@ function checkOpenComboboxButton() {
   }
 }
 
-.hint {
-  cursor: pointer;
-  display: inline-block;
-  vertical-align: middle;
-  color: #007bff;
-}
+// .hint {
+//   cursor: pointer;
+//   display: inline-block;
+//   vertical-align: middle;
+//   color: #007bff;
+// }
 
-.custom-tooltip .tooltip-inner {
-  background-color: #333;
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 4px;
-  max-width: 450px;
-  text-align: left;
-}
+// .custom-tooltip .tooltip-inner {
+//   background-color: #333;
+//   color: #fff;
+//   padding: 5px 10px;
+//   border-radius: 4px;
+//   max-width: 450px;
+//   text-align: left;
+// }
 </style>

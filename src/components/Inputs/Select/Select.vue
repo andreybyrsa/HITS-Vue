@@ -79,18 +79,3 @@ const LabelClassName = computed(() => [
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.hint {
-  cursor: pointer;
-  display: inline-block;
-  vertical-align: middle;
-  color: #007bff;
-}
-
-.tooltip {
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-</style>
