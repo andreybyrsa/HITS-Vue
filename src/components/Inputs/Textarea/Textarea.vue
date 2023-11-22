@@ -9,6 +9,8 @@ import {
 
 import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
+import Icon from '@Components/Icon/Icon.vue'
+
 const props = defineProps<TextareaProps>()
 
 const emit = defineEmits<TextareaEmits>()
@@ -41,6 +43,12 @@ const LabelClassName = computed(() => [
       v-if="label"
     >
       {{ label }}
+      <Icon
+        class-name="bi bi-patch-question"
+        v-if="hint"
+        class="hint"
+        v-tooltip="hint"
+      ></Icon>
     </label>
 
     <div class="input-group">
@@ -76,3 +84,18 @@ const LabelClassName = computed(() => [
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.hint {
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  color: #007bff;
+}
+
+.tooltip {
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+</style>

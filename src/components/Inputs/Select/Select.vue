@@ -4,6 +4,8 @@ import { useField } from 'vee-validate'
 
 import { SelectProps } from '@Components/Inputs/Select/Select.types'
 
+import Icon from '@Components/Icon/Icon.vue'
+
 const props = defineProps<SelectProps>()
 
 defineModel({
@@ -34,6 +36,12 @@ const LabelClassName = computed(() => [
       :class="LabelClassName"
     >
       {{ label }}
+      <Icon
+        class-name="bi bi-patch-question"
+        v-if="hint"
+        class="hint"
+        v-tooltip="hint"
+      ></Icon>
     </label>
 
     <select
@@ -71,3 +79,18 @@ const LabelClassName = computed(() => [
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.hint {
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  color: #007bff;
+}
+
+.tooltip {
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+</style>

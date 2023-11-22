@@ -195,6 +195,12 @@ function checkOpenComboboxButton() {
       class="form-label mb-2 text-primary"
     >
       {{ props.label }}
+      <Icon
+        class-name="bi bi-patch-question"
+        v-if="hint"
+        class="hint"
+        v-tooltip="hint"
+      ></Icon>
     </label>
 
     <div class="combobox">
@@ -283,5 +289,21 @@ function checkOpenComboboxButton() {
 
     @include flexible(center, flex-start);
   }
+}
+
+.hint {
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  color: #007bff;
+}
+
+.custom-tooltip .tooltip-inner {
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  max-width: 450px;
+  text-align: left;
 }
 </style>

@@ -20,6 +20,7 @@ function checkKeyDownValue(event: KeyboardEvent) {
       label="Название идеи*"
       class-name="rounded-end"
       placeholder="Введите название идеи"
+      hint="Здесь Вы должны написать название для вашей идеи"
     />
 
     <Textarea
@@ -30,10 +31,14 @@ function checkKeyDownValue(event: KeyboardEvent) {
       :label="textarea.label"
       class-name="rounded-end"
       :placeholder="textarea.placeholder"
+      :hint="textarea.hint"
     ></Textarea>
 
     <div>
-      <Typography class-name="text-primary">
+      <Typography
+        class-name="text-primary"
+        hint="Необходимо указать желаемую численность команды, при наличии физических ограничений, т.е. если предполагается предоставление рабочих мест инициатором. В остальных случаях нужно оставить значение по умолчанию."
+      >
         Желаемое количество участников в команде*
       </Typography>
 
