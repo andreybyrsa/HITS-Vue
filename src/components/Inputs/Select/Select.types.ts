@@ -20,6 +20,8 @@ interface SelectProps {
   error?: string
 
   disabled?: boolean
+
+  hint?: string
 }
 
 export { SelectProps, OptionType }

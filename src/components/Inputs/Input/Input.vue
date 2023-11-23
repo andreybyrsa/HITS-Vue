@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
+import tooltipDirective from '@Utils/tooltip'
+import Icon from '@Components/Icon/Icon.vue'
 
 import { InputProps, InputEmits } from '@Components/Inputs/Input/Input.types'
 
@@ -39,6 +41,12 @@ const LabelClassName = computed(() => [
       v-if="label"
     >
       {{ label }}
+      <Icon
+        class-name="bi bi-patch-question"
+        v-if="hint"
+        class="hint"
+        v-tooltip="hint"
+      ></Icon>
     </label>
 
     <div class="input-group">
@@ -77,3 +85,21 @@ const LabelClassName = computed(() => [
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.hint {
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  color: #007bff;
+}
+
+.custom-tooltip .tooltip-inner {
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  max-width: 450px;
+  text-align: left;
+}
+</style>

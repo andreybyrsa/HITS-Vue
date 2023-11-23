@@ -12,6 +12,7 @@ import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCal
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import Button from '@Components/Button/Button.vue'
+import { hints } from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
 
 import { Idea, IdeaSkills } from '@Domain/Idea'
 import { Skill } from '@Domain/Skill'
@@ -196,6 +197,7 @@ async function saveIdeaSkills(
       <StackCategories
         :skills="ideaSkills"
         v-model:stack="stackTechnologies"
+        :hint="hints.stackCategories"
       />
 
       <CustomerAndContact

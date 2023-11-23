@@ -11,6 +11,8 @@ interface ComboboxProps<OptionType> {
   placeholder?: string
   multiselectPlaceholder?: string
   disabled?: boolean
+
+  hint?: string
 }
 
 interface ComboboxEmits<OptionType> {

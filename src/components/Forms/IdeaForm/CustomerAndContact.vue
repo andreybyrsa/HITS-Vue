@@ -7,6 +7,7 @@ import {
   CustomerAndContactEmits,
 } from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import { hints } from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
 
 import Company from '@Domain/Company'
 import RolesTypes from '@Domain/Roles'
@@ -106,6 +107,7 @@ watch(
       label="Заказчик*"
       :options="companiesNames"
       placeholder="Выберите заказчика"
+      :hint="hints.customer"
     />
   </div>
 
