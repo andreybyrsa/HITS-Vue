@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 import TeamMember from '@Domain/TeamMember'
 
 import Typography from '@Components/Typography/Typography.vue'

@@ -9,7 +9,7 @@ import Button from '@Components/Button/Button.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 import TeamsTable from '@Components/Tables/TeamsTable/TeamsTable.vue'
 
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 

@@ -22,6 +22,8 @@ interface InputProps {
   error?: string
 
   disabled?: boolean
+
+  hint?: string
 }
 
 interface InputEmits {

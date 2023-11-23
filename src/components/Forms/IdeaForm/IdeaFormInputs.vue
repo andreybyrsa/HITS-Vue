@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Input from '@Components/Inputs/Input/Input.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
-import textareas from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
+import { textareas, hints } from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
 import Typography from '@Components/Typography/Typography.vue'
 
 function checkKeyDownValue(event: KeyboardEvent) {
@@ -20,6 +20,7 @@ function checkKeyDownValue(event: KeyboardEvent) {
       label="Название идеи*"
       class-name="rounded-end"
       placeholder="Введите название идеи"
+      :hint="hints.name"
     />
 
     <Textarea
@@ -30,10 +31,14 @@ function checkKeyDownValue(event: KeyboardEvent) {
       :label="textarea.label"
       class-name="rounded-end"
       :placeholder="textarea.placeholder"
+      :hint="textarea.hint"
     ></Textarea>
 
     <div>
-      <Typography class-name="text-primary">
+      <Typography
+        class-name="text-primary"
+        :hint="hints.wandtedTeamSize"
+      >
         Желаемое количество участников в команде*
       </Typography>
 

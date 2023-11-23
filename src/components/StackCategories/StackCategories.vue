@@ -11,7 +11,6 @@ import {
 } from '@Components/StackCategories/StackCategories'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import Skills from '@Components/Skills/Skills.vue'
-
 import { Skill, SkillType } from '@Domain/Skill'
 
 import SkillsService from '@Services/SkillsService'
@@ -118,7 +117,12 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
 
 <template>
   <div>
-    <Typography class-name="text-primary">Стек технологий*</Typography>
+    <Typography
+      class-name="text-primary"
+      :hint="hint"
+    >
+      Стек технологий*
+    </Typography>
 
     <div
       v-if="skills"

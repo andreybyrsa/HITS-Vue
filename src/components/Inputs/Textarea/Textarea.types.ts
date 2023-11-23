@@ -18,6 +18,8 @@ interface TextareaProps {
   error?: string
 
   disabled?: boolean
+
+  hint?: string
 }
 
 interface TextareaEmits {

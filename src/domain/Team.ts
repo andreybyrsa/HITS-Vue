@@ -6,15 +6,17 @@ interface Team {
   id: string
   name: string
   createdAt: string
-
   description: string
-  closed: boolean
+  isClosed: boolean
   membersCount: number
   owner: TeamMember
   leader?: TeamMember
   members: TeamMember[]
-  skills: Skill[]
   projects?: Project[]
 }
-
-export default Team
+interface TeamSkills {
+  teamId: string
+  skills: Skill[]
+  wantedSkills: Skill[]
+}
+export { Team, TeamSkills }
