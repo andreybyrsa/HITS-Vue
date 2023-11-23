@@ -180,6 +180,74 @@ function getMocks(): Mocks {
     },
   ]
 
+  const teams: Team[] = [
+    {
+      id: '0',
+      name: 'Фронтендеры',
+      isClosed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 4,
+      owner: users[0],
+      leader: users[1],
+      members: [...users],
+      skills: [skills[0], skills[4], skills[6], skills[9]],
+      wantedSkills: [skills[0], skills[11], skills[16]],
+    },
+    {
+      id: '1',
+      name: 'Бэккендеры',
+      isClosed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 3,
+      owner: users[1],
+      leader: users[2],
+      members: [users[3]],
+      skills: [
+        skills[0],
+        skills[1],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+        skills[12],
+        skills[13],
+      ],
+      wantedSkills: [
+        skills[0],
+        skills[1],
+        skills[5],
+        skills[8],
+        skills[9],
+        skills[10],
+        skills[18],
+        skills[17],
+        skills[16],
+        skills[15],
+        skills[11],
+        skills[12],
+        skills[13],
+      ],
+    },
+    {
+      id: '2',
+      name: 'Команда 3',
+      isClosed: false,
+      createdAt: '2023-10-30T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 11,
+      owner: users[1],
+      leader: users[2],
+      members: [users[3]],
+      skills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
+      wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
+    },
+  ]
+
   const usersGroups: UsersGroup[] = [
     {
       id: '0',
@@ -415,50 +483,6 @@ function getMocks(): Mocks {
       teamId: '1',
       wantedSkills: [skills[0], skills[2]],
       skills: [],
-    },
-  ]
-  const teams: Team[] = [
-    {
-      id: '0',
-      name: 'Фронтендеры',
-      isClosed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 4,
-      owner: users[0],
-      leader: users[1],
-      members: [...users],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
-      wantedSkills: [skills[0], skills[11], skills[16]],
-    },
-    {
-      id: '1',
-      name: 'Бэккендеры',
-      isClosed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 3,
-      owner: users[1],
-      leader: users[2],
-      members: [users[3]],
-      skills: [skills[1], skills[5], skills[7], skills[14]],
-      wantedSkills: [skills[1], skills[5], skills[10], skills[13], skills[16]],
-    },
-    {
-      id: '2',
-      name: 'Команда 3',
-      isClosed: false,
-      createdAt: '2023-10-30T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 11,
-      owner: users[1],
-      leader: users[2],
-      members: [users[3]],
-      skills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
-      wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
     },
   ]
 

@@ -1,15 +1,27 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
+
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import { TeamDescriptionEmits } from '@Components/Modals/TeamModal/TeamModal.types'
 import TeamProjects from '@Components/Modals/TeamModal/TeamProjects.vue'
 import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
+import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
+import { SkillsForRadar } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
 import { Team } from '@Domain/Team'
 
 const team = defineModel<Team>({ required: true })
 
 const emit = defineEmits<TeamDescriptionEmits>()
+
+const radarChartsSkills = ref<SkillsForRadar[]>([
+  { label: 'Фактические компетенции', skills: team.value.skills },
+  {
+    label: 'Желаемые компетенции',
+    skills: team.value.wantedSkills,
+  },
+])
 </script>
 <template>
   <div class="header">
@@ -42,6 +54,8 @@ const emit = defineEmits<TeamDescriptionEmits>()
       <TeamProjects v-model="team" />
     </li>
   </ul>
+
+  <SkillsRadarChart :skills="radarChartsSkills" />
 </template>
 
 <style lang="scss" scoped>
