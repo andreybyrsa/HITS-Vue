@@ -37,7 +37,7 @@ function checkKeyDownValue(event: KeyboardEvent) {
     <div>
       <Typography
         class-name="text-primary"
-        :hint="hints.wandtedTeamSize"
+        :hint="hints.wantedTeamSize"
       >
         Желаемое количество участников в команде*
       </Typography>
