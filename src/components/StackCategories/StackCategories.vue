@@ -11,7 +11,6 @@ import {
 } from '@Components/StackCategories/StackCategories'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import Skills from '@Components/Skills/Skills.vue'
-import Icon from '@Components/Icon/Icon.vue'
 import { Skill, SkillType } from '@Domain/Skill'
 
 import SkillsService from '@Services/SkillsService'
@@ -120,8 +119,9 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
   <div>
     <Typography
       class-name="text-primary"
-      hint="В стеке технологий необходимо указать минимальный набор технологий, которые должны быть использованы командой для реализации. Избегайте в одной идее конкурирующих между собой технологий. Например нельзя указать одновременно MYSQL и PostgreSQL или нельзя указать одновременно VueJS и ReactJS.<br/>Желательно выбирать технологии, которыми Вы лучше всего владеете на практике и легко сможете дать оценку и консультацию команде студентов."
-      >Стек технологий*
+      :hint="hint"
+    >
+      Стек технологий*
     </Typography>
 
     <div
