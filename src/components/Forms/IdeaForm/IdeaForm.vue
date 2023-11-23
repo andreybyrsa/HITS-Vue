@@ -38,6 +38,7 @@ const ideaSkills = ref<Skill[]>()
 
 const isSavingDraft = ref(false)
 const isSendingOnApproval = ref(false)
+const isUpdatingByAdmin = ref(false)
 
 const { values, setFieldValue, setValues, validateField, handleSubmit } =
   useForm<Idea>({
@@ -150,6 +151,26 @@ const handleSaveDraftIdea = async () => {
   }
 }
 
+const handleUpdateIdeaByAdmin = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    isUpdatingByAdmin.value = true
+    const response = await IdeasService.updateIdeaByAdmin(values, values.id, token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    await saveIdeaSkills(values.id, token, props.idea)
+    isUpdatingByAdmin.value = false
+
+    router.push({ name: 'ideas-list' })
+  }
+}
+
 async function saveIdeaSkills(
   ideaId: string,
   token: string,
@@ -183,6 +204,14 @@ async function saveIdeaSkills(
     }
   }
 }
+
+function checkSaveDraftButton() {
+  return values.status !== 'ON_EDITING' && user.value?.role !== 'ADMIN'
+}
+
+function checkUpdateByAdminButton() {
+  return values.id && user.value?.role === 'ADMIN'
+}
 </script>
 
 <template>
@@ -209,7 +238,7 @@ async function saveIdeaSkills(
 
       <div class="idea-form__submit-buttons">
         <Button
-          v-if="values.status !== 'ON_EDITING'"
+          v-if="checkSaveDraftButton()"
           variant="primary"
           :is-loading="isSavingDraft"
           @click="handleSaveDraftIdea"
@@ -218,11 +247,21 @@ async function saveIdeaSkills(
         </Button>
 
         <Button
+          v-if="user?.role !== 'ADMIN'"
           variant="success"
           :is-loading="isSendingOnApproval"
           @click="handleSaveAndSendOnApproval"
         >
           Отправить на согласование
+        </Button>
+
+        <Button
+          v-if="checkUpdateByAdminButton()"
+          variant="success"
+          :is-loading="isUpdatingByAdmin"
+          @click="handleUpdateIdeaByAdmin"
+        >
+          Сохранить изменения
         </Button>
       </div>
     </div>
