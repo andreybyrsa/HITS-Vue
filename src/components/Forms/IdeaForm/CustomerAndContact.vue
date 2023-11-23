@@ -85,7 +85,15 @@ async function handleCustomerChange(selectedCompany: string) {
       ({ firstName, lastName }) => `${firstName} ${lastName}`,
     )
 
-    emit('set-value', 'contactPerson', companyContacts.value[0])
+    const isCorrectContactPerson = companyContacts.value.find(
+      (user) => user === props.idea.contactPerson,
+    )
+
+    emit(
+      'set-value',
+      'contactPerson',
+      isCorrectContactPerson ?? companyContacts.value[0],
+    )
   }
 }
 
