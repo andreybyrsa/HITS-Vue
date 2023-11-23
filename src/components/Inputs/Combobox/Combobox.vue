@@ -162,11 +162,14 @@ onClickOutside(comboboxRef, () => {
 
 function checkIsExistOption(currentOption: OptionType, comparingOption: OptionType) {
   const { comparingKey } = props
-  return (
-    currentOption === comparingOption ||
-    JSON.stringify(currentOption) === JSON.stringify(comparingOption) ||
-    (comparingKey && currentOption[comparingKey] === comparingOption[comparingKey])
-  )
+
+  if (currentOption && comparingOption) {
+    return (
+      currentOption === comparingOption ||
+      JSON.stringify(currentOption) === JSON.stringify(comparingOption) ||
+      (comparingKey && currentOption[comparingKey] === comparingOption[comparingKey])
+    )
+  }
 }
 
 function checkNewOptionButton() {
@@ -196,11 +199,11 @@ function checkOpenComboboxButton() {
     >
       {{ props.label }}
       <Icon
+        v-if="props.hint"
         class-name="bi bi-patch-question"
-        v-if="hint"
         class="hint"
-        v-tooltip="hint"
-      ></Icon>
+        v-tooltip="props.hint"
+      />
     </label>
 
     <div class="combobox">
