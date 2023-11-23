@@ -89,13 +89,13 @@ function filterData(filters: Ref<FilterValue | FilterValue[] | undefined>[]) {
           if (filter.value instanceof Array) {
             return filter.value.length
               ? filter.value.some((value) =>
-                  props.filters?.[index].checkFilter(dataValue, value),
+                  props.filters?.[index].checkFilter?.(dataValue, value),
                 )
               : true
           }
 
           return filter.value !== undefined
-            ? props.filters?.[index].checkFilter(dataValue, filter.value)
+            ? props.filters?.[index].checkFilter?.(dataValue, filter.value)
             : true
         })
       })
@@ -278,7 +278,7 @@ function checkDropdownActionStatement(
                 <div
                   :class="`${column.contentClassName ?? ''} flex-wrap d-flex gap-1`"
                 >
-                  <template v-if="row[column.key] instanceof Array">
+                  <div v-if="row[column.key] instanceof Array">
                     <div
                       v-for="(value, index) in row[column.key]"
                       :key="index"
@@ -290,16 +290,17 @@ function checkDropdownActionStatement(
                         )
                       "
                     >
-                      {{
-                        getRowCellFormat(
-                          row[column.key],
-                          column.getRowCellFormat,
-                          +index.toString(),
-                        )
-                      }}
+                      <div v-if="column.key != 'checkedBy'">
+                        {{
+                          getRowCellFormat(
+                            row[column.key],
+                            column.getRowCellFormat,
+                            +index.toString(),
+                          )
+                        }}
+                      </div>
                     </div>
-                  </template>
-
+                  </div>
                   <div
                     v-else
                     :class="[
@@ -309,6 +310,15 @@ function checkDropdownActionStatement(
                     @click="rowCellClick(row, column.rowCellClick)"
                   >
                     {{ getRowCellFormat(row[column.key], column.getRowCellFormat) }}
+                  </div>
+
+                  <div v-if="column.key == 'checkedBy'">
+                    <Icon
+                      class-name="bi bi-circle-fill fs-6"
+                      :class="[
+                        getRowCellStyle(row[column.key], column.getRowCellStyle),
+                      ]"
+                    />
                   </div>
                 </div>
               </td>

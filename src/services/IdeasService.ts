@@ -183,6 +183,50 @@ const updateIdeaSkills = async (
     })
 }
 
+const checkIdea = async (
+  id: string,
+  email: string,
+  token: string,
+): Promise<void | Error> => {
+  return await ideasAxios
+    .putNoRequestBody<void>(
+      `/idea/check/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id }, requestData: { checkedBy: [email] } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка просмотра комментария'
+      return new Error(error)
+    })
+}
+
+function formatNotConfirmedIdea(idea: Idea[]) {
+  return idea.filter((idea) => idea.id === '0')
+}
+
+const getExpertNotConfirmedRating = async (
+  token: string,
+): Promise<Idea[] | Error> => {
+  return await ideasAxios
+    .get<Idea[]>(
+      `/idea/not/confirmed/all`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { formatter: formatNotConfirmedIdea },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения идей'
+      return new Error(error)
+    })
+}
+
 const sendIdeaOnApproval = async (
   id: string,
   status: IdeaStatusTypes,
@@ -295,6 +339,7 @@ const IdeasService = {
   getIdea,
   getInitiatorIdea,
   getIdeaSkills,
+  getExpertNotConfirmedRating,
 
   saveIdeaDraft,
   createIdeaSkills,
@@ -305,6 +350,7 @@ const IdeasService = {
   sendIdeaOnApproval,
   updateIdeaStatus,
   updateIdeaByAdmin,
+  checkIdea,
 
   deleteIdea,
   deleteIdeaByAdmin,

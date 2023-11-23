@@ -12,7 +12,7 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
       const error = response?.data?.error ?? 'Ошибка авторизации'
       console.log(user)
       return {
-        id: '0',
+        id: '1',
         token: '1',
         firstName: 'Da',
         lastName: 'Da',

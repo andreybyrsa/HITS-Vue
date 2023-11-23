@@ -62,6 +62,14 @@ function getMocks(): Mocks {
       lastName: 'Владелец',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
+    {
+      id: '4',
+      token: '161232142341',
+      email: 'kirill.vlasov.05@inbox.ru',
+      firstName: 'Кирилл',
+      lastName: 'Власов',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
+    },
   ]
   const usersEmails: string[] = users.map((user) => user.email)
   const skills: Skill[] = [
@@ -197,7 +205,7 @@ function getMocks(): Mocks {
     {
       id: '1',
       name: 'Группа экспертов',
-      users: [],
+      users: [users[0], users[4]],
       roles: ['ADMIN', 'EXPERT'],
     },
   ]
@@ -269,7 +277,7 @@ function getMocks(): Mocks {
     {
       id: '0',
       ideaId: '0',
-      expertId: '0',
+      expertId: '1',
       budget: 1,
       technicalRealizability: null,
       suitability: 2,
@@ -281,7 +289,7 @@ function getMocks(): Mocks {
     {
       id: '1',
       ideaId: '0',
-      expertId: '1',
+      expertId: '0',
       budget: 2,
       technicalRealizability: 4,
       suitability: 5,
@@ -302,10 +310,35 @@ function getMocks(): Mocks {
       marketValue: null,
       confirmed: false,
     },
+    {
+      id: '3',
+      ideaId: '2',
+      expertId: '2',
+      budget: 1,
+      technicalRealizability: 1,
+      suitability: 5,
+      rating: null,
+      originality: null,
+      marketValue: null,
+      confirmed: false,
+    },
+    {
+      id: '4',
+      ideaId: '3',
+      expertId: '2',
+      budget: 1,
+      technicalRealizability: 1,
+      suitability: 5,
+      rating: null,
+      originality: null,
+      marketValue: null,
+      confirmed: false,
+    },
   ]
   const ideas: Idea[] = [
     {
       id: '0',
+      checkedBy: ['kirill.vlasov.05@inbox.ru', 'admin@mail.com'],
       initiatorEmail: 'admin@mail.com',
       name: 'Рефактор кода',
       problem:
@@ -323,7 +356,7 @@ function getMocks(): Mocks {
       minTeamSize: 3,
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
-      experts: null,
+      experts: usersGroups[1],
       projectOffice: null,
       budget: 1,
       suitability: 1,
@@ -332,6 +365,7 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
+      checkedBy: ['admin@mail.com', '1@mail.com'],
       initiatorEmail: '1@mail.com',
       name: 'Реактор железного человека',
       problem:
@@ -358,6 +392,7 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
+      checkedBy: ['admin@mail.com'],
       initiatorEmail: '2@mail.com',
       name: 'Идея 2',
       problem:
@@ -384,6 +419,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
+      checkedBy: ['admin@mail.com', '3@mail.com'],
       initiatorEmail: '3@mail.com',
       name: 'Раскладушка',
       problem:

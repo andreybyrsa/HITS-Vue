@@ -66,6 +66,7 @@ function navigateToCreateIdeaPage() {
       <div class="ideas-page__header w-100">
         <Typography class-name="fs-2 text-primary">Список идей</Typography>
         <Button
+          v-if="user?.role == 'ADMIN' || user?.role == 'INITIATOR'"
           variant="primary"
           prepend-icon-name="bi bi-plus-lg"
           @click="navigateToCreateIdeaPage"

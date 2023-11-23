@@ -6,7 +6,7 @@
     :filters="ideasFilters"
     :checked-data-actions="checkedIdeasActions"
     :dropdown-actions-menu="dropdownIdeasActions"
-  ></Table>
+  />
 
   <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -40,6 +40,7 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 import getStatus from '@Utils/getStatus'
 import getStatusStyle from '@Utils/getStatusStyle'
 import mutableSort from '@Utils/mutableSort'
+import IdeasService from '@Services/IdeasService'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -59,6 +60,8 @@ const isOpenedIdeaDeleteModal = ref(false)
 
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
 
+const filterByConfirmedExpert = ref<boolean>()
+
 watchImmediate(
   () => props.ideas,
   () => {
@@ -67,6 +70,11 @@ watchImmediate(
 )
 
 const ideaTableColumns: TableColumn<Idea>[] = [
+  {
+    key: 'checkedBy',
+    label: '',
+    getRowCellStyle: getCkeckedIdeaStyle,
+  },
   {
     key: 'name',
     label: 'Название',
@@ -152,7 +160,47 @@ const ideasFilters: Filter<Idea>[] = [
     isUniqueChoice: false,
     checkFilter: checkIdeaStatus,
   },
+  {
+    category: 'Экспертиза',
+    choices: [
+      {
+        label: 'Неутвержденные мною идеи',
+        value: true,
+      },
+    ],
+    refValue: filterByConfirmedExpert,
+    isUniqueChoice: true,
+    checkFilter: () => true,
+  },
 ]
+
+watch(filterByConfirmedExpert, async (value) => {
+  if (value) {
+    const currentUser = user.value
+
+    if (currentUser?.token) {
+      const { token } = currentUser
+
+      const response = await IdeasService.getExpertNotConfirmedRating(token)
+
+      if (response instanceof Error) {
+        return
+      }
+
+      ideasData.value = response
+    }
+  } else ideasData.value = props.ideas
+})
+
+function getCkeckedIdeaStyle(emails: string) {
+  const initialClass = ['text-secondary']
+  const emailUser = user.value?.email
+
+  if (emailUser && emails.includes(emailUser)) {
+    initialClass.splice(0, 1, 'text-success')
+    return initialClass
+  } else return initialClass
+}
 
 function sortByCreatedAt() {
   mutableSort(ideasData.value, (ideaData: Idea) =>
@@ -199,7 +247,7 @@ function getRatingColor(rating: number) {
   return 'text-danger'
 }
 
-function navigateToIdeaModal(idea: Idea) {
+async function navigateToIdeaModal(idea: Idea) {
   router.push(`/ideas/list/${idea.id}`)
 }
 
