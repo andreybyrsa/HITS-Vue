@@ -75,9 +75,9 @@ const getAllInitiatorMarketIdeas = async (
 }
 
 const sendIdeaOnMarket = async (
-  idea: IdeasMarket,
+  idea: IdeasMarket[],
   token: string,
-): Promise<IdeasMarket | Error> => {
+): Promise<IdeasMarket[] | Error> => {
   return await ideasMarketAxios
     .post('/ideas/market/add', idea, {
       headers: { Authorization: `Bearer ${token}` },

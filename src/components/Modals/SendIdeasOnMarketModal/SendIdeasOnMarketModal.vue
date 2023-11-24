@@ -53,42 +53,10 @@ const sendIdeasToMarket = handleSubmit(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    checkedIdeas.value.every(async (idea) => {
-      const {
-        id,
-        initiator,
-        createdAt,
-        name,
-        problem,
-        description,
-        solution,
-        result,
-        maxTeamSize,
-        customer,
-      } = idea
-
-      const responseSkillsIdea = await IdeasService.getIdeaSkills(id, token)
-
-      if (responseSkillsIdea instanceof Error) {
-        return
-      }
-
-      const skills = responseSkillsIdea.skills
-
-      const ideaMarket: IdeasMarket = {
-        id: id,
-        initiator: initiator,
-        createdAt: createdAt,
-        name: name,
-        problem: problem,
-        description: description,
-        solution: solution,
-        result: result,
-        maxTeamSize: maxTeamSize,
-        customer: customer,
-
+    const ideasMarket: IdeasMarket[] = checkedIdeas.value.map((idea) => {
+      return {
+        ...idea,
         position: 0,
-        stack: skills,
         status: 'RECRUITMENT_IS_OPEN',
         requests: 0,
         acceptedRequests: 0,
@@ -96,24 +64,19 @@ const sendIdeasToMarket = handleSubmit(async () => {
         startDate: dateStart.value,
         finishDate: dateFinish.value,
       }
-
-      const responseSendIdeaOnMarket = await IdeasMarketService.sendIdeaOnMarket(
-        ideaMarket,
-        token,
-      )
-      if (responseSendIdeaOnMarket instanceof Error) {
-        return
-      }
-
-      const responseDeleteIdea = await IdeasService.deleteIdea(id, token)
-      if (responseDeleteIdea instanceof Error) {
-        return
-      }
-
-      ideas.value = ideas.value.filter((elem) => elem.id != idea.id)
-      isLoading.value = false
-      emit('close-modal')
     })
+
+    const responseSendIdeaOnMarket = await IdeasMarketService.sendIdeaOnMarket(
+      ideasMarket,
+      token,
+    )
+
+    if (responseSendIdeaOnMarket instanceof Error) {
+      return
+    }
+
+    isLoading.value = false
+    emit('close-modal')
   }
 })
 

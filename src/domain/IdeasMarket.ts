@@ -15,7 +15,7 @@ interface IdeasMarket {
   customer: string
 
   position: number
-  stack: Skill[]
+  // stack: Skill[]
   status: IdeasMarketStatusTypes
   requests: number
   acceptedRequests: number
