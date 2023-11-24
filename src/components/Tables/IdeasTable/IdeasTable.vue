@@ -40,6 +40,7 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 import getStatus from '@Utils/getStatus'
 import getStatusStyle from '@Utils/getStatusStyle'
 import mutableSort from '@Utils/mutableSort'
+import getFiltersByRoles from '@Utils/getFiltersByRoles'
 import IdeasService from '@Services/IdeasService'
 
 const props = defineProps<IdeasTableProps>()
@@ -51,9 +52,11 @@ const { user } = storeToRefs(userStore)
 
 const ideaStore = useIdeasStore()
 
-const ideasData = ref<Idea[]>([])
+const filtersByRoles = getFiltersByRoles()
 
 const availableStatus = getStatus()
+
+const ideasData = ref<Idea[]>([])
 
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
@@ -66,6 +69,16 @@ watchImmediate(
   () => props.ideas,
   () => {
     ideasData.value = props.ideas
+  },
+)
+
+watchImmediate(
+  () => user.value?.role,
+  (role) => {
+    if (role) {
+      filterByIdeaStatus.value = filtersByRoles.filter[role]
+      filterByConfirmedExpert.value = filtersByRoles.filterByExpert[role]
+    }
   },
 )
 
@@ -169,7 +182,7 @@ const ideasFilters: Filter<Idea>[] = [
       },
     ],
     refValue: filterByConfirmedExpert,
-    isUniqueChoice: true,
+    isUniqueChoice: false,
     checkFilter: () => true,
   },
 ]
