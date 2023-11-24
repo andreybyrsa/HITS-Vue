@@ -139,14 +139,14 @@ function handleCloseNotificationModal() {
         {{ isHovered ? getTranslatedRole(user.role) : '' }}
       </Button>
 
-      <!-- <Button
+      <Button
         variant="light"
         class-name="left-side-bar__button"
         @click="handleOpenNotificationModal"
         prepend-icon-name="bi bi-bell"
       >
         {{ isHovered ? 'Уведомления' : '' }}
-      </Button> -->
+      </Button>
 
       <Button
         class-name="left-side-bar__button btn-light w-100"

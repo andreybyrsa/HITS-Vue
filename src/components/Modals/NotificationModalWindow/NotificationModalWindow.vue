@@ -38,16 +38,16 @@ const favoriteNotifications = ref<Notification[]>([])
 onMounted(async () => {
   const currentUser = user.value
 
-  // if (currentUser?.token) {
-  //   const { token } = currentUser
-  //   const response = await NotificatonsService.getNotifications(token)
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await NotificatonsService.getNotifications(token)
 
-  //   if (response instanceof Error) {
-  //     return NotificationsStore.createSystemNotification('Система', response.message)
-  //   }
+    if (response instanceof Error) {
+      return NotificationsStore.createSystemNotification('Система', response.message)
+    }
 
-  //   notifications.value = response
-  // }
+    notifications.value = response
+  }
 })
 
 for (const notification of notifications.value) {
@@ -124,6 +124,7 @@ const addToFavorites = async () => {
       }
 
       readedNotifications.value.unshift(notification)
+      favoriteNotifications.value.push(notification)
     }
   }
 }
@@ -161,6 +162,8 @@ const removeAllFromFavorites = () => {
   })
   favoriteNotifications.value = []
 }
+
+console.log(notifications)
 </script>
 
 <template>
@@ -260,7 +263,7 @@ const removeAllFromFavorites = () => {
             >
             <div
               class="notification-window-modal__new-notification p-2 mb-2 rounded-3"
-              v-for="notification in newNotifications"
+              v-for="notification in notifications"
               :key="notification.id"
             >
               <div
