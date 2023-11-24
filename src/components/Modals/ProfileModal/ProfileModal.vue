@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, Ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 import ProfileAvatar from '@Components/Modals/ProfileModal/ProfileAvatar.vue'
 import ProfileInfo from '@Components/Modals/ProfileModal/ProfileInfo.vue'
@@ -51,11 +51,10 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const userEmail = route.params.email.toString()
     const { token, email } = currentUser
 
     const profileParallelRequests = [
-      () => ProfileService.getUserProfile(userEmail, token),
+      () => ProfileService.getUserProfile(email, token),
     ]
 
     await makeParallelRequests<Profile | Error>(profileParallelRequests).then(
@@ -73,8 +72,10 @@ onMounted(async () => {
 })
 
 function handleCloseProfileModal() {
+  const parentBaseRoute = route.matched[0].path
+
   isOpenedProfileModal.value = false
-  router.go(-1)
+  router.push({ path: parentBaseRoute })
 }
 </script>
 

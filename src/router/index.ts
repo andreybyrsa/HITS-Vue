@@ -34,12 +34,6 @@ import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 
-const profileRoute = {
-  path: 'profile/:email',
-  component: ProfileModal,
-  alias: '/profile/:email',
-}
-
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -59,20 +53,19 @@ const routes: RouteRecordRaw[] = [
             path: ':id',
             component: IdeaModal,
           },
-          profileRoute,
         ],
       },
       {
+        name: 'create-idea',
         path: 'create',
         meta: { roles: ['INITIATOR', 'ADMIN'] },
         component: NewIdeaView,
-        children: [profileRoute],
       },
       {
+        name: 'update-idea',
         path: 'update/:id',
         meta: { roles: ['INITIATOR', 'ADMIN'] },
         component: EditIdeaView,
-        children: [profileRoute],
       },
     ],
   },
@@ -87,23 +80,25 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: ':teamId',
-            meta: {
-              roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-            },
             component: TeamModal,
           },
-          profileRoute,
+          {
+            name: 'profile',
+            path: 'profile/:id',
+            alias: '/profile/:id',
+            component: ProfileModal,
+          },
         ],
       },
       {
+        name: 'create-team',
         path: 'create',
         component: NewTeamView,
-        children: [profileRoute],
       },
       {
+        name: 'update-team',
         path: 'update/:id',
         component: EditTeamView,
-        children: [profileRoute],
       },
     ],
   },
@@ -113,41 +108,36 @@ const routes: RouteRecordRaw[] = [
     meta: { roles: ['ADMIN'] },
     children: [
       {
+        name: 'admin-users',
         path: 'users',
         component: UsersView,
         meta: { roles: ['ADMIN'] },
-        children: [profileRoute],
       },
       {
+        name: 'admin-add-users',
         path: 'add-users',
         component: AddUsersView,
         meta: { roles: ['ADMIN'] },
-        children: [profileRoute],
       },
       {
+        name: 'admin-users-groups',
         path: 'users-groups',
         component: UsersGroupsView,
         meta: { roles: ['ADMIN'] },
-        children: [profileRoute],
       },
       {
+        name: 'admin-skills',
         path: 'skills',
         component: SkillsView,
         meta: { roles: ['ADMIN'] },
-        children: [profileRoute],
       },
       {
+        name: 'admin-companies',
         path: 'companies',
         component: CompaniesView,
         meta: { roles: ['ADMIN'] },
-        children: [profileRoute],
       },
     ],
-  },
-  {
-    path: '/profile/:email',
-    component: ProfileModal,
-    meta: { roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'] },
   },
   {
     path: '/change-email',
