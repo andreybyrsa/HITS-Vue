@@ -4,13 +4,16 @@ import { watchImmediate } from '@vueuse/core'
 import { RadarChart } from 'vue-chart-3'
 import { Chart, registerables, ChartData } from 'chart.js'
 
-import { SkillsRadarChartsProps } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+import {
+  SkillsRadarChartsProps,
+  SkillData,
+} from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
 import { Skill, SkillType } from '@Domain/Skill'
 
-Chart.register(...registerables)
-
 const props = defineProps<SkillsRadarChartsProps>()
+
+Chart.register(...registerables)
 
 type SkillsRadarChartType = ChartData<'radar', (number | null)[], string>
 
@@ -21,33 +24,38 @@ const devopsSkills = ref<SkillsRadarChartType>()
 
 const ButtonClassName = computed(() => [props.className])
 
-interface SkillData {
-  label: string
-  backgroundColor: string
-  skills: { label: string; value: number }[]
-}
+const getBackgroundColorBySkillType = (type: SkillType, alphaOpacity?: number) => {
+  const hexAlphaOpacity = alphaOpacity ? alphaOpacity.toString(16) : 'ff'
 
-const getOptionsBySkillType = (type: SkillType) => {
-  switch (type) {
-    case 'LANGUAGE':
-      return '#19865380'
-    case 'FRAMEWORK':
-      return '#0dcaf080'
-    case 'DATABASE':
-      return '#ffc10780'
-    default:
-      return '#dc354580'
+  if (type === 'LANGUAGE') {
+    return `#198653${hexAlphaOpacity}`
   }
+
+  if (type === 'FRAMEWORK') {
+    return `#0dcaf0${hexAlphaOpacity}`
+  }
+
+  if (type === 'DATABASE') {
+    return `#ffc107${hexAlphaOpacity}`
+  }
+
+  return `#dc3545${hexAlphaOpacity}`
 }
 
-function getSkillsData(label: string, skills: Skill[], type: SkillType): SkillData {
+function getSkillsData(
+  label: string,
+  skills: Skill[],
+  type: SkillType,
+  alphaOpacity?: number,
+): SkillData {
   const skillsByType = skills.filter((skill) => skill.type === type)
 
   const skillsData: SkillData = {
     label,
     skills: [],
-    backgroundColor: getOptionsBySkillType(type),
+    backgroundColor: getBackgroundColorBySkillType(type, alphaOpacity),
   }
+
   const uniqueSkills = [
     ...new Map(skillsByType.map((skill) => [skill.id, skill])).values(),
   ]
@@ -66,7 +74,7 @@ function getSkillsData(label: string, skills: Skill[], type: SkillType): SkillDa
 
 function findMissingSkillAndAdd(
   skillsDataSet: SkillData[],
-  data: { label: string; value: number; backgroundColor: string },
+  data: { label: string; value: number },
 ) {
   skillsDataSet.forEach((dataSet, index) => {
     const currentDataIndex = dataSet.skills.findIndex(
@@ -108,25 +116,26 @@ function getSkillsDataSet(skillsDataSet: SkillData[]): SkillsRadarChartType {
   return totalSkillsDataSet
 }
 
+const chartId = ref(1)
+
 watchImmediate(
   () => props.skills,
   (currentSkills) => {
-    const languageDataSet: SkillData[] = []
-    const frameworkDataSet: SkillData[] = []
-    const databaseDataSet: SkillData[] = []
-    const devopsDataSet: SkillData[] = []
+    const languageData: SkillData[] = []
+    const frameworkData: SkillData[] = []
+    const databaseData: SkillData[] = []
+    const devopsData: SkillData[] = []
 
-    currentSkills.forEach(({ label, skills }) => {
-      languageDataSet.push(getSkillsData(label, skills, 'LANGUAGE'))
-      frameworkDataSet.push(getSkillsData(label, skills, 'FRAMEWORK'))
-      databaseDataSet.push(getSkillsData(label, skills, 'DATABASE'))
-      devopsDataSet.push(getSkillsData(label, skills, 'DEVOPS'))
+    currentSkills.forEach(({ label, skills, alphaOpacity }) => {
+      languageData.push(getSkillsData(label, skills, 'LANGUAGE', alphaOpacity))
+      frameworkData.push(getSkillsData(label, skills, 'FRAMEWORK', alphaOpacity))
+      databaseData.push(getSkillsData(label, skills, 'DATABASE', alphaOpacity))
+      devopsData.push(getSkillsData(label, skills, 'DEVOPS', alphaOpacity))
     })
-
-    languageSkills.value = getSkillsDataSet(languageDataSet)
-    frameworkSkills.value = getSkillsDataSet(frameworkDataSet)
-    databaseSkills.value = getSkillsDataSet(databaseDataSet)
-    devopsSkills.value = getSkillsDataSet(devopsDataSet)
+    languageSkills.value = getSkillsDataSet(languageData)
+    frameworkSkills.value = getSkillsDataSet(frameworkData)
+    databaseSkills.value = getSkillsDataSet(databaseData)
+    devopsSkills.value = getSkillsDataSet(devopsData)
   },
   { deep: true },
 )
@@ -138,25 +147,29 @@ watchImmediate(
       v-if="languageSkills"
       :chart-data="languageSkills"
       :height="300"
+      :width="300"
     />
 
-    <RadarChart
+    <!-- <RadarChart
       v-if="frameworkSkills"
       :chart-data="frameworkSkills"
       :height="300"
+      :width="300"
     />
 
     <RadarChart
       v-if="databaseSkills"
       :chart-data="databaseSkills"
       :height="300"
+      :width="300"
     />
 
     <RadarChart
       v-if="devopsSkills"
       :chart-data="devopsSkills"
       :height="300"
-    />
+      :width="300"
+    /> -->
   </div>
 </template>
 

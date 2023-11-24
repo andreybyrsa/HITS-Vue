@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
-import useUserStore from '@Store/user/userStore'
+import { MODE } from '@Main'
 
 import Button from '@Components/Button/Button.vue'
 import {
@@ -11,6 +11,8 @@ import {
   TeamActionButtonsProps,
   modalNames,
 } from '@Components/Modals/TeamModal/TeamAction.types'
+
+import useUserStore from '@Store/user/userStore'
 
 defineProps<TeamActionButtonsProps>()
 
@@ -22,30 +24,52 @@ const router = useRouter()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const disabled = ref<boolean>(false)
+const isCopied = ref<boolean>(false)
+
+const route = useRoute()
 
 function shareButton(id: string) {
-  navigator.clipboard.writeText('http://localhost:8080/team/' + id)
-  disabled.value = true
+  const link =
+    MODE === 'DEVELOPMENT'
+      ? `http://localhost:8080${route.fullPath}`
+      : `https://hits.tyuiu.ru${route.fullPath}`
+  navigator.clipboard.writeText(link + id)
+  isCopied.value = true
 }
 </script>
+
 <template>
-  <Button
-    v-if="team.owner?.id == user?.id || user?.role == 'ADMIN'"
-    class-name="bi bi-pencil-square btn-primary w-100"
-    @click="router.push(`/teams/update/${team.id}`)"
-    >Редактировать</Button
-  >
-  <Button
-    class-name="bi bi-share-fill btn-primary w-100"
-    @click="shareButton(team?.id)"
-    :disabled="disabled"
-    >{{ disabled ? 'Ссылка скопирована!' : 'Скопировать ссылку' }}</Button
-  >
-  <Button
-    v-if="team.owner.id == user?.id || user?.role == 'ADMIN'"
-    class-name="bi bi-trash3-fill btn-danger w-100"
-    @click="emits('openModal', team.id, deleteModal)"
-    >Удалить команду</Button
-  >
+  <div class="action-buttons w-100">
+    <Button
+      v-if="team.owner?.id == user?.id || user?.role == 'ADMIN'"
+      variant="primary"
+      prepend-icon-name="bi bi-pencil-square"
+      @click="router.push(`/teams/update/${team.id}`)"
+    >
+      Редактировать
+    </Button>
+
+    <Button
+      @click="shareButton(team?.id)"
+      :variant="isCopied ? 'success' : 'primary'"
+      prepend-icon-name="bi bi-share-fill"
+    >
+      {{ isCopied ? 'Ссылка скопирована!' : 'Скопировать ссылку' }}
+    </Button>
+
+    <Button
+      v-if="team.owner.id == user?.id || user?.role == 'ADMIN'"
+      variant="danger"
+      prepend-icon-name="bi bi-trash3-fill"
+      @click="emits('openModal', team.id, deleteModal)"
+    >
+      Удалить команду
+    </Button>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.action-buttons {
+  @include flexible(stretch, stretch, column, $gap: 8px);
+}
+</style>

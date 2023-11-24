@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -16,13 +16,27 @@ const team = defineModel<Team>({ required: true })
 const emit = defineEmits<TeamDescriptionEmits>()
 
 const radarChartsSkills = ref<SkillsForRadar[]>([
-  { label: 'Фактические компетенции', skills: team.value.skills },
+  { label: 'Фактические компетенции', skills: team.value.skills, alphaOpacity: 200 },
   {
     label: 'Желаемые компетенции',
     skills: team.value.wantedSkills,
+    alphaOpacity: 50,
   },
 ])
+
+onMounted(() => {
+  setTimeout(() => {
+    radarChartsSkills.value = [
+      {
+        label: 'Желаемые компетенции',
+        skills: team.value.wantedSkills,
+        alphaOpacity: 50,
+      },
+    ]
+  }, 2000)
+})
 </script>
+
 <template>
   <div class="header">
     <Button
@@ -34,28 +48,33 @@ const radarChartsSkills = ref<SkillsForRadar[]>([
     </Button>
 
     <Typography
-      class-name="p-3 w-100 bg-white rounded-3 fs-6 text-primary text-nowrap overflow-x-scroll"
+      class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-x-scroll"
     >
       {{ team?.name }}
     </Typography>
   </div>
-  <ul class="list-group rounded-3">
-    <li class="list-group-item p-0 overflow-hidden">
-      <div class="d-flex flex-column p-1">
-        <Typography class-name="fs-2 text-primary w-100">
-          Описание команды
-        </Typography>
-        <Typography class-name="px-1">
-          {{ team.description }}
-        </Typography>
-      </div>
 
-      <TeamMembers v-model="team" />
-      <TeamProjects v-model="team" />
-    </li>
-  </ul>
+  <div class="bg-white rounded-3">
+    <div class="p-2 border-bottom">
+      <Typography class-name="text-primary">Описание команды</Typography>
+    </div>
+    <div class="p-2">
+      <Typography>{{ team.description }}</Typography>
+    </div>
 
-  <SkillsRadarChart :skills="radarChartsSkills" />
+    <TeamMembers v-model="team" />
+    <TeamProjects v-model="team" />
+  </div>
+
+  <div class="bg-white rounded-3">
+    <div class="p-2 border-bottom">
+      <Typography class-name="text-primary">Компетенции команды</Typography>
+    </div>
+
+    <div class="p-2">
+      <SkillsRadarChart :skills="[...radarChartsSkills]" />
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>

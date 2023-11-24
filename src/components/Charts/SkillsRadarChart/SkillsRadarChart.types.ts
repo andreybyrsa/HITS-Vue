@@ -3,13 +3,19 @@ import { Skill } from '@Domain/Skill'
 interface SkillsForRadar {
   label: string
   skills: Skill[]
+  alphaOpacity?: number
+}
+
+interface SkillData {
+  label: string
+  backgroundColor: string
+  skills: { label: string; value: number }[]
 }
 
 interface SkillsRadarChartsProps {
   skills: SkillsForRadar[]
-  isNotPlaceholder?: boolean
 
   className?: string
 }
 
-export { SkillsRadarChartsProps, SkillsForRadar }
+export { SkillsRadarChartsProps, SkillsForRadar, SkillData }

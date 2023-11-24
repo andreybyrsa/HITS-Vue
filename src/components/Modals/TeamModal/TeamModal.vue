@@ -68,7 +68,8 @@ function closeTeamModal() {
           @close-modal="closeTeamModal"
         />
       </div>
-      <div class="team-modal__right-side p-3 rounded w-25 bg-white">
+
+      <div class="team-modal__right-side rounded w-25 bg-white">
         <TeamMainStuff v-model="team" />
         <TeamAction :team="team" />
       </div>

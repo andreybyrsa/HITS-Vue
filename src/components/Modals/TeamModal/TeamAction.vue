@@ -49,7 +49,7 @@ function closeModal() {
 </script>
 <template>
   <div
-    class="team-action"
+    class="team-action px-2 pb-2"
     v-if="team && user"
   >
     <TeamActionButtons
