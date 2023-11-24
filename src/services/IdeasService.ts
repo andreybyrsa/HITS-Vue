@@ -161,6 +161,28 @@ const updateIdea = async (
     })
 }
 
+const updateIdeaByAdmin = async (
+  idea: Idea,
+  id: string,
+  token: string,
+): Promise<Success | Error> => {
+  return await ideasAxios
+    .put<Success>(
+      `/idea/admin/update/${id}`,
+      idea,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id }, responseData: { success: 'Успешное обновление идеи' } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка редактирования идеи'
+      return new Error(error)
+    })
+}
+
 const updateIdeaSkills = async (
   ideaId: string,
   ideaSkills: IdeaSkills,
@@ -266,28 +288,6 @@ const updateIdeaStatus = async (
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       { params: { id }, responseData: { success: 'Статус идеи изменен' } },
-    )
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка редактирования идеи'
-      return new Error(error)
-    })
-}
-
-const updateIdeaByAdmin = async (
-  idea: Idea,
-  id: string,
-  token: string,
-): Promise<Idea | Error> => {
-  return await ideasAxios
-    .put(
-      `/idea/admin/update/${id}`,
-      idea,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

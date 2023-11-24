@@ -103,7 +103,7 @@ function handleCloseChangeEmailModal() {
           variant="primary"
           @click="handleEditUser"
         >
-          Сохнарить
+          Сохранить
         </Button>
         <Button
           v-if="isUpdatingUserInfo"

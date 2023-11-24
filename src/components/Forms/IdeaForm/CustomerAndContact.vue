@@ -7,6 +7,7 @@ import {
   CustomerAndContactEmits,
 } from '@Components/Forms/IdeaForm/CustomerAndContact.types'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import { hints } from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
 
 import Company from '@Domain/Company'
 import RolesTypes from '@Domain/Roles'
@@ -84,7 +85,15 @@ async function handleCustomerChange(selectedCompany: string) {
       ({ firstName, lastName }) => `${firstName} ${lastName}`,
     )
 
-    emit('set-value', 'contactPerson', companyContacts.value[0])
+    const isCorrectContactPerson = companyContacts.value.find(
+      (user) => user === props.idea.contactPerson,
+    )
+
+    emit(
+      'set-value',
+      'contactPerson',
+      isCorrectContactPerson ?? companyContacts.value[0],
+    )
   }
 }
 
@@ -106,6 +115,7 @@ watch(
       label="Заказчик*"
       :options="companiesNames"
       placeholder="Выберите заказчика"
+      :hint="hints.customer"
     />
   </div>
 
