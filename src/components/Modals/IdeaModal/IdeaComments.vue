@@ -1,8 +1,10 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { useForm } from 'vee-validate'
-import { string } from 'yup'
 import { storeToRefs } from 'pinia'
 import { vIntersectionObserver } from '@vueuse/components'
+import { watchImmediate } from '@vueuse/core'
+import { useRoute } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
 import { IdeaCommentsProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
@@ -15,6 +17,7 @@ import Comment from '@Domain/Comment'
 
 import useUserStore from '@Store/user/userStore'
 import useCommentsStore from '@Store/comments/commentsStore'
+import { string } from 'yup'
 
 const props = defineProps<IdeaCommentsProps>()
 
@@ -23,6 +26,17 @@ const { user } = storeToRefs(userStore)
 
 const commentsStore = useCommentsStore()
 const { comments } = storeToRefs(commentsStore)
+
+const route = useRoute()
+
+const isPageMarket = ref<boolean>(false)
+
+watchImmediate(
+  () => route.params.id,
+  () => {
+    isPageMarket.value = route.name == 'MarketModal'
+  },
+)
 
 const { handleSubmit, resetForm } = useForm<Comment>({
   validationSchema: {
@@ -94,7 +108,7 @@ const onIntersectionObserver = async (
   <div class="bg-white rounded-3">
     <div class="py-2 w-100 border-bottom">
       <Typography class-name="fs-6 px-3">
-        {{ news ? 'Объявления' : 'Комментарии' }}
+        {{ isPageMarket ? 'Объявления' : 'Комментарии' }}
       </Typography>
     </div>
 
@@ -113,24 +127,29 @@ const onIntersectionObserver = async (
     </div>
     <IdeaCommentsPlaceholder v-else />
 
-    <form class="comment-form p-3">
-      <Input
-        name="text"
-        class-name="rounded-end"
-        placeholder="Добавить комментарий"
+    <form class="p-3">
+      <div
+        v-if="isPageMarket ? news : true"
+        class="comment-form"
       >
-        <template #prepend>
-          <i class="bi bi-chat"></i>
-        </template>
-      </Input>
+        <Input
+          name="text"
+          class-name="rounded-end"
+          placeholder="Добавить комментарий"
+        >
+          <template #prepend>
+            <i class="bi bi-chat"></i>
+          </template>
+        </Input>
 
-      <Button
-        type="submit"
-        variant="primary"
-        @click="handleSendComment"
-      >
-        Отправить
-      </Button>
+        <Button
+          type="submit"
+          variant="primary"
+          @click="handleSendComment"
+        >
+          Отправить
+        </Button>
+      </div>
     </form>
   </div>
 </template>

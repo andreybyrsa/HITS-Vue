@@ -127,7 +127,7 @@ function closeMarketModal() {
         />
 
         <IdeaComments
-          news
+          :news="user.id === idea.id"
           :idea="idea"
           :idea-modal-ref="MarketModalRef"
         />
