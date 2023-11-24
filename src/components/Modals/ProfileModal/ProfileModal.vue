@@ -72,7 +72,7 @@ onMounted(async () => {
 })
 
 function handleCloseProfileModal() {
-  const parentBaseRoute = route.matched[0].path
+  const parentBaseRoute = route.matched[route.matched.length - 2].path
 
   isOpenedProfileModal.value = false
   router.push({ path: parentBaseRoute })

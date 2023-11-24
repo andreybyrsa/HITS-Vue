@@ -62,7 +62,7 @@ const handleSaveSkills = async () => {
 </script>
 
 <template>
-  <div class="w-100 bg-white border p-3 rounded-4">
+  <div class="w-100 bg-white border p-3 rounded-3">
     <div class="header border-bottom pb-1">
       <Typography class-name="fs-4 text-primary">Компетенции</Typography>
       <Button

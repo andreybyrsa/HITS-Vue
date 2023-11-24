@@ -49,7 +49,7 @@ const handleFileChange = async (event: Event): Promise<void> => {
 </script>
 
 <template>
-  <div class="user bg-white border p-3 rounded-4">
+  <div class="user bg-white border p-3 rounded-3">
     <input
       ref="fileInputRef"
       type="file"
