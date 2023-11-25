@@ -10,7 +10,6 @@ import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const profileUserAxios = defineAxios(getMocks().profiles)
-const profileSkillsAxios = defineAxios(getMocks().profileSkills)
 
 const getUserProfile = async (
   email: string,
@@ -52,7 +51,7 @@ const saveProfileSkills = async (
   skill: Skill[],
   token: string,
 ): Promise<Skill[] | Error> => {
-  return await profileSkillsAxios
+  return await axios
     .post(`/profile/skills/save`, skill, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

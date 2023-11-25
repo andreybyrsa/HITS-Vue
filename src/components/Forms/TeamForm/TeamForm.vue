@@ -29,6 +29,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 const router = useRouter()
+
+const teamWantedSkills = ref<Skill[]>([])
 const stackTechnologies = ref<Skill[]>([])
 
 const { handleSubmit, setValues } = useForm<Team>({
@@ -53,17 +55,22 @@ watchImmediate(
     if (team) {
       setValues({ ...team })
       const currentUser = user.value
+
       if (currentUser?.token) {
         const { token } = currentUser
         const { id } = team
+
         const response = await TeamService.getTeamSkills(id, token)
+        console.log(response)
+
         if (response instanceof Error) {
           return notificationsStore.createSystemNotification(
             'Система',
             response.message,
           )
         }
-        stackTechnologies.value = response.wantedSkills
+
+        teamWantedSkills.value = response.wantedSkills
       }
     }
   },
@@ -159,9 +166,14 @@ async function saveTeamSkills(teamId: string, token: string, team?: Team) {
         validate-on-update
         placeholder="Введите описание команды"
       ></Textarea>
+
       <TeamType />
+
       <div class="w-100 d-flex flex-column gap-3">
-        <StackCategories v-model:stack="stackTechnologies" />
+        <StackCategories
+          :skills="teamWantedSkills"
+          v-model:stack="stackTechnologies"
+        />
       </div>
 
       <TeamVue :mode="mode" />

@@ -12,7 +12,7 @@ interface GetRolesType {
 
 function getRoles(): GetRolesType {
   return {
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
+    roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     translatedRoles: {
       INITIATOR: 'Инициатор',
       MEMBER: 'Студент',

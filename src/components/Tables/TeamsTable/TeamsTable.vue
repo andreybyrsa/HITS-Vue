@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed, Ref } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -25,12 +25,18 @@ import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
+import { Skill } from '@Domain/Skill'
 
 import TeamService from '@Services/TeamService'
+import SkillsService from '@Services/SkillsService'
+import ProfileService from '@Services/ProfileService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import Profile from '@Domain/Profile'
 
 const router = useRouter()
 
@@ -39,18 +45,67 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const teams = defineModel<Team[]>({ required: true })
+const skills = ref<Skill[]>([])
+const profile = ref<Profile>()
 
 const deletingTeamId = ref<string | null>(null)
 
 const filterByIsClosed = ref<boolean>()
+const filterByVacancies = ref<boolean>(false)
+const filterBySkills = ref<string[]>([])
+
+const searchBySkills = ref('')
 
 const isSortedByMembersCount = ref(false)
 const isSortedByCreatedAt = ref(false)
 const isOpenedTeamDeleteModal = ref(false)
 
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
+}
+
+onMounted(async () => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token, email } = currentUser
+
+    const teamsTableParallelRequests = [
+      () => SkillsService.getAllSkills(token),
+      () => ProfileService.getUserProfile(email, token),
+    ]
+
+    await makeParallelRequests<Profile | Skill[] | Error>(
+      teamsTableParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, skills)
+        } else if (response.id === 1) {
+          checkResponseStatus(response, profile)
+        }
+      })
+    })
+
+    const response = await SkillsService.getAllSkills(token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    skills.value = response
+  }
+})
+
 const teamTableColumns: TableColumn<Team>[] = [
   {
-    key: 'closed',
+    key: 'isClosed',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusStyle,
@@ -84,7 +139,7 @@ const dropdownTeamsActions: DropdownMenuAction<Team>[] = [
   },
 ]
 
-const teamsFilters: Filter<Team>[] = [
+const teamsFilters = computed<Filter<Team>[]>(() => [
   {
     category: 'Статус',
     choices: [
@@ -95,7 +150,32 @@ const teamsFilters: Filter<Team>[] = [
     isUniqueChoice: true,
     checkFilter: checkTeamStatus,
   },
-]
+  {
+    category: 'Компетенции',
+    choices: [
+      { label: 'Искать везде', value: false },
+      { label: 'Искать по вакансиям', value: true },
+    ],
+    refValue: filterByVacancies,
+    isUniqueChoice: true,
+    checkFilter: checkTeamVacancies,
+    statement: user.value?.role !== 'INITIATOR',
+  },
+  {
+    category: 'Стек технологий',
+    choices: skills.value
+      .map(({ name }) => ({
+        label: name,
+        value: name,
+        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+      }))
+      .sort((a, b) => +b.isMarked - +a.isMarked),
+    refValue: filterBySkills,
+    isUniqueChoice: false,
+    searchValue: searchBySkills,
+    checkFilter: checkTeamSkill,
+  },
+])
 
 function sortByCreatedAt() {
   teams.value.sort((team1, team2) => {
@@ -178,6 +258,34 @@ async function handleDeleteTeam() {
 }
 
 function checkTeamStatus(team: Team, status: FilterValue) {
-  return team.closed === status
+  return team.isClosed === status
+}
+
+function checkTeamVacancies(team: Team, isFilteringByVacancies: FilterValue) {
+  if (isFilteringByVacancies) {
+    const teamSkills = team.wantedSkills
+      .map(({ name }) => name)
+      .filter((skillName) => !team.skills.find(({ name }) => name === skillName))
+
+    return teamSkills.some((skillName) => filterBySkills.value.includes(skillName))
+  }
+  return true
+}
+
+function checkTeamSkill(team: Team, skill: FilterValue) {
+  const currentUser = user.value
+
+  if (currentUser?.role) {
+    const { role } = currentUser
+
+    if (role === 'INITIATOR') {
+      return team.skills.some(({ name }) => name === skill)
+    }
+
+    return (
+      team.skills.some(({ name }) => name === skill) ||
+      team.wantedSkills.some(({ name }) => name === skill)
+    )
+  }
 }
 </script>

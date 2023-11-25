@@ -17,7 +17,6 @@ import useUserStore from '@Store/user/userStore'
 import Input from '@Components/Inputs/Input/Input.vue'
 import TeamService from '@Services/TeamService'
 import { useRouter } from 'vue-router'
-import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
 const router = useRouter()
 

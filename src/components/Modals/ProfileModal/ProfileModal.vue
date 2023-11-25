@@ -55,17 +55,21 @@ onMounted(async () => {
 
     const profileParallelRequests = [
       () => ProfileService.getUserProfile(email, token),
+      () => ProfileService.getProfileAvatar(email, token),
     ]
 
-    await makeParallelRequests<Profile | Error>(profileParallelRequests).then(
-      (responses) => {
-        responses.forEach((response) => {
-          if (response.id === 0) {
-            checkResponseStatus(response, profile)
-          }
-        })
-      },
-    )
+    await makeParallelRequests<Profile | string | Error>(
+      profileParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, profile)
+        }
+        if (response.id === 1) {
+          console.log(response.value)
+        }
+      })
+    })
 
     isOwnProfile.value = email === profile.value?.email
   }

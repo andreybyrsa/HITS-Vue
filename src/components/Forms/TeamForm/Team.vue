@@ -128,7 +128,6 @@ function getMemberColor(member: TeamMember) {
       label="Владелец команды*"
       :options="users"
       :display-by="['firstName', 'lastName']"
-      comparing-key="id"
       v-model="owner"
       placeholder="Выберите владельца"
       :disabled="mode == 'creating'"
@@ -139,7 +138,6 @@ function getMemberColor(member: TeamMember) {
       label="Тим-лидер команды*"
       :options="users"
       :display-by="['firstName', 'lastName']"
-      comparing-key="id"
       v-model="leader"
       placeholder="Выберите тим-лидера"
     />
