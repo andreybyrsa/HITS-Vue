@@ -29,7 +29,7 @@ const defaultRadarOptions: ApexOptions = {
     padding: { left: 30 },
   },
   legend: {
-    offsetY: -35,
+    offsetY: -15,
   },
   markers: { size: 4 },
 }

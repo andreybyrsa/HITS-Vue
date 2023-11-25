@@ -33,7 +33,9 @@ const isUpdatingSkills = ref(false)
 watchImmediate(
   () => props.profile.skills,
   (skills) => {
-    profileSkills.value = [{ label: 'Фактические компетенции', skills }]
+    profileSkills.value = [
+      { label: 'Фактические компетенции', skills, alphaOpacity: 50 },
+    ]
   },
 )
 
