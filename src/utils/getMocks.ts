@@ -178,6 +178,12 @@ function getMocks(): Mocks {
       type: 'DATABASE',
       confirmed: true,
     },
+    {
+      id: '19',
+      name: 'Redis',
+      type: 'DATABASE',
+      confirmed: true,
+    },
   ]
 
   const teams: Team[] = [
@@ -215,6 +221,10 @@ function getMocks(): Mocks {
         skills[11],
         skills[12],
         skills[13],
+        skills[16],
+        skills[17],
+        skills[18],
+        skills[19],
       ],
       wantedSkills: [
         skills[0],

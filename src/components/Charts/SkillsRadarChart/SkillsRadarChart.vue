@@ -1,30 +1,70 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { Ref, ref, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
-import { RadarChart } from 'vue-chart-3'
-import { Chart, registerables, ChartData } from 'chart.js'
+import VueApexCharts from 'vue3-apexcharts'
+import { ApexOptions } from 'apexcharts'
 
 import {
   SkillsRadarChartsProps,
-  SkillData,
+  SkillsData,
+  UniqueSkill,
 } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
 import { Skill, SkillType } from '@Domain/Skill'
 
 const props = defineProps<SkillsRadarChartsProps>()
 
-Chart.register(...registerables)
+type SkillsSeries = { name: string; data: number[] }[]
 
-type SkillsRadarChartType = ChartData<'radar', (number | null)[], string>
+const defaultRadarOptions: ApexOptions = {
+  chart: { type: 'radar', toolbar: { show: false } },
+  yaxis: {
+    labels: {
+      formatter: (value) => value.toFixed(0),
+      offsetX: 8,
+      offsetY: 3,
+    },
+  },
+  grid: {
+    padding: { left: 30 },
+  },
+  legend: {
+    offsetY: -35,
+  },
+  markers: { size: 4 },
+}
 
-const languageSkills = ref<SkillsRadarChartType>()
-const frameworkSkills = ref<SkillsRadarChartType>()
-const databaseSkills = ref<SkillsRadarChartType>()
-const devopsSkills = ref<SkillsRadarChartType>()
+const languageRadarOptions = ref<ApexOptions>(defaultRadarOptions)
+const frameworkRadarOptions = ref<ApexOptions>(defaultRadarOptions)
+const databaseRadarOptions = ref<ApexOptions>(defaultRadarOptions)
+const devopsRadarOptions = ref<ApexOptions>(defaultRadarOptions)
 
-const ButtonClassName = computed(() => [props.className])
+const RadarChartsClassName = computed(() => ['radar-charts', props.className])
 
-const getBackgroundColorBySkillType = (type: SkillType, alphaOpacity?: number) => {
+watchImmediate(
+  () => props.skills,
+  (currentSkills) => {
+    const languageDataSet: SkillsData[] = []
+    const frameworkDataSet: SkillsData[] = []
+    const databaseDataSet: SkillsData[] = []
+    const devopsDataSet: SkillsData[] = []
+
+    currentSkills.forEach(({ label, skills, alphaOpacity }) => {
+      languageDataSet.push(getSkillsData(label, skills, 'LANGUAGE', alphaOpacity))
+      frameworkDataSet.push(getSkillsData(label, skills, 'FRAMEWORK', alphaOpacity))
+      databaseDataSet.push(getSkillsData(label, skills, 'DATABASE', alphaOpacity))
+      devopsDataSet.push(getSkillsData(label, skills, 'DEVOPS', alphaOpacity))
+    })
+
+    setRadarOptions(languageRadarOptions, languageDataSet)
+    setRadarOptions(frameworkRadarOptions, frameworkDataSet)
+    setRadarOptions(databaseRadarOptions, databaseDataSet)
+    setRadarOptions(devopsRadarOptions, devopsDataSet)
+  },
+  { deep: true },
+)
+
+function getBackgroundColorBySkillType(type: SkillType, alphaOpacity?: number) {
   const hexAlphaOpacity = alphaOpacity ? alphaOpacity.toString(16) : 'ff'
 
   if (type === 'LANGUAGE') {
@@ -47,10 +87,10 @@ function getSkillsData(
   skills: Skill[],
   type: SkillType,
   alphaOpacity?: number,
-): SkillData {
+): SkillsData {
   const skillsByType = skills.filter((skill) => skill.type === type)
 
-  const skillsData: SkillData = {
+  const skillsData: SkillsData = {
     label,
     skills: [],
     backgroundColor: getBackgroundColorBySkillType(type, alphaOpacity),
@@ -73,22 +113,51 @@ function getSkillsData(
 }
 
 function findMissingSkillAndAdd(
-  skillsDataSet: SkillData[],
-  data: { label: string; value: number },
+  skillsDataSet: SkillsData[],
+  uniqueSkill: UniqueSkill,
 ) {
   skillsDataSet.forEach((dataSet, index) => {
     const currentDataIndex = dataSet.skills.findIndex(
-      ({ label }) => label === data.label,
+      ({ label }) => label === uniqueSkill.label,
     )
 
     if (currentDataIndex === -1) {
-      dataSet.skills.splice(index, 0, { label: data.label, value: 0 })
+      dataSet.skills.splice(index, 0, { label: uniqueSkill.label, value: 0 })
     }
   })
 }
 
-function getSkillsDataSet(skillsDataSet: SkillData[]): SkillsRadarChartType {
-  const totalSkillsDataSet: SkillsRadarChartType = { labels: [], datasets: [] }
+function setRadarOptions(
+  radarOptions: Ref<ApexOptions>,
+  skillsDataSet: SkillsData[],
+) {
+  skillsDataSet.forEach((dataSet) => {
+    dataSet.skills
+      .sort((a, b) => a.label.length - b.label.length)
+      .forEach((data) => findMissingSkillAndAdd(skillsDataSet, data))
+  })
+
+  const dataSets = skillsDataSet.map(({ skills }) => skills).flat(1)
+  const crossingDataSet: SkillsData = {
+    label: 'Пересечение',
+    skills: [],
+    backgroundColor: '#00000040',
+  }
+
+  dataSets.forEach((skill, index1) => {
+    const crossingSkill = dataSets.find(
+      ({ label, value }, index2) =>
+        index1 !== index2 && label === skill.label && value + skill.value === 2,
+    )
+
+    if (
+      crossingSkill &&
+      !crossingDataSet.skills.find(({ label }) => label === crossingSkill.label)
+    ) {
+      crossingDataSet.skills.push(crossingSkill)
+    }
+  })
+  skillsDataSet.push(crossingDataSet)
 
   skillsDataSet.forEach((dataSet) => {
     dataSet.skills
@@ -96,98 +165,71 @@ function getSkillsDataSet(skillsDataSet: SkillData[]): SkillsRadarChartType {
       .forEach((data) => findMissingSkillAndAdd(skillsDataSet, data))
   })
 
-  totalSkillsDataSet.labels = [
-    ...new Set(
-      skillsDataSet
-        .map(({ skills }) => skills)
-        .flat(1)
-        .map(({ label }) => label),
-    ).values(),
-  ]
+  const series: SkillsSeries = skillsDataSet.map(({ label, skills }) => ({
+    name: label,
+    data: skills.map(({ value }) => value),
+  }))
 
-  skillsDataSet.forEach((dataSet) => {
-    totalSkillsDataSet.datasets.push({
-      label: dataSet.label,
-      backgroundColor: dataSet.backgroundColor,
-      data: dataSet.skills.map(({ value }) => value),
-    })
-  })
+  const xaxis = {
+    categories: [
+      ...new Set(
+        skillsDataSet
+          .map(({ skills }) => skills)
+          .flat(1)
+          .map(({ label }) => label),
+      ).values(),
+    ],
+  }
 
-  return totalSkillsDataSet
+  const colors = skillsDataSet.map(({ backgroundColor }) => backgroundColor)
+
+  radarOptions.value = {
+    ...radarOptions.value,
+    series,
+    xaxis,
+    colors,
+  }
 }
-
-const chartId = ref(1)
-
-watchImmediate(
-  () => props.skills,
-  (currentSkills) => {
-    const languageData: SkillData[] = []
-    const frameworkData: SkillData[] = []
-    const databaseData: SkillData[] = []
-    const devopsData: SkillData[] = []
-
-    currentSkills.forEach(({ label, skills, alphaOpacity }) => {
-      languageData.push(getSkillsData(label, skills, 'LANGUAGE', alphaOpacity))
-      frameworkData.push(getSkillsData(label, skills, 'FRAMEWORK', alphaOpacity))
-      databaseData.push(getSkillsData(label, skills, 'DATABASE', alphaOpacity))
-      devopsData.push(getSkillsData(label, skills, 'DEVOPS', alphaOpacity))
-    })
-    languageSkills.value = getSkillsDataSet(languageData)
-    frameworkSkills.value = getSkillsDataSet(frameworkData)
-    databaseSkills.value = getSkillsDataSet(databaseData)
-    devopsSkills.value = getSkillsDataSet(devopsData)
-  },
-  { deep: true },
-)
 </script>
 
 <template>
-  <div :class="['radar-charts', ...ButtonClassName]">
-    <RadarChart
-      v-if="languageSkills"
-      :chart-data="languageSkills"
+  <div :class="RadarChartsClassName">
+    <VueApexCharts
+      v-if="languageRadarOptions.series?.length"
+      :options="languageRadarOptions"
+      :series="languageRadarOptions.series"
+      :width="305"
       :height="300"
-      :width="300"
     />
 
-    <!-- <RadarChart
-      v-if="frameworkSkills"
-      :chart-data="frameworkSkills"
+    <VueApexCharts
+      v-if="frameworkRadarOptions.series?.length"
+      :options="frameworkRadarOptions"
+      :series="frameworkRadarOptions.series"
+      :width="305"
       :height="300"
-      :width="300"
     />
 
-    <RadarChart
-      v-if="databaseSkills"
-      :chart-data="databaseSkills"
+    <VueApexCharts
+      v-if="databaseRadarOptions.series?.length"
+      :options="databaseRadarOptions"
+      :series="databaseRadarOptions.series"
+      :width="305"
       :height="300"
-      :width="300"
     />
 
-    <RadarChart
-      v-if="devopsSkills"
-      :chart-data="devopsSkills"
+    <VueApexCharts
+      v-if="devopsRadarOptions.series?.length"
+      :options="devopsRadarOptions"
+      :series="devopsRadarOptions.series"
+      :width="305"
       :height="300"
-      :width="300"
-    /> -->
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .radar-charts {
   @include flexible(center, center, $flex-wrap: wrap, $gap: 16px);
-
-  &__chart {
-    @include flexible(center, center);
-  }
-
-  &__placeholder {
-    width: 130px;
-    height: 130px;
-
-    &-wrapper {
-      @include flexible(center, center);
-    }
-  }
 }
 </style>
