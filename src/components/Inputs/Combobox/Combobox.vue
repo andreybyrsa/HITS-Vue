@@ -162,11 +162,14 @@ onClickOutside(comboboxRef, () => {
 
 function checkIsExistOption(currentOption: OptionType, comparingOption: OptionType) {
   const { comparingKey } = props
-  return (
-    currentOption === comparingOption ||
-    JSON.stringify(currentOption) === JSON.stringify(comparingOption) ||
-    (comparingKey && currentOption[comparingKey] === comparingOption[comparingKey])
-  )
+
+  if (currentOption && comparingOption) {
+    return (
+      currentOption === comparingOption ||
+      JSON.stringify(currentOption) === JSON.stringify(comparingOption) ||
+      (comparingKey && currentOption[comparingKey] === comparingOption[comparingKey])
+    )
+  }
 }
 
 function checkNewOptionButton() {
@@ -195,6 +198,12 @@ function checkOpenComboboxButton() {
       class="form-label mb-2 text-primary"
     >
       {{ props.label }}
+      <Icon
+        v-if="props.hint"
+        class-name="bi bi-patch-question"
+        class="hint"
+        v-tooltip="props.hint"
+      />
     </label>
 
     <div class="combobox">
@@ -284,4 +293,20 @@ function checkOpenComboboxButton() {
     @include flexible(center, flex-start);
   }
 }
+
+// .hint {
+//   cursor: pointer;
+//   display: inline-block;
+//   vertical-align: middle;
+//   color: #007bff;
+// }
+
+// .custom-tooltip .tooltip-inner {
+//   background-color: #333;
+//   color: #fff;
+//   padding: 5px 10px;
+//   border-radius: 4px;
+//   max-width: 450px;
+//   text-align: left;
+// }
 </style>

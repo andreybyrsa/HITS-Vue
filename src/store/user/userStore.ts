@@ -71,7 +71,7 @@ const useUserStore = defineStore('user', {
           (currentActivity.getTime() - currentUser.lastLogin.getTime()) /
           (1000 * 60 * 60)
 
-        if (activityDifference > 24) {
+        if (activityDifference > 4) {
           this.logoutUser()
 
           return true

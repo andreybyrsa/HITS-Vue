@@ -1,14 +1,17 @@
 <script lang="ts" setup>
-import { Ref, ref, computed } from 'vue'
+import { Ref, ref, computed, VueElement } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { ProfileInfoProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
 
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
+
 import ProfileService from '@Services/ProfileService'
 
 import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import getRoles from '@Utils/getRoles'
 
@@ -17,46 +20,49 @@ const props = defineProps<ProfileInfoProps>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const notificationsStore = useNotificationsStore()
+
 const userRoles = getRoles()
 
 const isOwnProfile = computed(() => props.profile.email === user.value?.email)
 
-const fileInputRef: Ref<HTMLInputElement | null> = ref(null)
-const imageUrl: Ref<string | null> = ref(null)
-const selectedFile = ref<File | null>(null)
+const fileInputRef: Ref<VueElement | null> = ref(null)
 
-const openFileInput = (): void => {
+function openFileInput() {
   if (fileInputRef.value) {
-    fileInputRef.value.value = ''
     fileInputRef.value.click()
   }
 }
 
-const handleFileChange = async (event: Event): Promise<void> => {
-  // const input = event.target as HTMLInputElement
-  // selectedFile.value = input.files[0]
-  // const formData = new FormData()
-  // formData.append('file', selectedFile.value)
-  // const currentUser = user.value
-  // if (currentUser?.token) {
-  //   const { token } = currentUser
-  //   await ProfileService.uploadProfileAvatar(formData, token)
-  // }
-  // if (selectedFile.value) {
-  //   imageUrl.value = URL.createObjectURL(selectedFile.value)
-  // }
+async function handleFileUpload(event: HTMLTargetEvent) {
+  const currentUser = user.value
+  const file = event.target.files?.[0]
+
+  if (currentUser?.token && file) {
+    const { token } = currentUser
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await ProfileService.uploadProfileAvatar(formData, token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+  }
 }
 </script>
 
 <template>
-  <div class="user bg-white border p-3 rounded-4">
+  <div class="user bg-white border p-3 rounded-3">
     <input
       ref="fileInputRef"
       type="file"
-      style="display: none"
-      @input="handleFileChange"
+      hidden
+      @input="(event) => handleFileUpload(event as HTMLTargetEvent)"
       enctype="multipart/form-data"
     />
+
     <div class="d-flex justify-content-center w-100 mb-2">
       <Button
         @click="openFileInput"
@@ -65,6 +71,7 @@ const handleFileChange = async (event: Event): Promise<void> => {
         <Icon class-name="bi bi-person-circle" />
       </Button>
     </div>
+
     <div class="user__roles w-100 flex-wrap">
       <div
         class="w-auto"

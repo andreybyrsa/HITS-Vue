@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, VueElement } from 'vue'
 import { watchImmediate, useElementHover } from '@vueuse/core'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import NavTab from '@Components/NavTab/NavTab.vue'
@@ -63,7 +63,22 @@ function getTranslatedRole(currentRole: RolesTypes) {
 }
 
 function navigateToProfile() {
-  router.push({ path: `${route.fullPath}/profile/${user.value?.email}` })
+  const currentUser = user.value
+
+  const currentRouteName = route.name?.toString()
+  const profileRoute: RouteRecordRaw = {
+    name: 'profile',
+    path: 'profile/:id',
+    alias: '/profile/:id',
+    component: ProfileModal,
+  }
+
+  if (currentUser?.token && currentRouteName) {
+    const { id } = currentUser
+
+    router.addRoute(currentRouteName, profileRoute)
+    router.push({ path: `/profile/${id}` })
+  }
 }
 
 function handleOpenRoleModal() {

@@ -8,6 +8,7 @@ interface ComboboxProps<OptionType> {
   noFormControlled?: boolean
 
   label?: string
+  hint?: string
   placeholder?: string
   multiselectPlaceholder?: string
   disabled?: boolean

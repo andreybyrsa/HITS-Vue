@@ -2,6 +2,7 @@ import { Skill, SkillType } from '@Domain/Skill'
 
 interface StackCategoriesProps {
   skills?: Skill[]
+  hint?: string
 }
 
 interface StackCategories {
