@@ -6,6 +6,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import { all } from 'axios'
 
 const teamsAxios = defineAxios(getMocks().teams)
 const teamMemberAxios = defineAxios(getMocks().teamMember)
@@ -84,11 +85,11 @@ const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
     })
 }
 const createTeamSkills = async (
-  wantedSkills: TeamSkills,
+  teamSkills: TeamSkills,
   token: string,
 ): Promise<TeamSkills | Error> => {
   return await teamSkillsAxios
-    .post('/team/skills/add', wantedSkills, {
+    .post('/team/skills/add', teamSkills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -121,13 +122,13 @@ const updateTeam = async (
 }
 const updateTeamSkills = async (
   teamId: string,
-  wantedSkills: TeamSkills,
+  teamSkills: TeamSkills,
   token: string,
 ): Promise<TeamSkills | Error> => {
   return await teamSkillsAxios
     .put(
       '/team/skills/update',
-      wantedSkills,
+      teamSkills,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

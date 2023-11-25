@@ -20,6 +20,7 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import Validation from '@Utils/Validation'
 import { Skill } from '@Domain/Skill'
+import { string } from 'yup'
 
 const props = defineProps<TeamFormProps>()
 
@@ -110,10 +111,17 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 })
 
 async function saveTeamSkills(teamId: string, token: string, team?: Team) {
+  const stackTechnologies: Skill[] = []
+
+  if (team) {
+    team.members.forEach((member) => {
+      stackTechnologies.push(...member.skills)
+    })
+  }
   const teamSkills = {
     teamId,
-    skills: stackTechnologies.value,
-    wantedSkills: stackTechnologies.value,
+    totalSkills: stackTechnologies,
+    wantedSkills: stackTechnologies,
   } as TeamSkills
   if (team) {
     const teamSkillsResponse = await TeamService.updateTeamSkills(
