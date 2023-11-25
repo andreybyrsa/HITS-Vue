@@ -48,11 +48,11 @@ const getProfileAvatar = async (
 }
 
 const saveProfileSkills = async (
-  skill: Skill[],
+  skills: Skill[],
   token: string,
 ): Promise<Skill[] | Error> => {
   return await axios
-    .post(`/profile/skills/save`, skill, {
+    .post('/profile/skills/save', skills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

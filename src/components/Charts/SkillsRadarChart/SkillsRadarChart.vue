@@ -133,7 +133,15 @@ function setRadarOptions(
 ) {
   skillsDataSet.forEach((dataSet) => {
     dataSet.skills
-      .sort((a, b) => a.label.length - b.label.length)
+      .sort((a, b) => {
+        if (a.label < b.label) {
+          return -1
+        }
+        if (a.label > b.label) {
+          return 1
+        }
+        return 0
+      })
       .forEach((data) => findMissingSkillAndAdd(skillsDataSet, data))
   })
 
@@ -161,7 +169,15 @@ function setRadarOptions(
 
   skillsDataSet.forEach((dataSet) => {
     dataSet.skills
-      .sort((a, b) => a.label.length - b.label.length)
+      .sort((a, b) => {
+        if (a.label < b.label) {
+          return -1
+        }
+        if (a.label > b.label) {
+          return 1
+        }
+        return 0
+      })
       .forEach((data) => findMissingSkillAndAdd(skillsDataSet, data))
   })
 

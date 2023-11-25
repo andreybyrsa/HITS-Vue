@@ -60,7 +60,7 @@ const radarChartsSkills = ref<SkillsArea[]>([
     </div>
 
     <div class="p-2">
-      <SkillsRadarChart :skills="[...radarChartsSkills]" />
+      <SkillsRadarChart :skills="radarChartsSkills" />
     </div>
   </div>
 </template>

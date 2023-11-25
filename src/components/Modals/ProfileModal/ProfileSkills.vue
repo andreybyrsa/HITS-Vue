@@ -7,7 +7,7 @@ import { ProfileSkillProps } from '@Components/Modals/ProfileModal/ProfileModal.
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
-import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
+import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
 
 import { Skill } from '@Domain/Skill'
 
@@ -15,6 +15,7 @@ import ProfileService from '@Services/ProfileService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
 const props = defineProps<ProfileSkillProps>()
 
@@ -23,7 +24,7 @@ const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
 
-const profileSkills = ref<Skill[]>([])
+const profileSkills = ref<SkillsArea[]>([])
 const selectedSkills = ref<Skill[]>([])
 
 const isOwnProfile = computed(() => props.profile.email === user.value?.email)
@@ -32,7 +33,7 @@ const isUpdatingSkills = ref(false)
 watchImmediate(
   () => props.profile.skills,
   (skills) => {
-    profileSkills.value = skills
+    profileSkills.value = [{ label: 'Фактические компетенции', skills }]
   },
 )
 
@@ -56,7 +57,7 @@ const handleSaveSkills = async () => {
     }
 
     toogleUpdatingSkills(false)
-    profileSkills.value = selectedSkills.value
+    profileSkills.value[0].skills = selectedSkills.value
   }
 }
 </script>
@@ -95,7 +96,7 @@ const handleSaveSkills = async () => {
     <div class="content p-2">
       <StackCategories
         v-if="isUpdatingSkills"
-        :skills="profileSkills"
+        :skills="profileSkills[0].skills"
         v-model:stack="selectedSkills"
       />
 
