@@ -33,14 +33,14 @@ function openMarketInfo() {
 </script>
 
 <template>
-  <div class="d-flex w-100 p-2 gap-2 bg-white rounded">
+  <div class="header-buttons w-100 p-2 bg-white rounded">
     <Button
-      :class-name="isChangeContent ? 'btn-primary' : 'btn-secondary'"
+      :class-name="isChangeContent ? 'btn-primary w-100' : 'btn-secondary w-100'"
       @click="openMarketSkillsRadarCharts"
       >Компетенции</Button
     >
     <Button
-      :class-name="!isChangeContent ? 'btn-primary' : 'btn-secondary'"
+      :class-name="!isChangeContent ? 'btn-primary w-100' : 'btn-secondary w-100'"
       @click="openMarketInfo"
       >Информация</Button
     >
@@ -66,4 +66,8 @@ function openMarketInfo() {
   />
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.header-buttons {
+  @include flexible(flex-start, space-between, $gap: 8px);
+}
+</style>

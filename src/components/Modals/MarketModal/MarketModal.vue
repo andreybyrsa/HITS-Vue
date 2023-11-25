@@ -271,6 +271,7 @@ const stack: Skill[] = [
 
   &__right-side {
     height: fit-content;
+    overflow: hidden;
 
     @include flexible(stretch, flex-start, column, $gap: 16px);
   }

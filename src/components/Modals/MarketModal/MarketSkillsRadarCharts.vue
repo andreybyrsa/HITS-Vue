@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import SkillsRadarChartsProps from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
 import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarCharts.vue'
 import { MarketSkillsradarChartsProps } from '@Components/Modals/MarketModal/MarketModal.types'
@@ -21,7 +21,7 @@ const skillsTeam = defineModel<Team[]>('skillsTeam')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const skillsRequestTeamsData = ref([
+const skillsRequestTeamsData = computed<SkillsArea[]>(() => [
   { label: 'Компетенции идеи', skills: props.skills, alphaOpacity: 100 },
   {
     label: 'Компетенции команды',
@@ -30,7 +30,7 @@ const skillsRequestTeamsData = ref([
   },
 ])
 
-const skillsTeamsData = ref([
+const skillsTeamsData = computed<SkillsArea[]>(() => [
   { label: 'Компетенции идеи', skills: props.skills, alphaOpacity: 100 },
   {
     label: 'Компетенции команды',

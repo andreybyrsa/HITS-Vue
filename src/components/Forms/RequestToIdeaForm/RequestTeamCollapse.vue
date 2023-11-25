@@ -11,6 +11,7 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Skills from '@Components/Skills/Skills.vue'
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
 import useUserStore from '@Store/user/userStore'
 import RequestTeamsServise from '@Services/RequestTeamsServise'
@@ -79,10 +80,6 @@ function checkTeamRequest(teamProps: Team) {
 function navigateToTeamModal(team: Team, idea: IdeasMarket) {
   return router.push(`/market/${idea.id}/${team.id}`)
 }
-
-function compareSkills(team: Team) {
-  skillsTeam.value = [team]
-}
 </script>
 
 <template>
@@ -132,15 +129,14 @@ function compareSkills(team: Team) {
               </div>
             </div>
             <div class="w-50 border-start ps-3 pb-1">
-              <div class="d-flex align-items-center text-primary pb-1">
-                <div>Компетенции:</div>
-                <Button
+              <div class="d-flex gap-2 align-items-center text-primary pb-1">
+                <Checkbox
                   v-if="!isDisabledButtonSkills"
-                  class-name="btn-link"
-                  @click="compareSkills(team)"
-                >
-                  Cравнить
-                </Button>
+                  name="compare"
+                  :value="team"
+                  v-model="skillsTeam"
+                />
+                <div>Компетенции:</div>
               </div>
               <div class="d-flex flex-wrap gap-2">
                 <Skills :skills="team.skills" />

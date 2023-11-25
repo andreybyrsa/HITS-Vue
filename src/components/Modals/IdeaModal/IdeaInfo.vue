@@ -39,7 +39,7 @@ function getModeButtonText() {
     )
     if (currentModeButton) return currentModeButton.text
 
-    if ((status === 'NEW' || status === 'ON_EDITING') && email === initiator) {
+    if ((status === 'NEW' || status === 'ON_EDITING') && email === initiator.email) {
       return 'Редактрирование'
     }
 
@@ -102,7 +102,7 @@ function getIdeaStatus() {
         <Icon class-name="bi bi-envelope text-secondary fs-3 opacity-25" />
 
         <Typography class-name="text-primary">
-          {{ idea.initiator }}
+          {{ idea.initiator.firstName }} {{ idea.initiator.lastName }}
         </Typography>
       </div>
     </div>
