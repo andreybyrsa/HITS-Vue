@@ -28,6 +28,7 @@ import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import { Skill } from '@Domain/Skill'
 
 defineProps<MarketModalProps>()
 
@@ -94,6 +95,93 @@ function closeMarketModal() {
 
   useCommentsStore().disconnectRsocket()
 }
+
+const stack: Skill[] = [
+  {
+    id: '0',
+    name: 'JavaScript',
+    type: 'LANGUAGE',
+    confirmed: true,
+  },
+  {
+    id: '2',
+    name: 'Python',
+    type: 'LANGUAGE',
+    confirmed: true,
+  },
+  {
+    id: '3',
+    name: 'TypeScript',
+    type: 'LANGUAGE',
+    confirmed: true,
+  },
+  {
+    id: '6',
+    name: 'ReactJS',
+    type: 'FRAMEWORK',
+    confirmed: true,
+  },
+  {
+    id: '7',
+    name: 'Django',
+    type: 'FRAMEWORK',
+    confirmed: true,
+  },
+  {
+    id: '8',
+    name: 'VueJS',
+    type: 'FRAMEWORK',
+    confirmed: true,
+  },
+  {
+    id: '9',
+    name: 'Angular',
+    type: 'FRAMEWORK',
+    confirmed: true,
+  },
+  {
+    id: '11',
+    name: 'Docker',
+    type: 'DEVOPS',
+    confirmed: true,
+  },
+  {
+    id: '12',
+    name: 'Git',
+    type: 'DEVOPS',
+    confirmed: true,
+  },
+  {
+    id: '14',
+    name: 'Elasticsearch',
+    type: 'DEVOPS',
+    confirmed: true,
+  },
+  {
+    id: '15',
+    name: 'MongoDB',
+    type: 'DATABASE',
+    confirmed: true,
+  },
+  {
+    id: '16',
+    name: 'PostgreSQL',
+    type: 'DATABASE',
+    confirmed: true,
+  },
+  {
+    id: '17',
+    name: 'MySQL',
+    type: 'DATABASE',
+    confirmed: true,
+  },
+  {
+    id: '18',
+    name: 'SQLite',
+    type: 'DATABASE',
+    confirmed: true,
+  },
+]
 </script>
 
 <template>
@@ -127,7 +215,7 @@ function closeMarketModal() {
         />
 
         <IdeaComments
-          :news="user.id === idea.id"
+          :news="user?.id === idea.id"
           :idea="idea"
           :idea-modal-ref="MarketModalRef"
         />
@@ -136,7 +224,7 @@ function closeMarketModal() {
       <div class="market-modal__right-side w-25 rounded">
         <MarketRightSide
           :idea="idea"
-          :skills="idea.stack"
+          :skills="stack"
           v-model:skillsRequestTeam="skillsRequestTeam"
           v-model:skillsTeam="skillsTeam"
         />

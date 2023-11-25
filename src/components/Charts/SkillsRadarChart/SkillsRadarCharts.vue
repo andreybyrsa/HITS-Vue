@@ -1,16 +1,20 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { watchImmediate } from '@vueuse/core'
 import { RadarChart } from 'vue-chart-3'
 import { Chart, registerables, ChartData } from 'chart.js'
 
-import { SkillsRadarChartsProps } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+import SkillsRadarChartsProps from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+import Typography from '@Components/Typography/Typography.vue'
 
 import { Skill, SkillType } from '@Domain/Skill'
 
 Chart.register(...registerables)
 
 const props = defineProps<SkillsRadarChartsProps>()
+
+const route = useRoute()
 
 type SkillsRadarChartType = ChartData<'radar', (number | null)[], string>
 
@@ -19,20 +23,30 @@ const frameworkSkills = ref<SkillsRadarChartType>()
 const databaseSkills = ref<SkillsRadarChartType>()
 const devopsSkills = ref<SkillsRadarChartType>()
 
+const radarChartPlaceholder = ref('Вычисление диаграмм')
+
+const skillsData = computed(() => [
+  { data: languageSkills.value },
+  { data: frameworkSkills.value },
+  { data: databaseSkills.value },
+  { data: devopsSkills.value },
+])
+
 const ButtonClassName = computed(() => [props.className])
 
-interface SkillData {
-  label: string
-  skills: { label: string; value: number }[]
-}
-
-function getSkillsData(label: string, skills: Skill[], type: SkillType): SkillData {
+function getSkillsData(skills: Skill[], type: SkillType) {
   const skillsByType = skills.filter((skill) => skill.type === type)
 
-  const skillsData: SkillData = { label, skills: [] }
+  if (skillsByType.length === 0) {
+    return undefined
+  }
+
   const uniqueSkills = [
     ...new Map(skillsByType.map((skill) => [skill.id, skill])).values(),
   ]
+
+  const skillsLabels = uniqueSkills.map((skill) => skill.name)
+  const skillsValues: number[] = []
 
   uniqueSkills.forEach((currentSkill) => {
     const skillAmount = skillsByType.reduce(
@@ -40,114 +54,101 @@ function getSkillsData(label: string, skills: Skill[], type: SkillType): SkillDa
       0,
     )
 
-    skillsData.skills.push({ label: currentSkill.name, value: skillAmount })
+    skillsValues.push(skillAmount)
   })
 
-  return skillsData
-}
-
-function findMissingSkillAndAdd(
-  skillsDataSet: SkillData[],
-  data: { label: string; value: number },
-) {
-  skillsDataSet.forEach((dataSet, index) => {
-    const currentDataIndex = dataSet.skills.findIndex(
-      ({ label }) => label === data.label,
-    )
-
-    if (currentDataIndex === -1) {
-      dataSet.skills.splice(index, 0, { label: data.label, value: 0 })
+  const getOptionsBySkillType = (type: SkillType) => {
+    switch (type) {
+      case 'LANGUAGE':
+        return { label: 'Языки разработки', backgroundColor: '#19865380' }
+      case 'FRAMEWORK':
+        return { label: 'Фреймворки', backgroundColor: '#0dcaf080' }
+      case 'DATABASE':
+        return { label: 'Базы данных', backgroundColor: '#ffc10780' }
+      default:
+        return { label: 'Девопс технологии', backgroundColor: '#dc354580' }
     }
-  })
-}
+  }
 
-function getSkillsDataSet(skillsDataSet: SkillData[]): SkillsRadarChartType {
-  const totalSkillsDataSet: SkillsRadarChartType = { labels: [], datasets: [] }
-
-  skillsDataSet.forEach((dataSet) => {
-    dataSet.skills.forEach((data) => findMissingSkillAndAdd(skillsDataSet, data))
-  })
-
-  totalSkillsDataSet.labels = [
-    ...new Set(
-      skillsDataSet
-        .map(({ skills }) => skills)
-        .flat(1)
-        .map(({ label }) => label),
-    ).values(),
-  ]
-
-  skillsDataSet.forEach((dataSet) => {
-    totalSkillsDataSet.datasets.push({
-      label: dataSet.label,
-      data: dataSet.skills.map(({ value }) => value),
-    })
-  })
-
-  return totalSkillsDataSet
+  return {
+    labels: skillsLabels,
+    datasets: [
+      {
+        data: skillsValues,
+        ...getOptionsBySkillType(type),
+        borderColor: '#000000',
+        borderWidth: 1,
+      },
+    ],
+  }
 }
 
 watchImmediate(
   () => props.skills,
   (currentSkills) => {
-    const languageDataSet: SkillData[] = []
-    const frameworkDataSet: SkillData[] = []
-    const databaseDataSet: SkillData[] = []
-    const devopsDataSet: SkillData[] = []
-
-    currentSkills.forEach(({ label, skills }) => {
-      languageDataSet.push(getSkillsData(label, skills, 'LANGUAGE'))
-      frameworkDataSet.push(getSkillsData(label, skills, 'FRAMEWORK'))
-      databaseDataSet.push(getSkillsData(label, skills, 'FRAMEWORK'))
-      devopsDataSet.push(getSkillsData(label, skills, 'DEVOPS'))
-    })
-
-    languageSkills.value = getSkillsDataSet(languageDataSet)
-    frameworkSkills.value = getSkillsDataSet(frameworkDataSet)
-    databaseSkills.value = getSkillsDataSet(databaseDataSet)
-    devopsSkills.value = getSkillsDataSet(devopsDataSet)
+    languageSkills.value = getSkillsData(currentSkills, 'LANGUAGE')
+    frameworkSkills.value = getSkillsData(currentSkills, 'FRAMEWORK')
+    databaseSkills.value = getSkillsData(currentSkills, 'DATABASE')
+    devopsSkills.value = getSkillsData(currentSkills, 'DEVOPS')
   },
-  { deep: true },
 )
+
+const intervalId = setInterval(() => {
+  if (route.fullPath !== '/teams/create') {
+    clearInterval(intervalId)
+  }
+
+  if (radarChartPlaceholder.value.includes('...')) {
+    radarChartPlaceholder.value = 'Вычисление диаграм'
+  } else {
+    radarChartPlaceholder.value += '.'
+  }
+}, 200)
 </script>
 
 <template>
   <div :class="['radar-charts', ...ButtonClassName]">
-    <RadarChart
-      v-if="languageSkills"
-      :chart-data="languageSkills"
-      :height="300"
-    />
+    <div
+      v-for="(skills, index) in skillsData"
+      :key="index"
+      class="radar-charts__chart w-50"
+    >
+      <RadarChart
+        v-if="skills.data"
+        :chart-data="skills.data"
+        :height="300"
+      />
 
-    <RadarChart
-      v-if="frameworkSkills"
-      :chart-data="frameworkSkills"
-      :height="300"
-    />
+      <div
+        v-else
+        class="radar-charts__placeholder-wrapper"
+      >
+        <div class="radar-charts__placeholder placeholder-glow">
+          <div class="placeholder col-12 h-100 rounded-3"></div>
+        </div>
+      </div>
+    </div>
 
-    <RadarChart
-      v-if="databaseSkills"
-      :chart-data="databaseSkills"
-      :height="300"
-    />
-
-    <RadarChart
-      v-if="devopsSkills"
-      :chart-data="devopsSkills"
-      :height="300"
-    />
+    <Typography
+      v-if="skillsData.every((skill) => skill.data === undefined)"
+      class-name="w-100 text-center"
+    >
+      {{ radarChartPlaceholder }}
+    </Typography>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .radar-charts {
-  @include flexible(center, center, $flex-wrap: wrap, $gap: 16px);
+  @include flexible(flex-start, flex-start, $flex-wrap: wrap);
 
   &__chart {
     @include flexible(center, center);
   }
 
   &__placeholder {
+    margin-bottom: 16px;
+
     width: 130px;
     height: 130px;
 

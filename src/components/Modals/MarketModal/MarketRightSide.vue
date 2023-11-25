@@ -48,13 +48,13 @@ function openMarketInfo() {
   <div v-if="isChangeContent">
     <MarketSkillsRadarCharts
       v-if="user?.email == idea.initiator.email"
-      :skills="idea.stack"
+      :skills="skills"
       v-model:skillsRequestTeam="skillsRequestTeam"
       :idea="idea"
     />
     <MarketSkillsRadarCharts
       v-else
-      :skills="idea.stack"
+      :skills="skills"
       v-model:skillsTeam="skillsTeam"
       :idea="idea"
     />
