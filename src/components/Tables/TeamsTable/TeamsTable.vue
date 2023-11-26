@@ -2,7 +2,7 @@
   <Table
     :columns="teamTableColumns"
     :data="teams"
-    :search-by="['name']"
+    :search-by="['name', 'description']"
     :filters="teamsFilters"
     :dropdown-actions-menu="dropdownTeamsActions"
   ></Table>
@@ -27,6 +27,7 @@ import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
 import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
+import Profile from '@Domain/Profile'
 
 import TeamService from '@Services/TeamService'
 import SkillsService from '@Services/SkillsService'
@@ -36,7 +37,6 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
-import Profile from '@Domain/Profile'
 
 const router = useRouter()
 
@@ -137,6 +137,17 @@ const dropdownTeamsActions: DropdownMenuAction<Team>[] = [
     label: 'Просмотреть',
     click: navigateToTeamModal,
   },
+  {
+    label: 'Редактировать',
+    statement: checkUpdateTeamAction,
+    click: navigateToTeamForm,
+  },
+  {
+    label: 'Удалить',
+    className: 'text-danger',
+    statement: checkDeleteTeamAction,
+    click: handleOpenDeleteModal,
+  },
 ]
 
 const teamsFilters = computed<Filter<Team>[]>(() => [
@@ -231,6 +242,15 @@ function navigateToTeamModal(team: Team) {
   router.push(`/teams/list/${team.id}`)
 }
 
+function navigateToTeamForm(team: Team) {
+  router.push(`/teams/update${team.id}`)
+}
+
+function handleOpenDeleteModal(team: Team) {
+  deletingTeamId.value = team.id
+  isOpenedTeamDeleteModal.value = true
+}
+
 function handleCloseDeleteModal() {
   isOpenedTeamDeleteModal.value = false
 }
@@ -255,6 +275,24 @@ async function handleDeleteTeam() {
       teams.value.splice(deletingTeamIndex, 1)
     }
   }
+}
+
+function checkUpdateTeamAction(team: Team) {
+  const currentUser = user.value
+  const { owner, leader } = team
+
+  return (
+    currentUser?.role === 'ADMIN' ||
+    currentUser?.id === owner.id ||
+    currentUser?.id === leader?.id
+  )
+}
+
+function checkDeleteTeamAction(team: Team) {
+  const currentUser = user.value
+  const { owner } = team
+
+  return currentUser?.role === 'ADMIN' || currentUser?.id === owner.id
 }
 
 function checkTeamStatus(team: Team, status: FilterValue) {

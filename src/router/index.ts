@@ -48,10 +48,16 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'ideas-list',
         component: IdeasView,
+        meta: {
+          roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
         children: [
           {
             path: ':id',
             component: IdeaModal,
+            meta: {
+              roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
           },
         ],
       },
@@ -77,10 +83,12 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
+        meta: { roles: ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'ADMIN'] },
         children: [
           {
             path: ':teamId',
             component: TeamModal,
+            meta: { roles: ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'ADMIN'] },
           },
           {
             name: 'profile',
@@ -94,11 +102,13 @@ const routes: RouteRecordRaw[] = [
         name: 'create-team',
         path: 'create',
         component: NewTeamView,
+        meta: { roles: ['TEAM_LEADER', 'ADMIN'] },
       },
       {
         name: 'update-team',
         path: 'update/:id',
         component: EditTeamView,
+        meta: { roles: ['TEAM_LEADER', 'ADMIN'] },
       },
     ],
   },
