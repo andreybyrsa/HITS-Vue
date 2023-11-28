@@ -7,6 +7,7 @@
             name="search"
             class-name="rounded-end"
             no-form-controlled
+            v-model="searchedValue"
             placeholder="Поиск"
           >
             <template #prepend>
@@ -15,24 +16,26 @@
           </Input>
         </div>
 
-        <div>
-          <Button
-            v-for="(user, index) in users"
-            :key="index"
-            @click="addUserToParent(user)"
-            class="search-users__element p-1"
-          >
-            <img
-              src="https://static.thenounproject.com/png/363640-200.png"
-              alt="avatar"
-              class="h-100"
-            />
+        <div class="overflow-y-auto w-100">
+          <div>
+            <Button
+              v-for="(user, index) in users"
+              :key="index"
+              @click="addUserToParent(user)"
+              class="search-users__element p-1"
+            >
+              <img
+                src="https://static.thenounproject.com/png/363640-200.png"
+                alt="avatar"
+                class="h-100"
+              />
 
-            <div>
-              {{ user.firstName }}
-              {{ user.lastName }}
-            </div>
-          </Button>
+              <div>
+                {{ user.firstName }}
+                {{ user.lastName }}
+              </div>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -43,17 +46,17 @@
       />
     </div>
 
-    <div
-      class="search-users__invite gap-2 w-100 bg-light rounded-bottom-4 border p-3"
+    <Button
+      class="search-users__invite gap-2 w-100 rounded-bottom-4 rounded-top-0 border p-3"
     >
       <Icon class-name="bi bi-plus-circle-fill fs-3 text-primary"></Icon>
       <Typography class-name="fs-4 text-primary">Пригласить на портал </Typography>
-    </div>
+    </Button>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { User } from '@Domain/User'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -64,6 +67,8 @@ import RolesTypes from '@Domain/Roles'
 import Typography from '@Components/Typography/Typography.vue'
 
 const users = inject<User[]>('users')
+
+const searchedValue = ref<string>('')
 
 const rolesFilter = ref<RolesTypes[]>([])
 
@@ -88,9 +93,61 @@ const filters: Filter<User>[] = [
   },
 ]
 
+const searchBy = ['firstName', 'lastName']
+
 function checkUserRoles(user: User, role: FilterValue) {
   return user.roles.find((userRole) => userRole === role)
 }
+
+// const filteredUsers = computed(() => {
+//   if (searchBy) {
+//     const searchKeys = searchBy
+
+//     return users?.filter((value) => {
+//       const currentDataByKeys = searchKeys.map((key) =>
+//         `${value[key]}`.toLocaleLowerCase().trim(),
+//       )
+//       const currentSearchedValue = searchedValue.value
+//         .toLocaleLowerCase()
+//         .trim()
+//         .split(' ')
+
+//       return currentSearchedValue.every((searchWord) =>
+//         currentDataByKeys.some((dataByKey) => dataByKey.includes(searchWord)),
+//       )
+//     })
+//   }
+//   return users
+// })
+
+// const filter = computed(() => {
+//   console.log(searchedValue)
+//   console.log(users?.filter)
+
+//   if (searchedValue.value) {
+//     return users?.filter((item) => {
+//       searchedValue.value
+//         .toLowerCase()
+//         .split(' ')
+//         .every((v) => item.firstName.toLowerCase().includes(v))
+//     })
+//   } else {
+//     return users
+//   }
+// })
+
+// const filteredUsers = computed(() => {
+//   const query = searchedValue.value?.toLowerCase().trim()
+//   if (!query) {
+//     return users
+//   } else {
+//     return users?.filter(
+//       (user) =>
+//         user.firstName.toLowerCase().includes(query) ||
+//         user.lastName.toLowerCase().includes(query),
+//     )
+//   }
+// })
 </script>
 
 <style lang="scss" scoped>
@@ -100,7 +157,8 @@ function checkUserRoles(user: User, role: FilterValue) {
 
   &__main {
     width: 70%;
-    @include flexible(start, center, column);
+    max-height: 80vh;
+    @include flexible(start, start, column);
   }
 
   &__element {
@@ -117,6 +175,26 @@ function checkUserRoles(user: User, role: FilterValue) {
 
   &__invite {
     @include flexible(center, start);
+    background-color: rgb(235, 234, 234);
   }
+
+  &__invite:hover {
+    background-color: rgb(221, 221, 221);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(209, 209, 209);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #0d6efd;
+  border-radius: 20px;
+  border: 3px solid #0d6efd;
 }
 </style>

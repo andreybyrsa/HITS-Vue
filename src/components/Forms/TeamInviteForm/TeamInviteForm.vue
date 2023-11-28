@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { provide, ref } from 'vue'
+import { Ref, onMounted, provide, ref } from 'vue'
 
 import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
@@ -24,6 +24,11 @@ import { Skill } from '@Domain/Skill'
 import TeamInviteSelectedUsers from './TeamInviteSelectedUsers.vue'
 import TeamInviteSearchUsers from './TeamInviteSearchUsers.vue'
 import { User } from '@Domain/User'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+import ManageUsersService from '@Services/ManageUsersService'
+import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const radarSkills: SkillsArea[] = [
   {
@@ -37,7 +42,7 @@ const radarSkills: SkillsArea[] = [
       },
       {
         id: '1',
-        name: 'Python',
+        name: 'React',
         type: 'FRAMEWORK',
         confirmed: true,
       },
@@ -53,70 +58,66 @@ const radarSkills: SkillsArea[] = [
         type: 'DEVOPS',
         confirmed: true,
       },
+      {
+        id: '4',
+        name: 'Python',
+        type: 'LANGUAGE',
+        confirmed: true,
+      },
+      {
+        id: '5',
+        name: 'VueJS',
+        type: 'FRAMEWORK',
+        confirmed: true,
+      },
+      {
+        id: '6',
+        name: 'SQL',
+        type: 'DATABASE',
+        confirmed: true,
+      },
+      {
+        id: '7',
+        name: 'Docker',
+        type: 'DEVOPS',
+        confirmed: true,
+      },
+      {
+        id: '8',
+        name: 'C++',
+        type: 'LANGUAGE',
+        confirmed: true,
+      },
+      {
+        id: '9',
+        name: 'Angular',
+        type: 'FRAMEWORK',
+        confirmed: true,
+      },
+      {
+        id: '10',
+        name: 'Node',
+        type: 'DATABASE',
+        confirmed: true,
+      },
+      {
+        id: '11',
+        name: 'Dev',
+        type: 'DEVOPS',
+        confirmed: true,
+      },
     ],
   },
 ]
 
+const notificationsStore = useNotificationsStore()
+
 const selectedUsers = ref<User[]>([])
 
-const users = ref<User[]>([
-  {
-    id: '0',
-    token: '10296538',
-    email: 'admin@mail.com',
-    firstName: 'Админ',
-    lastName: 'Админ',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-  },
-  {
-    id: '1',
-    token: '613098',
-    email: '1@mail.com',
-    firstName: 'Пользователь',
-    lastName: 'Пользователь',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-  },
-  {
-    id: '2',
-    token: '059182',
-    email: '2@mail.com',
-    firstName: 'Менеджер',
-    lastName: 'Менеджер',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-  },
-  {
-    id: '3',
-    token: '059182',
-    email: '2@mail.com',
-    firstName: 'Менеджер',
-    lastName: 'Менеджер',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-  },
-  {
-    id: '4',
-    token: '059182',
-    email: '2@mail.com',
-    firstName: 'Менеджер',
-    lastName: 'Менеджер',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-  },
-  {
-    id: '5',
-    token: '059182',
-    email: '2@mail.com',
-    firstName: 'Менеджер',
-    lastName: 'Менеджер',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-  },
-  {
-    id: '6',
-    token: '059182',
-    email: '2@mail.com',
-    firstName: 'Менеджер',
-    lastName: 'Менеджер',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-  },
-])
+const users = ref<User[]>([])
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 provide('selectedUsers', selectedUsers)
 provide('users', users)
@@ -130,6 +131,37 @@ const removeUser = (user: User) => {
   selectedUsers.value = selectedUsers.value.filter((u) => u.id !== user.id)
   users.value.push(user)
 }
+
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
+}
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const profileParallelRequests = [() => ManageUsersService.getUsers(token)]
+
+    await makeParallelRequests<User[] | Error>(profileParallelRequests).then(
+      (responses) => {
+        responses.forEach((response) => {
+          if (response.id === 0) {
+            checkResponseStatus(response, users)
+          }
+        })
+      },
+    )
+  }
+})
 </script>
 
 <style lang="scss" scoped>

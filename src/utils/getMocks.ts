@@ -61,6 +61,30 @@ function getMocks(): Mocks {
       lastName: 'Владелец',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
+    {
+      id: '4',
+      token: '8755764',
+      email: '4@mail.com',
+      firstName: 'Винрит',
+      lastName: 'Загрев',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '5',
+      token: '836444',
+      email: '5@mail.com',
+      firstName: 'Версаль',
+      lastName: 'Кустерман',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '6',
+      token: '6745354',
+      email: '6@mail.com',
+      firstName: 'Дмитрий',
+      lastName: 'Амонов',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
   ]
   const usersEmails: string[] = users.map((user) => user.email)
   const skills: Skill[] = [
