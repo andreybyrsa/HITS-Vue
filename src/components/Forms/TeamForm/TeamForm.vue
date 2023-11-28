@@ -20,6 +20,7 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import Validation from '@Utils/Validation'
 import { Skill } from '@Domain/Skill'
+import TeamInviteForm from '@Components/Forms/TeamInviteForm/TeamInviteForm.vue'
 
 const props = defineProps<TeamFormProps>()
 
@@ -177,6 +178,9 @@ async function saveTeamSkills(teamId: string, token: string, team?: Team) {
       </div>
 
       <TeamVue :mode="mode" />
+
+      <TeamInviteForm></TeamInviteForm>
+
       <Button
         v-if="props.team"
         variant="primary"
