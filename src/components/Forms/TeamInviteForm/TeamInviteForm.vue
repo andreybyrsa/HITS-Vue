@@ -20,7 +20,6 @@ import { Ref, onMounted, provide, ref } from 'vue'
 
 import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
-import { Skill } from '@Domain/Skill'
 import TeamInviteSelectedUsers from './TeamInviteSelectedUsers.vue'
 import TeamInviteSearchUsers from './TeamInviteSearchUsers.vue'
 import { User } from '@Domain/User'
@@ -107,6 +106,7 @@ const radarSkills: SkillsArea[] = [
         confirmed: true,
       },
     ],
+    alphaOpacity: 50,
   },
 ]
 

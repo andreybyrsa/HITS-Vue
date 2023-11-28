@@ -37,6 +37,10 @@
             </Button>
           </div>
         </div>
+
+        <div v-if="users?.length === 0">
+          <Typography class-name="text-secondary">Никого не осталось</Typography>
+        </div>
       </div>
 
       <FilterBar
@@ -49,14 +53,14 @@
     <Button
       class="search-users__invite gap-2 w-100 rounded-bottom-4 rounded-top-0 border p-3"
     >
-      <Icon class-name="bi bi-plus-circle-fill fs-3 text-primary"></Icon>
-      <Typography class-name="fs-4 text-primary">Пригласить на портал </Typography>
+      <Icon class-name="bi bi-plus-circle-fill fs-4 text-primary"></Icon>
+      <Typography class-name="text-primary">Пригласить на портал </Typography>
     </Button>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, ref } from 'vue'
+import { computed, inject, ref, Ref, onMounted } from 'vue'
 import { User } from '@Domain/User'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -65,38 +69,107 @@ import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import RolesTypes from '@Domain/Roles'
 import Typography from '@Components/Typography/Typography.vue'
+import { Skill } from '@Domain/Skill'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+import SkillsService from '@Services/SkillsService'
+import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import Profile from '@Domain/Profile'
+import ProfileService from '@Services/ProfileService'
+import { Team } from '@Domain/Team'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+const notificationsStore = useNotificationsStore()
 
 const users = inject<User[]>('users')
+const profile = ref<Profile>()
+const skills = ref<Skill[]>([])
 
+const filterBySkills = ref<string[]>([])
+
+const searchBySkills = ref('')
 const searchedValue = ref<string>('')
 
-const rolesFilter = ref<RolesTypes[]>([])
-
 const emits = defineEmits(['addUser'])
-
 const addUserToParent = (user: User) => {
   emits('addUser', user)
 }
-
-const filters: Filter<User>[] = [
-  {
-    category: 'Роли',
-    choices: [
-      { label: 'Инициатор', value: 'INITIATOR' },
-      { label: 'Проектный офис', value: 'PROJECT_OFFICE' },
-      { label: 'Эксперт', value: 'EXPERT' },
-      { label: 'Админ', value: 'ADMIN' },
-    ],
-    refValue: rolesFilter,
-    isUniqueChoice: false,
-    checkFilter: checkUserRoles,
-  },
-]
 
 const searchBy = ['firstName', 'lastName']
 
 function checkUserRoles(user: User, role: FilterValue) {
   return user.roles.find((userRole) => userRole === role)
+}
+
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
+}
+
+onMounted(async () => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token, email } = currentUser
+
+    const teamsTableParallelRequests = [
+      () => SkillsService.getAllSkills(token),
+      () => ProfileService.getUserProfile(email, token),
+    ]
+
+    await makeParallelRequests<Profile | Skill[] | Error>(
+      teamsTableParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, skills)
+        } else if (response.id === 1) {
+          checkResponseStatus(response, profile)
+        }
+      })
+    })
+  }
+})
+
+const filters = computed<Filter<Team>[]>(() => [
+  {
+    category: 'Стек технологий',
+    choices: skills.value
+      .map(({ name }) => ({
+        label: name,
+        value: name,
+        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+      }))
+      .sort((a, b) => +b.isMarked - +a.isMarked),
+    refValue: filterBySkills,
+    isUniqueChoice: false,
+    searchValue: searchBySkills,
+    checkFilter: checkTeamSkill,
+  },
+])
+
+function checkTeamSkill(team: Team, skill: FilterValue) {
+  const currentUser = user.value
+
+  if (currentUser?.role) {
+    const { role } = currentUser
+
+    if (role === 'INITIATOR') {
+      return team.skills.some(({ name }) => name === skill)
+    }
+
+    return (
+      team.skills.some(({ name }) => name === skill) ||
+      team.wantedSkills.some(({ name }) => name === skill)
+    )
+  }
 }
 
 // const filteredUsers = computed(() => {
@@ -158,11 +231,11 @@ function checkUserRoles(user: User, role: FilterValue) {
   &__main {
     width: 70%;
     max-height: 80vh;
-    @include flexible(start, start, column);
+    @include flexible(center, start, column);
   }
 
   &__element {
-    height: 50px;
+    height: 35px;
     width: fit-content;
     margin-bottom: 8px;
     @include flexible(center, start, $gap: 8px);
