@@ -30,7 +30,7 @@ const NotificationClassName = computed(() => ['card', 'text-primary'])
       appear
     >
       <div
-        v-if="!notification.isShowed"
+        v-if="notification.isShowed === false"
         :class="NotificationClassName"
       >
         <div class="card-header">
