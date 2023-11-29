@@ -63,7 +63,7 @@ const isOpenedIdeaDeleteModal = ref(false)
 
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
 
-const filterByConfirmedExpert = ref<boolean>()
+const filterByConfirmedExpert = ref<boolean>(true)
 
 watchImmediate(
   () => props.ideas,
@@ -172,6 +172,7 @@ const ideasFilters: Filter<Idea>[] = [
     refValue: filterByIdeaStatus,
     isUniqueChoice: false,
     checkFilter: checkIdeaStatus,
+    statement: () => true,
   },
   {
     category: 'Экспертиза',
@@ -184,6 +185,7 @@ const ideasFilters: Filter<Idea>[] = [
     refValue: filterByConfirmedExpert,
     isUniqueChoice: false,
     checkFilter: () => true,
+    statement: () => user.value?.role === 'EXPERT',
   },
 ]
 

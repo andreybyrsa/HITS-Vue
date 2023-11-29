@@ -7,6 +7,7 @@ interface Filter<DataType> {
   isUniqueChoice: boolean
   choices: { label: string; value: FilterValue }[]
   refValue: Ref<FilterValue | FilterValue[] | undefined>
+  statement: () => boolean
   checkFilter: (data: DataType, filter: FilterValue) => void
 }
 

@@ -15,7 +15,7 @@ function GetFiltersByRoles(): GetFiltersByRolesType {
   return {
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     filter: {
-      INITIATOR: ['NEW', 'ON_EDITING'],
+      INITIATOR: [],
       MEMBER: [],
       PROJECT_OFFICE: ['ON_APPROVAL'],
       EXPERT: ['ON_CONFIRMATION'],

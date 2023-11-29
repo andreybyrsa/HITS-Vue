@@ -226,22 +226,14 @@ const checkIdea = async (
     })
 }
 
-function formatNotConfirmedIdea(idea: Idea[]) {
-  return idea.filter((idea) => idea.id === '0')
-}
-
 const getExpertNotConfirmedRating = async (
   token: string,
 ): Promise<Idea[] | Error> => {
   return await ideasAxios
-    .get<Idea[]>(
-      `/idea/not/confirmed/all`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { formatter: formatNotConfirmedIdea },
-    )
+    .get(`/idea/all/on-confirmation`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения идей'

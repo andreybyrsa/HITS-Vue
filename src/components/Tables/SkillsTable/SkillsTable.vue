@@ -105,6 +105,7 @@ const skillsFilters: Filter<Skill>[] = [
     refValue: filterByType,
     isUniqueChoice: false,
     checkFilter: checkSkillType,
+    statement: () => true,
   },
   {
     category: 'Статус',
@@ -115,6 +116,7 @@ const skillsFilters: Filter<Skill>[] = [
     refValue: filterByIsConfirmed,
     isUniqueChoice: true,
     checkFilter: checkSkillConfirmed,
+    statement: () => true,
   },
 ]
 

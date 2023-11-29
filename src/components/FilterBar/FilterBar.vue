@@ -67,31 +67,33 @@ function resetFilters() {
       v-for="(filter, index) in filters"
       :key="index"
     >
-      <Typography class-name="fw-semibold">{{ filter.category }}</Typography>
+      <div v-if="filter.statement()">
+        <Typography class-name="fw-semibold">{{ filter.category }}</Typography>
 
-      <div class="filter__choices">
-        <div
-          v-for="(choice, index) in filter.choices"
-          :key="index"
-          class="filter__choice ps-2 py-1 rounded-1"
-          @click="chooseFilter(choice.value, filter.refValue)"
-        >
-          <Radio
-            v-if="filter.isUniqueChoice"
-            :name="filter.category"
-            no-form-cotrolled
-            :label="choice.label"
-            :value="choice.value"
-            v-model="filter.refValue.value"
-          />
-          <Checkbox
-            v-else
-            :name="filter.category"
-            no-form-controlled
-            :label="choice.label"
-            :value="choice.value"
-            v-model="filter.refValue.value"
-          />
+        <div class="filter__choices">
+          <div
+            v-for="(choice, index) in filter.choices"
+            :key="index"
+            class="filter__choice ps-2 py-1 rounded-1"
+            @click="chooseFilter(choice.value, filter.refValue)"
+          >
+            <Radio
+              v-if="filter.isUniqueChoice"
+              :name="filter.category"
+              no-form-cotrolled
+              :label="choice.label"
+              :value="choice.value"
+              v-model="filter.refValue.value"
+            />
+            <Checkbox
+              v-else
+              :name="filter.category"
+              no-form-controlled
+              :label="choice.label"
+              :value="choice.value"
+              v-model="filter.refValue.value"
+            />
+          </div>
         </div>
       </div>
     </div>
