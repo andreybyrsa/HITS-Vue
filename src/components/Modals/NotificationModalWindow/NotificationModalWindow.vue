@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/valid-v-else -->
 <script lang="ts" setup>
 import { Ref, ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -36,6 +35,7 @@ defineProps<NotificatonModalWindowProps>()
 const emit = defineEmits<NotificatonModalWindowEmits>()
 
 const readedNotifications = ref<Notification[]>([])
+const unreadNotifications = ref<Notification[]>([])
 
 const favoriteNotifications = ref<Notification[]>([])
 
@@ -74,13 +74,17 @@ onMounted(async () => {
     )
   }
 
-  for (const notification of notifications.value) {
+  notifications.value.forEach((notification) => {
     if (notification.isReaded === false) {
-      notifications.value.push(notification)
+      unreadNotifications.value.push(notification)
     } else {
-      readedNotifications.value.push(notification)
+      if (notification.isFavourite === true) {
+        readedNotifications.value.unshift(notification)
+      } else {
+        readedNotifications.value.push(notification)
+      }
     }
-  }
+  })
 })
 
 const showAllTab = ref(true)
@@ -94,99 +98,88 @@ const switchTabToShow = (tab: any) => {
   showAllTab.value = tab === 'all'
 }
 
-const markAllAsRead = () => {
-  notifications.value.forEach((notification) => {
-    notification.isReaded = true
-    readedNotifications.value.unshift(notification)
-  })
-  notifications.value = []
-}
+// const markAllAsRead = () => {
+//   unreadNotifications.value.forEach((notification) => {
+//     notification.isReaded = true
+//     readedNotifications.value.push(notification)
+//   })
+//   unreadNotifications.value = []
+// }
 
-const markAsRead = async () => {
+const markAsRead = async (id: string, index: number) => {
   const currentUser = user.value
-  const currentNotification = notifications.value
 
-  if (currentUser?.token && currentNotification) {
+  if (currentUser?.token) {
     const { token } = currentUser
+    const response = await NotificatonsService.checkNotification(id, token)
 
-    for (const notification of currentNotification) {
-      const { id } = notification
-
-      const response = await NotificatonsService.checkNotification(id, token)
-
-      if (response instanceof Error) {
-        return NotificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-
-      readedNotifications.value.unshift(notification)
+    if (response instanceof Error) {
+      return NotificationsStore.createSystemNotification('Система', response.message)
     }
+
+    notifications.value.forEach((notification) => {
+      if (notification.id === id) {
+        unreadNotifications.value.splice(index, 1)
+        readedNotifications.value.push(notification)
+      }
+    })
   }
 }
 
-const addToFavorites = async () => {
+const addToFavorites = async (id: string, index: number) => {
   const currentUser = user.value
-  const currentNotification = notifications.value
 
-  if (currentUser?.token && currentNotification) {
+  if (currentUser?.token) {
     const { token } = currentUser
+    const response = await NotificatonsService.markAsFavoriteNotification(id, token)
 
-    for (const notification of currentNotification) {
-      const { id } = notification
-
-      const response = await NotificatonsService.markAsFavoriteNotification(
-        id,
-        token,
-      )
-
-      if (response instanceof Error) {
-        return NotificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-      console.log(notification)
-      readedNotifications.value.unshift(notification)
-      favoriteNotifications.value.push(notification)
+    if (response instanceof Error) {
+      return NotificationsStore.createSystemNotification('Система', response.message)
     }
+
+    notifications.value.forEach((notification) => {
+      if (notification.id === id) {
+        if (notification.isReaded === false) {
+          unreadNotifications.value.splice(index, 1)
+          readedNotifications.value.unshift(notification)
+        }
+
+        favoriteNotifications.value.push(notification)
+        notification.isFavourite = true
+      }
+    })
   }
 }
 
-const removeFromFavorites = async () => {
+const removeFromFavorites = async (id: string, index: number) => {
   const currentUser = user.value
-  const currentNotification = notifications.value
 
-  if (currentUser?.token && currentNotification) {
+  if (currentUser?.token) {
     const { token } = currentUser
+    const response = await NotificatonsService.unMarkAsFavoriteNotification(
+      id,
+      token,
+    )
 
-    for (const notification of currentNotification) {
-      const { id } = notification
-
-      const response = await NotificatonsService.unMarkAsFavoriteNotification(
-        id,
-        token,
-      )
-
-      if (response instanceof Error) {
-        return NotificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-
-      readedNotifications.value.unshift(notification)
+    if (response instanceof Error) {
+      return NotificationsStore.createSystemNotification('Система', response.message)
     }
+
+    notifications.value.forEach((notification) => {
+      if (notification.id === id) {
+        favoriteNotifications.value.splice(index, 1)
+        notification.isFavourite = false
+      }
+    })
   }
 }
 
-const removeAllFromFavorites = () => {
-  favoriteNotifications.value.forEach((notification) => {
-    notification.isFavourite = false
-  })
-  favoriteNotifications.value = []
-}
+// const removeAllFromFavorites = () => {
+//   favoriteNotifications.value.forEach((notification) => {
+//     notification.isFavourite = false
+//   })
+//   favoriteNotifications.value = []
+// }
 
 function getFormattedDate(date: Date) {
   if (date) {
@@ -214,7 +207,8 @@ function getFormattedDate(date: Date) {
           Назад
         </Button>
         <Typography class-name="fs-3 text-primary">Уведомления</Typography>
-        <Button
+
+        <!-- <Button
           v-if="showAllTab && hasNewNotifications"
           variant="primary"
           class-name="notification-window-modal__all-check-btn mb-3"
@@ -249,7 +243,7 @@ function getFormattedDate(date: Date) {
           @click="removeAllFromFavorites"
         >
           Открепить все
-        </Button>
+        </Button> -->
       </div>
 
       <div class="notification-window-modal__pages-headers">
@@ -293,7 +287,7 @@ function getFormattedDate(date: Date) {
             >
             <div
               class="notification-window-modal__new-notification p-2 mb-2 rounded-3"
-              v-for="notification in notifications"
+              v-for="(notification, index) in unreadNotifications"
               :key="notification.id"
             >
               <div
@@ -309,15 +303,15 @@ function getFormattedDate(date: Date) {
                     <Button
                       class="notification-window-modal__favorite-btn text-white col float-end"
                       prepend-icon-name="bi bi-check fa-2x"
-                      @click="markAsRead"
+                      @click="markAsRead(notification.id, index)"
                     ></Button>
                     <Button
                       class="notification-window-modal__check-btn text-white col float-end btn-xs"
                       prepend-icon-name="bi bi-star"
-                      @click="addToFavorites"
+                      @click="addToFavorites(notification.id, index)"
                     ></Button>
                   </div>
-                  <Typography class-name="fs-6 text-white fw-bold col-2">
+                  <Typography class-name="fs-6 text-white w-50 fw-bold col-2">
                     {{ notification.title }}
                   </Typography>
                 </div>
@@ -335,7 +329,7 @@ function getFormattedDate(date: Date) {
             >
 
             <div
-              v-for="notification in readedNotifications"
+              v-for="(notification, index) in readedNotifications"
               :key="notification.id"
               class="notification-window-modal__notification p-2 mb-2"
             >
@@ -352,16 +346,16 @@ function getFormattedDate(date: Date) {
                       class="notification-window-modal__favorite-btn text-primary col float-end"
                       v-if="notification.isFavourite === false"
                       prepend-icon-name="bi bi-star"
-                      @click="addToFavorites"
+                      @click="addToFavorites(notification.id, index)"
                     ></Button>
                     <Button
                       class="notification-window-modal__favorite-btn text-primary col float-end"
                       v-else
                       prepend-icon-name="bi bi-star-fill"
-                      @click="removeFromFavorites"
+                      @click="removeFromFavorites(notification.id, index)"
                     ></Button>
                   </div>
-                  <Typography class-name="fs-6 text-black fw-bold col-2">
+                  <Typography class-name="fs-6 text-black w-50 fw-bold col-2">
                     {{ notification.title }}
                   </Typography>
                 </div>
@@ -378,7 +372,7 @@ function getFormattedDate(date: Date) {
           <div v-if="hasFavoriteNotifications">
             <div
               class="notification-window-modal__notification mx-4"
-              v-for="notification in favoriteNotifications"
+              v-for="(notification, index) in favoriteNotifications"
               :key="notification.id"
             >
               <div v-if="notifications">
@@ -392,10 +386,10 @@ function getFormattedDate(date: Date) {
                     <Button
                       class="notification-window-modal__check-btn text-white col-1 float-end"
                       prepend-icon-name="bi bi-star-fill text-primary"
-                      @click="removeFromFavorites"
+                      @click="removeFromFavorites(notification.id, index)"
                     ></Button>
                   </div>
-                  <Typography class-name="fs-6 text-black fw-bold col-2">
+                  <Typography class-name="fs-6 text-black w-50 fw-bold col-2">
                     {{ notification.title }}
                   </Typography>
 
@@ -434,7 +428,7 @@ function getFormattedDate(date: Date) {
     align-items: center;
   }
   &__top-btn {
-    width: 100%;
+    width: 59%;
     display: flex;
     justify-content: space-between;
   }

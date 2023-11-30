@@ -60,7 +60,7 @@ const useNotificationsStore = defineStore('notification', {
 
       const notification = this.notifications.find((n) => n.id === id)
       if (notification) {
-        notification.isReaded = true
+        notification.isReaded = false
       }
     },
 
