@@ -19,7 +19,7 @@
         <div class="overflow-y-auto w-100">
           <div>
             <Button
-              v-for="(user, index) in users"
+              v-for="(user, index) in usersData"
               :key="index"
               @click="addUserToParent(user)"
               class="search-users__element p-1"
@@ -67,7 +67,6 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
-import RolesTypes from '@Domain/Roles'
 import Typography from '@Components/Typography/Typography.vue'
 import { Skill } from '@Domain/Skill'
 import useUserStore from '@Store/user/userStore'
@@ -83,25 +82,21 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
-const users = inject<User[]>('users')
+const users = inject<Ref<User[]>>('users')
 const profile = ref<Profile>()
 const skills = ref<Skill[]>([])
 
 const filterBySkills = ref<string[]>([])
 
 const searchBySkills = ref('')
-const searchedValue = ref<string>('')
+const searchedValue = ref('')
 
 const emits = defineEmits(['addUser'])
 const addUserToParent = (user: User) => {
   emits('addUser', user)
 }
 
-const searchBy = ['firstName', 'lastName']
-
-function checkUserRoles(user: User, role: FilterValue) {
-  return user.roles.find((userRole) => userRole === role)
-}
+const searchBy: (keyof User)[] = ['firstName', 'lastName']
 
 function checkResponseStatus<T>(
   data: RequestResult<T>,
@@ -171,6 +166,26 @@ function checkTeamSkill(team: Team, skill: FilterValue) {
     )
   }
 }
+
+const usersData = computed(() => {
+  if (searchedValue.value) {
+    return users?.value.filter((user) => {
+      const currentDataByKeys = searchBy.map((key) =>
+        `${user[key]}`.toLocaleLowerCase().trim(),
+      )
+
+      const currentSearchedValue = searchedValue.value
+        .toLocaleLowerCase()
+        .trim()
+        .split(' ')
+
+      return currentSearchedValue.every((searchWord) =>
+        currentDataByKeys.some((dataByKey) => dataByKey.includes(searchWord)),
+      )
+    })
+  }
+  return users?.value
+})
 
 // const filteredUsers = computed(() => {
 //   if (searchBy) {

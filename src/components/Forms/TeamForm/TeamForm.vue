@@ -179,7 +179,7 @@ async function saveTeamSkills(teamId: string, token: string, team?: Team) {
 
       <TeamVue :mode="mode" />
 
-      <TeamInviteForm></TeamInviteForm>
+      <TeamInviteForm />
 
       <Button
         v-if="props.team"

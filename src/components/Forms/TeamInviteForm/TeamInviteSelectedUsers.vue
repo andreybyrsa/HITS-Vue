@@ -1,5 +1,5 @@
 <template>
-  <div class="selected-users border rounded-4">
+  <div class="selected-users p-2 border rounded-4">
     <div class="d-flex gap-3 flex-wrap">
       <div
         v-for="(user, index) in selectedUsers"
@@ -15,15 +15,22 @@
           prepend-icon-name="bi bi-x-lg fs-6"
           class-name="p-0"
           @click="removeUserFromParent(user)"
-        ></Button>
+        />
       </div>
     </div>
 
-    <div v-if="selectedUsers?.length === 0">
+    <div
+      v-if="selectedUsers?.length === 0"
+      class="m-1"
+    >
       <Typography class-name="text-secondary">Никто не выбран</Typography>
     </div>
     <div>
-      <Button class-name="btn-success">Принять</Button>
+      <Button
+        v-if="selectedUsers?.length !== 0"
+        class-name="btn-success"
+        >Принять</Button
+      >
     </div>
   </div>
 </template>
@@ -46,7 +53,6 @@ const removeUserFromParent = (user: User) => {
 <style lang="scss" scoped>
 .selected-users {
   width: 100%;
-  padding: 16px;
   @include flexible(center, space-between, $gap: 16px);
 
   &__element {
