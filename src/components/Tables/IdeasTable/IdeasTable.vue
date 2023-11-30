@@ -203,6 +203,7 @@ watch(filterByConfirmedExpert, async (value) => {
       }
 
       ideasData.value = response
+      console.log(ideasData.value)
     }
   } else ideasData.value = props.ideas
 })

@@ -7,7 +7,6 @@ import { ProfileSkillProps } from '@Components/Modals/ProfileModal/ProfileModal.
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
-import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
 
 import { Skill } from '@Domain/Skill'
 
@@ -99,10 +98,10 @@ const handleSaveSkills = async () => {
         v-model:stack="selectedSkills"
       />
 
-      <SkillsRadarCharts
+      <!-- <SkillsRadarCharts
         v-else
         :skills="profileSkills"
-      />
+      /> -->
     </div>
   </div>
 </template>
