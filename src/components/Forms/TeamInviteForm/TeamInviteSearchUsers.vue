@@ -77,12 +77,15 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import Profile from '@Domain/Profile'
 import ProfileService from '@Services/ProfileService'
 import { Team } from '@Domain/Team'
+import UsersSkills from '@Domain/UsersSkills'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const users = inject<Ref<User[]>>('users')
+const usersSkills = inject<Ref<UsersSkills[]>>('usersSkills')
+
 const profile = ref<Profile>()
 const skills = ref<Skill[]>([])
 
@@ -184,58 +187,17 @@ const usersData = computed(() => {
       )
     })
   }
+  if (filterBySkills.value.length) {
+    return users?.value.filter((user) => {
+      const filters = filterBySkills.value
+      const userSkills = usersSkills?.value.find(
+        (userSkills) => userSkills.idUsers === user.id,
+      )
+      return userSkills?.skills.find((skill) => filters.includes(skill.name))
+    })
+  }
   return users?.value
 })
-
-// const filteredUsers = computed(() => {
-//   if (searchBy) {
-//     const searchKeys = searchBy
-
-//     return users?.filter((value) => {
-//       const currentDataByKeys = searchKeys.map((key) =>
-//         `${value[key]}`.toLocaleLowerCase().trim(),
-//       )
-//       const currentSearchedValue = searchedValue.value
-//         .toLocaleLowerCase()
-//         .trim()
-//         .split(' ')
-
-//       return currentSearchedValue.every((searchWord) =>
-//         currentDataByKeys.some((dataByKey) => dataByKey.includes(searchWord)),
-//       )
-//     })
-//   }
-//   return users
-// })
-
-// const filter = computed(() => {
-//   console.log(searchedValue)
-//   console.log(users?.filter)
-
-//   if (searchedValue.value) {
-//     return users?.filter((item) => {
-//       searchedValue.value
-//         .toLowerCase()
-//         .split(' ')
-//         .every((v) => item.firstName.toLowerCase().includes(v))
-//     })
-//   } else {
-//     return users
-//   }
-// })
-
-// const filteredUsers = computed(() => {
-//   const query = searchedValue.value?.toLowerCase().trim()
-//   if (!query) {
-//     return users
-//   } else {
-//     return users?.filter(
-//       (user) =>
-//         user.firstName.toLowerCase().includes(query) ||
-//         user.lastName.toLowerCase().includes(query),
-//     )
-//   }
-// })
 </script>
 
 <style lang="scss" scoped>

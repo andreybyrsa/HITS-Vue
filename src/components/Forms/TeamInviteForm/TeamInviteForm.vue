@@ -28,6 +28,8 @@ import { storeToRefs } from 'pinia'
 import ManageUsersService from '@Services/ManageUsersService'
 import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import SkillsService from '@Services/SkillsService'
+import UsersSkills from '@Domain/UsersSkills'
 
 const radarSkills: SkillsArea[] = [
   {
@@ -115,12 +117,14 @@ const notificationsStore = useNotificationsStore()
 const selectedUsers = ref<User[]>([])
 
 const users = ref<User[]>([])
+const usersSkills = ref<UsersSkills[]>([])
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 provide('selectedUsers', selectedUsers)
 provide('users', users)
+provide('usersSkills', usersSkills)
 
 const addUser = (user: User) => {
   users.value = users.value.filter((u) => u.id !== user.id)
@@ -149,17 +153,22 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const profileParallelRequests = [() => ManageUsersService.getUsers(token)]
+    const profileParallelRequests = [
+      () => ManageUsersService.getUsers(token),
+      () => SkillsService.getAllUsersSkills(token),
+    ]
 
-    await makeParallelRequests<User[] | Error>(profileParallelRequests).then(
-      (responses) => {
-        responses.forEach((response) => {
-          if (response.id === 0) {
-            checkResponseStatus(response, users)
-          }
-        })
-      },
-    )
+    await makeParallelRequests<User[] | UsersSkills[] | Error>(
+      profileParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, users)
+        } else if (response.id === 1) {
+          checkResponseStatus(response, usersSkills)
+        }
+      })
+    })
   }
 })
 </script>

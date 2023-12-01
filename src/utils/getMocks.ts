@@ -8,6 +8,7 @@ import TeamMember from '@Domain/TeamMember'
 import Notification from '@Domain/Notification'
 import Profile from '@Domain/Profile'
 import Company from '@Domain/Company'
+import UsersSkills from '@Domain/UsersSkills'
 
 interface Mocks {
   users: User[]
@@ -21,6 +22,7 @@ interface Mocks {
   ideasSkills: IdeaSkills[]
   teams: Team[]
   profiles: Profile[]
+  usersSkills: UsersSkills[]
 
   teamMember: TeamMember[]
   notifications: Notification[]
@@ -207,6 +209,37 @@ function getMocks(): Mocks {
       name: 'Redis',
       type: 'DATABASE',
       confirmed: true,
+    },
+  ]
+
+  const usersSkills: UsersSkills[] = [
+    {
+      idUsers: '0',
+      skills: [skills[0], skills[4], skills[6], skills[9]],
+    },
+    {
+      idUsers: '1',
+      skills: [skills[1], skills[2], skills[7], skills[19]],
+    },
+    {
+      idUsers: '2',
+      skills: [skills[0], skills[1], skills[9], skills[19]],
+    },
+    {
+      idUsers: '3',
+      skills: [skills[1], skills[5], skills[6], skills[17]],
+    },
+    {
+      idUsers: '4',
+      skills: [skills[1], skills[2], skills[3], skills[16]],
+    },
+    {
+      idUsers: '5',
+      skills: [skills[0], skills[2], skills[7], skills[15]],
+    },
+    {
+      idUsers: '6',
+      skills: [skills[2], skills[2], skills[7], skills[11]],
     },
   ]
 
@@ -656,6 +689,7 @@ function getMocks(): Mocks {
     usersEmails,
     teamMember,
     skills,
+    usersSkills,
     teamSkills,
     usersGroups,
     comments,

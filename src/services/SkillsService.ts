@@ -6,8 +6,10 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import UsersSkills from '@Domain/UsersSkills'
 
 const skillsAxios = defineAxios(getMocks().skills)
+const usersSkillsAxois = defineAxios(getMocks().usersSkills)
 
 function mockSkillsFormatter(skills: Skill[]) {
   const LANGUAGE = skills.filter((skill) => skill.type === 'LANGUAGE')
@@ -19,6 +21,20 @@ function mockSkillsFormatter(skills: Skill[]) {
 
 function mockSkillsByTypeMather(skills: Skill[], type: SkillType) {
   return skills.filter((skill) => skill.type === type)
+}
+
+const getAllUsersSkills = async (token: string): Promise<UsersSkills[] | Error> => {
+  return await usersSkillsAxois
+    .get('all/users/skills', {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error =
+        response?.data?.error ?? 'Ошибка получения компетенций пользователей'
+      return new Error(error)
+    })
 }
 
 const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
@@ -167,6 +183,7 @@ const SkillsService = {
   getAllSkills,
   getSkillsByType,
   getAllConfirmedOrCreatorSkills,
+  getAllUsersSkills,
 
   createSkill,
   createNoConfirmedSkill,
