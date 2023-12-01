@@ -9,6 +9,7 @@ import {
   TeamModalActionsEmits,
 } from '@Components/Modals/TeamModal/TeamModal.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
@@ -24,6 +25,7 @@ const { user } = storeToRefs(userStore)
 const teamsStore = useTeamStore()
 
 const isOpenedDeletingModal = ref(false)
+const isOpenedInvitationModal = ref(false)
 
 function getAccessToEdit() {
   if (user.value) {
@@ -64,6 +66,14 @@ function closeDeletingModal() {
   isOpenedDeletingModal.value = false
 }
 
+function openInvitationModal() {
+  isOpenedInvitationModal.value = true
+}
+
+function closeInvitationModal() {
+  isOpenedInvitationModal.value = false
+}
+
 async function handleDeleteTeam() {
   const currentUser = user.value
 
@@ -95,6 +105,14 @@ async function handleDeleteTeam() {
       @click="openDeletingModal"
     >
       Удалить команду
+    </Button>
+
+    <Button
+      v-if="getAccessToDelete()"
+      variant="primary"
+      @click="openInvitationModal"
+    >
+      Пригласить пользователя
     </Button>
 
     <!-- <Button
@@ -133,6 +151,11 @@ async function handleDeleteTeam() {
       :is-opened="isOpenedDeletingModal"
       @delete="handleDeleteTeam"
       @close-modal="closeDeletingModal"
+    />
+
+    <InvitationTeamMemberModal
+      :is-opened="isOpenedInvitationModal"
+      @close-modal="closeInvitationModal"
     />
   </div>
 </template>

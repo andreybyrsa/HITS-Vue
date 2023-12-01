@@ -30,6 +30,7 @@ import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import SkillsService from '@Services/SkillsService'
 import UsersSkills from '@Domain/UsersSkills'
+import { TeamInvitation } from '@Domain/Team'
 
 const radarSkills: SkillsArea[] = [
   {
@@ -116,6 +117,8 @@ const notificationsStore = useNotificationsStore()
 
 const selectedUsers = ref<User[]>([])
 
+const invitationUsers = defineModel<User[]>()
+
 const users = ref<User[]>([])
 const usersSkills = ref<UsersSkills[]>([])
 
@@ -126,9 +129,10 @@ provide('selectedUsers', selectedUsers)
 provide('users', users)
 provide('usersSkills', usersSkills)
 
-const addUser = (user: User) => {
-  users.value = users.value.filter((u) => u.id !== user.id)
-  selectedUsers.value.push(user)
+const addUser = (selectedUser: User) => {
+  users.value = users.value.filter((u) => u.id !== selectedUser.id)
+  selectedUsers.value.push(selectedUser)
+  invitationUsers.value?.push(selectedUser)
 }
 
 const removeUser = (user: User) => {

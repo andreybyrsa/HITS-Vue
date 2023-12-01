@@ -34,6 +34,8 @@ const router = useRouter()
 const teamWantedSkills = ref<Skill[]>([])
 const stackTechnologies = ref<Skill[]>([])
 
+const invitationUsers = ref<User[]>([])
+
 const { handleSubmit, setValues } = useForm<Team>({
   validationSchema: {
     name: (value: string) =>
@@ -92,6 +94,7 @@ const handleCreateTeam = handleSubmit(async (values) => {
     }
 
     await saveTeamSkills(response.id, token)
+
     isLoading.value = false
 
     router.push({ name: 'teams-list' })
@@ -179,7 +182,7 @@ async function saveTeamSkills(teamId: string, token: string, team?: Team) {
 
       <TeamVue :mode="mode" />
 
-      <TeamInviteForm />
+      <TeamInviteForm v-model="invitationUsers" />
 
       <Button
         v-if="props.team"

@@ -164,6 +164,22 @@ const createTeamSkills = async (
     })
 }
 
+const invitationTeamMember = async (
+  user: TeamInvitation[],
+  token: string,
+): Promise<TeamInvitation[] | Error> => {
+  return await teamInvitationsAxios
+    .post(`/team/invitation/add`, user, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка приглашения участника'
+      return new Error(error)
+    })
+}
+
 const addTeamMember = async (
   teamMember: TeamMember,
   token: string,
@@ -294,6 +310,7 @@ const TeamService = {
   createTeam,
   createTeamSkills,
   addTeamMember,
+  invitationTeamMember,
 
   updateTeam,
   updateTeamSkills,
