@@ -4,7 +4,7 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
 
 <template>
   <div class="w-100">
-    <table class="table">
+    <table class="table mb-0">
       <thead>
         <tr>
           <th

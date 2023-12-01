@@ -1,47 +1,85 @@
 <script setup lang="ts">
+import { Ref, ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-
 import { useRoute, useRouter } from 'vue-router'
 
-import { onMounted, ref } from 'vue'
+import TeamModalPlaceholder from '@Components/Modals/TeamModal/TeamModalPlaceholder.vue'
+import TeamDescription from '@Components/Modals/TeamModal/TeamDescription.vue'
+import TeamModalActions from '@Components/Modals/TeamModal/TeamModalActions.vue'
+import TeamModalInfo from '@Components/Modals/TeamModal/TeamModalInfo.vue'
+import TeamModalTables from '@Components/Modals/TeamModal/TeamModalTables.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import TeamAction from '@Components/Modals/TeamModal/TeamAction.vue'
-import TeamModalPlaceholder from '@Components/Modals/TeamModal/TeamModalPlaceholder.vue'
-import TeamDescription from '@Components/Modals/TeamModal/TeamDescription.vue'
-import TeamMainStuff from '@Components/Modals/TeamModal/TeamMainStuff.vue'
+import { Team, TeamInvitation, RequestToTeam, TeamSkills } from '@Domain/Team'
+
+import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 
-import { Team } from '@Domain/Team'
-
-const teamStore = useTeamStore()
+import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const route = useRoute()
+const teamsStore = useTeamStore()
+const requestsToTeamStore = useRequestsToTeamStore()
 
+const notificationsStore = useNotificationsStore()
+
+const route = useRoute()
 const router = useRouter()
 
 const team = ref<Team>()
+const teamSkills = ref<TeamSkills>()
+const teamInvitations = ref<TeamInvitation[]>()
+const requestsToTeam = ref<RequestToTeam[]>()
 
 const isOpened = ref<boolean>(true)
 
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
+}
+
 onMounted(async () => {
   const currentUser = user.value
+
   if (currentUser?.token) {
     const id = route.params.teamId.toString()
     const { token } = currentUser
-    const response = await teamStore.getTeam(id, token)
 
-    if (response instanceof Error) {
-      return
-    }
+    const ideaParallelRequests = [
+      () => teamsStore.getTeam(id, token),
+      () => TeamService.getTeamSkills(id, token),
+      () => TeamService.getTeamInvitations(id, token),
+      () => requestsToTeamStore.getRequestsToTeam(id, token),
+    ]
 
-    team.value = response
+    await makeParallelRequests<
+      Team | TeamSkills | TeamInvitation[] | RequestToTeam[] | Error
+    >(ideaParallelRequests).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, team)
+        } else if (response.id === 1) {
+          checkResponseStatus(response, teamSkills)
+        } else if (response.id === 2) {
+          checkResponseStatus(response, teamInvitations)
+        } else if (response.id === 3) {
+          checkResponseStatus(response, requestsToTeam)
+        }
+      })
+    })
   }
 })
 
@@ -60,20 +98,33 @@ function closeTeamModal() {
     <div
       v-if="team"
       class="team-modal p-3 h-100 overflow-y-scroll"
-      ref="teamModalRef"
     >
       <div class="team-modal__left-side w-75">
         <TeamDescription
-          v-model="team"
+          :team="team"
+          @close-modal="closeTeamModal"
+        />
+
+        <TeamModalTables
+          :team="team"
+          :invitations="teamInvitations"
+          :requests="requestsToTeam"
+        />
+
+        <TeamModalActions
+          :team="team"
           @close-modal="closeTeamModal"
         />
       </div>
 
-      <div class="team-modal__right-side rounded w-25 bg-white">
-        <TeamMainStuff v-model="team" />
-        <TeamAction :team="team" />
+      <div class="team-modal__right-side rounded-3 w-25 bg-white">
+        <TeamModalInfo
+          :team="team"
+          :team-skills="teamSkills"
+        />
       </div>
     </div>
+
     <TeamModalPlaceholder v-else />
   </ModalLayout>
 </template>

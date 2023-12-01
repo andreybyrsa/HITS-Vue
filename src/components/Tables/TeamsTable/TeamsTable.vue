@@ -29,20 +29,23 @@ import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 import Profile from '@Domain/Profile'
 
-import TeamService from '@Services/TeamService'
 import SkillsService from '@Services/SkillsService'
 import ProfileService from '@Services/ProfileService'
 
 import useUserStore from '@Store/user/userStore'
+import useTeamStore from '@Store/teams/teamsStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
-const router = useRouter()
-
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const teamsStore = useTeamStore()
+
 const notificationsStore = useNotificationsStore()
+
+const router = useRouter()
 
 const teams = defineModel<Team[]>({ required: true })
 const skills = ref<Skill[]>([])
@@ -243,7 +246,7 @@ function navigateToTeamModal(team: Team) {
 }
 
 function navigateToTeamForm(team: Team) {
-  router.push(`/teams/update${team.id}`)
+  router.push(`/teams/update/${team.id}`)
 }
 
 function handleOpenDeleteModal(team: Team) {
@@ -261,19 +264,7 @@ async function handleDeleteTeam() {
   if (currentUser?.token && deletingTeamId.value !== null) {
     const { token } = currentUser
 
-    const response = await TeamService.deleteTeam(deletingTeamId.value, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    const deletingTeamIndex = teams.value.findIndex(
-      (team) => team.id === deletingTeamId.value,
-    )
-
-    if (deletingTeamIndex !== -1) {
-      teams.value.splice(deletingTeamIndex, 1)
-    }
+    await teamsStore.deleteTeam(deletingTeamId.value, token)
   }
 }
 

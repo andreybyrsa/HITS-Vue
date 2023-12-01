@@ -21,6 +21,8 @@ interface SkillsRadarChartsProps {
   skills: SkillsArea[]
 
   className?: string
+  width?: number
+  height?: number
 }
 
 export { SkillsRadarChartsProps, SkillsArea, SkillsData, UniqueSkill }

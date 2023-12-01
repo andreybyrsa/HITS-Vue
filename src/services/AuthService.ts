@@ -16,7 +16,14 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
         ...user,
         firstName: 'Андрей',
         lastName: 'Бырса',
-        roles: ['ADMIN', 'MEMBER', 'EXPERT', 'INITIATOR', 'PROJECT_OFFICE'],
+        roles: [
+          'ADMIN',
+          'TEAM_LEADER',
+          'MEMBER',
+          'EXPERT',
+          'INITIATOR',
+          'PROJECT_OFFICE',
+        ],
       }
     })
 }

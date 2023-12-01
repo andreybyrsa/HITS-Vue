@@ -181,7 +181,7 @@ function checkDropdownActionStatement(
 
 <template>
   <div class="w-100">
-    <div class="bg-white p-2 d-flex justify-content-between">
+    <div class="bg-white py-2 d-flex justify-content-between">
       <div
         v-if="searchBy"
         class="w-50"
@@ -222,7 +222,7 @@ function checkDropdownActionStatement(
 
     <div class="w-100 d-flex">
       <div class="w-100">
-        <table class="table table-hover">
+        <table class="table table-hover mb-0">
           <thead>
             <tr>
               <th class="py-3 col">

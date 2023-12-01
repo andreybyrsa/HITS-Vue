@@ -214,38 +214,38 @@ function setRadarOptions(
       v-if="languageRadarOptions.series?.length"
       :options="languageRadarOptions"
       :series="languageRadarOptions.series"
-      :width="305"
-      :height="300"
+      :width="width"
+      :height="height"
     />
 
     <VueApexCharts
       v-if="frameworkRadarOptions.series?.length"
       :options="frameworkRadarOptions"
       :series="frameworkRadarOptions.series"
-      :width="305"
-      :height="300"
+      :width="width"
+      :height="height"
     />
 
     <VueApexCharts
       v-if="databaseRadarOptions.series?.length"
       :options="databaseRadarOptions"
       :series="databaseRadarOptions.series"
-      :width="305"
-      :height="300"
+      :width="width"
+      :height="height"
     />
 
     <VueApexCharts
       v-if="devopsRadarOptions.series?.length"
       :options="devopsRadarOptions"
       :series="devopsRadarOptions.series"
-      :width="305"
-      :height="300"
+      :width="width"
+      :height="height"
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .radar-charts {
-  @include flexible(center, center, $flex-wrap: wrap, $gap: 16px);
+  @include flexible(center, center, $flex-wrap: wrap);
 }
 </style>
