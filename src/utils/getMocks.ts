@@ -2,6 +2,7 @@ import { User } from '@Domain/User'
 import Profile from '@Domain/Profile'
 import UsersGroup from '@Domain/UsersGroup'
 import Company from '@Domain/Company'
+import UsersSkills from '@Domain/UsersSkills'
 
 import { Skill } from '@Domain/Skill'
 
@@ -23,6 +24,8 @@ interface Mocks {
   usersEmails: string[]
   profiles: Profile[]
   usersGroups: UsersGroup[]
+  usersSkills: UsersSkills[]
+
   companies: Company[]
 
   skills: Skill[]
@@ -73,6 +76,30 @@ function getMocks(): Mocks {
       email: '3@mail.com',
       firstName: 'Владелец',
       lastName: 'Владелец',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '4',
+      token: '8755764',
+      email: '4@mail.com',
+      firstName: 'Винрит',
+      lastName: 'Загрев',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '5',
+      token: '836444',
+      email: '5@mail.com',
+      firstName: 'Версаль',
+      lastName: 'Кустерман',
+      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    },
+    {
+      id: '6',
+      token: '6745354',
+      email: '6@mail.com',
+      firstName: 'Дмитрий',
+      lastName: 'Амонов',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
   ]
@@ -237,6 +264,37 @@ function getMocks(): Mocks {
       name: 'Redis',
       type: 'DATABASE',
       confirmed: true,
+    },
+  ]
+
+  const usersSkills: UsersSkills[] = [
+    {
+      idUsers: '0',
+      skills: [skills[0], skills[4], skills[6], skills[9]],
+    },
+    {
+      idUsers: '1',
+      skills: [skills[1], skills[2], skills[7], skills[19]],
+    },
+    {
+      idUsers: '2',
+      skills: [skills[0], skills[1], skills[9], skills[19]],
+    },
+    {
+      idUsers: '3',
+      skills: [skills[1], skills[5], skills[6], skills[17]],
+    },
+    {
+      idUsers: '4',
+      skills: [skills[1], skills[2], skills[3], skills[16]],
+    },
+    {
+      idUsers: '5',
+      skills: [skills[0], skills[2], skills[7], skills[15]],
+    },
+    {
+      idUsers: '6',
+      skills: [skills[2], skills[2], skills[7], skills[11]],
     },
   ]
 
@@ -740,10 +798,11 @@ function getMocks(): Mocks {
     users,
     usersEmails,
     profiles,
+    skills,
+    usersSkills,
+    teamSkills,
     usersGroups,
     companies,
-
-    skills,
 
     ideas,
     ideasSkills,
@@ -754,7 +813,6 @@ function getMocks(): Mocks {
     teamMembers,
     requestsToTeam,
     teamInvitations,
-    teamSkills,
 
     notifications,
   }
