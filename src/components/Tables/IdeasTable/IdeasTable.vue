@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -189,7 +189,7 @@ const ideasFilters: Filter<Idea>[] = [
   },
 ]
 
-watch(filterByConfirmedExpert, async (value) => {
+watchImmediate(filterByConfirmedExpert, async (value) => {
   if (value) {
     const currentUser = user.value
 
@@ -203,7 +203,6 @@ watch(filterByConfirmedExpert, async (value) => {
       }
 
       ideasData.value = response
-      console.log(ideasData.value)
     }
   } else ideasData.value = props.ideas
 })

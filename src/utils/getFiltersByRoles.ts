@@ -2,7 +2,6 @@ import RolesTypes from '@Domain/Roles'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 interface GetFiltersByRolesType {
-  roles: RolesTypes[]
   filter: {
     [key in RolesTypes]: IdeaStatusTypes[]
   }
@@ -13,12 +12,11 @@ interface GetFiltersByRolesType {
 
 function GetFiltersByRoles(): GetFiltersByRolesType {
   return {
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     filter: {
       INITIATOR: [],
       MEMBER: [],
       PROJECT_OFFICE: ['ON_APPROVAL'],
-      EXPERT: ['ON_CONFIRMATION'],
+      EXPERT: [],
       ADMIN: [],
     },
     filterByExpert: {
