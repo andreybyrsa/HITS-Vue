@@ -1,30 +1,44 @@
 import { User } from '@Domain/User'
-import { Skill } from '@Domain/Skill'
-import UsersGroup from '@Domain/UsersGroup'
-import Comment from '@Domain/Comment'
-import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
-import { Team, TeamSkills } from '@Domain/Team'
-import TeamMember from '@Domain/TeamMember'
-import Notification from '@Domain/Notification'
 import Profile from '@Domain/Profile'
+import UsersGroup from '@Domain/UsersGroup'
 import Company from '@Domain/Company'
+
+import { Skill } from '@Domain/Skill'
+
+import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
+import Comment from '@Domain/Comment'
+
+import {
+  RequestToTeam,
+  Team,
+  TeamInvitation,
+  TeamMember,
+  TeamSkills,
+} from '@Domain/Team'
+
+import Notification from '@Domain/Notification'
 
 interface Mocks {
   users: User[]
   usersEmails: string[]
-  skills: Skill[]
-  teamSkills: TeamSkills[]
-  usersGroups: UsersGroup[]
-  comments: Comment[]
-  ideas: Idea[]
-  ratings: Rating[]
-  ideasSkills: IdeaSkills[]
-  teams: Team[]
   profiles: Profile[]
-
-  teamMember: TeamMember[]
-  notifications: Notification[]
+  usersGroups: UsersGroup[]
   companies: Company[]
+
+  skills: Skill[]
+
+  ideas: Idea[]
+  ideasSkills: IdeaSkills[]
+  ratings: Rating[]
+  comments: Comment[]
+
+  teams: Team[]
+  teamMembers: TeamMember[]
+  teamInvitations: TeamInvitation[]
+  requestsToTeam: RequestToTeam[]
+  teamSkills: TeamSkills[]
+
+  notifications: Notification[]
 }
 
 function getMocks(): Mocks {
@@ -41,8 +55,8 @@ function getMocks(): Mocks {
       id: '1',
       token: '613098',
       email: '1@mail.com',
-      firstName: 'Пользователь',
-      lastName: 'Пользователь',
+      firstName: 'Иван',
+      lastName: 'Иванович',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
     {
@@ -62,6 +76,46 @@ function getMocks(): Mocks {
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
   ]
+
+  const teamMembers: TeamMember[] = [
+    {
+      id: '0',
+      teamId: '1',
+      userId: '1',
+      email: 'timyr@mail.com',
+      firstName: 'Тимур',
+      lastName: 'Минязев',
+      skills: [],
+    },
+    {
+      id: '1',
+      teamId: '1',
+      userId: '2',
+      email: 'kirill.vlasov.05@inbox.ru',
+      firstName: 'Кирилл',
+      lastName: 'Власов',
+      skills: [],
+    },
+    {
+      id: '2',
+      teamId: '0',
+      userId: '3',
+      email: 'admin@mail.com',
+      firstName: 'Админ',
+      lastName: 'Иванов',
+      skills: [],
+    },
+    {
+      id: '3',
+      teamId: '1',
+      userId: '4',
+      email: 'deins@mail.com',
+      firstName: 'Денис',
+      lastName: 'Денисович',
+      skills: [],
+    },
+  ]
+
   const usersEmails: string[] = users.map((user) => user.email)
   const skills: Skill[] = [
     {
@@ -195,9 +249,9 @@ function getMocks(): Mocks {
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 4,
-      owner: users[0],
-      leader: users[1],
-      members: [...users],
+      owner: teamMembers[0],
+      leader: teamMembers[1],
+      members: [...teamMembers],
       skills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
     },
@@ -209,9 +263,9 @@ function getMocks(): Mocks {
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 3,
-      owner: users[1],
-      leader: users[2],
-      members: [users[3]],
+      owner: teamMembers[0],
+      leader: teamMembers[1],
+      members: teamMembers.filter(({ teamId }) => teamId === '1'),
       skills: [
         skills[0],
         skills[1],
@@ -250,11 +304,98 @@ function getMocks(): Mocks {
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 11,
-      owner: users[1],
-      leader: users[2],
-      members: [users[3]],
+      owner: teamMembers[1],
+      leader: teamMembers[2],
+      members: [teamMembers[3]],
       skills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
       wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
+    },
+  ]
+
+  const teamSkills: TeamSkills[] = [
+    {
+      teamId: '0',
+      wantedSkills: [skills[0], skills[2]],
+      skills: [],
+    },
+    {
+      teamId: '1',
+      wantedSkills: [
+        skills[0],
+        skills[1],
+        skills[5],
+        skills[8],
+        skills[9],
+        skills[10],
+        skills[18],
+        skills[17],
+        skills[16],
+        skills[15],
+        skills[11],
+        skills[12],
+        skills[13],
+      ],
+      skills: [
+        skills[0],
+        skills[1],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+        skills[12],
+        skills[13],
+        skills[16],
+        skills[17],
+        skills[18],
+        skills[19],
+      ],
+    },
+  ]
+
+  const teamInvitations: TeamInvitation[] = [
+    {
+      id: '0',
+      teamId: '1',
+      userId: '3',
+      email: 'maga@mail.com',
+      firstName: 'Мамедага',
+      lastName: 'Байрамов',
+    },
+    {
+      id: '1',
+      teamId: '0',
+      userId: '1',
+      email: 'timyr@mail.com',
+      firstName: 'Тимур',
+      lastName: 'Минязев',
+    },
+    {
+      id: '2',
+      teamId: '1',
+      userId: '4',
+      email: 'admin@mail.com',
+      firstName: 'Админ',
+      lastName: 'Иванов',
+    },
+  ]
+  const requestsToTeam: RequestToTeam[] = [
+    {
+      id: '1',
+      teamId: '0',
+      status: 'NEW',
+      userId: '5',
+      email: 'deins@mail.com',
+      firstName: 'Денис',
+      lastName: 'Денисович',
+    },
+    {
+      id: '2',
+      teamId: '1',
+      userId: '3',
+      status: 'NEW',
+      email: 'maga@mail.com',
+      firstName: 'Мамедага',
+      lastName: 'Байрамов',
     },
   ]
 
@@ -272,32 +413,7 @@ function getMocks(): Mocks {
       roles: ['ADMIN', 'EXPERT'],
     },
   ]
-  const teamMember: TeamMember[] = [
-    {
-      id: '33',
-      email: 'andrey@mail.com',
-      firstName: 'Андрей',
-      lastName: 'Бырса',
-    },
-    {
-      id: '343',
-      email: 'timyr@mail.com',
-      firstName: 'Тимур',
-      lastName: 'Минязев',
-    },
-    {
-      id: '3',
-      email: 'kirill.vlasov.05@inbox.ru',
-      firstName: 'Кирилл',
-      lastName: 'Власов',
-    },
-    {
-      id: '345',
-      email: 'maga@mail.com',
-      firstName: 'Мамедага',
-      lastName: 'Байрамов',
-    },
-  ]
+
   const comments: Comment[] = [
     {
       id: '0',
@@ -487,14 +603,6 @@ function getMocks(): Mocks {
       skills: [skills[0], skills[2]],
     },
   ]
-  const teamSkills: TeamSkills[] = [
-    { teamId: '0', wantedSkills: [...skills], skills: [] },
-    {
-      teamId: '1',
-      wantedSkills: [skills[0], skills[2]],
-      skills: [],
-    },
-  ]
 
   const profiles: Profile[] = [
     {
@@ -627,21 +735,28 @@ function getMocks(): Mocks {
       users: [users[1]],
     },
   ]
+
   return {
     users,
     usersEmails,
-    teamMember,
-    skills,
-    teamSkills,
+    profiles,
     usersGroups,
-    comments,
-    ratings,
+    companies,
+
+    skills,
+
     ideas,
     ideasSkills,
+    ratings,
+    comments,
+
     teams,
-    profiles,
+    teamMembers,
+    requestsToTeam,
+    teamInvitations,
+    teamSkills,
+
     notifications,
-    companies,
   }
 }
 export default getMocks
