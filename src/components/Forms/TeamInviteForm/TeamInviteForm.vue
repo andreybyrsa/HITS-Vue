@@ -117,7 +117,7 @@ const notificationsStore = useNotificationsStore()
 
 const selectedUsers = ref<User[]>([])
 
-const invitationUsers = defineModel<User[]>()
+const invitationUsers = defineModel<User[]>({ required: true })
 
 const users = ref<User[]>([])
 const usersSkills = ref<UsersSkills[]>([])

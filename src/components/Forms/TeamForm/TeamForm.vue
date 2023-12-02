@@ -14,7 +14,7 @@ import Button from '@Components/Button/Button.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import { TeamFormProps } from '@Components/Forms/TeamForm/TeamForm.types'
 import { User } from '@Domain/User'
-import { Team, TeamSkills } from '@Domain/Team'
+import { Team, TeamInvitation, TeamSkills } from '@Domain/Team'
 import TeamService from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -94,6 +94,27 @@ const handleCreateTeam = handleSubmit(async (values) => {
     }
 
     await saveTeamSkills(response.id, token)
+
+    const invitationTeamMembers: TeamInvitation[] = invitationUsers.value.map(
+      (user) => {
+        return {
+          id: user.id,
+          teamId: response.id,
+          userId: user.id,
+          email: user.email,
+          firstName: user.email,
+          lastName: user.lastName,
+        }
+      },
+    )
+
+    const responseInvitation = await TeamService.invitationTeamMember(
+      invitationTeamMembers,
+      token,
+    )
+    if (responseInvitation instanceof Error) {
+      return
+    }
 
     isLoading.value = false
 

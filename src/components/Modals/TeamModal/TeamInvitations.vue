@@ -53,8 +53,6 @@ const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
 
 const dropdownTeamInvitationActions: DropdownMenuAction<TeamInvitation>[] = [
   { label: 'Перейти на профиль', click: navigateToUserProfile },
-  { label: 'Принять', className: 'text-success', click: () => null },
-  { label: 'Отклонить', className: 'text-danger', click: () => null },
 ]
 
 function navigateToUserProfile(invitation: TeamInvitation) {

@@ -17,6 +17,7 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
+import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 
@@ -37,6 +38,8 @@ const team = ref<Team>()
 const teamSkills = ref<TeamSkills>()
 const teamInvitations = ref<TeamInvitation[]>()
 const requestsToTeam = ref<RequestToTeam[]>()
+
+const invitatinUsers = useInvitationUsersStore()
 
 const isOpened = ref<boolean>(true)
 
@@ -61,12 +64,12 @@ onMounted(async () => {
     const ideaParallelRequests = [
       () => teamsStore.getTeam(id, token),
       () => TeamService.getTeamSkills(id, token),
-      () => TeamService.getTeamInvitations(id, token),
       () => requestsToTeamStore.getRequestsToTeam(id, token),
+      () => invitatinUsers.getInvitationUsers(id, token),
     ]
 
     await makeParallelRequests<
-      Team | TeamSkills | TeamInvitation[] | RequestToTeam[] | Error
+      Team | TeamSkills | TeamInvitation[] | undefined | RequestToTeam[] | Error
     >(ideaParallelRequests).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
@@ -74,9 +77,9 @@ onMounted(async () => {
         } else if (response.id === 1) {
           checkResponseStatus(response, teamSkills)
         } else if (response.id === 2) {
-          checkResponseStatus(response, teamInvitations)
-        } else if (response.id === 3) {
           checkResponseStatus(response, requestsToTeam)
+        } else if (response.id === 3) {
+          checkResponseStatus(response, teamInvitations)
         }
       })
     })
