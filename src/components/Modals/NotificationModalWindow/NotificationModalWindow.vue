@@ -21,6 +21,7 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
 import { useDateFormat } from '@vueuse/core'
+import Icon from '@Components/Icon/Icon.vue'
 
 const notificationsStore = useNotificationsStore()
 
@@ -98,13 +99,24 @@ const switchTabToShow = (tab: any) => {
   showAllTab.value = tab === 'all'
 }
 
-// const markAllAsRead = () => {
-//   unreadNotifications.value.forEach((notification) => {
-//     notification.isReaded = true
-//     readedNotifications.value.push(notification)
-//   })
-//   unreadNotifications.value = []
-// }
+const markAllAsRead = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await NotificatonsService.checkAllNotification(token)
+
+    if (response instanceof Error) {
+      return NotificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    unreadNotifications.value.forEach((notification) => {
+      notification.isReaded = true
+      readedNotifications.value.push(notification)
+    })
+    unreadNotifications.value = []
+  }
+}
 
 const markAsRead = async (id: string, index: number) => {
   const currentUser = user.value
@@ -207,43 +219,6 @@ function getFormattedDate(date: Date) {
           Назад
         </Button>
         <Typography class-name="fs-3 text-primary">Уведомления</Typography>
-
-        <!-- <Button
-          v-if="showAllTab && hasNewNotifications"
-          variant="primary"
-          class-name="notification-window-modal__all-check-btn mb-3"
-          prepend-icon-name="bi bi-check-all fs-3"
-          @click="markAllAsRead"
-        >
-          Прочитать все
-        </Button>
-        <Button
-          v-if="showAllTab && !hasNewNotifications"
-          variant="mute"
-          class-name="notification-window-modal__all-check-btn mb-3"
-          prepend-icon-name="bi bi-check-all fs-3"
-          @click="markAllAsRead"
-        >
-          Прочитать все
-        </Button>
-        <Button
-          variant="primary"
-          v-if="!showAllTab && hasFavoriteNotifications"
-          class="notification-window-modal__all-check-btn mb-3"
-          prepend-icon-name="bi bi-check-all fs-3"
-          @click="removeAllFromFavorites"
-        >
-          Открепить все
-        </Button>
-        <Button
-          v-if="!showAllTab && !hasFavoriteNotifications"
-          variant="mute"
-          class-name="notification-window-modal__all-check-btn mb-3"
-          prepend-icon-name="bi bi-check-all fs-3"
-          @click="removeAllFromFavorites"
-        >
-          Открепить все
-        </Button> -->
       </div>
 
       <div class="notification-window-modal__pages-headers">
@@ -282,9 +257,21 @@ function getFormattedDate(date: Date) {
       <div class="notification-window-modal__header">
         <div v-if="showAllTab">
           <div v-if="hasNewNotifications">
-            <Typography class-name="fs-5 text-primary text-wrap"
-              >Не прочитано</Typography
-            >
+            <div class="notification-window-modal__header-unread">
+              <Typography class-name="fs-5 text-primary text-wrap"
+                >Не прочитано</Typography
+              >
+
+              <Button
+                v-if="showAllTab"
+                variant="primary"
+                class-name="notification-window-modal__all-check-btn bg-white text-primary border-white text-center text-opacity-50   mb-3 me-2 p-0"
+                @click="markAllAsRead"
+              >
+                Прочитать все ({{ unreadNotifications.length }})
+                <Icon class-name="bi bi-check-all fs-3"></Icon>
+              </Button>
+            </div>
             <div
               class="notification-window-modal__new-notification p-2 mb-2 rounded-3"
               v-for="(notification, index) in unreadNotifications"
@@ -423,10 +410,14 @@ function getFormattedDate(date: Date) {
     width: 5%;
     font-size: 60%;
   }
+  &__header-unread {
+    @include flexible(start, space-between);
+  }
   &__title {
     display: flex;
     align-items: center;
   }
+
   &__top-btn {
     width: 59%;
     display: flex;

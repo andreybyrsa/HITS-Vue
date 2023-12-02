@@ -120,6 +120,23 @@ const checkNotification = async (
     })
 }
 
+const checkAllNotification = async (token: string): Promise<void | Error> => {
+  return await notificationsAxios
+    .putNoRequestBody<void>(
+      `/notification/read/all`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { requestData: { isReaded: false } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка просмотра уведомления'
+      return new Error(error)
+    })
+}
+
 const closeNotification = async (
   id: string,
   token: string,
@@ -152,6 +169,7 @@ const NotificatonsService = {
   markAsFavoriteNotification,
   unMarkAsFavoriteNotification,
   checkNotification,
+  checkAllNotification,
   closeNotification,
 }
 
