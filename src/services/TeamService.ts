@@ -150,10 +150,11 @@ const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
 
 const createTeamSkills = async (
   wantedSkills: TeamSkills,
+  teamId: string,
   token: string,
 ): Promise<TeamSkills | Error> => {
   return await teamSkillsAxios
-    .post('/team/skills/add', wantedSkills, {
+    .post('/skills/create/${teamId}', wantedSkills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -165,11 +166,11 @@ const createTeamSkills = async (
 }
 
 const invitationTeamMember = async (
-  user: TeamInvitation[],
+  users: TeamInvitation[],
   token: string,
 ): Promise<TeamInvitation[] | Error> => {
   return await teamInvitationsAxios
-    .post(`/team/invitation/add`, user, {
+    .post(`/team/invitation/add`, users, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

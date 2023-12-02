@@ -61,7 +61,7 @@ function toggleTeamInfo(value: boolean) {
 function copyLink() {
   const link =
     MODE === 'DEVELOPMENT'
-      ? `http://localhost:8080${route.fullPath}`
+      ? `http://localhost:3000${route.fullPath}`
       : `https://hits.tyuiu.ru${route.fullPath}`
 
   navigator.clipboard.writeText(link)

@@ -160,7 +160,11 @@ async function saveTeamSkills(teamId: string, token: string, team?: Team) {
       )
     }
   } else {
-    const teamSkillsResponse = await TeamService.createTeamSkills(teamSkills, token)
+    const teamSkillsResponse = await TeamService.createTeamSkills(
+      teamSkills,
+      teamId,
+      token,
+    )
     if (teamSkillsResponse instanceof Error) {
       return notificationsStore.createSystemNotification(
         'Система',
