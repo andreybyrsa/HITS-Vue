@@ -33,7 +33,7 @@ watch(enter, () => {
         {{ textQuestion + '*' }}
       </Typography>
       <Button
-        variant="primary"
+        variant="light"
         :isLoading="isLoading"
         @click="emit('action')"
       >
