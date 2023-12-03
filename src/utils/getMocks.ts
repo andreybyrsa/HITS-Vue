@@ -545,11 +545,11 @@ function getMocks(): Mocks {
     },
   ]
   const teamSkills: TeamSkills[] = [
-    { teamId: '0', wantedSkills: [...skills], skills: [] },
+    { teamId: '0', wantedSkills: [...skills], totalSkills: [] },
     {
       teamId: '1',
       wantedSkills: [skills[0], skills[2]],
-      skills: [],
+      totalSkills: [],
     },
   ]
 

@@ -18,7 +18,7 @@ interface Team {
 }
 interface TeamSkills {
   teamId: string
-  skills: Skill[]
+  totalSkills: Skill[]
   wantedSkills: Skill[]
 }
 export { Team, TeamSkills }
