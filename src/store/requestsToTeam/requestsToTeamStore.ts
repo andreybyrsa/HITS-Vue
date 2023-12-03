@@ -28,6 +28,16 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
   },
 
   actions: {
+    async sendRequestInTeam(userId: string, teamId: string, token: string) {
+      const response = await TeamService.sendRequestInTeam(userId, teamId, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        this.requests.push(response)
+      }
+    },
+
     async acceptRequestToTeam(requestToTeam: RequestToTeam, token: string) {
       const { id } = requestToTeam
       const response = await TeamService.updateRequestToTeamStatus(
@@ -56,7 +66,7 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
       const { id, teamId, userId } = requestToTeam
       const response = await TeamService.updateRequestToTeamStatus(
         id,
-        'CACELED',
+        'CANCELED',
         token,
       )
 
@@ -67,12 +77,12 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
           (request) => request.id === id,
         )
         if (currentRequestToTeam?.status === 'ACCEPTED') {
-          currentRequestToTeam.status = 'CACELED'
+          currentRequestToTeam.status = 'CANCELED'
 
           const teamsStore = useTeamStore()
           await teamsStore.kickTeamMember(teamId, userId, token)
         } else if (currentRequestToTeam?.status === 'NEW') {
-          currentRequestToTeam.status = 'CACELED'
+          currentRequestToTeam.status = 'CANCELED'
         }
       }
     },

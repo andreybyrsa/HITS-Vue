@@ -10,9 +10,13 @@ import Success from '@Domain/ResponseMessage'
 
 import useUserStore from '@Store/user/userStore'
 
+import { API_URL } from '@Main'
+
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import axios from 'axios'
+import { User } from '@Domain/User'
 
 function getTeamInvitationsByTeamId(invitations: TeamInvitation[], teamId: string) {
   return invitations.filter((invitation) => invitation.teamId === teamId)
@@ -30,7 +34,7 @@ const teamSkillsAxios = defineAxios(getMocks().teamSkills)
 
 const getTeams = async (token: string): Promise<Team[] | Error> => {
   return await teamsAxios
-    .get(`/team/all `, {
+    .get(`/team/all`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -154,7 +158,7 @@ const createTeamSkills = async (
   token: string,
 ): Promise<TeamSkills | Error> => {
   return await teamSkillsAxios
-    .post('/skills/create/${teamId}', wantedSkills, {
+    .post(`/skills/create/${teamId}`, wantedSkills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -166,17 +170,35 @@ const createTeamSkills = async (
 }
 
 const invitationTeamMember = async (
-  users: TeamInvitation[],
+  users: User[],
+  teamId: string,
   token: string,
 ): Promise<TeamInvitation[] | Error> => {
-  return await teamInvitationsAxios
-    .post(`/team/invitation/add`, users, {
+  return await axios
+    .post(`${API_URL}/send-invites/${teamId}`, users, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка приглашения участника'
+      return new Error(error)
+    })
+}
+
+const sendRequestInTeam = async (
+  userId: string,
+  teamId: string,
+  token: string,
+): Promise<RequestToTeam | Error> => {
+  return await axios
+    .post(`${API_URL}/request/send/${teamId}/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка подачи заявки'
       return new Error(error)
     })
 }
@@ -312,6 +334,7 @@ const TeamService = {
   createTeamSkills,
   addTeamMember,
   invitationTeamMember,
+  sendRequestInTeam,
 
   updateTeam,
   updateTeamSkills,

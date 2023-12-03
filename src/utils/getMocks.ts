@@ -302,7 +302,7 @@ function getMocks(): Mocks {
     {
       id: '0',
       name: 'Фронтендеры',
-      isClosed: false,
+      closed: false,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -316,7 +316,7 @@ function getMocks(): Mocks {
     {
       id: '1',
       name: 'Бэккендеры',
-      isClosed: false,
+      closed: false,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -357,7 +357,7 @@ function getMocks(): Mocks {
     {
       id: '2',
       name: 'Команда 3',
-      isClosed: false,
+      closed: false,
       createdAt: '2023-10-30T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',

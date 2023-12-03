@@ -108,7 +108,7 @@ onMounted(async () => {
 
 const teamTableColumns: TableColumn<Team>[] = [
   {
-    key: 'isClosed',
+    key: 'closed',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusStyle,
@@ -164,31 +164,31 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     isUniqueChoice: true,
     checkFilter: checkTeamStatus,
   },
-  {
-    category: 'Компетенции',
-    choices: [
-      { label: 'Искать везде', value: false },
-      { label: 'Искать по вакансиям', value: true },
-    ],
-    refValue: filterByVacancies,
-    isUniqueChoice: true,
-    checkFilter: checkTeamVacancies,
-    statement: user.value?.role !== 'INITIATOR',
-  },
-  {
-    category: 'Стек технологий',
-    choices: skills.value
-      .map(({ name }) => ({
-        label: name,
-        value: name,
-        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
-      }))
-      .sort((a, b) => +b.isMarked - +a.isMarked),
-    refValue: filterBySkills,
-    isUniqueChoice: false,
-    searchValue: searchBySkills,
-    checkFilter: checkTeamSkill,
-  },
+  // {
+  //   category: 'Компетенции',
+  //   choices: [
+  //     { label: 'Искать везде', value: false },
+  //     { label: 'Искать по вакансиям', value: true },
+  //   ],
+  //   refValue: filterByVacancies,
+  //   isUniqueChoice: true,
+  //   checkFilter: checkTeamVacancies,
+  //   statement: user.value?.role !== 'INITIATOR',
+  // },
+  // {
+  //   category: 'Стек технологий',
+  //   choices: skills.value
+  //     .map(({ name }) => ({
+  //       label: name,
+  //       value: name,
+  //       isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+  //     }))
+  //     .sort((a, b) => +b.isMarked - +a.isMarked),
+  //   refValue: filterBySkills,
+  //   isUniqueChoice: false,
+  //   searchValue: searchBySkills,
+  //   checkFilter: checkTeamSkill,
+  // },
 ])
 
 function sortByCreatedAt() {
@@ -219,9 +219,9 @@ function sortByMembersCount() {
   isSortedByMembersCount.value = !isSortedByMembersCount.value
 }
 
-function getStatusStyle(isClosed: boolean) {
+function getStatusStyle(closed: boolean) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
-  if (isClosed) {
+  if (closed) {
     initialClass.push('bg-danger-subtle', 'text-danger')
     return initialClass
   }
@@ -230,8 +230,8 @@ function getStatusStyle(isClosed: boolean) {
   return initialClass
 }
 
-function getTranslatedStatus(isClosed: boolean) {
-  return isClosed ? 'Закрыта' : 'Открыта'
+function getTranslatedStatus(closed: boolean) {
+  return closed ? 'Закрыта' : 'Открыта'
 }
 
 function getFormattedDate(date: string) {
@@ -287,34 +287,34 @@ function checkDeleteTeamAction(team: Team) {
 }
 
 function checkTeamStatus(team: Team, status: FilterValue) {
-  return team.isClosed === status
+  return team.closed === status
 }
 
-function checkTeamVacancies(team: Team, isFilteringByVacancies: FilterValue) {
-  if (isFilteringByVacancies) {
-    const teamSkills = team.wantedSkills
-      .map(({ name }) => name)
-      .filter((skillName) => !team.skills.find(({ name }) => name === skillName))
+// function checkTeamVacancies(team: Team, isFilteringByVacancies: FilterValue) {
+//   if (isFilteringByVacancies) {
+//     const teamSkills = team.wantedSkills
+//       .map(({ name }) => name)
+//       .filter((skillName) => !team.skills.find(({ name }) => name === skillName))
 
-    return teamSkills.some((skillName) => filterBySkills.value.includes(skillName))
-  }
-  return true
-}
+//     return teamSkills.some((skillName) => filterBySkills.value.includes(skillName))
+//   }
+//   return true
+// }
 
-function checkTeamSkill(team: Team, skill: FilterValue) {
-  const currentUser = user.value
+// function checkTeamSkill(team: Team, skill: FilterValue) {
+//   const currentUser = user.value
 
-  if (currentUser?.role) {
-    const { role } = currentUser
+//   if (currentUser?.role) {
+//     const { role } = currentUser
 
-    if (role === 'INITIATOR') {
-      return team.skills.some(({ name }) => name === skill)
-    }
+//     if (role === 'INITIATOR') {
+//       return team.skills.some(({ name }) => name === skill)
+//     }
 
-    return (
-      team.skills.some(({ name }) => name === skill) ||
-      team.wantedSkills.some(({ name }) => name === skill)
-    )
-  }
-}
+//     return (
+//       team.skills.some(({ name }) => name === skill) ||
+//       team.wantedSkills.some(({ name }) => name === skill)
+//     )
+//   }
+// }
 </script>

@@ -13,16 +13,16 @@ const { value: teamIsClosed, errorMessage } = useField<boolean>(
   },
 )
 
-function chooseTeamType(isClosed: boolean) {
-  teamIsClosed.value = isClosed === true ? isClosed : false
+function chooseTeamType(closed: boolean) {
+  teamIsClosed.value = closed === true ? closed : false
 }
 
-function getTeamTypeClassName(isClosed: boolean) {
+function getTeamTypeClassName(closed: boolean) {
   return [
     'team-type w-50 p-2 rounded-3 border border-2',
     {
       'team-type--active border-primary border-opacity-75':
-        isClosed === teamIsClosed.value,
+        closed === teamIsClosed.value,
     },
     {
       'teamt-type--error border-danger border-opacity-75': errorMessage.value,

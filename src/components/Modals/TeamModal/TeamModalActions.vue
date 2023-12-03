@@ -13,6 +13,7 @@ import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberMo
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
+import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 
 const props = defineProps<TeamModalActionsProps>()
 const emit = defineEmits<TeamModalActionsEmits>()
@@ -23,6 +24,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const teamsStore = useTeamStore()
+const requestsToTeamStore = useRequestsToTeamStore()
+const { requests } = storeToRefs(requestsToTeamStore)
 
 const isOpenedDeletingModal = ref(false)
 const isOpenedInvitationModal = ref(false)
@@ -42,6 +45,32 @@ function getAccessToDelete() {
     const { owner } = props.team
 
     return role === 'ADMIN' || id === owner.id
+  }
+}
+
+function getAccessRequestToTeam() {
+  if (user.value) {
+    const { id } = user.value
+    const { owner, members, leader } = props.team
+    const allMembers = [...members, owner, leader]
+
+    return !(
+      allMembers.find((user) => user?.id === id) &&
+      requests.value.find((request) => request.userId === id)
+    )
+  }
+}
+
+function getAccessCancelRequestToTeam() {
+  if (user.value) {
+    const { id } = user.value
+    const { owner, members, leader } = props.team
+    const allMembers = [...members, owner, leader]
+
+    return (
+      !allMembers.find((user) => user?.id === id) &&
+      requests.value.find((request) => request.userId === id)
+    )
   }
 }
 
@@ -84,13 +113,34 @@ async function handleDeleteTeam() {
     await teamsStore.deleteTeam(id, token).then(() => emit('close-modal'))
   }
 }
+
+async function sendRequestInTeam() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id } = props.team
+
+    await requestsToTeamStore.sendRequestInTeam(currentUser.id, id, token)
+  }
+}
+
+async function cancelRequestInTeam() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id } = props.team
+    const requestToTeam = requests.value.find((request) => request.userId === id)
+
+    if (requestToTeam)
+      await requestsToTeamStore.cancelRequestToTeam(requestToTeam, token)
+  }
+}
 </script>
 
 <template>
-  <div
-    v-if="getAccessToEdit() || getAccessToDelete()"
-    class="rounded-3 bg-white p-3 d-flex flex-wrap gap-3"
-  >
+  <div class="rounded-3 bg-white p-3 d-flex flex-wrap gap-3">
     <Button
       v-if="getAccessToEdit()"
       variant="light"
@@ -121,31 +171,31 @@ async function handleDeleteTeam() {
       @click="openDeletingModal"
     >
       Выйти из команды
-    </Button>
+    </Button> -->
 
     <Button
-      v-if="getAccessToLeave()"
-      variant="danger"
-      @click="openDeletingModal"
+      v-if="getAccessRequestToTeam()"
+      variant="primary"
+      @click="sendRequestInTeam"
     >
       Подать заявку
     </Button>
 
-    <Button
+    <!-- <Button
       v-if="getAccessToLeave()"
       variant="danger"
       @click="openDeletingModal"
     >
       Принять заявку
-    </Button>
+    </Button> -->
 
     <Button
-      v-if="getAccessToLeave()"
+      v-if="getAccessCancelRequestToTeam()"
       variant="danger"
-      @click="openDeletingModal"
+      @click="cancelRequestInTeam"
     >
       Отклонить заявку
-    </Button> -->
+    </Button>
 
     <DeleteModal
       :is-opened="isOpenedDeletingModal"

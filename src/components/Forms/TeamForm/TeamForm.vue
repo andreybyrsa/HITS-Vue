@@ -86,34 +86,31 @@ const handleCreateTeam = handleSubmit(async (values) => {
     values.membersCount = values.members.length
     values.createdAt = new Date().toJSON()
 
+    const skills = stackTechnologies.value
+    const wantedSkills = stackTechnologies.value
+
     isLoading.value = true
-    const response = await TeamService.createTeam(values, token)
+    const response = await TeamService.createTeam(
+      { ...values, skills: skills, wantedSkills: wantedSkills },
+      token,
+    )
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    await saveTeamSkills(response.id, token)
-
-    const invitationTeamMembers: TeamInvitation[] = invitationUsers.value.map(
-      (user) => {
-        return {
-          id: user.id,
-          teamId: response.id,
-          userId: user.id,
-          email: user.email,
-          firstName: user.email,
-          lastName: user.lastName,
-        }
-      },
-    )
+    // await saveTeamSkills(response.id, token)
 
     const responseInvitation = await TeamService.invitationTeamMember(
-      invitationTeamMembers,
+      invitationUsers.value,
+      response.id,
       token,
     )
     if (responseInvitation instanceof Error) {
-      return
+      return notificationsStore.createSystemNotification(
+        'Система',
+        responseInvitation.message,
+      )
     }
 
     isLoading.value = false
@@ -147,6 +144,7 @@ async function saveTeamSkills(teamId: string, token: string, team?: Team) {
     skills: stackTechnologies.value,
     wantedSkills: stackTechnologies.value,
   } as TeamSkills
+
   if (team) {
     const teamSkillsResponse = await TeamService.updateTeamSkills(
       teamId,

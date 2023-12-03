@@ -15,7 +15,7 @@ interface Team {
   name: string
   createdAt: string
   description: string
-  isClosed: boolean
+  closed: boolean
   membersCount: number
   owner: TeamMember
   leader?: TeamMember
@@ -39,7 +39,7 @@ interface TeamInvitation {
   lastName: string
 }
 
-type RequestToTeamStatus = 'NEW' | 'ACCEPTED' | 'CACELED'
+type RequestToTeamStatus = 'NEW' | 'ACCEPTED' | 'CANCELED'
 
 interface RequestToTeam {
   id: string
