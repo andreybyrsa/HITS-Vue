@@ -103,7 +103,7 @@ const getRequestsToTeam = async (
 ): Promise<RequestToTeam[] | Error> => {
   return await requestsToTeamAxios
     .get<RequestToTeam[]>(
-      '/team/requests/all',
+      `/team/requests/${teamId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -175,7 +175,7 @@ const invitationTeamMember = async (
   token: string,
 ): Promise<TeamInvitation[] | Error> => {
   return await axios
-    .post(`${API_URL}/send-invites/${teamId}`, users, {
+    .post(`${API_URL}/team/send-invites/${teamId}`, users, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
