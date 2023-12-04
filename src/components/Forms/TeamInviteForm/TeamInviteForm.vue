@@ -4,13 +4,6 @@
 
     <div class="team-invite-form__main">
       <TeamInviteSearchUsers @addUser="addUser" />
-
-      <div class="w-25">
-        <SkillsRadarChart
-          label="Members"
-          :skills="radarSkills"
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -18,8 +11,6 @@
 <script lang="ts" setup>
 import { Ref, onMounted, provide, ref } from 'vue'
 
-import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
-import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
 import TeamInviteSelectedUsers from './TeamInviteSelectedUsers.vue'
 import TeamInviteSearchUsers from './TeamInviteSearchUsers.vue'
 import { User } from '@Domain/User'
@@ -31,87 +22,6 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import SkillsService from '@Services/SkillsService'
 import UsersSkills from '@Domain/UsersSkills'
 import { TeamInvitation } from '@Domain/Team'
-
-const radarSkills: SkillsArea[] = [
-  {
-    label: 'Members',
-    skills: [
-      {
-        id: '0',
-        name: 'JavaScript',
-        type: 'LANGUAGE',
-        confirmed: true,
-      },
-      {
-        id: '1',
-        name: 'React',
-        type: 'FRAMEWORK',
-        confirmed: true,
-      },
-      {
-        id: '2',
-        name: 'Rust',
-        type: 'DATABASE',
-        confirmed: true,
-      },
-      {
-        id: '3',
-        name: 'Swift',
-        type: 'DEVOPS',
-        confirmed: true,
-      },
-      {
-        id: '4',
-        name: 'Python',
-        type: 'LANGUAGE',
-        confirmed: true,
-      },
-      {
-        id: '5',
-        name: 'VueJS',
-        type: 'FRAMEWORK',
-        confirmed: true,
-      },
-      {
-        id: '6',
-        name: 'SQL',
-        type: 'DATABASE',
-        confirmed: true,
-      },
-      {
-        id: '7',
-        name: 'Docker',
-        type: 'DEVOPS',
-        confirmed: true,
-      },
-      {
-        id: '8',
-        name: 'C++',
-        type: 'LANGUAGE',
-        confirmed: true,
-      },
-      {
-        id: '9',
-        name: 'Angular',
-        type: 'FRAMEWORK',
-        confirmed: true,
-      },
-      {
-        id: '10',
-        name: 'Node',
-        type: 'DATABASE',
-        confirmed: true,
-      },
-      {
-        id: '11',
-        name: 'Dev',
-        type: 'DEVOPS',
-        confirmed: true,
-      },
-    ],
-    alphaOpacity: 50,
-  },
-]
 
 const notificationsStore = useNotificationsStore()
 

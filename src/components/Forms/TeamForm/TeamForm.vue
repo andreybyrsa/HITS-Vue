@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { watchImmediate } from '@vueuse/core'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -21,6 +21,9 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import Validation from '@Utils/Validation'
 import { Skill } from '@Domain/Skill'
 import TeamInviteForm from '@Components/Forms/TeamInviteForm/TeamInviteForm.vue'
+
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
 
 const props = defineProps<TeamFormProps>()
 
@@ -118,6 +121,7 @@ const handleCreateTeam = handleSubmit(async (values) => {
     router.push({ name: 'teams-list' })
   }
 })
+
 const handleUpdateTeam = handleSubmit(async (values) => {
   const currentUser = user.value
   if (currentUser?.token && props.team) {
@@ -141,7 +145,7 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 async function saveTeamSkills(teamId: string, token: string, team?: Team) {
   const teamSkills = {
     teamId,
-    skills: stackTechnologies.value,
+    totalSkills: stackTechnologies.value,
     wantedSkills: stackTechnologies.value,
   } as TeamSkills
 
@@ -171,6 +175,19 @@ async function saveTeamSkills(teamId: string, token: string, team?: Team) {
     }
   }
 }
+
+const radarChartsSkills = computed<SkillsArea[]>(() => [
+  {
+    label: 'Желаемые компетенции',
+    skills: stackTechnologies.value,
+    alphaOpacity: 100,
+  },
+  {
+    label: 'Фактические компетенции',
+    skills: teamWantedSkills.value,
+    alphaOpacity: 50,
+  },
+])
 </script>
 
 <template>
@@ -204,8 +221,13 @@ async function saveTeamSkills(teamId: string, token: string, team?: Team) {
       </div>
 
       <TeamVue :mode="mode" />
+      <div class="team-invite-form__main">
+        <TeamInviteForm v-model="invitationUsers" />
 
-      <TeamInviteForm v-model="invitationUsers" />
+        <div class="w-25">
+          <SkillsRadarChart :skills="radarChartsSkills" />
+        </div>
+      </div>
 
       <Button
         v-if="props.team"
@@ -231,6 +253,15 @@ async function saveTeamSkills(teamId: string, token: string, team?: Team) {
   @include flexible(flex-start, center);
   &__content {
     @include flexible(center, flex-start, column, $gap: 16px);
+  }
+}
+.team-invite-form {
+  width: 100%;
+  @include flexible(start, start, column, $gap: 16px);
+
+  &__main {
+    width: 100%;
+    @include flexible(start, start, $gap: 16px);
   }
 }
 </style>

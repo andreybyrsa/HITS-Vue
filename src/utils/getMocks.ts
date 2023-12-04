@@ -310,7 +310,7 @@ function getMocks(): Mocks {
       owner: teamMembers[0],
       leader: teamMembers[1],
       members: [...teamMembers],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
+      totalSkills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
     },
     {
@@ -324,7 +324,7 @@ function getMocks(): Mocks {
       owner: teamMembers[0],
       leader: teamMembers[2],
       members: [teamMembers[0], teamMembers[2]],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
+      totalSkills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
     },
     {
@@ -338,7 +338,7 @@ function getMocks(): Mocks {
       owner: teamMembers[0],
       leader: teamMembers[2],
       members: [teamMembers[0], teamMembers[2]],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
+      totalSkills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
     },
     {
@@ -352,7 +352,7 @@ function getMocks(): Mocks {
       owner: teamMembers[0],
       leader: teamMembers[2],
       members: [teamMembers[0], teamMembers[2]],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
+      totalSkills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
     },
     {
@@ -366,7 +366,7 @@ function getMocks(): Mocks {
       owner: teamMembers[0],
       leader: teamMembers[2],
       members: [teamMembers[0], teamMembers[1], teamMembers[2]],
-      skills: [
+      totalSkills: [
         skills[0],
         skills[1],
         skills[7],
@@ -407,7 +407,7 @@ function getMocks(): Mocks {
       owner: teamMembers[1],
       leader: teamMembers[2],
       members: [teamMembers[1], teamMembers[2]],
-      skills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
+      totalSkills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
       wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
     },
   ]
@@ -416,7 +416,7 @@ function getMocks(): Mocks {
     {
       teamId: '0',
       wantedSkills: [skills[0], skills[2]],
-      skills: [],
+      totalSkills: [],
     },
     {
       teamId: '1',
@@ -435,7 +435,7 @@ function getMocks(): Mocks {
         skills[12],
         skills[13],
       ],
-      skills: [
+      totalSkills: [
         skills[0],
         skills[1],
         skills[7],
