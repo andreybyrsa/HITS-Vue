@@ -9,7 +9,7 @@ import getAbortedSignal from '@Utils/getAbortedSignal'
 import UsersSkills from '@Domain/UsersSkills'
 
 const skillsAxios = defineAxios(getMocks().skills)
-const usersSkillsAxois = defineAxios(getMocks().usersSkills)
+const usersSkillsAxios = defineAxios(getMocks().usersSkills)
 
 function mockSkillsFormatter(skills: Skill[]) {
   const LANGUAGE = skills.filter((skill) => skill.type === 'LANGUAGE')
@@ -24,8 +24,8 @@ function mockSkillsByTypeMather(skills: Skill[], type: SkillType) {
 }
 
 const getAllUsersSkills = async (token: string): Promise<UsersSkills[] | Error> => {
-  return await usersSkillsAxois
-    .get('all/users/skills', {
+  return await usersSkillsAxios
+    .get(`/team/users`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

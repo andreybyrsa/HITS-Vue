@@ -204,11 +204,12 @@ const sendRequestInTeam = async (
 }
 
 const addTeamMember = async (
-  teamMember: TeamMember,
+  userId: string,
+  teamId: string,
   token: string,
 ): Promise<TeamMember | Error> => {
-  return await teamMemberAxios
-    .post(`/team/members/add`, teamMember, {
+  return await axios
+    .post(`${API_URL}/team/invite/${teamId}/${userId}`, null, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

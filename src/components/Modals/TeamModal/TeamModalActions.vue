@@ -14,6 +14,7 @@ import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberMo
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
+import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 
 const props = defineProps<TeamModalActionsProps>()
 const emit = defineEmits<TeamModalActionsEmits>()
@@ -26,6 +27,8 @@ const { user } = storeToRefs(userStore)
 const teamsStore = useTeamStore()
 const requestsToTeamStore = useRequestsToTeamStore()
 const { requests } = storeToRefs(requestsToTeamStore)
+const invitatinUsers = useInvitationUsersStore()
+const { invitationUsers } = storeToRefs(invitatinUsers)
 
 const isOpenedDeletingModal = ref(false)
 const isOpenedInvitationModal = ref(false)
@@ -35,7 +38,7 @@ function getAccessToEdit() {
     const { id, role } = user.value
     const { owner, leader } = props.team
 
-    return role === 'ADMIN' || id === owner.id || id === leader?.id
+    return role === 'ADMIN' || id === owner.userId || id === leader?.userId
   }
 }
 
@@ -44,19 +47,28 @@ function getAccessToDelete() {
     const { id, role } = user.value
     const { owner } = props.team
 
-    return role === 'ADMIN' || id === owner.id
+    return role === 'ADMIN' || id === owner.userId
+  }
+}
+
+function getAccessToInvite() {
+  if (user.value) {
+    const { id, role } = user.value
+    const { owner, leader } = props.team
+
+    return role === 'ADMIN' || id === owner.userId || id === leader?.userId
   }
 }
 
 function getAccessRequestToTeam() {
   if (user.value) {
     const { id } = user.value
-    const { owner, members, leader } = props.team
-    const allMembers = [...members, owner, leader]
+    const { members } = props.team
 
     return !(
-      allMembers.find((user) => user?.id === id) &&
-      requests.value.find((request) => request.userId === id)
+      members.find((user) => user?.userId === id) ||
+      requests.value.find((request) => request.userId === id) ||
+      invitationUsers.value?.find((invitation) => invitation.userId === id)
     )
   }
 }
@@ -64,12 +76,14 @@ function getAccessRequestToTeam() {
 function getAccessCancelRequestToTeam() {
   if (user.value) {
     const { id } = user.value
-    const { owner, members, leader } = props.team
-    const allMembers = [...members, owner, leader]
 
     return (
-      !allMembers.find((user) => user?.id === id) &&
-      requests.value.find((request) => request.userId === id)
+      requests.value.find(
+        (request) => request.userId === id && request.status === 'NEW',
+      ) ||
+      invitationUsers.value?.find(
+        (invitation) => invitation.userId === id && invitation.status === 'NEW',
+      )
     )
   }
 }
@@ -142,7 +156,6 @@ async function cancelRequestInTeam() {
 <template>
   <div class="rounded-3 bg-white p-3 d-flex flex-wrap gap-3">
     <Button
-      v-if="getAccessToEdit()"
       variant="light"
       @click="navigateToUpdateTeamForm"
     >
@@ -150,7 +163,6 @@ async function cancelRequestInTeam() {
     </Button>
 
     <Button
-      v-if="getAccessToDelete()"
       variant="danger"
       @click="openDeletingModal"
     >
@@ -158,7 +170,6 @@ async function cancelRequestInTeam() {
     </Button>
 
     <Button
-      v-if="getAccessToDelete()"
       variant="primary"
       @click="openInvitationModal"
     >
@@ -174,7 +185,6 @@ async function cancelRequestInTeam() {
     </Button> -->
 
     <Button
-      v-if="getAccessRequestToTeam()"
       variant="primary"
       @click="sendRequestInTeam"
     >
@@ -190,7 +200,6 @@ async function cancelRequestInTeam() {
     </Button> -->
 
     <Button
-      v-if="getAccessCancelRequestToTeam()"
       variant="danger"
       @click="cancelRequestInTeam"
     >

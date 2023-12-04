@@ -99,7 +99,7 @@ const handleCreateTeam = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    // await saveTeamSkills(response.id, token)
+    await saveTeamSkills(response.id, token)
 
     const responseInvitation = await TeamService.invitationTeamMember(
       invitationUsers.value,

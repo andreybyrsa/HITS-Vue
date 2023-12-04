@@ -56,7 +56,11 @@ const useTeamStore = defineStore('teams', {
   },
   actions: {
     async addTeamMember(teamMember: TeamMember, token: string) {
-      const response = await TeamService.addTeamMember(teamMember, token)
+      const response = await TeamService.addTeamMember(
+        teamMember.userId,
+        teamMember.teamId,
+        token,
+      )
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
