@@ -34,6 +34,7 @@ interface TeamInvitation {
   id: string
   teamId: string
   userId: string
+  status: RequestToTeamStatus
   email: string
   firstName: string
   lastName: string

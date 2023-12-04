@@ -17,7 +17,7 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
-// import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
+import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 
@@ -39,7 +39,7 @@ const teamSkills = ref<TeamSkills>()
 const teamInvitations = ref<TeamInvitation[]>()
 const requestsToTeam = ref<RequestToTeam[]>()
 
-// const invitatinUsers = useInvitationUsersStore()
+const invitatinUsers = useInvitationUsersStore()
 
 const isOpened = ref<boolean>(true)
 
@@ -65,7 +65,7 @@ onMounted(async () => {
       () => teamsStore.getTeam(id, token),
       () => TeamService.getTeamSkills(id, token),
       () => requestsToTeamStore.getRequestsToTeam(id, token),
-      // () => invitatinUsers.getInvitationUsers(id, token),
+      () => invitatinUsers.getInvitationUsers(id, token),
     ]
 
     await makeParallelRequests<

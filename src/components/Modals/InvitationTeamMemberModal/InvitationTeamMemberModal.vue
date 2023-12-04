@@ -19,6 +19,8 @@ const emit = defineEmits<InvitationTeamMemberModalEmits>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const invitationUsersStore = useInvitationUsersStore()
+
 const route = useRoute()
 
 const invitationUsers = ref<User[]>([])
@@ -31,7 +33,7 @@ const inviteUsers = async () => {
     const { token } = currentUser
     isLoading.value = true
 
-    await useInvitationUsersStore().inviteUsers(
+    await invitationUsersStore.inviteUsers(
       invitationUsers.value,
       route.params.teamId.toString(),
       token,

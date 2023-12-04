@@ -103,7 +103,7 @@ function getStatusFormat(status: RequestToTeamStatus) {
     return 'Принята'
   }
 
-  if (status === 'CACELED') {
+  if (status === 'CANCELED') {
     return 'Отклонена'
   }
 }
@@ -121,7 +121,7 @@ function getStatusStyle(status: RequestToTeamStatus) {
     return initialClass
   }
 
-  if (status === 'CACELED') {
+  if (status === 'CANCELED') {
     initialClass.push('bg-danger-subtle', 'text-danger')
     return initialClass
   }
@@ -189,6 +189,6 @@ async function cancelRequestToTeam() {
 }
 
 function checkDropdownAction(requestToTeam: RequestToTeam) {
-  return requestToTeam.status !== 'CACELED' && requestToTeam.status !== 'ACCEPTED'
+  return requestToTeam.status !== 'CANCELED' && requestToTeam.status !== 'ACCEPTED'
 }
 </script>

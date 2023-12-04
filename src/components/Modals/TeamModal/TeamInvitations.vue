@@ -17,7 +17,7 @@ import { TeamInvitationsProps } from '@Components/Modals/TeamModal/TeamModal.typ
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
-import { TeamInvitation } from '@Domain/Team'
+import { RequestToTeamStatus, TeamInvitation } from '@Domain/Team'
 
 const props = defineProps<TeamInvitationsProps>()
 
@@ -40,6 +40,13 @@ const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
     rowCellClick: navigateToUserProfile,
   },
   {
+    key: 'status',
+    label: 'Статус',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    getRowCellFormat: getStatusFormat,
+    getRowCellStyle: getStatusStyle,
+  },
+  {
     key: 'firstName',
     label: 'Имя',
     size: 'col-3',
@@ -50,6 +57,39 @@ const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
     size: 'col-3',
   },
 ]
+
+function getStatusStyle(status: RequestToTeamStatus) {
+  const initialClass = ['px-2', 'py-1', 'rounded-4']
+
+  if (status === 'NEW') {
+    initialClass.push('bg-primary-subtle', 'text-primary')
+    return initialClass
+  }
+
+  if (status === 'ACCEPTED') {
+    initialClass.push('bg-success-subtle', 'text-success')
+    return initialClass
+  }
+
+  if (status === 'CANCELED') {
+    initialClass.push('bg-danger-subtle', 'text-danger')
+    return initialClass
+  }
+}
+
+function getStatusFormat(status: RequestToTeamStatus) {
+  if (status === 'NEW') {
+    return 'Новая'
+  }
+
+  if (status === 'ACCEPTED') {
+    return 'Принята'
+  }
+
+  if (status === 'CANCELED') {
+    return 'Отклонена'
+  }
+}
 
 const dropdownTeamInvitationActions: DropdownMenuAction<TeamInvitation>[] = [
   { label: 'Перейти на профиль', click: navigateToUserProfile },
