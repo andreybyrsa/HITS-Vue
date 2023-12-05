@@ -16,6 +16,7 @@ import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 
 const props = defineProps<TableProps<DataType>>()
+const selectedDataModel = defineModel<DataType[]>()
 
 const data = ref<DataType[]>([]) as Ref<DataType[]>
 const filtersRefs = ref<Ref<FilterValue | FilterValue[] | undefined>[]>([])
@@ -49,6 +50,7 @@ watchImmediate(checkedData, () => {
   } else {
     isCheckedAll.value = false
   }
+  selectedDataModel.value = checkedData.value
 })
 
 const searchedData = computed(() => searchDataByKeys())

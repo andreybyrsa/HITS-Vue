@@ -94,14 +94,14 @@ function getMocks(): Mocks {
       lastName: 'Кустерман',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
-    {
-      id: '6',
-      token: '6745354',
-      email: '6@mail.com',
-      firstName: 'Дмитрий',
-      lastName: 'Амонов',
-      roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-    },
+    // {
+    //   id: '6',
+    //   token: '6745354',
+    //   email: '6@mail.com',
+    //   firstName: 'Дмитрий',
+    //   lastName: 'Амонов',
+    //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    // },
   ]
 
   const teamMembers: TeamMember[] = [

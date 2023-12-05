@@ -1,22 +1,28 @@
 <template>
-  <div class="team-invite-form w-75 p-2 border rounded">
+  <div class="team-invite-form w-75">
     <!-- <TeamInviteSelectedUsers @removeUser="removeUser" />
 
     <div class="team-invite-form__main">
       <TeamInviteSearchUsers @addUser="addUser" />
     </div> -->
-    <UsersInviteTable
-      :users="users"
-      :skills="skills"
-      :users-skills="usersSkills"
-    />
-    <Button
-      variant="light"
-      class="w-100 rounded-bottom-2 rounded-top-0 border p-3 text-primary"
-      prepend-icon-name="bi bi-plus-circle-fill"
-    >
-      Пригласить на портал
-    </Button>
+    <div class="text-primary">Пригласить пользователь*</div>
+    <div class="w-100 p-2 border rounded">
+      <div class="team-invite-form__table w-100">
+        <UsersInviteTable
+          :users="users"
+          :skills="skills"
+          :users-skills="usersSkills"
+          v-model="invitationUsers"
+        />
+      </div>
+      <Button
+        variant="light"
+        class="w-100 rounded-bottom-2 rounded-top-0 border p-3 text-primary"
+        prepend-icon-name="bi bi-plus-circle-fill"
+      >
+        Пригласить на портал
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -108,6 +114,11 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .team-invite-form {
-  @include flexible(start, start, column);
+  @include flexible(start, start, column, $gap: 8px);
+
+  &__table {
+    height: 500px;
+    overflow-y: scroll;
+  }
 }
 </style>

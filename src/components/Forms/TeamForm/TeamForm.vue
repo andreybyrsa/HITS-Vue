@@ -257,11 +257,11 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
 }
 .team-invite-form {
   width: 100%;
-  @include flexible(start, start, column, $gap: 16px);
+  @include flexible(start, start, column);
 
   &__main {
     width: 100%;
-    @include flexible(start, start, $gap: 8px);
+    @include flexible(start, start);
   }
 }
 </style>

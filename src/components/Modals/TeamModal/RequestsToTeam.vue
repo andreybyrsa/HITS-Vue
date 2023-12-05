@@ -78,21 +78,21 @@ const requestToTeamColumns: TableColumn<RequestToTeam>[] = [
   },
 ]
 
-// const dropdownRequestToTeamActions: DropdownMenuAction<RequestToTeam>[] = [
-//   { label: 'Перейти на профиль', click: navigateToUserProfile },
-//   {
-//     label: 'Принять',
-//     className: 'text-success',
-//     statement: checkDropdownAction,
-//     click: openConfirmModalAccepted,
-//   },
-//   {
-//     label: 'Отклонить',
-//     className: 'text-danger',
-//     statement: checkDropdownAction,
-//     click: openConfirmModalCancel,
-//   },
-// ]
+const dropdownRequestToTeamActions: DropdownMenuAction<RequestToTeam>[] = [
+  { label: 'Перейти на профиль', click: navigateToUserProfile },
+  {
+    label: 'Принять',
+    className: 'text-success',
+    statement: checkDropdownAction,
+    click: openConfirmModalAccepted,
+  },
+  {
+    label: 'Отклонить',
+    className: 'text-danger',
+    statement: checkDropdownAction,
+    click: openConfirmModalCancel,
+  },
+]
 
 function getStatusFormat(status: RequestToTeamStatus) {
   if (status === 'NEW') {
