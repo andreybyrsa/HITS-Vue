@@ -326,12 +326,13 @@ const deleteTeam = async (id: string, token: string): Promise<Success | Error> =
 }
 
 const kickTeamMember = async (
+  teamId: string,
   teamMemberId: string,
   token: string,
 ): Promise<Success | Error> => {
   return await teamMemberAxios
     .delete(
-      `/team/members/add`,
+      `/team/kick/${teamId}/${teamMemberId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

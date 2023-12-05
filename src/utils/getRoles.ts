@@ -12,17 +12,10 @@ interface GetRolesType {
 
 function getRoles(): GetRolesType {
   return {
-    roles: [
-      'INITIATOR',
-      'TEAM_LEADER',
-      'MEMBER',
-      'PROJECT_OFFICE',
-      'EXPERT',
-      'ADMIN',
-    ],
+    roles: ['INITIATOR', 'LEADER', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     translatedRoles: {
       INITIATOR: 'Инициатор',
-      TEAM_LEADER: 'Тим-лидер',
+      LEADER: 'Тим-лидер',
       MEMBER: 'Студент',
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперт',
@@ -30,7 +23,7 @@ function getRoles(): GetRolesType {
     },
     translatedGroups: {
       INITIATOR: 'Инициаторы',
-      TEAM_LEADER: 'Тим-лидеры',
+      LEADER: 'Тим-лидеры',
       MEMBER: 'Студенты',
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперты',

@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocationRaw,
+  RouteRecordRaw,
+} from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import LoginView from '@Views/LoginView.vue'
@@ -34,11 +39,25 @@ import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 
+function homeRouteMiddleware(): RouteLocationRaw {
+  const userStore = useUserStore()
+  const { user } = storeToRefs(userStore)
+  const localStorageUser = LocalStorageUser.getLocalStorageUser()
+
+  if (localStorageUser?.token && !user.value?.token) {
+    useUserStore().setUser(localStorageUser)
+  }
+
+  return user.value?.roles.includes('LEADER')
+    ? { name: 'teams-list' }
+    : { name: 'ideas-list' }
+}
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    redirect: { name: 'ideas-list' },
+    redirect: homeRouteMiddleware,
   },
   {
     path: '/ideas',
@@ -83,12 +102,12 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
-        meta: { roles: ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'ADMIN'] },
+        meta: { roles: ['INITIATOR', 'LEADER', 'MEMBER', 'ADMIN'] },
         children: [
           {
             path: ':teamId',
             component: TeamModal,
-            meta: { roles: ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'ADMIN'] },
+            meta: { roles: ['INITIATOR', 'LEADER', 'MEMBER', 'ADMIN'] },
           },
           {
             name: 'profile',
@@ -102,13 +121,13 @@ const routes: RouteRecordRaw[] = [
         name: 'create-team',
         path: 'create',
         component: NewTeamView,
-        meta: { roles: ['TEAM_LEADER', 'ADMIN'] },
+        meta: { roles: ['LEADER', 'ADMIN'] },
       },
       {
         name: 'update-team',
         path: 'update/:id',
         component: EditTeamView,
-        meta: { roles: ['TEAM_LEADER', 'ADMIN'] },
+        meta: { roles: ['LEADER', 'ADMIN'] },
       },
     ],
   },
@@ -218,6 +237,12 @@ router.beforeEach((to) => {
     return { name: 'login' }
   }
   if (user.value && authRouteNames.includes(currentRouteName)) {
+    const { roles } = user.value
+
+    if (roles.includes('LEADER')) {
+      return { name: 'teams-list' }
+    }
+
     return { name: 'ideas-list' }
   }
   if (requiredRouteRoles.length && user.value?.role) {

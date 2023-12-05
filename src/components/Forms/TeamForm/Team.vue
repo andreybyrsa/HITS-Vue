@@ -10,7 +10,7 @@ import Icon from '@Components/Icon/Icon.vue'
 import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
 import { TeamProps } from '@Components/Forms/TeamForm/TeamForm.types'
 
-import TeamMember from '@Domain/TeamMember'
+import { TeamMember } from '@Domain/Team'
 
 import TeamService from '@Services/TeamService'
 

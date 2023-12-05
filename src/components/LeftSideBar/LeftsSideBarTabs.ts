@@ -1,7 +1,5 @@
 import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 
-import getRoles from '@Utils/getRoles'
-
 const leftSideBarTabs: LeftSideBarTabType[] = [
   {
     id: 0,
@@ -36,18 +34,18 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Список команд',
         to: '/teams/list',
         iconName: 'bi bi-list',
-        roles: ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+        roles: ['INITIATOR', 'LEADER', 'MEMBER', 'ADMIN'],
       },
       {
         id: 5,
         text: 'Создать команду',
         to: '/teams/create',
         iconName: 'bi bi-plus-lg',
-        roles: ['TEAM_LEADER', 'ADMIN'],
+        roles: ['LEADER', 'ADMIN'],
       },
     ],
     iconName: 'bi bi-people',
-    roles: ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+    roles: ['INITIATOR', 'LEADER', 'MEMBER', 'ADMIN'],
   },
   {
     id: 7,
@@ -92,22 +90,6 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     ],
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
-  },
-  {
-    id: 14,
-    text: 'Настройки',
-    to: '/change-email',
-    routes: [
-      {
-        id: 15,
-        to: '/change-email',
-        text: 'Изменение почты',
-        iconName: 'bi bi-pencil-square',
-        roles: getRoles().roles,
-      },
-    ],
-    iconName: 'bi bi-gear',
-    roles: getRoles().roles,
   },
 ]
 

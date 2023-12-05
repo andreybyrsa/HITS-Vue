@@ -20,13 +20,13 @@ interface Team {
   owner: TeamMember
   leader?: TeamMember
   members: TeamMember[]
-  totalSkills: Skill[]
+  skills: Skill[]
   wantedSkills: Skill[]
 }
 
 interface TeamSkills {
   teamId: string
-  totalSkills: Skill[]
+  skills: Skill[]
   wantedSkills: Skill[]
 }
 

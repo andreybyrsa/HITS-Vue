@@ -112,7 +112,7 @@ function navigateToUserProfile(teamMember: TeamMember) {
   }
 
   router.addRoute('teams-list', profileRoute)
-  router.push({ path: `/profile/${teamMember.userId}` })
+  router.push({ path: `/profile/${teamMember.id}` })
 }
 
 async function kickTeamMember(teamMember: TeamMember) {
@@ -122,7 +122,7 @@ async function kickTeamMember(teamMember: TeamMember) {
     const { token } = currentUser
     const { id } = props.team
 
-    await teamsStore.kickTeamMember(id, teamMember.userId, token)
+    await teamsStore.kickTeamMember(id, teamMember.id, token)
   }
 }
 
@@ -131,9 +131,9 @@ function checkKickDropdownAction(teamMember: TeamMember) {
   const { owner, leader } = props.team
 
   return (
-    (currentUser?.id === owner.userId || currentUser?.id === leader?.userId) &&
-    teamMember.userId !== owner.userId &&
-    teamMember.userId !== currentUser?.id
+    (currentUser?.id === owner.id || currentUser?.id === leader?.id) &&
+    teamMember.id !== owner.id &&
+    teamMember.id !== currentUser?.id
   )
 }
 </script>
