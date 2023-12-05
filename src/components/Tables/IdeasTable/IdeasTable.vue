@@ -6,17 +6,25 @@
     :filters="ideasFilters"
     :checked-data-actions="checkedIdeasActions"
     :dropdown-actions-menu="dropdownIdeasActions"
-  ></Table>
+    v-model="checkedIdeas"
+  />
 
   <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
   />
+
+  <SendIdeasOnMarketModal
+    v-model:ideas="ideasData"
+    v-model:checkedIdeas="checkedIdeas"
+    :is-opened="isOpenSendIdeasModal"
+    @close-modal="closeSendIdeasModal"
+  />
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -58,6 +66,9 @@ const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
+
+const isOpenSendIdeasModal = ref<boolean>(false)
+const checkedIdeas = ref<Idea[]>([])
 
 watchImmediate(
   () => props.ideas,
@@ -114,14 +125,16 @@ const ideaTableColumns: TableColumn<Idea>[] = [
   },
 ]
 
-const checkedIdeasActions: CheckedDataAction<Idea>[] = [
+const checkedIdeasActions = computed<CheckedDataAction<Idea>[]>(() => [
   {
     label: 'Отправить на биржу',
     className: 'btn-primary',
-    statement: user.value?.role == 'PROJECT_OFFICE',
-    click: () => console.log('market'),
+    statement:
+      user.value?.role == 'PROJECT_OFFICE' &&
+      checkedIdeas.value.every((idea) => idea.status == 'CONFIRMED'),
+    click: openSendIdeasModal,
   },
-]
+])
 
 const dropdownIdeasActions: DropdownMenuAction<Idea>[] = [
   {
@@ -197,6 +210,14 @@ function getRatingColor(rating: number) {
     return 'text-warning'
   }
   return 'text-danger'
+}
+
+function openSendIdeasModal(ideas: Idea[]) {
+  isOpenSendIdeasModal.value = true
+  checkedIdeas.value = ideas.filter((idea) => idea.status == 'CONFIRMED')
+}
+function closeSendIdeasModal() {
+  isOpenSendIdeasModal.value = false
 }
 
 function navigateToIdeaModal(idea: Idea) {

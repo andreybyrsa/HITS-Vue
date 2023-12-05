@@ -15,6 +15,8 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 
+const checkedValue = defineModel<DataType[]>()
+
 const props = defineProps<TableProps<DataType>>()
 
 const data = ref<DataType[]>([]) as Ref<DataType[]>
@@ -35,6 +37,7 @@ watchImmediate(
     data.value = props.data
     searchDataByKeys()
     filterData(filtersRefs.value)
+    checkedData.value = []
   },
   { deep: true },
 )
@@ -49,6 +52,7 @@ watchImmediate(checkedData, () => {
   } else {
     isCheckedAll.value = false
   }
+  checkedValue.value = checkedData.value
 })
 
 const searchedData = computed(() => searchDataByKeys())
