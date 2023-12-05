@@ -115,7 +115,7 @@ const checkNotification = async (
     )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка просмотра уведомления'
+      const error = response?.data?.error ?? 'Ошибка прочтения уведомления'
       return new Error(error)
     })
 }
@@ -132,7 +132,7 @@ const checkAllNotification = async (token: string): Promise<void | Error> => {
     )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка просмотра уведомления'
+      const error = response?.data?.error ?? 'Ошибка прочтения уведомлений'
       return new Error(error)
     })
 }
