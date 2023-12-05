@@ -25,7 +25,11 @@ const useUserStore = defineStore('user', {
         const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
         this.user = localStorageUser
 
-        this.router.push({ name: 'ideas-list' })
+        if (response.roles.includes('LEADER')) {
+          this.router.push({ name: 'teams-list' })
+        } else {
+          this.router.push({ name: 'ideas-list' })
+        }
       }
     },
 
@@ -38,7 +42,11 @@ const useUserStore = defineStore('user', {
         const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
         this.user = localStorageUser
 
-        this.router.push({ name: 'ideas-list' })
+        if (response.roles.includes('LEADER')) {
+          this.router.push({ name: 'teams-list' })
+        } else {
+          this.router.push({ name: 'ideas-list' })
+        }
 
         await InvitationService.deleteInvitationInfo(slug)
       }

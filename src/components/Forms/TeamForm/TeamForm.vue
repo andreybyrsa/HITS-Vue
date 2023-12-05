@@ -60,24 +60,8 @@ watchImmediate(
   async (team) => {
     if (team) {
       setValues({ ...team })
-      const currentUser = user.value
 
-      if (currentUser?.token) {
-        const { token } = currentUser
-        const { id } = team
-
-        const response = await TeamService.getTeamSkills(id, token)
-        console.log(response)
-
-        if (response instanceof Error) {
-          return notificationsStore.createSystemNotification(
-            'Система',
-            response.message,
-          )
-        }
-
-        teamWantedSkills.value = response.wantedSkills
-      }
+      teamWantedSkills.value = team.wantedSkills
     }
   },
 )
@@ -87,9 +71,7 @@ const handleCreateTeam = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
     values.membersCount = values.members.length
-    // values.createdAt = new Date().toJSON()
 
-    // const skills = stackTechnologies.value
     const wantedSkills = stackTechnologies.value
 
     isLoading.value = true
@@ -102,15 +84,16 @@ const handleCreateTeam = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    await saveTeamSkills(response.id, token)
+    // await saveTeamSkills(response.id, token)
 
     const responseInvitation = await TeamService.invitationTeamMember(
       invitationUsers.value,
       response.id,
       token,
     )
+
     if (responseInvitation instanceof Error) {
-      return notificationsStore.createSystemNotification(
+      notificationsStore.createSystemNotification(
         'Система',
         responseInvitation.message,
       )
@@ -135,7 +118,7 @@ const handleUpdateTeam = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    await saveTeamSkills(response.id, token, props.team)
+    // await saveTeamSkills(response.id, token, props.team)
     isLoading.value = false
 
     router.push({ name: 'teams-list' })
@@ -145,7 +128,7 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 async function saveTeamSkills(teamId: string, token: string, team?: Team) {
   const teamSkills = {
     teamId,
-    totalSkills: stackTechnologies.value,
+    skills: stackTechnologies.value,
     wantedSkills: stackTechnologies.value,
   } as TeamSkills
 

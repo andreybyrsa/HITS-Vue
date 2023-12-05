@@ -13,8 +13,6 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { Team, TeamInvitation, RequestToTeam, TeamSkills } from '@Domain/Team'
 
-import TeamService from '@Services/TeamService'
-
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
@@ -35,7 +33,6 @@ const route = useRoute()
 const router = useRouter()
 
 const team = ref<Team>()
-const teamSkills = ref<TeamSkills>()
 const teamInvitations = ref<TeamInvitation[]>()
 const requestsToTeam = ref<RequestToTeam[]>()
 
@@ -63,7 +60,6 @@ onMounted(async () => {
 
     const ideaParallelRequests = [
       () => teamsStore.getTeam(id, token),
-      () => TeamService.getTeamSkills(id, token),
       () => requestsToTeamStore.getRequestsToTeam(id, token),
       () => invitatinUsers.getInvitationUsers(id, token),
     ]
@@ -75,10 +71,8 @@ onMounted(async () => {
         if (response.id === 0) {
           checkResponseStatus(response, team)
         } else if (response.id === 1) {
-          checkResponseStatus(response, teamSkills)
-        } else if (response.id === 2) {
           checkResponseStatus(response, requestsToTeam)
-        } else if (response.id === 3) {
+        } else if (response.id === 2) {
           checkResponseStatus(response, teamInvitations)
         }
       })
@@ -121,10 +115,7 @@ function closeTeamModal() {
       </div>
 
       <div class="team-modal__right-side rounded-3 w-25 bg-white">
-        <TeamModalInfo
-          :team="team"
-          :team-skills="teamSkills"
-        />
+        <TeamModalInfo :team="team" />
       </div>
     </div>
 

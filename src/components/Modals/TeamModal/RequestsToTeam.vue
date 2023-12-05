@@ -78,21 +78,21 @@ const requestToTeamColumns: TableColumn<RequestToTeam>[] = [
   },
 ]
 
-// const dropdownRequestToTeamActions: DropdownMenuAction<RequestToTeam>[] = [
-//   { label: 'Перейти на профиль', click: navigateToUserProfile },
-//   {
-//     label: 'Принять',
-//     className: 'text-success',
-//     statement: checkDropdownAction,
-//     click: openConfirmModalAccepted,
-//   },
-//   {
-//     label: 'Отклонить',
-//     className: 'text-danger',
-//     statement: checkDropdownAction,
-//     click: openConfirmModalCancel,
-//   },
-// ]
+const dropdownRequestToTeamActions: DropdownMenuAction<RequestToTeam>[] = [
+  { label: 'Перейти на профиль', click: navigateToUserProfile },
+  {
+    label: 'Принять',
+    className: 'text-success',
+    statement: checkDropdownAction,
+    click: openConfirmModalAccepted,
+  },
+  {
+    label: 'Отклонить',
+    className: 'text-danger',
+    statement: checkDropdownAction,
+    click: openConfirmModalCancel,
+  },
+]
 
 function getStatusFormat(status: RequestToTeamStatus) {
   if (status === 'NEW') {
@@ -146,13 +146,13 @@ const isOpenedConfirmModalAccepted = ref(false)
 const isOpenedConfirmModalCancel = ref(false)
 const requestToTeam = ref<RequestToTeam>()
 
-function openConfirmModalAccepted(team: RequestToTeam) {
-  requestToTeam.value = team
+function openConfirmModalAccepted(request: RequestToTeam) {
+  requestToTeam.value = request
   isOpenedConfirmModalAccepted.value = true
 }
 
-function openConfirmModalCancel(team: RequestToTeam) {
-  requestToTeam.value = team
+function openConfirmModalCancel(request: RequestToTeam) {
+  requestToTeam.value = request
   isOpenedConfirmModalCancel.value = true
 }
 
@@ -193,9 +193,8 @@ function checkDropdownAction(requestToTeam: RequestToTeam) {
   const { leader, owner } = props.team
 
   return (
-    requestToTeam.status !== 'CANCELED' &&
-    requestToTeam.status !== 'ACCEPTED' &&
-    (leader?.userId === currentUser?.id || owner.userId === currentUser?.id)
+    requestToTeam.status === 'NEW' &&
+    (leader?.id === currentUser?.id || owner.id === currentUser?.id)
   )
 }
 </script>

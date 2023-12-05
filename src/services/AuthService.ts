@@ -18,7 +18,7 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
         lastName: 'Власов',
         roles: [
           'ADMIN',
-          'TEAM_LEADER',
+          'LEADER',
           'MEMBER',
           'EXPERT',
           'INITIATOR',
