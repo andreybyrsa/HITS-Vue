@@ -1,10 +1,22 @@
 <template>
-  <div class="team-invite-form">
-    <TeamInviteSelectedUsers @removeUser="removeUser" />
+  <div class="team-invite-form w-75 p-2 border rounded">
+    <!-- <TeamInviteSelectedUsers @removeUser="removeUser" />
 
     <div class="team-invite-form__main">
       <TeamInviteSearchUsers @addUser="addUser" />
-    </div>
+    </div> -->
+    <UsersInviteTable
+      :users="users"
+      :skills="skills"
+      :users-skills="usersSkills"
+    />
+    <Button
+      variant="light"
+      class="w-100 rounded-bottom-2 rounded-top-0 border p-3 text-primary"
+      prepend-icon-name="bi bi-plus-circle-fill"
+    >
+      Пригласить на портал
+    </Button>
   </div>
 </template>
 
@@ -21,6 +33,10 @@ import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import SkillsService from '@Services/SkillsService'
 import UsersSkills from '@Domain/UsersSkills'
+import Button from '@Components/Button/Button.vue'
+
+import UsersInviteTable from '@Components/Tables/UsersInviteTable/UsersInviteTable.vue'
+import { Skill } from '@Domain/Skill'
 
 const notificationsStore = useNotificationsStore()
 
@@ -30,6 +46,7 @@ const invitationUsers = defineModel<User[]>({ required: true })
 
 const users = ref<User[]>([])
 const usersSkills = ref<UsersSkills[]>([])
+const skills = ref<Skill[]>([])
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -69,9 +86,10 @@ onMounted(async () => {
     const profileParallelRequests = [
       () => ManageUsersService.getUsers(token),
       () => SkillsService.getAllUsersSkills(token),
+      () => SkillsService.getAllSkills(token),
     ]
 
-    await makeParallelRequests<User[] | UsersSkills[] | Error>(
+    await makeParallelRequests<User[] | UsersSkills[] | Skill[] | Error>(
       profileParallelRequests,
     ).then((responses) => {
       responses.forEach((response) => {
@@ -79,6 +97,8 @@ onMounted(async () => {
           checkResponseStatus(response, users)
         } else if (response.id === 1) {
           checkResponseStatus(response, usersSkills)
+        } else if (response.id === 2) {
+          checkResponseStatus(response, skills)
         }
       })
     })
@@ -88,12 +108,6 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .team-invite-form {
-  width: 100%;
-  @include flexible(start, start, column, $gap: 16px);
-
-  &__main {
-    width: 100%;
-    @include flexible(start, start, $gap: 16px);
-  }
+  @include flexible(start, start, column);
 }
 </style>
