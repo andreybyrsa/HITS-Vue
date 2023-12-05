@@ -21,7 +21,6 @@ import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import SkillsService from '@Services/SkillsService'
 import UsersSkills from '@Domain/UsersSkills'
-import { TeamInvitation } from '@Domain/Team'
 
 const notificationsStore = useNotificationsStore()
 

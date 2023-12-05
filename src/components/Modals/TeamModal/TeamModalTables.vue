@@ -1,12 +1,18 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
 import TeamInvitations from '@Components/Modals/TeamModal/TeamInvitations.vue'
 import RequestsToTeam from '@Components/Modals/TeamModal/RequestsToTeam.vue'
 import { TeamModalTables } from '@Components/Modals/TeamModal/TeamModal.types'
 
-defineProps<TeamModalTables>()
+import useUserStore from '@Store/user/userStore'
+
+const props = defineProps<TeamModalTables>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const isTeamMembersTable = ref(true)
 const isTeamInvitationsTable = ref(false)
@@ -42,6 +48,23 @@ function getNavLinkStyle(isCurrentTable: boolean) {
     { 'text-secondary': !isCurrentTable },
   ]
 }
+
+function getTeamInvitations() {
+  const currentUser = user.value
+  const { leader, owner } = props.team
+
+  return currentUser?.id === leader?.userId || currentUser?.id === owner.userId
+}
+
+function getRequestsToTeam() {
+  const currentUser = user.value
+  const { leader, owner } = props.team
+
+  return (
+    !props.team.closed &&
+    (currentUser?.id === leader?.userId || currentUser?.id === owner.userId)
+  )
+}
 </script>
 
 <template>
@@ -55,12 +78,14 @@ function getNavLinkStyle(isCurrentTable: boolean) {
           Участники
         </div>
         <div
+          v-if="getTeamInvitations()"
           :class="getNavLinkStyle(isTeamInvitationsTable)"
           @click="switchToTeamInvitationsTable"
         >
           Приглашения
         </div>
         <div
+          v-if="getRequestsToTeam()"
           :class="getNavLinkStyle(isRequestsToTeamTable)"
           @click="switchToRequestsToTeamTable"
         >
@@ -83,6 +108,7 @@ function getNavLinkStyle(isCurrentTable: boolean) {
       <RequestsToTeam
         v-if="isRequestsToTeamTable && requests"
         :requests="requests"
+        :team="team"
       />
     </div>
   </div>

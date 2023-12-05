@@ -4,7 +4,7 @@
     :columns="teamInvitationColumns"
     :search-by="['email', 'firstName', 'lastName']"
     :dropdown-actions-menu="dropdownTeamInvitationActions"
-  ></Table>
+  />
 </template>
 
 <script lang="ts" setup>
@@ -34,27 +34,31 @@ watchImmediate(
 
 const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
   {
-    key: 'email',
-    label: 'Почта',
-    size: 'col-5',
-    rowCellClick: navigateToUserProfile,
-  },
-  {
     key: 'status',
     label: 'Статус',
+    size: 'col-1',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getStatusFormat,
     getRowCellStyle: getStatusStyle,
   },
   {
+    key: 'email',
+    label: 'Почта',
+    size: 'col-3',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    rowCellClick: navigateToUserProfile,
+  },
+  {
     key: 'firstName',
     label: 'Имя',
     size: 'col-3',
+    contentClassName: 'justify-content-center align-items-center text-center',
   },
   {
     key: 'lastName',
     label: 'Фамилия',
     size: 'col-3',
+    contentClassName: 'justify-content-center align-items-center text-center',
   },
 ]
 

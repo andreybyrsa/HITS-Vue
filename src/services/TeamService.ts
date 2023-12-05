@@ -286,6 +286,28 @@ const updateRequestToTeamStatus = async (
     })
 }
 
+const updateInvitationToTeamStatus = async (
+  id: string,
+  status: RequestToTeamStatus,
+  token: string,
+): Promise<Success | Error> => {
+  return await teamInvitationsAxios
+    .put<Success>(
+      `/team/invitation/${id}/update/${status}`,
+      { status: status },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id }, responseData: { success: 'Успешное удаление' } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка изменения статуса заявки'
+      return new Error(error)
+    })
+}
+
 const deleteTeam = async (id: string, token: string): Promise<Success | Error> => {
   return await teamsAxios
     .delete(
@@ -340,6 +362,7 @@ const TeamService = {
   updateTeam,
   updateTeamSkills,
   updateRequestToTeamStatus,
+  updateInvitationToTeamStatus,
 
   deleteTeam,
   kickTeamMember,

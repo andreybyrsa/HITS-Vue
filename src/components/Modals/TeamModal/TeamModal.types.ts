@@ -20,6 +20,7 @@ interface TeamInvitationsProps {
 
 interface RequestsToTeamProps {
   requests: RequestToTeam[]
+  team: Team
 }
 
 interface TeamModalActionsProps {

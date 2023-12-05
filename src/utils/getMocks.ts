@@ -343,8 +343,22 @@ function getMocks(): Mocks {
     },
     {
       id: '6',
-      name: 'Пользователь',
+      name: 'Пользователь(Открытая)',
       closed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 2,
+      owner: teamMembers[0],
+      leader: teamMembers[2],
+      members: [teamMembers[0], teamMembers[2]],
+      totalSkills: [skills[0], skills[4], skills[6], skills[9]],
+      wantedSkills: [skills[0], skills[11], skills[16]],
+    },
+    {
+      id: '7',
+      name: 'Пользователь(Закрытая)',
+      closed: true,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',

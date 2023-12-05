@@ -9,6 +9,7 @@ import {
   TeamModalActionsEmits,
 } from '@Components/Modals/TeamModal/TeamModal.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
 import useUserStore from '@Store/user/userStore'
@@ -63,27 +64,24 @@ function getAccessToInvite() {
 function getAccessRequestToTeam() {
   if (user.value) {
     const { id } = user.value
-    const { members } = props.team
+    const { members, closed } = props.team
 
-    return !(
-      members.find((user) => user?.userId === id) ||
-      requests.value.find((request) => request.userId === id) ||
-      invitationUsers.value?.find((invitation) => invitation.userId === id)
+    return (
+      !(
+        members.find((user) => user?.userId === id) ||
+        requests.value.find((request) => request.userId === id) ||
+        invitationUsers.value?.find((invitation) => invitation.userId === id)
+      ) && !closed
     )
   }
 }
 
-function getAccessCancelRequestToTeam() {
+function getAccessCancelOrAcceptRequestToTeam() {
   if (user.value) {
     const { id } = user.value
 
-    return (
-      requests.value.find(
-        (request) => request.userId === id && request.status === 'NEW',
-      ) ||
-      invitationUsers.value?.find(
-        (invitation) => invitation.userId === id && invitation.status === 'NEW',
-      )
+    return invitationUsers.value?.find(
+      (invitation) => invitation.userId === id && invitation.status === 'NEW',
     )
   }
 }
@@ -93,8 +91,20 @@ function getAccessToLeave() {
     const { id } = user.value
     const { owner, members } = props.team
 
-    return id !== owner.id && members.find((user) => user.id === id)
+    return id !== owner.userId && members.find((user) => user.userId === id)
   }
+}
+
+function getAccess() {
+  return (
+    getAccessToEdit() ||
+    getAccessToDelete() ||
+    getAccessToInvite() ||
+    getAccessRequestToTeam() ||
+    getAccessToLeave() ||
+    getAccessCancelOrAcceptRequestToTeam() ||
+    getAccessCancelOrAcceptRequestToTeam()
+  )
 }
 
 function navigateToUpdateTeamForm() {
@@ -139,23 +149,57 @@ async function sendRequestInTeam() {
   }
 }
 
-async function cancelRequestInTeam() {
+async function acceptInvitationToTeam() {
   const currentUser = user.value
+  const currentUserInvitation = invitationUsers.value?.find(
+    (invitation) => invitation.userId === currentUser?.id,
+  )
 
-  if (currentUser?.token) {
+  if (currentUser?.token && currentUserInvitation) {
     const { token } = currentUser
-    const { id } = props.team
-    const requestToTeam = requests.value.find((request) => request.userId === id)
+    console.log(currentUserInvitation)
 
-    if (requestToTeam)
-      await requestsToTeamStore.cancelRequestToTeam(requestToTeam, token)
+    await invitatinUsers.acceptInvitationToTeam(currentUserInvitation, token)
   }
+}
+
+async function cancelInvitationToTeam() {
+  const currentUser = user.value
+  const currentUserInvitation = invitationUsers.value?.find(
+    (invitation) => invitation.userId === currentUser?.id,
+  )
+
+  if (currentUser?.token && currentUserInvitation) {
+    const { token } = currentUser
+
+    await invitatinUsers.cancelInvitationToTeam(currentUserInvitation, token)
+  }
+}
+
+const isOpenedConfirmModalAccepted = ref(false)
+const isOpenedConfirmModalCancel = ref(false)
+
+function openConfirmModalAccepted() {
+  isOpenedConfirmModalAccepted.value = true
+}
+
+function openConfirmModalCancel() {
+  isOpenedConfirmModalCancel.value = true
+}
+
+function closeConfirmModal() {
+  isOpenedConfirmModalAccepted.value = false
+  isOpenedConfirmModalCancel.value = false
 }
 </script>
 
 <template>
-  <div class="rounded-3 bg-white p-3 d-flex flex-wrap gap-3">
+  <div
+    v-if="getAccess()"
+    class="rounded-3 bg-white p-3 d-flex flex-wrap gap-3"
+  >
     <Button
+      v-if="getAccessToEdit()"
       variant="light"
       @click="navigateToUpdateTeamForm"
     >
@@ -163,6 +207,7 @@ async function cancelRequestInTeam() {
     </Button>
 
     <Button
+      v-if="getAccessToDelete()"
       variant="danger"
       @click="openDeletingModal"
     >
@@ -170,40 +215,43 @@ async function cancelRequestInTeam() {
     </Button>
 
     <Button
+      v-if="getAccessToInvite()"
       variant="primary"
       @click="openInvitationModal"
     >
       Пригласить пользователя
     </Button>
 
-    <!-- <Button
+    <Button
       v-if="getAccessToLeave()"
       variant="danger"
       @click="openDeletingModal"
     >
       Выйти из команды
-    </Button> -->
+    </Button>
 
     <Button
+      v-if="getAccessRequestToTeam()"
       variant="primary"
       @click="sendRequestInTeam"
     >
       Подать заявку
     </Button>
 
-    <!-- <Button
-      v-if="getAccessToLeave()"
-      variant="danger"
-      @click="openDeletingModal"
+    <Button
+      v-if="getAccessCancelOrAcceptRequestToTeam()"
+      variant="success"
+      @click="openConfirmModalAccepted"
     >
-      Принять заявку
-    </Button> -->
+      Принять приглашение
+    </Button>
 
     <Button
+      v-if="getAccessCancelOrAcceptRequestToTeam()"
       variant="danger"
-      @click="cancelRequestInTeam"
+      @click="openConfirmModalCancel"
     >
-      Отклонить заявку
+      Отклонить приглашение
     </Button>
 
     <DeleteModal
@@ -215,6 +263,22 @@ async function cancelRequestInTeam() {
     <InvitationTeamMemberModal
       :is-opened="isOpenedInvitationModal"
       @close-modal="closeInvitationModal"
+    />
+
+    <ConfirmModal
+      :is-opened="isOpenedConfirmModalAccepted"
+      text-button="Принять заявку"
+      text-question="Вы действительно хотите принять приглашение?"
+      @close-modal="closeConfirmModal"
+      @action="acceptInvitationToTeam"
+    />
+
+    <ConfirmModal
+      :is-opened="isOpenedConfirmModalCancel"
+      text-button="Отклонить заявку"
+      text-question="Вы действительно хотите отклонить приглашение?"
+      @close-modal="closeConfirmModal"
+      @action="cancelInvitationToTeam"
     />
   </div>
 </template>

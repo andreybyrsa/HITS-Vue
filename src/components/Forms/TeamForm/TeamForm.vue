@@ -14,7 +14,7 @@ import Button from '@Components/Button/Button.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import { TeamFormProps } from '@Components/Forms/TeamForm/TeamForm.types'
 import { User } from '@Domain/User'
-import { Team, TeamInvitation, TeamSkills } from '@Domain/Team'
+import { Team, TeamSkills } from '@Domain/Team'
 import TeamService from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -225,7 +225,7 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
         <TeamInviteForm v-model="invitationUsers" />
 
         <div class="w-25">
-          <SkillsRadarChart :skills="radarChartsSkills" />
+          <!-- <SkillsRadarChart :skills="radarChartsSkills" /> -->
         </div>
       </div>
 

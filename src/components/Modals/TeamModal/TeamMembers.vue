@@ -4,7 +4,7 @@
     :columns="teamMemberColumns"
     :search-by="['email', 'firstName', 'lastName']"
     :dropdown-actions-menu="dropdownTeamMemberActions"
-  ></Table>
+  />
 </template>
 
 <script lang="ts" setup>
@@ -131,8 +131,9 @@ function checkKickDropdownAction(teamMember: TeamMember) {
   const { owner, leader } = props.team
 
   return (
-    (currentUser?.id === owner.id || currentUser?.id === leader?.id) &&
-    teamMember.userId !== owner.id
+    (currentUser?.id === owner.userId || currentUser?.id === leader?.userId) &&
+    teamMember.userId !== owner.userId &&
+    teamMember.userId !== currentUser?.id
   )
 }
 </script>

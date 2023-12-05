@@ -1,26 +1,11 @@
 <template>
-  <Table
-    :data="requests"
+  <div></div>
+  <!-- <Table
+    :data="users"
     :columns="requestToTeamColumns"
     :search-by="['email', 'firstName', 'lastName']"
     :dropdown-actions-menu="dropdownRequestToTeamActions"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedConfirmModalAccepted"
-    text-button="Принять заявку"
-    text-question="Вы действительно хотите принять заявку?"
-    @close-modal="closeConfirmModal"
-    @action="acceptRequestToTeam"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedConfirmModalCancel"
-    text-button="Отклонить заявку"
-    text-question="Вы действительно хотите отклонить заявку?"
-    @close-modal="closeConfirmModal"
-    @action="cancelRequestToTeam"
-  />
+  /> -->
 </template>
 
 <script lang="ts" setup>
@@ -31,20 +16,16 @@ import Table from '@Components/Table/Table.vue'
 import { RequestsToTeamProps } from '@Components/Modals/TeamModal/TeamModal.types'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
 import { RequestToTeam, RequestToTeamStatus } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
-import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 import { ref } from 'vue'
 
 const props = defineProps<RequestsToTeamProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-
-const requestsToTeamStore = useRequestsToTeamStore()
 
 const router = useRouter()
 
@@ -78,21 +59,21 @@ const requestToTeamColumns: TableColumn<RequestToTeam>[] = [
   },
 ]
 
-// const dropdownRequestToTeamActions: DropdownMenuAction<RequestToTeam>[] = [
-//   { label: 'Перейти на профиль', click: navigateToUserProfile },
-//   {
-//     label: 'Принять',
-//     className: 'text-success',
-//     statement: checkDropdownAction,
-//     click: openConfirmModalAccepted,
-//   },
-//   {
-//     label: 'Отклонить',
-//     className: 'text-danger',
-//     statement: checkDropdownAction,
-//     click: openConfirmModalCancel,
-//   },
-// ]
+const dropdownRequestToTeamActions: DropdownMenuAction<RequestToTeam>[] = [
+  { label: 'Перейти на профиль', click: navigateToUserProfile },
+  {
+    label: 'Принять',
+    className: 'text-success',
+    statement: checkDropdownAction,
+    click: openConfirmModalAccepted,
+  },
+  {
+    label: 'Отклонить',
+    className: 'text-danger',
+    statement: checkDropdownAction,
+    click: openConfirmModalCancel,
+  },
+]
 
 function getStatusFormat(status: RequestToTeamStatus) {
   if (status === 'NEW') {
@@ -154,38 +135,6 @@ function openConfirmModalAccepted(team: RequestToTeam) {
 function openConfirmModalCancel(team: RequestToTeam) {
   requestToTeam.value = team
   isOpenedConfirmModalCancel.value = true
-}
-
-function closeConfirmModal() {
-  requestToTeam.value = undefined
-  isOpenedConfirmModalAccepted.value = false
-  isOpenedConfirmModalCancel.value = false
-}
-
-async function acceptRequestToTeam() {
-  const currentUser = user.value
-
-  if (currentUser?.token && requestToTeam.value) {
-    const { token } = currentUser
-
-    await requestsToTeamStore.acceptRequestToTeam(requestToTeam.value, token)
-
-    requestToTeam.value = undefined
-    isOpenedConfirmModalAccepted.value = false
-  }
-}
-
-async function cancelRequestToTeam() {
-  const currentUser = user.value
-
-  if (currentUser?.token && requestToTeam.value) {
-    const { token } = currentUser
-
-    await requestsToTeamStore.cancelRequestToTeam(requestToTeam.value, token)
-
-    requestToTeam.value = undefined
-    isOpenedConfirmModalCancel.value = false
-  }
 }
 
 function checkDropdownAction(requestToTeam: RequestToTeam) {
