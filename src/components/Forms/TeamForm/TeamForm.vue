@@ -244,7 +244,7 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
 
   &__main {
     width: 100%;
-    @include flexible(start, start, $gap: 16px);
+    @include flexible(start, start, $gap: 8px);
   }
 }
 </style>

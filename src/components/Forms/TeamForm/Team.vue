@@ -143,7 +143,7 @@ function getMemberColor(member: TeamMember) {
     />
 
     <div class="w-100 d-flex gap-3">
-      <div class="w-50 d-flex flex-column">
+      <div class="w-100 d-flex flex-column">
         <Combobox
           name="members"
           label="Участники команды*"
