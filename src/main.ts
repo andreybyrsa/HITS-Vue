@@ -2,6 +2,7 @@ import { createApp, markRaw } from 'vue'
 import App from './App.vue'
 import { createPinia } from 'pinia'
 import router from './router/index'
+import VueApexCharts from 'vue3-apexcharts'
 
 import tooltipDirective from '@Utils/tooltip'
 import dropdownDirective from '@Utils/dropdown'
@@ -24,6 +25,8 @@ pinia.use(({ store }) => {
 app.use(pinia)
 
 app.use(router)
+
+app.use(VueApexCharts)
 
 app.directive('tooltip', tooltipDirective)
 app.directive('dropdown', dropdownDirective)

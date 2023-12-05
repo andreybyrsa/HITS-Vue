@@ -62,7 +62,7 @@ const sendChangingUrl = handleSubmit(async (values) => {
   <ModalLayout
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
-    class="change-email-page"
+    class-name="change-email-page"
   >
     <div class="change-email-page__content">
       <FormLayout>

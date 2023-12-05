@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+import { API_URL } from '@Main'
+
 import Profile from '@Domain/Profile'
 import { Skill } from '@Domain/Skill'
 
@@ -10,7 +12,6 @@ import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 
 const profileUserAxios = defineAxios(getMocks().profiles)
-const profileSkillsAxios = defineAxios(getMocks().profileSkills)
 
 const getUserProfile = async (
   email: string,
@@ -37,7 +38,7 @@ const getProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return await axios
-    .get(`/profile/avatar/get/${email}`, {
+    .get(`${API_URL}/profile/avatar/get/${email}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -49,11 +50,11 @@ const getProfileAvatar = async (
 }
 
 const saveProfileSkills = async (
-  skill: Skill[],
+  skills: Skill[],
   token: string,
 ): Promise<Skill[] | Error> => {
-  return await profileSkillsAxios
-    .post(`/profile/skills/save`, skill, {
+  return await axios
+    .post(`${API_URL}/profile/skills/save`, skills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -67,9 +68,9 @@ const saveProfileSkills = async (
 const uploadProfileAvatar = async (
   formData: FormData,
   token: string,
-): Promise<FormData | Error> => {
+): Promise<string | Error> => {
   return await axios
-    .post(`/profile/avatar/upload`, formData, {
+    .post(`${API_URL}/profile/avatar/upload`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',

@@ -21,7 +21,6 @@ interface Mocks {
   ideasSkills: IdeaSkills[]
   teams: Team[]
   profiles: Profile[]
-  profileSkills: Skill[]
 
   teamMember: TeamMember[]
   notifications: Notification[]
@@ -73,44 +72,44 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      name: 'C++',
-      type: 'LANGUAGE',
-      confirmed: true,
-    },
-    {
-      id: '2',
       name: 'Python',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
+      id: '2',
+      name: 'Rust',
+      type: 'LANGUAGE',
+      confirmed: true,
+    },
+    {
       id: '3',
-      name: 'TypeScript',
+      name: 'Swift',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
       id: '4',
-      name: 'Java',
+      name: 'Kotlin',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
       id: '5',
-      name: 'C#',
+      name: 'Go',
       type: 'LANGUAGE',
       confirmed: true,
     },
     {
       id: '6',
-      name: 'ReactJS',
+      name: 'React JS',
       type: 'FRAMEWORK',
       confirmed: true,
     },
     {
       id: '7',
-      name: 'Django',
-      type: 'FRAMEWORK',
+      name: 'C++',
+      type: 'LANGUAGE',
       confirmed: true,
     },
     {
@@ -181,9 +180,81 @@ function getMocks(): Mocks {
     },
     {
       id: '19',
-      name: 'Kotlin',
-      type: 'LANGUAGE',
+      name: 'Redis',
+      type: 'DATABASE',
       confirmed: true,
+    },
+  ]
+
+  const teams: Team[] = [
+    {
+      id: '0',
+      name: 'Фронтендеры',
+      isClosed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 4,
+      owner: users[0],
+      leader: users[1],
+      members: [...users],
+      skills: [skills[0], skills[4], skills[6], skills[9]],
+      wantedSkills: [skills[0], skills[11], skills[16]],
+    },
+    {
+      id: '1',
+      name: 'Бэккендеры',
+      isClosed: false,
+      createdAt: '2023-10-20T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 3,
+      owner: users[1],
+      leader: users[2],
+      members: [users[3]],
+      skills: [
+        skills[0],
+        skills[1],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+        skills[12],
+        skills[13],
+        skills[16],
+        skills[17],
+        skills[18],
+        skills[19],
+      ],
+      wantedSkills: [
+        skills[0],
+        skills[1],
+        skills[5],
+        skills[8],
+        skills[9],
+        skills[10],
+        skills[18],
+        skills[17],
+        skills[16],
+        skills[15],
+        skills[11],
+        skills[12],
+        skills[13],
+      ],
+    },
+    {
+      id: '2',
+      name: 'Команда 3',
+      isClosed: false,
+      createdAt: '2023-10-30T11:02:17Z',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      membersCount: 11,
+      owner: users[1],
+      leader: users[2],
+      members: [users[3]],
+      skills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
+      wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
     },
   ]
 
@@ -328,7 +399,7 @@ function getMocks(): Mocks {
       budget: 1,
       suitability: 1,
       preAssessment: 1,
-      rating: 3,
+      rating: null,
     },
     {
       id: '1',
@@ -424,58 +495,6 @@ function getMocks(): Mocks {
       skills: [],
     },
   ]
-  const teams: Team[] = [
-    {
-      id: '0',
-      name: 'Фронтендеры',
-      isClosed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 4,
-      owner: teamMember[0],
-      leader: teamMember[1],
-      members: [...teamMember],
-    },
-    {
-      id: '1',
-      name: 'Бэккендеры',
-      isClosed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 3,
-      owner: teamMember[2],
-      leader: teamMember[2],
-      members: [teamMember[3], teamMember[2]],
-    },
-    {
-      id: '2',
-      name: 'Мушкетеры',
-      isClosed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 4,
-      owner: teamMember[2],
-      leader: teamMember[1],
-      members: [teamMember[3], teamMember[1]],
-    },
-    {
-      id: '3',
-      name: 'Смешарики',
-      isClosed: true,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 4,
-      owner: teamMember[2],
-      leader: teamMember[1],
-      members: [teamMember[3], teamMember[1]],
-    },
-  ]
-
-  const profileSkills: Skill[] = [skills[0], skills[2], skills[6], skills[5]]
 
   const profiles: Profile[] = [
     {
@@ -489,11 +508,6 @@ function getMocks(): Mocks {
         skills[7],
         skills[8],
         skills[9],
-        skills[10],
-        skills[11],
-        skills[12],
-        skills[13],
-        skills[14],
       ],
       ideas: [ideas[0], ideas[1]],
       projects: [
@@ -616,6 +630,7 @@ function getMocks(): Mocks {
   return {
     users,
     usersEmails,
+    teamMember,
     skills,
     teamSkills,
     usersGroups,
@@ -624,9 +639,7 @@ function getMocks(): Mocks {
     ideas,
     ideasSkills,
     teams,
-    profileSkills,
     profiles,
-    teamMember,
     notifications,
     companies,
   }

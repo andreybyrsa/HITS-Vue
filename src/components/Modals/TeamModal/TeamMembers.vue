@@ -27,10 +27,12 @@ function getMemberButtonClassName(member: TeamMember) {
 </script>
 
 <template>
-  <Typography class-name="p-2 fs-2 text-primary w-100">
-    Участники команды
-  </Typography>
-  <div class="content overflow-y-scroll">
+  <div class="bg-white rounded-3">
+    <div class="p-2 border-bottom">
+      <Typography class-name="text-primary">Участники команды:</Typography>
+    </div>
+  </div>
+  <div class="content p-2 overflow-y-scroll">
     <template v-if="team.membersCount > 0">
       <template
         v-for="member in team.members"

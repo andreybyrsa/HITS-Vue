@@ -7,10 +7,19 @@ interface CollapseDirective {
 }
 
 function createCollapse(element: HTMLElement, binding: DirectiveBinding) {
-  return new Collapse(document.getElementById(binding.value) as HTMLElement, {
-    parent: element,
-    toggle: false,
-  })
+  const collapse = new Collapse(
+    document.getElementById(binding.value) as HTMLElement,
+    {
+      parent: element,
+      toggle: false,
+    },
+  )
+
+  if (binding.arg === 'openOnMount') {
+    collapse.toggle()
+  }
+
+  return collapse
 }
 
 function rotateIcon(icon: HTMLElement | null, degree: number) {

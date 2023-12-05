@@ -6,11 +6,14 @@ import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
-import getStatusStyle from '@Utils/getStatusStyle'
 
-const router = useRouter()
+import getStatusStyle from '@Utils/getStatusStyle'
+import getStatus from '@Utils/getStatus'
 
 defineProps<ProfileIdeasProps>()
+
+const router = useRouter()
+const status = getStatus()
 
 function navigateToIdeaModal(ideaId: string) {
   router.push(`/ideas/list/${ideaId}`)
@@ -34,12 +37,16 @@ function navigateToIdeaModal(ideaId: string) {
           :key="idea.id"
         >
           <div class="w-100 d-flex justify-content-between align-items-center gap-3">
-            <div
-              class="fs-5 profile-ideas__idea-link"
-              @click="navigateToIdeaModal(idea.id)"
-            >
-              {{ idea.name }}
-              {{ getStatusStyle(idea.status) }}
+            <div class="d-flex gap-2">
+              <div
+                class="fs-5 profile-ideas__idea-link"
+                @click="navigateToIdeaModal(idea.id)"
+              >
+                {{ idea.name }}
+              </div>
+              <div :class="[getStatusStyle(idea.status), 'fs-6']">
+                {{ status.translatedStatus[idea.status] }}
+              </div>
             </div>
             <div
               class="profile-ideas__idea-open-button d-flex align-items-center gap-1"

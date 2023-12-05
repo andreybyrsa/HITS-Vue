@@ -72,11 +72,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
           Отправить
         </Button>
 
-        <NewPasswordModal
-          :is-opened="isOpenedModal"
-          :email="values.email"
-          :auth-key="authKey"
-        />
+        <NewPasswordModal :is-opened="isOpenedModal" />
       </FormLayout>
     </template>
   </PageLayout>

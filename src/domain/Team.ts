@@ -13,6 +13,8 @@ interface Team {
   leader?: TeamMember
   members: TeamMember[]
   projects?: Project[]
+  skills: Skill[]
+  wantedSkills: Skill[]
 }
 interface TeamSkills {
   teamId: string
