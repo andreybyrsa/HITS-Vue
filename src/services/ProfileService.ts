@@ -14,17 +14,17 @@ import getAbortedSignal from '@Utils/getAbortedSignal'
 const profileUserAxios = defineAxios(getMocks().profiles)
 
 const getUserProfile = async (
-  email: string,
+  id: string,
   token: string,
 ): Promise<Profile | Error> => {
   return await profileUserAxios
     .get(
-      `/profile/${email}`,
+      `/profile/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { email } },
+      { params: { id } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

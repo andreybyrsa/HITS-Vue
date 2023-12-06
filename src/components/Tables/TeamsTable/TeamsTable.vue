@@ -74,11 +74,11 @@ function checkResponseStatus<T>(
 onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
-    const { token, email } = currentUser
+    const { token, id } = currentUser
 
     const teamsTableParallelRequests = [
       () => SkillsService.getAllSkills(token),
-      () => ProfileService.getUserProfile(email, token),
+      () => ProfileService.getUserProfile(id, token),
     ]
 
     await makeParallelRequests<Profile | Skill[] | Error>(
