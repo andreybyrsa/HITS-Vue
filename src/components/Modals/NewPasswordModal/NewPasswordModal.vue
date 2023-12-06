@@ -66,7 +66,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
       <Input
         v-for="input in newPasswordModalInputs"
         :key="input.id"
-        :type="input.type"
+        type="text"
         :name="input.name"
         class-name="rounded-end"
         :placeholder="input.placeholder"
