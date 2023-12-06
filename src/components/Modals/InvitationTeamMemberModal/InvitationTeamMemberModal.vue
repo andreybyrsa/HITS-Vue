@@ -3,47 +3,16 @@ import {
   InvitationTeamMemberModalEmits,
   InvitationTeamMemberModalProps,
 } from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.types'
+import UsersInviteTable from '@Components/Tables/UsersInviteTable/UsersInviteTable.vue'
+
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import TeamInviteForm from '@Components/Forms/TeamInviteForm/TeamInviteForm.vue'
-import Button from '@Components/Button/Button.vue'
-import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
+
 import { User } from '@Domain/User'
-import { ref } from 'vue'
-import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
+
+const invitationUsers = defineModel<User[]>({ required: true })
 
 defineProps<InvitationTeamMemberModalProps>()
 const emit = defineEmits<InvitationTeamMemberModalEmits>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
-const invitationUsersStore = useInvitationUsersStore()
-
-const route = useRoute()
-
-const invitationUsers = ref<User[]>([])
-const isLoading = ref(false)
-
-const inviteUsers = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    isLoading.value = true
-
-    await invitationUsersStore.inviteUsers(
-      invitationUsers.value,
-      route.params.teamId.toString(),
-      token,
-    )
-
-    invitationUsers.value = []
-    isLoading.value = false
-    emit('close-modal')
-  }
-}
 </script>
 
 <template>
@@ -51,14 +20,8 @@ const inviteUsers = async () => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="invitation-modal p-3 bg-white rounded">
-      <TeamInviteForm v-model="invitationUsers" />
-      <Button
-        :isLoading="isLoading"
-        variant="primary"
-        @click="inviteUsers"
-        >Пригласить</Button
-      >
+    <div class="invitation-modal p-3 bg-white overflow-y-scroll rounded">
+      <UsersInviteTable v-model="invitationUsers" />
     </div>
   </ModalLayout>
 </template>
@@ -67,14 +30,21 @@ const inviteUsers = async () => {
 .invitation-modal {
   width: 1000px;
   height: 600px;
-  overflow-y: scroll;
+
   @include flexible(
     stretch,
-    stretch,
+    flex-start,
     column,
-    $gap: 16px,
     $align-self: center,
-    $justify-self: center
+    $justify-self: center,
+    $gap: 12px
   );
+
+  transition: all $default-transition-settings;
+}
+
+.modal-layout-enter-from .invitation-modal,
+.modal-layout-leave-to .invitation-modal {
+  transform: scale(0.9);
 }
 </style>

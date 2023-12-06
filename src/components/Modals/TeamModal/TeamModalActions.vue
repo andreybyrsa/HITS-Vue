@@ -16,6 +16,7 @@ import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
+import { User } from '@Domain/User'
 
 const props = defineProps<TeamModalActionsProps>()
 const emit = defineEmits<TeamModalActionsEmits>()
@@ -35,12 +36,14 @@ const isOpenedDeletingModal = ref(false)
 const isOpenedLeavingModal = ref(false)
 const isOpenedInvitationModal = ref(false)
 
+const invitationUsersInTeam = ref<User[]>([])
+
 function getAccessToEdit() {
   if (user.value) {
     const { id, role } = user.value
     const { owner, leader } = props.team
 
-    return role === 'ADMIN' || id === owner.id || id === leader?.id
+    return role === 'ADMIN' || id === owner.userId || id === leader?.userId
   }
 }
 
@@ -49,7 +52,7 @@ function getAccessToDelete() {
     const { id, role } = user.value
     const { owner } = props.team
 
-    return role === 'ADMIN' || id === owner.id
+    return role === 'ADMIN' || id === owner.userId
   }
 }
 
@@ -58,7 +61,7 @@ function getAccessToInvite() {
     const { id, role } = user.value
     const { owner, leader } = props.team
 
-    return role === 'ADMIN' || id === owner.id || id === leader?.id
+    return role === 'ADMIN' || id === owner.userId || id === leader?.userId
   }
 }
 
@@ -76,7 +79,7 @@ function getAccessRequestToTeam() {
           ({ userId, status }) => userId === id && status === 'NEW',
         )
       ) &&
-      !members.find((user) => user?.id === id) &&
+      !members.find((user) => user?.userId === id) &&
       !closed
     )
   }
@@ -107,7 +110,7 @@ function getAccessToLeave() {
     const { id } = user.value
     const { owner, members } = props.team
 
-    return id !== owner.id && members.find((user) => user.id === id)
+    return id !== owner.userId && members.find((user) => user.userId === id)
   }
 }
 
@@ -318,6 +321,7 @@ function closeConfirmModal() {
     />
 
     <InvitationTeamMemberModal
+      v-model="invitationUsersInTeam"
       :is-opened="isOpenedInvitationModal"
       @close-modal="closeInvitationModal"
     />
