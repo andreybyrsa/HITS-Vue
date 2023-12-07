@@ -17,7 +17,7 @@ const getRequestAll = async (
   token: string,
 ): Promise<RequestTeams[] | Error> => {
   return await RequestTeamsAxios.get<RequestTeams[]>(
-    '/application/all',
+    `/market/requests/${ideaId}`,
     {
       headers: { Authorization: `Bearer ${token}` },
     },
@@ -34,7 +34,7 @@ const postRequest = async (
   team: RequestTeams,
   token: string,
 ): Promise<RequestTeams | Error> => {
-  return await RequestTeamsAxios.post('/application/create', team, {
+  return await RequestTeamsAxios.post('/market/declare', team, {
     headers: { Authorization: `Bearer ${token}` },
   })
     .then((response) => response.data)
@@ -49,7 +49,7 @@ const acceptRequestTeam = async (
   token: string,
 ): Promise<Success | Error> => {
   return await RequestTeamsAxios.put<Success>(
-    `/application/add/${team.id}`,
+    `/market/accept/${team.id}`,
     team,
     { headers: { Authorization: `Bearer ${token}` } },
     {
@@ -64,32 +64,32 @@ const acceptRequestTeam = async (
     })
 }
 
-const acceptRequestTeams = async (
-  teams: RequestTeams[],
-  token: string,
-): Promise<RequestTeams[] | Error> => {
-  return await RequestTeamsAxios.put(
-    `/application/add/${teams}`,
-    teams,
-    { headers: { Authorization: `Bearer ${token}` } },
-    {
-      comparingKey: 'id',
-      responseData: { success: 'Успешное принятие команды' },
-    },
-  )
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка принятия команды'
-      return new Error(error)
-    })
-}
+// const acceptRequestTeams = async (
+//   teams: RequestTeams[],
+//   token: string,
+// ): Promise<RequestTeams[] | Error> => {
+//   return await RequestTeamsAxios.put(
+//     `/application/add/${teams}`,
+//     teams,
+//     { headers: { Authorization: `Bearer ${token}` } },
+//     {
+//       comparingKey: 'id',
+//       responseData: { success: 'Успешное принятие команды' },
+//     },
+//   )
+//     .then((response) => response.data)
+//     .catch(({ response }) => {
+//       const error = response?.data?.error ?? 'Ошибка принятия команды'
+//       return new Error(error)
+//     })
+// }
 
 const deleteRequestTeams = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
   return await RequestTeamsAxios.delete(
-    `/application/delete/${id}`,
+    `/market/delete/request/${id}`,
     {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -111,7 +111,6 @@ const RequestTeamsServise = {
   deleteRequestTeams,
 
   acceptRequestTeam,
-  acceptRequestTeams,
 }
 
 export default RequestTeamsServise

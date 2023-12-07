@@ -158,7 +158,7 @@ const createTeamSkills = async (
   token: string,
 ): Promise<TeamSkills | Error> => {
   return await teamSkillsAxios
-    .post(`/skills/create/${teamId}`, wantedSkills, {
+    .post(`/team/skills/create/${teamId}`, wantedSkills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

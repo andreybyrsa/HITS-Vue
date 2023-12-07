@@ -12,7 +12,7 @@ import useUserStore from '@Store/user/userStore'
 import Button from '@Components/Button/Button.vue'
 
 import RequestTeams from '@Domain/RequestTeams'
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

@@ -48,6 +48,7 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 import getStatus from '@Utils/getStatus'
 import getStatusStyle from '@Utils/getStatusStyle'
 import mutableSort from '@Utils/mutableSort'
+import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
 const props = defineProps<IdeasTableProps>()
 

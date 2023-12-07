@@ -9,11 +9,11 @@ function formatFavoriteIdea(ideasMarket: IdeasMarket[]) {
   return ideasMarket.filter((ideaMarket) => ideaMarket.isFavorite)
 }
 
-const ideasMarketAxios = defineAxios(getMocks().IdeasMarket)
+const ideasMarketAxios = defineAxios(getMocks().ideasMarket)
 
 const fetchIdeasMarket = async (token: string): Promise<IdeasMarket[] | Error> => {
   return await ideasMarketAxios
-    .get('/ideas/market/all', {
+    .get('/market/all', {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -28,7 +28,7 @@ const fetchFavoritesIdeas = async (
 ): Promise<IdeasMarket[] | Error> => {
   return await ideasMarketAxios
     .get<IdeasMarket[]>(
-      '/ideas/market/favorites',
+      '/market/favorite',
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -47,7 +47,7 @@ const getIdeaMarket = async (
 ): Promise<IdeasMarket | Error> => {
   return await ideasMarketAxios
     .get<IdeasMarket>(
-      `/ideas/market/${id}`,
+      `/market/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -64,7 +64,7 @@ const getAllInitiatorMarketIdeas = async (
   token: string,
 ): Promise<IdeasMarket[] | Error> => {
   return await ideasMarketAxios
-    .get('/ideas/market/initiator/all', {
+    .get('/market/initiator/all', {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -79,7 +79,7 @@ const sendIdeaOnMarket = async (
   token: string,
 ): Promise<IdeasMarket[] | Error> => {
   return await ideasMarketAxios
-    .post('/ideas/market/add', idea, {
+    .post('/market/send', idea, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -96,7 +96,7 @@ const addIdeaToFavorites = async (
 ): Promise<Success | Error> => {
   return await ideasMarketAxios
     .putNoRequestBody<Success>(
-      '/market/add/favorites',
+      `/market/favorite/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { isFavorite: true } },
     )
@@ -112,8 +112,8 @@ const removeIdeaFromFavorites = async (
   token: string,
 ): Promise<Success | Error> => {
   return await ideasMarketAxios
-    .putNoRequestBody<Success>(
-      '/market/remove/favorites',
+    .delete(
+      `/market/unfavorite/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { isFavorite: false } },
     )

@@ -16,6 +16,7 @@ import CompaniesView from '@Views/Admin/CompaniesView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
@@ -30,6 +31,7 @@ import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import DevView from '@Views/DevView.vue'
 
+import IdeasMarketViewVue from '@Views/IdeasMarket/IdeasMarketView.vue'
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
@@ -83,12 +85,12 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
-        meta: { roles: ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'ADMIN'] },
+        meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
         children: [
           {
             path: ':teamId',
             component: TeamModal,
-            meta: { roles: ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'ADMIN'] },
+            meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
           },
           {
             name: 'profile',
@@ -102,13 +104,13 @@ const routes: RouteRecordRaw[] = [
         name: 'create-team',
         path: 'create',
         component: NewTeamView,
-        meta: { roles: ['TEAM_LEADER', 'ADMIN'] },
+        meta: { roles: ['TEAM_OWNER', 'ADMIN'] },
       },
       {
         name: 'update-team',
         path: 'update/:id',
         component: EditTeamView,
-        meta: { roles: ['TEAM_LEADER', 'ADMIN'] },
+        meta: { roles: ['TEAM_OWNER', 'ADMIN'] },
       },
     ],
   },
@@ -179,6 +181,33 @@ const routes: RouteRecordRaw[] = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
+  },
+  {
+    path: '/market',
+    name: 'market',
+    component: IdeasMarketViewVue,
+    children: [
+      {
+        path: ':id',
+        name: 'MarketModal',
+        component: MarketModal,
+        children: [
+          {
+            path: ':teamId',
+            meta: {
+              roles: [
+                'INITIATOR',
+                'TEAM_OWNER',
+                'PROJECT_OFFICE',
+                'EXPERT',
+                'ADMIN',
+              ],
+            },
+            component: TeamModal,
+          },
+        ],
+      },
+    ],
   },
   {
     path: '/dev',

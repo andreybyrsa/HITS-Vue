@@ -16,21 +16,43 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import useUserStore from '@Store/user/userStore'
 import RequestTeamsServise from '@Services/RequestTeamsServise'
 
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
+import useTeamStore from '@Store/teams/teamsStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<RequestTeamCollapseProps>()
+
+const teamsStore = useTeamStore()
+
+const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const currentTeam = ref<Team>()
+
 const requestTeams = defineModel<RequestTeams[]>('requestTeams', { required: true })
-const skillsTeam = defineModel<Team[]>('skillsTeam', { required: true })
+//const skillsTeam = defineModel<Team[]>('skillsTeam', { required: true })
 
 const letter = ref<string>('')
+
+const takeTeamData = async (id: string) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await teamsStore.getTeam(id, token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+    currentTeam.value = response
+  }
+}
 
 const { handleSubmit } = useForm({
   validationSchema: {
@@ -49,12 +71,17 @@ const sendRequestTeam = handleSubmit(async () => {
     const id = props.idea.id
 
     const requestTeam: RequestTeams = {
-      ...props.team,
+      ...currentTeam,
 
       teamId: props.team.id,
       ideaId: id,
       accepted: false,
       letter: letter.value,
+      owner: currentTeam.value?.owner,
+      leader: currentTeam.value?.leader,
+      name: currentTeam.value?.name,
+      closed: props.team.closed,
+      members: currentTeam.value?.members,
     }
 
     console.log(requestTeam)
@@ -80,6 +107,8 @@ function checkTeamRequest(teamProps: Team) {
 function navigateToTeamModal(team: Team, idea: IdeasMarket) {
   return router.push(`/market/${idea.id}/${team.id}`)
 }
+
+//console.log(props.team)
 </script>
 
 <template>
@@ -99,12 +128,13 @@ function navigateToTeamModal(team: Team, idea: IdeasMarket) {
         <Button
           class-name="btn-primary"
           v-collapse="team.id"
+          @click="takeTeamData(team.id)"
         >
           Заполнить заявку
         </Button>
       </div>
 
-      <Collapse :id="+team.id">
+      <Collapse :id="team.id">
         <div class="team-request-collapse__info py-1">
           <div class="w-100 d-flex p-2">
             <div class="w-50">
@@ -121,7 +151,7 @@ function navigateToTeamModal(team: Team, idea: IdeasMarket) {
               <div class="d-flex flex-wrap gap-2">
                 <div
                   class="p-1 rounded bg-light border"
-                  v-for="(member, index) in team.members"
+                  v-for="(member, index) in currentTeam?.members"
                   :key="index"
                 >
                   {{ member.firstName }} {{ member.lastName }}
@@ -133,13 +163,13 @@ function navigateToTeamModal(team: Team, idea: IdeasMarket) {
                 <Checkbox
                   v-if="!isDisabledButtonSkills"
                   name="compare"
-                  :value="team"
-                  v-model="skillsTeam"
+                  :value="currentTeam"
+                  v-model="team.totalSkills"
                 />
                 <div>Компетенции:</div>
               </div>
               <div class="d-flex flex-wrap gap-2">
-                <Skills :skills="team.skills" />
+                <Skills :skills="currentTeam?.wantedSkills" />
               </div>
             </div>
           </div>
@@ -173,7 +203,7 @@ function navigateToTeamModal(team: Team, idea: IdeasMarket) {
     class="team-request-collapse__button py-1 px-2 border rounded w-100"
   >
     <Button class-name="btn-link">
-      {{ team.name }}
+      {{ currentTeam?.name }}
     </Button>
     <Button
       class-name="btn-secondary"

@@ -22,7 +22,7 @@ import IdeasMarketService from '@Services/IdeasMarketService'
 import RequestTeamsServise from '@Services/RequestTeamsServise'
 import useCommentsStore from '@Store/comments/commentsStore'
 
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
 import Comment from '@Domain/Comment'
 import RequestTeams from '@Domain/RequestTeams'
 import IdeasMarket from '@Domain/IdeasMarket'
@@ -96,92 +96,7 @@ function closeMarketModal() {
   useCommentsStore().disconnectRsocket()
 }
 
-const stack: Skill[] = [
-  {
-    id: '0',
-    name: 'JavaScript',
-    type: 'LANGUAGE',
-    confirmed: true,
-  },
-  {
-    id: '2',
-    name: 'Python',
-    type: 'LANGUAGE',
-    confirmed: true,
-  },
-  {
-    id: '3',
-    name: 'TypeScript',
-    type: 'LANGUAGE',
-    confirmed: true,
-  },
-  {
-    id: '6',
-    name: 'ReactJS',
-    type: 'FRAMEWORK',
-    confirmed: true,
-  },
-  {
-    id: '7',
-    name: 'Django',
-    type: 'FRAMEWORK',
-    confirmed: true,
-  },
-  {
-    id: '8',
-    name: 'VueJS',
-    type: 'FRAMEWORK',
-    confirmed: true,
-  },
-  {
-    id: '9',
-    name: 'Angular',
-    type: 'FRAMEWORK',
-    confirmed: true,
-  },
-  {
-    id: '11',
-    name: 'Docker',
-    type: 'DEVOPS',
-    confirmed: true,
-  },
-  {
-    id: '12',
-    name: 'Git',
-    type: 'DEVOPS',
-    confirmed: true,
-  },
-  {
-    id: '14',
-    name: 'Elasticsearch',
-    type: 'DEVOPS',
-    confirmed: true,
-  },
-  {
-    id: '15',
-    name: 'MongoDB',
-    type: 'DATABASE',
-    confirmed: true,
-  },
-  {
-    id: '16',
-    name: 'PostgreSQL',
-    type: 'DATABASE',
-    confirmed: true,
-  },
-  {
-    id: '17',
-    name: 'MySQL',
-    type: 'DATABASE',
-    confirmed: true,
-  },
-  {
-    id: '18',
-    name: 'SQLite',
-    type: 'DATABASE',
-    confirmed: true,
-  },
-]
+console.log(teams)
 </script>
 
 <template>
@@ -224,7 +139,7 @@ const stack: Skill[] = [
       <div class="market-modal__right-side w-25 rounded">
         <MarketRightSide
           :idea="idea"
-          :skills="stack"
+          :skills="idea.stack"
           v-model:skillsRequestTeam="skillsRequestTeam"
           v-model:skillsTeam="skillsTeam"
         />
