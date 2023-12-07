@@ -34,13 +34,14 @@ const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
 
+const wantedSkills = ref<Skill[]>([])
 const stackTechnologies = ref<Skill[]>([])
 
 const invitationUsers = ref<User[]>([])
 
 const isLoading = ref<boolean>(false)
 
-const { values, handleSubmit, setFieldValue, setValues } = useForm<Team>({
+const { handleSubmit, setFieldValue, setValues } = useForm<Team>({
   validationSchema: {
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
@@ -54,9 +55,6 @@ const { values, handleSubmit, setFieldValue, setValues } = useForm<Team>({
     members: (value: User[]) =>
       Validation.checkIsEmptyValue(value) || 'Участники не выбраны',
   },
-  initialValues: {
-    wantedSkills: [],
-  },
 })
 
 watchImmediate(
@@ -64,6 +62,8 @@ watchImmediate(
   async (team) => {
     if (team) {
       setValues({ ...team })
+
+      wantedSkills.value = team.wantedSkills
     }
   },
 )
@@ -162,7 +162,7 @@ const handleUpdateTeam = handleSubmit(async (values) => {
 
       <div class="w-100 d-flex flex-column gap-3">
         <StackCategories
-          :skills="values.wantedSkills"
+          :skills="wantedSkills"
           v-model:stack="stackTechnologies"
         />
       </div>
