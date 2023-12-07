@@ -48,7 +48,7 @@ function homeRouteMiddleware(): RouteLocationRaw {
     useUserStore().setUser(localStorageUser)
   }
 
-  return user.value?.roles.includes('LEADER')
+  return user.value?.roles.includes('TEAM_OWNER')
     ? { name: 'teams-list' }
     : { name: 'ideas-list' }
 }
@@ -102,12 +102,12 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
-        meta: { roles: ['INITIATOR', 'LEADER', 'MEMBER', 'ADMIN'] },
+        meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
         children: [
           {
             path: ':teamId',
             component: TeamModal,
-            meta: { roles: ['INITIATOR', 'LEADER', 'MEMBER', 'ADMIN'] },
+            meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
           },
           {
             name: 'profile',
@@ -121,13 +121,13 @@ const routes: RouteRecordRaw[] = [
         name: 'create-team',
         path: 'create',
         component: NewTeamView,
-        meta: { roles: ['LEADER', 'ADMIN'] },
+        meta: { roles: ['TEAM_OWNER', 'ADMIN'] },
       },
       {
         name: 'update-team',
         path: 'update/:id',
         component: EditTeamView,
-        meta: { roles: ['LEADER', 'ADMIN'] },
+        meta: { roles: ['TEAM_OWNER', 'ADMIN'] },
       },
     ],
   },
@@ -239,7 +239,7 @@ router.beforeEach((to) => {
   if (user.value && authRouteNames.includes(currentRouteName)) {
     const { roles } = user.value
 
-    if (roles.includes('LEADER')) {
+    if (roles.includes('TEAM_OWNER')) {
       return { name: 'teams-list' }
     }
 

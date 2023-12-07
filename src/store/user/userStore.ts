@@ -25,7 +25,7 @@ const useUserStore = defineStore('user', {
         const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
         this.user = localStorageUser
 
-        if (response.roles.includes('LEADER')) {
+        if (response.roles.includes('TEAM_OWNER')) {
           this.router.push({ name: 'teams-list' })
         } else {
           this.router.push({ name: 'ideas-list' })
@@ -42,7 +42,7 @@ const useUserStore = defineStore('user', {
         const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
         this.user = localStorageUser
 
-        if (response.roles.includes('LEADER')) {
+        if (response.roles.includes('TEAM_OWNER')) {
           this.router.push({ name: 'teams-list' })
         } else {
           this.router.push({ name: 'ideas-list' })

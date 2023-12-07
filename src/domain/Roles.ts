@@ -1,6 +1,6 @@
 type RolesTypes =
   | 'INITIATOR'
-  | 'LEADER'
+  | 'TEAM_OWNER'
   | 'MEMBER'
   | 'PROJECT_OFFICE'
   | 'EXPERT'
