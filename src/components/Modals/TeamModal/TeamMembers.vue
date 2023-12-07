@@ -39,7 +39,14 @@ const router = useRouter()
 watchImmediate(
   () => props.team,
   () => {
+    const { owner, leader } = props.team
     teamMembers.value = props.team.members
+    teamMembers.value.sort((a, b) =>
+      (a.id === owner.id || a.id === leader?.id) &&
+      (b.id === owner.id || b.id === leader?.id)
+        ? -1
+        : 1,
+    )
   },
 )
 
@@ -69,7 +76,7 @@ const dropdownTeamMemberActions: DropdownMenuAction<TeamMember>[] = [
   {
     label: 'Назначить лидером',
     className: 'text-primary',
-    statement: checkKickDropdownAction,
+    statement: checkLeaderDropdownAction,
     click: appointLeaderTeam,
   },
   {
@@ -142,14 +149,7 @@ async function appointLeaderTeam(teamMember: TeamMember) {
     const { id: userId } = teamMember
     const { id: teamId } = props.team
 
-    const response = await TeamServise.appointLeaderTeam(userId, teamId, token)
-
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
-    }
+    await teamsStore.changeLeaderTeamMember(teamId, userId, token)
   }
 }
 
@@ -161,6 +161,18 @@ function checkKickDropdownAction(teamMember: TeamMember) {
     currentUser?.id === owner.id &&
     teamMember.id !== owner.id &&
     teamMember.id !== currentUser?.id
+  )
+}
+
+function checkLeaderDropdownAction(teamMember: TeamMember) {
+  const currentUser = user.value
+  const { owner, leader } = props.team
+
+  return (
+    currentUser?.id === owner.id &&
+    teamMember.id !== owner.id &&
+    teamMember.id !== currentUser?.id &&
+    teamMember.id !== leader?.id
   )
 }
 </script>

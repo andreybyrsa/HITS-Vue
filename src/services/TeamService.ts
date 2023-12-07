@@ -227,12 +227,12 @@ const addTeamMember = async (
 }
 
 const appointLeaderTeam = async (
-  userId: string,
   teamId: string,
+  userId: string,
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .post(`${API_URL}/team/leader/${teamId}/${userId}`, null, {
+    .put(`${API_URL}/team/change/leader/${teamId}/${userId}`, null, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

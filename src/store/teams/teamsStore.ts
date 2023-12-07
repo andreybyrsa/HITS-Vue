@@ -73,6 +73,21 @@ const useTeamStore = defineStore('teams', {
       }
     },
 
+    async changeLeaderTeamMember(teamId: string, userId: string, token: string) {
+      const response = await TeamService.appointLeaderTeam(teamId, userId, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentTeam = this.teams.find(({ id }) => id === teamId)
+        const newLeader = currentTeam?.members.find(({ id }) => id === userId)
+
+        if (currentTeam && newLeader) {
+          currentTeam.leader = newLeader
+        }
+      }
+    },
+
     async kickTeamMember(teamId: string, teamMemberId: string, token: string) {
       const response = await TeamService.kickTeamMember(teamId, teamMemberId, token)
 
