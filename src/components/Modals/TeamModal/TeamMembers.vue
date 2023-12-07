@@ -155,10 +155,10 @@ async function appointLeaderTeam(teamMember: TeamMember) {
 
 function checkKickDropdownAction(teamMember: TeamMember) {
   const currentUser = user.value
-  const { owner, leader } = props.team
+  const { owner } = props.team
 
   return (
-    (currentUser?.id === owner.id || currentUser?.id === leader?.id) &&
+    currentUser?.id === owner.id &&
     teamMember.id !== owner.id &&
     teamMember.id !== currentUser?.id
   )

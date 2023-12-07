@@ -31,11 +31,6 @@ const isLoading = ref(false)
 defineProps<InvitationTeamMemberModalProps>()
 const emit = defineEmits<InvitationTeamMemberModalEmits>()
 
-function cancelInviteUsers() {
-  selectedUsers.value = invitationUsers.value
-  emit('close-modal')
-}
-
 function inviteUsers() {
   invitationUsers.value = selectedUsers.value
   emit('close-modal')
@@ -62,12 +57,17 @@ async function inviteUsersInTeam() {
     emit('close-modal')
   }
 }
+
+function closeInvitationModal() {
+  selectedUsers.value = invitationUsers.value
+  emit('close-modal')
+}
 </script>
 
 <template>
   <ModalLayout
     :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
+    @on-outside-close="closeInvitationModal"
   >
     <div class="invitation-modal p-3 bg-white overflow-y-scroll rounded">
       <div class="invitation-modal__header w-100">
@@ -77,14 +77,14 @@ async function inviteUsersInTeam() {
 
         <Button
           variant="close"
-          @click="emit('close-modal')"
+          @click="closeInvitationModal"
         />
       </div>
 
       <div class="invitation-modal__table">
         <UsersInviteTable
           v-model="selectedUsers"
-          @close-modal="emit('close-modal')"
+          @close-modal="closeInvitationModal"
         />
       </div>
 
@@ -130,7 +130,7 @@ async function inviteUsersInTeam() {
         >
         <Button
           variant="danger"
-          @click="cancelInviteUsers"
+          @click="closeInvitationModal"
           >Отменить выбор</Button
         >
       </div>

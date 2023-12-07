@@ -12,11 +12,12 @@ import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
+import { User } from '@Domain/User'
+
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-import { User } from '@Domain/User'
 
 const props = defineProps<TeamModalActionsProps>()
 const emit = defineEmits<TeamModalActionsEmits>()
@@ -28,8 +29,9 @@ const { user } = storeToRefs(userStore)
 
 const teamsStore = useTeamStore()
 const requestsToTeamStore = useRequestsToTeamStore()
-const { requests } = storeToRefs(requestsToTeamStore)
 const invitatinUsers = useInvitationUsersStore()
+
+const { requests } = storeToRefs(requestsToTeamStore)
 const { invitationUsers } = storeToRefs(invitatinUsers)
 
 const isOpenedDeletingModal = ref(false)
@@ -72,9 +74,11 @@ function getAccessRequestToTeam() {
 
     return (
       !(
-        requests.value.find(({ id, status }) => id === id && status === 'NEW') ||
-        invitationUsers.value?.find(
-          ({ id, status }) => id === id && status === 'NEW',
+        requests.value.find(
+          ({ userId, status }) => userId === id && status === 'NEW',
+        ) ||
+        invitationUsers.value.find(
+          ({ userId, status }) => userId === id && status === 'NEW',
         )
       ) &&
       !members.find((user) => user.id === id) &&
@@ -97,8 +101,8 @@ function getAccessCancelOrAcceptRequestToTeam() {
   if (user.value) {
     const { id } = user.value
 
-    return invitationUsers.value?.find(
-      (invitation) => invitation.userId === id && invitation.status === 'NEW',
+    return invitationUsers.value.find(
+      ({ userId, status }) => userId === id && status === 'NEW',
     )
   }
 }
@@ -120,7 +124,6 @@ function getAccess() {
     getAccessRequestToTeam() ||
     getAccessCancelRequestToTeam() ||
     getAccessToLeave() ||
-    getAccessCancelOrAcceptRequestToTeam() ||
     getAccessCancelOrAcceptRequestToTeam()
   )
 }
@@ -181,7 +184,7 @@ async function sendRequestInTeam() {
     const { token } = currentUser
     const { id } = props.team
 
-    await requestsToTeamStore.sendRequestInTeam(currentUser.id, id, token)
+    await requestsToTeamStore.sendRequestInTeam(id, token)
   }
 }
 

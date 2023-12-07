@@ -190,11 +190,8 @@ async function cancelRequestToTeam() {
 
 function checkDropdownAction(requestToTeam: RequestToTeam) {
   const currentUser = user.value
-  const { leader, owner } = props.team
+  const { owner } = props.team
 
-  return (
-    requestToTeam.status === 'NEW' &&
-    (leader?.id === currentUser?.id || owner.id === currentUser?.id)
-  )
+  return requestToTeam.status === 'NEW' && owner.id === currentUser?.id
 }
 </script>
