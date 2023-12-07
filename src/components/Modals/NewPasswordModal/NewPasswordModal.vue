@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 
@@ -24,6 +24,8 @@ const props = defineProps<NewPasswordModalProps>()
 
 const router = useRouter()
 
+const isLoading = ref(false)
+
 const { setValues, handleSubmit } = useForm<UpdateUserPassword>({
   validationSchema: {
     key: (value: string) => Validation.checkIsEmptyValue(value),
@@ -43,7 +45,9 @@ watch(
 )
 
 const handleUpdatePassword = handleSubmit(async (values) => {
+  isLoading.value = true
   const response = await ManageUsersService.updateUserPassword(values)
+  isLoading.value = false
 
   if (response instanceof Error) {
     return notificationsStore.createSystemNotification('Система', response.message)
@@ -66,7 +70,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
       <Input
         v-for="input in newPasswordModalInputs"
         :key="input.id"
-        :type="input.type"
+        type="text"
         :name="input.name"
         class-name="rounded-end"
         :placeholder="input.placeholder"
@@ -78,6 +82,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
 
       <Button
         variant="primary"
+        :is-loading="isLoading"
         @click="handleUpdatePassword"
       >
         Изменить пароль

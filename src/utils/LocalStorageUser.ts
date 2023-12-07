@@ -1,26 +1,50 @@
 import { User } from '@Domain/User'
 
 class LocalStorageUser {
-  getLocalStorageUser(): User | null {
-    const localStorageUser = localStorage.getItem('user') ?? '{}'
+  private LOCAL_STORAGE_KEY = 'user'
 
-    return JSON.parse(localStorageUser, (key: string, value: string) => {
-      return key === 'lastLogin' ? new Date(value) : value
-    })
-  }
+  public getLocalStorageUser(): User | null {
+    const stringifiedUser = localStorage.getItem(this.LOCAL_STORAGE_KEY) ?? '{}'
+    const jsonParsedUser = JSON.parse(stringifiedUser) as User
 
-  setLocalStorageUser(user: User) {
-    const localStorageUser: User = {
-      ...user,
-      lastLogin: new Date(),
+    if (jsonParsedUser.token) {
+      return JSON.parse(stringifiedUser, (key: string, value: string) => {
+        return key === 'lastLogin' ? new Date(value) : value
+      })
     }
 
-    localStorage.setItem('user', JSON.stringify(localStorageUser))
-
-    return localStorageUser
+    return null
   }
 
-  removeLocalStorageUser() {
+  public setLocalStorageUser(user: User) {
+    const localStorageUser = this.getLocalStorageUser()
+
+    const updateLocalStorageUser = (value: User) =>
+      localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(value))
+
+    if (localStorageUser?.token) {
+      const currentLocalStorageUser: User = {
+        ...localStorageUser,
+        ...user,
+      }
+
+      updateLocalStorageUser(currentLocalStorageUser)
+
+      localStorage.setItem(
+        this.LOCAL_STORAGE_KEY,
+        JSON.stringify(currentLocalStorageUser),
+      )
+    } else {
+      const currentLocalStorageUser: User = {
+        ...user,
+        lastLogin: new Date(),
+      }
+
+      updateLocalStorageUser(currentLocalStorageUser)
+    }
+  }
+
+  public removeLocalStorageUser() {
     localStorage.removeItem('user')
   }
 }
