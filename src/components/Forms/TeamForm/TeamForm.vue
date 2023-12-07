@@ -116,19 +116,6 @@ const handleUpdateTeam = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    const responseInvitation = await TeamService.invitationTeamMember(
-      invitationUsers.value,
-      response.id,
-      token,
-    )
-
-    if (responseInvitation instanceof Error) {
-      notificationsStore.createSystemNotification(
-        'Система',
-        responseInvitation.message,
-      )
-    }
-
     isLoading.value = false
 
     router.push({ name: 'teams-list' })

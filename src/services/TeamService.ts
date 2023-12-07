@@ -220,6 +220,23 @@ const addTeamMember = async (
     })
 }
 
+const appointLeaderTeam = async (
+  userId: string,
+  teamId: string,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .post(`${API_URL}/team/leader/${teamId}/${userId}`, null, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка назвачения лидера'
+      return new Error(error)
+    })
+}
+
 const updateTeam = async (
   team: Team,
   id: string,
@@ -359,6 +376,7 @@ const TeamService = {
   addTeamMember,
   invitationTeamMember,
   sendRequestInTeam,
+  appointLeaderTeam,
 
   updateTeam,
   updateTeamSkills,

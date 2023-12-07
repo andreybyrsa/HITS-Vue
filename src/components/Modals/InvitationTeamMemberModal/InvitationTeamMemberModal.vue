@@ -21,7 +21,10 @@ const emit = defineEmits<InvitationTeamMemberModalEmits>()
     @on-outside-close="emit('close-modal')"
   >
     <div class="invitation-modal p-3 bg-white overflow-y-scroll rounded">
-      <UsersInviteTable v-model="invitationUsers" />
+      <UsersInviteTable
+        v-model="invitationUsers"
+        @close-modal="emit('close-modal')"
+      />
     </div>
   </ModalLayout>
 </template>

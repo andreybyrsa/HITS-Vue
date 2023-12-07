@@ -8,4 +8,8 @@ interface UsersInviteTableProps {
   usersSkills: UsersSkills[]
 }
 
-export type { UsersInviteTableProps }
+interface UsersInviteTableEmits {
+  (event: 'close-modal'): void
+}
+
+export type { UsersInviteTableProps, UsersInviteTableEmits }

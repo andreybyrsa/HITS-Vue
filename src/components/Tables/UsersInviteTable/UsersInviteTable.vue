@@ -9,6 +9,7 @@
       :search-by="['email', 'firstName', 'lastName']"
       :dropdown-actions-menu="dropdownInviteUserActions"
       :filters="usersFilters"
+      :checked-data-actions="checkedUsersActions"
       v-model="invitationUsers"
     ></Table>
   </div>
@@ -18,11 +19,16 @@
 
 <script lang="ts" setup>
 import { Ref, computed, onMounted, ref } from 'vue'
-import { useRouter, RouteRecordRaw } from 'vue-router'
+import { useRouter, RouteRecordRaw, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
+import type { UsersInviteTableEmits } from '@Components/Tables/UsersInviteTable/UsersInviteTable.types'
 import Table from '@Components/Table/Table.vue'
-import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
+import {
+  CheckedDataAction,
+  DropdownMenuAction,
+  TableColumn,
+} from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import { Filter } from '@Components/FilterBar/FilterBar.types'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
@@ -42,6 +48,8 @@ import ProfileService from '@Services/ProfileService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+import TeamService from '@Services/TeamService'
+import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 
 const invitationUsers = defineModel<User[]>({ required: true })
 
@@ -50,7 +58,10 @@ const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
 
+const emit = defineEmits<UsersInviteTableEmits>()
+
 const router = useRouter()
+const route = useRoute()
 
 const users = ref<User[]>()
 const skills = ref<Skill[]>()
@@ -111,6 +122,30 @@ const inviteUserColumns: TableColumn<User>[] = [
   },
 ]
 
+const checkedUsersActions: CheckedDataAction<User>[] = [
+  {
+    label: 'Пригласить пользователей',
+    className: 'btn-success',
+    statement: route.name !== 'create-team',
+    click: inviteUsersInTeam,
+  },
+]
+
+const invitatinUsers = useInvitationUsersStore()
+async function inviteUsersInTeam() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { teamId } = route.params
+
+    await invitatinUsers.inviteUsers(invitationUsers.value, teamId.toString(), token)
+
+    invitationUsers.value = []
+    emit('close-modal')
+  }
+}
+
 const usersFilters = computed<Filter<User>[]>(() => [
   {
     category: 'Компетенции',
@@ -123,6 +158,7 @@ const usersFilters = computed<Filter<User>[]>(() => [
 ])
 
 const dropdownInviteUserActions: DropdownMenuAction<User>[] = [
+  { label: 'Перейти на профиль', click: navigateToUserProfile },
   {
     label: 'Выбрать',
     statement: checkIsNotExistUser,
@@ -135,7 +171,6 @@ const dropdownInviteUserActions: DropdownMenuAction<User>[] = [
     click: unselectUser,
     className: 'text-danger',
   },
-  { label: 'Перейти на профиль', click: navigateToUserProfile },
 ]
 
 function getFilterSkills() {

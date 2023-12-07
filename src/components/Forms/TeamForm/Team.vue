@@ -180,6 +180,7 @@ function closeTeamInviteModal() {
 
     <div class="d-flex flex-column">
       <div
+        v-if="$route.name === 'create-team'"
         class="team__invite-button d-flex gap-2 text-primary"
         @click="openTeamInviteModal"
       >

@@ -41,27 +41,27 @@ const invitationUsersInTeam = ref<User[]>([])
 function getAccessToEdit() {
   if (user.value) {
     const { id, role } = user.value
-    const { owner, leader } = props.team
+    const { owner } = props.team
 
-    return role === 'ADMIN' || id === owner.userId || id === leader?.userId
+    return role === 'ADMIN' || id === owner.id
   }
 }
 
 function getAccessToDelete() {
   if (user.value) {
     const { id, role } = user.value
-    const { owner } = props.team
+    const { owner, members } = props.team
 
-    return role === 'ADMIN' || id === owner.userId
+    return role === 'ADMIN' || (id === owner.id && members.length === 1)
   }
 }
 
 function getAccessToInvite() {
   if (user.value) {
     const { id, role } = user.value
-    const { owner, leader } = props.team
+    const { owner } = props.team
 
-    return role === 'ADMIN' || id === owner.userId || id === leader?.userId
+    return role === 'ADMIN' || id === owner.id
   }
 }
 
@@ -72,14 +72,12 @@ function getAccessRequestToTeam() {
 
     return (
       !(
-        requests.value.find(
-          ({ userId, status }) => userId === id && status === 'NEW',
-        ) ||
+        requests.value.find(({ id, status }) => id === id && status === 'NEW') ||
         invitationUsers.value?.find(
-          ({ userId, status }) => userId === id && status === 'NEW',
+          ({ id, status }) => id === id && status === 'NEW',
         )
       ) &&
-      !members.find((user) => user?.userId === id) &&
+      !members.find((user) => user.id === id) &&
       !closed
     )
   }
@@ -107,10 +105,10 @@ function getAccessCancelOrAcceptRequestToTeam() {
 
 function getAccessToLeave() {
   if (user.value) {
-    const { id } = user.value
+    const { id: userId } = user.value
     const { owner, members } = props.team
 
-    return id !== owner.userId && members.find((user) => user.userId === id)
+    return userId !== owner.id && members.find((user) => user.id === userId)
   }
 }
 

@@ -20,8 +20,10 @@ import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import { TeamMember } from '@Domain/Team'
 
+import TeamServise from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<TeamMembersProps>()
 
@@ -64,6 +66,12 @@ const teamMemberColumns: TableColumn<TeamMember>[] = [
 
 const dropdownTeamMemberActions: DropdownMenuAction<TeamMember>[] = [
   { label: 'Перейти на профиль', click: navigateToUserProfile },
+  {
+    label: 'Назначить лидером',
+    className: 'text-primary',
+    statement: checkKickDropdownAction,
+    click: appointLeaderTeam,
+  },
   {
     label: 'Исключить',
     className: 'text-danger',
@@ -123,6 +131,25 @@ async function kickTeamMember(teamMember: TeamMember) {
     const { id } = props.team
 
     await teamsStore.kickTeamMember(id, teamMember.id, token)
+  }
+}
+
+async function appointLeaderTeam(teamMember: TeamMember) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id: userId } = teamMember
+    const { id: teamId } = props.team
+
+    const response = await TeamServise.appointLeaderTeam(userId, teamId, token)
+
+    if (response instanceof Error) {
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        response.message,
+      )
+    }
   }
 }
 
