@@ -54,11 +54,12 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token, email } = currentUser
+    const profileId = route.params.id.toString()
+    const { token, id } = currentUser
 
     const profileParallelRequests = [
-      () => ProfileService.getUserProfile(email, token),
-      () => ProfileService.getProfileAvatar(email, token),
+      () => ProfileService.getUserProfile(profileId, token),
+      () => ProfileService.getProfileAvatar(profileId, token),
     ]
 
     await makeParallelRequests<Profile | string | Error>(
@@ -74,7 +75,7 @@ onMounted(async () => {
       })
     })
 
-    isOwnProfile.value = email === profile.value?.email
+    isOwnProfile.value = profileId === id
   }
 })
 
