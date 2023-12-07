@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { watchImmediate } from '@vueuse/core'
@@ -20,6 +20,9 @@ import { Skill } from '@Domain/Skill'
 
 import TeamService from '@Services/TeamService'
 
+import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
@@ -35,6 +38,7 @@ const notificationsStore = useNotificationsStore()
 const router = useRouter()
 
 const wantedSkills = ref<Skill[]>([])
+const totalSkills = ref<Skill[]>([])
 const stackTechnologies = ref<Skill[]>([])
 
 const invitationUsers = ref<User[]>([])
@@ -64,6 +68,7 @@ watchImmediate(
       setValues({ ...team })
 
       wantedSkills.value = team.wantedSkills
+      totalSkills.value = team.skills
     }
   },
 )
@@ -122,18 +127,18 @@ const handleUpdateTeam = handleSubmit(async (values) => {
   }
 })
 
-// const radarChartsSkills = computed<SkillsArea[]>(() => [
-//   {
-//     label: 'Желаемые компетенции',
-//     skills: stackTechnologies.value,
-//     alphaOpacity: 100,
-//   },
-//   {
-//     label: 'Фактические компетенции',
-//     skills: teamWantedSkills.value,
-//     alphaOpacity: 50,
-//   },
-// ])
+const radarChartsSkills = computed<SkillsArea[]>(() => [
+  {
+    label: 'Желаемые компетенции',
+    skills: stackTechnologies.value,
+    alphaOpacity: 100,
+  },
+  {
+    label: 'Фактические компетенции',
+    skills: totalSkills.value,
+    alphaOpacity: 50,
+  },
+])
 </script>
 
 <template>
@@ -171,6 +176,11 @@ const handleUpdateTeam = handleSubmit(async (values) => {
         :team="team"
         v-model="invitationUsers"
         @set-value="setFieldValue"
+      />
+      <SkillsRadarChart
+        :skills="radarChartsSkills"
+        :width="350"
+        :height="350"
       />
 
       <Button
