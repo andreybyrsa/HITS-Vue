@@ -179,8 +179,8 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
       />
       <SkillsRadarChart
         :skills="radarChartsSkills"
-        :width="350"
-        :height="350"
+        :width="225"
+        :height="225"
       />
 
       <Button
