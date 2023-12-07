@@ -68,7 +68,7 @@ const useTeamStore = defineStore('teams', {
         const currentTeam = this.teams.find(({ id }) => id === teamMember.teamId)
 
         if (currentTeam) {
-          currentTeam.members.push(teamMember)
+          currentTeam.members.push({ ...teamMember, id: teamMember.userId })
         }
       }
     },

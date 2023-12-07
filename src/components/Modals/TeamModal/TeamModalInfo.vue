@@ -25,12 +25,12 @@ const isCopiedLink = ref(false)
 const teamSkills = computed<SkillsArea[]>(() => [
   {
     label: 'Желаемые компетенции',
-    skills: props.team.skills ?? [],
+    skills: props.team.wantedSkills,
     alphaOpacity: 130,
   },
   {
     label: 'Фактические компетенции',
-    skills: props.team.wantedSkills ?? [],
+    skills: props.team.skills,
     alphaOpacity: 50,
   },
 ])

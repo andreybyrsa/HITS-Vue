@@ -51,19 +51,16 @@ function getNavLinkStyle(isCurrentTable: boolean) {
 
 function getTeamInvitations() {
   const currentUser = user.value
-  const { leader, owner } = props.team
+  const { owner } = props.team
 
-  return currentUser?.id === leader?.id || currentUser?.id === owner.id
+  return currentUser?.id === owner.id
 }
 
 function getRequestsToTeam() {
   const currentUser = user.value
-  const { leader, owner } = props.team
+  const { owner } = props.team
 
-  return (
-    !props.team.closed &&
-    (currentUser?.id === leader?.id || currentUser?.id === owner.id)
-  )
+  return !props.team.closed && currentUser?.id === owner.id
 }
 </script>
 
