@@ -12,7 +12,7 @@ function getRolesStyle(roles: RolesTypes[], index: number) {
 
   if (
     currentRole === 'INITIATOR' ||
-    currentRole === 'LEADER' ||
+    currentRole === 'TEAM_OWNER' ||
     currentRole === 'MEMBER'
   ) {
     initialClass.push('bg-primary-subtle', 'text-primary')

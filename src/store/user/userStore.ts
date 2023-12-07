@@ -22,10 +22,10 @@ const useUserStore = defineStore('user', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-        this.user = localStorageUser
+        LocalStorageUser.setLocalStorageUser(response)
+        this.user = LocalStorageUser.getLocalStorageUser()
 
-        if (response.roles.includes('LEADER')) {
+        if (response.roles.includes('TEAM_OWNER')) {
           this.router.push({ name: 'teams-list' })
         } else {
           this.router.push({ name: 'ideas-list' })
@@ -39,10 +39,10 @@ const useUserStore = defineStore('user', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-        this.user = localStorageUser
+        LocalStorageUser.setLocalStorageUser(response)
+        this.user = LocalStorageUser.getLocalStorageUser()
 
-        if (response.roles.includes('LEADER')) {
+        if (response.roles.includes('TEAM_OWNER')) {
           this.router.push({ name: 'teams-list' })
         } else {
           this.router.push({ name: 'ideas-list' })
