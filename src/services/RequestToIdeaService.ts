@@ -1,28 +1,32 @@
+import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
 import Success from '@Domain/ResponseMessage'
 
-import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
-import { RequestTeams } from '@Domain/RequestTeamToIdea'
-import getAbortedSignal from '@Utils/getAbortedSignal'
 import useUserStore from '@Store/user/userStore'
 
-const RequestTeamsAxios = defineAxios(getMocks().RequestTeams)
+import defineAxios from '@Utils/defineAxios'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
-function filterApplicationsById(ideaId: string, request: RequestTeams[]) {
-  return request.filter((request) => request.ideaId == ideaId)
+const requestTeamsAxios = defineAxios([] as RequestTeamToIdea[])
+
+function filterRequestsToIdeaByIdeaId(ideaId: string, request: RequestTeamToIdea[]) {
+  return request.filter((request) => request.ideaMarketId === ideaId)
 }
 
 const getIdeaRequests = async (
   ideaId: string,
   token: string,
-): Promise<RequestTeams[] | Error> => {
-  return await RequestTeamsAxios.get<RequestTeams[]>(
-    `/market/requests/${ideaId}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    },
-    { formatter: (applications) => filterApplicationsById(ideaId, applications) },
-  )
+): Promise<RequestTeamToIdea[] | Error> => {
+  return await requestTeamsAxios
+    .get<RequestTeamToIdea[]>(
+      `/market/requests/${ideaId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      {
+        formatter: (applications) =>
+          filterRequestsToIdeaByIdeaId(ideaId, applications),
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка получения заявок'
@@ -31,44 +35,46 @@ const getIdeaRequests = async (
 }
 
 const postRequest = async (
-  team: RequestTeams,
+  team: RequestTeamToIdea,
   token: string,
-): Promise<RequestTeams | Error> => {
-  return await RequestTeamsAxios.post('/market/declare', team, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+): Promise<RequestTeamToIdea | Error> => {
+  return await requestTeamsAxios
+    .post('/market/declare', team, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка добавления запроса'
+      const error = response?.data?.error ?? 'Ошибка отправки заявки'
       return new Error(error)
     })
 }
 
-const acceptRequestTeam = async (
-  team: RequestTeams,
+const updateRequestToIdeaStatus = async (
+  id: string,
+  status: RequestToIdeaStatus,
   token: string,
 ): Promise<Success | Error> => {
-  return await RequestTeamsAxios.put<Success>(
-    `/market/accept/${team.id}`,
-    team,
-    { headers: { Authorization: `Bearer ${token}` } },
-    {
-      params: { id: team.id },
-      responseData: { success: 'Успешное принятие команды' },
-    },
-  )
+  return await requestTeamsAxios
+    .putNoRequestBody<Success>(
+      `/market/accept/${id}/${status}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        params: { id },
+        responseData: { success: 'Успешное изменение статуса' },
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка принятия команды'
+      const error = response?.data?.error ?? 'Ошибка изменения статуса заявки'
       return new Error(error)
     })
 }
 
 // const acceptRequestTeams = async (
-//   teams: RequestTeams[],
+//   teams: RequestTeamToIdea[],
 //   token: string,
-// ): Promise<RequestTeams[] | Error> => {
-//   return await RequestTeamsAxios.put(
+// ): Promise<RequestTeamToIdea[] | Error> => {
+//   return await requestTeamsAxios.put(
 //     `/application/add/${teams}`,
 //     teams,
 //     { headers: { Authorization: `Bearer ${token}` } },
@@ -88,29 +94,32 @@ const deleteRequestTeams = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await RequestTeamsAxios.delete(
-    `/market/delete/request/${id}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    },
-    {
-      params: { id },
-    },
-  )
+  return await requestTeamsAxios
+    .delete(
+      `/market/delete/request/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id },
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления команды'
+      const error = response?.data?.error ?? 'Ошибка удаления заявки'
       return new Error(error)
     })
 }
 
 const RequestTeamsServise = {
   getIdeaRequests,
-  postRequest,
-  deleteRequestTeams,
 
-  acceptRequestTeam,
+  postRequest,
+
+  updateRequestToIdeaStatus,
+
+  deleteRequestTeams,
 }
 
 export default RequestTeamsServise

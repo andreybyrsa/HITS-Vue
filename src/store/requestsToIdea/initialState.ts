@@ -1,7 +1,7 @@
-import { RequestTeams } from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 interface InitialState {
-  requests: RequestTeams[]
+  requests: RequestTeamToIdea[]
 }
 
 export default InitialState
