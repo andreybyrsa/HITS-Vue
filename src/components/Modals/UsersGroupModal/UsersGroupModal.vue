@@ -119,9 +119,15 @@ onUpdated(async () => {
   }
 })
 
-function selectUser(user: User, index: number) {
-  push(user)
-  unselectedUsers.value.splice(index, 1)
+function selectUser(user: User) {
+  const selectedUserIndex = unselectedUsers.value.findIndex(
+    ({ id }) => id === user.id,
+  )
+
+  if (selectedUserIndex !== -1) {
+    push(user)
+    unselectedUsers.value.splice(selectedUserIndex, 1)
+  }
 }
 
 function unselectUser(user: User, index: number) {
@@ -218,11 +224,11 @@ const handleUpdateGroup = handleSubmit(async (values) => {
 
         <UsersColumns
           :users="fields"
-          :display-by="['lastName', 'firstName']"
-          :email="'email'"
           :unselected-users="unselectedUsers"
-          @on-select="selectUser"
-          @on-unselect="unselectUser"
+          unselected-users-label="Пользователи:"
+          selected-users-label="Пользователи в группе:"
+          @selectUser="selectUser"
+          @unselect-user="unselectUser"
         />
 
         <Combobox

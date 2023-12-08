@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
+import { Idea } from '@Domain/Idea'
 import RolesTypes from '@Domain/Roles'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
 
@@ -78,6 +79,16 @@ const useIdeasStore = defineStore('ideas', {
           currentIdea.status = status
         }
       }
+    },
+
+    changeIdeasStatusOnMarket(merketIdeas: Idea[]) {
+      merketIdeas.forEach((marketIdea) => {
+        const ideaStore = this.ideas.find(({ id }) => id === marketIdea.id)
+
+        if (ideaStore) {
+          ideaStore.status = 'ON_MARKET'
+        }
+      })
     },
 
     setIdeaRating(id: string, rating: number) {

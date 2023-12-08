@@ -12,7 +12,7 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
-import UsersColumns from '@Components/Modals/CompanyModal/UsersColumns.vue'
+import UsersColumns from '@Components/UserColumns/UsersColumns.vue'
 import CompanyModalPlaceholder from '@Components/Modals/CompanyModal/CompanyModalPlaceholder.vue'
 
 import { User } from '@Domain/User'
@@ -237,6 +237,8 @@ const handleUpdateCompany = handleSubmit(async (values) => {
         <UsersColumns
           :users="fields"
           :unselected-users="unselectedUsers"
+          unselected-users-label="Пользователи:"
+          selected-users-label="Представители компании:"
           @select-user="selectUser"
           @unselect-user="unselectUser"
         />

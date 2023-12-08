@@ -1,34 +1,38 @@
 <script lang="ts" setup>
+import { Ref, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useDateFormat } from '@vueuse/core'
+
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Skills from '@Components/Skills/Skills.vue'
+import RequestToIdeaModal from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.vue'
 
 import SingleIdeaCardProps from '@Views/IdeasMarket/IdeasMarketView.types'
 
 import IdeasMarket from '@Domain/IdeasMarket'
 import IdeasMarketStatusTypes from '@Domain/MarketStatus'
-import RequestToIdeaModal from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.vue'
-
-import IdeasMarketService from '@Services/IdeasMarketService'
-
-import useUserStore from '@Store/user/userStore'
-
-import getMarketStatus from '@Utils/getMarketStatus'
-import { Ref, onMounted, ref } from 'vue'
 import RequestTeams from '@Domain/RequestTeams'
 import { Team } from '@Domain/Team'
+
+import getMarketStatus from '@Utils/getMarketStatus'
+
+import IdeasMarketService from '@Services/IdeasMarketService'
 import RequestTeamsServise from '@Services/RequestTeamsServise'
 import TeamService from '@Services/TeamService'
 
+import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
-import { useDateFormat } from '@vueuse/core'
 
 const availableStatus = getMarketStatus()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const notificationsStore = useNotificationsStore()
 
 const props = defineProps<SingleIdeaCardProps>()
 const ideas = defineModel<IdeasMarket[]>('ideas', { required: true })
@@ -88,12 +92,15 @@ const handleAddIdeaToFavorites = async () => {
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
+
     const response = await IdeasMarketService.addIdeaToFavorites(id, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
+
     const currentIdea = ideas.value.find((idea) => idea.id === id)
+
     if (currentIdea) {
       currentIdea.isFavorite = true
     }
@@ -102,15 +109,19 @@ const handleAddIdeaToFavorites = async () => {
 
 const handleRemoveIdeaFromFavorites = async () => {
   const currentUser = user.value
+
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     const { id } = props.idea
+
     const response = await IdeasMarketService.removeIdeaFromFavorites(id, token)
 
     if (response instanceof Error) {
-      return // notification
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
+
     const currentIdeaIndex = ideas.value.findIndex((idea) => idea.id === id)
+
     if (props.isAllIdeas && currentIdeaIndex !== -1) {
       ideas.value[currentIdeaIndex].isFavorite = false
     } else if (!props.isAllIdeas && currentIdeaIndex !== -1) {
@@ -125,10 +136,6 @@ function openRequestToIdeaModal() {
 }
 function closeRequestToIdeaModal() {
   isOpenRequestToIdeaModal.value = false
-}
-
-function filterTeams(teams: RequestTeams[]) {
-  return teams.filter((team) => team.accepted == true)
 }
 </script>
 
@@ -156,19 +163,20 @@ function filterTeams(teams: RequestTeams[]) {
       <div class="idea-start-date">
         <div class="idea-start-date">
           <Icon class-name="bi bi-clock-history fs-5" />
-          Дата старта: {{ getFormattedDate(idea.createdAt) }}
+          Дата старта: {{ getFormattedDate(idea.startDate) }}
         </div>
       </div>
       <div class="idea-applications">
         <Icon class-name="bi bi-envelope-open fs-5" />
-        Подано заявок: {{ requestTeams?.length }}
+        Подано заявок: {{ idea.requests }}
       </div>
-      <div
-        class="idea-accepted-applications"
-        v-if="requestTeams"
-      >
+      <div class="idea-applications">
+        <Icon class-name="bi bi-envelope-open fs-5" />
+        Принятые заявки: {{ idea.acceptedRequests }}
+      </div>
+      <div class="idea-accepted-applications">
         <Icon class-name="bi bi-people-fill fs-5" />
-        Участники: {{ filterTeams(requestTeams).length }} / {{ idea.maxTeamSize }}
+        Требуется участников: {{ idea.maxTeamSize }}
       </div>
       <div class="idea-applications">
         <Icon class-name="bi bi-check2-all fs-5" />

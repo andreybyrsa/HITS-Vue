@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
-import { watchImmediate } from '@vueuse/core'
+import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Typography from '@Components/Typography/Typography.vue'
@@ -32,55 +31,41 @@ const isAllIdeas = ref(true)
 
 const searchedValue = ref('')
 
-const filteredIdeas = computed(() => {
-  if (!searchedValue.value || !ideas.value) {
+const searchedIdeas = computed(() => {
+  if (!searchedValue.value) {
     return ideas.value
   }
 
-  const lowercaseSearch = searchedValue.value.toLowerCase()
-  return ideas.value.filter((idea) =>
-    idea.name.toLowerCase().includes(lowercaseSearch),
-  )
+  const lowercaseSearch = searchedValue.value.toLowerCase().trim()
+  return ideas.value?.filter((idea) => {
+    const ideaName = idea.name.toLocaleLowerCase().trim()
+    return ideaName.includes(lowercaseSearch)
+  })
 })
 
-onMounted(getIdeas)
+onMounted(async () => getIdeasByRole())
 
-watchImmediate(
+watch(
   () => user.value?.role,
-  async (currentRole) => {
-    const currentUser = user.value
-
-    if (currentUser?.token && currentRole) {
-      const { token } = currentUser
-
-      const response = await ideasMarketStore.getMarketIdeas(currentRole, token)
-
-      if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-
-      ideas.value = response
-    }
+  async () => {
+    if (isAllIdeas.value) getIdeasByRole()
   },
 )
 
-async function getIdeas() {
+async function getIdeasByRole() {
   const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    ideas.value = null
 
-    const response = await IdeasMarketService.fetchIdeasMarket(token)
+  if (currentUser?.token && currentUser.role) {
+    const { token, role } = currentUser
+
+    ideas.value = null
+    const response = await ideasMarketStore.getMarketIdeas(role, token)
 
     if (response instanceof Error) {
-      return
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     ideas.value = response
-    isAllIdeas.value = true
   }
 }
 
@@ -88,16 +73,15 @@ async function getFavoritesIdeas() {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    ideas.value = null
 
+    ideas.value = null
     const response = await IdeasMarketService.fetchFavoritesIdeas(token)
 
     if (response instanceof Error) {
-      return
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     ideas.value = response
-    isAllIdeas.value = false
   }
 }
 
@@ -110,6 +94,11 @@ function getNavTabClass(isAllIdeas: boolean) {
   initialClass.push('text-dark')
   return initialClass
 }
+
+async function switchNavTab(value: boolean, callback: () => Promise<void>) {
+  await callback()
+  isAllIdeas.value = value
+}
 </script>
 
 <template>
@@ -117,20 +106,20 @@ function getNavTabClass(isAllIdeas: boolean) {
     <template #leftSideBar>
       <LeftSideBar />
     </template>
+
     <template #content>
-      <router-view />
       <Typography class-name="fs-2 text-primary w-75">Биржа идей</Typography>
 
       <div class="nav nav-underline">
         <div
           :class="getNavTabClass(isAllIdeas === true)"
-          @click="getIdeas"
+          @click="switchNavTab(true, getIdeasByRole)"
         >
           Все
         </div>
         <div
           :class="getNavTabClass(isAllIdeas === false)"
-          @click="getFavoritesIdeas"
+          @click="switchNavTab(false, getFavoritesIdeas)"
         >
           Избранное
         </div>
@@ -146,23 +135,18 @@ function getNavTabClass(isAllIdeas: boolean) {
           </template>
         </Input>
       </div>
-      <div
-        v-if="ideas"
-        class="ideas-container"
-      >
-        <div
-          v-if="filteredIdeas"
-          class="idea-cards"
-        >
-          <SingleIdeaCard
-            v-for="idea in filteredIdeas"
-            :key="idea.id"
-            :idea="idea"
-            :is-all-ideas="isAllIdeas"
-            v-model:ideas="ideas"
-          />
-        </div>
+
+      <div v-if="searchedIdeas">
+        <SingleIdeaCard
+          v-for="idea in searchedIdeas"
+          :key="idea.id"
+          :idea="idea"
+          :is-all-ideas="isAllIdeas"
+          v-model:ideas="searchedIdeas"
+        />
       </div>
+
+      <router-view />
     </template>
   </PageLayout>
 </template>
@@ -177,10 +161,6 @@ function getNavTabClass(isAllIdeas: boolean) {
   padding-bottom: 16px;
 }
 .market-page {
-  &__header {
-    @include flexible(center, space-between);
-  }
-
   &__content {
     overflow-y: scroll;
 

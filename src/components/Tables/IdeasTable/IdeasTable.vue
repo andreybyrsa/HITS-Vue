@@ -16,10 +16,10 @@
   />
 
   <SendIdeasOnMarketModal
-    v-model:ideas="ideasData"
-    v-model:checkedIdeas="checkedIdeas"
     :is-opened="isOpenSendIdeasModal"
+    :checked-ideas="sendingIdeasOnMarket"
     @close-modal="closeSendIdeasModal"
+    @reset-checked-ideas="resetCheckedIdeas"
   />
 </template>
 
@@ -38,6 +38,7 @@ import {
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
 import { Idea } from '@Domain/Idea'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
@@ -48,7 +49,6 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 import getStatus from '@Utils/getStatus'
 import getStatusStyle from '@Utils/getStatusStyle'
 import mutableSort from '@Utils/mutableSort'
-import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -60,6 +60,8 @@ const { user } = storeToRefs(userStore)
 const ideaStore = useIdeasStore()
 
 const ideasData = ref<Idea[]>([])
+const checkedIdeas = ref<Idea[]>([])
+const sendingIdeasOnMarket = ref<Idea[]>([])
 
 const availableStatus = getStatus()
 
@@ -69,7 +71,6 @@ const isOpenedIdeaDeleteModal = ref(false)
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
 
 const isOpenSendIdeasModal = ref<boolean>(false)
-const checkedIdeas = ref<Idea[]>([])
 
 watchImmediate(
   () => props.ideas,
@@ -132,7 +133,7 @@ const checkedIdeasActions = computed<CheckedDataAction<Idea>[]>(() => [
     className: 'btn-primary',
     statement:
       user.value?.role == 'PROJECT_OFFICE' &&
-      checkedIdeas.value.every((idea) => idea.status == 'CONFIRMED'),
+      checkedIdeas.value.every((idea) => idea.status === 'CONFIRMED'),
     click: openSendIdeasModal,
   },
 ])
@@ -214,11 +215,14 @@ function getRatingColor(rating: number) {
 }
 
 function openSendIdeasModal(ideas: Idea[]) {
+  sendingIdeasOnMarket.value = [...ideas]
   isOpenSendIdeasModal.value = true
-  checkedIdeas.value = ideas.filter((idea) => idea.status == 'CONFIRMED')
 }
 function closeSendIdeasModal() {
   isOpenSendIdeasModal.value = false
+}
+function resetCheckedIdeas() {
+  checkedIdeas.value = []
 }
 
 function navigateToIdeaModal(idea: Idea) {

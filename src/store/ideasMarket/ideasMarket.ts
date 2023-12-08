@@ -15,25 +15,16 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
   getters: {
     getMarketIdeas() {
       return async (role: RolesTypes, token: string) => {
-        if (role === 'INITIATOR') {
-          const response = await IdeasMarketService.getAllInitiatorMarketIdeas(token)
+        const currentServiceKey =
+          role === 'INITIATOR' ? 'getAllInitiatorMarketIdeas' : 'fetchIdeasMarket'
+        const response = await IdeasMarketService[currentServiceKey](token)
 
-          if (response instanceof Error) {
-            return response
-          }
-
-          this.ideas = response
-          return this.ideas
-        } else {
-          const response = await IdeasMarketService.fetchIdeasMarket(token)
-
-          if (response instanceof Error) {
-            return response
-          }
-
-          this.ideas = response
-          return this.ideas
+        if (response instanceof Error) {
+          return response
         }
+
+        this.ideas = response
+        return this.ideas
       }
     },
 

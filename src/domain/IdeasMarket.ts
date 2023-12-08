@@ -1,6 +1,6 @@
-import { Skill } from './Skill'
-import IdeasMarketStatusTypes from './MarketStatus'
-import TeamMember from './TeamMember'
+import { Skill } from '@Domain/Skill'
+import IdeasMarketStatusTypes from '@Domain/MarketStatus'
+import TeamMember from '@Domain/TeamMember'
 
 interface IdeasMarket {
   id: string

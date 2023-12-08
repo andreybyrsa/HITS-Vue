@@ -4,5 +4,6 @@ type IdeaStatusTypes =
   | 'ON_APPROVAL'
   | 'ON_CONFIRMATION'
   | 'CONFIRMED'
+  | 'ON_MARKET'
 
 export default IdeaStatusTypes
