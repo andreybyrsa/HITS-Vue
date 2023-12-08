@@ -9,7 +9,8 @@ import Icon from '@Components/Icon/Icon.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
-import SingleIdeaCard from '@Views/IdeasMarket/SingleIdeaCard.vue'
+import IdeaCardsPlaceholder from '@Views/IdeasMarket/IdeaCardsPlaceholder.vue'
+import IdeaCard from '@Views/IdeasMarket/IdeaCard.vue'
 
 import IdeasMarket from '@Domain/IdeasMarket'
 
@@ -138,17 +139,18 @@ async function switchNavTab(value: boolean, callback: () => Promise<void>) {
         </Input>
       </div>
 
-      <div
-        v-if="searchedIdeas"
-        class="idea-cards row"
-      >
-        <SingleIdeaCard
-          v-for="idea in searchedIdeas"
-          :key="idea.id"
-          :idea="idea"
-          :is-all-ideas="isAllIdeas"
-          v-model:ideas="searchedIdeas"
-        />
+      <div class="idea-cards row">
+        <template v-if="searchedIdeas">
+          <IdeaCard
+            v-for="idea in searchedIdeas"
+            :key="idea.id"
+            :idea="idea"
+            :is-all-ideas="isAllIdeas"
+            v-model:ideas="searchedIdeas"
+          />
+        </template>
+
+        <IdeaCardsPlaceholder v-else />
       </div>
 
       <router-view />
