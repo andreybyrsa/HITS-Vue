@@ -3,62 +3,137 @@ import {
   InvitationTeamMemberModalEmits,
   InvitationTeamMemberModalProps,
 } from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.types'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import TeamInviteForm from '@Components/Forms/TeamInviteForm/TeamInviteForm.vue'
+import UsersInviteTable from '@Components/Tables/UsersInviteTable/UsersInviteTable.vue'
 import Button from '@Components/Button/Button.vue'
-import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
+import Typography from '@Components/Typography/Typography.vue'
+import Icon from '@Components/Icon/Icon.vue'
+
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+
 import { User } from '@Domain/User'
 import { ref } from 'vue'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
+import { useRoute } from 'vue-router'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
 
-defineProps<InvitationTeamMemberModalProps>()
-const emit = defineEmits<InvitationTeamMemberModalEmits>()
+const invitationUsers = defineModel<User[]>({ required: true })
+const selectedUsers = ref<User[]>([])
+
+const invitatinUsers = useInvitationUsersStore()
+const route = useRoute()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const invitationUsersStore = useInvitationUsersStore()
-
-const route = useRoute()
-
-const invitationUsers = ref<User[]>([])
 const isLoading = ref(false)
 
-const inviteUsers = async () => {
+defineProps<InvitationTeamMemberModalProps>()
+const emit = defineEmits<InvitationTeamMemberModalEmits>()
+
+function inviteUsers() {
+  invitationUsers.value = selectedUsers.value
+  emit('close-modal')
+}
+
+function cancelSelectedUsers(user: User) {
+  selectedUsers.value = selectedUsers.value.filter(
+    (selectedUser) => selectedUser.id !== user.id,
+  )
+}
+
+async function inviteUsersInTeam() {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  if (currentUser?.token && route.params.teamId) {
     isLoading.value = true
+    const { token } = currentUser
+    const { teamId } = route.params
 
-    await invitationUsersStore.inviteUsers(
-      invitationUsers.value,
-      route.params.teamId.toString(),
-      token,
-    )
+    await invitatinUsers.inviteUsers(selectedUsers.value, teamId.toString(), token)
 
-    invitationUsers.value = []
+    selectedUsers.value = []
     isLoading.value = false
     emit('close-modal')
   }
+}
+
+function closeInvitationModal() {
+  selectedUsers.value = invitationUsers.value
+  emit('close-modal')
 }
 </script>
 
 <template>
   <ModalLayout
     :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
+    @on-outside-close="closeInvitationModal"
   >
-    <div class="invitation-modal p-3 bg-white rounded">
-      <TeamInviteForm v-model="invitationUsers" />
-      <Button
-        :isLoading="isLoading"
-        variant="primary"
-        @click="inviteUsers"
-        >Пригласить</Button
-      >
+    <div class="invitation-modal p-3 bg-white overflow-y-scroll rounded">
+      <div class="invitation-modal__header w-100">
+        <Typography class-name="fs-5 text-primary">
+          Выберите пользователей для приглашения
+        </Typography>
+
+        <Button
+          variant="close"
+          @click="closeInvitationModal"
+        />
+      </div>
+
+      <div class="invitation-modal__table">
+        <UsersInviteTable
+          v-model="selectedUsers"
+          @close-modal="closeInvitationModal"
+        />
+      </div>
+
+      <div class="w-100 p-2 border rounded">
+        <div
+          v-if="selectedUsers.length"
+          class="d-flex gap-2 flex-wrap"
+        >
+          <div
+            v-for="(user, index) in selectedUsers"
+            :key="index"
+            class="invitation-modal__selected-users p-1 rounded-3 bg-primary bg-opacity-25"
+          >
+            <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
+            <Icon
+              class-name="bi bi-x-lg"
+              @click="cancelSelectedUsers(user)"
+            />
+          </div>
+        </div>
+
+        <div
+          v-else
+          class="m-1 w-100 text-center"
+        >
+          Никто не выбран
+        </div>
+      </div>
+
+      <div class="invitation-modal__buttons">
+        <Button
+          v-if="$route.name !== 'create-team'"
+          :is-loading="isLoading"
+          variant="success"
+          @click="inviteUsersInTeam"
+          >Пригласить пользователей</Button
+        >
+        <Button
+          v-if="$route.name === 'create-team'"
+          variant="success"
+          @click="inviteUsers"
+          >Сохранить выбор</Button
+        >
+        <Button
+          variant="danger"
+          @click="closeInvitationModal"
+          >Отменить выбор</Button
+        >
+      </div>
     </div>
   </ModalLayout>
 </template>
@@ -66,15 +141,41 @@ const inviteUsers = async () => {
 <style lang="scss">
 .invitation-modal {
   width: 1000px;
-  height: 600px;
-  overflow-y: scroll;
+  max-height: 600px;
+
   @include flexible(
     stretch,
-    stretch,
+    flex-start,
     column,
-    $gap: 16px,
     $align-self: center,
-    $justify-self: center
+    $justify-self: center,
+    $gap: 12px
   );
+
+  transition: all $default-transition-settings;
+
+  &__header {
+    @include flexible(flex-start, space-between);
+  }
+
+  &__buttons {
+    height: 100%;
+    @include flexible(flex-end, flex-start, $gap: 16px);
+  }
+
+  &__table {
+    max-height: 400px;
+    overflow-y: scroll;
+  }
+
+  &__selected-users {
+    width: fit-content;
+    @include flexible(center, flex-start, $gap: 3px);
+  }
+}
+
+.modal-layout-enter-from .invitation-modal,
+.modal-layout-leave-to .invitation-modal {
+  transform: scale(0.9);
 }
 </style>

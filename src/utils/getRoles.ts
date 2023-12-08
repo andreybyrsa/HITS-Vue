@@ -22,7 +22,7 @@ function getRoles(): GetRolesType {
     ],
     translatedRoles: {
       INITIATOR: 'Инициатор',
-      TEAM_OWNER: 'Тим-лидер',
+      TEAM_OWNER: 'Владелец команды',
       MEMBER: 'Студент',
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперт',
@@ -30,7 +30,7 @@ function getRoles(): GetRolesType {
     },
     translatedGroups: {
       INITIATOR: 'Инициаторы',
-      TEAM_OWNER: 'Тим-лидеры',
+      TEAM_OWNER: 'Владелец команды',
       MEMBER: 'Студенты',
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперты',

@@ -14,9 +14,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const app = createApp(App)
 
-const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
-const API_URL: 'http://localhost:3000/api/v1' | 'https://hits.tyuiu.ru/api/v1' =
-  'http://localhost:3000/api/v1'
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'PRODUCTION'
+const API_URL: 'http://localhost:80/api/v1' | 'https://hits.tyuiu.ru/api/v1' =
+  'http://localhost:80/api/v1'
 
 const pinia = createPinia()
 pinia.use(({ store }) => {

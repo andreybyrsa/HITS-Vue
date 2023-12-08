@@ -20,8 +20,10 @@ import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import { TeamMember } from '@Domain/Team'
 
+import TeamServise from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<TeamMembersProps>()
 
@@ -37,7 +39,14 @@ const router = useRouter()
 watchImmediate(
   () => props.team,
   () => {
+    const { owner, leader } = props.team
     teamMembers.value = props.team.members
+    teamMembers.value.sort((a, b) =>
+      (a.id === owner.id || a.id === leader?.id) &&
+      (b.id === owner.id || b.id === leader?.id)
+        ? -1
+        : 1,
+    )
   },
 )
 
@@ -64,6 +73,12 @@ const teamMemberColumns: TableColumn<TeamMember>[] = [
 
 const dropdownTeamMemberActions: DropdownMenuAction<TeamMember>[] = [
   { label: 'Перейти на профиль', click: navigateToUserProfile },
+  {
+    label: 'Назначить лидером',
+    className: 'text-primary',
+    statement: checkLeaderDropdownAction,
+    click: appointLeaderTeam,
+  },
   {
     label: 'Исключить',
     className: 'text-danger',
@@ -112,7 +127,7 @@ function navigateToUserProfile(teamMember: TeamMember) {
   }
 
   router.addRoute('teams-list', profileRoute)
-  router.push({ path: `/profile/${teamMember.userId}` })
+  router.push({ path: `/profile/${teamMember.id}` })
 }
 
 async function kickTeamMember(teamMember: TeamMember) {
@@ -122,18 +137,42 @@ async function kickTeamMember(teamMember: TeamMember) {
     const { token } = currentUser
     const { id } = props.team
 
-    await teamsStore.kickTeamMember(id, teamMember.userId, token)
+    await teamsStore.kickTeamMember(id, teamMember.id, token)
+  }
+}
+
+async function appointLeaderTeam(teamMember: TeamMember) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id: userId } = teamMember
+    const { id: teamId } = props.team
+
+    await teamsStore.changeLeaderTeamMember(teamId, userId, token)
   }
 }
 
 function checkKickDropdownAction(teamMember: TeamMember) {
   const currentUser = user.value
+  const { owner } = props.team
+
+  return (
+    currentUser?.id === owner.id &&
+    teamMember.id !== owner.id &&
+    teamMember.id !== currentUser?.id
+  )
+}
+
+function checkLeaderDropdownAction(teamMember: TeamMember) {
+  const currentUser = user.value
   const { owner, leader } = props.team
 
   return (
-    (currentUser?.id === owner.userId || currentUser?.id === leader?.userId) &&
-    teamMember.userId !== owner.userId &&
-    teamMember.userId !== currentUser?.id
+    currentUser?.id === owner.id &&
+    teamMember.id !== owner.id &&
+    teamMember.id !== currentUser?.id &&
+    teamMember.id !== leader?.id
   )
 }
 </script>

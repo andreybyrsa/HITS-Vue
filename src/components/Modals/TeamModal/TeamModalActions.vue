@@ -12,6 +12,8 @@ import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
+import { User } from '@Domain/User'
+
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
@@ -27,37 +29,41 @@ const { user } = storeToRefs(userStore)
 
 const teamsStore = useTeamStore()
 const requestsToTeamStore = useRequestsToTeamStore()
-const { requests } = storeToRefs(requestsToTeamStore)
 const invitatinUsers = useInvitationUsersStore()
+
+const { requests } = storeToRefs(requestsToTeamStore)
 const { invitationUsers } = storeToRefs(invitatinUsers)
 
 const isOpenedDeletingModal = ref(false)
+const isOpenedLeavingModal = ref(false)
 const isOpenedInvitationModal = ref(false)
+
+const invitationUsersInTeam = ref<User[]>([])
 
 function getAccessToEdit() {
   if (user.value) {
     const { id, role } = user.value
-    const { owner, leader } = props.team
+    const { owner } = props.team
 
-    return role === 'ADMIN' || id === owner.userId || id === leader?.userId
+    return role === 'ADMIN' || id === owner.id
   }
 }
 
 function getAccessToDelete() {
   if (user.value) {
     const { id, role } = user.value
-    const { owner } = props.team
+    const { owner, members } = props.team
 
-    return role === 'ADMIN' || id === owner.userId
+    return role === 'ADMIN' || (id === owner.id && members.length === 1)
   }
 }
 
 function getAccessToInvite() {
   if (user.value) {
     const { id, role } = user.value
-    const { owner, leader } = props.team
+    const { owner } = props.team
 
-    return role === 'ADMIN' || id === owner.userId || id === leader?.userId
+    return role === 'ADMIN' || id === owner.id
   }
 }
 
@@ -68,10 +74,25 @@ function getAccessRequestToTeam() {
 
     return (
       !(
-        members.find((user) => user?.userId === id) ||
-        requests.value.find((request) => request.userId === id) ||
-        invitationUsers.value?.find((invitation) => invitation.userId === id)
-      ) && !closed
+        requests.value.find(
+          ({ userId, status }) => userId === id && status === 'NEW',
+        ) ||
+        invitationUsers.value.find(
+          ({ userId, status }) => userId === id && status === 'NEW',
+        )
+      ) &&
+      !members.find((user) => user.id === id) &&
+      !closed
+    )
+  }
+}
+
+function getAccessCancelRequestToTeam() {
+  if (user.value) {
+    const { id } = user.value
+
+    return requests.value.find(
+      ({ userId, status }) => userId === id && status === 'NEW',
     )
   }
 }
@@ -80,18 +101,18 @@ function getAccessCancelOrAcceptRequestToTeam() {
   if (user.value) {
     const { id } = user.value
 
-    return invitationUsers.value?.find(
-      (invitation) => invitation.userId === id && invitation.status === 'NEW',
+    return invitationUsers.value.find(
+      ({ userId, status }) => userId === id && status === 'NEW',
     )
   }
 }
 
 function getAccessToLeave() {
   if (user.value) {
-    const { id } = user.value
+    const { id: userId } = user.value
     const { owner, members } = props.team
 
-    return id !== owner.userId && members.find((user) => user.userId === id)
+    return userId !== owner.id && members.find((user) => user.id === userId)
   }
 }
 
@@ -101,8 +122,8 @@ function getAccess() {
     getAccessToDelete() ||
     getAccessToInvite() ||
     getAccessRequestToTeam() ||
+    getAccessCancelRequestToTeam() ||
     getAccessToLeave() ||
-    getAccessCancelOrAcceptRequestToTeam() ||
     getAccessCancelOrAcceptRequestToTeam()
   )
 }
@@ -114,15 +135,20 @@ function navigateToUpdateTeamForm() {
 function openDeletingModal() {
   isOpenedDeletingModal.value = true
 }
-
 function closeDeletingModal() {
   isOpenedDeletingModal.value = false
+}
+
+function openLeavingModal() {
+  isOpenedLeavingModal.value = true
+}
+function closeLeavingModal() {
+  isOpenedLeavingModal.value = false
 }
 
 function openInvitationModal() {
   isOpenedInvitationModal.value = true
 }
-
 function closeInvitationModal() {
   isOpenedInvitationModal.value = false
 }
@@ -138,6 +164,19 @@ async function handleDeleteTeam() {
   }
 }
 
+async function handleLeaveTeam() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, id: userId } = currentUser
+    const { id } = props.team
+
+    await teamsStore
+      .kickTeamMember(id, userId, token)
+      .then(() => emit('close-modal'))
+  }
+}
+
 async function sendRequestInTeam() {
   const currentUser = user.value
 
@@ -145,7 +184,23 @@ async function sendRequestInTeam() {
     const { token } = currentUser
     const { id } = props.team
 
-    await requestsToTeamStore.sendRequestInTeam(currentUser.id, id, token)
+    await requestsToTeamStore.sendRequestInTeam(id, token)
+  }
+}
+
+async function cancelRequestToTeam() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, id } = currentUser
+
+    const currentRequest = requests.value.find(
+      ({ userId, status }) => userId === id && status === 'NEW',
+    )
+
+    if (currentRequest) {
+      await requestsToTeamStore.cancelRequestToTeam(currentRequest, token)
+    }
   }
 }
 
@@ -157,7 +212,6 @@ async function acceptInvitationToTeam() {
 
   if (currentUser?.token && currentUserInvitation) {
     const { token } = currentUser
-    console.log(currentUserInvitation)
 
     await invitatinUsers.acceptInvitationToTeam(currentUserInvitation, token)
   }
@@ -225,7 +279,7 @@ function closeConfirmModal() {
     <Button
       v-if="getAccessToLeave()"
       variant="danger"
-      @click="openDeletingModal"
+      @click="openLeavingModal"
     >
       Выйти из команды
     </Button>
@@ -236,6 +290,13 @@ function closeConfirmModal() {
       @click="sendRequestInTeam"
     >
       Подать заявку
+    </Button>
+    <Button
+      v-if="getAccessCancelRequestToTeam()"
+      variant="danger"
+      @click="cancelRequestToTeam"
+    >
+      Отклонить заявку
     </Button>
 
     <Button
@@ -261,6 +322,7 @@ function closeConfirmModal() {
     />
 
     <InvitationTeamMemberModal
+      v-model="invitationUsersInTeam"
       :is-opened="isOpenedInvitationModal"
       @close-modal="closeInvitationModal"
     />
@@ -279,6 +341,14 @@ function closeConfirmModal() {
       text-question="Вы действительно хотите отклонить приглашение?"
       @close-modal="closeConfirmModal"
       @action="cancelInvitationToTeam"
+    />
+
+    <ConfirmModal
+      :is-opened="isOpenedLeavingModal"
+      text-button="Выйти из команды"
+      text-question="Вы действительно хотите выйти из команды?"
+      @close-modal="closeLeavingModal"
+      @action="handleLeaveTeam"
     />
   </div>
 </template>

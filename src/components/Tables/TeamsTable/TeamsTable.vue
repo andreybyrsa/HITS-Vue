@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed, Ref } from 'vue'
+import { ref, onMounted, computed, Ref, watch } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -31,6 +31,7 @@ import Profile from '@Domain/Profile'
 
 import SkillsService from '@Services/SkillsService'
 import ProfileService from '@Services/ProfileService'
+import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
@@ -95,14 +96,6 @@ onMounted(async () => {
         }
       })
     })
-
-    const response = await SkillsService.getAllSkills(token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    skills.value = response
   }
 })
 
@@ -164,32 +157,119 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     isUniqueChoice: true,
     checkFilter: checkTeamStatus,
   },
-  // {
-  //   category: 'Компетенции',
-  //   choices: [
-  //     { label: 'Искать везде', value: false },
-  //     { label: 'Искать по вакансиям', value: true },
-  //   ],
-  //   refValue: filterByVacancies,
-  //   isUniqueChoice: true,
-  //   checkFilter: checkTeamVacancies,
-  //   statement: user.value?.role !== 'INITIATOR',
-  // },
-  // {
-  //   category: 'Стек технологий',
-  //   choices: skills.value
-  //     .map(({ name }) => ({
-  //       label: name,
-  //       value: name,
-  //       isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
-  //     }))
-  //     .sort((a, b) => +b.isMarked - +a.isMarked),
-  //   refValue: filterBySkills,
-  //   isUniqueChoice: false,
-  //   searchValue: searchBySkills,
-  //   checkFilter: checkTeamSkill,
-  // },
+  {
+    category: 'Компетенции',
+    choices: [
+      { label: 'Искать везде', value: false },
+      { label: 'Искать по вакансиям', value: true },
+    ],
+    refValue: filterByVacancies,
+    isUniqueChoice: true,
+    checkFilter: () => true,
+    statement: user.value?.role !== 'INITIATOR',
+  },
+  {
+    category: 'Стек технологий',
+    choices: skills.value
+      .map(({ name }) => ({
+        label: name,
+        value: name,
+        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+      }))
+      .sort((a, b) => +b.isMarked - +a.isMarked),
+    refValue: filterBySkills,
+    isUniqueChoice: false,
+    searchValue: searchBySkills,
+    checkFilter: () => true,
+  },
 ])
+
+watch(
+  filterBySkills,
+  async () => {
+    const currentUser = user.value
+
+    const checkedSkills = getCheckedSkills()
+
+    if (currentUser?.token && currentUser.role) {
+      if (checkedSkills.length && currentUser.role) {
+        const { token, role } = currentUser
+
+        const response = await TeamService.filterBySkillsAndRole(
+          checkedSkills,
+          role,
+          token,
+        )
+
+        if (response instanceof Error) {
+          return notificationsStore.createSystemNotification(
+            'Система',
+            response.message,
+          )
+        }
+
+        teams.value = response
+      } else {
+        const { token } = currentUser
+
+        const response = await TeamService.getTeams(token)
+
+        if (response instanceof Error) {
+          return notificationsStore.createSystemNotification(
+            'Система',
+            response.message,
+          )
+        }
+
+        teams.value = response
+      }
+    }
+  },
+  { deep: true },
+)
+
+watch(filterByVacancies, async (isVacancies) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const checkedSkills = getCheckedSkills()
+
+    if (isVacancies && checkedSkills.length) {
+      const response = await TeamService.filterByVacancies(checkedSkills, token)
+
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+
+      teams.value = response
+    } else {
+      const response = await TeamService.getTeams(token)
+
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+
+      teams.value = response
+    }
+  }
+})
+
+function getCheckedSkills() {
+  return filterBySkills.value.reduce<Skill[]>((prevSkills, skillName) => {
+    const skill = skills.value.find(({ name }) => skillName === name)
+
+    if (skill) prevSkills.push(skill)
+
+    return prevSkills
+  }, [])
+}
 
 function sortByCreatedAt() {
   teams.value.sort((team1, team2) => {
@@ -301,20 +381,14 @@ function checkTeamStatus(team: Team, status: FilterValue) {
 //   return true
 // }
 
-// function checkTeamSkill(team: Team, skill: FilterValue) {
-//   const currentUser = user.value
-
-//   if (currentUser?.role) {
-//     const { role } = currentUser
-
-//     if (role === 'INITIATOR') {
-//       return team.skills.some(({ name }) => name === skill)
-//     }
-
-//     return (
-//       team.skills.some(({ name }) => name === skill) ||
-//       team.wantedSkills.some(({ name }) => name === skill)
-//     )
+// function checkTeamSkill() {
+//   const { role } = currentUser
+//   if (role === 'INITIATOR') {
+//     return team.skills.some(({ name }) => name === skill)
 //   }
+//   return (
+//     team.skills.some(({ name }) => name === skill) ||
+//     team.wantedSkills.some(({ name }) => name === skill)
+//   )
 // }
 </script>

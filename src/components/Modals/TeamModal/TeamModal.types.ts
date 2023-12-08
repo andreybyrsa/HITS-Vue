@@ -1,4 +1,4 @@
-import { Team, TeamInvitation, RequestToTeam, TeamSkills } from '@Domain/Team'
+import { Team, TeamInvitation, RequestToTeam } from '@Domain/Team'
 
 interface TeamDescriptionProps {
   team: Team
@@ -29,7 +29,6 @@ interface TeamModalActionsProps {
 
 interface TeamModalInfoProps {
   team: Team
-  teamSkills?: TeamSkills
 }
 
 interface TeamDescriptionEmits {

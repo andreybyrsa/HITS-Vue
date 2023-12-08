@@ -1,7 +1,5 @@
 import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 
-import getRoles from '@Utils/getRoles'
-
 const leftSideBarTabs: LeftSideBarTabType[] = [
   {
     id: 0,
@@ -54,7 +52,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     text: 'Биржа идей',
     to: '/market',
     iconName: 'bi bi-basket3',
-    roles: getRoles().roles,
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
   },
   {
     id: 7,
@@ -99,22 +97,6 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     ],
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
-  },
-  {
-    id: 14,
-    text: 'Настройки',
-    to: '/change-email',
-    routes: [
-      {
-        id: 15,
-        to: '/change-email',
-        text: 'Изменение почты',
-        iconName: 'bi bi-pencil-square',
-        roles: getRoles().roles,
-      },
-    ],
-    iconName: 'bi bi-gear',
-    roles: getRoles().roles,
   },
 ]
 

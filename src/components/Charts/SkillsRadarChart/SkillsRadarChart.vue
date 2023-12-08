@@ -206,12 +206,16 @@ function setRadarOptions(
     colors,
   }
 }
+
+function checkIsExistRadarData(radarOptions: ApexOptions) {
+  return radarOptions.series?.some((value) => value.data.length)
+}
 </script>
 
 <template>
   <div :class="RadarChartsClassName">
     <VueApexCharts
-      v-if="languageRadarOptions.series?.length"
+      v-if="checkIsExistRadarData(languageRadarOptions)"
       :options="languageRadarOptions"
       :series="languageRadarOptions.series"
       :width="width"
@@ -219,7 +223,7 @@ function setRadarOptions(
     />
 
     <VueApexCharts
-      v-if="frameworkRadarOptions.series?.length"
+      v-if="checkIsExistRadarData(frameworkRadarOptions)"
       :options="frameworkRadarOptions"
       :series="frameworkRadarOptions.series"
       :width="width"
@@ -227,7 +231,7 @@ function setRadarOptions(
     />
 
     <VueApexCharts
-      v-if="databaseRadarOptions.series?.length"
+      v-if="checkIsExistRadarData(databaseRadarOptions)"
       :options="databaseRadarOptions"
       :series="databaseRadarOptions.series"
       :width="width"
@@ -235,7 +239,7 @@ function setRadarOptions(
     />
 
     <VueApexCharts
-      v-if="devopsRadarOptions.series?.length"
+      v-if="checkIsExistRadarData(devopsRadarOptions)"
       :options="devopsRadarOptions"
       :series="devopsRadarOptions.series"
       :width="width"

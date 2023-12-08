@@ -1,9 +1,9 @@
 <script lang="ts" setup>
+import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { watchImmediate } from '@vueuse/core'
 import { useRouter } from 'vue-router'
-import { ref, computed } from 'vue'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -13,33 +13,39 @@ import TeamVue from '@Components/Forms/TeamForm/Team.vue'
 import Button from '@Components/Button/Button.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import { TeamFormProps } from '@Components/Forms/TeamForm/TeamForm.types'
+
 import { User } from '@Domain/User'
-import { Team, TeamSkills } from '@Domain/Team'
+import { Team } from '@Domain/Team'
+import { Skill } from '@Domain/Skill'
+
 import TeamService from '@Services/TeamService'
+
+import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import Validation from '@Utils/Validation'
-import { Skill } from '@Domain/Skill'
-import TeamInviteForm from '@Components/Forms/TeamInviteForm/TeamInviteForm.vue'
 
-import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
-import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
+import Validation from '@Utils/Validation'
 
 const props = defineProps<TeamFormProps>()
 
-const isLoading = ref<boolean>(false)
-
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
 const notificationsStore = useNotificationsStore()
+
 const router = useRouter()
 
-const teamWantedSkills = ref<Skill[]>([])
+const wantedSkills = ref<Skill[]>([])
+const totalSkills = ref<Skill[]>([])
 const stackTechnologies = ref<Skill[]>([])
 
 const invitationUsers = ref<User[]>([])
 
-const { handleSubmit, setValues } = useForm<Team>({
+const isLoading = ref<boolean>(false)
+
+const { handleSubmit, setFieldValue, setValues } = useForm<Team>({
   validationSchema: {
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
@@ -60,63 +66,42 @@ watchImmediate(
   async (team) => {
     if (team) {
       setValues({ ...team })
-      const currentUser = user.value
 
-      if (currentUser?.token) {
-        const { token } = currentUser
-        const { id } = team
-
-        const response = await TeamService.getTeamSkills(id, token)
-        console.log(response)
-
-        if (response instanceof Error) {
-          return notificationsStore.createSystemNotification(
-            'Система',
-            response.message,
-          )
-        }
-
-        teamWantedSkills.value = response.wantedSkills
-      }
+      wantedSkills.value = team.wantedSkills
+      totalSkills.value = team.skills
     }
   },
 )
 
+watchImmediate(stackTechnologies, (skills) => setFieldValue('wantedSkills', skills))
+
 const handleCreateTeam = handleSubmit(async (values) => {
   const currentUser = user.value
+
   if (currentUser?.token) {
     const { token } = currentUser
-    values.membersCount = values.members.length
-    // values.createdAt = new Date().toJSON()
-
-    // const skills = stackTechnologies.value
-    const wantedSkills = stackTechnologies.value
 
     isLoading.value = true
-    const response = await TeamService.createTeam(
-      { ...values, wantedSkills: wantedSkills },
-      token,
-    )
+    const response = await TeamService.createTeam(values, token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
-
-    await saveTeamSkills(response.id, token)
 
     const responseInvitation = await TeamService.invitationTeamMember(
       invitationUsers.value,
       response.id,
       token,
     )
+
+    isLoading.value = false
+
     if (responseInvitation instanceof Error) {
-      return notificationsStore.createSystemNotification(
+      notificationsStore.createSystemNotification(
         'Система',
         responseInvitation.message,
       )
     }
-
-    isLoading.value = false
 
     router.push({ name: 'teams-list' })
   }
@@ -124,6 +109,7 @@ const handleCreateTeam = handleSubmit(async (values) => {
 
 const handleUpdateTeam = handleSubmit(async (values) => {
   const currentUser = user.value
+
   if (currentUser?.token && props.team) {
     const { token } = currentUser
     const { id } = props.team
@@ -135,46 +121,11 @@ const handleUpdateTeam = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    await saveTeamSkills(response.id, token, props.team)
     isLoading.value = false
 
     router.push({ name: 'teams-list' })
   }
 })
-
-async function saveTeamSkills(teamId: string, token: string, team?: Team) {
-  const teamSkills = {
-    teamId,
-    totalSkills: stackTechnologies.value,
-    wantedSkills: stackTechnologies.value,
-  } as TeamSkills
-
-  if (team) {
-    const teamSkillsResponse = await TeamService.updateTeamSkills(
-      teamId,
-      teamSkills,
-      token,
-    )
-    if (teamSkillsResponse instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        teamSkillsResponse.message,
-      )
-    }
-  } else {
-    const teamSkillsResponse = await TeamService.createTeamSkills(
-      teamSkills,
-      teamId,
-      token,
-    )
-    if (teamSkillsResponse instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        teamSkillsResponse.message,
-      )
-    }
-  }
-}
 
 const radarChartsSkills = computed<SkillsArea[]>(() => [
   {
@@ -184,7 +135,7 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
   },
   {
     label: 'Фактические компетенции',
-    skills: teamWantedSkills.value,
+    skills: totalSkills.value,
     alphaOpacity: 50,
   },
 ])
@@ -196,6 +147,7 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
       <Typography class-name="fs-2 text-primary">
         {{ props.team ? 'Редактирование команды' : 'Создание команды' }}
       </Typography>
+
       <Input
         name="name"
         class-name="rounded-end"
@@ -215,19 +167,21 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
 
       <div class="w-100 d-flex flex-column gap-3">
         <StackCategories
-          :skills="teamWantedSkills"
+          :skills="wantedSkills"
           v-model:stack="stackTechnologies"
         />
       </div>
 
-      <TeamVue :mode="mode" />
-      <div class="team-invite-form__main">
-        <TeamInviteForm v-model="invitationUsers" />
-
-        <div class="w-25">
-          <!-- <SkillsRadarChart :skills="radarChartsSkills" /> -->
-        </div>
-      </div>
+      <TeamVue
+        :team="team"
+        v-model="invitationUsers"
+        @set-value="setFieldValue"
+      />
+      <SkillsRadarChart
+        :skills="radarChartsSkills"
+        :width="225"
+        :height="225"
+      />
 
       <Button
         v-if="props.team"
@@ -248,20 +202,22 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
     </div>
   </div>
 </template>
+
 <style lang="scss" scoped>
 .team-form {
   @include flexible(flex-start, center);
+
   &__content {
     @include flexible(center, flex-start, column, $gap: 16px);
   }
 }
 .team-invite-form {
   width: 100%;
-  @include flexible(start, start, column, $gap: 16px);
+  @include flexible(start, start, column);
 
   &__main {
     width: 100%;
-    @include flexible(start, start, $gap: 16px);
+    @include flexible(start, start);
   }
 }
 </style>

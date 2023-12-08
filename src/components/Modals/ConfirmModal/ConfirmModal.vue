@@ -21,6 +21,11 @@ const { enter } = useMagicKeys()
 watch(enter, () => {
   emit('close-modal')
 })
+
+function clickAction() {
+  emit('action')
+  emit('close-modal')
+}
 </script>
 
 <template>
@@ -35,7 +40,7 @@ watch(enter, () => {
       <Button
         variant="light"
         :isLoading="isLoading"
-        @click="emit('action')"
+        @click="clickAction"
       >
         {{ textButton }}
       </Button>

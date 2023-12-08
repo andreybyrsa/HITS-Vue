@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocationRaw,
+  RouteRecordRaw,
+} from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import LoginView from '@Views/LoginView.vue'
@@ -36,11 +41,25 @@ import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 
+function homeRouteMiddleware(): RouteLocationRaw {
+  const userStore = useUserStore()
+  const { user } = storeToRefs(userStore)
+  const localStorageUser = LocalStorageUser.getLocalStorageUser()
+
+  if (localStorageUser?.token && !user.value?.token) {
+    useUserStore().setUser(localStorageUser)
+  }
+
+  return user.value?.roles.includes('TEAM_OWNER')
+    ? { name: 'teams-list' }
+    : { name: 'ideas-list' }
+}
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    redirect: { name: 'ideas-list' },
+    redirect: homeRouteMiddleware,
   },
   {
     path: '/ideas',
@@ -247,6 +266,12 @@ router.beforeEach((to) => {
     return { name: 'login' }
   }
   if (user.value && authRouteNames.includes(currentRouteName)) {
+    const { roles } = user.value
+
+    if (roles.includes('TEAM_OWNER')) {
+      return { name: 'teams-list' }
+    }
+
     return { name: 'ideas-list' }
   }
   if (requiredRouteRoles.length && user.value?.role) {

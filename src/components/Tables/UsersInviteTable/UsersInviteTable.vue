@@ -1,114 +1,167 @@
 <template>
-  <div></div>
-  <!-- <Table
-    :data="users"
-    :columns="requestToTeamColumns"
-    :search-by="['email', 'firstName', 'lastName']"
-    :dropdown-actions-menu="dropdownRequestToTeamActions"
-  /> -->
+  <div v-if="users">
+    <Table
+      :data="users"
+      :columns="inviteUserColumns"
+      :search-by="['email', 'firstName', 'lastName']"
+      :dropdown-actions-menu="dropdownInviteUserActions"
+      :filters="usersFilters"
+      v-model="invitationUsers"
+    />
+  </div>
+
+  <TablePlaceholder v-else />
 </template>
 
 <script lang="ts" setup>
+import { Ref, computed, onMounted, ref } from 'vue'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
+import type { UsersInviteTableEmits } from '@Components/Tables/UsersInviteTable/UsersInviteTable.types'
 import Table from '@Components/Table/Table.vue'
-import { RequestsToTeamProps } from '@Components/Modals/TeamModal/TeamModal.types'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-
-import { RequestToTeam, RequestToTeamStatus } from '@Domain/Team'
+import { Filter } from '@Components/FilterBar/FilterBar.types'
+import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 
 import useUserStore from '@Store/user/userStore'
-import { ref } from 'vue'
 
-const props = defineProps<RequestsToTeamProps>()
+import { User } from '@Domain/User'
+import { Skill } from '@Domain/Skill'
+import UsersSkills from '@Domain/UsersSkills'
+import Profile from '@Domain/Profile'
+
+import ManageUsersService from '@Services/ManageUsersService'
+import SkillsService from '@Services/SkillsService'
+import ProfileService from '@Services/ProfileService'
+
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+
+const invitationUsers = defineModel<User[]>({ required: true })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const notificationsStore = useNotificationsStore()
+
+const emit = defineEmits<UsersInviteTableEmits>()
+
 const router = useRouter()
 
-const requestToTeamColumns: TableColumn<RequestToTeam>[] = [
-  {
-    key: 'status',
-    label: 'Статус',
-    size: 'col-1',
-    contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellFormat: getStatusFormat,
-    getRowCellStyle: getStatusStyle,
-  },
-  {
-    key: 'email',
-    label: 'Почта',
-    size: 'col-3',
-    contentClassName: 'justify-content-center align-items-center text-center',
-    rowCellClick: navigateToUserProfile,
-  },
+const users = ref<User[]>()
+const skills = ref<Skill[]>()
+const profile = ref<Profile>()
+
+const filterBySkill = ref<Skill[]>([])
+const searchBySkills = ref('')
+
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
+}
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, id } = currentUser
+
+    const profileParallelRequests = [
+      () => ManageUsersService.getUsers(token),
+      () => SkillsService.getAllSkills(token),
+      () => ProfileService.getUserProfile(id, token),
+    ]
+
+    await makeParallelRequests<User[] | UsersSkills[] | Skill[] | Profile | Error>(
+      profileParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, users)
+        } else if (response.id === 1) {
+          checkResponseStatus(response, skills)
+        } else if (response.id === 2) {
+          checkResponseStatus(response, profile)
+        }
+      })
+    })
+  }
+})
+
+const inviteUserColumns: TableColumn<User>[] = [
   {
     key: 'firstName',
     label: 'Имя',
-    size: 'col-3',
-    contentClassName: 'justify-content-center align-items-center text-center',
+    size: 'col-4',
   },
   {
     key: 'lastName',
     label: 'Фамилия',
-    size: 'col-3',
-    contentClassName: 'justify-content-center align-items-center text-center',
+    size: 'col-6',
   },
 ]
 
-const dropdownRequestToTeamActions: DropdownMenuAction<RequestToTeam>[] = [
+const usersFilters = computed<Filter<User>[]>(() => [
+  {
+    category: 'Компетенции',
+    searchValue: searchBySkills,
+    choices: getFilterSkills(),
+    refValue: filterBySkill,
+    isUniqueChoice: false,
+    checkFilter: () => true,
+  },
+])
+
+const dropdownInviteUserActions: DropdownMenuAction<User>[] = [
   { label: 'Перейти на профиль', click: navigateToUserProfile },
   {
-    label: 'Принять',
+    label: 'Выбрать',
+    statement: checkIsNotExistUser,
+    click: chooseUser,
     className: 'text-success',
-    statement: checkDropdownAction,
-    click: openConfirmModalAccepted,
   },
   {
-    label: 'Отклонить',
+    label: 'Отменить выбор',
+    statement: checkIsExistUser,
+    click: unselectUser,
     className: 'text-danger',
-    statement: checkDropdownAction,
-    click: openConfirmModalCancel,
   },
 ]
 
-function getStatusFormat(status: RequestToTeamStatus) {
-  if (status === 'NEW') {
-    return 'Новая'
-  }
-
-  if (status === 'ACCEPTED') {
-    return 'Принята'
-  }
-
-  if (status === 'CANCELED') {
-    return 'Отклонена'
-  }
+function getFilterSkills() {
+  return skills.value
+    ? skills.value
+        .map(({ name }) => ({
+          label: name,
+          value: name,
+          isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+        }))
+        .sort((a, b) => +b.isMarked - +a.isMarked)
+    : []
 }
 
-function getStatusStyle(status: RequestToTeamStatus) {
-  const initialClass = ['px-2', 'py-1', 'rounded-4']
-
-  if (status === 'NEW') {
-    initialClass.push('bg-primary-subtle', 'text-primary')
-    return initialClass
-  }
-
-  if (status === 'ACCEPTED') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
-
-  if (status === 'CANCELED') {
-    initialClass.push('bg-danger-subtle', 'text-danger')
-    return initialClass
-  }
+function chooseUser(user: User) {
+  invitationUsers.value.push(user)
 }
 
-function navigateToUserProfile(request: RequestToTeam) {
+function unselectUser(user: User) {
+  const currentUserIndex = invitationUsers.value.findIndex(
+    ({ id }) => id === user.id,
+  )
+
+  invitationUsers.value.splice(currentUserIndex, 1)
+}
+
+function navigateToUserProfile(user: User) {
   const profileRoute: RouteRecordRaw = {
     name: 'profile',
     path: 'profile/:id',
@@ -119,32 +172,21 @@ function navigateToUserProfile(request: RequestToTeam) {
     },
   }
 
-  router.addRoute('teams-list', profileRoute)
-  router.push({ path: `/profile/${request.userId}` })
+  router.addRoute('create-team', profileRoute)
+  router.push({ path: `/profile/${user.id}` })
 }
 
-const isOpenedConfirmModalAccepted = ref(false)
-const isOpenedConfirmModalCancel = ref(false)
-const requestToTeam = ref<RequestToTeam>()
-
-function openConfirmModalAccepted(team: RequestToTeam) {
-  requestToTeam.value = team
-  isOpenedConfirmModalAccepted.value = true
+function checkIsNotExistUser(user: User) {
+  return !invitationUsers.value.find(({ id }) => id === user.id)
 }
 
-function openConfirmModalCancel(team: RequestToTeam) {
-  requestToTeam.value = team
-  isOpenedConfirmModalCancel.value = true
-}
-
-function checkDropdownAction(requestToTeam: RequestToTeam) {
-  const currentUser = user.value
-  const { leader, owner } = props.team
-
-  return (
-    requestToTeam.status !== 'CANCELED' &&
-    requestToTeam.status !== 'ACCEPTED' &&
-    (leader?.userId === currentUser?.id || owner.userId === currentUser?.id)
-  )
+function checkIsExistUser(user: User) {
+  return !!invitationUsers.value.find(({ id }) => id === user.id)
 }
 </script>
+
+<style lang="scss">
+.user-invite-table {
+  @include flexible(flex-start, space-between);
+}
+</style>

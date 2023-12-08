@@ -1,7 +1,7 @@
 import { TeamInvitation } from '@Domain/Team'
 
 interface InitialState {
-  invitationUsers: TeamInvitation[] | null
+  invitationUsers: TeamInvitation[]
 }
 
 export default InitialState

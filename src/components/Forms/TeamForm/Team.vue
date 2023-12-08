@@ -2,67 +2,42 @@
 import { ref, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFieldValue } from 'vee-validate'
-import { useRoute } from 'vue-router'
 
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarCharts.vue'
-import TeamPlaceholder from '@Components/Forms/TeamForm/TeamPlaceholder.vue'
-import { TeamProps } from '@Components/Forms/TeamForm/TeamForm.types'
+import { TeamProps, TeamEmits } from '@Components/Forms/TeamForm/TeamForm.types'
 
-import TeamMember from '@Domain/TeamMember'
-
-import TeamService from '@Services/TeamService'
+import { User } from '@Domain/User'
+import { TeamMember } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
+
+const invitationUsers = defineModel<User[]>({ required: true })
 
 const props = defineProps<TeamProps>()
-
-const route = useRoute()
+const emit = defineEmits<TeamEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const notificationsStore = useNotificationsStore()
 
-const users = ref<TeamMember[]>()
+const users = ref<TeamMember[]>([])
 const owner = ref<TeamMember | undefined>(useFieldValue<TeamMember>('owner').value)
 const leader = ref<TeamMember | undefined>(useFieldValue<TeamMember>('leader').value)
 const members = ref<TeamMember[]>(useFieldValue<TeamMember[]>('members').value ?? [])
 
+const isOpenedTeamInviteModal = ref(false)
+
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { id, email, firstName, lastName, token } = currentUser
-
-    if (props.mode == 'editing') {
-      const teamId = route.params.id.toString()
-      const response = await TeamService.getTeam(teamId, token)
-
-      if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-
-      members.value = [...response.members]
-
-      owner.value = response.owner
-
-      leader.value = response.leader
-
-      users.value = [...response.members]
-
-      if (!users.value.find((member) => member.id == response.owner.id)) {
-        users.value.push(response.owner)
-      }
+  if (currentUser) {
+    if (!props.team) {
+      owner.value = currentUser
+      users.value = [currentUser]
     } else {
-      owner.value = { id, email, firstName, lastName }
-
-      users.value = [owner.value]
+      users.value = [...props.team.members]
     }
   }
 })
@@ -93,6 +68,12 @@ watch(
   { immediate: true },
 )
 
+watch(
+  members,
+  (currentMembers) => emit('set-value', 'membersCount', currentMembers.length),
+  { immediate: true },
+)
+
 function onUnselectMember(unselectedMember: TeamMember) {
   if (unselectedMember.email === leader.value?.email) {
     leader.value = undefined
@@ -101,7 +82,7 @@ function onUnselectMember(unselectedMember: TeamMember) {
 
 function unselectMember(unselectedMember: TeamMember) {
   const currentMemberIndex = members.value.findIndex(
-    (member) => member.email === unselectedMember.email,
+    (member) => member.id === unselectedMember.id,
   )
 
   if (currentMemberIndex !== -1) {
@@ -111,27 +92,47 @@ function unselectMember(unselectedMember: TeamMember) {
   }
 }
 
-function getMemberColor(member: TeamMember) {
-  const memberClassName = 'team__member p-1 rounded-3 bg-opacity-25 '
-  return member.email !== leader.value?.email
-    ? memberClassName + 'bg-primary'
-    : memberClassName + 'bg-danger'
+function unselectInviteUser(unselectedUser: User) {
+  const currentUserIndex = invitationUsers.value.findIndex(
+    ({ id }) => id === unselectedUser.id,
+  )
+
+  if (currentUserIndex !== -1) {
+    invitationUsers.value.splice(currentUserIndex, 1)
+  }
+}
+
+function getMemberColor(member: TeamMember | User) {
+  const memberClassName = ['team__member', 'p-1', 'rounded-3', 'bg-opacity-25']
+
+  if (member.id !== leader.value?.id) {
+    memberClassName.push('bg-primary')
+  } else {
+    memberClassName.push('bg-danger')
+  }
+
+  return memberClassName
+}
+
+function openTeamInviteModal() {
+  isOpenedTeamInviteModal.value = true
+}
+function closeTeamInviteModal() {
+  isOpenedTeamInviteModal.value = false
 }
 </script>
 
 <template>
-  <div
-    v-if="users"
-    class="team w-100"
-  >
+  <div class="team w-100">
     <Combobox
       name="owner"
       label="Владелец команды*"
       :options="users"
       :display-by="['firstName', 'lastName']"
       v-model="owner"
+      comparing-key="id"
       placeholder="Выберите владельца"
-      :disabled="mode == 'creating'"
+      :disabled="!team"
     />
 
     <Combobox
@@ -139,44 +140,78 @@ function getMemberColor(member: TeamMember) {
       label="Тим-лидер команды*"
       :options="users"
       :display-by="['firstName', 'lastName']"
+      comparing-key="id"
       v-model="leader"
       placeholder="Выберите тим-лидера"
     />
 
-    <div class="w-100 d-flex gap-3">
-      <div class="w-50 d-flex flex-column">
-        <Combobox
-          name="members"
-          label="Участники команды*"
-          :options="users"
-          :display-by="['firstName', 'lastName']"
-          comparing-key="id"
-          v-model="members"
-          placeholder="Выберите участников"
-          multiselect-placeholder="В команде"
-          @on-unselect="onUnselectMember"
-        />
+    <div class="w-100 d-flex flex-column">
+      <Combobox
+        name="members"
+        label="Участники команды*"
+        :options="users"
+        :display-by="['firstName', 'lastName']"
+        comparing-key="id"
+        v-model="members"
+        placeholder="Выберите участников"
+        multiselect-placeholder="В команде"
+        @on-unselect="onUnselectMember"
+      />
 
-        <div class="team__members mt-2">
-          <div
-            v-for="(member, index) in members.sort((member) =>
-              member.email === leader?.email ? -1 : 1,
-            )"
-            :key="index"
-            :class="getMemberColor(member)"
-          >
-            <Typography>{{ member.firstName }} {{ member.lastName }}</Typography>
-            <Icon
-              class-name="team__member-delete-icon bi bi-x-lg"
-              @click="unselectMember(member)"
-            />
-          </div>
+      <div
+        v-if="members.length"
+        class="team__members mt-2"
+      >
+        <div
+          v-for="(member, index) in members.sort((member) =>
+            member.email === leader?.email ? -1 : 1,
+          )"
+          :key="index"
+          :class="getMemberColor(member)"
+        >
+          <Typography>{{ member.firstName }} {{ member.lastName }}</Typography>
+          <Icon
+            class-name="team__member-delete-icon bi bi-x-lg"
+            @click="unselectMember(member)"
+          />
         </div>
       </div>
     </div>
-  </div>
 
-  <TeamPlaceholder v-else />
+    <div class="d-flex flex-column">
+      <div
+        v-if="$route.name === 'create-team'"
+        class="team__invite-button d-flex gap-2 text-primary"
+        @click="openTeamInviteModal"
+      >
+        <div class="team__invite-link">Пригласить пользователей</div>
+        <Icon class-name="bi bi-person-plus" />
+      </div>
+
+      <div
+        v-if="invitationUsers.length"
+        class="team__members mt-2"
+      >
+        <div
+          v-for="(user, index) in invitationUsers"
+          :key="index"
+          :class="getMemberColor(user)"
+        >
+          <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
+          <Icon
+            class-name="team__member-delete-icon bi bi-x-lg"
+            @click="unselectInviteUser(user)"
+          />
+        </div>
+      </div>
+    </div>
+
+    <InvitationTeamMemberModal
+      :is-opened="isOpenedTeamInviteModal"
+      v-model="invitationUsers"
+      @close-modal="closeTeamInviteModal"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -196,6 +231,20 @@ function getMemberColor(member: TeamMember) {
 
     &-placeholder {
       width: 100px;
+    }
+  }
+
+  &__invite {
+    &-button {
+      cursor: pointer;
+
+      &:hover {
+        .team__invite-link {
+          text-decoration: underline;
+          text-underline-offset: 4px;
+          text-decoration-thickness: 1px;
+        }
+      }
     }
   }
 }
