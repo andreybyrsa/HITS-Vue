@@ -38,10 +38,7 @@ import { useRouter, useRoute, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import Table from '@Components/Table/Table.vue'
-import {
-  RequestsToIdeaProps,
-  ReviewIdeaRequestsFormProps,
-} from './ReviewIdeaRequestsForm.types'
+import { ReviewIdeaRequestsFormProps } from './ReviewIdeaRequestsForm.types'
 import {
   TableColumn,
   DropdownMenuAction,
@@ -53,7 +50,7 @@ import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import { RequestTeams, RequestsToIdeaStatus } from '@Domain/RequestTeamToIdea'
 
 import useUserStore from '@Store/user/userStore'
-import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore' //  НУЖЕН НОВЫЙ СТОР ДЛЯ МАРКЕТА (ЗАМЕНИТЬ КОГДА АНДРЕЙ ЗАПУШИТ)
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
 import RequestToIdeaService from '@Services/RequestToIdeaService'
 const teams = defineModel<RequestTeams[]>('teams', { required: true })
@@ -66,7 +63,7 @@ const route = useRoute()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const requestsToIdeaStore = useRequestsToIdeaStore() //  НУЖЕН НОВЫЙ СТОР ДЛЯ МАРКЕТА (ЗАМЕНИТЬ КОГДА АНДРЕЙ ЗАПУШИТ)
+const requestsToIdeaStore = useRequestsToIdeaStore()
 
 const router = useRouter()
 

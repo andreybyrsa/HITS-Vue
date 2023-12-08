@@ -76,12 +76,12 @@ function getRequestsToIdea() {
     <div class="team-tables px-3 pb-3 pt-1">
       <ReviewIdeaRequestTable :teams="requests" />
 
-      <RequestToIdea
+      <!-- <RequestToIdea
         v-if="isRequestsToIdeaTable && requests"
         :requests="requests"
-        :idea="idea"
         :teams="requests"
-      />
+        :idea="ideas"
+      /> -->
     </div>
   </div>
 </template>
