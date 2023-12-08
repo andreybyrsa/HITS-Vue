@@ -134,6 +134,24 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/market',
+    name: 'market',
+    component: IdeasMarketViewVue,
+    meta: {
+      roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    },
+    children: [
+      {
+        path: ':id',
+        name: 'MarketModal',
+        component: MarketModal,
+        meta: {
+          roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+        },
+      },
+    ],
+  },
+  {
     path: '/admin',
     redirect: { path: '/admin/users' },
     meta: { roles: ['ADMIN'] },
@@ -201,33 +219,7 @@ const routes: RouteRecordRaw[] = [
     name: 'forgot-password',
     component: ForgotPasswordView,
   },
-  {
-    path: '/market',
-    name: 'market',
-    component: IdeasMarketViewVue,
-    children: [
-      {
-        path: ':id',
-        name: 'MarketModal',
-        component: MarketModal,
-        children: [
-          {
-            path: ':teamId',
-            meta: {
-              roles: [
-                'INITIATOR',
-                'TEAM_OWNER',
-                'PROJECT_OFFICE',
-                'EXPERT',
-                'ADMIN',
-              ],
-            },
-            component: TeamModal,
-          },
-        ],
-      },
-    ],
-  },
+
   {
     path: '/dev',
     component: DevView,
