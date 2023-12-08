@@ -8,7 +8,6 @@ import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import { TeamProps, TeamEmits } from '@Components/Forms/TeamForm/TeamForm.types'
 
-import { User } from '@Domain/User'
 import { TeamMember } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
@@ -102,10 +101,10 @@ function unselectInviteUser(unselectedUser: TeamMember) {
   }
 }
 
-function getMemberColor(member: TeamMember | User) {
+function getMemberColor(member: TeamMember) {
   const memberClassName = ['team__member', 'p-1', 'rounded-3', 'bg-opacity-25']
 
-  if (member.id !== leader.value?.id) {
+  if (member.userId !== leader.value?.id) {
     memberClassName.push('bg-primary')
   } else {
     memberClassName.push('bg-danger')
