@@ -2,7 +2,7 @@ import Success from '@Domain/ResponseMessage'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
-import RequestTeams from '@Domain/RequestTeams'
+import RequestTeams from '@Domain/RequestTeamToIdea'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import useUserStore from '@Store/user/userStore'
 
@@ -12,7 +12,7 @@ function filterApplicationsById(ideaId: string, request: RequestTeams[]) {
   return request.filter((request) => request.ideaId == ideaId)
 }
 
-const getRequestAll = async (
+const getIdeaRequests = async (
   ideaId: string,
   token: string,
 ): Promise<RequestTeams[] | Error> => {
@@ -106,7 +106,7 @@ const deleteRequestTeams = async (
 }
 
 const RequestTeamsServise = {
-  getRequestAll,
+  getIdeaRequests,
   postRequest,
   deleteRequestTeams,
 

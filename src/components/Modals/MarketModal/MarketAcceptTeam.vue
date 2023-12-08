@@ -3,29 +3,29 @@ import { MarketAcceptTeamProps } from '@Components/Modals/MarketModal/MarketModa
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import RequestTeams from '@Domain/RequestTeams'
+import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
-import RequestTeamsServise from '@Services/RequestTeamsServise'
+import RequestToIdeaService from '@Services/RequestToIdeaService'
 
 defineProps<MarketAcceptTeamProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const teams = defineModel<RequestTeams[]>({ required: true })
+const teams = defineModel<RequestTeamToIdea[]>({ required: true })
 
-function filterTeams(teams: RequestTeams[]) {
+function filterTeams(teams: RequestTeamToIdea[]) {
   return teams.filter((team) => team.accepted == true)
 }
 
-async function deleteRequestTeams(team: RequestTeams) {
+async function deleteRequestTeams(team: RequestTeamToIdea) {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await RequestTeamsServise.acceptRequestTeam(
+    const response = await RequestToIdeaService.acceptRequestTeam(
       { ...team, accepted: false },
       token,
     )

@@ -12,7 +12,7 @@ import {
 } from '@Components/Modals/MarketModal/MarketModal.types'
 
 import useUserStore from '@Store/user/userStore'
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 
 defineProps<MarketDescriptionProps>()
 
@@ -64,7 +64,7 @@ function closeModal() {
         </Button>
         <Collapse :id="collapse.id">
           <div class="p-2">
-            {{ idea?.[collapse.ideaKey as keyof IdeasMarket] }}
+            {{ idea?.[collapse.ideaKey as keyof IdeaMarket] }}
           </div>
         </Collapse>
       </li>

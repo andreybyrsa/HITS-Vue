@@ -1,4 +1,4 @@
-import RequestTeams from '@Domain/RequestTeams'
+import RequestTeams from '@Domain/RequestTeamToIdea'
 
 interface ReviewIdeaRequestTableProps {
   teams: RequestTeams[]

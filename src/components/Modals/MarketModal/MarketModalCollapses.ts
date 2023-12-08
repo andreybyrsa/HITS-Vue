@@ -1,4 +1,4 @@
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 
 const marketModalCollapses: MarketModalCollapseType[] = [
   { key: 0, id: 0, ideaKey: 'problem', text: 'Проблема' },
@@ -15,7 +15,7 @@ const marketModalCollapses: MarketModalCollapseType[] = [
 interface MarketModalCollapseType {
   key: number
   id: number
-  ideaKey: keyof IdeasMarket
+  ideaKey: keyof IdeaMarket
   text: string
 }
 

@@ -1,5 +1,5 @@
-import IdeasMarket from '@Domain/IdeasMarket'
-import ApplicationTeams from '@Domain/RequestTeams'
+import IdeaMarket from '@Domain/IdeaMarket'
+import ApplicationTeams from '@Domain/RequestTeamToIdea'
 import { Skill } from '@Domain/Skill'
 
 interface MarketModalProps {
@@ -7,7 +7,7 @@ interface MarketModalProps {
 }
 
 interface MarketDescriptionProps {
-  idea: IdeasMarket
+  idea: IdeaMarket
 }
 
 interface MarketModalEmits {
@@ -16,15 +16,15 @@ interface MarketModalEmits {
 
 interface MarketAcceptTeamProps {
   teams?: ApplicationTeams[]
-  idea?: IdeasMarket
+  idea?: IdeaMarket
 }
 
 interface MarketInfoProps {
-  idea: IdeasMarket
+  idea: IdeaMarket
 }
 
 interface MarketRightSideProps {
-  idea: IdeasMarket
+  idea: IdeaMarket
   skills: Skill[]
   skillsTeam?: Skill[]
 }
@@ -32,7 +32,7 @@ interface MarketRightSideProps {
 interface MarketSkillsradarChartsProps {
   skills: Skill[]
   skillsTeam?: Skill[]
-  idea: IdeasMarket
+  idea: IdeaMarket
 }
 
 export {

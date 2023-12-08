@@ -18,8 +18,8 @@ import {
 } from '@Domain/Team'
 
 import Notification from '@Domain/Notification'
-import IdeasMarket from '@Domain/IdeasMarket'
-import RequestTeams from '@Domain/RequestTeams'
+import IdeaMarket from '@Domain/IdeaMarket'
+import RequestTeams from '@Domain/RequestTeamToIdea'
 
 interface Mocks {
   users: User[]
@@ -34,7 +34,7 @@ interface Mocks {
 
   ideas: Idea[]
   ideasSkills: IdeaSkills[]
-  ideasMarket: IdeasMarket[]
+  ideasMarket: IdeaMarket[]
   ratings: Rating[]
   comments: Comment[]
 
@@ -270,7 +270,7 @@ function getMocks(): Mocks {
     },
   ]
 
-  const ideasMarket: IdeasMarket[] = [
+  const ideasMarket: IdeaMarket[] = [
     {
       id: '1',
       position: 1,

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
 import RolesTypes from '@Domain/Roles'
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
 
@@ -46,7 +46,7 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
           this.ideas.splice(existingIdeaIndex, 1, response)
         }
 
-        return this.ideas[existingIdeaIndex] as IdeasMarket
+        return this.ideas[existingIdeaIndex] as IdeaMarket
       }
     },
   },

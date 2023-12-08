@@ -51,6 +51,19 @@ const getTeams = async (token: string): Promise<Team[] | Error> => {
     })
 }
 
+const getOwnerTeams = async (token: string): Promise<Team[] | Error> => {
+  return await teamsAxios
+    .get(`/team/owner/all`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения команд'
+      return new Error(error)
+    })
+}
+
 const getTeam = async (id: string, token: string): Promise<Team | Error> => {
   return await teamsAxios
     .get(
@@ -406,6 +419,7 @@ const kickTeamMember = async (
 
 const TeamService = {
   getTeams,
+  getOwnerTeams,
   getTeam,
   getTeamMembers,
   getTeamInvitations,

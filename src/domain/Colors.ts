@@ -9,5 +9,6 @@ type Colors =
   | 'dark'
   | 'close'
   | 'mute'
+  | 'link'
 
 export default Colors

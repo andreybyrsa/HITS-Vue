@@ -1,7 +1,7 @@
 import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
 
-interface RequestTeams {
+interface RequestTeamToIdea {
   ideaId: string
   accepted: boolean
   letter: string
@@ -19,4 +19,4 @@ interface RequestTeams {
   skills: Skill[]
 }
 
-export default RequestTeams
+export default RequestTeamToIdea

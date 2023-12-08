@@ -14,11 +14,11 @@ import Skills from '@Components/Skills/Skills.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 
 import useUserStore from '@Store/user/userStore'
-import RequestTeamsServise from '@Services/RequestTeamsServise'
+import RequestToIdeaService from '@Services/RequestToIdeaService'
 
 import { Team } from '@Domain/Team'
-import RequestTeams from '@Domain/RequestTeams'
-import IdeasMarket from '@Domain/IdeasMarket'
+import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import IdeaMarket from '@Domain/IdeaMarket'
 import useTeamStore from '@Store/teams/teamsStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
@@ -35,7 +35,9 @@ const { user } = storeToRefs(userStore)
 
 const currentTeam = ref<Team>()
 
-const requestTeams = defineModel<RequestTeams[]>('requestTeams', { required: true })
+const requestTeams = defineModel<RequestTeamToIdea[]>('requestTeams', {
+  required: true,
+})
 //const skillsTeam = defineModel<Team[]>('skillsTeam', { required: true })
 
 const letter = ref<string>('')
@@ -70,7 +72,7 @@ const sendRequestTeam = handleSubmit(async () => {
     const { token } = currentUser
     const id = props.idea.id
 
-    const requestTeam: RequestTeams = {
+    const requestTeam: RequestTeamToIdea = {
       ...currentTeam,
 
       teamId: props.team.id,
@@ -86,7 +88,7 @@ const sendRequestTeam = handleSubmit(async () => {
 
     console.log(requestTeam)
 
-    const response = await RequestTeamsServise.postRequest(requestTeam, token)
+    const response = await RequestToIdeaService.postRequest(requestTeam, token)
 
     if (response instanceof Error) {
       return
@@ -104,7 +106,7 @@ function checkTeamRequest(teamProps: Team) {
   return requestTeams.value?.find((team) => team.teamId == teamProps.id)
 }
 
-function navigateToTeamModal(team: Team, idea: IdeasMarket) {
+function navigateToTeamModal(team: Team, idea: IdeaMarket) {
   return router.push(`/market/${idea.id}/${team.id}`)
 }
 

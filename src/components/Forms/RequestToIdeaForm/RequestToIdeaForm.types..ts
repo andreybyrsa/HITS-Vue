@@ -1,15 +1,14 @@
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 import { Team } from '@Domain/Team'
 
-interface RequestToIdeaProps {
-  idea: IdeasMarket
-  isDisabledButtonSkills?: boolean
+interface RequestToIdeaFormProps {
+  idea: IdeaMarket
 }
 
 interface RequestTeamCollapseProps {
   team: Team
-  idea: IdeasMarket
+  idea: IdeaMarket
   isDisabledButtonSkills?: boolean
 }
 
-export { RequestToIdeaProps, RequestTeamCollapseProps }
+export { RequestToIdeaFormProps, RequestTeamCollapseProps }

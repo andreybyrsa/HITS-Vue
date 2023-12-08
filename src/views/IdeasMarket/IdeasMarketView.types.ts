@@ -1,8 +1,12 @@
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 
-interface SingleIdeaCardProps {
-  idea: IdeasMarket
+interface IdeaCardProps {
+  idea: IdeaMarket
   isAllIdeas: boolean
 }
 
-export default SingleIdeaCardProps
+interface IdeaCardEmits {
+  (event: 'send-quick-request', idea: IdeaMarket): void
+}
+
+export { IdeaCardProps, IdeaCardEmits }

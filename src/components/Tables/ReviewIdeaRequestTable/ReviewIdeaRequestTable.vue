@@ -14,13 +14,13 @@ import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
 
 import useUserStore from '@Store/user/userStore'
 
-import RequestTeams from '@Domain/RequestTeams'
+import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
 import { Skill } from '@Domain/Skill'
 import getSkillsStyle from '@Utils/getSkillsStyle'
-import RequestTeamsServise from '@Services/RequestTeamsServise'
+import RequestToIdeaService from '@Services/RequestToIdeaService'
 
-const teams = defineModel<RequestTeams[]>('teams', { required: true })
-const skillsRequestTeam = defineModel<RequestTeams[]>('skillsRequestTeam')
+const teams = defineModel<RequestTeamToIdea[]>('teams', { required: true })
+const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
 
 const router = useRouter()
 const route = useRoute()
@@ -29,9 +29,9 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedModal = ref<boolean>(false)
-const currentTeam = ref<RequestTeams>()
+const currentTeam = ref<RequestTeamToIdea>()
 
-const requestsTableColumns: TableColumn<RequestTeams>[] = [
+const requestsTableColumns: TableColumn<RequestTeamToIdea>[] = [
   {
     key: 'name',
     label: 'Название',
@@ -60,7 +60,7 @@ const requestsTableColumns: TableColumn<RequestTeams>[] = [
   },
 ]
 
-const dropdownIdeasActions: DropdownMenuAction<RequestTeams>[] = [
+const dropdownIdeasActions: DropdownMenuAction<RequestTeamToIdea>[] = [
   {
     label: 'Профиль команды',
     click: navigateToTeamModal,
@@ -83,11 +83,11 @@ const dropdownIdeasActions: DropdownMenuAction<RequestTeams>[] = [
   },
 ]
 
-function isAcceptedFalse(team: RequestTeams) {
+function isAcceptedFalse(team: RequestTeamToIdea) {
   return team.accepted === false
 }
 
-function isAcceptedTrue(team: RequestTeams) {
+function isAcceptedTrue(team: RequestTeamToIdea) {
   return team.accepted === true
 }
 
@@ -114,17 +114,17 @@ function getFilterSkills(skills: Skill[], index: number) {
   return currentSkill.name
 }
 
-function navigateToTeamModal(team: RequestTeams) {
+function navigateToTeamModal(team: RequestTeamToIdea) {
   return router.push(`/market/${route.params.id}/${team.id}`)
 }
 
-async function acceptRequestTeam(team: RequestTeams) {
+async function acceptRequestTeam(team: RequestTeamToIdea) {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await RequestTeamsServise.acceptRequestTeam(
+    const response = await RequestToIdeaService.acceptRequestTeam(
       { ...team, accepted: true },
       token,
     )
@@ -137,13 +137,13 @@ async function acceptRequestTeam(team: RequestTeams) {
   }
 }
 
-async function rejectRequestTeam(team: RequestTeams) {
+async function rejectRequestTeam(team: RequestTeamToIdea) {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await RequestTeamsServise.acceptRequestTeam(
+    const response = await RequestToIdeaService.acceptRequestTeam(
       { ...team, accepted: false },
       token,
     )
@@ -158,7 +158,7 @@ async function rejectRequestTeam(team: RequestTeams) {
   }
 }
 
-function openLetterTeam(team: RequestTeams) {
+function openLetterTeam(team: RequestTeamToIdea) {
   isOpenedModal.value = true
   currentTeam.value = team
 }
@@ -167,7 +167,7 @@ function closeLetterTeam() {
   isOpenedModal.value = false
 }
 
-const checkedIdeasMarketActions: CheckedDataAction<RequestTeams>[] = [
+const checkedIdeasMarketActions: CheckedDataAction<RequestTeamToIdea>[] = [
   {
     label: 'Принять заявки',
     className: 'btn-primary',
@@ -175,13 +175,13 @@ const checkedIdeasMarketActions: CheckedDataAction<RequestTeams>[] = [
   },
 ]
 
-function acceptRequestTeams(requestsTeams: RequestTeams[]) {
+function acceptRequestTeams(requestsTeams: RequestTeamToIdea[]) {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = RequestTeamsServise.acceptRequestTeams(
+    const response = RequestToIdeaService.acceptRequestTeam(
       requestsTeams.filter((team) => (team.accepted = true)),
       token,
     )

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { Ref, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDateFormat } from '@vueuse/core'
 
@@ -7,25 +6,21 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Skills from '@Components/Skills/Skills.vue'
-import RequestToIdeaModal from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.vue'
 
-import SingleIdeaCardProps from '@Views/IdeasMarket/IdeasMarketView.types'
+import {
+  IdeaCardProps,
+  IdeaCardEmits,
+} from '@Views/IdeasMarket/IdeasMarketView.types'
 
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 import IdeasMarketStatusTypes from '@Domain/MarketStatus'
-import RequestTeams from '@Domain/RequestTeams'
-import { Team } from '@Domain/Team'
 
 import getMarketStatus from '@Utils/getMarketStatus'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
-import RequestTeamsServise from '@Services/RequestTeamsServise'
-import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
 const availableStatus = getMarketStatus()
 
@@ -34,47 +29,9 @@ const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
 
-const props = defineProps<SingleIdeaCardProps>()
-const ideas = defineModel<IdeasMarket[]>('ideas', { required: true })
-
-const requestTeams = ref<RequestTeams[]>()
-const teams = ref<Team[]>()
-
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    // notification
-  }
-}
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const teamsParallelRequests = [
-      () => RequestTeamsServise.getRequestAll(props.idea.id, token),
-      () => TeamService.getTeams(token),
-    ]
-
-    await makeParallelRequests<RequestTeams[] | Team[] | Error>(
-      teamsParallelRequests,
-    ).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, requestTeams)
-        } else if (response.id === 1) {
-          checkResponseStatus(response, teams)
-        }
-      })
-    })
-  }
-})
+const props = defineProps<IdeaCardProps>()
+const emit = defineEmits<IdeaCardEmits>()
+const ideas = defineModel<IdeaMarket[]>('ideas', { required: true })
 
 function getFormattedDate(date: string) {
   if (date) {
@@ -130,12 +87,11 @@ const handleRemoveIdeaFromFavorites = async () => {
   }
 }
 
-const isOpenRequestToIdeaModal = ref<boolean>(false)
-function openRequestToIdeaModal() {
-  isOpenRequestToIdeaModal.value = true
-}
-function closeRequestToIdeaModal() {
-  isOpenRequestToIdeaModal.value = false
+function checkIdeaOwned() {
+  return (
+    user.value?.email !== props.idea.initiator.email &&
+    user.value?.role === 'TEAM_OWNER'
+  )
 }
 </script>
 
@@ -177,10 +133,7 @@ function closeRequestToIdeaModal() {
           <Icon class-name="bi bi-envelope-open fs-5" />
           Принятно заявок: {{ idea.acceptedRequests }}
         </div>
-        <div
-          class="idea-accepted-applications"
-          v-if="requestTeams"
-        >
+        <div class="idea-accepted-applications">
           <Icon class-name="bi bi-people-fill fs-5" />
           Требуется участников: {{ idea.maxTeamSize }}
         </div>
@@ -190,10 +143,10 @@ function closeRequestToIdeaModal() {
         </div>
         <div class="idea-buttons">
           <Button
-            v-if="user?.email != idea.initiator.email && user?.role === 'TEAM_OWNER'"
+            v-if="checkIdeaOwned()"
             class="apply-button"
             prepend-icon-name="bi bi-send-fill"
-            @click="openRequestToIdeaModal"
+            @click="emit('send-quick-request', idea)"
           >
             Подать заявку
           </Button>
@@ -215,18 +168,9 @@ function closeRequestToIdeaModal() {
       </div>
     </div>
   </div>
-
-  <RequestToIdeaModal
-    v-if="teams && requestTeams"
-    :is-opened="isOpenRequestToIdeaModal"
-    @close-modal="closeRequestToIdeaModal"
-    :idea="idea"
-    v-model:teams="teams"
-    v-model:requestTeams="requestTeams"
-  />
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .idea-card {
   min-width: 100%;
   height: 100%;
