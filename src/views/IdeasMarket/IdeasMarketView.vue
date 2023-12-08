@@ -134,6 +134,8 @@ function getNavTabClass(isAllIdeas: boolean) {
         >
           Избранное
         </div>
+      </div>
+      <div class="w-50 mb-3">
         <Input
           name="search"
           class-name="rounded-end"
@@ -148,11 +150,11 @@ function getNavTabClass(isAllIdeas: boolean) {
       </div>
       <div
         v-if="ideas"
-        class="ideas-container"
+        class=""
       >
         <div
           v-if="filteredIdeas"
-          class="idea-cards"
+          class="idea-cards row"
         >
           <SingleIdeaCard
             v-for="idea in filteredIdeas"
@@ -186,5 +188,10 @@ function getNavTabClass(isAllIdeas: boolean) {
 
     @include flexible(stretch, flex-start, column);
   }
+}
+
+.idea-cards {
+  width: 100%;
+  grid-row-gap: 20px;
 }
 </style>

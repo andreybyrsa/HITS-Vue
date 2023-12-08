@@ -133,69 +133,73 @@ function filterTeams(teams: RequestTeams[]) {
 </script>
 
 <template>
-  <div class="idea-card">
-    <div class="idea-card-left">
-      <div class="idea-title">
-        <Typography>#{{ idea.position }}</Typography>
-      </div>
-      <div class="idea-title">
-        <router-link :to="'market/' + idea.id">{{ idea.name }}</router-link>
-      </div>
-      <div class="idea-description">
-        {{ idea.description }}
-      </div>
-      <div class="idea-creator">
-        <Icon class-name="bi bi-person-circle fs-5" /> Инициатор:
-        {{ idea.initiator.firstName }} {{ idea.initiator.lastName }}
-      </div>
-      <div class="idea-stacks">
-        <Skills :skills="idea?.stack" />
-      </div>
-    </div>
-    <div class="idea-card-right">
-      <div class="idea-start-date">
-        <div class="idea-start-date">
-          <Icon class-name="bi bi-clock-history fs-5" />
-          Дата старта: {{ getFormattedDate(idea.createdAt) }}
+  <div class="col-lg-6 col-xxl-4">
+    <div class="idea-card">
+      <div class="idea-card-left">
+        <div class="idea-title">
+          <Typography>#{{ idea.position }}</Typography>
+        </div>
+        <div class="idea-title">
+          <router-link :to="'market/' + idea.id">{{ idea.name }}</router-link>
+        </div>
+        <div class="idea-description">
+          {{ idea.description }}
+        </div>
+        <div class="idea-creator">
+          <Icon class-name="bi bi-person-circle fs-5" /> Инициатор:
+          {{ idea.initiator.firstName }} {{ idea.initiator.lastName }}
+        </div>
+        <div class="idea-stacks">
+          <Skills :skills="idea?.stack" />
         </div>
       </div>
-      <div class="idea-applications">
-        <Icon class-name="bi bi-envelope-open fs-5" />
-        Подано заявок: {{ requestTeams?.length }}
-      </div>
-      <div
-        class="idea-accepted-applications"
-        v-if="requestTeams"
-      >
-        <Icon class-name="bi bi-people-fill fs-5" />
-        Участники: {{ filterTeams(requestTeams).length }} / {{ idea.maxTeamSize }}
-      </div>
-      <div class="idea-applications">
-        <Icon class-name="bi bi-check2-all fs-5" />
-        Статус: {{ getTranslatedStatus(idea.status) }}
-      </div>
-      <div class="idea-buttons">
-        <Button
-          v-if="user?.email != idea.initiator.email"
-          class="apply-button"
-          prepend-icon-name="bi bi-send-fill"
-          @click="openRequestToIdeaModal"
+      <div class="idea-card-right">
+        <div class="idea-start-date">
+          <Icon class-name="bi bi-clock-history fs-5" />
+
+          <Typography class-name="w-50">
+            Дата старта: {{ getFormattedDate(idea.createdAt) }}
+          </Typography>
+        </div>
+
+        <div class="idea-applications">
+          <Icon class-name="bi bi-envelope-open fs-5" />
+          Подано заявок: {{ requestTeams?.length }}
+        </div>
+        <div
+          class="idea-accepted-applications"
+          v-if="requestTeams"
         >
-          Подать заявку
-        </Button>
-        <div class="favorite-button">
-          <Icon
-            v-if="!idea.isFavorite"
-            class-name="bi bi-star fs-4"
-            style="color: #ff9900"
-            @click="handleAddIdeaToFavorites"
-          />
-          <Icon
-            v-else
-            class-name="bi bi-star-fill fs-4"
-            style="color: #ff9900"
-            @click="handleRemoveIdeaFromFavorites"
-          />
+          <Icon class-name="bi bi-people-fill fs-5" />
+          Участники: {{ filterTeams(requestTeams).length }} / {{ idea.maxTeamSize }}
+        </div>
+        <div class="idea-applications">
+          <Icon class-name="bi bi-check2-all fs-5" />
+          Статус: {{ getTranslatedStatus(idea.status) }}
+        </div>
+        <div class="idea-buttons">
+          <Button
+            v-if="user?.email != idea.initiator.email && user?.role === 'TEAM_OWNER'"
+            class="apply-button"
+            prepend-icon-name="bi bi-send-fill"
+            @click="openRequestToIdeaModal"
+          >
+            Подать заявку
+          </Button>
+          <div class="favorite-button">
+            <Icon
+              v-if="!idea.isFavorite"
+              class-name="bi bi-star fs-4"
+              style="color: #ff9900"
+              @click="handleAddIdeaToFavorites"
+            />
+            <Icon
+              v-else
+              class-name="bi bi-star-fill fs-4"
+              style="color: #ff9900"
+              @click="handleRemoveIdeaFromFavorites"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -213,6 +217,8 @@ function filterTeams(teams: RequestTeams[]) {
 
 <style lang="scss">
 .idea-card {
+  min-width: 100%;
+  height: 100%;
   display: flex;
   background-color: white;
   border: 1px solid #ccc;
@@ -244,6 +250,7 @@ function filterTeams(teams: RequestTeams[]) {
     align-items: center;
   }
   .idea-stacks {
+    overflow-y: scroll;
     display: flex;
     margin-top: 35px;
     .icon {
@@ -258,6 +265,7 @@ function filterTeams(teams: RequestTeams[]) {
     font-size: 16px;
     display: flex;
     align-items: center;
+    justify-content: end;
   }
   .bi {
     margin-right: 5px;
