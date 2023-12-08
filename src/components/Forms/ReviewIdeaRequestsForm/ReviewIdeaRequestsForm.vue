@@ -1,25 +1,25 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 
-import ReviewIdeaRequestsFormProps from '@Components/Forms/ReviewIdeaRequestsForm/ReviewIdeaRequestsForm.types'
+import { ReviewIdeaRequestsFormProps } from '@Components/Forms/ReviewIdeaRequestsForm/ReviewIdeaRequestsForm.types'
 
 import useUserStore from '@Store/user/userStore'
 
 import ReviewIdeaRequestTable from '@Components/Tables/ReviewIdeaRequestTable/ReviewIdeaRequestTable.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import { RequestTeams } from '@Domain/RequestTeamToIdea'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 defineProps<ReviewIdeaRequestsFormProps>()
 
-const teams = defineModel<RequestTeamToIdea[]>('requestTeams', { required: true })
-const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
+const teams = defineModel<RequestTeams[]>('requestTeams', { required: true })
+const skillsRequestTeam = defineModel<RequestTeams[]>('skillsRequestTeam')
 
-function filterTeamsAccepted(teams: RequestTeamToIdea[]) {
-  return teams.filter((elem) => elem.accepted === false)
+function filterTeamsAccepted(teams: RequestTeams[]) {
+  return teams.filter((elem) => elem.status === 'ACCEPTED')
 }
 </script>
 
