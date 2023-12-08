@@ -15,7 +15,7 @@ import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import { TeamFormProps } from '@Components/Forms/TeamForm/TeamForm.types'
 
 import { User } from '@Domain/User'
-import { Team } from '@Domain/Team'
+import { Team, TeamMember } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 
 import TeamService from '@Services/TeamService'
@@ -41,7 +41,7 @@ const wantedSkills = ref<Skill[]>([])
 const totalSkills = ref<Skill[]>([])
 const stackTechnologies = ref<Skill[]>([])
 
-const invitationUsers = ref<User[]>([])
+const invitationUsers = ref<TeamMember[]>([])
 
 const isLoading = ref<boolean>(false)
 
@@ -177,6 +177,7 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
         v-model="invitationUsers"
         @set-value="setFieldValue"
       />
+
       <SkillsRadarChart
         :skills="radarChartsSkills"
         :width="225"

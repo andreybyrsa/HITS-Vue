@@ -20,10 +20,8 @@ import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import { TeamMember } from '@Domain/Team'
 
-import TeamServise from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<TeamMembersProps>()
 
@@ -39,14 +37,21 @@ const router = useRouter()
 watchImmediate(
   () => props.team,
   () => {
-    const { owner, leader } = props.team
     teamMembers.value = props.team.members
-    teamMembers.value.sort((a, b) =>
-      (a.id === owner.id || a.id === leader?.id) &&
-      (b.id === owner.id || b.id === leader?.id)
-        ? -1
-        : 1,
-    )
+  },
+)
+
+watchImmediate(
+  () => props.team.leader,
+  () => {
+    const { owner, leader } = props.team
+    teamMembers.value.sort((a: TeamMember, b: TeamMember) => {
+      if (a.id === owner.id) return -1
+      if (a.id === leader?.id && b.id !== owner.id) return -1
+      if (b.id === owner.id) return 1
+      if (b.id === leader?.id && a.id !== owner.id) return 1
+      return +a.id - +b.id
+    })
   },
 )
 

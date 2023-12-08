@@ -12,12 +12,11 @@ import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
-import { User } from '@Domain/User'
-
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
+import { TeamMember } from '@Domain/Team'
 
 const props = defineProps<TeamModalActionsProps>()
 const emit = defineEmits<TeamModalActionsEmits>()
@@ -38,14 +37,14 @@ const isOpenedDeletingModal = ref(false)
 const isOpenedLeavingModal = ref(false)
 const isOpenedInvitationModal = ref(false)
 
-const invitationUsersInTeam = ref<User[]>([])
+const invitationUsersInTeam = ref<TeamMember[]>([])
 
 function getAccessToEdit() {
   if (user.value) {
     const { id, role } = user.value
     const { owner } = props.team
 
-    return role === 'ADMIN' || id === owner.id
+    return role === 'ADMIN' || (id === owner.id && role === 'TEAM_OWNER')
   }
 }
 
@@ -54,7 +53,10 @@ function getAccessToDelete() {
     const { id, role } = user.value
     const { owner, members } = props.team
 
-    return role === 'ADMIN' || (id === owner.id && members.length === 1)
+    return (
+      role === 'ADMIN' ||
+      (id === owner.id && members.length === 1 && role === 'TEAM_OWNER')
+    )
   }
 }
 
@@ -63,7 +65,7 @@ function getAccessToInvite() {
     const { id, role } = user.value
     const { owner } = props.team
 
-    return role === 'ADMIN' || id === owner.id
+    return role === 'ADMIN' || (id === owner.id && role === 'TEAM_OWNER')
   }
 }
 

@@ -14,7 +14,6 @@ import { Skill } from '@Domain/Skill'
 
 import useUserStore from '@Store/user/userStore'
 
-import { User } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
 import Success from '@Domain/ResponseMessage'
@@ -177,7 +176,7 @@ const createTeamSkills = async (
 }
 
 const invitationTeamMember = async (
-  users: User[],
+  users: TeamMember[],
   teamId: string,
   token: string,
 ): Promise<TeamInvitation[] | Error> => {
