@@ -15,7 +15,7 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { Idea } from '@Domain/Idea'
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
 
@@ -62,7 +62,7 @@ const sendIdeasToMarket = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const ideasMarket: IdeasMarket[] = checkedIdeas.value.map((idea) => {
+    const ideasMarket: IdeaMarket[] = checkedIdeas.value.map((idea) => {
       return {
         ...idea,
         position: 0,
@@ -72,7 +72,7 @@ const sendIdeasToMarket = handleSubmit(async (values) => {
         isFavorite: false,
         startDate: values.dateStart,
         finishDate: values.dateFinish,
-      } as unknown as IdeasMarket
+      } as unknown as IdeaMarket
     })
 
     isLoading.value = true

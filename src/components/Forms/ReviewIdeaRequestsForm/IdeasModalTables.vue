@@ -79,7 +79,7 @@ function getRequestsToIdea() {
       <RequestToIdea
         v-if="isRequestsToIdeaTable && requests"
         :requests="requests"
-        :team="team"
+        :idea="idea"
         :teams="requests"
       />
     </div>

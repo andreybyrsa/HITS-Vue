@@ -19,13 +19,13 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import useUserStore from '@Store/user/userStore'
 import TeamService from '@Services/TeamService'
 import IdeasMarketService from '@Services/IdeasMarketService'
-import RequestTeamsServise from '@Services/RequestTeamsServise'
+import RequestToIdeaService from '@Services/RequestToIdeaService'
 import useCommentsStore from '@Store/comments/commentsStore'
 
 import { Team } from '@Domain/Team'
 import Comment from '@Domain/Comment'
-import RequestTeams from '@Domain/RequestTeams'
-import IdeasMarket from '@Domain/IdeasMarket'
+import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import IdeaMarket from '@Domain/IdeaMarket'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 import { Skill } from '@Domain/Skill'
@@ -40,10 +40,10 @@ const { user } = storeToRefs(userStore)
 const route = useRoute()
 const router = useRouter()
 
-const idea = ref<IdeasMarket>()
-const requestTeams = ref<RequestTeams[]>()
+const idea = ref<IdeaMarket>()
+const requestTeams = ref<RequestTeamToIdea[]>()
 const teams = ref<Team[]>()
-const skillsRequestTeam = ref<RequestTeams[]>()
+const skillsRequestTeam = ref<RequestTeamToIdea[]>()
 const skillsTeam = ref<Team[]>([])
 
 function checkResponseStatus<T>(
@@ -66,13 +66,13 @@ onMounted(async () => {
 
     const marketParallelRequests = [
       () => IdeasMarketService.getIdeaMarket(id, token),
-      () => RequestTeamsServise.getRequestAll(id, token),
+      () => RequestToIdeaService.getIdeaRequests(id, token),
       () => TeamService.getTeams(token),
       () => useCommentsStore().getComments(id, token),
     ]
 
     await makeParallelRequests<
-      RequestTeams[] | Team[] | IdeasMarket | Comment[] | Error
+      RequestTeamToIdea[] | Team[] | IdeaMarket | Comment[] | Error
     >(marketParallelRequests).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {

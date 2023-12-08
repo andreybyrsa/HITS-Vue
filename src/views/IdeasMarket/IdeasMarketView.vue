@@ -6,12 +6,14 @@ import Typography from '@Components/Typography/Typography.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Icon from '@Components/Icon/Icon.vue'
+import RequestToIdeaModal from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
-import SingleIdeaCard from '@Views/IdeasMarket/SingleIdeaCard.vue'
+import IdeaCardsPlaceholder from '@Views/IdeasMarket/IdeaCardsPlaceholder.vue'
+import IdeaCard from '@Views/IdeasMarket/IdeaCard.vue'
 
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
 
@@ -26,10 +28,13 @@ const ideasMarketStore = useIdeasMarketStore()
 
 const notificationsStore = useNotificationsStore()
 
-const ideas = ref<IdeasMarket[] | null>(null)
+const ideas = ref<IdeaMarket[] | null>(null)
 const isAllIdeas = ref(true)
 
 const searchedValue = ref('')
+
+const ideaMarket = ref<IdeaMarket | null>(null)
+const isOpenedRequestToIdeaModal = ref(false)
 
 const searchedIdeas = computed(() => {
   if (!searchedValue.value) {
@@ -99,6 +104,15 @@ async function switchNavTab(value: boolean, callback: () => Promise<void>) {
   await callback()
   isAllIdeas.value = value
 }
+
+function openRequestToIdeaModal(idea: IdeaMarket) {
+  ideaMarket.value = idea
+  isOpenedRequestToIdeaModal.value = true
+}
+function closeRequestToIdeaModal() {
+  ideaMarket.value = null
+  isOpenedRequestToIdeaModal.value = false
+}
 </script>
 
 <template>
@@ -110,7 +124,7 @@ async function switchNavTab(value: boolean, callback: () => Promise<void>) {
     <template #content>
       <Typography class-name="fs-2 text-primary w-75">Биржа идей</Typography>
 
-      <div class="nav nav-underline">
+      <div class="market-page__navigation nav nav-underline mb-3">
         <div
           :class="getNavTabClass(isAllIdeas === true)"
           @click="switchNavTab(true, getIdeasByRole)"
@@ -138,18 +152,26 @@ async function switchNavTab(value: boolean, callback: () => Promise<void>) {
         </Input>
       </div>
 
-      <div
-        v-if="searchedIdeas"
-        class="idea-cards row"
-      >
-        <SingleIdeaCard
-          v-for="idea in searchedIdeas"
-          :key="idea.id"
-          :idea="idea"
-          :is-all-ideas="isAllIdeas"
-          v-model:ideas="searchedIdeas"
-        />
+      <div class="idea-cards row">
+        <template v-if="searchedIdeas">
+          <IdeaCard
+            v-for="idea in searchedIdeas"
+            :key="idea.id"
+            :idea="idea"
+            :is-all-ideas="isAllIdeas"
+            v-model:ideas="searchedIdeas"
+            @send-quick-request="openRequestToIdeaModal"
+          />
+        </template>
+
+        <IdeaCardsPlaceholder v-else />
       </div>
+
+      <RequestToIdeaModal
+        :idea="ideaMarket"
+        :is-opened="isOpenedRequestToIdeaModal"
+        @close-modal="closeRequestToIdeaModal"
+      />
 
       <router-view />
     </template>
@@ -160,12 +182,12 @@ async function switchNavTab(value: boolean, callback: () => Promise<void>) {
 .header-link {
   cursor: pointer;
 }
-.nav {
-  display: flex;
-  justify-content: center;
-  padding-bottom: 16px;
-}
+
 .market-page {
+  &__navigation {
+    @include flexible(none, center, $gap: 16px);
+  }
+
   &__content {
     overflow-y: scroll;
 

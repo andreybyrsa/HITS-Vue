@@ -1,17 +1,17 @@
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import Success from '@Domain/ResponseMessage'
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import useUserStore from '@Store/user/userStore'
 
-function formatFavoriteIdea(ideasMarket: IdeasMarket[]) {
+function formatFavoriteIdea(ideasMarket: IdeaMarket[]) {
   return ideasMarket.filter((ideaMarket) => ideaMarket.isFavorite)
 }
 
 const ideasMarketAxios = defineAxios(getMocks().ideasMarket)
 
-const fetchIdeasMarket = async (token: string): Promise<IdeasMarket[] | Error> => {
+const fetchIdeasMarket = async (token: string): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
     .get('/market/all', {
       headers: { Authorization: `Bearer ${token}` },
@@ -23,11 +23,9 @@ const fetchIdeasMarket = async (token: string): Promise<IdeasMarket[] | Error> =
     })
 }
 
-const fetchFavoritesIdeas = async (
-  token: string,
-): Promise<IdeasMarket[] | Error> => {
+const fetchFavoritesIdeas = async (token: string): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
-    .get<IdeasMarket[]>(
+    .get<IdeaMarket[]>(
       '/market/favorite',
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -44,9 +42,9 @@ const fetchFavoritesIdeas = async (
 const getIdeaMarket = async (
   id: string,
   token: string,
-): Promise<IdeasMarket | Error> => {
+): Promise<IdeaMarket | Error> => {
   return await ideasMarketAxios
-    .get<IdeasMarket>(
+    .get<IdeaMarket>(
       `/market/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -62,7 +60,7 @@ const getIdeaMarket = async (
 
 const getAllInitiatorMarketIdeas = async (
   token: string,
-): Promise<IdeasMarket[] | Error> => {
+): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
     .get('/market/initiator/all', {
       headers: { Authorization: `Bearer ${token}` },
@@ -75,9 +73,9 @@ const getAllInitiatorMarketIdeas = async (
 }
 
 const sendIdeaOnMarket = async (
-  idea: IdeasMarket[],
+  idea: IdeaMarket[],
   token: string,
-): Promise<IdeasMarket[] | Error> => {
+): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
     .post('/market/send', idea, {
       headers: { Authorization: `Bearer ${token}` },

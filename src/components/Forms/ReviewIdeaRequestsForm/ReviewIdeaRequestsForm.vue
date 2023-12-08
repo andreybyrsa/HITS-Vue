@@ -8,7 +8,7 @@ import useUserStore from '@Store/user/userStore'
 import ReviewIdeaRequestTable from '@Components/Tables/ReviewIdeaRequestTable/ReviewIdeaRequestTable.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
-import { RequestTeams } from '@Domain/RequestTeams'
+import { RequestTeams } from '@Domain/RequestTeamToIdea'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

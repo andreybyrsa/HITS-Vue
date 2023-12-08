@@ -3,39 +3,31 @@ import {
   RequestToIdeaModalProps,
   RequestToIdeaModalEmits,
 } from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.types'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-
 import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
-import RequestTeams from '@Domain/RequestTeams'
-import { Team } from '@Domain/Team'
 
-const requestTeams = defineModel<RequestTeams[]>('requestTeams', { required: true })
-const teams = defineModel<Team[]>('teams', { required: true })
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 defineProps<RequestToIdeaModalProps>()
 const emit = defineEmits<RequestToIdeaModalEmits>()
-
-function closeModal() {
-  emit('close-modal')
-}
-//console.log(teams)
 </script>
 
 <template>
   <ModalLayout
-    @on-outside-close="closeModal"
     :is-opened="isOpened"
+    @on-outside-close="emit('close-modal')"
   >
-    <div class="request-idea-modal bg-white rounded">
+    <div
+      v-if="idea"
+      class="request-to-idea-modal bg-white rounded"
+    >
       <div class="d-flex flex-column w-100">
         <div class="d-flex w-100 gap-2 p-2">
           <Button
-            class-name="btn-primary"
+            variant="primary"
             prepend-icon-name="bi bi-backspace-fill"
-            @click="closeModal"
+            @click="emit('close-modal')"
           >
             Назад
           </Button>
@@ -43,22 +35,18 @@ function closeModal() {
           <Typography
             class-name="p-2 w-100 border bg-white rounded-3 fs-4 text-primary text-nowrap"
           >
-            {{ idea?.name }}
+            {{ idea.name }}
           </Typography>
         </div>
-        <RequestToIdeaForm
-          v-model:teams="teams"
-          :idea="idea"
-          v-model:requestTeams="requestTeams"
-          isDisabledButtonSkills
-        />
+
+        <RequestToIdeaForm :idea="idea" />
       </div>
     </div>
   </ModalLayout>
 </template>
 
 <style lang="scss" scoped>
-.request-idea-modal {
+.request-to-idea-modal {
   position: relative;
 
   width: 50%;
@@ -82,8 +70,8 @@ function closeModal() {
   }
 }
 
-.modal-layout-enter-from .request-idea-modal,
-.modal-layout-leave-to .request-idea-modal {
+.modal-layout-enter-from .request-to-idea-modal,
+.modal-layout-leave-to .request-to-idea-modal {
   transform: translateX(100%);
 }
 </style>

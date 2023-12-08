@@ -2,7 +2,7 @@ import { Skill } from '@Domain/Skill'
 import IdeasMarketStatusTypes from '@Domain/MarketStatus'
 import TeamMember from '@Domain/TeamMember'
 
-interface IdeasMarket {
+interface IdeaMarket {
   id: string
   initiator: TeamMember
   createdAt: string
@@ -24,4 +24,4 @@ interface IdeasMarket {
   finishDate: string
 }
 
-export default IdeasMarket
+export default IdeaMarket

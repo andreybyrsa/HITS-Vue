@@ -1,6 +1,6 @@
 <template>
   <Table
-    :data="requests"
+    :data="teams"
     :columns="requestToIdeaColumns"
     :search-by="['name']"
     :dropdown-actions-menu="dropdownIdeasActions"
@@ -38,7 +38,10 @@ import { useRouter, useRoute, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import Table from '@Components/Table/Table.vue'
-import { RequestsToIdeaProps } from './ReviewIdeaRequestsForm.types'
+import {
+  RequestsToIdeaProps,
+  ReviewIdeaRequestsFormProps,
+} from './ReviewIdeaRequestsForm.types'
 import {
   TableColumn,
   DropdownMenuAction,
@@ -47,23 +50,23 @@ import {
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
-import { RequestTeams, RequestsToIdeaStatus } from '@Domain/RequestTeams'
+import { RequestTeams, RequestsToIdeaStatus } from '@Domain/RequestTeamToIdea'
 
 import useUserStore from '@Store/user/userStore'
-import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore' //  НУЖЕН НОВЫЙ СТОР ДЛЯ МАРКЕТА (ЗАМЕНИТЬ КОГДА АНДРЕЙ ЗАПУШИТ)
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore' //  НУЖЕН НОВЫЙ СТОР ДЛЯ МАРКЕТА (ЗАМЕНИТЬ КОГДА АНДРЕЙ ЗАПУШИТ)
 import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
-
+import RequestToIdeaService from '@Services/RequestToIdeaService'
 const teams = defineModel<RequestTeams[]>('teams', { required: true })
 const skillsRequestTeam = defineModel<RequestTeams[]>('skillsRequestTeam')
 
-const props = defineProps<RequestsToIdeaProps>()
+const props = defineProps<ReviewIdeaRequestsFormProps>()
 
 const route = useRoute()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const requestsToTeamStore = useRequestsToTeamStore() //  НУЖЕН НОВЫЙ СТОР ДЛЯ МАРКЕТА (ЗАМЕНИТЬ КОГДА АНДРЕЙ ЗАПУШИТ)
+const requestsToIdeaStore = useRequestsToIdeaStore() //  НУЖЕН НОВЫЙ СТОР ДЛЯ МАРКЕТА (ЗАМЕНИТЬ КОГДА АНДРЕЙ ЗАПУШИТ)
 
 const router = useRouter()
 
@@ -177,7 +180,7 @@ async function acceptRequestTeam(team: RequestTeams) {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await RequestTeamsServise.acceptRequestTeam(
+    const response = await RequestToIdeaService.acceptRequestTeam(
       { ...team, status: 'ACCEPTED' },
       token,
     )
@@ -196,7 +199,7 @@ async function rejectRequestTeam(team: RequestTeams) {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await RequestTeamsServise.acceptRequestTeam(
+    const response = await RequestToIdeaService.acceptRequestTeam(
       { ...team, status: 'CANCELLED' },
       token,
     )
@@ -215,9 +218,10 @@ async function acceptRequestToIdea() {
   const currentUser = user.value
 
   if (currentUser?.token && requestToIdea.value) {
+    const { id } = props.idea
     const { token } = currentUser
 
-    await requestsToTeamStore.acceptRequestToTeam(requestToIdea.value, token) // store
+    await requestsToIdeaStore.getRequestsToIdea(id, token) // store
 
     requestToIdea.value = undefined
     isOpenedConfirmModalAccepted.value = false
@@ -229,8 +233,9 @@ async function cancelRequestToIdea() {
 
   if (currentUser?.token && requestToIdea.value) {
     const { token } = currentUser
+    const { id } = props.idea
 
-    await requestsToTeamStore.cancelRequestToTeam(requestToIdea.value, token) // store
+    await requestsToIdeaStore.getRequestsToIdea(id, token) // store
 
     requestToIdea.value = undefined
     isOpenedConfirmModalCancel.value = false
@@ -260,8 +265,18 @@ function acceptRequestTeams(requestsTeams: RequestTeams[]) {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = RequestTeamsServise.acceptRequestTeams(
-      requestsTeams.filter((team) => (team.status = 'ACCEPTED')),
+    const response = RequestToIdeaService.acceptRequestTeam(
+      {
+        ...requestsTeams,
+        status: 'ACCEPTED',
+        ideaId: '',
+        letter: '',
+        teamId: '',
+        id: '',
+        name: '',
+        membersCount: 0,
+        skills: [],
+      },
       token,
     )
 

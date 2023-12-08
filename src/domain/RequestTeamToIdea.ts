@@ -1,4 +1,3 @@
-import TeamMember from '@Domain/TeamMember'
 import { Skill } from '@Domain/Skill'
 
 type RequestsToIdeaStatus = 'NEW' | 'ACCEPTED' | 'CANCELLED'

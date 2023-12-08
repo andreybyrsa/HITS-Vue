@@ -30,13 +30,14 @@ import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
+import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
+
 import ErrorView from '@Views/ErrorView.vue'
 
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import DevView from '@Views/DevView.vue'
 
-import IdeasMarketViewVue from '@Views/IdeasMarket/IdeasMarketView.vue'
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
@@ -136,7 +137,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/market',
     name: 'market',
-    component: IdeasMarketViewVue,
+    component: IdeasMarketView,
     meta: {
       roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
     },

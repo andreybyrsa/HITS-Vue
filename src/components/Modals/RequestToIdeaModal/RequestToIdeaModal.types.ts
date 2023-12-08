@@ -1,8 +1,8 @@
-import IdeasMarket from '@Domain/IdeasMarket'
+import IdeaMarket from '@Domain/IdeaMarket'
 
 interface RequestToIdeaModalProps {
   isOpened: boolean
-  idea: IdeasMarket
+  idea: IdeaMarket | null
 }
 
 interface RequestToIdeaModalEmits {

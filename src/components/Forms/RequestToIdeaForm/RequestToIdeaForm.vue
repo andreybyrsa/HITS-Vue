@@ -1,77 +1,120 @@
 <script lang="ts" setup>
+import { Ref, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-import { RequestToIdeaProps } from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.types.'
-
+import { RequestToIdeaFormProps } from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.types.'
 import Button from '@Components/Button/Button.vue'
-import RequestTeamCollapse from '@Components/Forms/RequestToIdeaForm/RequestTeamCollapse.vue'
-import useUserStore from '@Store/user/userStore'
 import Typography from '@Components/Typography/Typography.vue'
+import RequestTeamCollapse from '@Components/Forms/RequestToIdeaForm/RequestTeamCollapse.vue'
 
-import RequestTeams from '@Domain/RequestTeams'
 import { Team } from '@Domain/Team'
+import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+
+import TeamService from '@Services/TeamService'
+
+import useUserStore from '@Store/user/userStore'
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const requestsToIdeaStore = useRequestsToIdeaStore()
+const { requests } = storeToRefs(requestsToIdeaStore)
+
+const notificationsStore = useNotificationsStore()
+
 const router = useRouter()
 
-defineProps<RequestToIdeaProps>()
+const props = defineProps<RequestToIdeaFormProps>()
 
-const requestTeams = defineModel<RequestTeams[]>('requestTeams', { required: true })
-const teams = defineModel<Team[]>('teams', { required: true })
-//const skillsTeam = defineModel<Team[]>('skillsTeam', { required: true })
+const ownerTeams = ref<Team[]>()
 
-function filterTeamOwner() {
-  return teams.value.filter((team) => team.owner.email == user.value?.email)
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
 }
 
-function sendOnPageCreateTeam() {
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id } = props.idea
+
+    const parallelRequests = [
+      () => TeamService.getOwnerTeams(token),
+      () => requestsToIdeaStore.getRequestsToIdea(id, token),
+    ]
+
+    await makeParallelRequests<Team[] | RequestTeamToIdea[] | Error>(
+      parallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, ownerTeams)
+        }
+      })
+    })
+  }
+})
+
+function navigateToTeamForm() {
   router.push('/teams/create')
 }
 
-//console.log(teams)
+function getAccessRequestToIdea() {
+  return (
+    user.value?.id !== props.idea.initiator.id && user.value?.role === 'TEAM_OWNER'
+  )
+}
 </script>
 
 <template>
   <div
-    v-if="user?.email != idea.initiator.email"
+    v-if="getAccessRequestToIdea() && ownerTeams"
     class="d-flex w-100 bg-white rounded-3"
   >
-    <div
-      v-if="filterTeamOwner().length"
-      class="w-100 d-flex flex-column"
-    >
+    <div class="w-100 d-flex flex-column">
       <Typography class-name="fs-6 py-2 px-3 border-bottom">
         Ваши команды
       </Typography>
       <div class="d-flex flex-column gap-2 p-3">
         <RequestTeamCollapse
-          v-for="(team, index) in filterTeamOwner()"
+          v-for="(team, index) in ownerTeams"
           :key="index"
           :team="team"
           :idea="idea"
-          v-model:teams="teams"
-          v-model:requestTeams="requestTeams"
-          :isDisabledButtonSkills="isDisabledButtonSkills"
+          v-model:requestTeams="requests"
+          :isDisabledButtonSkills="false"
         />
       </div>
     </div>
+  </div>
 
-    <div
-      v-else
-      class="team-request-collapse__button w-100 p-2"
+  <div
+    v-else
+    class="d-flex w-100 px-3 align-items-center justify-content-between"
+  >
+    <Typography class-name="text-danger">
+      *Вы не являетесь владельцем команды.
+    </Typography>
+    <Button
+      v-if="user?.role === 'TEAM_OWNER'"
+      variant="primary"
+      @click="navigateToTeamForm"
     >
-      <span class="text-danger">*Вы не являетесь владельцем команды.</span>
-      <Button
-        v-if="user?.role === 'TEAM_OWNER'"
-        class-name="btn-primary"
-        @click="sendOnPageCreateTeam"
-      >
-        Создать команду?
-      </Button>
-    </div>
+      Создать команду?
+    </Button>
   </div>
 </template>
 

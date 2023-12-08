@@ -1,9 +1,9 @@
-import IdeasMarket from '@Domain/IdeasMarket'
 import { Team } from '@Domain/Team'
-import { RequestTeams } from '@Domain/RequestTeams'
+import { RequestTeams } from '@Domain/RequestTeamToIdea'
+import IdeaMarket from '@Domain/IdeaMarket'
 
 interface ReviewIdeaRequestsFormProps {
-  idea: IdeasMarket
+  idea: IdeaMarket
 }
 
 interface IdeasModalTables {
