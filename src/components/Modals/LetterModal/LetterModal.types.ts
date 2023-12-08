@@ -1,6 +1,6 @@
 interface LetterModalProps {
   isOpened: boolean
-  letter?: string
+  letter: string
 }
 
 interface LetterModalEmits {

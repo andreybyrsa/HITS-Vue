@@ -11,13 +11,7 @@ import TeamModalTables from '@Components/Modals/TeamModal/TeamModalTables.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import {
-  Team,
-  TeamInvitation,
-  RequestToTeam,
-  TeamSkills,
-  TeamMember,
-} from '@Domain/Team'
+import { Team, TeamInvitation, RequestToTeam, TeamSkills } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
@@ -54,18 +48,6 @@ function checkResponseStatus<T>(
     refValue.value = data.value
   } else {
     notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
-
-const handleKick = async (member: TeamMember, teamId: number) => {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await TeamService.kickTeamMember(member.id, token)
-
-    if (response instanceof Error) {
-      return
-    }
   }
 }
 

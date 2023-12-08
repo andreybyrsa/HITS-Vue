@@ -12,9 +12,8 @@ import {
 } from '@Components/Modals/MarketModal/MarketModal.types'
 
 import useUserStore from '@Store/user/userStore'
-import IdeaMarket from '@Domain/IdeaMarket'
 
-defineProps<MarketDescriptionProps>()
+const props = defineProps<MarketDescriptionProps>()
 
 const emit = defineEmits<MarketModalEmits>()
 
@@ -27,11 +26,18 @@ function closeModal() {
   emit('close-modal')
   router.push('/market')
 }
+
+function getAccessToViewDescription() {
+  return (
+    user.value?.email !== props.idea.initiator.email &&
+    user.value?.role !== 'INITIATOR'
+  )
+}
 </script>
 
 <template>
   <div class="idea-description">
-    <div class="idea-description-header">
+    <div class="idea-description__header">
       <Button
         class-name="btn-primary"
         prepend-icon-name="bi bi-backspace-fill"
@@ -48,7 +54,7 @@ function closeModal() {
     </div>
 
     <ul
-      v-if="user?.email != idea?.initiator.email"
+      v-if="getAccessToViewDescription()"
       class="list-group rounded-3"
     >
       <li
@@ -58,13 +64,13 @@ function closeModal() {
       >
         <Button
           class-name="collapse-controller btn-light w-100"
-          v-collapse="collapse.id"
+          v-collapse:openOnMount="collapse.id"
         >
           {{ collapse.text }}
         </Button>
-        <Collapse :id="collapse.id">
+        <Collapse :id="collapse.id.toString()">
           <div class="p-2">
-            {{ idea?.[collapse.ideaKey as keyof IdeaMarket] }}
+            {{ idea[collapse.ideaKey] }}
           </div>
         </Collapse>
       </li>
@@ -76,7 +82,7 @@ function closeModal() {
 .idea-description {
   @include flexible(stretch, flex-start, column, $gap: 16px);
 
-  &-header {
+  &__header {
     @include flexible(stretch, flex-start, $gap: 16px);
   }
 }

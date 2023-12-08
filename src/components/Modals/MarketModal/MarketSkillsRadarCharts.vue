@@ -10,12 +10,12 @@ import { MarketSkillsradarChartsProps } from '@Components/Modals/MarketModal/Mar
 import useUserStore from '@Store/user/userStore'
 
 import { Skill } from '@Domain/Skill'
-import RequestTeams from '@Domain/RequestTeams'
-import Team from '@Domain/Team'
+import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import { Team } from '@Domain/Team'
 
 const props = defineProps<MarketSkillsradarChartsProps>()
 
-const skillsRequestTeam = defineModel<RequestTeams[]>('skillsRequestTeam')
+const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
 const skillsTeam = defineModel<Team[]>('skillsTeam')
 
 const userStore = useUserStore()

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { Ref, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
@@ -8,16 +7,8 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import RequestTeamCollapse from '@Components/Forms/RequestToIdeaForm/RequestTeamCollapse.vue'
 
-import { Team } from '@Domain/Team'
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
-
-import TeamService from '@Services/TeamService'
-
 import useUserStore from '@Store/user/userStore'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -25,48 +16,9 @@ const { user } = storeToRefs(userStore)
 const requestsToIdeaStore = useRequestsToIdeaStore()
 const { requests } = storeToRefs(requestsToIdeaStore)
 
-const notificationsStore = useNotificationsStore()
-
 const router = useRouter()
 
 const props = defineProps<RequestToIdeaFormProps>()
-
-const ownerTeams = ref<Team[]>()
-
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = props.idea
-
-    const parallelRequests = [
-      () => TeamService.getOwnerTeams(token),
-      () => requestsToIdeaStore.getRequestsToIdea(id, token),
-    ]
-
-    await makeParallelRequests<Team[] | RequestTeamToIdea[] | Error>(
-      parallelRequests,
-    ).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, ownerTeams)
-        }
-      })
-    })
-  }
-})
 
 function navigateToTeamForm() {
   router.push('/teams/create')
@@ -81,7 +33,7 @@ function getAccessRequestToIdea() {
 
 <template>
   <div
-    v-if="getAccessRequestToIdea() && ownerTeams"
+    v-if="getAccessRequestToIdea()"
     class="d-flex w-100 bg-white rounded-3"
   >
     <div class="w-100 d-flex flex-column">

@@ -3,10 +3,10 @@ import {
   LetterModalProps,
   LetterModalEmits,
 } from '@Components/Modals/LetterModal/LetterModal.types'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
+
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 defineProps<LetterModalProps>()
 const emit = defineEmits<LetterModalEmits>()
@@ -29,7 +29,7 @@ function acceptRequest() {
           Мотивационное письмо
         </Typography>
         <Button
-          append-icon-name="bi bi-x fs-3"
+          variant="close"
           @click="closeModal"
         />
       </div>
@@ -41,8 +41,9 @@ function acceptRequest() {
       <Button
         class-name="btn-success"
         @click="acceptRequest"
-        >Принять заявку</Button
       >
+        Принять заявку
+      </Button>
     </div>
   </ModalLayout>
 </template>
