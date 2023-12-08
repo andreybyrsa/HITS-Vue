@@ -19,7 +19,7 @@ import {
 
 import Notification from '@Domain/Notification'
 import IdeaMarket from '@Domain/IdeaMarket'
-import RequestTeams from '@Domain/RequestTeamToIdea'
+// import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 interface Mocks {
   users: User[]
@@ -42,7 +42,7 @@ interface Mocks {
   teamMembers: TeamMember[]
   teamInvitations: TeamInvitation[]
   requestsToTeam: RequestToTeam[]
-  RequestTeams: RequestTeams[]
+  // RequestTeams: RequestTeamToIdea[]
   teamSkills: TeamSkills[]
 
   notifications: Notification[]
@@ -270,144 +270,6 @@ function getMocks(): Mocks {
     },
   ]
 
-  const ideasMarket: IdeaMarket[] = [
-    {
-      id: '1',
-      position: 1,
-      name: 'Создать электрический самолет',
-      initiator: teamMembers[2],
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      stack: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-        skills[12],
-        skills[14],
-        skills[15],
-        skills[16],
-        skills[17],
-        skills[18],
-      ],
-      customer: 'ВШЦТ',
-      createdAt: '2023-10-21T11:02:17Z',
-      maxTeamSize: 10,
-      status: 'RECRUITMENT_IS_OPEN',
-      requests: 111,
-      acceptedRequests: 4,
-      isFavorite: false,
-      startDate: '2023-10-20T11:02:17Z',
-      finishDate: '2024-01-20T11:02:17Z',
-    },
-    {
-      id: '2',
-      position: 2,
-      name: 'Создать машину времени',
-      initiator: teamMembers[0],
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
-      stack: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-        skills[12],
-        skills[14],
-        skills[15],
-        skills[16],
-        skills[17],
-        skills[18],
-      ],
-      customer: 'ВШЦТ',
-      createdAt: '2023-10-21T11:02:17Z',
-      maxTeamSize: 10,
-      status: 'RECRUITMENT_IS_OPEN',
-      requests: 222,
-      acceptedRequests: 5,
-      isFavorite: false,
-      startDate: '2023-10-20T11:02:17Z',
-      finishDate: '2024-01-20T11:02:17Z',
-    },
-    {
-      id: '3',
-      position: 3,
-      name: 'Создать киборга',
-      initiator: teamMembers[1],
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      stack: [skills[1], skills[2], skills[4], skills[9], skills[10]],
-      customer: 'ВШЦТ',
-      createdAt: '2023-10-21T11:02:17Z',
-      maxTeamSize: 10,
-      status: 'RECRUITMENT_IS_OPEN',
-      requests: 0,
-      acceptedRequests: 0,
-      isFavorite: false,
-      startDate: '2023-10-20T11:02:17Z',
-      finishDate: '2024-01-20T11:02:17Z',
-    },
-  ]
-
-  const usersEmails: string[] = users.map((user) => user.email)
-
-  const usersSkills: UsersSkills[] = [
-    {
-      idUsers: '0',
-      skills: [skills[0], skills[4], skills[6], skills[9]],
-    },
-    {
-      idUsers: '1',
-      skills: [skills[1], skills[2], skills[7], skills[19]],
-    },
-    {
-      idUsers: '2',
-      skills: [skills[0], skills[1], skills[9], skills[19]],
-    },
-    {
-      idUsers: '3',
-      skills: [skills[1], skills[5], skills[6], skills[17]],
-    },
-    {
-      idUsers: '4',
-      skills: [skills[1], skills[2], skills[3], skills[16]],
-    },
-    {
-      idUsers: '5',
-      skills: [skills[0], skills[2], skills[7], skills[15]],
-    },
-    {
-      idUsers: '6',
-      skills: [skills[2], skills[2], skills[7], skills[11]],
-    },
-  ]
-
   const teams: Team[] = [
     {
       id: '0',
@@ -533,6 +395,147 @@ function getMocks(): Mocks {
       members: [teamMembers[1], teamMembers[2]],
       skills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
       wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
+    },
+  ]
+
+  const ideasMarket: IdeaMarket[] = [
+    {
+      id: '1',
+      position: 1,
+      name: 'Создать электрический самолет',
+      initiator: users[2],
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
+      team: null,
+      stack: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+        skills[12],
+        skills[14],
+        skills[15],
+        skills[16],
+        skills[17],
+        skills[18],
+      ],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 111,
+      acceptedRequests: 4,
+      isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
+    },
+    {
+      id: '2',
+      position: 2,
+      name: 'Создать машину времени',
+      initiator: users[0],
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
+      team: teams[0],
+      stack: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+        skills[12],
+        skills[14],
+        skills[15],
+        skills[16],
+        skills[17],
+        skills[18],
+      ],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 222,
+      acceptedRequests: 5,
+      isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
+    },
+    {
+      id: '3',
+      position: 3,
+      name: 'Создать киборга',
+      initiator: users[1],
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
+      team: teams[1],
+      stack: [skills[1], skills[2], skills[4], skills[9], skills[10]],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 0,
+      acceptedRequests: 0,
+      isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
+    },
+  ]
+
+  const usersEmails: string[] = users.map((user) => user.email)
+
+  const usersSkills: UsersSkills[] = [
+    {
+      idUsers: '0',
+      skills: [skills[0], skills[4], skills[6], skills[9]],
+    },
+    {
+      idUsers: '1',
+      skills: [skills[1], skills[2], skills[7], skills[19]],
+    },
+    {
+      idUsers: '2',
+      skills: [skills[0], skills[1], skills[9], skills[19]],
+    },
+    {
+      idUsers: '3',
+      skills: [skills[1], skills[5], skills[6], skills[17]],
+    },
+    {
+      idUsers: '4',
+      skills: [skills[1], skills[2], skills[3], skills[16]],
+    },
+    {
+      idUsers: '5',
+      skills: [skills[0], skills[2], skills[7], skills[15]],
+    },
+    {
+      idUsers: '6',
+      skills: [skills[2], skills[2], skills[7], skills[11]],
     },
   ]
 
@@ -991,239 +994,239 @@ function getMocks(): Mocks {
     },
   ]
 
-  const RequestTeams: RequestTeams[] = [
-    {
-      id: '0',
-      ideaId: '1',
-      accepted: false,
-      teamId: '0',
+  // const RequestTeams: RequestTeamToIdea[] = [
+  //   {
+  //     id: '0',
+  //     ideaId: '1',
+  //     accepted: false,
+  //     teamId: '0',
 
-      name: 'Первые разрабы мира',
-      closed: false,
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
-      skills: [
-        skills[0],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[11],
-        skills[12],
-        skills[17],
-        skills[18],
-      ],
-      createdAt: '2023-10-20T11:02:17Z',
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '1',
-      ideaId: '1',
-      accepted: false,
-      teamId: '1',
+  //     name: 'Первые разрабы мира',
+  //     closed: false,
+  //     membersCount: 4,
+  //     description:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  //     owner: teamMembers[1],
+  //     leader: teamMembers[2],
+  //     members: [...teamMembers],
+  //     skills: [
+  //       skills[0],
+  //       skills[4],
+  //       skills[6],
+  //       skills[7],
+  //       skills[8],
+  //       skills[11],
+  //       skills[12],
+  //       skills[17],
+  //       skills[18],
+  //     ],
+  //     createdAt: '2023-10-20T11:02:17Z',
+  //     letter:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+  //   },
+  //   {
+  //     id: '1',
+  //     ideaId: '1',
+  //     accepted: false,
+  //     teamId: '1',
 
-      name: 'Программисты из apple',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
-      skills: [
-        skills[3],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[11],
-        skills[12],
-        skills[16],
-      ],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '2',
-      ideaId: '1',
-      accepted: true,
-      teamId: '2',
+  //     name: 'Программисты из apple',
+  //     closed: false,
+  //     createdAt: '2023-10-20T11:02:17Z',
+  //     membersCount: 4,
+  //     description:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  //     owner: teamMembers[1],
+  //     leader: teamMembers[2],
+  //     members: [...teamMembers],
+  //     skills: [
+  //       skills[3],
+  //       skills[4],
+  //       skills[6],
+  //       skills[7],
+  //       skills[8],
+  //       skills[11],
+  //       skills[12],
+  //       skills[16],
+  //     ],
+  //     letter:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+  //   },
+  //   {
+  //     id: '2',
+  //     ideaId: '1',
+  //     accepted: true,
+  //     teamId: '2',
 
-      name: 'Удальцы',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
-      skills: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-      ],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '3',
-      ideaId: '1',
-      accepted: false,
-      teamId: '3',
+  //     name: 'Удальцы',
+  //     closed: false,
+  //     createdAt: '2023-10-20T11:02:17Z',
+  //     membersCount: 4,
+  //     description:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  //     owner: teamMembers[1],
+  //     leader: teamMembers[2],
+  //     members: [...teamMembers],
+  //     skills: [
+  //       skills[0],
+  //       skills[2],
+  //       skills[3],
+  //       skills[4],
+  //       skills[6],
+  //       skills[7],
+  //       skills[8],
+  //       skills[9],
+  //       skills[11],
+  //     ],
+  //     letter:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+  //   },
+  //   {
+  //     id: '3',
+  //     ideaId: '1',
+  //     accepted: false,
+  //     teamId: '3',
 
-      name: 'Молодцы',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
-      skills: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-      ],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '4',
-      ideaId: '2',
-      accepted: false,
-      teamId: '4',
+  //     name: 'Молодцы',
+  //     closed: false,
+  //     createdAt: '2023-10-20T11:02:17Z',
+  //     membersCount: 4,
+  //     description:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  //     owner: teamMembers[1],
+  //     leader: teamMembers[2],
+  //     members: [...teamMembers],
+  //     skills: [
+  //       skills[0],
+  //       skills[2],
+  //       skills[3],
+  //       skills[4],
+  //       skills[6],
+  //       skills[7],
+  //       skills[8],
+  //       skills[9],
+  //       skills[11],
+  //     ],
+  //     letter:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+  //   },
+  //   {
+  //     id: '4',
+  //     ideaId: '2',
+  //     accepted: false,
+  //     teamId: '4',
 
-      name: 'Хорошая компания',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      membersCount: 4,
-      members: [...teamMembers],
-      skills: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-      ],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '5',
-      ideaId: '2',
-      accepted: false,
-      teamId: '5',
+  //     name: 'Хорошая компания',
+  //     closed: false,
+  //     createdAt: '2023-10-20T11:02:17Z',
+  //     description:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  //     owner: teamMembers[1],
+  //     leader: teamMembers[2],
+  //     membersCount: 4,
+  //     members: [...teamMembers],
+  //     skills: [
+  //       skills[0],
+  //       skills[2],
+  //       skills[3],
+  //       skills[4],
+  //       skills[6],
+  //       skills[7],
+  //       skills[8],
+  //       skills[9],
+  //       skills[11],
+  //     ],
+  //     letter:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+  //   },
+  //   {
+  //     id: '5',
+  //     ideaId: '2',
+  //     accepted: false,
+  //     teamId: '5',
 
-      name: 'Негатив',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      membersCount: 4,
-      members: [...teamMembers],
-      skills: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-      ],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '6',
-      ideaId: '2',
-      accepted: true,
-      teamId: '6',
+  //     name: 'Негатив',
+  //     closed: false,
+  //     createdAt: '2023-10-20T11:02:17Z',
+  //     description:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  //     owner: teamMembers[1],
+  //     leader: teamMembers[2],
+  //     membersCount: 4,
+  //     members: [...teamMembers],
+  //     skills: [
+  //       skills[0],
+  //       skills[2],
+  //       skills[3],
+  //       skills[4],
+  //       skills[6],
+  //       skills[7],
+  //       skills[8],
+  //       skills[9],
+  //       skills[11],
+  //     ],
+  //     letter:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+  //   },
+  //   {
+  //     id: '6',
+  //     ideaId: '2',
+  //     accepted: true,
+  //     teamId: '6',
 
-      name: 'Позитив',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
-      skills: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-      ],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '7',
-      ideaId: '2',
-      accepted: false,
-      teamId: '13',
+  //     name: 'Позитив',
+  //     closed: false,
+  //     createdAt: '2023-10-20T11:02:17Z',
+  //     membersCount: 4,
+  //     description:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  //     owner: teamMembers[1],
+  //     leader: teamMembers[2],
+  //     members: [...teamMembers],
+  //     skills: [
+  //       skills[0],
+  //       skills[2],
+  //       skills[3],
+  //       skills[4],
+  //       skills[6],
+  //       skills[7],
+  //       skills[8],
+  //       skills[9],
+  //       skills[11],
+  //     ],
+  //     letter:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+  //   },
+  //   {
+  //     id: '7',
+  //     ideaId: '2',
+  //     accepted: false,
+  //     teamId: '13',
 
-      name: 'Смешарики',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
-      skills: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-      ],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-  ]
+  //     name: 'Смешарики',
+  //     closed: false,
+  //     createdAt: '2023-10-20T11:02:17Z',
+  //     membersCount: 4,
+  //     description:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+  //     owner: teamMembers[1],
+  //     leader: teamMembers[2],
+  //     members: [...teamMembers],
+  //     skills: [
+  //       skills[0],
+  //       skills[2],
+  //       skills[3],
+  //       skills[4],
+  //       skills[6],
+  //       skills[7],
+  //       skills[8],
+  //       skills[9],
+  //       skills[11],
+  //     ],
+  //     letter:
+  //       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+  //   },
+  // ]
 
   const companies: Company[] = [
     {
@@ -1265,7 +1268,7 @@ function getMocks(): Mocks {
     teams,
     teamMembers,
     requestsToTeam,
-    RequestTeams,
+    // RequestTeams,
     teamInvitations,
 
     notifications,

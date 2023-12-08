@@ -1,9 +1,17 @@
-import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
+import axios from 'axios'
+
+import { API_URL } from '@Main'
+
 import Success from '@Domain/ResponseMessage'
 import IdeaMarket from '@Domain/IdeaMarket'
-import getAbortedSignal from '@Utils/getAbortedSignal'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { Team } from '@Domain/Team'
+
 import useUserStore from '@Store/user/userStore'
+
+import defineAxios from '@Utils/defineAxios'
+import getMocks from '@Utils/getMocks'
+import getAbortedSignal from '@Utils/getAbortedSignal'
 
 function formatFavoriteIdea(ideasMarket: IdeaMarket[]) {
   return ideasMarket.filter((ideaMarket) => ideaMarket.isFavorite)
@@ -11,6 +19,7 @@ function formatFavoriteIdea(ideasMarket: IdeaMarket[]) {
 
 const ideasMarketAxios = defineAxios(getMocks().ideasMarket)
 
+// --- GET --- //
 const fetchIdeasMarket = async (token: string): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
     .get('/market/all', {
@@ -72,6 +81,7 @@ const getAllInitiatorMarketIdeas = async (
     })
 }
 
+// --- POST --- //
 const sendIdeaOnMarket = async (
   idea: IdeaMarket[],
   token: string,
@@ -88,6 +98,23 @@ const sendIdeaOnMarket = async (
     })
 }
 
+const postIdeaMarketTeam = async (
+  requestToIdea: RequestTeamToIdea,
+  token: string,
+): Promise<Team | Error> => {
+  return await axios
+    .post(`${API_URL}/market/update/team`, requestToIdea, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка добавления команды'
+      return new Error(error)
+    })
+}
+
+// --- PUT --- //
 const addIdeaToFavorites = async (
   id: string,
   token: string,
@@ -100,11 +127,12 @@ const addIdeaToFavorites = async (
     )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки компетенций идеи'
+      const error = response?.data?.error ?? 'Ошибка загрузки избранных идей'
       return new Error(error)
     })
 }
 
+// --- DELETE --- ///
 const removeIdeaFromFavorites = async (
   id: string,
   token: string,
@@ -117,19 +145,38 @@ const removeIdeaFromFavorites = async (
     )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки компетенций идеи'
+      const error = response?.data?.error ?? 'Ошибка обновления избранных идей'
+      return new Error(error)
+    })
+}
+
+const kickTeamFromIdeaMarket = async (teamId: string, token: string) => {
+  return await ideasMarketAxios
+    .delete(
+      `/market/kick/team/${teamId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { team: null } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка исключения команды из идеи'
       return new Error(error)
     })
 }
 
 const IdeasMarketService = {
   fetchIdeasMarket,
-  getIdeaMarket,
-  sendIdeaOnMarket,
   fetchFavoritesIdeas,
-  addIdeaToFavorites,
-  removeIdeaFromFavorites,
   getAllInitiatorMarketIdeas,
+  getIdeaMarket,
+
+  sendIdeaOnMarket,
+  postIdeaMarketTeam,
+
+  addIdeaToFavorites,
+
+  removeIdeaFromFavorites,
+  kickTeamFromIdeaMarket,
 }
 
 export default IdeasMarketService

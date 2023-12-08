@@ -1,6 +1,6 @@
 import IdeaMarket from '@Domain/IdeaMarket'
 interface InitialState {
-  ideas: IdeaMarket[]
+  ideasMarket: IdeaMarket[]
 }
 
 export default InitialState
