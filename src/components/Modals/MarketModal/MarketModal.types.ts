@@ -1,5 +1,5 @@
 import IdeaMarket from '@Domain/IdeaMarket'
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Skill } from '@Domain/Skill'
 
 interface MarketModalProps {
@@ -7,11 +7,11 @@ interface MarketModalProps {
 }
 
 interface MarketDescriptionProps {
-  idea: IdeaMarket
+  ideaMarket: IdeaMarket
 }
 
 interface MarketTablesProps {
-  acceptedTeams?: RequestTeamToIdea[]
+  ideaMarket: IdeaMarket
   requestTeams?: RequestTeamToIdea[]
 }
 

@@ -25,9 +25,14 @@ function navigateToTeamForm() {
 }
 
 function getAccessRequestToIdea() {
-  return (
-    user.value?.id !== props.idea.initiator.id && user.value?.role === 'TEAM_OWNER'
-  )
+  const currentUser = user.value
+
+  if (currentUser) {
+    const { id, role } = currentUser
+    const { id: initiatorId } = props.ideaMarket.initiator
+
+    return id !== initiatorId && role === 'TEAM_OWNER'
+  }
 }
 </script>
 
@@ -45,7 +50,7 @@ function getAccessRequestToIdea() {
           v-for="(team, index) in ownerTeams"
           :key="index"
           :team="team"
-          :idea="idea"
+          :idea="ideaMarket"
           v-model:requestTeams="requests"
           :isDisabledButtonSkills="false"
         />

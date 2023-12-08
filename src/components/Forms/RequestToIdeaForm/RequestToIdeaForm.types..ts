@@ -1,9 +1,9 @@
 import IdeaMarket from '@Domain/IdeaMarket'
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
 interface RequestToIdeaFormProps {
-  idea: IdeaMarket
+  ideaMarket: IdeaMarket
   requests: RequestTeamToIdea[]
   ownerTeams: Team[]
 }

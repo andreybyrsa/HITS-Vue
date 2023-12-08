@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
 
 import marketModalCollapses from '@Components/Modals/MarketModal/MarketModalCollapses'
 import Button from '@Components/Button/Button.vue'
@@ -17,21 +16,18 @@ const props = defineProps<MarketDescriptionProps>()
 
 const emit = defineEmits<MarketModalEmits>()
 
-const router = useRouter()
-
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-function closeModal() {
-  emit('close-modal')
-  router.push('/market')
-}
-
 function getAccessToViewDescription() {
-  return (
-    user.value?.email !== props.idea.initiator.email &&
-    user.value?.role !== 'INITIATOR'
-  )
+  const currentUser = user.value
+
+  if (currentUser) {
+    const { id } = currentUser
+    const { id: initiatorId } = props.ideaMarket.initiator
+
+    return id !== initiatorId
+  }
 }
 </script>
 
@@ -39,9 +35,9 @@ function getAccessToViewDescription() {
   <div class="idea-description">
     <div class="idea-description__header">
       <Button
-        class-name="btn-primary"
+        variant="close"
         prepend-icon-name="bi bi-backspace-fill"
-        @click="closeModal"
+        @click="emit('close-modal')"
       >
         Назад
       </Button>
@@ -49,7 +45,7 @@ function getAccessToViewDescription() {
       <Typography
         class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap"
       >
-        {{ idea?.name }}
+        {{ ideaMarket.name }}
       </Typography>
     </div>
 
@@ -70,7 +66,7 @@ function getAccessToViewDescription() {
         </Button>
         <Collapse :id="collapse.id.toString()">
           <div class="p-2">
-            {{ idea[collapse.ideaKey] }}
+            {{ ideaMarket[collapse.ideaKey] }}
           </div>
         </Collapse>
       </li>

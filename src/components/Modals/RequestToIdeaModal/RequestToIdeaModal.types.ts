@@ -2,7 +2,7 @@ import IdeaMarket from '@Domain/IdeaMarket'
 
 interface RequestToIdeaModalProps {
   isOpened: boolean
-  idea: IdeaMarket | null
+  ideaMarket: IdeaMarket | null
 }
 
 interface RequestToIdeaModalEmits {

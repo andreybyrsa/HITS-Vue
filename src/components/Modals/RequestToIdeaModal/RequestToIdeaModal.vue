@@ -12,7 +12,7 @@ import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdea
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
 import TeamService from '@Services/TeamService'
@@ -103,7 +103,7 @@ watch(
 
         <RequestToIdeaForm
           v-if="ownerTeams"
-          :idea="idea"
+          :idea-market="idea"
           :requests="requests"
           :owner-teams="ownerTeams"
         />

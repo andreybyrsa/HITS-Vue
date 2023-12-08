@@ -1,10 +1,17 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 
-import TeamInvitations from '@Components/Modals/TeamModal/TeamInvitations.vue'
 import { MarketTablesProps } from '@Components/Modals/MarketModal/MarketModal.types'
+import RequestsToIdeaTable from '@Components/Tables/RequestsToIdeaTable/RequestsToIdeaTable.vue'
 
-defineProps<MarketTablesProps>()
+import useUserStore from '@Store/user/userStore'
+import IdeaMarketTeamsTable from '@Components/Tables/IdeaMarketTeamsTable/IdeaMarketTeamsTable.vue'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const props = defineProps<MarketTablesProps>()
 
 const isAcceptedTeamsTable = ref(true)
 const isRequestsToIdeaTable = ref(false)
@@ -28,10 +35,24 @@ function getNavLinkStyle(isCurrentTable: boolean) {
     { 'text-secondary': !isCurrentTable },
   ]
 }
+
+function getAccessToTables() {
+  const currentUser = user.value
+
+  if (currentUser) {
+    const { id, role } = currentUser
+    const { id: initiatorId } = props.ideaMarket.initiator
+
+    return id === initiatorId && role === 'INITIATOR'
+  }
+}
 </script>
 
 <template>
-  <div class="bg-white rounded-3">
+  <div
+    v-if="getAccessToTables()"
+    class="bg-white rounded-3"
+  >
     <div class="border-bottom px-3">
       <ul class="nav nav-underline">
         <div
@@ -50,16 +71,15 @@ function getNavLinkStyle(isCurrentTable: boolean) {
     </div>
 
     <div class="idea-market-tables px-3 pb-3 pt-1">
-      <TeamInvitations
-        v-if="isAcceptedTeamsTable && acceptedTeams"
-        :invitations="invitations"
+      <IdeaMarketTeamsTable
+        v-if="isAcceptedTeamsTable"
+        :idea-market="ideaMarket"
       />
 
-      <!-- <RequestsToTeam
+      <RequestsToIdeaTable
         v-if="isRequestsToIdeaTable && requestTeams"
-        :requests="requests"
-        :team="team"
-      />  -->
+        :requests="requestTeams"
+      />
     </div>
   </div>
 </template>
