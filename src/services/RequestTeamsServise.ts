@@ -2,7 +2,7 @@ import Success from '@Domain/ResponseMessage'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
-import RequestTeams from '@Domain/RequestTeams'
+import { RequestTeams } from '@Domain/RequestTeams'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import useUserStore from '@Store/user/userStore'
 

@@ -26,6 +26,7 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import TeamService from '@Services/TeamService'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -57,17 +58,17 @@ function checkResponseStatus<T>(
   }
 }
 
-const handleKick = async (member: TeamMember, teamId: number) => {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await TeamService.kickTeamMember(member.id, token)
+// const handleKick = async (member: TeamMember, teamId: number) => {
+//   const currentUser = user.value
+//   if (currentUser?.token) {
+//     const { token } = currentUser
+//     const response = await TeamService.kickTeamMember(member.id, token)
 
-    if (response instanceof Error) {
-      return
-    }
-  }
-}
+//     if (response instanceof Error) {
+//       return
+//     }
+//   }
+// }
 
 onMounted(async () => {
   const currentUser = user.value

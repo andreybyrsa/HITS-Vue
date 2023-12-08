@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 
-import ReviewIdeaRequestsFormProps from '@Components/Forms/ReviewIdeaRequestsForm/ReviewIdeaRequestsForm.types'
+import { ReviewIdeaRequestsFormProps } from '@Components/Forms/ReviewIdeaRequestsForm/ReviewIdeaRequestsForm.types'
 
 import useUserStore from '@Store/user/userStore'
 
 import ReviewIdeaRequestTable from '@Components/Tables/ReviewIdeaRequestTable/ReviewIdeaRequestTable.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
-import RequestTeams from '@Domain/RequestTeams'
+import { RequestTeams } from '@Domain/RequestTeams'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -19,7 +19,7 @@ const teams = defineModel<RequestTeams[]>('requestTeams', { required: true })
 const skillsRequestTeam = defineModel<RequestTeams[]>('skillsRequestTeam')
 
 function filterTeamsAccepted(teams: RequestTeams[]) {
-  return teams.filter((elem) => elem.accepted === false)
+  return teams.filter((elem) => elem.status === 'ACCEPTED')
 }
 </script>
 
