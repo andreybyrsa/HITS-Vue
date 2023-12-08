@@ -123,6 +123,8 @@ async function switchNavTab(value: boolean, callback: () => Promise<void>) {
         >
           Избранное
         </div>
+      </div>
+      <div class="w-50 mb-3">
         <Input
           name="search"
           class-name="rounded-end"
@@ -136,7 +138,10 @@ async function switchNavTab(value: boolean, callback: () => Promise<void>) {
         </Input>
       </div>
 
-      <div v-if="searchedIdeas">
+      <div
+        v-if="searchedIdeas"
+        class="idea-cards row"
+      >
         <SingleIdeaCard
           v-for="idea in searchedIdeas"
           :key="idea.id"
@@ -166,5 +171,10 @@ async function switchNavTab(value: boolean, callback: () => Promise<void>) {
 
     @include flexible(stretch, flex-start, column);
   }
+}
+
+.idea-cards {
+  width: 100%;
+  grid-row-gap: 20px;
 }
 </style>
