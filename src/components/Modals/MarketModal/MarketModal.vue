@@ -6,7 +6,6 @@ import { storeToRefs } from 'pinia'
 import { MarketModalProps } from '@Components/Modals/MarketModal/MarketModal.types'
 import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.vue'
-import MarketAcceptTeam from '@Components/Modals/MarketModal/MarketAcceptTeam.vue'
 import MarketModalPlaceholder from '@Components/Modals/MarketModal/MarketModalPlaceholder.vue'
 import MarketRightSide from '@Components/Modals/MarketModal/MarketRightSide.vue'
 import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
@@ -145,11 +144,6 @@ function closeMarketModal() {
           :skills="ideaMarket.stack"
           v-model:skillsRequestTeam="skillsRequestTeam"
           v-model:skillsTeam="skillsTeam"
-        />
-
-        <MarketAcceptTeam
-          v-model="requestTeams"
-          :idea="ideaMarket"
         />
       </div>
     </div>

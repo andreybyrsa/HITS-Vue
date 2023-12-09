@@ -12,8 +12,7 @@ import {
 
 import useUserStore from '@Store/user/userStore'
 
-const props = defineProps<MarketDescriptionProps>()
-
+defineProps<MarketDescriptionProps>()
 const emit = defineEmits<MarketModalEmits>()
 
 const userStore = useUserStore()
@@ -23,10 +22,9 @@ function getAccessToViewDescription() {
   const currentUser = user.value
 
   if (currentUser) {
-    const { id } = currentUser
-    const { id: initiatorId } = props.ideaMarket.initiator
+    const { role } = currentUser
 
-    return id !== initiatorId
+    return role !== 'INITIATOR'
   }
 }
 </script>

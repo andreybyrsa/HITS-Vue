@@ -15,17 +15,22 @@ interface MarketTablesProps {
   requestTeams?: RequestTeamToIdea[]
 }
 
-interface MarketModalEmits {
-  (event: 'close-modal'): void
-}
-
-interface MarketAcceptTeamProps {
-  teams?: RequestTeamToIdea[]
-  idea?: IdeaMarket
-}
-
 interface MarketInfoProps {
-  idea: IdeaMarket
+  ideaMarket: IdeaMarket
+}
+
+interface MarketModalCollapseType {
+  key: number
+  id: number
+  ideaKey: keyof IdeaMarket
+  text: string
+}
+
+interface MarketModalTabType {
+  id: string
+  key: keyof IdeaMarket
+  name: string
+  icon: string
 }
 
 interface MarketRightSideProps {
@@ -40,13 +45,18 @@ interface MarketSkillsradarChartsProps {
   idea: IdeaMarket
 }
 
+interface MarketModalEmits {
+  (event: 'close-modal'): void
+}
+
 export {
   MarketModalProps,
   MarketDescriptionProps,
   MarketTablesProps,
-  MarketModalEmits,
-  MarketAcceptTeamProps,
   MarketInfoProps,
+  MarketModalCollapseType,
+  MarketModalTabType,
   MarketSkillsradarChartsProps,
   MarketRightSideProps,
+  MarketModalEmits,
 }

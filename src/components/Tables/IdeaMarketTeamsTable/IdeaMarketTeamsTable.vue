@@ -94,6 +94,7 @@ const dropdownIdeaMarketTeamActions: DropdownMenuAction<Team>[] = [
   {
     label: 'Исключить',
     className: 'text-danger',
+    statement: checkRecruitmentIdeaStatus,
     click: openConfirmModal,
   },
 ]
@@ -170,5 +171,9 @@ async function kickTeamFromIdeaMarket() {
       token,
     )
   }
+}
+
+function checkRecruitmentIdeaStatus() {
+  return props.ideaMarket.status === 'RECRUITMENT_IS_OPEN'
 }
 </script>

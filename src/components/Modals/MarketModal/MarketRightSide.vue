@@ -11,7 +11,7 @@ import useUserStore from '@Store/user/userStore'
 
 import Button from '@Components/Button/Button.vue'
 
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
 const userStore = useUserStore()
@@ -47,6 +47,7 @@ function openMarketInfo() {
       Компетенции
     </Button>
   </div>
+
   <div v-if="isChangeContent">
     <MarketSkillsRadarCharts
       v-if="user?.email == idea.initiator.email"
@@ -64,7 +65,7 @@ function openMarketInfo() {
 
   <MarketInfo
     v-else
-    :idea="idea"
+    :idea-market="idea"
   />
 </template>
 

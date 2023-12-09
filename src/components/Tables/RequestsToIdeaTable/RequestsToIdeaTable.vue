@@ -111,11 +111,13 @@ const dropdownRequestActions: DropdownMenuAction<RequestTeamToIdea>[] = [
   {
     label: 'Принять',
     className: 'text-success',
+    statement: checkRecruitmentIdeaStatus,
     click: (requestToIdea) => openModal(isOpenedAcceptModal, requestToIdea),
   },
   {
     label: 'Отклонить',
     className: 'text-danger',
+    statement: checkRecruitmentIdeaStatus,
     click: (requestToIdea) => openModal(isOpenedCancelModal, requestToIdea),
   },
 ]
@@ -208,5 +210,9 @@ async function cancelRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
 
     await requestsToIdeaStore.cancelRequestToIdea(requestToIdea, token)
   }
+}
+
+function checkRecruitmentIdeaStatus() {
+  return props.ideaMarket.status === 'RECRUITMENT_IS_OPEN'
 }
 </script>

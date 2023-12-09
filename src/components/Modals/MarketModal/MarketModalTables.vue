@@ -78,6 +78,7 @@ function getAccessToTables() {
 
       <RequestsToIdeaTable
         v-if="isRequestsToIdeaTable && requestTeams"
+        :idea-market="ideaMarket"
         :requests="requestTeams"
       />
     </div>

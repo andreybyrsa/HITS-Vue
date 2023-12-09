@@ -21,6 +21,7 @@ const router = useRouter()
 const props = defineProps<RequestToIdeaFormProps>()
 
 function navigateToTeamForm() {
+  userStore.setRole('TEAM_OWNER')
   router.push('/teams/create')
 }
 
@@ -28,10 +29,25 @@ function getAccessRequestToIdea() {
   const currentUser = user.value
 
   if (currentUser) {
-    const { id, role } = currentUser
-    const { id: initiatorId } = props.ideaMarket.initiator
+    const { role } = currentUser
+    const { status } = props.ideaMarket
 
-    return id !== initiatorId && role === 'TEAM_OWNER'
+    return role === 'TEAM_OWNER' && status === 'RECRUITMENT_IS_OPEN'
+  }
+}
+
+function getAccessToCreateTeam() {
+  const currentUser = user.value
+
+  if (currentUser) {
+    const { role, roles } = currentUser
+    const { status } = props.ideaMarket
+
+    return (
+      role !== 'TEAM_OWNER' &&
+      roles.includes('TEAM_OWNER') &&
+      status === 'RECRUITMENT_IS_OPEN'
+    )
   }
 }
 </script>
@@ -59,19 +75,20 @@ function getAccessRequestToIdea() {
   </div>
 
   <div
-    v-else
+    v-if="getAccessToCreateTeam()"
     class="d-flex w-100 px-3 align-items-center justify-content-between"
   >
-    <Typography class-name="text-danger">
-      *Вы не являетесь владельцем команды.
-    </Typography>
-    <Button
-      v-if="user?.role === 'TEAM_OWNER'"
-      variant="primary"
-      @click="navigateToTeamForm"
-    >
-      Создать команду?
-    </Button>
+    <template>
+      <Typography class-name="text-danger">
+        *Вы не являетесь владельцем команды.
+      </Typography>
+      <Button
+        variant="primary"
+        @click="navigateToTeamForm"
+      >
+        Создать команду?
+      </Button>
+    </template>
   </div>
 </template>
 

@@ -6,6 +6,7 @@ import Success from '@Domain/ResponseMessage'
 import IdeaMarket from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
+import IdeaMarketStatusTypes from '@Domain/MarketStatus'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -132,6 +133,24 @@ const addIdeaToFavorites = async (
     })
 }
 
+const updateIdeaMarketStatus = async (
+  id: string,
+  status: IdeaMarketStatusTypes,
+  token: string,
+): Promise<Success | Error> => {
+  return await ideasMarketAxios
+    .putNoRequestBody<Success>(
+      `/market/change/status/${id}/${status}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      { params: { id }, requestData: { isFavorite: true } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки избранных идей'
+      return new Error(error)
+    })
+}
+
 // --- DELETE --- ///
 const removeIdeaFromFavorites = async (
   id: string,
@@ -174,6 +193,7 @@ const IdeasMarketService = {
   postIdeaMarketTeam,
 
   addIdeaToFavorites,
+  updateIdeaMarketStatus,
 
   removeIdeaFromFavorites,
   kickTeamFromIdeaMarket,

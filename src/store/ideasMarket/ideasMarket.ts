@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 import RolesTypes from '@Domain/Roles'
 import { Team } from '@Domain/Team'
+import IdeaMarketStatusTypes from '@Domain/MarketStatus'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
@@ -70,6 +71,30 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
   },
 
   actions: {
+    async updateIdeaMarketStatus(
+      id: string,
+      status: IdeaMarketStatusTypes,
+      token: string,
+    ) {
+      const response = await IdeasMarketService.updateIdeaMarketStatus(
+        id,
+        status,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentIdeaMarket = this.ideasMarket.find(
+          (ideaMarket) => ideaMarket.id === id,
+        )
+
+        if (currentIdeaMarket) {
+          currentIdeaMarket.status = status
+        }
+      }
+    },
+
     async setIdeaMarketTeam(requestToIdea: RequestTeamToIdea, token: string) {
       const { ideaMarketId } = requestToIdea
       const response = await IdeasMarketService.postIdeaMarketTeam(
