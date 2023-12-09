@@ -95,7 +95,7 @@ function getAccessRequestToIdea() {
           :team="team"
           :idea="idea"
           v-model:requestTeams="requests"
-          :isDisabledButtonSkills="false"
+          :isDisabledButtonSkills="$route.name === 'market'"
         />
       </div>
     </div>

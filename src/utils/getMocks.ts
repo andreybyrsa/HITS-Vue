@@ -994,18 +994,12 @@ function getMocks(): Mocks {
   const RequestTeams: RequestTeams[] = [
     {
       id: '0',
-      ideaId: '1',
-      accepted: false,
+      ideaMarketId: '1',
       teamId: '0',
+      status: 'NEW',
 
       name: 'Первые разрабы мира',
-      closed: false,
       membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
       skills: [
         skills[0],
         skills[4],
@@ -1017,25 +1011,17 @@ function getMocks(): Mocks {
         skills[17],
         skills[18],
       ],
-      createdAt: '2023-10-20T11:02:17Z',
       letter:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
       id: '1',
-      ideaId: '1',
-      accepted: false,
+      ideaMarketId: '1',
+      status: 'NEW',
       teamId: '1',
 
       name: 'Программисты из apple',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
       membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
       skills: [
         skills[3],
         skills[4],
@@ -1051,19 +1037,12 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
-      ideaId: '1',
-      accepted: true,
+      ideaMarketId: '1',
+      status: 'NEW',
       teamId: '2',
 
       name: 'Удальцы',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
       membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
       skills: [
         skills[0],
         skills[2],
@@ -1080,19 +1059,12 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
-      ideaId: '1',
-      accepted: false,
+      ideaMarketId: '1',
+      status: 'NEW',
       teamId: '3',
 
       name: 'Молодцы',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
       membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
       skills: [
         skills[0],
         skills[2],
@@ -1109,19 +1081,12 @@ function getMocks(): Mocks {
     },
     {
       id: '4',
-      ideaId: '2',
-      accepted: false,
+      ideaMarketId: '2',
+      status: 'NEW',
       teamId: '4',
 
       name: 'Хорошая компания',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
       membersCount: 4,
-      members: [...teamMembers],
       skills: [
         skills[0],
         skills[2],
@@ -1138,19 +1103,12 @@ function getMocks(): Mocks {
     },
     {
       id: '5',
-      ideaId: '2',
-      accepted: false,
+      ideaMarketId: '2',
+      status: 'NEW',
       teamId: '5',
 
       name: 'Негатив',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
       membersCount: 4,
-      members: [...teamMembers],
       skills: [
         skills[0],
         skills[2],
@@ -1167,19 +1125,12 @@ function getMocks(): Mocks {
     },
     {
       id: '6',
-      ideaId: '2',
-      accepted: true,
+      ideaMarketId: '2',
+      status: 'NEW',
       teamId: '6',
 
       name: 'Позитив',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
       membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
       skills: [
         skills[0],
         skills[2],
@@ -1196,19 +1147,12 @@ function getMocks(): Mocks {
     },
     {
       id: '7',
-      ideaId: '2',
-      accepted: false,
+      ideaMarketId: '2',
+      status: 'NEW',
       teamId: '13',
 
       name: 'Смешарики',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
       membersCount: 4,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [...teamMembers],
       skills: [
         skills[0],
         skills[2],

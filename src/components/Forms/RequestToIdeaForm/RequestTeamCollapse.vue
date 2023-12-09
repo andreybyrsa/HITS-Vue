@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouteRecordRaw, useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -12,21 +12,23 @@ import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Skills from '@Components/Skills/Skills.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
 import useUserStore from '@Store/user/userStore'
-import RequestToIdeaService from '@Services/RequestToIdeaService'
 
 import { Team } from '@Domain/Team'
 import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
-import IdeaMarket from '@Domain/IdeaMarket'
 import useTeamStore from '@Store/teams/teamsStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
 const props = defineProps<RequestTeamCollapseProps>()
 
 const teamsStore = useTeamStore()
 
 const notificationsStore = useNotificationsStore()
+const requestToIdeaStore = useRequestsToIdeaStore()
 
 const router = useRouter()
 
@@ -38,7 +40,6 @@ const currentTeam = ref<Team>()
 const requestTeams = defineModel<RequestTeamToIdea[]>('requestTeams', {
   required: true,
 })
-//const skillsTeam = defineModel<Team[]>('skillsTeam', { required: true })
 
 const letter = ref<string>('')
 
@@ -68,35 +69,28 @@ const { handleSubmit } = useForm({
 const sendRequestTeam = handleSubmit(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && currentTeam.value) {
     const { token } = currentUser
     const id = props.idea.id
 
-    const requestTeam: RequestTeamToIdea = {
-      ...currentTeam,
-
-      teamId: props.team.id,
-      ideaId: id,
-      accepted: false,
-      letter: letter.value,
-      owner: currentTeam.value?.owner,
-      leader: currentTeam.value?.leader,
-      name: currentTeam.value?.name,
-      closed: props.team.closed,
-      members: currentTeam.value?.members,
-    }
-
-    console.log(requestTeam)
-
-    const response = await RequestToIdeaService.postRequest(requestTeam, token)
-
-    if (response instanceof Error) {
-      return
-    }
-
-    requestTeams.value?.push(response)
+    requestToIdeaStore.postRequest(currentTeam.value, id, letter.value, token)
   }
 })
+
+function navigateToUserProfile(team: Team | RequestTeamToIdea) {
+  const profileRoute: RouteRecordRaw = {
+    name: 'team-profile',
+    path: 'team-profile/:teamId',
+    alias: '/team-profile/:teamId',
+    component: TeamModal,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  router.addRoute('market', profileRoute)
+  router.push({ path: `/team-profile/${team.id}` })
+}
 
 function checkSendTeamRequest() {
   return requestTeams.value?.filter((team) => team.teamId == props.team.id)
@@ -106,11 +100,28 @@ function checkTeamRequest(teamProps: Team) {
   return requestTeams.value?.find((team) => team.teamId == teamProps.id)
 }
 
-function navigateToTeamModal(team: Team, idea: IdeaMarket) {
-  return router.push(`/market/${idea.id}/${team.id}`)
+const isOpenedConfirmModal = ref<boolean>(false)
+const currentTeamForChangeStatus = ref<RequestTeamToIdea>()
+
+function openConfirmModal(team: RequestTeamToIdea) {
+  currentTeamForChangeStatus.value = team
+  isOpenedConfirmModal.value = true
 }
 
-//console.log(props.team)
+function closeConfirmModal() {
+  isOpenedConfirmModal.value = false
+}
+
+const cancelRequestToTeam = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token && currentTeamForChangeStatus.value) {
+    const { token } = currentUser
+    const { id } = currentTeamForChangeStatus.value
+
+    requestToIdeaStore.changeStatusRequestToTeam(id, 'CANCELED', token)
+  }
+}
 </script>
 
 <template>
@@ -123,7 +134,7 @@ function navigateToTeamModal(team: Team, idea: IdeaMarket) {
       <div class="team-request-collapse__button">
         <Button
           class-name="btn-link"
-          @click="navigateToTeamModal(team, idea)"
+          @click="navigateToUserProfile(team)"
         >
           {{ team.name }}
         </Button>
@@ -142,13 +153,6 @@ function navigateToTeamModal(team: Team, idea: IdeaMarket) {
             <div class="w-50">
               <div class="d-flex align-items-center text-primary pb-1">
                 <div>Состав:</div>
-                <Button
-                  class-name="btn-link"
-                  @click="navigateToTeamModal(team, idea)"
-                  v-if="!isDisabledButtonSkills"
-                >
-                  Профиль
-                </Button>
               </div>
               <div class="d-flex flex-wrap gap-2">
                 <div
@@ -166,12 +170,12 @@ function navigateToTeamModal(team: Team, idea: IdeaMarket) {
                   v-if="!isDisabledButtonSkills"
                   name="compare"
                   :value="currentTeam"
-                  v-model="team.totalSkills"
+                  v-model="team.skills"
                 />
                 <div>Компетенции:</div>
               </div>
               <div class="d-flex flex-wrap gap-2">
-                <Skills :skills="currentTeam?.wantedSkills" />
+                <Skills :skills="currentTeam?.skills" />
               </div>
             </div>
           </div>
@@ -204,16 +208,28 @@ function navigateToTeamModal(team: Team, idea: IdeaMarket) {
     :key="index"
     class="team-request-collapse__button py-1 px-2 border rounded w-100"
   >
-    <Button class-name="btn-link">
-      {{ currentTeam?.name }}
+    <Button
+      class-name="btn-link"
+      @click="navigateToUserProfile(team)"
+    >
+      {{ team.name }}
     </Button>
     <Button
-      class-name="btn-secondary"
-      disabled
+      :variant="team.status === 'CANCELED' ? 'secondary' : 'danger'"
+      @click="openConfirmModal(team)"
+      :disabled="team.status === 'CANCELED'"
     >
-      Заявка подана
+      {{ team.status === 'CANCELED' ? 'Заявка была отклонена' : 'Отклонить заявку' }}
     </Button>
   </div>
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModal"
+    text-button="Отклонить заявку"
+    text-question="Вы действительно хотите отклонить заявку?"
+    @close-modal="closeConfirmModal"
+    @action="cancelRequestToTeam"
+  />
 </template>
 
 <style lang="scss">
