@@ -28,8 +28,7 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   },
   actions: {
     async postRequest(team: Team, ideaId: string, letter: string, token: string) {
-      const requestTeam: RequestTeamToIdea = {
-        id: team.id,
+      const requestTeam = {
         teamId: team.id,
         ideaMarketId: ideaId,
 
@@ -39,7 +38,7 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
         skills: team.skills,
 
         letter: letter,
-      }
+      } as RequestTeamToIdea
 
       const response = await RequestToIdeaService.postRequest(requestTeam, token)
 

@@ -53,7 +53,7 @@ const changeStatusRequest = async (
   token: string,
 ): Promise<Success | Error> => {
   return await axios
-    .put(`${API_URL}/market/accept/${teamMarketId}/${status}`, null, {
+    .put(`${API_URL}/market/change-status/request/${teamMarketId}/${status}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
