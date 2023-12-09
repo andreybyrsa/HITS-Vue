@@ -79,6 +79,9 @@ function getAccessRequestToTeam() {
         requests.value.find(
           ({ userId, status }) => userId === id && status === 'NEW',
         ) ||
+        requests.value.find(
+          ({ userId, status }) => userId === id && status === 'CANCELED',
+        ) ||
         invitationUsers.value.find(
           ({ userId, status }) => userId === id && status === 'NEW',
         )
@@ -247,6 +250,8 @@ function closeConfirmModal() {
   isOpenedConfirmModalAccepted.value = false
   isOpenedConfirmModalCancel.value = false
 }
+
+console.log(requests)
 </script>
 
 <template>
