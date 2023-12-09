@@ -10,15 +10,15 @@ import Icon from '@Components/Icon/Icon.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { User } from '@Domain/User'
 import { ref } from 'vue'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 import { useRoute } from 'vue-router'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
+import { TeamMember } from '@Domain/Team'
 
-const invitationUsers = defineModel<User[]>({ required: true })
-const selectedUsers = ref<User[]>([])
+const invitationUsers = defineModel<TeamMember[]>({ required: true })
+const selectedUsers = ref<TeamMember[]>([])
 
 const invitatinUsers = useInvitationUsersStore()
 const route = useRoute()
@@ -36,7 +36,7 @@ function inviteUsers() {
   emit('close-modal')
 }
 
-function cancelSelectedUsers(user: User) {
+function cancelSelectedUsers(user: TeamMember) {
   selectedUsers.value = selectedUsers.value.filter(
     (selectedUser) => selectedUser.id !== user.id,
   )

@@ -22,7 +22,7 @@ import type { UsersInviteTableEmits } from '@Components/Tables/UsersInviteTable/
 import Table from '@Components/Table/Table.vue'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-import { Filter } from '@Components/FilterBar/FilterBar.types'
+import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 
 import useUserStore from '@Store/user/userStore'
@@ -39,8 +39,9 @@ import ProfileService from '@Services/ProfileService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+import { TeamMember } from '@Domain/Team'
 
-const invitationUsers = defineModel<User[]>({ required: true })
+const invitationUsers = defineModel<TeamMember[]>({ required: true })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -51,8 +52,8 @@ const emit = defineEmits<UsersInviteTableEmits>()
 
 const router = useRouter()
 
-const users = ref<User[]>()
 const skills = ref<Skill[]>()
+const users = ref<TeamMember[]>()
 const profile = ref<Profile>()
 
 const filterBySkill = ref<Skill[]>([])
@@ -76,28 +77,34 @@ onMounted(async () => {
     const { token, id } = currentUser
 
     const profileParallelRequests = [
-      () => ManageUsersService.getUsers(token),
       () => SkillsService.getAllSkills(token),
       () => ProfileService.getUserProfile(id, token),
+      () => SkillsService.getAllUsersSkills(token),
     ]
 
-    await makeParallelRequests<User[] | UsersSkills[] | Skill[] | Profile | Error>(
+    await makeParallelRequests<TeamMember[] | Skill[] | Profile | Error>(
       profileParallelRequests,
     ).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
-          checkResponseStatus(response, users)
-        } else if (response.id === 1) {
           checkResponseStatus(response, skills)
-        } else if (response.id === 2) {
+        } else if (response.id === 1) {
           checkResponseStatus(response, profile)
+        } else if (response.id === 2) {
+          checkResponseStatus(response, users)
         }
       })
     })
   }
 })
 
-const inviteUserColumns: TableColumn<User>[] = [
+const inviteUserColumns: TableColumn<TeamMember>[] = [
+  {
+    key: 'email',
+    label: 'Почта',
+    size: 'col-4',
+    rowCellClick: navigateToUserProfile,
+  },
   {
     key: 'firstName',
     label: 'Имя',
@@ -110,18 +117,22 @@ const inviteUserColumns: TableColumn<User>[] = [
   },
 ]
 
-const usersFilters = computed<Filter<User>[]>(() => [
+const usersFilters = computed<Filter<TeamMember>[]>(() => [
   {
     category: 'Компетенции',
     searchValue: searchBySkills,
     choices: getFilterSkills(),
     refValue: filterBySkill,
     isUniqueChoice: false,
-    checkFilter: () => true,
+    checkFilter: filterUsersWithSkillls,
   },
 ])
 
-const dropdownInviteUserActions: DropdownMenuAction<User>[] = [
+function filterUsersWithSkillls(user: TeamMember, filterSkill: FilterValue) {
+  return user.skills.find((skill) => skill.name === filterSkill)
+}
+
+const dropdownInviteUserActions: DropdownMenuAction<TeamMember>[] = [
   { label: 'Перейти на профиль', click: navigateToUserProfile },
   {
     label: 'Выбрать',
@@ -149,11 +160,11 @@ function getFilterSkills() {
     : []
 }
 
-function chooseUser(user: User) {
+function chooseUser(user: TeamMember) {
   invitationUsers.value.push(user)
 }
 
-function unselectUser(user: User) {
+function unselectUser(user: TeamMember) {
   const currentUserIndex = invitationUsers.value.findIndex(
     ({ id }) => id === user.id,
   )
@@ -161,7 +172,7 @@ function unselectUser(user: User) {
   invitationUsers.value.splice(currentUserIndex, 1)
 }
 
-function navigateToUserProfile(user: User) {
+function navigateToUserProfile(user: TeamMember) {
   const profileRoute: RouteRecordRaw = {
     name: 'profile',
     path: 'profile/:id',
@@ -173,14 +184,14 @@ function navigateToUserProfile(user: User) {
   }
 
   router.addRoute('create-team', profileRoute)
-  router.push({ path: `/profile/${user.id}` })
+  router.push({ path: `/profile/${user.userId}` })
 }
 
-function checkIsNotExistUser(user: User) {
+function checkIsNotExistUser(user: TeamMember) {
   return !invitationUsers.value.find(({ id }) => id === user.id)
 }
 
-function checkIsExistUser(user: User) {
+function checkIsExistUser(user: TeamMember) {
   return !!invitationUsers.value.find(({ id }) => id === user.id)
 }
 </script>

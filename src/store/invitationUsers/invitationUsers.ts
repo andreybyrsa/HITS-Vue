@@ -3,8 +3,7 @@ import { defineStore } from 'pinia'
 import InitialState from '@Store/invitationUsers/initialState'
 import TeamService from '@Services/TeamService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { User } from '@Domain/User'
-import { TeamInvitation } from '@Domain/Team'
+import { TeamInvitation, TeamMember } from '@Domain/Team'
 import useTeamStore from '@Store/teams/teamsStore'
 
 const useInvitationUsersStore = defineStore('invitationUsers', {
@@ -31,7 +30,7 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
   },
 
   actions: {
-    async inviteUsers(users: User[], teamId: string, token: string) {
+    async inviteUsers(users: TeamMember[], teamId: string, token: string) {
       const response = await TeamService.invitationTeamMember(users, teamId, token)
 
       if (response instanceof Error) {

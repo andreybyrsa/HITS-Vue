@@ -6,13 +6,11 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import UsersSkills from '@Domain/UsersSkills'
 import { TeamMember } from '@Domain/Team'
 import axios from 'axios'
 import { API_URL } from '@Main'
 
 const skillsAxios = defineAxios(getMocks().skills)
-const usersSkillsAxios = defineAxios(getMocks().usersSkills)
 
 function mockSkillsFormatter(skills: Skill[]) {
   const LANGUAGE = skills.filter((skill) => skill.type === 'LANGUAGE')
@@ -26,8 +24,8 @@ function mockSkillsByTypeMather(skills: Skill[], type: SkillType) {
   return skills.filter((skill) => skill.type === type)
 }
 
-const getAllUsersSkills = async (token: string): Promise<UsersSkills[] | Error> => {
-  return await usersSkillsAxios
+const getAllUsersSkills = async (token: string): Promise<TeamMember[] | Error> => {
+  return await axios
     .get(`${API_URL}/team/users`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

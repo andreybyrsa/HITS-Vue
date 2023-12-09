@@ -8,13 +8,12 @@ import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import { TeamProps, TeamEmits } from '@Components/Forms/TeamForm/TeamForm.types'
 
-import { User } from '@Domain/User'
 import { TeamMember } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
-const invitationUsers = defineModel<User[]>({ required: true })
+const invitationUsers = defineModel<TeamMember[]>({ required: true })
 
 const props = defineProps<TeamProps>()
 const emit = defineEmits<TeamEmits>()
@@ -92,7 +91,7 @@ function unselectMember(unselectedMember: TeamMember) {
   }
 }
 
-function unselectInviteUser(unselectedUser: User) {
+function unselectInviteUser(unselectedUser: TeamMember) {
   const currentUserIndex = invitationUsers.value.findIndex(
     ({ id }) => id === unselectedUser.id,
   )
@@ -102,10 +101,10 @@ function unselectInviteUser(unselectedUser: User) {
   }
 }
 
-function getMemberColor(member: TeamMember | User) {
+function getMemberColor(member: TeamMember) {
   const memberClassName = ['team__member', 'p-1', 'rounded-3', 'bg-opacity-25']
 
-  if (member.id !== leader.value?.id) {
+  if (member.userId !== leader.value?.id) {
     memberClassName.push('bg-primary')
   } else {
     memberClassName.push('bg-danger')
@@ -123,7 +122,10 @@ function closeTeamInviteModal() {
 </script>
 
 <template>
-  <div class="team w-100">
+  <div
+    class="team w-100"
+    v-if="!props.team"
+  >
     <Combobox
       name="owner"
       label="Владелец команды*"
