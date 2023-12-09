@@ -168,7 +168,7 @@ function closeRequestToIdeaModal() {
       </div>
 
       <RequestToIdeaModal
-        :idea="ideaMarket"
+        :idea-market="ideaMarket"
         :is-opened="isOpenedRequestToIdeaModal"
         @close-modal="closeRequestToIdeaModal"
       />

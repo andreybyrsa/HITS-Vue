@@ -1,21 +1,38 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDateFormat } from '@vueuse/core'
+import { useRoute } from 'vue-router'
+
+import { MODE } from '@Main'
 
 import { MarketInfoProps } from '@Components/Modals/MarketModal/MarketModal.types'
-
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
+import MarketInfoTabs from '@Components/Modals/MarketModal/MarketInfoIdeaTabs'
+import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
+
+import IdeaMarket from '@Domain/IdeaMarket'
 
 import useUserStore from '@Store/user/userStore'
+import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
-import MarketInfoTabs from '@Components/Modals/MarketModal/MarketInfoIdeaTabs'
+import getMarketStatus from '@Utils/getMarketStatus'
 
 const props = defineProps<MarketInfoProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const ideasMarketStore = useIdeasMarketStore()
+
+const isOpenedConfirmModal = ref(false)
+const isCopiedLink = ref(false)
+
+const route = useRoute()
+
+const marketStatus = getMarketStatus()
 
 function getFormattedDate(date: string) {
   if (date) {
@@ -24,19 +41,65 @@ function getFormattedDate(date: string) {
   }
 }
 
-function valueTab(name: string) {
-  if (name == 'Заказчик') {
-    return props.idea.customer
+function valueTab(key: keyof IdeaMarket) {
+  const { customer, initiator, status, startDate, finishDate } = props.ideaMarket
+
+  if (key === 'customer') {
+    return customer
   }
-  if (name == 'Инициатор') {
-    return props.idea.initiator.firstName + ' ' + props.idea.initiator.lastName
+  if (key === 'initiator') {
+    return initiator.firstName + ' ' + initiator.lastName
   }
-  if (name == 'Дата старта проекта') {
-    return getFormattedDate(props.idea.startDate)
+  if (key === 'status') {
+    return marketStatus.translatedStatus[status]
   }
-  if (name == 'Дата окончания проекта') {
-    return getFormattedDate(props.idea.finishDate)
+  if (key === 'startDate') {
+    return getFormattedDate(startDate)
   }
+  if (key === 'finishDate') {
+    return getFormattedDate(finishDate)
+  }
+}
+
+function copyLink() {
+  const link =
+    MODE === 'DEVELOPMENT'
+      ? `http://localhost:8080${route.fullPath}`
+      : `https://hits.tyuiu.ru${route.fullPath}`
+
+  navigator.clipboard.writeText(link)
+  isCopiedLink.value = true
+}
+
+function getAccessToCloseRecruitment() {
+  const currentUser = user.value
+  const { initiator, status } = props.ideaMarket
+
+  if (currentUser) {
+    const { id, role } = currentUser
+
+    return (
+      id === initiator.id && role === 'INITIATOR' && status === 'RECRUITMENT_IS_OPEN'
+    )
+  }
+}
+
+async function changeIdeaMarketStatus() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id } = props.ideaMarket
+
+    await ideasMarketStore.updateIdeaMarketStatus(id, 'RECRUITMENT_IS_CLOSED', token)
+  }
+}
+
+function openConfirmModal() {
+  isOpenedConfirmModal.value = true
+}
+function closeConfirmModal() {
+  isOpenedConfirmModal.value = false
 }
 </script>
 
@@ -59,19 +122,35 @@ function valueTab(name: string) {
           <Icon :class-name="`${tab.icon} text-secondary fs-2 opacity-25`" />
 
           <Typography class-name="text-primary">
-            {{ valueTab(tab.name) }}
+            {{ valueTab(tab.key) }}
           </Typography>
         </div>
       </div>
 
       <Button
-        v-if="user?.email == idea.initiator.email"
-        class-name="btn-danger"
+        v-if="getAccessToCloseRecruitment()"
+        variant="danger"
+        @click="openConfirmModal"
       >
         Закрыть набор
       </Button>
+
+      <Button
+        variant="primary"
+        @click="copyLink"
+      >
+        {{ isCopiedLink ? 'Ссылка скопирована!' : 'Поделиться идеей' }}
+      </Button>
     </div>
   </div>
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModal"
+    text-button="Закрыть набор"
+    text-question="Вы действительно закрыть набор?"
+    @close-modal="closeConfirmModal"
+    @action="changeIdeaMarketStatus"
+  />
 </template>
 
 <style lang="scss" scoped>

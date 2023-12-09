@@ -4,31 +4,29 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import { MarketModalProps } from '@Components/Modals/MarketModal/MarketModal.types'
-
 import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.vue'
-import MarketAcceptTeam from '@Components/Modals/MarketModal/MarketAcceptTeam.vue'
-import MarketPlaceholder from '@Components/Modals/MarketModal/MarketPlaceholder.vue'
+import MarketModalPlaceholder from '@Components/Modals/MarketModal/MarketModalPlaceholder.vue'
 import MarketRightSide from '@Components/Modals/MarketModal/MarketRightSide.vue'
-
 import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
-import ReviewIdeaRequestsForm from '@Components/Forms/ReviewIdeaRequestsForm/ReviewIdeaRequestsForm.vue'
+import MarketModalTables from '@Components/Modals/MarketModal/MarketModalTables.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import useUserStore from '@Store/user/userStore'
-import TeamService from '@Services/TeamService'
-import IdeasMarketService from '@Services/IdeasMarketService'
-import RequestToIdeaService from '@Services/RequestToIdeaService'
-import useCommentsStore from '@Store/comments/commentsStore'
-
 import { Team } from '@Domain/Team'
 import Comment from '@Domain/Comment'
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import IdeaMarket from '@Domain/IdeaMarket'
 
+import TeamService from '@Services/TeamService'
+
+import useUserStore from '@Store/user/userStore'
+import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+import useCommentsStore from '@Store/comments/commentsStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
-import { Skill } from '@Domain/Skill'
 
 defineProps<MarketModalProps>()
 
@@ -37,14 +35,23 @@ const MarketModalRef = ref<VueElement | null>(null)
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const ideasMarketStore = useIdeasMarketStore()
+
+const requestsToIdeaStore = useRequestsToIdeaStore()
+
+const notificationsStore = useNotificationsStore()
+
 const route = useRoute()
 const router = useRouter()
 
-const idea = ref<IdeaMarket>()
+const ideaMarket = ref<IdeaMarket>()
 const requestTeams = ref<RequestTeamToIdea[]>()
-const teams = ref<Team[]>()
+const ownerTeams = ref<Team[]>()
+
 const skillsRequestTeam = ref<RequestTeamToIdea[]>()
 const skillsTeam = ref<Team[]>([])
+
+const isOpenedMarketModal = ref(true)
 
 function checkResponseStatus<T>(
   data: RequestResult<T>,
@@ -53,21 +60,21 @@ function checkResponseStatus<T>(
   if (data.status === 'fulfilled') {
     refValue.value = data.value
   } else {
-    // notification
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
   }
 }
 
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  if (currentUser?.token && currentUser.role) {
+    const { token, role } = currentUser
     const id = route.params.id.toString()
 
     const marketParallelRequests = [
-      () => IdeasMarketService.getIdeaMarket(id, token),
-      () => RequestToIdeaService.getIdeaRequests(id, token),
-      () => TeamService.getTeams(token),
+      () => ideasMarketStore.getMarketIdea(id, role, token),
+      () => requestsToIdeaStore.getRequestsToIdea(id, token),
+      () => TeamService.getOwnerTeams(token),
       () => useCommentsStore().getComments(id, token),
     ]
 
@@ -76,18 +83,16 @@ onMounted(async () => {
     >(marketParallelRequests).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
-          checkResponseStatus(response, idea)
+          checkResponseStatus(response, ideaMarket)
         } else if (response.id === 1) {
           checkResponseStatus(response, requestTeams)
         } else if (response.id === 2) {
-          checkResponseStatus(response, teams)
+          checkResponseStatus(response, ownerTeams)
         }
       })
     })
   }
 })
-
-const isOpenedMarketModal = ref(true)
 
 function closeMarketModal() {
   isOpenedMarketModal.value = false
@@ -95,8 +100,6 @@ function closeMarketModal() {
 
   useCommentsStore().disconnectRsocket()
 }
-
-console.log(teams)
 </script>
 
 <template>
@@ -106,51 +109,46 @@ console.log(teams)
     @on-outside-close="closeMarketModal"
   >
     <div
-      v-if="idea && requestTeams && teams"
+      v-if="ideaMarket"
       ref="MarketModalRef"
       class="market-modal p-3 h-100 overflow-y-scroll"
     >
       <div class="market-modal__left-side w-75">
         <MarketDescription
-          :idea="idea"
+          :idea-market="ideaMarket"
           @close-modal="closeMarketModal"
         />
 
-        <ReviewIdeaRequestsForm
-          :idea="idea"
-          v-model:requestTeams="requestTeams"
-          v-model:skillsRequestTeam="skillsRequestTeam"
+        <MarketModalTables
+          :idea-market="ideaMarket"
+          :request-teams="requestTeams"
         />
 
         <RequestToIdeaForm
-          v-model:teams="teams"
-          :idea="idea"
-          v-model:requestTeams="requestTeams"
-          v-model:skillsTeam="skillsTeam"
+          v-if="requestTeams && ownerTeams"
+          :idea-market="ideaMarket"
+          :requests="requestTeams"
+          :owner-teams="ownerTeams"
         />
 
         <IdeaComments
-          :news="user?.id === idea.id"
-          :idea="idea"
+          :news="user?.id === ideaMarket.id"
+          :idea="ideaMarket"
           :idea-modal-ref="MarketModalRef"
         />
       </div>
 
       <div class="market-modal__right-side w-25 rounded">
         <MarketRightSide
-          :idea="idea"
-          :skills="idea.stack"
+          :idea="ideaMarket"
+          :skills="ideaMarket.stack"
           v-model:skillsRequestTeam="skillsRequestTeam"
           v-model:skillsTeam="skillsTeam"
         />
-
-        <MarketAcceptTeam
-          v-model="requestTeams"
-          :idea="idea"
-        />
       </div>
     </div>
-    <MarketPlaceholder v-else />
+
+    <MarketModalPlaceholder v-else />
   </ModalLayout>
 </template>
 

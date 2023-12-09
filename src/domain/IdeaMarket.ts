@@ -1,10 +1,11 @@
+import { User } from '@Domain/User'
+import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 import IdeasMarketStatusTypes from '@Domain/MarketStatus'
-import TeamMember from '@Domain/TeamMember'
 
 interface IdeaMarket {
   id: string
-  initiator: TeamMember
+  initiator: User
   createdAt: string
   name: string
   problem: string
@@ -15,13 +16,14 @@ interface IdeaMarket {
   customer: string
 
   position: number
+  team: Team | null
   stack: Skill[]
   status: IdeasMarketStatusTypes
   requests: number
   acceptedRequests: number
-  isFavorite: boolean
   startDate: string
   finishDate: string
+  isFavorite: boolean
 }
 
 export default IdeaMarket

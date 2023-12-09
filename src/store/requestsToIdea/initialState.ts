@@ -1,4 +1,4 @@
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 interface InitialState {
   requests: RequestTeamToIdea[]

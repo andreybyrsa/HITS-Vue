@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia'
 
-import InitialState from '@Store/requestsToIdea/initialState'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 import RequestToIdeaService from '@Services/RequestToIdeaService'
 import { Team } from '@Domain/Team'
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+import InitialState from '@Store/requestsToIdea/initialState'
+import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({
@@ -49,26 +51,47 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
       }
     },
 
-    async changeStatusRequestToTeam(
-      teamMarketId: string,
-      status: string,
-      token: string,
-    ) {
-      const response = await RequestToIdeaService.changeStatusRequest(
-        teamMarketId,
-        status,
+    async acceptRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
+      const { id } = requestToIdea
+      const response = await RequestToIdeaService.updateRequestToIdeaStatus(
+        id,
+        'ACCEPTED',
         token,
       )
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const currentTeam = this.requests.find(
-          (request) => request.id === teamMarketId,
+        const currentRequestToIdea = this.requests.find(
+          (request) => request.id === id,
         )
-        console.log(currentTeam)
-        if (currentTeam) {
-          currentTeam.status = 'CANCELED'
+
+        if (currentRequestToIdea) {
+          currentRequestToIdea.status = 'ACCEPTED'
+        }
+
+        const ideasMarketStore = useIdeasMarketStore()
+        await ideasMarketStore.setIdeaMarketTeam(requestToIdea, token)
+      }
+    },
+
+    async cancelRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
+      const { id } = requestToIdea
+      const response = await RequestToIdeaService.updateRequestToIdeaStatus(
+        id,
+        'CANCELED',
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentRequestToIdea = this.requests.find(
+          (request) => request.id === id,
+        )
+
+        if (currentRequestToIdea) {
+          currentRequestToIdea.status = 'CANCELED'
         }
       }
     },

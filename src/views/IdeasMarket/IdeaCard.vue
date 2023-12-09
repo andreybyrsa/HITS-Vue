@@ -89,8 +89,7 @@ const handleRemoveIdeaFromFavorites = async () => {
 
 function checkIdeaOwned() {
   return (
-    user.value?.email !== props.idea.initiator.email &&
-    user.value?.role === 'TEAM_OWNER'
+    user.value?.role === 'TEAM_OWNER' && props.idea.status === 'RECRUITMENT_IS_OPEN'
   )
 }
 </script>

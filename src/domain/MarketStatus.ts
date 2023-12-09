@@ -1,3 +1,3 @@
-type IdeasMarketStatusTypes = 'RECRUITMENT_IS_OPEN' | 'RECRUITMENT_IS_CLOSED'
+type IdeaMarketStatusTypes = 'RECRUITMENT_IS_OPEN' | 'RECRUITMENT_IS_CLOSED'
 
-export default IdeasMarketStatusTypes
+export default IdeaMarketStatusTypes

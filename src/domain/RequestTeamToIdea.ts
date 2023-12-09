@@ -1,8 +1,10 @@
 import { Skill } from '@Domain/Skill'
 
+type RequestToIdeaStatus = 'NEW' | 'ACCEPTED' | 'CANCELED'
+
 interface RequestTeamToIdea {
   ideaMarketId: string
-  status: 'NEW' | 'ACCEPTED' | 'CANCELED'
+  status: RequestToIdeaStatus
   letter: string
   teamId: string
 
@@ -12,4 +14,4 @@ interface RequestTeamToIdea {
   skills: Skill[]
 }
 
-export default RequestTeamToIdea
+export { RequestTeamToIdea, RequestToIdeaStatus }

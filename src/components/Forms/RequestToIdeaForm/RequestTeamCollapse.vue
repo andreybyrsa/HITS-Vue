@@ -17,15 +17,13 @@ import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import useUserStore from '@Store/user/userStore'
 
 import { Team } from '@Domain/Team'
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
-import useTeamStore from '@Store/teams/teamsStore'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+import TeamService from '@Services/TeamService'
 
 const props = defineProps<RequestTeamCollapseProps>()
-
-const teamsStore = useTeamStore()
 
 const notificationsStore = useNotificationsStore()
 const requestToIdeaStore = useRequestsToIdeaStore()
@@ -48,7 +46,7 @@ const takeTeamData = async (id: string) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await teamsStore.getTeam(id, token)
+    const response = await TeamService.getTeam(id, token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -117,9 +115,11 @@ const cancelRequestToTeam = async () => {
 
   if (currentUser?.token && currentTeamForChangeStatus.value) {
     const { token } = currentUser
-    const { id } = currentTeamForChangeStatus.value
 
-    requestToIdeaStore.changeStatusRequestToTeam(id, 'CANCELED', token)
+    await requestToIdeaStore.cancelRequestToIdea(
+      currentTeamForChangeStatus.value,
+      token,
+    )
   }
 }
 </script>
@@ -215,11 +215,11 @@ const cancelRequestToTeam = async () => {
       {{ team.name }}
     </Button>
     <Button
-      :variant="team.status === 'CANCELED' ? 'secondary' : 'danger'"
+      :variant="team.status !== 'NEW' ? 'secondary' : 'danger'"
       @click="openConfirmModal(team)"
-      :disabled="team.status === 'CANCELED'"
+      :disabled="team.status !== 'NEW'"
     >
-      {{ team.status === 'CANCELED' ? 'Заявка была отклонена' : 'Отклонить заявку' }}
+      {{ team.status !== 'NEW' ? 'Заявка была отклонена' : 'Отклонить заявку' }}
     </Button>
   </div>
 

@@ -11,7 +11,7 @@ import useUserStore from '@Store/user/userStore'
 
 import Button from '@Components/Button/Button.vue'
 
-import RequestTeams from '@Domain/RequestTeams'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
 const userStore = useUserStore()
@@ -19,10 +19,10 @@ const { user } = storeToRefs(userStore)
 
 defineProps<MarketRightSideProps>()
 
-const skillsRequestTeam = defineModel<RequestTeams[]>('skillsRequestTeam')
+const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
 const skillsTeam = defineModel<Team[]>('skillsTeam')
 
-const isChangeContent = ref<boolean>(true)
+const isChangeContent = ref<boolean>(false)
 
 function openMarketSkillsRadarCharts() {
   isChangeContent.value = true
@@ -35,16 +35,19 @@ function openMarketInfo() {
 <template>
   <div class="header-buttons w-100 p-2 bg-white rounded">
     <Button
-      :class-name="isChangeContent ? 'btn-primary w-100' : 'btn-secondary w-100'"
-      @click="openMarketSkillsRadarCharts"
-      >Компетенции</Button
-    >
-    <Button
       :class-name="!isChangeContent ? 'btn-primary w-100' : 'btn-secondary w-100'"
       @click="openMarketInfo"
-      >Информация</Button
     >
+      Информация
+    </Button>
+    <Button
+      :class-name="isChangeContent ? 'btn-primary w-100' : 'btn-secondary w-100'"
+      @click="openMarketSkillsRadarCharts"
+    >
+      Компетенции
+    </Button>
   </div>
+
   <div v-if="isChangeContent">
     <MarketSkillsRadarCharts
       v-if="user?.email == idea.initiator.email"
@@ -62,7 +65,7 @@ function openMarketInfo() {
 
   <MarketInfo
     v-else
-    :idea="idea"
+    :idea-market="idea"
   />
 </template>
 

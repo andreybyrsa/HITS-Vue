@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { ref, Ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+
 import {
   RequestToIdeaModalProps,
   RequestToIdeaModalEmits,
@@ -9,8 +12,67 @@ import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdea
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-defineProps<RequestToIdeaModalProps>()
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { Team } from '@Domain/Team'
+
+import TeamService from '@Services/TeamService'
+
+import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+
+import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+
+const props = defineProps<RequestToIdeaModalProps>()
 const emit = defineEmits<RequestToIdeaModalEmits>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const requestsToIdeaStore = useRequestsToIdeaStore()
+const { requests } = storeToRefs(requestsToIdeaStore)
+
+const notificationsStore = useNotificationsStore()
+
+const ownerTeams = ref<Team[]>()
+
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
+}
+
+watch(
+  () => props.isOpened,
+  async (isOpened) => {
+    const currentUser = user.value
+
+    if (isOpened && currentUser?.token && props.ideaMarket) {
+      const { token } = currentUser
+      const { id } = props.ideaMarket
+
+      const parallelRequests = [
+        () => TeamService.getOwnerTeams(token),
+        () => requestsToIdeaStore.getRequestsToIdea(id, token),
+      ]
+
+      await makeParallelRequests<Team[] | RequestTeamToIdea[] | Error>(
+        parallelRequests,
+      ).then((responses) => {
+        responses.forEach((response) => {
+          if (response.id === 0) {
+            checkResponseStatus(response, ownerTeams)
+          }
+        })
+      })
+    }
+  },
+)
 </script>
 
 <template>
@@ -19,7 +81,7 @@ const emit = defineEmits<RequestToIdeaModalEmits>()
     @on-outside-close="emit('close-modal')"
   >
     <div
-      v-if="idea"
+      v-if="ideaMarket"
       class="request-to-idea-modal bg-white rounded"
     >
       <div class="d-flex flex-column w-100">
@@ -35,11 +97,16 @@ const emit = defineEmits<RequestToIdeaModalEmits>()
           <Typography
             class-name="p-2 w-100 border bg-white rounded-3 fs-4 text-primary text-nowrap"
           >
-            {{ idea.name }}
+            {{ ideaMarket.name }}
           </Typography>
         </div>
 
-        <RequestToIdeaForm :idea="idea" />
+        <RequestToIdeaForm
+          v-if="ownerTeams"
+          :idea-market="ideaMarket"
+          :requests="requests"
+          :owner-teams="ownerTeams"
+        />
       </div>
     </div>
   </ModalLayout>

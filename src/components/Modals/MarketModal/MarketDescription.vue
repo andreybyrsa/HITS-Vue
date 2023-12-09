@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
 
 import marketModalCollapses from '@Components/Modals/MarketModal/MarketModalCollapses'
 import Button from '@Components/Button/Button.vue'
@@ -12,30 +11,31 @@ import {
 } from '@Components/Modals/MarketModal/MarketModal.types'
 
 import useUserStore from '@Store/user/userStore'
-import IdeaMarket from '@Domain/IdeaMarket'
 
 defineProps<MarketDescriptionProps>()
-
 const emit = defineEmits<MarketModalEmits>()
-
-const router = useRouter()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-function closeModal() {
-  emit('close-modal')
-  router.push('/market')
+function getAccessToViewDescription() {
+  const currentUser = user.value
+
+  if (currentUser) {
+    const { role } = currentUser
+
+    return role !== 'INITIATOR'
+  }
 }
 </script>
 
 <template>
   <div class="idea-description">
-    <div class="idea-description-header">
+    <div class="idea-description__header">
       <Button
-        class-name="btn-primary"
+        variant="primary"
         prepend-icon-name="bi bi-backspace-fill"
-        @click="closeModal"
+        @click="emit('close-modal')"
       >
         Назад
       </Button>
@@ -43,12 +43,12 @@ function closeModal() {
       <Typography
         class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap"
       >
-        {{ idea?.name }}
+        {{ ideaMarket.name }}
       </Typography>
     </div>
 
     <ul
-      v-if="user?.email != idea?.initiator.email"
+      v-if="getAccessToViewDescription()"
       class="list-group rounded-3"
     >
       <li
@@ -58,13 +58,13 @@ function closeModal() {
       >
         <Button
           class-name="collapse-controller btn-light w-100"
-          v-collapse="collapse.id"
+          v-collapse:openOnMount="collapse.id"
         >
           {{ collapse.text }}
         </Button>
-        <Collapse :id="collapse.id">
+        <Collapse :id="collapse.id.toString()">
           <div class="p-2">
-            {{ idea?.[collapse.ideaKey as keyof IdeaMarket] }}
+            {{ ideaMarket[collapse.ideaKey] }}
           </div>
         </Collapse>
       </li>
@@ -76,7 +76,7 @@ function closeModal() {
 .idea-description {
   @include flexible(stretch, flex-start, column, $gap: 16px);
 
-  &-header {
+  &__header {
     @include flexible(stretch, flex-start, $gap: 16px);
   }
 }

@@ -1,5 +1,5 @@
 import IdeaMarket from '@Domain/IdeaMarket'
-import ApplicationTeams from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Skill } from '@Domain/Skill'
 
 interface MarketModalProps {
@@ -7,20 +7,30 @@ interface MarketModalProps {
 }
 
 interface MarketDescriptionProps {
-  idea: IdeaMarket
+  ideaMarket: IdeaMarket
 }
 
-interface MarketModalEmits {
-  (event: 'close-modal'): void
-}
-
-interface MarketAcceptTeamProps {
-  teams?: ApplicationTeams[]
-  idea?: IdeaMarket
+interface MarketTablesProps {
+  ideaMarket: IdeaMarket
+  requestTeams?: RequestTeamToIdea[]
 }
 
 interface MarketInfoProps {
-  idea: IdeaMarket
+  ideaMarket: IdeaMarket
+}
+
+interface MarketModalCollapseType {
+  key: number
+  id: number
+  ideaKey: keyof IdeaMarket
+  text: string
+}
+
+interface MarketModalTabType {
+  id: string
+  key: keyof IdeaMarket
+  name: string
+  icon: string
 }
 
 interface MarketRightSideProps {
@@ -35,12 +45,18 @@ interface MarketSkillsradarChartsProps {
   idea: IdeaMarket
 }
 
+interface MarketModalEmits {
+  (event: 'close-modal'): void
+}
+
 export {
   MarketModalProps,
   MarketDescriptionProps,
-  MarketModalEmits,
-  MarketAcceptTeamProps,
+  MarketTablesProps,
   MarketInfoProps,
+  MarketModalCollapseType,
+  MarketModalTabType,
   MarketSkillsradarChartsProps,
   MarketRightSideProps,
+  MarketModalEmits,
 }
