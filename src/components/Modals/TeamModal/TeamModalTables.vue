@@ -3,8 +3,8 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
-import TeamInvitations from '@Components/Modals/TeamModal/TeamInvitations.vue'
-import RequestsToTeam from '@Components/Modals/TeamModal/RequestsToTeam.vue'
+import TeamInvitations from '@Components/Tables/TeamsTable/TeamInvitations.vue'
+import RequestsToTeam from '@Components/Tables/TeamsTable/RequestsToTeam.vue'
 import { TeamModalTables } from '@Components/Modals/TeamModal/TeamModal.types'
 
 import useUserStore from '@Store/user/userStore'
