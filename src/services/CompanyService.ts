@@ -139,7 +139,7 @@ const deleteCompany = async (
     })
 }
 
-const TeamService = {
+const CompanyService = {
   getCompanies,
   getOwnerCompanies,
   getCompany,
@@ -152,4 +152,4 @@ const TeamService = {
   deleteCompany,
 }
 
-export default TeamService
+export default CompanyService

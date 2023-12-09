@@ -11,6 +11,7 @@ import ProfileIdeas from '@Components/Modals/ProfileModal/ProfileIdeas.vue'
 import ProfileModalPlaceholder from '@Components/Modals/ProfileModal/ProfileModalPlaceholder.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import { ProfileModalProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
@@ -22,6 +23,8 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+
+const props = defineProps<ProfileModalProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -77,6 +80,10 @@ onMounted(async () => {
 })
 
 function handleCloseProfileModal() {
+  if (props.canGoBack) {
+    return router.go(-1)
+  }
+
   const parentBaseRoute = route.matched[route.matched.length - 2].path
 
   isOpenedProfileModal.value = false

@@ -6,17 +6,25 @@
     :filters="ideasFilters"
     :checked-data-actions="checkedIdeasActions"
     :dropdown-actions-menu="dropdownIdeasActions"
-  ></Table>
+    v-model="checkedIdeas"
+  />
 
   <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
   />
+
+  <SendIdeasOnMarketModal
+    :is-opened="isOpenSendIdeasModal"
+    :checked-ideas="sendingIdeasOnMarket"
+    @close-modal="closeSendIdeasModal"
+    @reset-checked-ideas="resetCheckedIdeas"
+  />
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -30,6 +38,7 @@ import {
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
 import { Idea } from '@Domain/Idea'
 import IdeaStatusTypes from '@Domain/IdeaStatus'
@@ -51,6 +60,8 @@ const { user } = storeToRefs(userStore)
 const ideaStore = useIdeasStore()
 
 const ideasData = ref<Idea[]>([])
+const checkedIdeas = ref<Idea[]>([])
+const sendingIdeasOnMarket = ref<Idea[]>([])
 
 const availableStatus = getStatus()
 
@@ -58,6 +69,8 @@ const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
 const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
+
+const isOpenSendIdeasModal = ref<boolean>(false)
 
 watchImmediate(
   () => props.ideas,
@@ -114,14 +127,16 @@ const ideaTableColumns: TableColumn<Idea>[] = [
   },
 ]
 
-const checkedIdeasActions: CheckedDataAction<Idea>[] = [
+const checkedIdeasActions = computed<CheckedDataAction<Idea>[]>(() => [
   {
     label: 'Отправить на биржу',
     className: 'btn-primary',
-    statement: user.value?.role == 'PROJECT_OFFICE',
-    click: () => console.log('market'),
+    statement:
+      user.value?.role == 'PROJECT_OFFICE' &&
+      checkedIdeas.value.every((idea) => idea.status === 'CONFIRMED'),
+    click: openSendIdeasModal,
   },
-]
+])
 
 const dropdownIdeasActions: DropdownMenuAction<Idea>[] = [
   {
@@ -197,6 +212,17 @@ function getRatingColor(rating: number) {
     return 'text-warning'
   }
   return 'text-danger'
+}
+
+function openSendIdeasModal(ideas: Idea[]) {
+  sendingIdeasOnMarket.value = [...ideas]
+  isOpenSendIdeasModal.value = true
+}
+function closeSendIdeasModal() {
+  isOpenSendIdeasModal.value = false
+}
+function resetCheckedIdeas() {
+  checkedIdeas.value = []
 }
 
 function navigateToIdeaModal(idea: Idea) {

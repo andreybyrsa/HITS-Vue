@@ -18,9 +18,16 @@ import DropDown from '@Components/DropDown/DropDown.vue'
 const props = defineProps<TableProps<DataType>>()
 
 const data = ref<DataType[]>([]) as Ref<DataType[]>
-const filtersRefs = ref<Ref<FilterValue | FilterValue[] | undefined>[]>([])
-const checkedData = ref<DataType[]>([]) as Ref<DataType[]>
+const searchedData = computed(() => searchDataByKeys())
+const checkedData = defineModel<DataType[]>({
+  default: [],
+  required: false,
+  local: true,
+}) as Ref<DataType[]>
+
 const searchedValue = ref('')
+const filtersRefs = ref<Ref<FilterValue | FilterValue[] | undefined>[]>([])
+
 const isCheckedAll = ref(false)
 
 onMounted(() => {
@@ -33,6 +40,8 @@ watchImmediate(
   () => props.data,
   () => {
     data.value = props.data
+    checkedData.value = []
+
     searchDataByKeys()
     filterData(filtersRefs.value)
   },
@@ -44,14 +53,15 @@ watchImmediate(filtersRefs, (filters) => filterData(filters), { deep: true })
 watchImmediate(searchedValue, () => searchDataByKeys())
 
 watchImmediate(checkedData, () => {
-  if (data.value.length && data.value.length === checkedData.value.length) {
+  if (
+    searchedData.value.length &&
+    searchedData.value.length === checkedData.value.length
+  ) {
     isCheckedAll.value = true
   } else {
     isCheckedAll.value = false
   }
 })
-
-const searchedData = computed(() => searchDataByKeys())
 
 function searchDataByKeys() {
   if (props.searchBy) {
@@ -106,9 +116,9 @@ function filterData(filters: Ref<FilterValue | FilterValue[] | undefined>[]) {
 }
 
 function checkAllRows() {
-  if (data.value.length !== checkedData.value.length) {
+  if (searchedData.value.length !== checkedData.value.length) {
     isCheckedAll.value = true
-    checkedData.value = data.value
+    checkedData.value = [...searchedData.value]
   } else {
     isCheckedAll.value = false
     checkedData.value = []
@@ -181,7 +191,7 @@ function checkDropdownActionStatement(
 
 <template>
   <div class="w-100">
-    <div class="bg-white p-2 d-flex justify-content-between">
+    <div class="bg-white py-2 d-flex justify-content-between">
       <div
         v-if="searchBy"
         class="w-50"
@@ -222,7 +232,7 @@ function checkDropdownActionStatement(
 
     <div class="w-100 d-flex">
       <div class="w-100">
-        <table class="table table-hover">
+        <table class="table table-hover mb-0">
           <thead>
             <tr>
               <th class="py-3 col">

@@ -1,11 +1,8 @@
 import { Skill } from '@Domain/Skill'
 import { Team } from '@Domain/Team'
 
-type mode = 'creating' | 'editing'
-
 interface TeamFormProps {
   team?: Team
-  mode: mode
 }
 interface SkillsRadarChartsProps {
   skills: Skill[]
@@ -13,7 +10,16 @@ interface SkillsRadarChartsProps {
 }
 
 interface TeamProps {
-  mode: mode
+  team?: Team
 }
 
-export { TeamFormProps, SkillsRadarChartsProps, TeamProps }
+interface TeamEmits {
+  (
+    event: 'set-value',
+    field: keyof Team,
+    value: string | number,
+    shouldValidate?: boolean,
+  ): void
+}
+
+export { TeamFormProps, SkillsRadarChartsProps, TeamProps, TeamEmits }

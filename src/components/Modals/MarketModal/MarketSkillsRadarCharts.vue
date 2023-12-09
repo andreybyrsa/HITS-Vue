@@ -1,0 +1,62 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+
+import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarCharts.vue'
+import { MarketSkillsradarChartsProps } from '@Components/Modals/MarketModal/MarketModal.types'
+
+import { Skill } from '@Domain/Skill'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { Team } from '@Domain/Team'
+
+const props = defineProps<MarketSkillsradarChartsProps>()
+
+const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
+const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
+
+const skillsRequestTeamsData = computed<SkillsArea[]>(() => [
+  { label: 'Компетенции идеи', skills: props.skills, alphaOpacity: 100 },
+  {
+    label: 'Компетенции команды',
+    skills: filterSkillsTeams(),
+    alphaOpacity: 50,
+  },
+])
+
+function filterSkillsTeams() {
+  if (skillsAcceptedTeam.value && skillsRequestTeam.value) {
+    const skills: Skill[] = []
+    skills.push(...skillsAcceptedTeam.value.skills)
+    skillsRequestTeam.value.forEach((team) => skills.push(...team.skills))
+
+    return skills
+  } else {
+    const skills: Skill[] = []
+    skillsRequestTeam.value?.forEach((team) => skills.push(...team.skills))
+
+    return skills
+  }
+}
+</script>
+
+<template>
+  <div class="bg-white rounded">
+    <div
+      class="market-skills-radar-charts w-100 bg-primary rounded-top fs-5 text-white p-2 mb-2"
+    >
+      Компетенции
+    </div>
+    <SkillsRadarCharts
+      class-name="w-100"
+      :skills="skillsRequestTeamsData"
+      is-not-placeholder
+    />
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.market-skills-radar-charts {
+  @include flexible(center, center);
+}
+</style>

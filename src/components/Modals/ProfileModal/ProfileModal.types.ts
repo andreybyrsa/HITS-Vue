@@ -1,6 +1,10 @@
 import { User } from '@Domain/User'
 import Profile from '@Domain/Profile'
 
+interface ProfileModalProps {
+  canGoBack?: boolean
+}
+
 interface ProfileAvatarProps {
   user: User
   avatar: FormData
@@ -24,6 +28,7 @@ interface ProfileProjectsProps {
 }
 
 export {
+  ProfileModalProps,
   ProfileAvatarProps,
   ProfileInfoProps,
   ProfileSkillProps,

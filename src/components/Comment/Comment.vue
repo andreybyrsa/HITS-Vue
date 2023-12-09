@@ -71,7 +71,7 @@ const getCurrentCommentDate = (createdAt: string) => {
           variant="primary"
           prepend-icon-name="bi bi-list fs-5"
           v-dropdown="'commentVue'"
-        ></Button>
+        />
         <DropDown id="commentVue">
           <ul class="list-group list-group-flush">
             <li

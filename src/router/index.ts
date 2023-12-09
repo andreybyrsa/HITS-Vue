@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocationRaw,
+  RouteRecordRaw,
+} from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import LoginView from '@Views/LoginView.vue'
@@ -16,6 +21,7 @@ import CompaniesView from '@Views/Admin/CompaniesView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
@@ -23,6 +29,8 @@ import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
+
+import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
 
@@ -34,11 +42,25 @@ import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 
+function homeRouteMiddleware(): RouteLocationRaw {
+  const userStore = useUserStore()
+  const { user } = storeToRefs(userStore)
+  const localStorageUser = LocalStorageUser.getLocalStorageUser()
+
+  if (localStorageUser?.token && !user.value?.token) {
+    useUserStore().setUser(localStorageUser)
+  }
+
+  return user.value?.roles.includes('TEAM_OWNER')
+    ? { name: 'teams-list' }
+    : { name: 'ideas-list' }
+}
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    redirect: { name: 'ideas-list' },
+    redirect: homeRouteMiddleware,
   },
   {
     path: '/ideas',
@@ -48,10 +70,16 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'ideas-list',
         component: IdeasView,
+        meta: {
+          roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
         children: [
           {
             path: ':id',
             component: IdeaModal,
+            meta: {
+              roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
           },
         ],
       },
@@ -77,10 +105,12 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
+        meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
         children: [
           {
             path: ':teamId',
             component: TeamModal,
+            meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
           },
           {
             name: 'profile',
@@ -94,11 +124,31 @@ const routes: RouteRecordRaw[] = [
         name: 'create-team',
         path: 'create',
         component: NewTeamView,
+        meta: { roles: ['TEAM_OWNER', 'ADMIN'] },
       },
       {
         name: 'update-team',
         path: 'update/:id',
         component: EditTeamView,
+        meta: { roles: ['TEAM_OWNER', 'ADMIN'] },
+      },
+    ],
+  },
+  {
+    path: '/market',
+    name: 'market',
+    component: IdeasMarketView,
+    meta: {
+      roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    },
+    children: [
+      {
+        path: ':id',
+        name: 'MarketModal',
+        component: MarketModal,
+        meta: {
+          roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+        },
       },
     ],
   },
@@ -170,6 +220,7 @@ const routes: RouteRecordRaw[] = [
     name: 'forgot-password',
     component: ForgotPasswordView,
   },
+
   {
     path: '/dev',
     component: DevView,
@@ -208,6 +259,12 @@ router.beforeEach((to) => {
     return { name: 'login' }
   }
   if (user.value && authRouteNames.includes(currentRouteName)) {
+    const { roles } = user.value
+
+    if (roles.includes('TEAM_OWNER')) {
+      return { name: 'teams-list' }
+    }
+
     return { name: 'ideas-list' }
   }
   if (requiredRouteRoles.length && user.value?.role) {

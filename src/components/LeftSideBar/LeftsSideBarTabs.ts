@@ -1,7 +1,5 @@
 import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 
-import getRoles from '@Utils/getRoles'
-
 const leftSideBarTabs: LeftSideBarTabType[] = [
   {
     id: 0,
@@ -13,7 +11,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Список идей',
         to: '/ideas/list',
         iconName: 'bi bi-list',
-        roles: getRoles().roles,
+        roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
       },
       {
         id: 2,
@@ -24,7 +22,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
     ],
     iconName: 'bi bi-lightbulb',
-    roles: getRoles().roles,
+    roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
   },
   {
     id: 3,
@@ -36,18 +34,25 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Список команд',
         to: '/teams/list',
         iconName: 'bi bi-list',
-        roles: getRoles().roles,
+        roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'],
       },
       {
         id: 5,
         text: 'Создать команду',
         to: '/teams/create',
         iconName: 'bi bi-plus-lg',
-        roles: getRoles().roles,
+        roles: ['TEAM_OWNER', 'ADMIN'],
       },
     ],
     iconName: 'bi bi-people',
-    roles: getRoles().roles,
+    roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'],
+  },
+  {
+    id: 6,
+    text: 'Биржа идей',
+    to: '/market',
+    iconName: 'bi bi-basket3',
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
   },
   {
     id: 7,
@@ -92,22 +97,6 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     ],
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
-  },
-  {
-    id: 14,
-    text: 'Настройки',
-    to: '/change-email',
-    routes: [
-      {
-        id: 15,
-        to: '/change-email',
-        text: 'Изменение почты',
-        iconName: 'bi bi-pencil-square',
-        roles: getRoles().roles,
-      },
-    ],
-    iconName: 'bi bi-gear',
-    roles: getRoles().roles,
   },
 ]
 

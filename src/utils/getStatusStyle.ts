@@ -2,6 +2,7 @@ import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 function getStatusStyle(status: IdeaStatusTypes) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
+
   if (status === 'NEW') {
     initialClass.push('bg-primary-subtle', 'text-primary')
     return initialClass
@@ -17,7 +18,7 @@ function getStatusStyle(status: IdeaStatusTypes) {
     return initialClass
   }
 
-  if (status === 'CONFIRMED') {
+  if (status === 'CONFIRMED' || status === 'ON_MARKET') {
     initialClass.push('bg-success-subtle', 'text-success')
     return initialClass
   }

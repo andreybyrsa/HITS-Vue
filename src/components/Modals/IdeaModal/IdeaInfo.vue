@@ -55,7 +55,6 @@ function copyLink() {
 
   navigator.clipboard.writeText(link)
   isCopiedLink.value = true
-  setTimeout(() => (isCopiedLink.value = false), 100000)
 }
 
 function getIdeaStatus() {
