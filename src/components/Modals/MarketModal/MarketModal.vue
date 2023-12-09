@@ -48,8 +48,8 @@ const ideaMarket = ref<IdeaMarket>()
 const requestTeams = ref<RequestTeamToIdea[]>()
 const ownerTeams = ref<Team[]>()
 
-const skillsRequestTeam = ref<RequestTeamToIdea[]>()
-const skillsTeam = ref<Team[]>([])
+const skillsRequestTeam = ref<RequestTeamToIdea[]>([])
+const skillsAcceptedTeam = ref<Team>()
 
 const isOpenedMarketModal = ref(true)
 
@@ -122,6 +122,8 @@ function closeMarketModal() {
         <MarketModalTables
           :idea-market="ideaMarket"
           :request-teams="requestTeams"
+          v-model:skillsRequestTeam="skillsRequestTeam"
+          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
         />
 
         <RequestToIdeaForm
@@ -143,7 +145,7 @@ function closeMarketModal() {
           :idea="ideaMarket"
           :skills="ideaMarket.stack"
           v-model:skillsRequestTeam="skillsRequestTeam"
-          v-model:skillsTeam="skillsTeam"
+          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
         />
       </div>
     </div>

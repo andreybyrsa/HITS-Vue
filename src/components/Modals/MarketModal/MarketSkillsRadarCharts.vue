@@ -1,36 +1,21 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { storeToRefs } from 'pinia'
 
 import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
 import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarCharts.vue'
 import { MarketSkillsradarChartsProps } from '@Components/Modals/MarketModal/MarketModal.types'
 
-import useUserStore from '@Store/user/userStore'
-
 import { Skill } from '@Domain/Skill'
-import RequestTeamToIdea from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
 const props = defineProps<MarketSkillsradarChartsProps>()
 
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
-const skillsTeam = defineModel<Team[]>('skillsTeam')
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
+const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
 const skillsRequestTeamsData = computed<SkillsArea[]>(() => [
-  { label: 'Компетенции идеи', skills: props.skills, alphaOpacity: 100 },
-  {
-    label: 'Компетенции команды',
-    skills: filterSkillsRequestTeams(),
-    alphaOpacity: 50,
-  },
-])
-
-const skillsTeamsData = computed<SkillsArea[]>(() => [
   { label: 'Компетенции идеи', skills: props.skills, alphaOpacity: 100 },
   {
     label: 'Компетенции команды',
@@ -39,22 +24,19 @@ const skillsTeamsData = computed<SkillsArea[]>(() => [
   },
 ])
 
-function filterSkillsRequestTeams() {
-  if (skillsRequestTeam.value) {
+function filterSkillsTeams() {
+  if (skillsAcceptedTeam.value && skillsRequestTeam.value) {
     const skills: Skill[] = []
+    skills.push(...skillsAcceptedTeam.value.skills)
     skillsRequestTeam.value.forEach((team) => skills.push(...team.skills))
 
     return skills
-  } else return []
-}
-
-function filterSkillsTeams() {
-  if (skillsTeam.value) {
+  } else {
     const skills: Skill[] = []
-    skillsTeam.value.forEach((team) => skills.push(...team.skills))
+    skillsRequestTeam.value?.forEach((team) => skills.push(...team.skills))
 
     return skills
-  } else return []
+  }
 }
 </script>
 
@@ -66,15 +48,8 @@ function filterSkillsTeams() {
       Компетенции
     </div>
     <SkillsRadarCharts
-      v-if="user?.email == idea.initiator.email"
       class-name="w-100"
       :skills="skillsRequestTeamsData"
-      is-not-placeholder
-    />
-    <SkillsRadarCharts
-      v-else
-      class-name="w-100"
-      :skills="skillsTeamsData"
       is-not-placeholder
     />
   </div>

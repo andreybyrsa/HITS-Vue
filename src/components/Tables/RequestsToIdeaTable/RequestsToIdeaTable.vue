@@ -4,6 +4,7 @@
     :columns="requestToIdeaColumns"
     :search-by="['name']"
     :dropdown-actions-menu="dropdownRequestActions"
+    v-model="selectedRequest"
   />
 
   <LetterModal
@@ -43,14 +44,18 @@ import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
 
+import getSkillStyle from '@Utils/getSkillsStyle'
+
 import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
 
 import useUserStore from '@Store/user/userStore'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
 import mutableSort from '@Utils/mutableSort'
+import { Skill } from '@Domain/Skill'
 
 const props = defineProps<RequestsToIdeaTableProps>()
+const skillsRequestTeam = defineModel<RequestTeamToIdea[]>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -59,6 +64,8 @@ const requestsToIdeaStore = useRequestsToIdeaStore()
 
 const requestToIdeaTeams = ref<RequestTeamToIdea[]>([])
 const currentRequestToIdea = ref<RequestTeamToIdea | null>(null)
+
+const selectedRequest = ref<RequestTeamToIdea[]>([])
 
 const router = useRouter()
 
@@ -73,7 +80,19 @@ watchImmediate(
   },
 )
 
+watchImmediate(
+  () => selectedRequest.value,
+  () => (skillsRequestTeam.value = selectedRequest.value),
+)
+
 const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
+  {
+    key: 'name',
+    label: 'Название',
+    size: 'col-3',
+    contentClassName: 'justify-content-start align-items-center text-center',
+    rowCellClick: navigateToTeamModal,
+  },
   {
     key: 'status',
     label: 'Статус',
@@ -83,21 +102,26 @@ const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
     getRowCellStyle: getStatusStyle,
   },
   {
-    key: 'name',
-    label: 'Название',
-    size: 'col-3',
-    contentClassName: 'justify-content-center align-items-center text-center',
-    rowCellClick: navigateToTeamModal,
-  },
-  {
     key: 'membersCount',
     label: 'Участники',
     size: 'col-1',
     contentClassName: 'justify-content-center align-items-center text-center',
     headerCellClick: sortByMembersCount,
   },
-  // skills ?
+  {
+    key: 'skills',
+    label: 'Кометенции',
+    size: 'col-4',
+    contentClassName: 'justify-content-center align-items-center',
+    getRowCellStyle: getSkillStyle,
+    getRowCellFormat: getSkillsFormat,
+  },
 ]
+
+function getSkillsFormat(skills: Skill[], index: number) {
+  const currentSkill = skills[index]
+  return currentSkill.name
+}
 
 const dropdownRequestActions: DropdownMenuAction<RequestTeamToIdea>[] = [
   {

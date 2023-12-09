@@ -7,6 +7,11 @@ import RequestsToIdeaTable from '@Components/Tables/RequestsToIdeaTable/Requests
 
 import useUserStore from '@Store/user/userStore'
 import IdeaMarketTeamsTable from '@Components/Tables/IdeaMarketTeamsTable/IdeaMarketTeamsTable.vue'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { Team } from '@Domain/Team'
+
+const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
+const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -59,7 +64,7 @@ function getAccessToTables() {
           :class="getNavLinkStyle(isAcceptedTeamsTable)"
           @click="switchToAcceptedTeamsTable"
         >
-          Принятые команды
+          Принятая команда
         </div>
         <div
           :class="getNavLinkStyle(isRequestsToIdeaTable)"
@@ -74,12 +79,14 @@ function getAccessToTables() {
       <IdeaMarketTeamsTable
         v-if="isAcceptedTeamsTable"
         :idea-market="ideaMarket"
+        v-model="skillsAcceptedTeam"
       />
 
       <RequestsToIdeaTable
         v-if="isRequestsToIdeaTable && requestTeams"
         :idea-market="ideaMarket"
         :requests="requestTeams"
+        v-model="skillsRequestTeam"
       />
     </div>
   </div>

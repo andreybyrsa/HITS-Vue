@@ -1,26 +1,20 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
 
 import { MarketRightSideProps } from '@Components/Modals/MarketModal/MarketModal.types'
 
 import MarketSkillsRadarCharts from '@Components/Modals/MarketModal/MarketSkillsRadarCharts.vue'
 import MarketInfo from '@Components/Modals/MarketModal/MarketInfo.vue'
 
-import useUserStore from '@Store/user/userStore'
-
 import Button from '@Components/Button/Button.vue'
 
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
 defineProps<MarketRightSideProps>()
 
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
-const skillsTeam = defineModel<Team[]>('skillsTeam')
+const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
 const isChangeContent = ref<boolean>(false)
 
@@ -50,15 +44,9 @@ function openMarketInfo() {
 
   <div v-if="isChangeContent">
     <MarketSkillsRadarCharts
-      v-if="user?.email == idea.initiator.email"
       :skills="skills"
       v-model:skillsRequestTeam="skillsRequestTeam"
-      :idea="idea"
-    />
-    <MarketSkillsRadarCharts
-      v-else
-      :skills="skills"
-      v-model:skillsTeam="skillsTeam"
+      v-model:skillsAcceptedTeam="skillsAcceptedTeam"
       :idea="idea"
     />
   </div>

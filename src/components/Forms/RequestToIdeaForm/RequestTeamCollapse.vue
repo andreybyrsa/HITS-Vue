@@ -22,6 +22,7 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 import TeamService from '@Services/TeamService'
+import TeamDescription from '@Components/Modals/TeamModal/TeamDescription.vue'
 
 const props = defineProps<RequestTeamCollapseProps>()
 
@@ -122,6 +123,24 @@ const cancelRequestToTeam = async () => {
     )
   }
 }
+
+function getTextStatusRequest(team: RequestTeamToIdea) {
+  if (team.status === 'ACCEPTED') {
+    return 'Заявка принята'
+  }
+  if (team.status === 'CANCELED') {
+    return 'Заявка отклонена'
+  }
+}
+
+function getStyleStatusRequest(team: RequestTeamToIdea) {
+  if (team.status === 'ACCEPTED') {
+    return 'success'
+  }
+  if (team.status === 'CANCELED') {
+    return 'danger'
+  }
+}
 </script>
 
 <template>
@@ -215,11 +234,11 @@ const cancelRequestToTeam = async () => {
       {{ team.name }}
     </Button>
     <Button
-      :variant="team.status !== 'NEW' ? 'secondary' : 'danger'"
+      :variant="team.status !== 'NEW' ? getStyleStatusRequest(team) : 'danger'"
       @click="openConfirmModal(team)"
       :disabled="team.status !== 'NEW'"
     >
-      {{ team.status !== 'NEW' ? 'Заявка была отклонена' : 'Отклонить заявку' }}
+      {{ team.status !== 'NEW' ? getTextStatusRequest(team) : 'Отклонить заявку' }}
     </Button>
   </div>
 

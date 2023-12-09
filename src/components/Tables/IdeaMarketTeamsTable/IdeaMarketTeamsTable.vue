@@ -26,6 +26,7 @@ import IdeaMarketTeamsTableProps from '@Components/Tables/IdeaMarketTeamsTable/I
 import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
+import getSkillStyle from '@Utils/getSkillsStyle'
 
 import { Team, TeamMember } from '@Domain/Team'
 
@@ -34,8 +35,10 @@ import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 import mutableSort from '@Utils/mutableSort'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
+import { Skill } from '@Domain/Skill'
 
 const props = defineProps<IdeaMarketTeamsTableProps>()
+const skillsAcceptedTeam = defineModel<Team>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -53,6 +56,7 @@ watchImmediate(
   (ideaMarket) => {
     if (ideaMarket.team) {
       ideaMarketTeams.value = [ideaMarket.team]
+      skillsAcceptedTeam.value = ideaMarket.team
     }
   },
 )
@@ -62,14 +66,14 @@ const ideaMarketTeamColumns: TableColumn<Team>[] = [
     key: 'name',
     label: 'Название',
     size: 'col-3',
-    contentClassName: 'justify-content-center align-items-center text-center',
+    contentClassName: 'justify-content-start align-items-center text-center',
     rowCellClick: navigateToTeamModal,
   },
   {
     key: 'leader',
     label: 'Лидер',
     size: 'col-3',
-    contentClassName: 'justify-content-center align-items-center text-center',
+    contentClassName: 'justify-content-start align-items-center text-center',
     rowCellClick: navigateToLeaderProfile,
     getRowCellFormat: getLeaderFormat,
     getRowCellStyle: getLeaderStyle,
@@ -77,12 +81,23 @@ const ideaMarketTeamColumns: TableColumn<Team>[] = [
   {
     key: 'membersCount',
     label: 'Участники',
-    size: 'col-1',
-    contentClassName: 'justify-content-center align-items-center text-center',
+    contentClassName: 'justify-content-center align-items-center',
     headerCellClick: sortByMembersCount,
   },
-  // skills ?
+  {
+    key: 'skills',
+    label: 'Кометенции',
+    size: 'col-4',
+    contentClassName: 'justify-content-center align-items-center',
+    getRowCellStyle: getSkillStyle,
+    getRowCellFormat: getSkillsFormat,
+  },
 ]
+
+function getSkillsFormat(skills: Skill[], index: number) {
+  const currentSkill = skills[index]
+  return currentSkill.name
+}
 
 const dropdownIdeaMarketTeamActions: DropdownMenuAction<Team>[] = [
   {
