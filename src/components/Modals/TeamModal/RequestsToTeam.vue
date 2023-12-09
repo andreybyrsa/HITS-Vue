@@ -104,7 +104,7 @@ function getStatusFormat(status: RequestToTeamStatus) {
   }
 
   if (status === 'CANCELED') {
-    return 'Отклонена'
+    return 'Отозвана'
   }
 }
 

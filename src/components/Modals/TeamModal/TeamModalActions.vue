@@ -237,6 +237,11 @@ async function cancelInvitationToTeam() {
 
 const isOpenedConfirmModalAccepted = ref(false)
 const isOpenedConfirmModalCancel = ref(false)
+const isOpenedConfirmModalCancelRequest = ref(false)
+
+function openConfirmModalCancelRequest() {
+  isOpenedConfirmModalCancelRequest.value = true
+}
 
 function openConfirmModalAccepted() {
   isOpenedConfirmModalAccepted.value = true
@@ -249,6 +254,7 @@ function openConfirmModalCancel() {
 function closeConfirmModal() {
   isOpenedConfirmModalAccepted.value = false
   isOpenedConfirmModalCancel.value = false
+  isOpenedConfirmModalCancelRequest.value = false
 }
 
 console.log(requests)
@@ -301,9 +307,9 @@ console.log(requests)
     <Button
       v-if="getAccessCancelRequestToTeam()"
       variant="danger"
-      @click="cancelRequestToTeam"
+      @click="openConfirmModalCancelRequest"
     >
-      Отклонить заявку
+      Отозвать заявку
     </Button>
 
     <Button
@@ -332,6 +338,14 @@ console.log(requests)
       v-model="invitationUsersInTeam"
       :is-opened="isOpenedInvitationModal"
       @close-modal="closeInvitationModal"
+    />
+
+    <ConfirmModal
+      :is-opened="isOpenedConfirmModalCancelRequest"
+      text-button="Отклонить заявку"
+      text-question="В следующий раз подать заявку будет НЕЛЬЗЯ!"
+      @close-modal="closeConfirmModal"
+      @action="cancelRequestToTeam"
     />
 
     <ConfirmModal

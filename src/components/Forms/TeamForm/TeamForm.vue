@@ -139,6 +139,17 @@ const radarChartsSkills = computed<SkillsArea[]>(() => [
     alphaOpacity: 50,
   },
 ])
+
+watchImmediate(
+  () => invitationUsers.value.length,
+  () => {
+    const skills: Skill[] = []
+    invitationUsers.value.forEach((user) => {
+      skills.push(...user.skills)
+    })
+    totalSkills.value = skills
+  },
+)
 </script>
 
 <template>
