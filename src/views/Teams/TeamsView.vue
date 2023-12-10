@@ -58,6 +58,7 @@ function navigateToCreateTeamPage() {
       <div class="teams-page__header w-100">
         <Typography class-name="fs-2 text-primary">Список команд</Typography>
         <Button
+          v-if="user?.role !== 'MEMBER'"
           variant="primary"
           prepend-icon-name="bi bi-plus-lg"
           @click="navigateToCreateTeamPage"

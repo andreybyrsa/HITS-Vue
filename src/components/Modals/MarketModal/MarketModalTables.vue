@@ -95,6 +95,7 @@ function getAccessToTables() {
 <style lang="scss" scoped>
 .idea-market-tables {
   max-height: 430px;
+  overflow-y: scroll;
 }
 .nav-link {
   cursor: pointer;
