@@ -5,27 +5,10 @@
     </template>
 
     <template #content>
-      <div class="skills-page__header">
-        <Typography class-name="fs-2 text-primary">Список компетенций</Typography>
-
-        <Button
-          variant="primary"
-          prepend-icon-name="bi bi-plus-lg"
-          @click="openCreatingSkillModal"
-        >
-          Добавить компетенцию
-        </Button>
-      </div>
-
-      <template v-if="skills">
-        <SkillsTable v-model="skills" />
-        <SkillModal
-          :is-opened="isOpenCreatingSkillModal"
-          v-model="skills"
-          @close-modal="closeCreatingSkillModal"
-        />
-      </template>
-
+      <SkillsTable
+        v-if="skills"
+        v-model="skills"
+      />
       <TablePlaceholder v-else />
 
       <router-view />
@@ -38,11 +21,8 @@ import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
-import Button from '@Components/Button/Button.vue'
 import SkillsTable from '@Components/Tables/SkillsTable/SkillsTable.vue'
-import SkillModal from '@Components/Modals/SkillModal/SkillModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -58,8 +38,6 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const skills = ref<Skill[]>()
-
-const isOpenCreatingSkillModal = ref(false)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -78,21 +56,10 @@ onMounted(async () => {
     skills.value = responseSkill
   }
 })
-
-function openCreatingSkillModal() {
-  isOpenCreatingSkillModal.value = true
-}
-function closeCreatingSkillModal() {
-  isOpenCreatingSkillModal.value = false
-}
 </script>
 
 <style lang="scss">
 .skills-page {
-  &__header {
-    @include flexible(center, space-between);
-  }
-
   &__content {
     overflow-y: scroll;
   }

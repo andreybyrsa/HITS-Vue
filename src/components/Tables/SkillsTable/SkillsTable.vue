@@ -1,5 +1,6 @@
 <template>
   <Table
+    :header="skillsTableHeader"
     :columns="skillTableColumns"
     :data="skills"
     :search-by="['name']"
@@ -7,6 +8,11 @@
     :dropdown-actions-menu="dropdownSkillsActions"
   ></Table>
 
+  <SkillModal
+    :is-opened="isOpenCreatingSkillModal"
+    v-model="skills"
+    @close-modal="closeCreatingSkillModal"
+  />
   <SkillModal
     :is-opened="isOpenUpdatingSkillModal"
     :skill="updatingSkill"
@@ -28,7 +34,11 @@ import { storeToRefs } from 'pinia'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import Table from '@Components/Table/Table.vue'
 import SkillModal from '@Components/Modals/SkillModal/SkillModal.vue'
-import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import {
+  TableColumn,
+  DropdownMenuAction,
+  TableHeader,
+} from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 
 import { Skill, SkillType } from '@Domain/Skill'
@@ -49,13 +59,27 @@ const notificationsStore = useNotificationsStore()
 const updatingSkill = ref<Skill | null>(null)
 const currentDeleteSkillId = ref<string | null>(null)
 
-const isOpenedDeletingModal = ref(false)
+const isOpenCreatingSkillModal = ref(false)
 const isOpenUpdatingSkillModal = ref(false)
+const isOpenedDeletingModal = ref(false)
 
 const filterByType = ref<SkillType[]>([])
 const filterByIsConfirmed = ref<boolean>()
 
 const availableSkills = getSkills()
+
+const skillsTableHeader: TableHeader = {
+  label: 'Список компетенций',
+  countData: true,
+  buttons: [
+    {
+      label: 'Добавить компетенцию',
+      variant: 'primary',
+      prependIconName: 'bi bi-plus-lg',
+      click: openCreatingSkillModal,
+    },
+  ],
+}
 
 const skillTableColumns: TableColumn<Skill>[] = [
   {
@@ -211,6 +235,13 @@ const handleDeleteSkill = async () => {
       skills.value.splice(currentSkillIndex, 1)
     }
   }
+}
+
+function openCreatingSkillModal() {
+  isOpenCreatingSkillModal.value = true
+}
+function closeCreatingSkillModal() {
+  isOpenCreatingSkillModal.value = false
 }
 
 function openUpdatingSkillModal(skill: Skill) {

@@ -1,5 +1,6 @@
 <template>
   <Table
+    :header="usersTableHeader"
     :columns="usersTableColumns"
     :data="users"
     :search-by="['email', 'firstName', 'lastName']"
@@ -19,7 +20,11 @@
 import { ref } from 'vue'
 
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
-import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
+import {
+  DropdownMenuAction,
+  TableColumn,
+  TableHeader,
+} from '@Components/Table/Table.types'
 import Table from '@Components/Table/Table.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 
@@ -36,6 +41,13 @@ const availableRoles = getRoles()
 
 const updatingUser = ref<User | null>(null)
 const isOpenedUpdatingUserModal = ref(false)
+
+const userRoles = getRoles()
+
+const usersTableHeader: TableHeader = {
+  label: 'Список пользователей',
+  countData: true,
+}
 
 const usersTableColumns: TableColumn<User>[] = [
   {
@@ -71,12 +83,10 @@ const dropdownUsersActions: DropdownMenuAction<User>[] = [
 const usersFilters: Filter<User>[] = [
   {
     category: 'Роли',
-    choices: [
-      { label: 'Инициатор', value: 'INITIATOR' },
-      { label: 'Проектный офис', value: 'PROJECT_OFFICE' },
-      { label: 'Эксперт', value: 'EXPERT' },
-      { label: 'Админ', value: 'ADMIN' },
-    ],
+    choices: userRoles.roles.map((role) => ({
+      label: userRoles.translatedRoles[role],
+      value: role,
+    })),
     refValue: rolesFilter,
     isUniqueChoice: false,
     checkFilter: checkUserRoles,
