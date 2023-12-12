@@ -12,13 +12,16 @@ interface TeamMember {
 
 interface Team {
   id: string
-  name: string
   createdAt: string
+
+  name: string
   description: string
   closed: boolean
+  isRefused: boolean
   membersCount: number
   owner: TeamMember
   leader?: TeamMember
+
   members: TeamMember[]
   skills: Skill[]
   wantedSkills: Skill[]
@@ -30,7 +33,15 @@ interface TeamSkills {
   wantedSkills: Skill[]
 }
 
-interface TeamInvitation {
+type RequestToTeamStatus = 'NEW' | 'ANNULLED' | 'ACCEPTED' | 'CANCELED' | 'WITHDRAWN'
+type InvitationToTeamStatus =
+  | 'NEW'
+  | 'ANNULLED'
+  | 'ACCEPTED'
+  | 'CANCELED'
+  | 'WITHDRAWN'
+
+interface RequestToTeam {
   id: string
   teamId: string
   userId: string
@@ -40,13 +51,11 @@ interface TeamInvitation {
   lastName: string
 }
 
-type RequestToTeamStatus = 'NEW' | 'ACCEPTED' | 'CANCELED'
-
-interface RequestToTeam {
+interface TeamInvitation {
   id: string
   teamId: string
   userId: string
-  status: RequestToTeamStatus
+  status: InvitationToTeamStatus
   email: string
   firstName: string
   lastName: string
@@ -59,4 +68,5 @@ export {
   TeamInvitation,
   RequestToTeam,
   RequestToTeamStatus,
+  InvitationToTeamStatus,
 }

@@ -17,13 +17,19 @@ import { TeamInvitationsProps } from '@Components/Modals/TeamModal/TeamModal.typ
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
-import { RequestToTeamStatus, TeamInvitation } from '@Domain/Team'
+import { InvitationToTeamStatus, TeamInvitation } from '@Domain/Team'
+import {
+  getInvitationsToTeamStatus,
+  getInvitationToTeamStatusStyle,
+} from '@Utils/invitaionsToTeamStatus'
 
 const props = defineProps<TeamInvitationsProps>()
 
 const teamInvitations = ref<TeamInvitation[]>([])
 
 const router = useRouter()
+
+const invitationsToTeamStatus = getInvitationsToTeamStatus()
 
 watchImmediate(
   () => props.invitations,
@@ -39,7 +45,7 @@ const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
     size: 'col-1',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getStatusFormat,
-    getRowCellStyle: getStatusStyle,
+    getRowCellStyle: getInvitationToTeamStatusStyle,
   },
   {
     key: 'email',
@@ -62,37 +68,8 @@ const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
   },
 ]
 
-function getStatusStyle(status: RequestToTeamStatus) {
-  const initialClass = ['px-2', 'py-1', 'rounded-4']
-
-  if (status === 'NEW') {
-    initialClass.push('bg-primary-subtle', 'text-primary')
-    return initialClass
-  }
-
-  if (status === 'ACCEPTED') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
-
-  if (status === 'CANCELED') {
-    initialClass.push('bg-danger-subtle', 'text-danger')
-    return initialClass
-  }
-}
-
-function getStatusFormat(status: RequestToTeamStatus) {
-  if (status === 'NEW') {
-    return 'Новая'
-  }
-
-  if (status === 'ACCEPTED') {
-    return 'Принята'
-  }
-
-  if (status === 'CANCELED') {
-    return 'Отклонена'
-  }
+function getStatusFormat(status: InvitationToTeamStatus) {
+  return invitationsToTeamStatus.translatedInvitations[status]
 }
 
 const dropdownTeamInvitationActions: DropdownMenuAction<TeamInvitation>[] = [

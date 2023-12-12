@@ -12,11 +12,12 @@ import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
+import { TeamMember } from '@Domain/Team'
+
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-import { TeamMember } from '@Domain/Team'
 
 const props = defineProps<TeamModalActionsProps>()
 const emit = defineEmits<TeamModalActionsEmits>()
@@ -72,27 +73,33 @@ function getAccessToInvite() {
 function getAccessRequestToTeam() {
   if (user.value) {
     const { id } = user.value
-    const { members, closed } = props.team
+    const { isRefused, owner, leader, members, closed } = props.team
+
+    const isExistInMembers =
+      members.find((user) => user.id === id) || owner.id === id || leader?.id === id
+    const isExistNewRequest = requests.value.find(
+      ({ userId, status }) => userId === id && status === 'NEW',
+    )
+    const isExistCanceledRequest = requests.value.find(
+      ({ userId, status }) => userId === id && status === 'CANCELED',
+    )
+
+    const isExistNewInvitation = invitationUsers.value.find(
+      ({ userId, status }) => userId === id && status === 'NEW',
+    )
 
     return (
-      !(
-        requests.value.find(
-          ({ userId, status }) => userId === id && status === 'NEW',
-        ) ||
-        requests.value.find(
-          ({ userId, status }) => userId === id && status === 'CANCELED',
-        ) ||
-        invitationUsers.value.find(
-          ({ userId, status }) => userId === id && status === 'NEW',
-        )
-      ) &&
-      !members.find((user) => user.id === id) &&
-      !closed
+      !isRefused &&
+      !closed &&
+      !isExistInMembers &&
+      !isExistNewRequest &&
+      !isExistCanceledRequest &&
+      !isExistNewInvitation
     )
   }
 }
 
-function getAccessCancelRequestToTeam() {
+function getAccessWithdrawRequestToTeam() {
   if (user.value) {
     const { id } = user.value
 
@@ -102,12 +109,19 @@ function getAccessCancelRequestToTeam() {
   }
 }
 
-function getAccessCancelOrAcceptRequestToTeam() {
+function getAccessCancelOrAcceptInvitationToTeam() {
   if (user.value) {
     const { id } = user.value
+    const { owner, leader, members } = props.team
 
-    return invitationUsers.value.find(
-      ({ userId, status }) => userId === id && status === 'NEW',
+    const isExistInMembers =
+      members.find((user) => user.id === id) || owner.id === id || leader?.id === id
+
+    return (
+      !isExistInMembers &&
+      invitationUsers.value.find(
+        ({ userId, status }) => userId === id && status === 'NEW',
+      )
     )
   }
 }
@@ -127,9 +141,9 @@ function getAccess() {
     getAccessToDelete() ||
     getAccessToInvite() ||
     getAccessRequestToTeam() ||
-    getAccessCancelRequestToTeam() ||
+    getAccessWithdrawRequestToTeam() ||
     getAccessToLeave() ||
-    getAccessCancelOrAcceptRequestToTeam()
+    getAccessCancelOrAcceptInvitationToTeam()
   )
 }
 
@@ -193,7 +207,7 @@ async function sendRequestInTeam() {
   }
 }
 
-async function cancelRequestToTeam() {
+async function withdrawRequestToTeam() {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -204,7 +218,11 @@ async function cancelRequestToTeam() {
     )
 
     if (currentRequest) {
-      await requestsToTeamStore.cancelRequestToTeam(currentRequest, token)
+      await requestsToTeamStore.updateRequestToTeamStatus(
+        currentRequest,
+        'WITHDRAWN',
+        token,
+      )
     }
   }
 }
@@ -256,8 +274,6 @@ function closeConfirmModal() {
   isOpenedConfirmModalCancel.value = false
   isOpenedConfirmModalCancelRequest.value = false
 }
-
-console.log(requests)
 </script>
 
 <template>
@@ -304,8 +320,9 @@ console.log(requests)
     >
       Подать заявку
     </Button>
+
     <Button
-      v-if="getAccessCancelRequestToTeam()"
+      v-if="getAccessWithdrawRequestToTeam()"
       variant="danger"
       @click="openConfirmModalCancelRequest"
     >
@@ -313,7 +330,7 @@ console.log(requests)
     </Button>
 
     <Button
-      v-if="getAccessCancelOrAcceptRequestToTeam()"
+      v-if="getAccessCancelOrAcceptInvitationToTeam()"
       variant="success"
       @click="openConfirmModalAccepted"
     >
@@ -321,7 +338,7 @@ console.log(requests)
     </Button>
 
     <Button
-      v-if="getAccessCancelOrAcceptRequestToTeam()"
+      v-if="getAccessCancelOrAcceptInvitationToTeam()"
       variant="danger"
       @click="openConfirmModalCancel"
     >
@@ -342,10 +359,10 @@ console.log(requests)
 
     <ConfirmModal
       :is-opened="isOpenedConfirmModalCancelRequest"
-      text-button="Отклонить заявку"
-      text-question="В следующий раз подать заявку будет НЕЛЬЗЯ!"
+      text-button="Отозвать заявку"
+      text-question="Вы действительно хотите отозвать заявку?"
       @close-modal="closeConfirmModal"
-      @action="cancelRequestToTeam"
+      @action="withdrawRequestToTeam"
     />
 
     <ConfirmModal
