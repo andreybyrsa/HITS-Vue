@@ -275,6 +275,7 @@ function getMocks(): Mocks {
       id: '0',
       name: 'Лидер',
       closed: false,
+      isRefused: false,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -289,6 +290,7 @@ function getMocks(): Mocks {
       id: '4',
       name: 'Приглашения',
       closed: false,
+      isRefused: false,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -303,6 +305,7 @@ function getMocks(): Mocks {
       id: '5',
       name: 'Заявки',
       closed: false,
+      isRefused: false,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -317,6 +320,7 @@ function getMocks(): Mocks {
       id: '6',
       name: 'Пользователь(Открытая)',
       closed: false,
+      isRefused: true,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -331,6 +335,7 @@ function getMocks(): Mocks {
       id: '7',
       name: 'Пользователь(Закрытая)',
       closed: true,
+      isRefused: false,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -345,6 +350,7 @@ function getMocks(): Mocks {
       id: '1',
       name: 'Участник',
       closed: false,
+      isRefused: true,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -386,6 +392,7 @@ function getMocks(): Mocks {
       id: '2',
       name: 'Владелец',
       closed: false,
+      isRefused: false,
       createdAt: '2023-10-30T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',

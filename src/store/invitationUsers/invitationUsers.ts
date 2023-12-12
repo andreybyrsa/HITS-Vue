@@ -65,7 +65,7 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
     },
 
     async cancelInvitationToTeam(invitationToTeam: TeamInvitation, token: string) {
-      const { id, teamId, userId } = invitationToTeam
+      const { id } = invitationToTeam
       const response = await TeamService.updateInvitationToTeamStatus(
         id,
         'CANCELED',
@@ -78,12 +78,8 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
         const currentInvitationToTeam = this.invitationUsers?.find(
           (invitation) => invitation.id === id,
         )
-        if (currentInvitationToTeam?.status === 'ACCEPTED') {
-          currentInvitationToTeam.status = 'CANCELED'
 
-          const teamsStore = useTeamStore()
-          await teamsStore.kickTeamMember(teamId, userId, token)
-        } else if (currentInvitationToTeam?.status === 'NEW') {
+        if (currentInvitationToTeam) {
           currentInvitationToTeam.status = 'CANCELED'
         }
       }

@@ -12,11 +12,11 @@ import {
 } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 
-import useUserStore from '@Store/user/userStore'
-
 import RolesTypes from '@Domain/Roles'
 
 import Success from '@Domain/ResponseMessage'
+
+import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
@@ -238,23 +238,6 @@ const addTeamMember = async (
     })
 }
 
-const appointLeaderTeam = async (
-  teamId: string,
-  userId: string,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .put(`${API_URL}/team/change/leader/${teamId}/${userId}`, null, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка назвачения лидера'
-      return new Error(error)
-    })
-}
-
 const filterBySkillsAndRole = async (
   skills: Skill[],
   role: RolesTypes,
@@ -329,6 +312,23 @@ const updateTeamSkills = async (
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка обновления компетенций команды'
+      return new Error(error)
+    })
+}
+
+const appointLeaderTeam = async (
+  teamId: string,
+  userId: string,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .put(`${API_URL}/team/change/leader/${teamId}/${userId}`, null, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка назвачения лидера'
       return new Error(error)
     })
 }
@@ -430,7 +430,6 @@ const TeamService = {
   addTeamMember,
   invitationTeamMember,
   sendRequestInTeam,
-  appointLeaderTeam,
   filterBySkillsAndRole,
   filterByVacancies,
 
@@ -438,6 +437,7 @@ const TeamService = {
   updateTeamSkills,
   updateRequestToTeamStatus,
   updateInvitationToTeamStatus,
+  appointLeaderTeam,
 
   deleteTeam,
   kickTeamMember,
