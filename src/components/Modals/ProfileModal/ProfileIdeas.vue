@@ -37,14 +37,14 @@ function navigateToIdeaModal(ideaId: string) {
           :key="idea.id"
         >
           <div class="w-100 d-flex justify-content-between align-items-center gap-3">
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center">
               <div
                 class="fs-5 profile-ideas__idea-link"
                 @click="navigateToIdeaModal(idea.id)"
               >
                 {{ idea.name }}
               </div>
-              <div :class="[getStatusStyle(idea.status), 'fs-6']">
+              <div :class="[getStatusStyle(idea.status), 'fs-6', 'text-center']">
                 {{ status.translatedStatus[idea.status] }}
               </div>
             </div>
@@ -62,7 +62,7 @@ function navigateToIdeaModal(ideaId: string) {
             class-name="w-100"
           >
             <Typography class-name="w-100 mt-1 border-top text-secondary">
-              {{ idea.description }}
+              {{ idea.solution }}
             </Typography>
           </Collapse>
         </div>
