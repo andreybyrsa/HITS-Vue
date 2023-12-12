@@ -53,6 +53,13 @@ onMounted(async () => {
       const response = await CompanyService.getOwnerCompanies(id, token)
 
       if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+
+      if (response.length === 0) {
         return getAllCompaniesByRole(token, role)
       }
 

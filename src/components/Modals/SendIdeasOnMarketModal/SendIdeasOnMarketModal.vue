@@ -109,7 +109,7 @@ function deleteIdea(ideaId: string) {
     <div class="send-ideas-on-market-modal bg-white rounded p-3">
       <div class="send-ideas-on-market-modal__idea-date w-100">
         <Typography class-name="fs-5 w-100 text-secondary border-bottom">
-          Укажите сроки набора команд
+          Укажите сроки набора команды
         </Typography>
         <Button
           variant="close"

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import ButtonProps from '@Components/Button/Button.types'
+import { ButtonProps } from '@Components/Button/Button.types'
 import Icon from '@Components/Icon/Icon.vue'
 import LoadingSpinner from '@Components/LoadingSpinner/LoadingSpinner.vue'
 

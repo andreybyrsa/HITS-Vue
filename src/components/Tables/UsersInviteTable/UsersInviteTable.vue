@@ -25,30 +25,25 @@ import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 
-import useUserStore from '@Store/user/userStore'
-
-import { User } from '@Domain/User'
+import { TeamMember } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
-import UsersSkills from '@Domain/UsersSkills'
 import Profile from '@Domain/Profile'
 
-import ManageUsersService from '@Services/ManageUsersService'
 import SkillsService from '@Services/SkillsService'
 import ProfileService from '@Services/ProfileService'
 
+import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
-import { TeamMember } from '@Domain/Team'
 
 const invitationUsers = defineModel<TeamMember[]>({ required: true })
+defineEmits<UsersInviteTableEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
-
-const emit = defineEmits<UsersInviteTableEmits>()
 
 const router = useRouter()
 

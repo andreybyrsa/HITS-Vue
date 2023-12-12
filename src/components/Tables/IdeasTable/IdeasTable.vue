@@ -1,5 +1,6 @@
 <template>
   <Table
+    :header="ideasTableHeader"
     :columns="ideaTableColumns"
     :data="ideasData"
     :search-by="['name', 'description']"
@@ -34,6 +35,7 @@ import {
   TableColumn,
   CheckedDataAction,
   DropdownMenuAction,
+  TableHeader,
 } from '@Components/Table/Table.types'
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
@@ -78,6 +80,20 @@ watchImmediate(
     ideasData.value = props.ideas
   },
 )
+
+const ideasTableHeader = computed<TableHeader>(() => ({
+  label: 'Список идей',
+  countData: true,
+  buttons: [
+    {
+      label: 'Создать идею',
+      variant: 'primary',
+      prependIconName: 'bi bi-plus-lg',
+      click: navigateToCreateIdeaForm,
+      statement: checkTableHeaderButton(),
+    },
+  ],
+}))
 
 const ideaTableColumns: TableColumn<Idea>[] = [
   {
@@ -146,7 +162,7 @@ const dropdownIdeasActions: DropdownMenuAction<Idea>[] = [
   {
     label: 'Редактировать',
     statement: checkUpdateIdeaAction,
-    click: navigateToIdeaForm,
+    click: navigateToUpdateIdeaForm,
   },
   {
     label: 'Удалить',
@@ -229,7 +245,11 @@ function navigateToIdeaModal(idea: Idea) {
   router.push(`/ideas/list/${idea.id}`)
 }
 
-function navigateToIdeaForm(idea: Idea) {
+function navigateToCreateIdeaForm() {
+  router.push('/ideas/create')
+}
+
+function navigateToUpdateIdeaForm(idea: Idea) {
   router.push(`/ideas/update/${idea.id}`)
 }
 
@@ -249,6 +269,15 @@ async function handleDeleteIdea() {
     const { token } = currentUser
     await ideaStore.deleteIdea(deletingIdeaId.value, token)
   }
+}
+
+function checkTableHeaderButton() {
+  const currentUser = user.value
+
+  if (currentUser?.role) {
+    return ['INITIATOR', 'ADMIN'].includes(currentUser?.role)
+  }
+  return false
 }
 
 function checkDeleteIdeaAction(idea: Idea) {

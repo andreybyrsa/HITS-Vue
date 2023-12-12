@@ -1,5 +1,6 @@
 <template>
   <Table
+    :header="usersGroupsTableHeader"
     :columns="usersGroupsTableColumns"
     :data="usersGroups"
     :search-by="['name']"
@@ -8,11 +9,17 @@
   ></Table>
 
   <UsersGroupModal
+    :isOpened="isOpenedCreatingGroupModal"
+    v-model="usersGroups"
+    @close-modal="closeCreatingGroupModal"
+  />
+  <UsersGroupModal
     :isOpened="isOpenedUpdatingGroupModal"
     :users-group-id="currentGroupId"
     v-model="usersGroups"
     @close-modal="closeUpdatingGroupModal"
   />
+
   <DeleteModal
     :is-opened="isOpenedDeletingGroupModal"
     @delete="handleDeleteGroup"
@@ -25,7 +32,11 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Table from '@Components/Table/Table.vue'
-import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
+import {
+  DropdownMenuAction,
+  TableColumn,
+  TableHeader,
+} from '@Components/Table/Table.types'
 import UsersGroupModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
@@ -50,11 +61,25 @@ const notificationsStore = useNotificationsStore()
 const currentGroupId = ref()
 const currentDeleteGroupId = ref<string | null>(null)
 
+const isOpenedCreatingGroupModal = ref(false)
 const isOpenedUpdatingGroupModal = ref(false)
 const isOpenedDeletingGroupModal = ref(false)
 
 const availableRoles = getRoles()
 const rolesFilter = ref<RolesTypes[]>([])
+
+const usersGroupsTableHeader: TableHeader = {
+  label: 'Группы пользователей',
+  countData: true,
+  buttons: [
+    {
+      label: 'Создать группу',
+      variant: 'primary',
+      prependIconName: 'bi bi-plus-lg',
+      click: openCreatingGroupModal,
+    },
+  ],
+}
 
 const usersGroupsTableColumns: TableColumn<UsersGroup>[] = [
   {
@@ -110,6 +135,13 @@ function getGroupRolesFormat(roles: RolesTypes[], index: number) {
 
 function checkUsersGroupRoles(usersGroup: UsersGroup, role: FilterValue) {
   return usersGroup.roles.find((usersGroupRole) => usersGroupRole === role)
+}
+
+function openCreatingGroupModal() {
+  isOpenedCreatingGroupModal.value = true
+}
+function closeCreatingGroupModal() {
+  isOpenedCreatingGroupModal.value = false
 }
 
 function openUpdatingGroupModal(usersGroup: UsersGroup) {

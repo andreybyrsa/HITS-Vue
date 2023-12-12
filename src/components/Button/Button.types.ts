@@ -1,12 +1,14 @@
 import Colors from '@Domain/Colors'
 
+type ButtonVariants = Colors | { [color in Colors]: `outline-${color}` }[Colors]
+
 interface ButtonProps {
   id?: string
   className?: string
-  variant?: Colors | { [color in Colors]: `outline-${color}` }[Colors]
+  variant?: ButtonVariants
   prependIconName?: string
   appendIconName?: string
   isLoading?: boolean
 }
 
-export default ButtonProps
+export { ButtonProps, ButtonVariants }
