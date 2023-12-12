@@ -9,6 +9,7 @@ import {
   TeamMember,
   TeamSkills,
   RequestToTeamStatus,
+  InvitationToTeamStatus,
 } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 
@@ -357,7 +358,7 @@ const updateRequestToTeamStatus = async (
 
 const updateInvitationToTeamStatus = async (
   id: string,
-  status: RequestToTeamStatus,
+  status: InvitationToTeamStatus,
   token: string,
 ): Promise<Success | Error> => {
   return await teamInvitationsAxios

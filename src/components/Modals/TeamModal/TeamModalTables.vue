@@ -100,6 +100,7 @@ function getRequestsToTeam() {
       <TeamInvitations
         v-if="isTeamInvitationsTable && invitations"
         :invitations="invitations"
+        :team="team"
       />
 
       <RequestsToTeam

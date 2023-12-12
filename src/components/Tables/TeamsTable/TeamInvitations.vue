@@ -10,6 +10,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 
 import Table from '@Components/Table/Table.vue'
@@ -18,12 +19,21 @@ import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import { InvitationToTeamStatus, TeamInvitation } from '@Domain/Team'
+
+import useUserStore from '@Store/user/userStore'
+import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
+
 import {
   getInvitationsToTeamStatus,
   getInvitationToTeamStatusStyle,
 } from '@Utils/invitaionsToTeamStatus'
 
 const props = defineProps<TeamInvitationsProps>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const invitationsToTeamStore = useInvitationUsersStore()
 
 const teamInvitations = ref<TeamInvitation[]>([])
 
@@ -74,6 +84,12 @@ function getStatusFormat(status: InvitationToTeamStatus) {
 
 const dropdownTeamInvitationActions: DropdownMenuAction<TeamInvitation>[] = [
   { label: 'Перейти на профиль', click: navigateToUserProfile },
+  {
+    label: 'Отозвать',
+    className: 'text-danger',
+    statement: checkWithdrawAction,
+    click: withdrawTeamInvitation,
+  },
 ]
 
 function navigateToUserProfile(invitation: TeamInvitation) {
@@ -89,5 +105,30 @@ function navigateToUserProfile(invitation: TeamInvitation) {
 
   router.addRoute('teams-list', profileRoute)
   router.push({ path: `/profile/${invitation.userId}` })
+}
+
+function checkWithdrawAction(teaminvitation: TeamInvitation) {
+  const currentUser = user.value
+  const { owner } = props.team
+
+  return (
+    currentUser?.id === owner.id &&
+    currentUser.role === 'TEAM_OWNER' &&
+    teaminvitation.status === 'NEW'
+  )
+}
+
+async function withdrawTeamInvitation(teaminvitation: TeamInvitation) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    await invitationsToTeamStore.updateInvitationStatus(
+      teaminvitation,
+      'WITHDRAWN',
+      token,
+    )
+  }
 }
 </script>

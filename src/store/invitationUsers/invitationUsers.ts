@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia'
 
-import InitialState from '@Store/invitationUsers/initialState'
+import { TeamInvitation, InvitationToTeamStatus, TeamMember } from '@Domain/Team'
+
 import TeamService from '@Services/TeamService'
+
+import InitialState from '@Store/invitationUsers/initialState'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { TeamInvitation, TeamMember } from '@Domain/Team'
 import useTeamStore from '@Store/teams/teamsStore'
 
 const useInvitationUsersStore = defineStore('invitationUsers', {
@@ -40,11 +42,15 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
       }
     },
 
-    async acceptInvitationToTeam(invitationToTeam: TeamInvitation, token: string) {
+    async updateInvitationStatus(
+      invitationToTeam: TeamInvitation,
+      status: InvitationToTeamStatus,
+      token: string,
+    ) {
       const { id } = invitationToTeam
       const response = await TeamService.updateInvitationToTeamStatus(
         id,
-        'ACCEPTED',
+        status,
         token,
       )
 
@@ -56,31 +62,12 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
         )
 
         if (currentInvitationToTeam) {
-          currentInvitationToTeam.status = 'ACCEPTED'
+          currentInvitationToTeam.status = status
         }
 
-        const teamsStore = useTeamStore()
-        await teamsStore.addTeamMember({ ...invitationToTeam, skills: [] }, token)
-      }
-    },
-
-    async cancelInvitationToTeam(invitationToTeam: TeamInvitation, token: string) {
-      const { id } = invitationToTeam
-      const response = await TeamService.updateInvitationToTeamStatus(
-        id,
-        'CANCELED',
-        token,
-      )
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentInvitationToTeam = this.invitationUsers?.find(
-          (invitation) => invitation.id === id,
-        )
-
-        if (currentInvitationToTeam) {
-          currentInvitationToTeam.status = 'CANCELED'
+        if (status === 'ACCEPTED') {
+          const teamsStore = useTeamStore()
+          await teamsStore.addTeamMember({ ...invitationToTeam, skills: [] }, token)
         }
       }
     },

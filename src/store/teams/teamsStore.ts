@@ -69,6 +69,7 @@ const useTeamStore = defineStore('teams', {
 
         if (currentTeam) {
           currentTeam.members.push({ ...teamMember, id: teamMember.userId })
+          currentTeam.membersCount++
         }
       }
     },
@@ -103,6 +104,7 @@ const useTeamStore = defineStore('teams', {
 
           if (currentTeamMemberIndex !== -1) {
             currentTeam.members.splice(currentTeamMemberIndex, 1)
+            currentTeam.membersCount--
           }
         }
       }

@@ -236,7 +236,11 @@ async function acceptInvitationToTeam() {
   if (currentUser?.token && currentUserInvitation) {
     const { token } = currentUser
 
-    await invitatinUsers.acceptInvitationToTeam(currentUserInvitation, token)
+    await invitatinUsers.updateInvitationStatus(
+      currentUserInvitation,
+      'ACCEPTED',
+      token,
+    )
   }
 }
 
@@ -249,7 +253,11 @@ async function cancelInvitationToTeam() {
   if (currentUser?.token && currentUserInvitation) {
     const { token } = currentUser
 
-    await invitatinUsers.cancelInvitationToTeam(currentUserInvitation, token)
+    await invitatinUsers.updateInvitationStatus(
+      currentUserInvitation,
+      'CANCELED',
+      token,
+    )
   }
 }
 
