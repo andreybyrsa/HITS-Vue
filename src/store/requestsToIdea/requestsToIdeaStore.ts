@@ -8,20 +8,8 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import InitialState from '@Store/requestsToIdea/initialState'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
-import { Ref, ref } from 'vue'
+import { makeParallelRequests } from '@Utils/makeParallelRequests'
 import Success from '@Domain/ResponseMessage'
-
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    useNotificationsStore().createSystemNotification('Система', `${data.value}`)
-  }
-}
 
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({
@@ -66,7 +54,7 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
     },
 
     async acceptRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
-      const { id, ideaMarketId, teamId } = requestToIdea
+      const { id, ideaMarketId } = requestToIdea
       const ideasMarketStore = useIdeasMarketStore()
 
       const parallelRequests = [
@@ -78,11 +66,12 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
             'RECRUITMENT_IS_CLOSED',
             token,
           ),
-        () =>
-          RequestToIdeaService.annulatedRequestsToIdea(teamId, 'ANNULLED', token),
+        () => RequestToIdeaService.annulatedRequestsToIdea(ideaMarketId, token),
       ]
 
-      await makeParallelRequests<Error | Success | void>(parallelRequests)
+      await makeParallelRequests<Error | Success | void | RequestTeamToIdea[]>(
+        parallelRequests,
+      )
 
       const currentRequestToIdea = this.requests.find((request) => request.id === id)
       if (currentRequestToIdea) {

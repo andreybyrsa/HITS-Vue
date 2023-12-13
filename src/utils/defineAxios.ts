@@ -321,7 +321,11 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     })
   }
 
-  return { get, post, put, putNoRequestBody, delete: deleteData }
+  function getReactiveMocks() {
+    return mockArray
+  }
+
+  return { get, post, put, putNoRequestBody, delete: deleteData, getReactiveMocks }
 }
 
 export default defineAxios
