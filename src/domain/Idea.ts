@@ -32,6 +32,8 @@ interface Rating {
   id: string
   ideaId: string
   expertId: string
+  firstName: string
+  lastName: string
 
   marketValue: number | null
   originality: number | null

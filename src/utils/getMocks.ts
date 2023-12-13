@@ -711,7 +711,9 @@ function getMocks(): Mocks {
     {
       id: '0',
       ideaId: '0',
-      expertId: '0',
+      expertId: users[0].id,
+      firstName: users[0].firstName,
+      lastName: users[0].lastName,
       budget: 1,
       technicalRealizability: null,
       suitability: 2,
@@ -723,7 +725,9 @@ function getMocks(): Mocks {
     {
       id: '1',
       ideaId: '0',
-      expertId: '1',
+      expertId: users[1].id,
+      firstName: users[1].firstName,
+      lastName: users[1].lastName,
       budget: 2,
       technicalRealizability: 4,
       suitability: 5,
@@ -735,7 +739,9 @@ function getMocks(): Mocks {
     {
       id: '2',
       ideaId: '1',
-      expertId: '2',
+      expertId: users[2].id,
+      firstName: users[2].firstName,
+      lastName: users[2].lastName,
       budget: 1,
       technicalRealizability: 1,
       suitability: 5,

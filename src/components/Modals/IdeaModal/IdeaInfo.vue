@@ -70,6 +70,28 @@ function getIdeaStatus() {
 
   return status.translatedStatus[idea.status]
 }
+
+function getExpertRatingicon(isConfirmed: boolean) {
+  let initialClassName = 'text-secondary fs-3 opacity-25'
+
+  if (isConfirmed) {
+    return (initialClassName += ' bi bi-check-lg')
+  }
+
+  return (initialClassName += ' bi bi-clock-history')
+}
+
+function getRatingColor(rating: number | null) {
+  if (rating) {
+    if (rating >= 4.0) {
+      return 'text-success'
+    }
+    if (rating < 4.0 && rating >= 3.0) {
+      return 'text-warning'
+    }
+    return 'text-danger'
+  }
+}
 </script>
 
 <template>
@@ -102,6 +124,27 @@ function getIdeaStatus() {
 
         <Typography class-name="text-primary">
           {{ idea.initiatorEmail }}
+        </Typography>
+      </div>
+    </div>
+
+    <div v-if="expertRatings">
+      <Typography class-name="border-bottom text-secondary d-block">
+        Эксперты
+      </Typography>
+
+      <div
+        v-for="{ id, firstName, lastName, rating, confirmed } in expertRatings"
+        :key="id"
+        class="idea-info__sub-info pt-2"
+      >
+        <Icon :class-name="getExpertRatingicon(confirmed)" />
+
+        <Typography class-name="text-primary">
+          {{ `${firstName} ${lastName}:` }}
+        </Typography>
+        <Typography :class-name="getRatingColor(rating)">
+          {{ rating }}
         </Typography>
       </div>
     </div>
