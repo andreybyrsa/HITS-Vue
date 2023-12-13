@@ -7,13 +7,12 @@ import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
-import getStatusStyle from '@Utils/getStatusStyle'
-import getStatus from '@Utils/getStatus'
+import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 
 defineProps<ProfileIdeasProps>()
 
 const router = useRouter()
-const status = getStatus()
+const status = getIdeaStatus()
 
 function navigateToIdeaModal(ideaId: string) {
   router.push(`/ideas/list/${ideaId}`)
@@ -44,7 +43,7 @@ function navigateToIdeaModal(ideaId: string) {
               >
                 {{ idea.name }}
               </div>
-              <div :class="[getStatusStyle(idea.status), 'fs-6', 'text-center']">
+              <div :class="[getIdeaStatusStyle(idea.status), 'fs-6', 'text-center']">
                 {{ status.translatedStatus[idea.status] }}
               </div>
             </div>

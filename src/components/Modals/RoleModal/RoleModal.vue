@@ -13,7 +13,7 @@ import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
 
-import getRoles from '@Utils/getRoles'
+import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 defineProps<RoleModalProps>()
 
@@ -22,7 +22,7 @@ const emit = defineEmits<RoleModalEmits>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const userRoles = getRoles()
+const userRoles = getUserRolesInfo()
 
 function getTranslatedRole(currentRole: RolesTypes) {
   return userRoles.translatedRoles[currentRole]

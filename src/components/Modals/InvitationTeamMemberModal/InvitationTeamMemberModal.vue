@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
+
 import {
   InvitationTeamMemberModalEmits,
   InvitationTeamMemberModalProps,
@@ -10,12 +14,10 @@ import Icon from '@Components/Icon/Icon.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { ref } from 'vue'
-import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-import { useRoute } from 'vue-router'
-import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
 import { TeamMember } from '@Domain/Team'
+
+import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
+import useUserStore from '@Store/user/userStore'
 
 const invitationUsers = defineModel<TeamMember[]>({ required: true })
 const selectedUsers = ref<TeamMember[]>([])

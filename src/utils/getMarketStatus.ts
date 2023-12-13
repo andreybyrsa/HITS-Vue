@@ -1,13 +1,13 @@
-import IdeasMarketStatusTypes from '@Domain/MarketStatus'
+import { IdeaMarketStatusType } from '@Domain/IdeaMarket'
 
-interface GetRolesType {
-  status: IdeasMarketStatusTypes[]
+interface GetMarketStatusType {
+  status: IdeaMarketStatusType[]
   translatedStatus: {
-    [key in IdeasMarketStatusTypes]: string
+    [key in IdeaMarketStatusType]: string
   }
 }
 
-function getMarketStatus(): GetRolesType {
+function getMarketStatus(): GetMarketStatusType {
   return {
     status: ['RECRUITMENT_IS_OPEN', 'RECRUITMENT_IS_CLOSED'],
     translatedStatus: {

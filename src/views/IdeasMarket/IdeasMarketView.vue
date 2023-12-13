@@ -13,7 +13,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import IdeaCardsPlaceholder from '@Views/IdeasMarket/IdeaCardsPlaceholder.vue'
 import IdeaCard from '@Views/IdeasMarket/IdeaCard.vue'
 
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
 

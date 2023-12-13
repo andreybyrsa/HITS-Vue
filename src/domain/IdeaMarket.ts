@@ -1,7 +1,8 @@
 import { User } from '@Domain/User'
 import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
-import IdeasMarketStatusTypes from '@Domain/MarketStatus'
+
+type IdeaMarketStatusType = 'RECRUITMENT_IS_OPEN' | 'RECRUITMENT_IS_CLOSED'
 
 interface IdeaMarket {
   id: string
@@ -18,7 +19,7 @@ interface IdeaMarket {
   position: number
   team: Team | null
   stack: Skill[]
-  status: IdeasMarketStatusTypes
+  status: IdeaMarketStatusType
   requests: number
   acceptedRequests: number
   startDate: string
@@ -26,4 +27,4 @@ interface IdeaMarket {
   isFavorite: boolean
 }
 
-export default IdeaMarket
+export { IdeaMarket, IdeaMarketStatusType }

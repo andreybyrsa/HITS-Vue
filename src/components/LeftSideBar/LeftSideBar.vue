@@ -17,7 +17,7 @@ import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
 
-import getRoles from '@Utils/getRoles'
+import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -28,7 +28,7 @@ const route = useRoute()
 const isOpenedRoleModal = ref(false)
 const isOpenedNotificationsModal = ref(false)
 
-const userRoles = getRoles()
+const userRoles = getUserRolesInfo()
 
 const leftSideBarRef = ref<VueElement | null>(null)
 const LeftSideBarClassName = ref<string[]>()

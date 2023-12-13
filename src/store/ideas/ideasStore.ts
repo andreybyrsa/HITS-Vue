@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
-import { Idea } from '@Domain/Idea'
+import { Idea, IdeaStatusType } from '@Domain/Idea'
 import RolesTypes from '@Domain/Roles'
-import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 import IdeasService from '@Services/IdeasService'
 
@@ -62,7 +61,7 @@ const useIdeasStore = defineStore('ideas', {
   actions: {
     async updateIdeaStatus(
       id: string,
-      status: IdeaStatusTypes,
+      status: IdeaStatusType,
       role: RolesTypes,
       token: string,
     ) {

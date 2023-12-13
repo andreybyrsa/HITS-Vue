@@ -5,7 +5,6 @@ import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
 import { RequestTeamCollapseProps } from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.types.'
-
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
@@ -13,16 +12,16 @@ import Typography from '@Components/Typography/Typography.vue'
 import Skills from '@Components/Skills/Skills.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
-
-import useUserStore from '@Store/user/userStore'
+import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import { Team } from '@Domain/Team'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
-import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+
 import TeamService from '@Services/TeamService'
-import TeamDescription from '@Components/Modals/TeamModal/TeamDescription.vue'
+
+import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
 const props = defineProps<RequestTeamCollapseProps>()
 

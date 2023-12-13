@@ -6,31 +6,15 @@ import Icon from '@Components/Icon/Icon.vue'
 
 import { SkillType } from '@Domain/Skill'
 
+import { getSkillInfoStyle } from '@Utils/skillsInfo'
+
 defineProps<SkillsProps>()
 const emit = defineEmits<SkillsEmits>()
 
 function getSkillClassName(key: SkillType) {
-  const initialClasName = ['px-2', 'py-1', 'rounded', 'd-flex', 'gap-1']
+  const skillTypeClass = getSkillInfoStyle(key)
 
-  if (key === 'LANGUAGE') {
-    initialClasName.push('bg-success-subtle', 'text-success')
-    return initialClasName
-  }
-
-  if (key === 'FRAMEWORK') {
-    initialClasName.push('bg-info-subtle', 'text-info')
-    return initialClasName
-  }
-
-  if (key === 'DATABASE') {
-    initialClasName.push('bg-warning-subtle', 'text-warning')
-    return initialClasName
-  }
-
-  if (key === 'DEVOPS') {
-    initialClasName.push('bg-danger-subtle', 'text-danger')
-    return initialClasName
-  }
+  return ['px-2', 'py-1', 'rounded', 'd-flex', 'gap-1', ...skillTypeClass]
 }
 </script>
 

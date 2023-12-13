@@ -1,13 +1,13 @@
 import { RequestToTeamStatus } from '@Domain/Team'
 
-interface GetRequestsType {
+interface GetRequestsToTeamType {
   requests: RequestToTeamStatus[]
   translatedRequests: {
     [key in RequestToTeamStatus]: string
   }
 }
 
-function getRequestsToTeamStatus(): GetRequestsType {
+function getRequestsToTeamStatus(): GetRequestsToTeamType {
   return {
     requests: ['NEW', 'WITHDRAWN', 'ACCEPTED', 'ANNULLED', 'CANCELED'],
     translatedRequests: {

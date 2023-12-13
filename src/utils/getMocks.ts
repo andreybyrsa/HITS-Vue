@@ -18,7 +18,7 @@ import {
 } from '@Domain/Team'
 
 import Notification from '@Domain/Notification'
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 interface Mocks {

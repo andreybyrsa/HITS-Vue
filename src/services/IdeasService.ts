@@ -1,6 +1,5 @@
-import { Idea, IdeaSkills } from '@Domain/Idea'
+import { Idea, IdeaStatusType, IdeaSkills } from '@Domain/Idea'
 import Success from '@Domain/ResponseMessage'
-import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -207,7 +206,7 @@ const updateIdeaSkills = async (
 
 const sendIdeaOnApproval = async (
   id: string,
-  status: IdeaStatusTypes,
+  status: IdeaStatusType,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios
@@ -232,7 +231,7 @@ const sendIdeaOnApproval = async (
 
 const updateIdeaStatus = async (
   id: string,
-  status: IdeaStatusTypes,
+  status: IdeaStatusType,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasAxios

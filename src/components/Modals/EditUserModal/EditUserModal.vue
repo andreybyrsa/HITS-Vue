@@ -24,7 +24,7 @@ import ManageUsersService from '@Services/ManageUsersService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import getRoles from '@Utils/getRoles'
+import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
@@ -39,7 +39,7 @@ const isLoading = ref(false)
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const availableRoles = getRoles()
+const availableRoles = getUserRolesInfo()
 
 const { errors, setValues, handleSubmit } = useForm<User>({
   validationSchema: {

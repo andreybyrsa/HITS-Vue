@@ -14,7 +14,7 @@ import useUserStore from '@Store/user/userStore'
 
 import modeButtons from '@Components/Modals/IdeaModal/IdeaInfo.types'
 
-import getStatus from '@Utils/getStatus'
+import { getIdeaStatus } from '@Utils/ideaStatus'
 
 const props = defineProps<IdeaInfoProps>()
 
@@ -23,7 +23,7 @@ const { user } = storeToRefs(userStore)
 
 const route = useRoute()
 
-const status = getStatus()
+const status = getIdeaStatus()
 
 const isCopiedLink = ref(false)
 
@@ -57,7 +57,7 @@ function copyLink() {
   isCopiedLink.value = true
 }
 
-function getIdeaStatus() {
+function getIdeaModalStatus() {
   const { idea, expertRatings } = props
 
   if (idea.status === 'ON_CONFIRMATION' && expertRatings) {
@@ -96,7 +96,7 @@ function getRatingColor(rating: number | null) {
 
 <template>
   <Typography class-name="p-2 bg-primary rounded-top fs-4 text-center text-white">
-    {{ getIdeaStatus() }}
+    {{ getIdeaModalStatus() }}
   </Typography>
 
   <div class="idea-info w-100 pb-3 px-3">

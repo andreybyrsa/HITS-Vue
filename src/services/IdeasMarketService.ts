@@ -3,10 +3,9 @@ import axios from 'axios'
 import { API_URL } from '@Main'
 
 import Success from '@Domain/ResponseMessage'
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket, IdeaMarketStatusType } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
-import IdeaMarketStatusTypes from '@Domain/MarketStatus'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -136,7 +135,7 @@ const addIdeaToFavorites = async (
 
 const updateIdeaMarketStatus = async (
   id: string,
-  status: IdeaMarketStatusTypes,
+  status: IdeaMarketStatusType,
   token: string,
 ): Promise<Success | Error> => {
   return await ideasMarketAxios

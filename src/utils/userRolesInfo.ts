@@ -1,6 +1,6 @@
 import RolesTypes from '@Domain/Roles'
 
-interface GetRolesType {
+interface GetUserRolesType {
   roles: RolesTypes[]
   translatedRoles: {
     [key in RolesTypes]: string
@@ -10,7 +10,7 @@ interface GetRolesType {
   }
 }
 
-function getRoles(): GetRolesType {
+function getUserRolesInfo(): GetUserRolesType {
   return {
     roles: [
       'INITIATOR',
@@ -39,4 +39,34 @@ function getRoles(): GetRolesType {
   }
 }
 
-export default getRoles
+function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
+  const currentRole = roles[index]
+  const initialClass = [
+    'px-2',
+    'py-1',
+    'rounded-4',
+    'text-center',
+    'align-self-start',
+  ]
+
+  if (
+    currentRole === 'INITIATOR' ||
+    currentRole === 'TEAM_OWNER' ||
+    currentRole === 'MEMBER'
+  ) {
+    initialClass.push('bg-primary-subtle', 'text-primary')
+    return initialClass
+  }
+
+  if (currentRole === 'PROJECT_OFFICE' || currentRole === 'EXPERT') {
+    initialClass.push('bg-success-subtle', 'text-success')
+    return initialClass
+  }
+
+  if (currentRole === 'ADMIN') {
+    initialClass.push('bg-danger-subtle', 'text-danger')
+    return initialClass
+  }
+}
+
+export { getUserRolesInfo, getUserRoleInfoStyle }

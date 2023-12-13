@@ -16,7 +16,7 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import { Team } from '@Domain/Team'
 import Comment from '@Domain/Comment'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import TeamService from '@Services/TeamService'
 

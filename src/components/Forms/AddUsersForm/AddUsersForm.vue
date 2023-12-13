@@ -21,14 +21,14 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
-import getRoles from '@Utils/getRoles'
+import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
 
 const { user } = storeToRefs(userStore)
 
-const currentRoles = getRoles()
+const currentRoles = getUserRolesInfo()
 const fileInputRef = ref<VueElement | null>(null)
 const isLoading = ref(false)
 

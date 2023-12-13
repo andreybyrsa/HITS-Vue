@@ -1,6 +1,13 @@
-import IdeaStatusTypes from '@Domain/IdeaStatus'
 import UsersGroup from '@Domain/UsersGroup'
 import { Skill } from '@Domain/Skill'
+
+type IdeaStatusType =
+  | 'NEW'
+  | 'ON_EDITING'
+  | 'ON_APPROVAL'
+  | 'ON_CONFIRMATION'
+  | 'CONFIRMED'
+  | 'ON_MARKET'
 
 interface Idea {
   id: string
@@ -13,7 +20,7 @@ interface Idea {
   description: string
   solution: string
   result: string
-  status: IdeaStatusTypes
+  status: IdeaStatusType
   maxTeamSize: number
   minTeamSize: number
 
@@ -49,4 +56,4 @@ interface IdeaSkills {
   skills: Skill[]
 }
 
-export { Idea, Rating, IdeaSkills }
+export { Idea, IdeaStatusType, Rating, IdeaSkills }
