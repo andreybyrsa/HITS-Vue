@@ -22,7 +22,6 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 import TeamService from '@Services/TeamService'
-import TeamDescription from '@Components/Modals/TeamModal/TeamDescription.vue'
 
 const props = defineProps<RequestTeamCollapseProps>()
 
@@ -35,12 +34,22 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const currentTeam = ref<Team>()
+const isOpenedConfirmModal = ref<boolean>(false)
+const withdrawOnRequest = ref<RequestTeamToIdea>()
+const letter = ref<string>('')
 
 const requestTeams = defineModel<RequestTeamToIdea[]>('requestTeams', {
   required: true,
 })
 
-const letter = ref<string>('')
+const { handleSubmit } = useForm({
+  validationSchema: {
+    letter: (value: string) => value?.length > 0 || 'Поле не заполнено',
+  },
+  initialValues: {
+    letter: '',
+  },
+})
 
 const takeTeamData = async (id: string) => {
   const currentUser = user.value
@@ -55,15 +64,6 @@ const takeTeamData = async (id: string) => {
     currentTeam.value = response
   }
 }
-
-const { handleSubmit } = useForm({
-  validationSchema: {
-    letter: (value: string) => value?.length > 0 || 'Поле не заполнено',
-  },
-  initialValues: {
-    letter: '',
-  },
-})
 
 const sendRequestTeam = handleSubmit(async () => {
   const currentUser = user.value
@@ -91,19 +91,10 @@ function navigateToUserProfile(team: Team | RequestTeamToIdea) {
   router.push({ path: `/team-profile/${team.id}` })
 }
 
-function checkSendTeamRequest() {
-  return requestTeams.value?.filter((team) => team.teamId == props.team.id)
-}
-
-function checkTeamRequest(teamProps: Team) {
-  return requestTeams.value?.find((team) => team.teamId == teamProps.id)
-}
-
-const isOpenedConfirmModal = ref<boolean>(false)
-const currentTeamForChangeStatus = ref<RequestTeamToIdea>()
-
-function openConfirmModal(team: RequestTeamToIdea) {
-  currentTeamForChangeStatus.value = team
+function openConfirmModal(team: Team) {
+  withdrawOnRequest.value = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status === 'NEW',
+  )
   isOpenedConfirmModal.value = true
 }
 
@@ -111,54 +102,100 @@ function closeConfirmModal() {
   isOpenedConfirmModal.value = false
 }
 
-const cancelRequestToTeam = async () => {
+const withdrawRequestToIdea = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentTeamForChangeStatus.value) {
+  if (currentUser?.token && withdrawOnRequest.value) {
     const { token } = currentUser
 
-    await requestToIdeaStore.cancelRequestToIdea(
-      currentTeamForChangeStatus.value,
-      token,
-    )
+    await requestToIdeaStore.withdrawRequestToIdea(withdrawOnRequest.value, token)
   }
 }
 
-function getTextStatusRequest(team: RequestTeamToIdea) {
-  if (team.status === 'ACCEPTED') {
-    return 'Заявка принята'
-  }
-  if (team.status === 'CANCELED') {
-    return 'Заявка отклонена'
-  }
+function getTextStatusRequest(team: Team) {
+  const currentRequestIsNew = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status === 'NEW',
+  )
+  if (currentRequestIsNew) return 'Отозвать заявку'
+
+  const currentRequestIsAccepted = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status === 'ACCEPTED',
+  )
+  if (currentRequestIsAccepted) return 'Команда принята'
+
+  const currentRequestIsCanceled = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status === 'CANCELED',
+  )
+  if (currentRequestIsCanceled) return 'Заявка отклонена'
+
+  const currentRequestIsAnnulated = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status === 'ANNULLED',
+  )
+  if (currentRequestIsAnnulated) return 'Команда занята'
 }
 
-function getStyleStatusRequest(team: RequestTeamToIdea) {
-  if (team.status === 'ACCEPTED') {
-    return 'success'
-  }
-  if (team.status === 'CANCELED') {
-    return 'danger'
-  }
+function getStyleRequest(team: Team) {
+  const currentRequestIsNew = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status === 'NEW',
+  )
+  if (currentRequestIsNew) return 'danger'
+
+  const currentRequestIsAccepted = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status === 'ACCEPTED',
+  )
+  if (currentRequestIsAccepted) return 'success'
+
+  const currentRequestIsCanceled = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status === 'CANCELED',
+  )
+  if (currentRequestIsCanceled) return 'danger'
+
+  const currentRequestIsAnnulated = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status === 'ANNULLED',
+  )
+  if (currentRequestIsAnnulated) return 'secondary'
+}
+
+function getDisabledRequest(team: Team) {
+  return requestTeams.value.find(
+    (request) =>
+      request.teamId === team.id &&
+      (request.status === 'ACCEPTED' ||
+        request.status === 'CANCELED' ||
+        request.status === 'ANNULLED'),
+  )
+}
+
+function checkRequestStatusNew(team: Team) {
+  const currentRequest = requestTeams.value.find(
+    (request) => request.teamId === team.id && request.status !== 'WITHDRAWN',
+  )
+  return currentRequest && props.idea.id === currentRequest.ideaMarketId
 }
 </script>
 
 <template>
   <router-view />
-  <div
-    v-if="!checkTeamRequest(team)"
-    class="team-request-collapse w-100"
-  >
+  <div class="team-request-collapse w-100">
     <div class="border rounded-3 py-1 px-2 overflow-hidden w-100">
       <div class="team-request-collapse__button">
         <Button
-          class-name="btn-link"
+          variant="link"
           @click="navigateToUserProfile(team)"
         >
           {{ team.name }}
         </Button>
         <Button
-          class-name="btn-primary"
+          v-if="checkRequestStatusNew(team)"
+          :variant="getStyleRequest(team)"
+          @click="openConfirmModal(team)"
+          :disabled="getDisabledRequest(team)"
+        >
+          {{ getTextStatusRequest(team) }}
+        </Button>
+        <Button
+          v-else
+          variant="primary"
           v-collapse="team.id"
           @click="takeTeamData(team.id)"
         >
@@ -211,6 +248,7 @@ function getStyleStatusRequest(team: RequestTeamToIdea) {
           <div class="d-flex gap-2">
             <Button
               class-name="btn-success"
+              v-collapse="team.id"
               @click="sendRequestTeam()"
             >
               Подать заявку
@@ -221,33 +259,12 @@ function getStyleStatusRequest(team: RequestTeamToIdea) {
     </div>
   </div>
 
-  <div
-    v-else
-    v-for="(team, index) in checkSendTeamRequest()"
-    :key="index"
-    class="team-request-collapse__button py-1 px-2 border rounded w-100"
-  >
-    <Button
-      class-name="btn-link"
-      @click="navigateToUserProfile(team)"
-    >
-      {{ team.name }}
-    </Button>
-    <Button
-      :variant="team.status !== 'NEW' ? getStyleStatusRequest(team) : 'danger'"
-      @click="openConfirmModal(team)"
-      :disabled="team.status !== 'NEW'"
-    >
-      {{ team.status !== 'NEW' ? getTextStatusRequest(team) : 'Отклонить заявку' }}
-    </Button>
-  </div>
-
   <ConfirmModal
     :is-opened="isOpenedConfirmModal"
     text-button="Отклонить заявку"
     text-question="Вы действительно хотите отклонить заявку?"
     @close-modal="closeConfirmModal"
-    @action="cancelRequestToTeam"
+    @action="withdrawRequestToIdea"
   />
 </template>
 

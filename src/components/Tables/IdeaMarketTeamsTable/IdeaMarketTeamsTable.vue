@@ -104,13 +104,6 @@ const dropdownIdeaMarketTeamActions: DropdownMenuAction<Team>[] = [
     label: 'Профиль команды',
     click: navigateToTeamModal,
   },
-
-  {
-    label: 'Исключить',
-    className: 'text-danger',
-    statement: checkRecruitmentIdeaStatus,
-    click: openConfirmModal,
-  },
 ]
 
 function getLeaderFormat(leader: TeamMember | null) {

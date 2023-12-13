@@ -172,7 +172,6 @@ function closeRequestToIdeaModal() {
         :is-opened="isOpenedRequestToIdeaModal"
         @close-modal="closeRequestToIdeaModal"
       />
-
       <router-view />
     </template>
   </PageLayout>

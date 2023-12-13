@@ -7,8 +7,9 @@ import { API_URL } from '@Main'
 
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import getMocks from '@Utils/getMocks'
 
-const requestTeamsAxios = defineAxios([] as RequestTeamToIdea[])
+const requestTeamsAxios = defineAxios(getMocks().RequestTeams)
 
 function filterRequestsToIdeaByIdeaId(ideaId: string, request: RequestTeamToIdea[]) {
   return request.filter((request) => request.ideaMarketId === ideaId)
@@ -40,7 +41,7 @@ const postRequest = async (
   team: RequestTeamToIdea,
   token: string,
 ): Promise<RequestTeamToIdea | Error> => {
-  return await axios
+  return await requestTeamsAxios
     .post(`${API_URL}/market/declare`, team, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -57,8 +58,9 @@ const updateRequestToIdeaStatus = async (
   token: string,
 ): Promise<Success | Error> => {
   return await requestTeamsAxios
-    .putNoRequestBody<Success>(
+    .put<Success>(
       `/market/change-status/request/${id}/${status}`,
+      { status: status },
       { headers: { Authorization: `Bearer ${token}` } },
       {
         params: { id },

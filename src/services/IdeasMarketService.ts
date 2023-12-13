@@ -72,7 +72,7 @@ const getAllInitiatorMarketIdeas = async (
   token: string,
 ): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
-    .get('/market/initiator/all', {
+    .get('/market/idea/initiator/all', {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -100,15 +100,25 @@ const sendIdeaOnMarket = async (
 }
 
 const postIdeaMarketTeam = async (
+  id: string,
   requestToIdea: RequestTeamToIdea,
   token: string,
-): Promise<Team | Error> => {
+): Promise<IdeaMarket | Error> => {
   const { ideaMarketId, teamId } = requestToIdea
-  return await axios
-    .put(`${API_URL}/market/accept/request/${ideaMarketId}/${teamId}`, null, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+  const team = getMocks().teams.find((team) => team.id === teamId)
+
+  return await ideasMarketAxios
+    .put<IdeaMarket>(
+      `${API_URL}/market/accept/request/${ideaMarketId}/${teamId}`,
+      { team: team },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id },
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка добавления команды'
@@ -143,7 +153,7 @@ const updateIdeaMarketStatus = async (
     .putNoRequestBody<Success>(
       `/market/idea-status/${id}/${status}`,
       { headers: { Authorization: `Bearer ${token}` } },
-      { params: { id }, requestData: { isFavorite: true } },
+      { params: { id }, requestData: { status: status } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

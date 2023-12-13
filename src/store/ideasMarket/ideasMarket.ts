@@ -84,19 +84,18 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const currentIdeaMarket = this.ideasMarket.find(
-          (ideaMarket) => ideaMarket.id === id,
-        )
-
-        if (currentIdeaMarket) {
-          currentIdeaMarket.status = status
-        }
+        this.ideasMarket.map((idea) => {
+          if (idea.id === id) {
+            idea.status = status
+          }
+        })
       }
     },
 
     async setIdeaMarketTeam(requestToIdea: RequestTeamToIdea, token: string) {
       const { ideaMarketId } = requestToIdea
       const response = await IdeasMarketService.postIdeaMarketTeam(
+        ideaMarketId,
         requestToIdea,
         token,
       )
@@ -104,13 +103,11 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const currentIdeaMarket = this.ideasMarket.find(
-          ({ id }) => id === ideaMarketId,
-        )
-
-        if (currentIdeaMarket) {
-          currentIdeaMarket.team = response
-        }
+        this.ideasMarket.map((idea) => {
+          if (idea.id === ideaMarketId) {
+            idea.team = response.team
+          }
+        })
       }
     },
 

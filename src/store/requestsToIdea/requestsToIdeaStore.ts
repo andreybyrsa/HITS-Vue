@@ -52,7 +52,7 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
     },
 
     async acceptRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
-      const { id } = requestToIdea
+      const { id, ideaMarketId, teamId } = requestToIdea
       const response = await RequestToIdeaService.updateRequestToIdeaStatus(
         id,
         'ACCEPTED',
@@ -72,6 +72,32 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
 
         const ideasMarketStore = useIdeasMarketStore()
         await ideasMarketStore.setIdeaMarketTeam(requestToIdea, token)
+        await ideasMarketStore.updateIdeaMarketStatus(
+          ideaMarketId,
+          'RECRUITMENT_IS_CLOSED',
+          token,
+        )
+      }
+    },
+
+    async withdrawRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
+      const { id } = requestToIdea
+      const response = await RequestToIdeaService.updateRequestToIdeaStatus(
+        id,
+        'WITHDRAWN',
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentRequestToIdea = this.requests.find(
+          (request) => request.id === id,
+        )
+
+        if (currentRequestToIdea) {
+          currentRequestToIdea.status = 'WITHDRAWN'
+        }
       }
     },
 

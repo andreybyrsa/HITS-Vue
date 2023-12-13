@@ -17,7 +17,7 @@
   <ConfirmModal
     :is-opened="isOpenedAcceptModal"
     text-button="Принять заявку"
-    text-question="Вы действительно хотите принять заявку?"
+    text-question="Команду можно выбрать только один раз"
     @close-modal="closeAcceptModal"
     @action="acceptRequestToIdea(currentRequestToIdea)"
   />
@@ -25,7 +25,7 @@
   <ConfirmModal
     :is-opened="isOpenedCancelModal"
     text-button="Отклонить заявку"
-    text-question="Вы действительно хотите отклонить заявку?"
+    text-question="Эта команда больше не сможет подать заявку"
     @close-modal="closeCancelModal"
     @action="cancelRequestToIdea(currentRequestToIdea)"
   />
@@ -96,15 +96,14 @@ const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
   {
     key: 'status',
     label: 'Статус',
-    size: 'col-1',
-    contentClassName: 'justify-content-center align-items-center text-center',
+    size: 'col-3',
+    contentClassName: 'justify-content-start align-items-center',
     getRowCellFormat: getStatusFormat,
     getRowCellStyle: getStatusStyle,
   },
   {
     key: 'membersCount',
     label: 'Участники',
-    size: 'col-1',
     contentClassName: 'justify-content-center align-items-center text-center',
     headerCellClick: sortByMembersCount,
   },
@@ -158,6 +157,14 @@ function getStatusFormat(status: RequestToIdeaStatus) {
   if (status === 'CANCELED') {
     return 'Отклонена'
   }
+
+  if (status === 'ANNULLED') {
+    return 'Аннулирована'
+  }
+
+  if (status === 'WITHDRAWN') {
+    return 'Отозвана'
+  }
 }
 
 function getStatusStyle(status: RequestToIdeaStatus) {
@@ -173,7 +180,17 @@ function getStatusStyle(status: RequestToIdeaStatus) {
     return initialClass
   }
 
+  if (status === 'ANNULLED') {
+    initialClass.push('bg-secondary-subtle', 'text-secondary')
+    return initialClass
+  }
+
   if (status === 'CANCELED') {
+    initialClass.push('bg-danger-subtle', 'text-danger')
+    return initialClass
+  }
+
+  if (status === 'WITHDRAWN') {
     initialClass.push('bg-danger-subtle', 'text-danger')
     return initialClass
   }
