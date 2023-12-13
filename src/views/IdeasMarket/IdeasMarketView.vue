@@ -21,6 +21,9 @@ import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
+import Button from '@Components/Button/Button.vue'
+import SendToNextMarketModal from '@Components/Modals/SendToNextMarket/SendToNextMarketModal.vue'
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -35,6 +38,7 @@ const searchedValue = ref('')
 
 const ideaMarket = ref<IdeaMarket | null>(null)
 const isOpenedRequestToIdeaModal = ref(false)
+const isOpenedSendToNextMarketModal = ref(false)
 
 const searchedIdeas = computed(() => {
   if (!searchedValue.value) {
@@ -113,6 +117,10 @@ function closeRequestToIdeaModal() {
   ideaMarket.value = null
   isOpenedRequestToIdeaModal.value = false
 }
+
+function closeSendToNextMarketModal() {
+  isOpenedSendToNextMarketModal.value = false
+}
 </script>
 
 <template>
@@ -138,18 +146,24 @@ function closeRequestToIdeaModal() {
           Избранное
         </div>
       </div>
-      <div class="w-50 mb-3">
-        <Input
-          name="search"
-          class-name="rounded-end"
-          no-form-controlled
-          v-model="searchedValue"
-          placeholder="Поиск"
-        >
-          <template #prepend>
-            <Icon class-name="bi bi-search" />
-          </template>
-        </Input>
+
+      <div class="search-and-close-market mb-3 w-100">
+        <div class="w-50">
+          <Input
+            name="search"
+            class-name="rounded-end"
+            no-form-controlled
+            v-model="searchedValue"
+            placeholder="Поиск"
+          >
+            <template #prepend>
+              <Icon class-name="bi bi-search" />
+            </template>
+          </Input>
+        </div>
+        <div>
+          <Button variant="primary">Закрыть биржу</Button>
+        </div>
       </div>
 
       <div class="idea-cards row">
@@ -173,12 +187,18 @@ function closeRequestToIdeaModal() {
         @close-modal="closeRequestToIdeaModal"
       />
 
+      <SendToNextMarketModal
+        :checked-ideas-market="ideas"
+        :is-opened="isOpenedSendToNextMarketModal"
+        @close-modal="closeSendToNextMarketModal"
+      />
+
       <router-view />
     </template>
   </PageLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .header-link {
   cursor: pointer;
 }
@@ -198,5 +218,9 @@ function closeRequestToIdeaModal() {
 .idea-cards {
   width: 100%;
   grid-row-gap: 20px;
+}
+
+.search-and-close-market {
+  @include flexible(center, space-between, $gap: 8px);
 }
 </style>

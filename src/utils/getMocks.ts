@@ -20,6 +20,7 @@ import {
 import Notification from '@Domain/Notification'
 import IdeaMarket from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { Market } from '@Domain/Market'
 
 interface Mocks {
   users: User[]
@@ -37,6 +38,7 @@ interface Mocks {
   ideasMarket: IdeaMarket[]
   ratings: Rating[]
   comments: Comment[]
+  market: Market[]
 
   teams: Team[]
   teamMembers: TeamMember[]
@@ -1193,6 +1195,30 @@ function getMocks(): Mocks {
     },
   ]
 
+  const market: Market[] = [
+    {
+      id: '0',
+      name: 'Осення биржа',
+      startDate: '01.10.2023',
+      finishDate: '01.12.2023',
+      status: 'DONE',
+    },
+    {
+      id: '1',
+      name: 'Зимняя биржа',
+      startDate: '01.12.2023',
+      finishDate: '01.03.2024',
+      status: 'NEW',
+    },
+    {
+      id: '2',
+      name: 'Весеснняя биржа',
+      startDate: '01.03.2024',
+      finishDate: '01.06.2024',
+      status: 'NEW',
+    },
+  ]
+
   return {
     users,
     usersEmails,
@@ -1208,6 +1234,7 @@ function getMocks(): Mocks {
     ideasMarket,
     ratings,
     comments,
+    market,
 
     teams,
     teamMembers,

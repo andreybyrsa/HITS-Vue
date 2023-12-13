@@ -2,6 +2,7 @@ import { User } from '@Domain/User'
 import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 import IdeasMarketStatusTypes from '@Domain/MarketStatus'
+import { Market } from '@Domain/Market'
 
 interface IdeaMarket {
   id: string
@@ -24,6 +25,7 @@ interface IdeaMarket {
   startDate: string
   finishDate: string
   isFavorite: boolean
+  market?: Market
 }
 
 export default IdeaMarket

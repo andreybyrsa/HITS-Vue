@@ -5,9 +5,9 @@ import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
 import {
-  SendIdeasOnMarketModalProps,
-  SendIdeasOnMarketModalEmits,
-} from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.types'
+  SendToNextMarketModalProps,
+  SendToNextMarketModalEmits,
+} from '@Components/Modals/SendToNextMarket/SendToNextMarketModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
@@ -15,7 +15,6 @@ import Validation from '@Utils/Validation'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { Idea } from '@Domain/Idea'
 import IdeaMarket from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 
@@ -24,19 +23,17 @@ import MarketService from '@Services/MarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import useIdeasStore from '@Store/ideas/ideasStore'
 
-const props = defineProps<SendIdeasOnMarketModalProps>()
-const emit = defineEmits<SendIdeasOnMarketModalEmits>()
+const props = defineProps<SendToNextMarketModalProps>()
+const emit = defineEmits<SendToNextMarketModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const ideasStore = useIdeasStore()
-
 const notificationsStore = useNotificationsStore()
 
-const checkedIdeas = ref<Idea[]>([])
+const noTeamIdeas = ref<IdeaMarket[]>([])
+const checkedIdeasMarket = ref<IdeaMarket[]>([])
 
 const isLoading = ref(false)
 
@@ -60,9 +57,9 @@ onMounted(async () => {
 })
 
 watchImmediate(
-  () => props.checkedIdeas,
+  () => props.checkedIdeasMarket,
   (ideas) => {
-    checkedIdeas.value = ideas
+    checkedIdeasMarket.value = ideas
   },
   { deep: true },
 )
@@ -74,13 +71,19 @@ const { handleSubmit } = useForm({
   },
 })
 
+for (const ideaMarket of checkedIdeasMarket.value) {
+  if (ideaMarket.team === null) {
+    noTeamIdeas.value.push(ideaMarket)
+  }
+}
+
 const sendIdeasToMarket = handleSubmit(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const ideasMarket: IdeaMarket[] = checkedIdeas.value.map((idea) => {
+    const ideasMarket: IdeaMarket[] = noTeamIdeas.value.map((idea) => {
       return {
         ...idea,
         position: 0,
@@ -88,6 +91,7 @@ const sendIdeasToMarket = handleSubmit(async () => {
         requests: 0,
         acceptedRequests: 0,
         isFavorite: false,
+        team: null,
         market: {},
       } as unknown as IdeaMarket
     })
@@ -99,23 +103,11 @@ const sendIdeasToMarket = handleSubmit(async () => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    ideasStore.changeIdeasStatusOnMarket(checkedIdeas.value)
-
     isLoading.value = false
     emit('close-modal')
-    emit('reset-checked-ideas')
+    emit('reset-no-team-ideas')
   }
 })
-
-function deleteIdea(ideaId: string) {
-  const ideaIndex = checkedIdeas.value.findIndex(({ id }) => id === ideaId)
-
-  if (ideaIndex !== -1) {
-    checkedIdeas.value.splice(ideaIndex, 1)
-
-    if (checkedIdeas.value.length === 0) emit('close-modal')
-  }
-}
 </script>
 
 <template>
@@ -145,18 +137,13 @@ function deleteIdea(ideaId: string) {
 
       <div class="send-ideas-on-market-modal__ideas d-flex flex-column gap-2 w-100">
         <div
-          v-for="(idea, index) in checkedIdeas"
+          v-for="(idea, index) in noTeamIdeas"
           :key="index"
           class="d-flex gap-2 w-100"
         >
           <Typography class-name="text-primary w-100 border rounded p-2">
             {{ idea.name }}
           </Typography>
-          <Button
-            variant="outline-danger"
-            append-icon-name="bi bi-x"
-            @click="deleteIdea(idea.id)"
-          />
         </div>
       </div>
 
