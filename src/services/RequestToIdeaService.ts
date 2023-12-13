@@ -74,6 +74,28 @@ const updateRequestToIdeaStatus = async (
     })
 }
 
+const annulatedRequestsToIdea = async (
+  teamId: string,
+  status: RequestToIdeaStatus,
+  token: string,
+): Promise<Success | Error> => {
+  return await requestTeamsAxios
+    .put<Success>(
+      `/market/change-status/request/${teamId}/${status}`,
+      { status: status },
+      { headers: { Authorization: `Bearer ${token}` } },
+      {
+        params: { teamId },
+        responseData: { success: 'Успешное изменение статуса' },
+      },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка изменения статуса заявки'
+      return new Error(error)
+    })
+}
+
 const deleteRequestTeams = async (
   id: string,
   token: string,
@@ -102,6 +124,7 @@ const RequestTeamsServise = {
   postRequest,
 
   updateRequestToIdeaStatus,
+  annulatedRequestsToIdea,
 
   deleteRequestTeams,
 }

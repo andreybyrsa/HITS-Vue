@@ -902,50 +902,6 @@ function getMocks(): Mocks {
 
   const RequestTeams: RequestTeamToIdea[] = [
     {
-      id: '0',
-      ideaMarketId: '2',
-      teamId: '100',
-      status: 'NEW',
-
-      name: 'Первые разрабы мира',
-      membersCount: 4,
-      skills: [
-        skills[0],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[11],
-        skills[12],
-        skills[17],
-        skills[18],
-      ],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
-      id: '1',
-      ideaMarketId: '2',
-      teamId: '101',
-      status: 'NEW',
-
-      name: 'Фронтендеры',
-      membersCount: 4,
-      skills: [
-        skills[0],
-        skills[4],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[11],
-        skills[12],
-        skills[17],
-        skills[18],
-      ],
-      letter:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
-    },
-    {
       id: '2',
       ideaMarketId: '2',
       teamId: '0',

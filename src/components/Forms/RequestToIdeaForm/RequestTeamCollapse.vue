@@ -4,12 +4,14 @@ import { RouteRecordRaw, useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
-import { RequestTeamCollapseProps } from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.types.'
+import {
+  RequestTeamCollapseProps,
+  hintLetter,
+} from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.types.'
 
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import Skills from '@Components/Skills/Skills.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
@@ -236,13 +238,12 @@ function checkRequestStatusNew(team: Team) {
             </div>
           </div>
 
-          <Typography class-name="border-bottom fs-6 text-secondary w-100">
-            Мотивационное письмо
-          </Typography>
           <Textarea
             class-name="team-request-collapse__letter w-100 rounded-end"
             name="letter"
             v-model="letter"
+            label="Мотивационное письмо"
+            :hint="hintLetter"
           />
 
           <div class="d-flex gap-2">

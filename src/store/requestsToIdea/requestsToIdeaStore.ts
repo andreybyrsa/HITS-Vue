@@ -8,6 +8,20 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import InitialState from '@Store/requestsToIdea/initialState'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
+import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import { Ref, ref } from 'vue'
+import Success from '@Domain/ResponseMessage'
+
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    useNotificationsStore().createSystemNotification('Система', `${data.value}`)
+  }
+}
 
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({
@@ -53,30 +67,26 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
 
     async acceptRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
       const { id, ideaMarketId, teamId } = requestToIdea
-      const response = await RequestToIdeaService.updateRequestToIdeaStatus(
-        id,
-        'ACCEPTED',
-        token,
-      )
+      const ideasMarketStore = useIdeasMarketStore()
 
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentRequestToIdea = this.requests.find(
-          (request) => request.id === id,
-        )
+      const parallelRequests = [
+        () => RequestToIdeaService.updateRequestToIdeaStatus(id, 'ACCEPTED', token),
+        () => ideasMarketStore.setIdeaMarketTeam(requestToIdea, token),
+        () =>
+          ideasMarketStore.updateIdeaMarketStatus(
+            ideaMarketId,
+            'RECRUITMENT_IS_CLOSED',
+            token,
+          ),
+        () =>
+          RequestToIdeaService.annulatedRequestsToIdea(teamId, 'ANNULLED', token),
+      ]
 
-        if (currentRequestToIdea) {
-          currentRequestToIdea.status = 'ACCEPTED'
-        }
+      await makeParallelRequests<Error | Success | void>(parallelRequests)
 
-        const ideasMarketStore = useIdeasMarketStore()
-        await ideasMarketStore.setIdeaMarketTeam(requestToIdea, token)
-        await ideasMarketStore.updateIdeaMarketStatus(
-          ideaMarketId,
-          'RECRUITMENT_IS_CLOSED',
-          token,
-        )
+      const currentRequestToIdea = this.requests.find((request) => request.id === id)
+      if (currentRequestToIdea) {
+        currentRequestToIdea.status = 'ACCEPTED'
       }
     },
 
