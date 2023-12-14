@@ -20,7 +20,7 @@ import IdeaMarket from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
-import MarketService from '@Services/MarketService'
+import MarketsService from '@Services/MarketsService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -49,7 +49,7 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { id } = currentUser
 
-    const response = await MarketService.fetchMarket(id)
+    const response = await MarketsService.fetchMarkets(id)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)

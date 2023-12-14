@@ -5,7 +5,7 @@ import getMocks from '@Utils/getMocks'
 
 const marketAxios = defineAxios(getMocks().market)
 
-const fetchMarket = async (token: string): Promise<Market[] | Error> => {
+const fetchMarkets = async (token: string): Promise<Market[] | Error> => {
   return await marketAxios
     .get('/market/all', {
       headers: { Authorization: `Bearer ${token}` },
@@ -18,7 +18,7 @@ const fetchMarket = async (token: string): Promise<Market[] | Error> => {
 }
 
 const MarketService = {
-  fetchMarket,
+  fetchMarkets,
 }
 
 export default MarketService
