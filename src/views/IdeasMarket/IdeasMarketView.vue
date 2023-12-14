@@ -31,7 +31,7 @@ const ideasMarketStore = useIdeasMarketStore()
 
 const notificationsStore = useNotificationsStore()
 
-const ideas = ref<IdeaMarket[] | null>(null)
+const ideas = ref<IdeaMarket[]>([])
 const isAllIdeas = ref(true)
 
 const searchedValue = ref('')
@@ -67,7 +67,7 @@ async function getIdeasByRole() {
   if (currentUser?.token && currentUser.role) {
     const { token, role } = currentUser
 
-    ideas.value = null
+    ideas.value = []
     const response = await ideasMarketStore.getMarketIdeas(role, token)
 
     if (response instanceof Error) {
@@ -83,7 +83,7 @@ async function getFavoritesIdeas() {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    ideas.value = null
+    ideas.value = []
     const response = await IdeasMarketService.fetchFavoritesIdeas(token)
 
     if (response instanceof Error) {
@@ -116,6 +116,10 @@ function openRequestToIdeaModal(idea: IdeaMarket) {
 function closeRequestToIdeaModal() {
   ideaMarket.value = null
   isOpenedRequestToIdeaModal.value = false
+}
+
+function openSendToNextMarketModal() {
+  isOpenedSendToNextMarketModal.value = true
 }
 
 function closeSendToNextMarketModal() {
@@ -162,7 +166,11 @@ function closeSendToNextMarketModal() {
           </Input>
         </div>
         <div>
-          <Button variant="primary">Закрыть биржу</Button>
+          <Button
+            variant="primary"
+            @click="openSendToNextMarketModal"
+            >Закрыть биржу</Button
+          >
         </div>
       </div>
 

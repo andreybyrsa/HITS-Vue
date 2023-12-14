@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, Ref, computed, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
@@ -24,6 +24,8 @@ import MarketService from '@Services/MarketService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
+import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+
 const props = defineProps<SendToNextMarketModalProps>()
 const emit = defineEmits<SendToNextMarketModalEmits>()
 
@@ -39,6 +41,17 @@ const isLoading = ref(false)
 
 const markets = ref<Market[]>([])
 const marketsNames = computed(() => markets.value.map((market) => market.name))
+
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
+}
 
 onMounted(async () => {
   const currentUser = user.value
@@ -56,13 +69,44 @@ onMounted(async () => {
   }
 })
 
-watchImmediate(
-  () => props.checkedIdeasMarket,
-  (ideas) => {
-    checkedIdeasMarket.value = ideas
-  },
-  { deep: true },
-)
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, id } = currentUser
+
+    const profileParallelRequests = [
+      () => MarketService.fetchMarket(id),
+      () => IdeasMarketService.fetchIdeasMarket(token),
+    ]
+
+    await makeParallelRequests<IdeaMarket[] | Market[] | Error>(
+      profileParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, markets)
+        }
+        if (response.id === 1) {
+          checkResponseStatus(response, checkedIdeasMarket)
+        }
+      })
+    })
+  }
+  checkedIdeasMarket.value.forEach((idea) => {
+    if (idea.team == null) {
+      noTeamIdeas.value.push(idea)
+    }
+  })
+})
+
+// watchImmediate(
+//   () => props.checkedIdeasMarket,
+//   (ideas) => {
+//     checkedIdeasMarket.value = ideas
+//   },
+//   { deep: true },
+// )
 
 const { handleSubmit } = useForm({
   validationSchema: {
@@ -71,11 +115,7 @@ const { handleSubmit } = useForm({
   },
 })
 
-for (const ideaMarket of checkedIdeasMarket.value) {
-  if (ideaMarket.team === null) {
-    noTeamIdeas.value.push(ideaMarket)
-  }
-}
+console.log(noTeamIdeas)
 
 const sendIdeasToMarket = handleSubmit(async () => {
   const currentUser = user.value
