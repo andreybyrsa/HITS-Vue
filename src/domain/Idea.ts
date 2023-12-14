@@ -39,8 +39,8 @@ interface Rating {
   id: string
   ideaId: string
   expertId: string
-  firstName: string
-  lastName: string
+  expertFirstName: string
+  expertLastName: string
 
   marketValue: number | null
   originality: number | null
@@ -48,7 +48,7 @@ interface Rating {
   suitability: number | null
   budget: number | null
   rating: number | null
-  confirmed: boolean
+  isConfirmed: boolean
 }
 
 interface IdeaSkills {

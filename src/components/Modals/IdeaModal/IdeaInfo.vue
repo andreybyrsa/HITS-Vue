@@ -62,7 +62,7 @@ function getIdeaModalStatus() {
 
   if (idea.status === 'ON_CONFIRMATION' && expertRatings) {
     const confirmedRatings = expertRatings.reduce(
-      (prevValue, value) => (value.confirmed ? (prevValue += 1) : prevValue),
+      (prevValue, value) => (value.isConfirmed ? (prevValue += 1) : prevValue),
       0,
     )
     return `Утвердили ${confirmedRatings}/${expertRatings.length}`
@@ -134,14 +134,20 @@ function getRatingColor(rating: number | null) {
       </Typography>
 
       <div
-        v-for="{ id, firstName, lastName, rating, confirmed } in expertRatings"
+        v-for="{
+          id,
+          expertFirstName,
+          expertLastName,
+          rating,
+          isConfirmed,
+        } in expertRatings"
         :key="id"
         class="idea-info__sub-info pt-2"
       >
-        <Icon :class-name="getExpertRatingicon(confirmed)" />
+        <Icon :class-name="getExpertRatingicon(isConfirmed)" />
 
         <Typography class-name="text-primary">
-          {{ `${firstName} ${lastName}:` }}
+          {{ `${expertFirstName} ${expertLastName}:` }}
         </Typography>
         <Typography :class-name="getRatingColor(rating)">
           {{ rating }}
