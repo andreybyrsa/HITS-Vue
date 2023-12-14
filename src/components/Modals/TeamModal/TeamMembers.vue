@@ -151,10 +151,9 @@ async function appointLeaderTeam(teamMember: TeamMember) {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { id: userId } = teamMember
-    const { id: teamId } = props.team
+    const { id } = props.team
 
-    await teamsStore.changeLeaderTeamMember(teamId, userId, token)
+    await teamsStore.changeLeaderTeamMember(id, teamMember, token)
   }
 }
 

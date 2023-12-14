@@ -14,7 +14,7 @@ import Icon from '@Components/Icon/Icon.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { TeamMember } from '@Domain/Team'
+import { TeamMember, TeamInvitation } from '@Domain/Team'
 
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 import useUserStore from '@Store/user/userStore'
@@ -52,7 +52,18 @@ async function inviteUsersInTeam() {
     const { token } = currentUser
     const { teamId } = route.params
 
-    await invitatinUsers.inviteUsers(selectedUsers.value, teamId.toString(), token)
+    const invitationsToTeam = selectedUsers.value.map(
+      ({ id: userId, email, firstName, lastName }) => ({
+        teamId,
+        userId,
+        email,
+        firstName,
+        lastName,
+        status: 'NEW',
+      }),
+    ) as TeamInvitation[]
+
+    await invitatinUsers.inviteUsers(invitationsToTeam, teamId.toString(), token)
 
     selectedUsers.value = []
     isLoading.value = false

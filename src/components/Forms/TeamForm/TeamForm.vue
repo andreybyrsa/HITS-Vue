@@ -15,7 +15,7 @@ import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import { TeamFormProps } from '@Components/Forms/TeamForm/TeamForm.types'
 
 import { User } from '@Domain/User'
-import { Team, TeamMember } from '@Domain/Team'
+import { Team, TeamMember, TeamInvitation } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 
 import TeamService from '@Services/TeamService'
@@ -88,8 +88,19 @@ const handleCreateTeam = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    const responseInvitation = await TeamService.invitationTeamMember(
-      invitationUsers.value,
+    const invitationsToTeam = invitationUsers.value.map(
+      ({ id: userId, email, firstName, lastName }) => ({
+        teamId: response.id,
+        userId,
+        email,
+        firstName,
+        lastName,
+        status: 'NEW',
+      }),
+    ) as TeamInvitation[]
+
+    const responseInvitation = await TeamService.createInvitationsToTeam(
+      invitationsToTeam,
       response.id,
       token,
     )

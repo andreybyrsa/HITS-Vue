@@ -27,8 +27,6 @@ onMounted(async () => {
     const { token } = currentUser
 
     const response = await TeamService.getTeams(token)
-
-    console.log(response)
   }
 })
 

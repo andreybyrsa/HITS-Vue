@@ -68,13 +68,13 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser.role) {
-    const { token, role } = currentUser
+    const { token, id: userId, role } = currentUser
     const id = route.params.id.toString()
 
     const marketParallelRequests = [
       () => ideasMarketStore.getMarketIdea(id, role, token),
       () => requestsToIdeaStore.getRequestsToIdea(id, token),
-      () => TeamService.getOwnerTeams(token),
+      () => TeamService.getOwnerTeams(userId, token),
       () => useCommentsStore().getComments(id, token),
     ]
 

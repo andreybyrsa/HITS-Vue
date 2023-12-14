@@ -28,8 +28,8 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
   },
 
   actions: {
-    async sendRequestInTeam(teamId: string, token: string) {
-      const response = await TeamService.sendRequestInTeam(teamId, token)
+    async sendRequestInTeam(requestToTeam: RequestToTeam, token: string) {
+      const response = await TeamService.createRequestToTeam(requestToTeam, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -43,8 +43,13 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
       status: RequestToTeamStatus,
       token: string,
     ) {
-      const { id } = requestToTeam
-      const response = await TeamService.updateRequestToTeamStatus(id, status, token)
+      const { id, userId } = requestToTeam
+      const response = await TeamService.updateRequestToTeamStatus(
+        id,
+        userId,
+        status,
+        token,
+      )
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)

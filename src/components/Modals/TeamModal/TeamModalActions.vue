@@ -12,7 +12,7 @@ import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
-import { TeamMember } from '@Domain/Team'
+import { RequestToTeam, TeamMember } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
@@ -129,9 +129,13 @@ function getAccessCancelOrAcceptInvitationToTeam() {
 function getAccessToLeave() {
   if (user.value) {
     const { id: userId } = user.value
-    const { owner, members } = props.team
+    const { owner, leader, members } = props.team
 
-    return userId !== owner.id && members.find((user) => user.id === userId)
+    return (
+      userId !== owner.id &&
+      leader?.id !== userId &&
+      members.find((user) => user.id === userId)
+    )
   }
 }
 
@@ -190,9 +194,7 @@ async function handleLeaveTeam() {
     const { token, id: userId } = currentUser
     const { id } = props.team
 
-    await teamsStore
-      .kickTeamMember(id, userId, token)
-      .then(() => emit('close-modal'))
+    await teamsStore.leaveFromTeam(id, userId, token)
   }
 }
 
@@ -200,10 +202,19 @@ async function sendRequestInTeam() {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = props.team
+    const { token, id: userId, email, firstName, lastName } = currentUser
+    const { id: teamId } = props.team
 
-    await requestsToTeamStore.sendRequestInTeam(id, token)
+    const requestToTeam = {
+      teamId,
+      userId,
+      status: 'NEW',
+      email,
+      firstName,
+      lastName,
+    } as RequestToTeam
+
+    await requestsToTeamStore.sendRequestInTeam(requestToTeam, token)
   }
 }
 
@@ -230,7 +241,7 @@ async function withdrawRequestToTeam() {
 async function acceptInvitationToTeam() {
   const currentUser = user.value
   const currentUserInvitation = invitationUsers.value?.find(
-    (invitation) => invitation.userId === currentUser?.id,
+    ({ userId, status }) => userId === currentUser?.id && status === 'NEW',
   )
 
   if (currentUser?.token && currentUserInvitation) {
@@ -247,7 +258,7 @@ async function acceptInvitationToTeam() {
 async function cancelInvitationToTeam() {
   const currentUser = user.value
   const currentUserInvitation = invitationUsers.value?.find(
-    (invitation) => invitation.userId === currentUser?.id,
+    ({ userId, status }) => userId === currentUser?.id && status === 'NEW',
   )
 
   if (currentUser?.token && currentUserInvitation) {

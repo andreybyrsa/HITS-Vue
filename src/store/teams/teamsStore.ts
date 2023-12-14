@@ -56,11 +56,7 @@ const useTeamStore = defineStore('teams', {
   },
   actions: {
     async addTeamMember(teamMember: TeamMember, token: string) {
-      const response = await TeamService.addTeamMember(
-        teamMember.userId,
-        teamMember.teamId,
-        token,
-      )
+      const response = await TeamService.addTeamMember(teamMember, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -74,8 +70,13 @@ const useTeamStore = defineStore('teams', {
       }
     },
 
-    async changeLeaderTeamMember(teamId: string, userId: string, token: string) {
-      const response = await TeamService.appointLeaderTeam(teamId, userId, token)
+    async changeLeaderTeamMember(
+      teamId: string,
+      teamMember: TeamMember,
+      token: string,
+    ) {
+      const { userId } = teamMember
+      const response = await TeamService.appointLeaderTeam(teamId, teamMember, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -91,6 +92,27 @@ const useTeamStore = defineStore('teams', {
 
     async kickTeamMember(teamId: string, teamMemberId: string, token: string) {
       const response = await TeamService.kickTeamMember(teamId, teamMemberId, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentTeam = this.teams.find(({ id }) => id === teamId)
+
+        if (currentTeam) {
+          const currentTeamMemberIndex = currentTeam.members.findIndex(
+            ({ id }) => id === teamMemberId,
+          )
+
+          if (currentTeamMemberIndex !== -1) {
+            currentTeam.members.splice(currentTeamMemberIndex, 1)
+            currentTeam.membersCount--
+          }
+        }
+      }
+    },
+
+    async leaveFromTeam(teamId: string, teamMemberId: string, token: string) {
+      const response = await TeamService.leaveFromTeam(teamId, teamMemberId, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)

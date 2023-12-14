@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { TeamInvitation, InvitationToTeamStatus, TeamMember } from '@Domain/Team'
+import { TeamInvitation, InvitationToTeamStatus } from '@Domain/Team'
 
 import TeamService from '@Services/TeamService'
 
@@ -32,8 +32,16 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
   },
 
   actions: {
-    async inviteUsers(users: TeamMember[], teamId: string, token: string) {
-      const response = await TeamService.invitationTeamMember(users, teamId, token)
+    async inviteUsers(
+      invitationsToTeam: TeamInvitation[],
+      teamId: string,
+      token: string,
+    ) {
+      const response = await TeamService.createInvitationsToTeam(
+        invitationsToTeam,
+        teamId,
+        token,
+      )
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -47,9 +55,10 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
       status: InvitationToTeamStatus,
       token: string,
     ) {
-      const { id } = invitationToTeam
+      const { id, userId } = invitationToTeam
       const response = await TeamService.updateInvitationToTeamStatus(
         id,
+        userId,
         status,
         token,
       )

@@ -53,11 +53,11 @@ watch(
     const currentUser = user.value
 
     if (isOpened && currentUser?.token && props.ideaMarket) {
-      const { token } = currentUser
+      const { token, id: userId } = currentUser
       const { id } = props.ideaMarket
 
       const parallelRequests = [
-        () => TeamService.getOwnerTeams(token),
+        () => TeamService.getOwnerTeams(userId, token),
         () => requestsToIdeaStore.getRequestsToIdea(id, token),
       ]
 
