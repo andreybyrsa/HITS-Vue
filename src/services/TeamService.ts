@@ -50,9 +50,12 @@ const getTeams = async (token: string): Promise<Team[] | Error> => {
     })
 }
 
-const getOwnerTeams = async (token: string): Promise<Team[] | Error> => {
+const getOwnerTeams = async (
+  ideaMarketId: string,
+  token: string,
+): Promise<Team[] | Error> => {
   return await teamsAxios
-    .get(`/team/owner/all`, {
+    .get(`/team/owner/all/${ideaMarketId}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

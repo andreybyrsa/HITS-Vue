@@ -21,6 +21,7 @@ import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { useRoute } from 'vue-router'
 
 const availableStatus = getMarketStatus()
 
@@ -92,6 +93,8 @@ function checkIdeaOwned() {
     user.value?.role === 'TEAM_OWNER' && props.idea.status === 'RECRUITMENT_IS_OPEN'
   )
 }
+
+const route = useRoute()
 </script>
 
 <template>
@@ -102,14 +105,16 @@ function checkIdeaOwned() {
           <Typography>#{{ idea.position }}</Typography>
         </div>
         <div class="idea-title">
-          <router-link :to="'market/' + idea.id">{{ idea.name }}</router-link>
+          <router-link :to="`${route.params.marketId}/${idea.id}`">{{
+            idea.name
+          }}</router-link>
         </div>
         <div class="idea-description">
           {{ idea.description }}
         </div>
         <div class="idea-creator">
           <Icon class-name="bi bi-person-circle fs-5" /> Инициатор:
-          {{ idea.initiator.firstName }} {{ idea.initiator.lastName }}
+          {{ idea.initiator?.firstName }} {{ idea.initiator?.lastName }}
         </div>
         <div class="idea-stacks">
           <Skills :skills="idea?.stack" />

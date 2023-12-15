@@ -20,6 +20,9 @@ import IdeasMarketService from '@Services/IdeasMarketService'
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import MarketService from '@Services/MarketService'
+import { Market } from '@Domain/Market'
+import { useRoute } from 'vue-router'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -29,6 +32,7 @@ const ideasMarketStore = useIdeasMarketStore()
 const notificationsStore = useNotificationsStore()
 
 const ideas = ref<IdeaMarket[] | null>(null)
+const market = ref<Market | null>(null)
 const isAllIdeas = ref(true)
 
 const searchedValue = ref('')
@@ -57,20 +61,36 @@ watch(
   },
 )
 
+const route = useRoute()
+
 async function getIdeasByRole() {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser.role) {
     const { token, role } = currentUser
+    const { marketId } = route.params
 
     ideas.value = null
-    const response = await ideasMarketStore.getMarketIdeas(role, token)
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
+    const responseMarket = await MarketService.fetchActiveMarket(token)
+    if (responseMarket instanceof Error) {
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        responseMarket.message,
+      )
+    }
+    market.value = responseMarket
+
+    const responseIdeas = await ideasMarketStore.getMarketIdeas(
+      marketId.toString(),
+      role,
+      token,
+    )
+    if (responseIdeas instanceof Error) {
+      return
     }
 
-    ideas.value = response
+    ideas.value = responseIdeas
   }
 }
 
@@ -122,7 +142,7 @@ function closeRequestToIdeaModal() {
     </template>
 
     <template #content>
-      <Typography class-name="fs-2 text-primary w-75">Биржа идей</Typography>
+      <Typography class-name="fs-2 text-primary w-75">{{ market?.name }}</Typography>
 
       <div class="market-page__navigation nav nav-underline mb-3">
         <div

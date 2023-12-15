@@ -37,7 +37,7 @@ const { user } = storeToRefs(userStore)
 
 const currentTeam = ref<Team>()
 const isOpenedConfirmModal = ref<boolean>(false)
-const withdrawOnRequest = ref<RequestTeamToIdea>()
+const currentRequest = ref<RequestTeamToIdea>()
 const letter = ref<string>('')
 
 const requestTeams = defineModel<RequestTeamToIdea[]>('requestTeams', {
@@ -78,6 +78,17 @@ const sendRequestTeam = handleSubmit(async () => {
   }
 })
 
+const withdrawRequestToIdea = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token && currentRequest.value) {
+    const { token } = currentUser
+    const { id } = currentRequest.value
+
+    await requestToIdeaStore.updateRequestToIdea(id, 'WITHDRAWN', token)
+  }
+}
+
 function navigateToUserProfile(team: Team | RequestTeamToIdea) {
   const profileRoute: RouteRecordRaw = {
     name: 'team-profile',
@@ -94,7 +105,7 @@ function navigateToUserProfile(team: Team | RequestTeamToIdea) {
 }
 
 function openConfirmModal(team: Team) {
-  withdrawOnRequest.value = requestTeams.value.find(
+  currentRequest.value = requestTeams.value.find(
     (request) => request.teamId === team.id && request.status === 'NEW',
   )
   isOpenedConfirmModal.value = true
@@ -102,16 +113,6 @@ function openConfirmModal(team: Team) {
 
 function closeConfirmModal() {
   isOpenedConfirmModal.value = false
-}
-
-const withdrawRequestToIdea = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && withdrawOnRequest.value) {
-    const { token } = currentUser
-
-    await requestToIdeaStore.withdrawRequestToIdea(withdrawOnRequest.value, token)
-  }
 }
 
 function getTextStatusRequest(team: Team) {

@@ -99,6 +99,7 @@ function deleteIdea(ideaId: string) {
     if (checkedIdeas.value.length === 0) emit('close-modal')
   }
 }
+const a = ref()
 </script>
 
 <template>
@@ -125,7 +126,9 @@ function deleteIdea(ideaId: string) {
           class-name="rounded"
           placeholder="Дата старта"
           validate-on-update
+          v-model="a"
         />
+        {{ a }}
         <Input
           name="dateFinish"
           type="date"

@@ -135,7 +135,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/market',
+    path: '/market/:marketId',
     name: 'market',
     component: IdeasMarketView,
     meta: {

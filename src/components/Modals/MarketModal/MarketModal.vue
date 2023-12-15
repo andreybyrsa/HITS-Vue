@@ -70,11 +70,12 @@ onMounted(async () => {
   if (currentUser?.token && currentUser.role) {
     const { token, role } = currentUser
     const id = route.params.id.toString()
+    const marketId = route.params.marketId.toString()
 
     const marketParallelRequests = [
-      () => ideasMarketStore.getMarketIdea(id, role, token),
+      () => ideasMarketStore.getMarketIdea(id, marketId, role, token),
       () => requestsToIdeaStore.getRequestsToIdea(id, token),
-      () => TeamService.getOwnerTeams(token),
+      () => TeamService.getOwnerTeams(id, token),
       () => useCommentsStore().getComments(id, token),
     ]
 
@@ -96,7 +97,7 @@ onMounted(async () => {
 
 function closeMarketModal() {
   isOpenedMarketModal.value = false
-  router.push('/market')
+  router.push(`/market/${route.params.marketId}`)
 
   useCommentsStore().disconnectRsocket()
 }

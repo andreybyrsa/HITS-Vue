@@ -191,7 +191,7 @@ function getStatusStyle(status: RequestToIdeaStatus) {
   }
 
   if (status === 'WITHDRAWN') {
-    initialClass.push('bg-danger-subtle', 'text-danger')
+    initialClass.push('bg-warning-subtle', 'text-warning')
     return initialClass
   }
 }
@@ -248,8 +248,9 @@ async function cancelRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
 
   if (currentUser?.token && requestToIdea) {
     const { token } = currentUser
+    const { id } = requestToIdea
 
-    await requestsToIdeaStore.cancelRequestToIdea(requestToIdea, token)
+    await requestsToIdeaStore.updateRequestToIdea(id, 'CANCELED', token)
   }
 }
 

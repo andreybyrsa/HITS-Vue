@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, VueElement } from 'vue'
+import { onMounted, ref, VueElement } from 'vue'
 import { watchImmediate, useElementHover } from '@vueuse/core'
 import { useRouter, useRoute, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -18,6 +18,9 @@ import RolesTypes from '@Domain/Roles'
 import useUserStore from '@Store/user/userStore'
 
 import getRoles from '@Utils/getRoles'
+import MarketService from '@Services/MarketService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { Market } from '@Domain/Market'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -28,6 +31,8 @@ const route = useRoute()
 const isOpenedRoleModal = ref(false)
 const isOpenedNotificationsModal = ref(false)
 
+const market = ref<Market>()
+
 const userRoles = getRoles()
 
 const leftSideBarRef = ref<VueElement | null>(null)
@@ -35,6 +40,25 @@ const LeftSideBarClassName = ref<string[]>()
 
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
+})
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await MarketService.fetchActiveMarket(token)
+
+    if (response instanceof Error) {
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        response.message,
+      )
+    }
+
+    market.value = response
+  }
 })
 
 watchImmediate(isHovered, (value, prevValue) => {
@@ -115,7 +139,7 @@ function handleCloseNotificationModal() {
           :class-name="isHovered ? 'text-white' : ''"
           :icon-name="tab.iconName"
           :label="isHovered ? tab.text : ''"
-          :to="tab.to"
+          :to="tab.id === 6 ? `${tab.to}/${market?.id}` : tab.to"
           :routes="tab.routes"
         />
       </template>

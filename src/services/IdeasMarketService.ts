@@ -18,9 +18,12 @@ function formatFavoriteIdea(ideasMarket: IdeaMarket[]) {
 const ideasMarketAxios = defineAxios(getMocks().ideasMarket)
 
 // --- GET --- //
-const fetchIdeasMarket = async (token: string): Promise<IdeaMarket[] | Error> => {
+const fetchIdeasMarket = async (
+  marketId: string,
+  token: string,
+): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
-    .get('/market/all', {
+    .get(`/market/idea/market/${marketId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -52,7 +55,7 @@ const getIdeaMarket = async (
 ): Promise<IdeaMarket | Error> => {
   return await ideasMarketAxios
     .get<IdeaMarket>(
-      `/market/${id}`,
+      `/market/idea/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
