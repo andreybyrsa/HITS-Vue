@@ -23,11 +23,21 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Button from '@Components/Button/Button.vue'
 import SendToNextMarketModal from '@Components/Modals/SendToNextMarket/SendToNextMarketModal.vue'
+import FilterBar from '@Components/FilterBar/FilterBar.vue'
+import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
+import getStatus from '@Utils/getStatus'
+import IdeaMarketStatusTypes from '@Domain/MarketStatus'
+import { Idea } from '@Domain/Idea'
+import getMarketStatus from '@Utils/getMarketStatus'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const availableStatus = getMarketStatus()
+
 const ideasMarketStore = useIdeasMarketStore()
+
+const filterByIdeaStatus = ref<IdeaMarketStatusTypes[]>([])
 
 const notificationsStore = useNotificationsStore()
 
@@ -51,6 +61,19 @@ const searchedIdeas = computed(() => {
     return ideaName.includes(lowercaseSearch)
   })
 })
+
+const ideasFilters: Filter<IdeaMarket>[] = [
+  {
+    category: 'Статус',
+    choices: availableStatus.status.map((ideaStatus) => ({
+      label: availableStatus.translatedStatus[ideaStatus],
+      value: ideaStatus,
+    })),
+    refValue: filterByIdeaStatus,
+    isUniqueChoice: false,
+    checkFilter: checkIdeaStatus,
+  },
+]
 
 onMounted(async () => getIdeasByRole())
 
@@ -125,6 +148,10 @@ function openSendToNextMarketModal() {
 function closeSendToNextMarketModal() {
   isOpenedSendToNextMarketModal.value = false
 }
+
+function checkIdeaStatus(idea: IdeaMarket, status: FilterValue) {
+  return idea.status === status
+}
 </script>
 
 <template>
@@ -174,19 +201,27 @@ function closeSendToNextMarketModal() {
         </div>
       </div>
 
-      <div class="idea-cards row">
-        <template v-if="searchedIdeas">
-          <IdeaCard
-            v-for="idea in searchedIdeas"
-            :key="idea.id"
-            :idea="idea"
-            :is-all-ideas="isAllIdeas"
-            v-model:ideas="searchedIdeas"
-            @send-quick-request="openRequestToIdeaModal"
-          />
-        </template>
+      <div class="idea-cards-filter">
+        <div class="idea-cards row">
+          <template v-if="searchedIdeas">
+            <IdeaCard
+              v-for="idea in searchedIdeas"
+              :key="idea.id"
+              :idea="idea"
+              :is-all-ideas="isAllIdeas"
+              v-model:ideas="searchedIdeas"
+              @send-quick-request="openRequestToIdeaModal"
+            />
+          </template>
 
-        <IdeaCardsPlaceholder v-else />
+          <IdeaCardsPlaceholder v-else />
+        </div>
+
+        <FilterBar
+          v-if="ideasFilters"
+          class-name="ms-2 border-start h-100"
+          :filters="ideasFilters"
+        />
       </div>
 
       <RequestToIdeaModal
@@ -218,7 +253,6 @@ function closeSendToNextMarketModal() {
 
   &__content {
     overflow-y: scroll;
-
     @include flexible(stretch, flex-start, column);
   }
 }
@@ -226,6 +260,10 @@ function closeSendToNextMarketModal() {
 .idea-cards {
   width: 100%;
   grid-row-gap: 20px;
+}
+
+.idea-cards-filter {
+  @include flexible(stretch, flex-start, $gap: 8px);
 }
 
 .search-and-close-market {
