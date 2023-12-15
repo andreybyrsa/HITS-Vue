@@ -31,8 +31,6 @@ const route = useRoute()
 const isOpenedRoleModal = ref(false)
 const isOpenedNotificationsModal = ref(false)
 
-const market = ref<Market>()
-
 const userRoles = getRoles()
 
 const leftSideBarRef = ref<VueElement | null>(null)
@@ -40,25 +38,6 @@ const LeftSideBarClassName = ref<string[]>()
 
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
-})
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const response = await MarketService.fetchActiveMarket(token)
-
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
-    }
-
-    market.value = response
-  }
 })
 
 watchImmediate(isHovered, (value, prevValue) => {
@@ -120,6 +99,45 @@ function handleOpenNotificationModal() {
 function handleCloseNotificationModal() {
   isOpenedNotificationsModal.value = false
 }
+
+const market = ref<Market>()
+const marketRouteTabs = ref<LeftSideBarTabType[]>([
+  {
+    id: 6,
+    text: 'Биржа идей',
+    to: '/market',
+    iconName: 'bi bi-basket3',
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    routes: [],
+  },
+])
+onMounted(async () => {
+  const currentUser = useUserStore().user
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await MarketService.fetchActiveMarket(token)
+
+    if (response instanceof Error) {
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        response.message,
+      )
+    }
+
+    market.value = response
+    const routeTab: LeftSideBarTabType = {
+      id: +market.value.id,
+      text: market.value.name,
+      to: `/market/${market.value.id}`,
+      iconName: 'bi bi-basket3',
+      roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    }
+
+    marketRouteTabs.value[0].routes?.push(routeTab)
+  }
+})
 </script>
 
 <template>
@@ -139,7 +157,21 @@ function handleCloseNotificationModal() {
           :class-name="isHovered ? 'text-white' : ''"
           :icon-name="tab.iconName"
           :label="isHovered ? tab.text : ''"
-          :to="tab.id === 6 ? `${tab.to}/${market?.id}` : tab.to"
+          :to="tab.to"
+          :routes="tab.routes"
+        />
+      </template>
+      <template
+        v-for="tab in marketRouteTabs"
+        :key="tab.id"
+      >
+        <NavTab
+          v-if="checkUserRole(tab)"
+          :wrapper-class-name="isHovered ? 'left-side-bar__link w-100' : ''"
+          :class-name="isHovered ? 'text-white' : ''"
+          :icon-name="tab.iconName"
+          :label="isHovered ? tab.text : ''"
+          :to="tab.to"
           :routes="tab.routes"
         />
       </template>

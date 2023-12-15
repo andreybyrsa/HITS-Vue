@@ -12,9 +12,6 @@ import { makeParallelRequests } from '@Utils/makeParallelRequests'
 import Success from '@Domain/ResponseMessage'
 import useTeamStore from '@Store/teams/teamsStore'
 
-const ideasMarketStore = useIdeasMarketStore()
-const teamStore = useTeamStore()
-
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({
     requests: [],
@@ -59,6 +56,8 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
 
     async acceptRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
       const { id, ideaMarketId, teamId } = requestToIdea
+      const ideasMarketStore = useIdeasMarketStore()
+      const teamStore = useTeamStore()
 
       const parallelRequests = [
         () =>
@@ -79,8 +78,8 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
         currentRequestToIdea.status = 'ACCEPTED'
       }
 
-      const team = teamStore.$state.teams.find((team) => team.id === teamId)
-      const ideaMarket = ideasMarketStore.$state.ideasMarket.find(
+      const team = teamStore.teams.find((team) => team.id === teamId)
+      const ideaMarket = ideasMarketStore.ideasMarket.find(
         (idea) => idea.id === ideaMarketId,
       )
       if (ideaMarket && team) {
