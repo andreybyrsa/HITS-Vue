@@ -25,9 +25,7 @@ import Button from '@Components/Button/Button.vue'
 import SendToNextMarketModal from '@Components/Modals/SendToNextMarket/SendToNextMarketModal.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
-import getStatus from '@Utils/getStatus'
 import IdeaMarketStatusTypes from '@Domain/MarketStatus'
-import { Idea } from '@Domain/Idea'
 import getMarketStatus from '@Utils/getMarketStatus'
 
 const userStore = useUserStore()
@@ -37,7 +35,7 @@ const availableStatus = getMarketStatus()
 
 const ideasMarketStore = useIdeasMarketStore()
 
-const filterByIdeaStatus = ref<IdeaMarketStatusTypes[]>([])
+const filterByIdeaMarketStatus = ref<IdeaMarketStatusTypes[]>([])
 
 const notificationsStore = useNotificationsStore()
 
@@ -62,16 +60,16 @@ const searchedIdeas = computed(() => {
   })
 })
 
-const ideasFilters: Filter<IdeaMarket>[] = [
+const ideasMarketFilters: Filter<IdeaMarket>[] = [
   {
     category: 'Статус',
-    choices: availableStatus.status.map((ideaStatus) => ({
-      label: availableStatus.translatedStatus[ideaStatus],
-      value: ideaStatus,
+    choices: availableStatus.status.map((IdeasMarketStatus) => ({
+      label: availableStatus.translatedStatus[IdeasMarketStatus],
+      value: IdeasMarketStatus,
     })),
-    refValue: filterByIdeaStatus,
+    refValue: filterByIdeaMarketStatus,
     isUniqueChoice: false,
-    checkFilter: checkIdeaStatus,
+    checkFilter: checkIdeaMarketStatus,
   },
 ]
 
@@ -149,8 +147,8 @@ function closeSendToNextMarketModal() {
   isOpenedSendToNextMarketModal.value = false
 }
 
-function checkIdeaStatus(idea: IdeaMarket, status: FilterValue) {
-  return idea.status === status
+function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
+  return ideaMarket.status === status
 }
 </script>
 
@@ -218,9 +216,9 @@ function checkIdeaStatus(idea: IdeaMarket, status: FilterValue) {
         </div>
 
         <FilterBar
-          v-if="ideasFilters"
+          v-if="ideasMarketFilters"
           class-name="ms-2 border-start h-100"
-          :filters="ideasFilters"
+          :filters="ideasMarketFilters"
         />
       </div>
 
