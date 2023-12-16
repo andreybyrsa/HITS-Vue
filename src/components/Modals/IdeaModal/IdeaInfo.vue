@@ -75,10 +75,10 @@ function getExpertRatingicon(isConfirmed: boolean) {
   let initialClassName = 'text-secondary fs-3 opacity-25'
 
   if (isConfirmed) {
-    return (initialClassName += ' bi bi-check-lg')
+    return (initialClassName += ' bi bi-check-lg text-success opacity-50')
   }
 
-  return (initialClassName += ' bi bi-clock-history')
+  return (initialClassName += ' bi bi-clock-history opacity-25')
 }
 
 function getRatingColor(rating: number | null) {
@@ -128,7 +128,7 @@ function getRatingColor(rating: number | null) {
       </div>
     </div>
 
-    <div v-if="expertRatings">
+    <div v-if="expertRatings && user?.role === 'PROJECT_OFFICE'">
       <Typography class-name="border-bottom text-secondary d-block">
         Эксперты
       </Typography>

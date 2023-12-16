@@ -88,31 +88,32 @@ const handleCreateTeam = handleSubmit(async (values) => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    const invitationsToTeam = invitationUsers.value.map(
-      ({ id: userId, email, firstName, lastName }) => ({
-        teamId: response.id,
-        userId,
-        email,
-        firstName,
-        lastName,
-        status: 'NEW',
-      }),
-    ) as TeamInvitation[]
+    if (invitationUsers.value.length) {
+      const invitationsToTeam = invitationUsers.value.map(
+        ({ userId, email, firstName, lastName }) => ({
+          teamId: response.id,
+          userId,
+          email,
+          firstName,
+          lastName,
+        }),
+      ) as TeamInvitation[]
 
-    const responseInvitation = await TeamService.createInvitationsToTeam(
-      invitationsToTeam,
-      response.id,
-      token,
-    )
+      const responseInvitation = await TeamService.createInvitationsToTeam(
+        invitationsToTeam,
+        response.id,
+        token,
+      )
+
+      if (responseInvitation instanceof Error) {
+        notificationsStore.createSystemNotification(
+          'Система',
+          responseInvitation.message,
+        )
+      }
+    }
 
     isLoading.value = false
-
-    if (responseInvitation instanceof Error) {
-      notificationsStore.createSystemNotification(
-        'Система',
-        responseInvitation.message,
-      )
-    }
 
     router.push({ name: 'teams-list' })
   }

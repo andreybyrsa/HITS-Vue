@@ -53,13 +53,12 @@ async function inviteUsersInTeam() {
     const { teamId } = route.params
 
     const invitationsToTeam = selectedUsers.value.map(
-      ({ id: userId, email, firstName, lastName }) => ({
+      ({ userId, email, firstName, lastName }) => ({
         teamId,
         userId,
         email,
         firstName,
         lastName,
-        status: 'NEW',
       }),
     ) as TeamInvitation[]
 

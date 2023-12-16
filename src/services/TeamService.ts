@@ -186,6 +186,10 @@ const createInvitationsToTeam = async (
   teamId: string,
   token: string,
 ): Promise<TeamInvitation[] | Error> => {
+  if (MODE === 'DEVELOPMENT') {
+    invitationsToTeam.forEach((invitation) => (invitation.status = 'NEW'))
+  }
+
   return teamInvitationsAxios
     .post(`/team/send-invites/${teamId}`, invitationsToTeam, {
       headers: { Authorization: `Bearer ${token}` },
@@ -204,7 +208,7 @@ const createRequestToTeam = async (
 ): Promise<RequestToTeam | Error> => {
   return requestsToTeamAxios
     .postNoRequestBody<RequestToTeam>(
-      '/team/request/send/${requestToTeam.teamId}',
+      `/team/request/send/${requestToTeam.teamId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -333,7 +337,7 @@ const appointLeaderTeam = async (
 ): Promise<Success | Error> => {
   return teamsAxios
     .putNoRequestBody<Success>(
-      `/team/change/leader/${teamId}/${teamMember.userId}`,
+      `/team/change/leader/${teamId}/${teamMember.id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
