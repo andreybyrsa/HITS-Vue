@@ -3,7 +3,11 @@ import axios from 'axios'
 import { API_URL } from '@Main'
 
 import Success from '@Domain/ResponseMessage'
-import { IdeaMarket, IdeaMarketStatusType } from '@Domain/IdeaMarket'
+import {
+  IdeaMarket,
+  IdeaMarketAdvertisement,
+  IdeaMarketStatusType,
+} from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
@@ -13,11 +17,23 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 
+const { ideasMarket, ideaMarketAdvertisements } = getMocks()
+
+const ideasMarketAxios = defineAxios(ideasMarket)
+const ideasMarketAdvertisementAxios = defineAxios(ideaMarketAdvertisements)
+
 function formatFavoriteIdea(ideasMarket: IdeaMarket[]) {
   return ideasMarket.filter((ideaMarket) => ideaMarket.isFavorite)
 }
 
-const ideasMarketAxios = defineAxios(getMocks().ideasMarket)
+function formatAdvertisementsByIdeaId(
+  ideaMarketAdvertisements: IdeaMarketAdvertisement[],
+  ideaMarketId: string,
+) {
+  return ideaMarketAdvertisements.filter(
+    (advertisement) => advertisement.ideaMarketId === ideaMarketId,
+  )
+}
 
 // --- GET --- //
 const fetchIdeasMarket = async (token: string): Promise<IdeaMarket[] | Error> => {
@@ -81,6 +97,29 @@ const getAllInitiatorMarketIdeas = async (
     })
 }
 
+const getIdeaMarketAdvertisements = async (
+  ideaMarketId: string,
+  token: string,
+): Promise<IdeaMarketAdvertisement[] | Error> => {
+  return ideasMarketAdvertisementAxios
+    .get<IdeaMarketAdvertisement[]>(
+      `/market/get/advertisements/${ideaMarketId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (advertisements) =>
+          formatAdvertisementsByIdeaId(advertisements, ideaMarketId),
+      },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки объявлений'
+      return new Error(error)
+    })
+}
+
 // --- POST --- //
 const sendIdeaOnMarket = async (
   idea: IdeaMarket[],
@@ -111,6 +150,22 @@ const postIdeaMarketTeam = async (
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка добавления команды'
+      return new Error(error)
+    })
+}
+
+const postIdeaMarketAdvertisement = async (
+  ideaMarketAdvertisement: IdeaMarketAdvertisement,
+  token: string,
+): Promise<IdeaMarketAdvertisement | Error> => {
+  return ideasMarketAdvertisementAxios
+    .post('/market/add/advertisement', ideaMarketAdvertisement, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка добавления объявления'
       return new Error(error)
     })
 }
@@ -165,6 +220,28 @@ const kickTeamFromIdeaMarket = async (ideaMarketId: string, token: string) => {
     })
 }
 
+const checkIdeaMarketAdvertisement = async (
+  ideaMarketAdvertisement: IdeaMarketAdvertisement,
+  token: string,
+): Promise<void | Error> => {
+  const { id } = ideaMarketAdvertisement
+
+  return ideasMarketAdvertisementAxios
+    .putNoRequestBody<void>(
+      `/market/check/advertisement/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id }, requestData: ideaMarketAdvertisement },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка прочтения объявления'
+      return new Error(error)
+    })
+}
+
 // --- DELETE --- ///
 const removeIdeaFromFavorites = async (
   id: string,
@@ -183,20 +260,44 @@ const removeIdeaFromFavorites = async (
     })
 }
 
+const deleteIdeaMarketAdvertisement = async (
+  id: string,
+  token: string,
+): Promise<Success | Error> => {
+  return ideasMarketAdvertisementAxios
+    .delete(
+      `/market/delete/advertisement/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка удаления объявления'
+      return new Error(error)
+    })
+}
+
 const IdeasMarketService = {
   fetchIdeasMarket,
   fetchFavoritesIdeas,
   getAllInitiatorMarketIdeas,
   getIdeaMarket,
+  getIdeaMarketAdvertisements,
 
   sendIdeaOnMarket,
   postIdeaMarketTeam,
+  postIdeaMarketAdvertisement,
 
   addIdeaToFavorites,
   updateIdeaMarketStatus,
   kickTeamFromIdeaMarket,
+  checkIdeaMarketAdvertisement,
 
   removeIdeaFromFavorites,
+  deleteIdeaMarketAdvertisement,
 }
 
 export default IdeasMarketService

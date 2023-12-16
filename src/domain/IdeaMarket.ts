@@ -27,4 +27,14 @@ interface IdeaMarket {
   isFavorite: boolean
 }
 
-export { IdeaMarket, IdeaMarketStatusType }
+interface IdeaMarketAdvertisement {
+  id: string
+  ideaMarketId: string
+  createdAt: string
+
+  text: string
+  sender: User
+  checkedBy: string[]
+}
+
+export { IdeaMarket, IdeaMarketStatusType, IdeaMarketAdvertisement }

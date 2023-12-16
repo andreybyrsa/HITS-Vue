@@ -18,7 +18,7 @@ import {
 } from '@Domain/Team'
 
 import Notification from '@Domain/Notification'
-import { IdeaMarket } from '@Domain/IdeaMarket'
+import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 interface Mocks {
@@ -34,9 +34,11 @@ interface Mocks {
 
   ideas: Idea[]
   ideasSkills: IdeaSkills[]
-  ideasMarket: IdeaMarket[]
   ratings: Rating[]
   comments: Comment[]
+
+  ideasMarket: IdeaMarket[]
+  ideaMarketAdvertisements: IdeaMarketAdvertisement[]
 
   teams: Team[]
   teamMembers: TeamMember[]
@@ -510,6 +512,36 @@ function getMocks(): Mocks {
       isFavorite: false,
       startDate: '2023-10-20T11:02:17Z',
       finishDate: '2024-01-20T11:02:17Z',
+    },
+  ]
+
+  const ideaMarketAdvertisements: IdeaMarketAdvertisement[] = [
+    {
+      id: '0',
+      ideaMarketId: ideasMarket[0].id,
+      createdAt: '2023-03-11T11:02:17Z',
+
+      text: 'Для выполнения данной идеи требуются только бекендеры!',
+      sender: users[2],
+      checkedBy: [users[2].email],
+    },
+    {
+      id: '1',
+      ideaMarketId: ideasMarket[0].id,
+      createdAt: '2023-03-12T11:02:17Z',
+
+      text: 'Скоро набор закроется, быстрее подавайте заявки!',
+      sender: users[2],
+      checkedBy: [users[2].email],
+    },
+    {
+      id: '2',
+      ideaMarketId: ideasMarket[1].id,
+      createdAt: '2023-03-18T11:02:17Z',
+
+      text: 'Требуются фронтендеры, бекендеры и желающие научиться новым компетенциям.',
+      sender: users[0],
+      checkedBy: [users[0].email],
     },
   ]
 
@@ -1211,9 +1243,11 @@ function getMocks(): Mocks {
 
     ideas,
     ideasSkills,
-    ideasMarket,
     ratings,
     comments,
+
+    ideasMarket,
+    ideaMarketAdvertisements,
 
     teams,
     teamMembers,

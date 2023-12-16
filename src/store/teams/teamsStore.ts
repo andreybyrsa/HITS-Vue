@@ -75,7 +75,7 @@ const useTeamStore = defineStore('teams', {
       teamMember: TeamMember,
       token: string,
     ) {
-      const { userId } = teamMember
+      const { id: userId } = teamMember
       const response = await TeamService.appointLeaderTeam(teamId, teamMember, token)
 
       if (response instanceof Error) {
