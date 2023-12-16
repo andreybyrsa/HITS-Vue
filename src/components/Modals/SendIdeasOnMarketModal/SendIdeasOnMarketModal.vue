@@ -15,7 +15,7 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { Idea } from '@Domain/Idea'
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
 

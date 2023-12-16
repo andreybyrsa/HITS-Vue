@@ -44,15 +44,14 @@ import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
 
-import getSkillStyle from '@Utils/getSkillsStyle'
-
+import { Skill } from '@Domain/Skill'
 import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
 
 import useUserStore from '@Store/user/userStore'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
 import mutableSort from '@Utils/mutableSort'
-import { Skill } from '@Domain/Skill'
+import { getSkillInfoStyle } from '@Utils/skillsInfo'
 
 const props = defineProps<RequestsToIdeaTableProps>()
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>()
@@ -113,15 +112,10 @@ const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
     label: 'Кометенции',
     size: 'col-4',
     contentClassName: 'justify-content-center align-items-center',
-    getRowCellStyle: getSkillStyle,
+    getRowCellStyle: getSkillsStyle,
     getRowCellFormat: getSkillsFormat,
   },
 ]
-
-function getSkillsFormat(skills: Skill[], index: number) {
-  const currentSkill = skills[index]
-  return currentSkill.name
-}
 
 const dropdownRequestActions: DropdownMenuAction<RequestTeamToIdea>[] = [
   {
@@ -146,6 +140,11 @@ const dropdownRequestActions: DropdownMenuAction<RequestTeamToIdea>[] = [
   },
 ]
 
+function getSkillsFormat(skills: Skill[], index: number) {
+  const currentSkill = skills[index]
+  return currentSkill.name
+}
+
 function getStatusFormat(status: RequestToIdeaStatus) {
   if (status === 'NEW') {
     return 'Новая'
@@ -158,6 +157,13 @@ function getStatusFormat(status: RequestToIdeaStatus) {
   if (status === 'CANCELED') {
     return 'Отклонена'
   }
+}
+
+function getSkillsStyle(skills: Skill[], index: number) {
+  const { type } = skills[index]
+  const skillTypeClass = getSkillInfoStyle(type)
+
+  return ['px-2', 'py-1', 'rounded', 'd-flex', 'gap-1', ...skillTypeClass]
 }
 
 function getStatusStyle(status: RequestToIdeaStatus) {

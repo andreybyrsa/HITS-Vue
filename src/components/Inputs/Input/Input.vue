@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
-import tooltipDirective from '@Utils/tooltip'
 import Icon from '@Components/Icon/Icon.vue'
 
 import { InputProps, InputEmits } from '@Components/Inputs/Input/Input.types'

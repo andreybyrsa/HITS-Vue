@@ -16,6 +16,7 @@ interface TeamMembersProps {
 
 interface TeamInvitationsProps {
   invitations: TeamInvitation[]
+  team: Team
 }
 
 interface RequestsToTeamProps {

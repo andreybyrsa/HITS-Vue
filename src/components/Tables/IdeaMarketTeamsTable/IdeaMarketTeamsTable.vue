@@ -26,16 +26,16 @@ import IdeaMarketTeamsTableProps from '@Components/Tables/IdeaMarketTeamsTable/I
 import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
-import getSkillStyle from '@Utils/getSkillsStyle'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
+import { Skill } from '@Domain/Skill'
 import { Team, TeamMember } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 import mutableSort from '@Utils/mutableSort'
-import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-import { Skill } from '@Domain/Skill'
+import { getSkillInfoStyle } from '@Utils/skillsInfo'
 
 const props = defineProps<IdeaMarketTeamsTableProps>()
 const skillsAcceptedTeam = defineModel<Team>()
@@ -89,15 +89,10 @@ const ideaMarketTeamColumns: TableColumn<Team>[] = [
     label: 'Кометенции',
     size: 'col-4',
     contentClassName: 'justify-content-center align-items-center',
-    getRowCellStyle: getSkillStyle,
+    getRowCellStyle: getSkillsStyle,
     getRowCellFormat: getSkillsFormat,
   },
 ]
-
-function getSkillsFormat(skills: Skill[], index: number) {
-  const currentSkill = skills[index]
-  return currentSkill.name
-}
 
 const dropdownIdeaMarketTeamActions: DropdownMenuAction<Team>[] = [
   {
@@ -113,10 +108,22 @@ const dropdownIdeaMarketTeamActions: DropdownMenuAction<Team>[] = [
   },
 ]
 
+function getSkillsFormat(skills: Skill[], index: number) {
+  const currentSkill = skills[index]
+  return currentSkill.name
+}
+
 function getLeaderFormat(leader: TeamMember | null) {
   if (leader) {
     return `${leader.firstName} ${leader.lastName}`
   }
+}
+
+function getSkillsStyle(skills: Skill[], index: number) {
+  const { type } = skills[index]
+  const skillTypeClass = getSkillInfoStyle(type)
+
+  return ['px-2', 'py-1', 'rounded', 'd-flex', 'gap-1', ...skillTypeClass]
 }
 
 function getLeaderStyle(leader: TeamMember | null) {

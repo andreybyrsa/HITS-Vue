@@ -1,13 +1,13 @@
 import { InvitationToTeamStatus } from '@Domain/Team'
 
-interface GetInvitationsType {
+interface GetInvitationsToTeamType {
   invitations: InvitationToTeamStatus[]
   translatedInvitations: {
     [key in InvitationToTeamStatus]: string
   }
 }
 
-function getInvitationsToTeamStatus(): GetInvitationsType {
+function getInvitationsToTeamStatus(): GetInvitationsToTeamType {
   return {
     invitations: ['NEW', 'WITHDRAWN', 'ACCEPTED', 'ANNULLED', 'CANCELED'],
     translatedInvitations: {

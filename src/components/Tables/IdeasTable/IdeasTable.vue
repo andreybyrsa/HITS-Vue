@@ -42,14 +42,12 @@ import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
-import { Idea } from '@Domain/Idea'
-import IdeaStatusTypes from '@Domain/IdeaStatus'
+import { Idea, IdeaStatusType } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
-import getStatus from '@Utils/getStatus'
-import getStatusStyle from '@Utils/getStatusStyle'
+import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 import mutableSort from '@Utils/mutableSort'
 
 const props = defineProps<IdeasTableProps>()
@@ -65,12 +63,12 @@ const ideasData = ref<Idea[]>([])
 const checkedIdeas = ref<Idea[]>([])
 const sendingIdeasOnMarket = ref<Idea[]>([])
 
-const availableStatus = getStatus()
+const availableStatus = getIdeaStatus()
 
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
-const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
+const filterByIdeaStatus = ref<IdeaStatusType[]>([])
 
 const isOpenSendIdeasModal = ref<boolean>(false)
 
@@ -106,7 +104,7 @@ const ideaTableColumns: TableColumn<Idea>[] = [
     key: 'status',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellStyle: getStatusStyle,
+    getRowCellStyle: getIdeaStatusStyle,
     getRowCellFormat: getTranslatedStatus,
   },
   {
@@ -205,7 +203,7 @@ function sortByRating() {
   mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
 }
 
-function getTranslatedStatus(status: IdeaStatusTypes) {
+function getTranslatedStatus(status: IdeaStatusType) {
   return availableStatus.translatedStatus[status].toString()
 }
 

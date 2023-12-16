@@ -1,4 +1,6 @@
-import IdeaMarket from '@Domain/IdeaMarket'
+import { VueElement } from 'vue'
+
+import { IdeaMarket } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Skill } from '@Domain/Skill'
 
@@ -33,6 +35,12 @@ interface MarketModalTabType {
   icon: string
 }
 
+interface MarketAdvertisementsProps {
+  ideaMarket: IdeaMarket
+
+  ideaMarketModalRef: VueElement | null
+}
+
 interface MarketRightSideProps {
   idea: IdeaMarket
   skills: Skill[]
@@ -53,6 +61,7 @@ export {
   MarketModalProps,
   MarketDescriptionProps,
   MarketTablesProps,
+  MarketAdvertisementsProps,
   MarketInfoProps,
   MarketModalCollapseType,
   MarketModalTabType,

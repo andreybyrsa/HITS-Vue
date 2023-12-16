@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 import RolesTypes from '@Domain/Roles'
-import IdeaMarketStatusTypes from '@Domain/MarketStatus'
+import { IdeaMarketStatusType } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
@@ -72,7 +72,7 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
   actions: {
     async updateIdeaMarketStatus(
       id: string,
-      status: IdeaMarketStatusTypes,
+      status: IdeaMarketStatusType,
       token: string,
     ) {
       const response = await IdeasMarketService.updateIdeaMarketStatus(

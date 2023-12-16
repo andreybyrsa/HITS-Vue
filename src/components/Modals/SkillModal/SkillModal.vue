@@ -21,7 +21,7 @@ import SkillsService from '@Services/SkillsService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import getSkills from '@Utils/getSkills'
+import { getSkillsInfo } from '@Utils/skillsInfo'
 import Validation from '@Utils/Validation'
 
 const skills = defineModel<Skill[]>({ required: true })
@@ -35,7 +35,7 @@ const notificationsStore = useNotificationsStore()
 
 const skillModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
-const availableSkills = getSkills()
+const availableSkills = getSkillsInfo()
 
 const isCreating = ref(false)
 const isUpdating = ref(false)
