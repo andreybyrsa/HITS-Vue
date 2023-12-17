@@ -1,5 +1,8 @@
 FROM node:18.16.0 as build-stage
 
+ARG API_URL
+ENV API_URL $API_URL
+
 WORKDIR /app
 
 COPY package*.json ./
