@@ -1,5 +1,6 @@
 import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
 import Success from '@Domain/ResponseMessage'
+import { Team } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -79,15 +80,14 @@ const acceptRequestToIdeaStatus = async (
   id: string,
   teamId: string,
   token: string,
-): Promise<Success | Error> => {
+): Promise<Team | Error> => {
   return await requestTeamsAxios
-    .put<Success>(
+    .put<Team>(
       `/market/idea/accept/request/${id}/${teamId}`,
       { status: status },
       { headers: { Authorization: `Bearer ${token}` } },
       {
         params: { id },
-        responseData: { success: 'Успешное изменение статуса' },
       },
     )
     .then((response) => response.data)

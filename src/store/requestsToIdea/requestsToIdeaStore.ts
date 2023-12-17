@@ -57,34 +57,43 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
     async acceptRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
       const { id, ideaMarketId, teamId } = requestToIdea
       const ideasMarketStore = useIdeasMarketStore()
-      const teamStore = useTeamStore()
 
-      const parallelRequests = [
-        () =>
-          RequestToIdeaService.acceptRequestToIdeaStatus(
-            ideaMarketId,
-            teamId,
-            token,
-          ),
-        () => RequestToIdeaService.updateRequestToIdeaStatus(id, 'ACCEPTED', token),
-      ]
+      const responseAcceptRequest =
+        await RequestToIdeaService.acceptRequestToIdeaStatus(
+          ideaMarketId,
+          teamId,
+          token,
+        )
+      if (responseAcceptRequest instanceof Error) {
+        useNotificationsStore().createSystemNotification(
+          'Система',
+          responseAcceptRequest.message,
+        )
+      } else {
+        const currentRequestToIdea = this.requests.find(
+          (request) => request.id === id,
+        )
+        if (currentRequestToIdea) {
+          currentRequestToIdea.status = 'ACCEPTED'
+        }
 
-      await makeParallelRequests<Error | Success | void | RequestTeamToIdea[]>(
-        parallelRequests,
-      )
-
-      const currentRequestToIdea = this.requests.find((request) => request.id === id)
-      if (currentRequestToIdea) {
-        currentRequestToIdea.status = 'ACCEPTED'
+        const ideaMarket = ideasMarketStore.ideasMarket.find(
+          (idea) => idea.id === ideaMarketId,
+        )
+        if (ideaMarket) {
+          ideaMarket.status = 'RECRUITMENT_IS_CLOSED'
+          ideaMarket.team = responseAcceptRequest
+        }
       }
 
-      const team = teamStore.teams.find((team) => team.id === teamId)
-      const ideaMarket = ideasMarketStore.ideasMarket.find(
-        (idea) => idea.id === ideaMarketId,
+      const response = RequestToIdeaService.updateRequestToIdeaStatus(
+        id,
+        'ACCEPTED',
+        token,
       )
-      if (ideaMarket && team) {
-        ideaMarket.status = 'RECRUITMENT_IS_CLOSED'
-        ideaMarket.team = team
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
       }
     },
 
