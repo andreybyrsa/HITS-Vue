@@ -134,7 +134,12 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
           }
         } else {
           const id = (Math.random() * 100000000).toString()
-          const data = { ...mockData, id } as MocksType
+          const requestData = mockConfig?.requestData
+          const data = {
+            ...mockData,
+            ...(requestData ?? {}),
+            id,
+          } as MocksType
           mockArray.value.push(data)
 
           if (mockConfig) {
@@ -151,6 +156,39 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
         }
       }, 500),
     )
+  }
+
+  function postNoRequestBody<ResponseType>(
+    endPoint: string,
+    config: AxiosRequestConfig<MocksType>,
+    mockConfig: AxiosMockConfig<MocksType, ResponseType>,
+  ): Promise<AxiosResponse<ResponseType | MocksType>> {
+    if (MODE === 'PRODUCTION') {
+      return axios.post(`${API_URL}${endPoint}`, null, config)
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const requestData = mockConfig.requestData
+        const responseData = mockConfig.responseData
+
+        if (requestData) {
+          const id = (Math.random() * 100000000).toString()
+          const data = {
+            ...({} as MocksType),
+            ...requestData,
+            id,
+          } as MocksType
+          mockArray.value.push(data)
+
+          if (responseData) {
+            resolve(createMockResponse(responseData))
+          } else {
+            resolve(createMockResponse(data))
+          }
+        }
+      }, 500)
+    })
   }
 
   function put(
@@ -325,7 +363,18 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     return mockArray
   }
 
-  return { get, post, put, putNoRequestBody, delete: deleteData, getReactiveMocks }
+  return {
+    get,
+    getReactiveMocks,
+
+    post,
+    postNoRequestBody,
+
+    put,
+    putNoRequestBody,
+
+    delete: deleteData,
+  }
 }
 
 export default defineAxios

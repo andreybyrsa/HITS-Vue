@@ -1,12 +1,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
-import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import Typography from '@Components/Typography/Typography.vue'
-import Button from '@Components/Button/Button.vue'
 import IdeasTable from '@Components/Tables/IdeasTable/IdeasTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 
@@ -24,8 +21,6 @@ const { user } = storeToRefs(userStore)
 const ideaStore = useIdeasStore()
 
 const notificationsStore = useNotificationsStore()
-
-const router = useRouter()
 
 const ideas = ref<Idea[]>()
 
@@ -50,10 +45,6 @@ watchImmediate(
     }
   },
 )
-
-function navigateToCreateIdeaPage() {
-  router.push('/ideas/create')
-}
 </script>
 
 <template>
@@ -63,17 +54,6 @@ function navigateToCreateIdeaPage() {
     </template>
 
     <template #content>
-      <div class="ideas-page__header w-100">
-        <Typography class-name="fs-2 text-primary">Список идей</Typography>
-        <Button
-          variant="primary"
-          prepend-icon-name="bi bi-plus-lg"
-          @click="navigateToCreateIdeaPage"
-        >
-          Создать идею
-        </Button>
-      </div>
-
       <IdeasTable
         v-if="ideas"
         :ideas="ideas"
@@ -87,10 +67,6 @@ function navigateToCreateIdeaPage() {
 
 <style lang="scss">
 .ideas-page {
-  &__header {
-    @include flexible(center, space-between);
-  }
-
   &__content {
     overflow-y: scroll;
 

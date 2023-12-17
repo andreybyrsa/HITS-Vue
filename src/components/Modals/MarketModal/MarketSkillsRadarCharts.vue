@@ -2,8 +2,7 @@
 import { computed } from 'vue'
 
 import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
-
-import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarCharts.vue'
+import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
 import { MarketSkillsradarChartsProps } from '@Components/Modals/MarketModal/MarketModal.types'
 
 import { Skill } from '@Domain/Skill'
@@ -50,7 +49,8 @@ function filterSkillsTeams() {
     <SkillsRadarCharts
       class-name="w-100"
       :skills="skillsRequestTeamsData"
-      is-not-placeholder
+      :width="250"
+      :height="250"
     />
   </div>
 </template>

@@ -1,11 +1,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import Typography from '@Components/Typography/Typography.vue'
-import Button from '@Components/Button/Button.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 import TeamsTable from '@Components/Tables/TeamsTable/TeamsTable.vue'
 
@@ -25,8 +22,6 @@ const notificationsStore = useNotificationsStore()
 
 const teams = ref<Team[]>()
 
-const router = useRouter()
-
 onMounted(async () => {
   const currentUser = user.value
 
@@ -42,10 +37,6 @@ onMounted(async () => {
     teams.value = response
   }
 })
-
-function navigateToCreateTeamPage() {
-  router.push('/teams/create')
-}
 </script>
 
 <template>
@@ -55,18 +46,6 @@ function navigateToCreateTeamPage() {
     </template>
 
     <template #content>
-      <div class="teams-page__header w-100">
-        <Typography class-name="fs-2 text-primary">Список команд</Typography>
-        <Button
-          v-if="user?.role !== 'MEMBER'"
-          variant="primary"
-          prepend-icon-name="bi bi-plus-lg"
-          @click="navigateToCreateTeamPage"
-        >
-          Создать команду
-        </Button>
-      </div>
-
       <TeamsTable
         v-if="teams"
         v-model="teams"
@@ -80,10 +59,6 @@ function navigateToCreateTeamPage() {
 
 <style lang="scss">
 .teams-page {
-  &__header {
-    @include flexible(center, space-between);
-  }
-
   &__content {
     overflow-y: scroll;
 

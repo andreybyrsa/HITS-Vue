@@ -24,6 +24,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
@@ -37,7 +38,11 @@ import { RequestToTeam, RequestToTeamStatus } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
-import { ref } from 'vue'
+
+import {
+  getRequestsToTeamStatus,
+  getRequestToTeamStatusStyle,
+} from '@Utils/requestsToTeamStatus'
 
 const props = defineProps<RequestsToTeamProps>()
 
@@ -48,6 +53,8 @@ const requestsToTeamStore = useRequestsToTeamStore()
 
 const router = useRouter()
 
+const requestsToTeamStatus = getRequestsToTeamStatus()
+
 const requestToTeamColumns: TableColumn<RequestToTeam>[] = [
   {
     key: 'status',
@@ -55,7 +62,7 @@ const requestToTeamColumns: TableColumn<RequestToTeam>[] = [
     size: 'col-1',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getStatusFormat,
-    getRowCellStyle: getStatusStyle,
+    getRowCellStyle: getRequestToTeamStatusStyle,
   },
   {
     key: 'email',
@@ -95,36 +102,7 @@ const dropdownRequestToTeamActions: DropdownMenuAction<RequestToTeam>[] = [
 ]
 
 function getStatusFormat(status: RequestToTeamStatus) {
-  if (status === 'NEW') {
-    return 'Новая'
-  }
-
-  if (status === 'ACCEPTED') {
-    return 'Принята'
-  }
-
-  if (status === 'CANCELED') {
-    return 'Отозвана'
-  }
-}
-
-function getStatusStyle(status: RequestToTeamStatus) {
-  const initialClass = ['px-2', 'py-1', 'rounded-4']
-
-  if (status === 'NEW') {
-    initialClass.push('bg-primary-subtle', 'text-primary')
-    return initialClass
-  }
-
-  if (status === 'ACCEPTED') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
-
-  if (status === 'CANCELED') {
-    initialClass.push('bg-danger-subtle', 'text-danger')
-    return initialClass
-  }
+  return requestsToTeamStatus.translatedRequests[status]
 }
 
 function navigateToUserProfile(request: RequestToTeam) {
@@ -168,7 +146,11 @@ async function acceptRequestToTeam() {
   if (currentUser?.token && requestToTeam.value) {
     const { token } = currentUser
 
-    await requestsToTeamStore.acceptRequestToTeam(requestToTeam.value, token)
+    await requestsToTeamStore.updateRequestToTeamStatus(
+      requestToTeam.value,
+      'ACCEPTED',
+      token,
+    )
 
     requestToTeam.value = undefined
     isOpenedConfirmModalAccepted.value = false
@@ -181,7 +163,11 @@ async function cancelRequestToTeam() {
   if (currentUser?.token && requestToTeam.value) {
     const { token } = currentUser
 
-    await requestsToTeamStore.cancelRequestToTeam(requestToTeam.value, token)
+    await requestsToTeamStore.updateRequestToTeamStatus(
+      requestToTeam.value,
+      'CANCELED',
+      token,
+    )
 
     requestToTeam.value = undefined
     isOpenedConfirmModalCancel.value = false

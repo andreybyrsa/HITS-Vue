@@ -12,8 +12,7 @@ import {
   IdeaCardEmits,
 } from '@Views/IdeasMarket/IdeasMarketView.types'
 
-import IdeaMarket from '@Domain/IdeaMarket'
-import IdeasMarketStatusTypes from '@Domain/MarketStatus'
+import { IdeaMarket, IdeaMarketStatusType } from '@Domain/IdeaMarket'
 
 import getMarketStatus from '@Utils/getMarketStatus'
 
@@ -40,7 +39,7 @@ function getFormattedDate(date: string) {
     return formattedDate.value
   }
 }
-function getTranslatedStatus(status: IdeasMarketStatusTypes) {
+function getTranslatedStatus(status: IdeaMarketStatusType) {
   return availableStatus.translatedStatus[status]
 }
 

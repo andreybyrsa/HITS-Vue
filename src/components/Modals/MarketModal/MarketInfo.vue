@@ -13,7 +13,7 @@ import Button from '@Components/Button/Button.vue'
 import MarketInfoTabs from '@Components/Modals/MarketModal/MarketInfoIdeaTabs'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'

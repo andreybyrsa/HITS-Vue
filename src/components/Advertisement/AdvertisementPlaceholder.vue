@@ -1,20 +1,20 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
+import { AdvertisementPlaceholderProps } from '@Components/Advertisement/Advertisement.types'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
-import { CommentPlaceholderProps } from '@Components/Comment/Comment.types'
 
-const props = defineProps<CommentPlaceholderProps>()
+const props = defineProps<AdvertisementPlaceholderProps>()
 
-const CommentPlaceholderClassName = computed(() => [
-  'comment card rounded-3 shadow',
-  props.className,
+const AdvertisementPlaceholderClassName = computed(() => [
+  'advertisement card rounded-3 shadow',
+  props.className ?? '',
 ])
 </script>
 
 <template>
-  <div :class="CommentPlaceholderClassName">
-    <div class="comment__header card-header">
+  <div :class="AdvertisementPlaceholderClassName">
+    <div class="card-header d-flex gap-3 justify-content-between align-items-center">
       <div class="w-25">
         <LoadingPlaceholder />
       </div>
@@ -31,11 +31,7 @@ const CommentPlaceholderClassName = computed(() => [
 </template>
 
 <style lang="scss" scoped>
-.comment {
+.advertisement {
   width: 400px;
-
-  &__header {
-    @include flexible(center, space-between, $gap: 50px);
-  }
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <Table
+    :header="ideasTableHeader"
     :columns="ideaTableColumns"
     :data="ideasData"
     :search-by="['name', 'description']"
@@ -34,20 +35,19 @@ import {
   TableColumn,
   CheckedDataAction,
   DropdownMenuAction,
+  TableHeader,
 } from '@Components/Table/Table.types'
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
-import { Idea } from '@Domain/Idea'
-import IdeaStatusTypes from '@Domain/IdeaStatus'
+import { Idea, IdeaStatusType } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
-import getStatus from '@Utils/getStatus'
-import getStatusStyle from '@Utils/getStatusStyle'
+import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 import mutableSort from '@Utils/mutableSort'
 
 const props = defineProps<IdeasTableProps>()
@@ -63,12 +63,12 @@ const ideasData = ref<Idea[]>([])
 const checkedIdeas = ref<Idea[]>([])
 const sendingIdeasOnMarket = ref<Idea[]>([])
 
-const availableStatus = getStatus()
+const availableStatus = getIdeaStatus()
 
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
-const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
+const filterByIdeaStatus = ref<IdeaStatusType[]>([])
 
 const isOpenSendIdeasModal = ref<boolean>(false)
 
@@ -78,6 +78,20 @@ watchImmediate(
     ideasData.value = props.ideas
   },
 )
+
+const ideasTableHeader = computed<TableHeader>(() => ({
+  label: 'Список идей',
+  countData: true,
+  buttons: [
+    {
+      label: 'Создать идею',
+      variant: 'primary',
+      prependIconName: 'bi bi-plus-lg',
+      click: navigateToCreateIdeaForm,
+      statement: checkTableHeaderButton(),
+    },
+  ],
+}))
 
 const ideaTableColumns: TableColumn<Idea>[] = [
   {
@@ -90,7 +104,7 @@ const ideaTableColumns: TableColumn<Idea>[] = [
     key: 'status',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellStyle: getStatusStyle,
+    getRowCellStyle: getIdeaStatusStyle,
     getRowCellFormat: getTranslatedStatus,
   },
   {
@@ -146,7 +160,7 @@ const dropdownIdeasActions: DropdownMenuAction<Idea>[] = [
   {
     label: 'Редактировать',
     statement: checkUpdateIdeaAction,
-    click: navigateToIdeaForm,
+    click: navigateToUpdateIdeaForm,
   },
   {
     label: 'Удалить',
@@ -189,7 +203,7 @@ function sortByRating() {
   mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
 }
 
-function getTranslatedStatus(status: IdeaStatusTypes) {
+function getTranslatedStatus(status: IdeaStatusType) {
   return availableStatus.translatedStatus[status].toString()
 }
 
@@ -229,7 +243,11 @@ function navigateToIdeaModal(idea: Idea) {
   router.push(`/ideas/list/${idea.id}`)
 }
 
-function navigateToIdeaForm(idea: Idea) {
+function navigateToCreateIdeaForm() {
+  router.push('/ideas/create')
+}
+
+function navigateToUpdateIdeaForm(idea: Idea) {
   router.push(`/ideas/update/${idea.id}`)
 }
 
@@ -249,6 +267,15 @@ async function handleDeleteIdea() {
     const { token } = currentUser
     await ideaStore.deleteIdea(deletingIdeaId.value, token)
   }
+}
+
+function checkTableHeaderButton() {
+  const currentUser = user.value
+
+  if (currentUser?.role) {
+    return ['INITIATOR', 'ADMIN'].includes(currentUser?.role)
+  }
+  return false
 }
 
 function checkDeleteIdeaAction(idea: Idea) {

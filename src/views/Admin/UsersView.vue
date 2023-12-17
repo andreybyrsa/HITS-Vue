@@ -5,8 +5,6 @@
     </template>
 
     <template #content>
-      <Typography class-name="fs-2 text-primary">Список пользователей</Typography>
-
       <UsersTable
         v-if="users"
         v-model="users"
@@ -23,7 +21,6 @@ import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import UsersTable from '@Components/Tables/UsersTable/UsersTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 

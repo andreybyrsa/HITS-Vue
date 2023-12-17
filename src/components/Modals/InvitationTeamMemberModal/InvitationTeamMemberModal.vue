@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
+
 import {
   InvitationTeamMemberModalEmits,
   InvitationTeamMemberModalProps,
@@ -10,12 +14,10 @@ import Icon from '@Components/Icon/Icon.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { ref } from 'vue'
+import { TeamMember, TeamInvitation } from '@Domain/Team'
+
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-import { useRoute } from 'vue-router'
 import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
-import { TeamMember } from '@Domain/Team'
 
 const invitationUsers = defineModel<TeamMember[]>({ required: true })
 const selectedUsers = ref<TeamMember[]>([])
@@ -50,7 +52,17 @@ async function inviteUsersInTeam() {
     const { token } = currentUser
     const { teamId } = route.params
 
-    await invitatinUsers.inviteUsers(selectedUsers.value, teamId.toString(), token)
+    const invitationsToTeam = selectedUsers.value.map(
+      ({ userId, email, firstName, lastName }) => ({
+        teamId,
+        userId,
+        email,
+        firstName,
+        lastName,
+      }),
+    ) as TeamInvitation[]
+
+    await invitatinUsers.inviteUsers(invitationsToTeam, teamId.toString(), token)
 
     selectedUsers.value = []
     isLoading.value = false

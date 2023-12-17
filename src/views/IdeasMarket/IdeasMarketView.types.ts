@@ -1,4 +1,4 @@
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain/IdeaMarket'
 
 interface IdeaCardProps {
   idea: IdeaMarket

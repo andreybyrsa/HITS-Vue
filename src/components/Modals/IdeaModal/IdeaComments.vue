@@ -1,23 +1,17 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { useForm } from 'vee-validate'
-import { storeToRefs } from 'pinia'
 import { vIntersectionObserver } from '@vueuse/components'
-import { watchImmediate } from '@vueuse/core'
-import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
-import Typography from '@Components/Typography/Typography.vue'
 import { IdeaCommentsProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
-import CommentVue from '@Components/Comment/Comment.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
-import Button from '@Components/Button/Button.vue'
+import AdvertisementsForm from '@Components/Forms/AdvertisementsForm/AdvertisementsForm.vue'
+import Advertisement from '@Components/Advertisement/Advertisement.vue'
+import { Action } from '@Components/ActionsList/ActionsList.types'
 import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPlaceholder.vue'
 
 import Comment from '@Domain/Comment'
 
 import useUserStore from '@Store/user/userStore'
 import useCommentsStore from '@Store/comments/commentsStore'
-import { string } from 'yup'
 
 const props = defineProps<IdeaCommentsProps>()
 
@@ -27,57 +21,43 @@ const { user } = storeToRefs(userStore)
 const commentsStore = useCommentsStore()
 const { comments } = storeToRefs(commentsStore)
 
-const route = useRoute()
+const commentFormInitialState = {
+  ideaId: props.idea.id,
+  text: '',
+  senderEmail: user.value?.email,
+  checkedBy: user.value ? [user.value.email] : [],
+} as Comment
 
-const isPageMarket = ref<boolean>(false)
-
-watchImmediate(
-  () => route.params.id,
-  () => {
-    isPageMarket.value = route.name == 'MarketModal'
+const commentDropdownActions: Action<Comment>[] = [
+  {
+    label: 'Удалить',
+    className: 'text-danger',
+    statement: checkCommentOwned,
+    click: handleDeleteComment,
   },
-)
+]
 
-const { handleSubmit, resetForm } = useForm<Comment>({
-  validationSchema: {
-    text: string().required('Поле обязательно к заполнению'),
-  },
-  initialValues: {
-    ideaId: props.idea.id,
-    text: '',
-    senderEmail: user.value?.email,
-    checkedBy: user.value ? [user.value.email] : [],
-  },
-})
-
-function checkIsUserComment(senderEmail: string) {
-  if (user.value?.email === senderEmail) {
-    return 'current-user-comment'
-  }
-}
-
-const handleSendComment = handleSubmit(async (values) => {
+async function handleSendComment(values: Comment) {
   const currentUser = user.value
 
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     await commentsStore.createComment(values, token)
 
-    resetForm()
-
     props.ideaModalRef?.scrollTo({
       top: props.ideaModalRef.scrollHeight,
       behavior: 'smooth',
     })
   }
-})
+}
 
-const handleDeleteComment = async (commentId: string) => {
+async function handleDeleteComment(comment?: Comment) {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && comment) {
     const { token } = currentUser
-    await commentsStore.deleteComment(commentId, token)
+    const { id } = comment
+    await commentsStore.deleteComment(id, token)
   }
 }
 
@@ -102,63 +82,56 @@ const onIntersectionObserver = async (
     }
   }
 }
+
+function checkIsUserComment(senderEmail: string) {
+  if (user.value?.email === senderEmail) {
+    return 'current-user-comment'
+  }
+}
+
+function checkIsActiveComment(comment: Comment) {
+  const { checkedBy } = comment
+  const currentUser = user.value
+
+  return currentUser && checkedBy.includes(currentUser.email) ? false : true
+}
+
+function checkCommentOwned(comment: Comment) {
+  return comment.senderEmail === user.value?.email
+}
 </script>
 
 <template>
-  <div class="bg-white rounded-3">
-    <div class="py-2 w-100 border-bottom">
-      <Typography class-name="fs-6 px-3">
-        {{ isPageMarket ? 'Объявления' : 'Комментарии' }}
-      </Typography>
-    </div>
+  <AdvertisementsForm
+    title="Комментарии"
+    input-placeholder="Добавить комментарий"
+    :initial-state="commentFormInitialState"
+    :handle-send-advertisement="handleSendComment"
+    has-access-to-send
+  >
+    <template #content>
+      <template v-if="comments">
+        <Advertisement
+          v-for="comment in comments"
+          :key="comment.id"
+          :class-name="checkIsUserComment(comment.senderEmail)"
+          :advertisement="comment"
+          :text="comment.text"
+          :sender="comment.senderEmail"
+          :created-at="comment.createdAt"
+          :is-active="checkIsActiveComment(comment)"
+          :has-access-to-actions="checkCommentOwned(comment)"
+          :dropdown-actions="commentDropdownActions"
+          v-intersection-observer="(elem) => onIntersectionObserver(elem, comment)"
+        />
+      </template>
 
-    <div
-      v-if="comments"
-      class="d-grid gap-3 pt-3 px-3 w-100"
-    >
-      <CommentVue
-        v-for="comment in comments"
-        :key="comment.id"
-        :class-name="checkIsUserComment(comment.senderEmail)"
-        :comment="comment"
-        v-intersection-observer="(elem) => onIntersectionObserver(elem, comment)"
-        @delete-comment="handleDeleteComment(comment.id)"
-      />
-    </div>
-    <IdeaCommentsPlaceholder v-else />
-
-    <form class="p-3">
-      <div
-        v-if="isPageMarket ? news : true"
-        class="comment-form"
-      >
-        <Input
-          name="text"
-          class-name="rounded-end"
-          placeholder="Добавить комментарий"
-        >
-          <template #prepend>
-            <i class="bi bi-chat"></i>
-          </template>
-        </Input>
-
-        <Button
-          type="submit"
-          variant="primary"
-          @click="handleSendComment"
-        >
-          Отправить
-        </Button>
-      </div>
-    </form>
-  </div>
+      <IdeaCommentsPlaceholder v-else />
+    </template>
+  </AdvertisementsForm>
 </template>
 
 <style lang="scss" scoped>
-.comment-form {
-  @include flexible(flex-start, flex-start, $gap: 16px);
-}
-
 .current-user-comment {
   justify-self: end;
 }

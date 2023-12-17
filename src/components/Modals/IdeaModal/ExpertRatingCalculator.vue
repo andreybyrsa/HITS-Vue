@@ -157,7 +157,7 @@ function getCurrentTooltip(select: RatingSelect) {
           :options="select.options"
           v-tooltip="getCurrentTooltip(select)"
           placeholder="Выберите значение"
-          :disabled="rating.confirmed"
+          :disabled="rating.isConfirmed"
         ></Select>
       </div>
     </div>
@@ -174,7 +174,7 @@ function getCurrentTooltip(select: RatingSelect) {
 
     <div
       class="d-flex gap-3"
-      v-if="!rating.confirmed"
+      v-if="!rating.isConfirmed"
     >
       <Button
         type="submit"
