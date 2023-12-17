@@ -6,6 +6,7 @@ type IdeaMarketStatusType = 'RECRUITMENT_IS_OPEN' | 'RECRUITMENT_IS_CLOSED'
 
 interface IdeaMarket {
   id: string
+  marketId: string
   initiator: User
   createdAt: string
   name: string

@@ -1,12 +1,21 @@
 import { Market } from '@Domain/Market'
-import { API_URL } from '@Main'
-import axios from 'axios'
+import useUserStore from '@Store/user/userStore'
+import defineAxios from '@Utils/defineAxios'
+import getAbortedSignal from '@Utils/getAbortedSignal'
+import getMocks from '@Utils/getMocks'
+
+const marketAxios = defineAxios(getMocks().markets)
+
+function formatMarketActive(teams: Market[]) {
+  return teams.find(({ status }) => status === 'ACTIVE')
+}
 
 // --- GET --- //
 const fetchMarkets = async (token: string): Promise<Market[] | Error> => {
-  return await axios
+  return await marketAxios
     .get('/market/all', {
       headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch(({ response }) => {
@@ -16,13 +25,20 @@ const fetchMarkets = async (token: string): Promise<Market[] | Error> => {
 }
 
 const fetchActiveMarket = async (token: string): Promise<Market | Error> => {
-  return await axios
-    .get(`${API_URL}/market/active`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  return await marketAxios
+    .get(
+      `/market/active`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (markets) => formatMarketActive(markets),
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки активной биржи'
+      const error = response?.data?.error ?? 'Ошибка загрузки активных биржи'
       return new Error(error)
     })
 }

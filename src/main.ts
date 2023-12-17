@@ -15,7 +15,7 @@ import { formToJSON } from 'axios'
 
 const app = createApp(App)
 
-const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'PRODUCTION'
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
 const API_URL: 'http://localhost:80/api/v1' | 'https://hits1.tyuiu.ru/api/v1' =
   'http://localhost:80/api/v1'
 

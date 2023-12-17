@@ -127,15 +127,18 @@ onMounted(async () => {
     }
 
     market.value = response
-    const routeTab: LeftSideBarTabType = {
-      id: +market.value.id,
-      text: market.value.name,
-      to: `/market/${market.value.id}`,
-      iconName: 'bi bi-basket3',
-      roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
-    }
 
-    marketRouteTabs.value[0].routes?.push(routeTab)
+    if (market.value) {
+      const routeTab: LeftSideBarTabType = {
+        id: +market.value.id,
+        text: market.value.name,
+        to: `/market/${market.value.id}`,
+        iconName: 'bi bi-basket3',
+        roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+      }
+
+      marketRouteTabs.value[0].routes?.push(routeTab)
+    }
   }
 })
 </script>

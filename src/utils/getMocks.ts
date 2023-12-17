@@ -20,6 +20,7 @@ import {
 import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { Market } from '@Domain/Market'
 
 interface Mocks {
   users: User[]
@@ -39,6 +40,8 @@ interface Mocks {
 
   ideasMarket: IdeaMarket[]
   ideaMarketAdvertisements: IdeaMarketAdvertisement[]
+
+  markets: Market[]
 
   teams: Team[]
   teamMembers: TeamMember[]
@@ -62,7 +65,7 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      token: '613098',
+      token: '1',
       email: '1@mail.com',
       firstName: 'Иван',
       lastName: 'Иванович',
@@ -410,6 +413,7 @@ function getMocks(): Mocks {
   const ideasMarket: IdeaMarket[] = [
     {
       id: '2',
+      marketId: '201',
       position: 2,
       name: 'Создать машину времени',
       initiator: users[0],
@@ -450,6 +454,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
+      marketId: '201',
       position: 3,
       name: 'Реактор',
       initiator: users[0],
@@ -487,6 +492,78 @@ function getMocks(): Mocks {
       isFavorite: false,
       startDate: '2023-10-20T11:02:17Z',
       finishDate: '2024-01-20T11:02:17Z',
+    },
+    {
+      id: '3',
+      marketId: '201',
+      position: 3,
+      name: 'Карандаш',
+      initiator: users[1],
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
+      team: null,
+      stack: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+        skills[12],
+        skills[14],
+        skills[15],
+        skills[16],
+        skills[17],
+        skills[18],
+      ],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 222,
+      acceptedRequests: 5,
+      isFavorite: false,
+      startDate: '2023-10-20T11:02:17Z',
+      finishDate: '2024-01-20T11:02:17Z',
+    },
+  ]
+
+  const markets: Market[] = [
+    {
+      id: '200',
+      name: 'Летняя биржа 2023',
+      startDate: '2023-10-25T11:02:17Z',
+      finishDate: '2023-10-25T11:02:17Z',
+      status: 'DONE',
+    },
+    {
+      id: '201',
+      name: 'Осенняя биржа 2023',
+      startDate: '2023-10-25T11:02:17Z',
+      finishDate: '2023-10-25T11:02:17Z',
+      status: 'ACTIVE',
+    },
+    {
+      id: '202',
+      name: 'Зимняя биржа 2024',
+      startDate: '2023-10-25T11:02:17Z',
+      finishDate: '2023-10-25T11:02:17Z',
+      status: 'NEW',
+    },
+    {
+      id: '203',
+      name: 'Весенняя биржа 2024',
+      startDate: '2023-10-25T11:02:17Z',
+      finishDate: '2023-10-25T11:02:17Z',
+      status: 'NEW',
     },
   ]
 
@@ -887,6 +964,7 @@ function getMocks(): Mocks {
       rating: 4,
     },
   ]
+
   const ideasSkills: IdeaSkills[] = [
     { ideaId: '0', skills: [...skills] },
     {
@@ -1095,6 +1173,7 @@ function getMocks(): Mocks {
     ratings,
     comments,
 
+    markets,
     ideasMarket,
     ideaMarketAdvertisements,
 

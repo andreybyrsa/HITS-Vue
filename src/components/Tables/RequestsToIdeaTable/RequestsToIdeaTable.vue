@@ -170,7 +170,14 @@ function getSkillsStyle(skills: Skill[], index: number) {
   const { type } = skills[index]
   const skillTypeClass = getSkillInfoStyle(type)
 
-  return ['px-2', 'py-1', 'rounded', 'd-flex', 'gap-1', ...skillTypeClass]
+  return [
+    'px-2',
+    'py-1',
+    'rounded',
+    'text-center',
+    'align-self-start',
+    ...skillTypeClass,
+  ]
 }
 
 function getStatusStyle(status: RequestToIdeaStatus) {

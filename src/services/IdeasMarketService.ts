@@ -23,6 +23,14 @@ function formatFavoriteIdea(ideasMarket: IdeaMarket[]) {
   return ideasMarket.filter((ideaMarket) => ideaMarket.isFavorite)
 }
 
+function formatIdeaMarket(ideasMarket: IdeaMarket[], marketId: string) {
+  return ideasMarket.filter((idea) => idea.marketId === marketId)
+}
+
+function formatIdeaInitiatorMarket(ideasMarket: IdeaMarket[]) {
+  return ideasMarket.filter((idea) => idea.initiator.id === useUserStore().user?.id)
+}
+
 function formatAdvertisementsByIdeaId(
   ideaMarketAdvertisements: IdeaMarketAdvertisement[],
   ideaMarketId: string,
@@ -38,9 +46,16 @@ const fetchIdeasMarket = async (
   token: string,
 ): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
-    .get(`/market/idea/market/${marketId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .get<IdeaMarket[]>(
+      `/market/idea/market/${marketId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (markets) => formatIdeaMarket(markets, marketId),
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки идей'
@@ -87,9 +102,15 @@ const getAllInitiatorMarketIdeas = async (
   token: string,
 ): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
-    .get('/market/idea/initiator/all', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .get<IdeaMarket[]>(
+      '/market/idea/initiator/all',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      {
+        formatter: (markets) => formatIdeaInitiatorMarket(markets),
+      },
+    )
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка загрузки идей'
