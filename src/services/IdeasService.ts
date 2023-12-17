@@ -204,6 +204,42 @@ const updateIdeaSkills = async (
     })
 }
 
+const checkIdea = async (
+  id: string,
+  email: string,
+  token: string,
+): Promise<void | Error> => {
+  return await ideasAxios
+    .putNoRequestBody<void>(
+      `/idea/check/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id }, requestData: { checkedBy: [email] } },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка просмотра комментария'
+      return new Error(error)
+    })
+}
+
+const getExpertNotConfirmedRating = async (
+  token: string,
+): Promise<Idea[] | Error> => {
+  return await ideasAxios
+    .get(`/idea/all/on-confirmation`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка получения идей'
+      return new Error(error)
+    })
+}
+
 const sendIdeaOnApproval = async (
   id: string,
   status: IdeaStatusType,
@@ -294,6 +330,7 @@ const IdeasService = {
   getIdea,
   getInitiatorIdea,
   getIdeaSkills,
+  getExpertNotConfirmedRating,
 
   saveIdeaDraft,
   createIdeaSkills,
@@ -304,6 +341,7 @@ const IdeasService = {
   sendIdeaOnApproval,
   updateIdeaStatus,
   updateIdeaByAdmin,
+  checkIdea,
 
   deleteIdea,
   deleteIdeaByAdmin,

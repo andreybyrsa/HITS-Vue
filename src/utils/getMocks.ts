@@ -663,7 +663,7 @@ function getMocks(): Mocks {
     {
       id: '1',
       name: 'Группа экспертов',
-      users: [],
+      users: [users[0], users[4]],
       roles: ['ADMIN', 'EXPERT'],
     },
   ]
@@ -753,6 +753,7 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
+      checkedBy: ['kirill.vlasov.05@inbox.ru', 'admin@mail.com'],
       initiatorEmail: 'admin@mail.com',
       name: 'Рефактор кода',
       problem:
@@ -770,7 +771,7 @@ function getMocks(): Mocks {
       minTeamSize: 3,
       customer: 'ВШЦТ',
       contactPerson: 'ВШЦТ',
-      experts: null,
+      experts: usersGroups[1],
       projectOffice: null,
       budget: 1,
       suitability: 1,
@@ -779,6 +780,7 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
+      checkedBy: ['admin@mail.com', '1@mail.com'],
       initiatorEmail: '1@mail.com',
       name: 'Реактор железного человека',
       problem:
@@ -805,6 +807,7 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
+      checkedBy: ['admin@mail.com'],
       initiatorEmail: '2@mail.com',
       name: 'Идея 2',
       problem:
@@ -831,6 +834,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
+      checkedBy: ['admin@mail.com', '3@mail.com'],
       initiatorEmail: '3@mail.com',
       name: 'Раскладушка',
       problem:
@@ -858,6 +862,7 @@ function getMocks(): Mocks {
     {
       id: '4',
       initiatorEmail: '3@mail.com',
+      checkedBy: ['admin@mail.com', '3@mail.com'],
       name: 'Зeмляника',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',

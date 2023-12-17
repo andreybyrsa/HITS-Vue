@@ -33,6 +33,8 @@ interface Idea {
   budget: number
   preAssessment: number
   rating: number | null
+
+  checkedBy: string[]
 }
 
 interface Rating {

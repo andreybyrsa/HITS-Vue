@@ -120,6 +120,7 @@ const usersGroupsFilters: Filter<UsersGroup>[] = [
     refValue: rolesFilter,
     isUniqueChoice: false,
     checkFilter: checkUsersGroupRoles,
+    statement: () => true,
   },
 ]
 
