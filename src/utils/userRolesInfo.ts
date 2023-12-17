@@ -1,4 +1,5 @@
 import RolesTypes from '@Domain/Roles'
+import { RouteLocationRaw } from 'vue-router'
 
 interface GetUserRolesType {
   roles: RolesTypes[]
@@ -69,4 +70,24 @@ function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
   }
 }
 
-export { getUserRolesInfo, getUserRoleInfoStyle }
+function getRouteByUserRole(currentRole: RolesTypes): RouteLocationRaw
+function getRouteByUserRole(currentRoles: RolesTypes[]): RouteLocationRaw
+function getRouteByUserRole(
+  currentRole: RolesTypes | RolesTypes[],
+): RouteLocationRaw {
+  if (currentRole instanceof Array) {
+    if (currentRole.includes('TEAM_OWNER')) {
+      return { name: 'teams-list' }
+    }
+
+    return { name: 'ideas-list' }
+  }
+
+  if (currentRole === 'TEAM_OWNER') {
+    return { name: 'teams-list' }
+  }
+
+  return { name: 'ideas-list' }
+}
+
+export { getUserRolesInfo, getUserRoleInfoStyle, getRouteByUserRole }

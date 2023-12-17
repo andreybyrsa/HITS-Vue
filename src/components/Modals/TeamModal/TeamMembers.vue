@@ -81,13 +81,19 @@ const dropdownTeamMemberActions: DropdownMenuAction<TeamMember>[] = [
   {
     label: 'Назначить лидером',
     className: 'text-primary',
-    statement: checkLeaderDropdownAction,
+    statement: checkManageMemberDropdownAction,
     click: appointLeaderTeam,
+  },
+  {
+    label: 'Снять роль лидера',
+    className: 'text-danger',
+    statement: checkRemoveLeaderRole,
+    click: switchLeaderToOwner,
   },
   {
     label: 'Исключить',
     className: 'text-danger',
-    statement: checkKickDropdownAction,
+    statement: checkManageMemberDropdownAction,
     click: kickTeamMember,
   },
 ]
@@ -157,26 +163,38 @@ async function appointLeaderTeam(teamMember: TeamMember) {
   }
 }
 
-function checkKickDropdownAction(teamMember: TeamMember) {
+async function switchLeaderToOwner() {
   const currentUser = user.value
-  const { owner } = props.team
 
-  return (
-    currentUser?.id === owner.id &&
-    teamMember.id !== owner.id &&
-    teamMember.id !== currentUser?.id
-  )
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id, owner } = props.team
+
+    await teamsStore.changeLeaderTeamMember(id, owner, token)
+  }
 }
 
-function checkLeaderDropdownAction(teamMember: TeamMember) {
+function checkManageMemberDropdownAction(teamMember: TeamMember) {
   const currentUser = user.value
   const { owner, leader } = props.team
 
   return (
     currentUser?.id === owner.id &&
+    currentUser.role === 'TEAM_OWNER' &&
     teamMember.id !== owner.id &&
-    teamMember.id !== currentUser?.id &&
     teamMember.id !== leader?.id
+  )
+}
+
+function checkRemoveLeaderRole(teamMember: TeamMember) {
+  const currentUser = user.value
+  const { owner, leader } = props.team
+
+  return (
+    currentUser?.id === owner.id &&
+    currentUser.role === 'TEAM_OWNER' &&
+    teamMember.id !== owner.id &&
+    teamMember.id === leader?.id
   )
 }
 </script>
