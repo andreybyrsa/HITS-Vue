@@ -763,9 +763,9 @@ function getMocks(): Mocks {
     {
       id: '2',
       ideaId: '1',
-      expertId: users[2].id,
-      expertFirstName: users[2].firstName,
-      expertLastName: users[2].lastName,
+      expertId: users[0].id,
+      expertFirstName: users[0].firstName,
+      expertLastName: users[0].lastName,
       budget: 1,
       technicalRealizability: 1,
       suitability: 5,
@@ -805,7 +805,7 @@ function getMocks(): Mocks {
     {
       id: '1',
       initiatorEmail: '1@mail.com',
-      name: 'Реактор железного человека',
+      name: 'Моя новая идея',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -816,7 +816,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       createdAt: '2023-10-24T11:02:17Z',
       modifiedAt: '2023-10-25T11:02:17Z',
-      status: 'NEW',
+      status: 'ON_APPROVAL',
       maxTeamSize: 4,
       minTeamSize: 3,
       customer: 'ВШЦТ',
@@ -894,7 +894,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       createdAt: '2023-10-25T11:02:17Z',
       modifiedAt: '2023-10-25T11:02:17Z',
-      status: 'CONFIRMED',
+      status: 'ON_MARKET',
       maxTeamSize: 5,
       minTeamSize: 5,
       customer: 'ВШЦТ',

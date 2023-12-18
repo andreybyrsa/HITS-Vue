@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import IdeasTable from '@Components/Tables/IdeasTable/IdeasTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
+import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -52,6 +53,10 @@ watchImmediate(
     <template #leftSideBar>
       <LeftSideBar />
     </template>
+
+    <!-- <template #header>
+      <Header></Header>
+    </template> -->
 
     <template #content>
       <IdeasTable

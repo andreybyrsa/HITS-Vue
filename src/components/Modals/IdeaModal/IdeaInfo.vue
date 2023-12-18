@@ -92,6 +92,14 @@ function getRatingColor(rating: number | null) {
     return 'text-danger'
   }
 }
+
+function getAccessToExpertsInfo() {
+  const currentUser = user.value
+  return (
+    props.expertRatings &&
+    (currentUser?.role === 'PROJECT_OFFICE' || currentUser?.role === 'ADMIN')
+  )
+}
 </script>
 
 <template>
@@ -128,7 +136,7 @@ function getRatingColor(rating: number | null) {
       </div>
     </div>
 
-    <div v-if="expertRatings && user?.role === 'PROJECT_OFFICE'">
+    <div v-if="getAccessToExpertsInfo()">
       <Typography class-name="border-bottom text-secondary d-block">
         Эксперты
       </Typography>

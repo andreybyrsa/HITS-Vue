@@ -21,9 +21,18 @@ const PageLayoutContentClassName = computed(() => [
       <slot name="leftSideBar"></slot>
     </div>
 
+    <!-- <div class="page-layout__content-wrapper bg-white">
+      <div
+        v-if="$slots.header"
+        class="bg-white border-bottom w-100"
+      >
+        <slot name="header"></slot>
+      </div> -->
+
     <div :class="PageLayoutContentClassName">
       <slot name="content"></slot>
     </div>
+    <!-- </div> -->
   </div>
 </template>
 
