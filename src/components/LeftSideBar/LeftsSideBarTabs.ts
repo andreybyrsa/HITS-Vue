@@ -1,5 +1,4 @@
 import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
-
 const leftSideBarTabs: LeftSideBarTabType[] = [
   {
     id: 0,
@@ -49,46 +48,62 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
   },
   {
     id: 6,
-    text: 'Биржа идей',
+    text: 'Реестр бирж',
     to: '/market',
-    iconName: 'bi bi-basket3',
+    routes: [
+      {
+        id: 7,
+        text: 'Биржа идей',
+        to: '/market',
+        iconName: 'bi bi-basket3',
+        roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN', 'PROJECT_OFFICE'],
+      },
+      {
+        id: 8,
+        text: 'Справочник бирж',
+        to: '/markets',
+        iconName: 'bi bi-table',
+        roles: ['PROJECT_OFFICE'],
+      },
+    ],
+    iconName: 'bi bi-shop-window',
     roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
   },
   {
-    id: 7,
+    id: 9,
     text: 'Админ панель',
     to: '/admin',
     routes: [
       {
-        id: 8,
+        id: 10,
         to: '/admin/users',
         text: 'Пользователи',
         iconName: 'bi bi-person-gear',
         roles: ['ADMIN'],
       },
       {
-        id: 9,
+        id: 11,
         to: '/admin/add-users',
         text: 'Добавить пользователей',
         iconName: 'bi bi-person-add',
         roles: ['ADMIN'],
       },
       {
-        id: 10,
+        id: 12,
         to: '/admin/companies',
         text: 'Компании',
         iconName: 'bi bi-building',
         roles: ['ADMIN'],
       },
       {
-        id: 11,
+        id: 13,
         to: '/admin/users-groups',
         text: 'Группы пользователей',
         iconName: 'bi bi-people',
         roles: ['ADMIN'],
       },
       {
-        id: 12,
+        id: 14,
         to: '/admin/skills',
         text: 'Справочник компетенций',
         iconName: 'bi bi-person-badge',
@@ -99,5 +114,4 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     roles: ['ADMIN'],
   },
 ]
-
 export default leftSideBarTabs
