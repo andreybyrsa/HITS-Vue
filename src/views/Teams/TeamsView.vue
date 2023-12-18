@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 import TeamsTable from '@Components/Tables/TeamsTable/TeamsTable.vue'
+import Header from '@Components/Header/Header.vue'
 
 import { Team } from '@Domain/Team'
 
@@ -40,9 +41,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <PageLayout content-class-name="teams-page__content p-3 bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="teams-page__content p-3 bg-white"
+  >
     <template #leftSideBar>
       <LeftSideBar />
+    </template>
+
+    <template #header>
+      <Header></Header>
     </template>
 
     <template #content>
@@ -60,8 +68,6 @@ onMounted(async () => {
 <style lang="scss">
 .teams-page {
   &__content {
-    overflow-y: scroll;
-
     @include flexible(stretch, flex-start, column);
   }
 }

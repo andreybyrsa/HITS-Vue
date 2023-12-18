@@ -83,6 +83,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
     </template>
   </PageLayout>
 </template>
+
 <style lang="scss">
 .forgot-password-page {
   &__content {

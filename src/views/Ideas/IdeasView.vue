@@ -49,14 +49,17 @@ watchImmediate(
 </script>
 
 <template>
-  <PageLayout content-class-name="ideas-page__content p-3 bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="ideas-page__content bg-white p-3"
+  >
     <template #leftSideBar>
       <LeftSideBar />
     </template>
 
-    <!-- <template #header>
+    <template #header>
       <Header></Header>
-    </template> -->
+    </template>
 
     <template #content>
       <IdeasTable
@@ -73,8 +76,6 @@ watchImmediate(
 <style lang="scss">
 .ideas-page {
   &__content {
-    overflow-y: scroll;
-
     @include flexible(stretch, flex-start, column);
   }
 }

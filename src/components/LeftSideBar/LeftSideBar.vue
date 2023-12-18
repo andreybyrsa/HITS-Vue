@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, VueElement } from 'vue'
 import { watchImmediate, useElementHover } from '@vueuse/core'
-import { useRouter, useRoute, RouteRecordRaw } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import NavTab from '@Components/NavTab/NavTab.vue'
@@ -11,7 +11,6 @@ import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import LeftSideBarPlaceholder from '@Components/LeftSideBar/LeftSideBarPlaceholder.vue'
 import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
-import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import RolesTypes from '@Domain/Roles'
 
@@ -23,7 +22,6 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const router = useRouter()
-const route = useRoute()
 
 const isOpenedRoleModal = ref(false)
 const isOpenedNotificationsModal = ref(false)
@@ -60,25 +58,6 @@ function handleLogout() {
 
 function getTranslatedRole(currentRole: RolesTypes) {
   return userRoles.translatedRoles[currentRole]
-}
-
-function navigateToProfile() {
-  const currentUser = user.value
-
-  const currentRouteName = route.name?.toString()
-  const profileRoute: RouteRecordRaw = {
-    name: 'profile',
-    path: 'profile/:id',
-    alias: '/profile/:id',
-    component: ProfileModal,
-  }
-
-  if (currentUser?.token && currentRouteName) {
-    const { id } = currentUser
-
-    router.addRoute(currentRouteName, profileRoute)
-    router.push({ path: `/profile/${id}` })
-  }
 }
 
 function handleOpenRoleModal() {
@@ -123,14 +102,6 @@ function handleCloseNotificationModal() {
 
     <div class="d-flex flex-column gap-2">
       <Button
-        class-name="left-side-bar__button btn-light w-100 text-black"
-        prepend-icon-name="bi bi-person-circle fs-5"
-        @click="navigateToProfile"
-      >
-        {{ isHovered ? 'Профиль' : '' }}
-      </Button>
-
-      <Button
         class-name="left-side-bar__button btn-light w-100 text-success"
         prepend-icon-name="bi bi-circle-fill fs-6"
         @click="handleOpenRoleModal"
@@ -173,7 +144,7 @@ function handleCloseNotificationModal() {
 
 <style lang="scss" scoped>
 .left-side-bar {
-  @include position(relative, $z-index: 6);
+  @include position(relative, $z-index: 8);
 
   overflow-x: hidden;
 
