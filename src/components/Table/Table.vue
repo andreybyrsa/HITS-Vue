@@ -326,7 +326,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
               <td
                 v-for="column in columns"
                 :key="column.key"
-                class="py-3 col"
+                class="py-3 col align-self-center"
               >
                 <div
                   :class="`${column.contentClassName ?? ''} flex-wrap d-flex gap-1`"
@@ -343,16 +343,17 @@ function checkHeaderButtonStatement(statement?: boolean) {
                         )
                       "
                     >
-                      {{
-                        getRowCellFormat(
-                          row[column.key],
-                          column.getRowCellFormat,
-                          +index.toString(),
-                        )
-                      }}
+                      <div v-if="column.key != 'checkedBy'">
+                        {{
+                          getRowCellFormat(
+                            row[column.key],
+                            column.getRowCellFormat,
+                            +index.toString(),
+                          )
+                        }}
+                      </div>
                     </div>
                   </template>
-
                   <div
                     v-else
                     :class="[
@@ -363,6 +364,15 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   >
                     {{ getRowCellFormat(row[column.key], column.getRowCellFormat) }}
                   </div>
+
+                  <Icon
+                    v-if="column.key == 'checkedBy'"
+                    class-name="bi
+                  bi-circle-fill fs-6"
+                    :class="[
+                      getRowCellStyle(row[column.key], column.getRowCellStyle),
+                    ]"
+                  />
                 </div>
               </td>
 
