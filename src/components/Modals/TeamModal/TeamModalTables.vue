@@ -115,6 +115,8 @@ function getRequestsToTeam() {
 <style lang="scss" scoped>
 .team-tables {
   max-height: 430px;
+
+  overflow: scroll;
 }
 .nav-link {
   cursor: pointer;
