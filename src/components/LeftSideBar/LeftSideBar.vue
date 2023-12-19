@@ -16,15 +16,18 @@ import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
 
-import MarketService from '@Services/MarketsService'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { Market } from '@Domain/Market'
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
+import MarketService from '@Services/MarketService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const notificationsStore = useNotificationsStore()
+
 const router = useRouter()
+
+const tabs = ref(structuredClone(LeftSideBarTabs))
 
 const isOpenedRoleModal = ref(false)
 const isOpenedNotificationsModal = ref(false)
@@ -36,6 +39,41 @@ const LeftSideBarClassName = ref<string[]>()
 
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
+})
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, role } = currentUser
+    const index = tabs.value.findIndex(({ name }) => name === 'markets')
+
+    const response = await MarketService.getAllActiveMarkets(token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    if (
+      role !== 'ADMIN' &&
+      role !== 'PROJECT_OFFICE' &&
+      response.length === 0 &&
+      index !== -1
+    ) {
+      tabs.value.splice(index, 1)
+    } else if (index !== -1) {
+      const initialMarketRoutes: LeftSideBarTabType[] =
+        LeftSideBarTabs[index].routes ?? []
+      const marketRoutes: LeftSideBarTabType[] = response.map(({ id, name }) => ({
+        name: `market-${id}`,
+        text: name,
+        roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+        iconName: 'bi bi-basket3',
+        to: `/market/${id}`,
+      }))
+      tabs.value[index].routes = [...initialMarketRoutes, ...marketRoutes]
+    }
+  }
 })
 
 watchImmediate(isHovered, (value, prevValue) => {
@@ -78,50 +116,6 @@ function handleOpenNotificationModal() {
 function handleCloseNotificationModal() {
   isOpenedNotificationsModal.value = false
 }
-
-const market = ref<Market[]>([])
-const marketRouteTabs = ref<LeftSideBarTabType[]>([
-  {
-    id: 6,
-    text: 'Биржа идей',
-    to: '/market',
-    iconName: 'bi bi-basket3',
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
-    routes: [],
-  },
-])
-onMounted(async () => {
-  const currentUser = useUserStore().user
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const response = await MarketService.getAllActiveMarkets(token)
-
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
-    }
-
-    market.value = response
-
-    if (market.value) {
-      const routeTab = market.value.map((market) => {
-        return {
-          id: +market.id,
-          text: market.name,
-          to: `/market/${market.id}`,
-          iconName: 'bi bi-basket3',
-          roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
-        }
-      }) as LeftSideBarTabType[]
-
-      marketRouteTabs.value[0].routes = routeTab
-    }
-  }
-})
 </script>
 
 <template>
@@ -132,22 +126,8 @@ onMounted(async () => {
   >
     <ul class="left-side-bar__content nav nav-pills w-100 gap-2">
       <template
-        v-for="tab in LeftSideBarTabs"
-        :key="tab.id"
-      >
-        <NavTab
-          v-if="checkUserRole(tab)"
-          :wrapper-class-name="isHovered ? 'left-side-bar__link w-100' : ''"
-          :class-name="isHovered ? 'text-white' : ''"
-          :icon-name="tab.iconName"
-          :label="isHovered ? tab.text : ''"
-          :to="tab.to"
-          :routes="tab.routes"
-        />
-      </template>
-      <template
-        v-for="tab in marketRouteTabs"
-        :key="tab.id"
+        v-for="(tab, index) in tabs"
+        :key="index"
       >
         <NavTab
           v-if="checkUserRole(tab)"

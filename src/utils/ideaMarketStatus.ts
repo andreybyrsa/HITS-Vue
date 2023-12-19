@@ -1,13 +1,13 @@
 import { IdeaMarketStatusType } from '@Domain/IdeaMarket'
 
-interface GetMarketStatusType {
+interface GetIdeaMarketStatusType {
   status: IdeaMarketStatusType[]
   translatedStatus: {
     [key in IdeaMarketStatusType]: string
   }
 }
 
-function getMarketStatus(): GetMarketStatusType {
+function getIdeaMarketStatus(): GetIdeaMarketStatusType {
   return {
     status: ['RECRUITMENT_IS_OPEN', 'RECRUITMENT_IS_CLOSED'],
     translatedStatus: {
@@ -17,4 +17,4 @@ function getMarketStatus(): GetMarketStatusType {
   }
 }
 
-export default getMarketStatus
+export default getIdeaMarketStatus

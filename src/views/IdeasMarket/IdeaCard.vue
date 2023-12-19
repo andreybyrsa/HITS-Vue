@@ -14,7 +14,7 @@ import {
 
 import { IdeaMarket, IdeaMarketStatusType } from '@Domain/IdeaMarket'
 
-import getMarketStatus from '@Utils/getMarketStatus'
+import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
 
@@ -22,7 +22,7 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import { useRoute } from 'vue-router'
 
-const availableStatus = getMarketStatus()
+const availableStatus = getIdeaMarketStatus()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

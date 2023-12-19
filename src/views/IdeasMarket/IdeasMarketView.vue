@@ -20,7 +20,7 @@ import IdeasMarketService from '@Services/IdeasMarketService'
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import MarketService from '@Services/MarketsService'
+import MarketService from '@Services/MarketService'
 import { Market } from '@Domain/Market'
 import { useRoute } from 'vue-router'
 
@@ -28,12 +28,12 @@ import Button from '@Components/Button/Button.vue'
 import SendToNextMarketModal from '@Components/Modals/SendToNextMarket/SendToNextMarketModal.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
-import getMarketStatus from '@Utils/getMarketStatus'
+import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const availableStatus = getMarketStatus()
+const availableStatus = getIdeaMarketStatus()
 
 const ideasMarketStore = useIdeasMarketStore()
 

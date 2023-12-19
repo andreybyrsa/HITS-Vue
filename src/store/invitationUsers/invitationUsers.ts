@@ -32,14 +32,9 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
   },
 
   actions: {
-    async inviteUsers(
-      invitationsToTeam: TeamInvitation[],
-      teamId: string,
-      token: string,
-    ) {
+    async inviteUsers(invitationsToTeam: TeamInvitation[], token: string) {
       const response = await TeamService.createInvitationsToTeam(
         invitationsToTeam,
-        teamId,
         token,
       )
 

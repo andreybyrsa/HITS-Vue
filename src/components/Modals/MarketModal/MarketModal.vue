@@ -28,7 +28,7 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 import useCommentsStore from '@Store/comments/commentsStore'
 import { Market } from '@Domain/Market'
-import MarketService from '@Services/MarketsService'
+import MarketService from '@Services/MarketService'
 
 defineProps<MarketModalProps>()
 
@@ -72,15 +72,19 @@ onMounted(async () => {
 
   if (currentUser?.token && currentUser.role) {
     const { token, role } = currentUser
-    const id = route.params.id.toString()
+    const ideaMarketId = route.params.ideaMarketId.toString()
     const marketId = route.params.marketId.toString()
 
     const marketParallelRequests = [
-      () => ideasMarketStore.getMarketIdea(id, marketId, role, token),
-      () => requestsToIdeaStore.getRequestsToIdea(id, token),
-      () => TeamService.getOwnerTeams(id, token),
+      () => ideasMarketStore.getMarketIdea(ideaMarketId, marketId, role, token),
+      () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId, token),
+      () => TeamService.getOwnerTeams(ideaMarketId, token),
       () => MarketService.getMarket(marketId, token),
-      () => ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(id, token),
+      () =>
+        ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(
+          ideaMarketId,
+          token,
+        ),
     ]
 
     await makeParallelRequests<

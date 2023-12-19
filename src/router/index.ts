@@ -25,6 +25,7 @@ import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
+import MarketsView from '@Views/Markets/MarketsView.vue'
 import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
 
 import HomeView from '@Views/HomeView.vue'
@@ -119,20 +120,41 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/market/:marketId',
+    path: '/market',
     name: 'market',
-    component: IdeasMarketView,
     meta: {
       roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
     },
     children: [
       {
-        path: ':id',
-        name: 'MarketModal',
-        component: MarketModal,
+        path: 'list',
+        name: 'markets-list',
+        component: MarketsView,
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN'] },
+      },
+      {
+        path: ':marketId',
+        name: 'market-ideas',
+        component: IdeasMarketView,
         meta: {
           roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
         },
+        children: [
+          {
+            path: ':ideaMarketId',
+            name: 'market-idea-modal',
+            component: MarketModal,
+            meta: {
+              roles: [
+                'INITIATOR',
+                'MEMBER',
+                'TEAM_OWNER',
+                'PROJECT_OFFICE',
+                'ADMIN',
+              ],
+            },
+          },
+        ],
       },
     ],
   },
@@ -206,7 +228,6 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/dev',
-    name: 'dev',
     component: DevView,
   },
   {

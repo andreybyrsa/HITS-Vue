@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
@@ -16,10 +16,9 @@ import Validation from '@Utils/Validation'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { Idea } from '@Domain/Idea'
-import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
-import MarketsService from '@Services/MarketsService'
+import MarketsService from '@Services/MarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'

@@ -17,7 +17,7 @@ import { IdeaMarket } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
-import MarketsService from '@Services/MarketsService'
+import MarketsService from '@Services/MarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
