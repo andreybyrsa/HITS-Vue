@@ -1,9 +1,4 @@
-import {
-  createRouter,
-  createWebHistory,
-  RouteLocationRaw,
-  RouteRecordRaw,
-} from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import LoginView from '@Views/LoginView.vue'
@@ -32,6 +27,8 @@ import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
 
+import HomeView from '@Views/HomeView.vue'
+
 import ErrorView from '@Views/ErrorView.vue'
 
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
@@ -41,26 +38,13 @@ import DevView from '@Views/DevView.vue'
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
-
-function homeRouteMiddleware(): RouteLocationRaw {
-  const userStore = useUserStore()
-  const { user } = storeToRefs(userStore)
-  const localStorageUser = LocalStorageUser.getLocalStorageUser()
-
-  if (localStorageUser?.token && !user.value?.token) {
-    useUserStore().setUser(localStorageUser)
-  }
-
-  return user.value?.roles.includes('TEAM_OWNER')
-    ? { name: 'teams-list' }
-    : { name: 'ideas-list' }
-}
+import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    redirect: homeRouteMiddleware,
+    component: HomeView,
   },
   {
     path: '/ideas',
@@ -220,9 +204,9 @@ const routes: RouteRecordRaw[] = [
     name: 'forgot-password',
     component: ForgotPasswordView,
   },
-
   {
     path: '/dev',
+    name: 'dev',
     component: DevView,
   },
   {
@@ -247,25 +231,24 @@ router.beforeEach((to) => {
   const { user } = storeToRefs(userStore)
   const localStorageUser = LocalStorageUser.getLocalStorageUser()
 
-  const currentRouteName = to.name?.toString() ?? ''
-  const requiredRouteRoles = to.meta?.roles ?? []
-  const authRouteNames = ['login', 'register', 'forgot-password']
-
   if (localStorageUser?.token && !user.value?.token) {
     useUserStore().setUser(localStorageUser)
   }
 
+  const currentRouteName = to.name?.toString() ?? ''
+  const requiredRouteRoles = to.meta?.roles ?? []
+  const authRouteNames = ['login', 'register', 'forgot-password']
+
   if (!user.value && !authRouteNames.includes(currentRouteName)) {
     return { name: 'login' }
   }
-  if (user.value && authRouteNames.includes(currentRouteName)) {
-    const { roles } = user.value
+  if (
+    user.value?.role &&
+    (authRouteNames.includes(currentRouteName) || currentRouteName === 'home')
+  ) {
+    const { role } = user.value
 
-    if (roles.includes('TEAM_OWNER')) {
-      return { name: 'teams-list' }
-    }
-
-    return { name: 'ideas-list' }
+    return getRouteByUserRole(role)
   }
   if (requiredRouteRoles.length && user.value?.role) {
     const { role } = user.value

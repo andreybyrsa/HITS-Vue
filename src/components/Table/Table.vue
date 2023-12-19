@@ -111,13 +111,13 @@ function filterData(filters: Ref<FilterValue | FilterValue[] | undefined>[]) {
           if (filter.value instanceof Array) {
             return filter.value.length
               ? filter.value.some((value) =>
-                  props.filters?.[index].checkFilter?.(dataValue, value),
+                  props.filters?.[index].checkFilter(dataValue, value),
                 )
               : true
           }
 
           return filter.value !== undefined
-            ? props.filters?.[index].checkFilter?.(dataValue, filter.value)
+            ? props.filters?.[index].checkFilter(dataValue, filter.value)
             : true
         })
       })
@@ -326,12 +326,12 @@ function checkHeaderButtonStatement(statement?: boolean) {
               <td
                 v-for="column in columns"
                 :key="column.key"
-                class="py-3 col"
+                class="py-3 col align-self-center"
               >
                 <div
                   :class="`${column.contentClassName ?? ''} flex-wrap d-flex gap-1`"
                 >
-                  <div v-if="row[column.key] instanceof Array">
+                  <template v-if="row[column.key] instanceof Array">
                     <div
                       v-for="(value, index) in row[column.key]"
                       :key="index"
@@ -353,7 +353,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
                         }}
                       </div>
                     </div>
-                  </div>
+                  </template>
                   <div
                     v-else
                     :class="[
@@ -365,14 +365,14 @@ function checkHeaderButtonStatement(statement?: boolean) {
                     {{ getRowCellFormat(row[column.key], column.getRowCellFormat) }}
                   </div>
 
-                  <div v-if="column.key == 'checkedBy'">
-                    <Icon
-                      class-name="bi bi-circle-fill fs-6"
-                      :class="[
-                        getRowCellStyle(row[column.key], column.getRowCellStyle),
-                      ]"
-                    />
-                  </div>
+                  <Icon
+                    v-if="column.key == 'checkedBy'"
+                    class-name="bi
+                  bi-circle-fill fs-6"
+                    :class="[
+                      getRowCellStyle(row[column.key], column.getRowCellStyle),
+                    ]"
+                  />
                 </div>
               </td>
 

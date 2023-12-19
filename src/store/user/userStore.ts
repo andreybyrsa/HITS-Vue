@@ -10,6 +10,7 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/user/initialState'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
+import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
@@ -25,11 +26,7 @@ const useUserStore = defineStore('user', {
         LocalStorageUser.setLocalStorageUser(response)
         this.user = LocalStorageUser.getLocalStorageUser()
 
-        if (response.roles.includes('TEAM_OWNER')) {
-          this.router.push({ name: 'teams-list' })
-        } else {
-          this.router.push({ name: 'ideas-list' })
-        }
+        this.router.push(getRouteByUserRole(response.roles))
       }
     },
 
@@ -42,11 +39,7 @@ const useUserStore = defineStore('user', {
         LocalStorageUser.setLocalStorageUser(response)
         this.user = LocalStorageUser.getLocalStorageUser()
 
-        if (response.roles.includes('TEAM_OWNER')) {
-          this.router.push({ name: 'teams-list' })
-        } else {
-          this.router.push({ name: 'ideas-list' })
-        }
+        this.router.push(getRouteByUserRole(response.roles))
 
         await InvitationService.deleteInvitationInfo(slug)
       }

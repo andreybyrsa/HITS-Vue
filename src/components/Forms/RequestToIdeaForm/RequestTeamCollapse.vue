@@ -25,8 +25,11 @@ import TeamService from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+import { watchImmediate } from '@vueuse/core'
 
 const props = defineProps<RequestTeamCollapseProps>()
+
+const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
 const notificationsStore = useNotificationsStore()
 const requestToIdeaStore = useRequestsToIdeaStore()
@@ -176,6 +179,18 @@ function checkRequestStatusNew(team: Team) {
   )
   return currentRequest && props.idea.id === currentRequest.ideaMarketId
 }
+
+const checkboxTeam = ref(false)
+watchImmediate(
+  () => checkboxTeam.value,
+  () => {
+    if (checkboxTeam.value) {
+      skillsAcceptedTeam.value = currentTeam.value
+    } else {
+      skillsAcceptedTeam.value = undefined
+    }
+  },
+)
 </script>
 
 <template>
@@ -230,7 +245,7 @@ function checkRequestStatusNew(team: Team) {
                   v-if="!isDisabledButtonSkills"
                   name="compare"
                   :value="currentTeam"
-                  v-model="team.skills"
+                  v-model="checkboxTeam"
                 />
                 <div>Компетенции:</div>
               </div>
@@ -265,7 +280,7 @@ function checkRequestStatusNew(team: Team) {
   <ConfirmModal
     :is-opened="isOpenedConfirmModal"
     text-button="Отклонить заявку"
-    text-question="Вы действительно хотите отклонить заявку?"
+    text-question="Вы действительно хотите отозвать заявку?"
     @close-modal="closeConfirmModal"
     @action="withdrawRequestToIdea"
   />

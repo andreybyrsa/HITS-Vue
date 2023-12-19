@@ -43,9 +43,29 @@ const fetchActiveMarket = async (token: string): Promise<Market | Error> => {
     })
 }
 
+const getMarket = async (id: string, token: string): Promise<Market | Error> => {
+  return await marketAxios
+    .get(
+      `/market/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id },
+      },
+    )
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки активных биржи'
+      return new Error(error)
+    })
+}
+
 const MarketService = {
   fetchMarkets,
   fetchActiveMarket,
+  getMarket,
 }
 
 export default MarketService

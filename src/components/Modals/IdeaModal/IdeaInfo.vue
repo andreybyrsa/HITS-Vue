@@ -147,10 +147,13 @@ function getRatingColor(rating: number | null) {
         <Icon :class-name="getExpertRatingicon(isConfirmed)" />
 
         <Typography class-name="text-primary">
-          {{ `${expertFirstName} ${expertLastName}:` }}
+          {{ `${expertFirstName} ${expertLastName}` }}
         </Typography>
-        <Typography :class-name="getRatingColor(rating)">
-          {{ rating }}
+        <Typography
+          v-if="rating"
+          :class-name="getRatingColor(rating)"
+        >
+          {{ rating.toFixed(1) }}
         </Typography>
       </div>
     </div>

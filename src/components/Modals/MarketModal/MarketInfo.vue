@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useDateFormat } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 
 import { MODE } from '@Main'
@@ -34,15 +33,8 @@ const route = useRoute()
 
 const marketStatus = getMarketStatus()
 
-function getFormattedDate(date: string) {
-  if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
-    return formattedDate.value
-  }
-}
-
 function valueTab(key: keyof IdeaMarket) {
-  const { customer, initiator, status, startDate, finishDate } = props.ideaMarket
+  const { customer, initiator, status } = props.ideaMarket
 
   if (key === 'customer') {
     return customer
@@ -54,10 +46,10 @@ function valueTab(key: keyof IdeaMarket) {
     return marketStatus.translatedStatus[status]
   }
   if (key === 'startDate') {
-    return getFormattedDate(startDate)
+    return '12.12.2000'
   }
   if (key === 'finishDate') {
-    return getFormattedDate(finishDate)
+    return '12.12.2000'
   }
 }
 

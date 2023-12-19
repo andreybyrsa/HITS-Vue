@@ -27,6 +27,7 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 import useCommentsStore from '@Store/comments/commentsStore'
+import { Market } from '@Domain/Market'
 
 defineProps<MarketModalProps>()
 
@@ -46,6 +47,7 @@ const router = useRouter()
 
 const ideaMarket = ref<IdeaMarket>()
 const requestTeams = ref<RequestTeamToIdea[]>()
+
 const ownerTeams = ref<Team[]>()
 
 const skillsRequestTeam = ref<RequestTeamToIdea[]>([])
@@ -76,11 +78,17 @@ onMounted(async () => {
       () => ideasMarketStore.getMarketIdea(id, marketId, role, token),
       () => requestsToIdeaStore.getRequestsToIdea(id, token),
       () => TeamService.getOwnerTeams(id, token),
+      // () => MarketService.getMarket(marketId, token),
       () => ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(id, token),
     ]
 
     await makeParallelRequests<
-      RequestTeamToIdea[] | Team[] | IdeaMarket | IdeaMarketAdvertisement[] | Error
+      | RequestTeamToIdea[]
+      | Team[]
+      | Market
+      | IdeaMarket
+      | IdeaMarketAdvertisement[]
+      | Error
     >(marketParallelRequests).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
@@ -132,6 +140,7 @@ function closeMarketModal() {
           :idea-market="ideaMarket"
           :requests="requestTeams"
           :owner-teams="ownerTeams"
+          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
         />
 
         <MarketAdvertisements

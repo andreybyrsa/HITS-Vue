@@ -190,7 +190,7 @@ const postIdeaMarketAdvertisement = async (
   token: string,
 ): Promise<IdeaMarketAdvertisement | Error> => {
   return ideasMarketAdvertisementAxios
-    .post('/market/add/advertisement', ideaMarketAdvertisement, {
+    .post('/market/idea/add/advertisement', ideaMarketAdvertisement, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -259,7 +259,7 @@ const checkIdeaMarketAdvertisement = async (
 
   return ideasMarketAdvertisementAxios
     .putNoRequestBody<void>(
-      `/market/check/advertisement/${id}`,
+      `/market/idea/check/advertisement/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

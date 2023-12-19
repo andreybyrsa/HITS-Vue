@@ -44,7 +44,6 @@ interface MarketAdvertisementsProps {
 interface MarketRightSideProps {
   idea: IdeaMarket
   skills: Skill[]
-  skillsTeam?: Skill[]
 }
 
 interface MarketSkillsradarChartsProps {

@@ -54,7 +54,7 @@ import mutableSort from '@Utils/mutableSort'
 import { getSkillInfoStyle } from '@Utils/skillsInfo'
 
 const props = defineProps<RequestsToIdeaTableProps>()
-const skillsRequestTeam = defineModel<RequestTeamToIdea[]>()
+const selectedTeam = defineModel<RequestTeamToIdea[]>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -81,7 +81,9 @@ watchImmediate(
 
 watchImmediate(
   () => selectedRequest.value,
-  () => (skillsRequestTeam.value = selectedRequest.value),
+  () => {
+    selectedTeam.value = selectedRequest.value
+  },
 )
 
 const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
