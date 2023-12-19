@@ -11,6 +11,7 @@ import NavTab from '@Components/NavTab/NavTab.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import MarketForm from '@Components/Forms/MarketForm/MarketForm.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -68,6 +69,9 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
 
     <template #content>
       <router-view></router-view>
+
+      <MarketForm></MarketForm>
+
       <Button @click="switchContent"> Проверка KeepAlive </Button>
       <KeepAlive>
         <Input
