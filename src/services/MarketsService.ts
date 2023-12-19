@@ -22,6 +22,18 @@ const fetchMarkets = async (token: string): Promise<Market[] | Error> => {
     })
 }
 
+const fetchMarket = async (token: string): Promise<Market[] | Error> => {
+  return await marketAxios
+    .get('/market/active', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка загрузки биржи'
+      return new Error(error)
+    })
+}
+
 // --- POST --- ///
 const createMarket = async (
   market: Market,
@@ -87,7 +99,7 @@ const updateMarketStatus = async (
 ): Promise<Success | Error> => {
   return await marketAxios
     .putNoRequestBody<Success>(
-      `/market/${id}/${status}`,
+      `/market/status/${id}/${status}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id } },
     )
@@ -100,6 +112,7 @@ const updateMarketStatus = async (
 
 const MarketService = {
   fetchMarkets,
+  fetchMarket,
   createMarket,
   deleteMarket,
   updateMarket,

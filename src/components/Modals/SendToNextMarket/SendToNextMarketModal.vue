@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, Ref, computed, onMounted } from 'vue'
+import { ref, Ref, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -9,7 +9,6 @@ import {
 } from '@Components/Modals/SendToNextMarket/SendToNextMarketModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Validation from '@Utils/Validation'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
@@ -38,8 +37,8 @@ const checkedIdeasMarket = ref<IdeaMarket[]>([])
 
 const isLoading = ref(false)
 
+const market = ref<Market>()
 const markets = ref<Market[]>([])
-const marketsNames = computed(() => markets.value.map((market) => market.name))
 
 function checkResponseStatus<T>(
   data: RequestResult<T>,
@@ -76,17 +75,21 @@ onMounted(async () => {
 
     const profileParallelRequests = [
       () => MarketsService.fetchMarkets(id),
+      () => MarketsService.fetchMarket(id),
       () => IdeasMarketService.fetchIdeasMarket(token),
     ]
 
-    await makeParallelRequests<IdeaMarket[] | Market[] | Error>(
+    await makeParallelRequests<Market[] | Market | IdeaMarket[] | Error>(
       profileParallelRequests,
     ).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
           checkResponseStatus(response, markets)
         }
-        if (response.id === 1) {
+        if (response.id == 1) {
+          checkResponseStatus(response, market)
+        }
+        if (response.id === 2) {
           checkResponseStatus(response, checkedIdeasMarket)
         }
       })
@@ -114,29 +117,17 @@ const { handleSubmit } = useForm({
   },
 })
 
-console.log(noTeamIdeas)
-
 const sendIdeasToMarket = handleSubmit(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const ideasMarket: IdeaMarket[] = noTeamIdeas.value.map((idea) => {
-      return {
-        ...idea,
-        position: 0,
-        status: 'RECRUITMENT_IS_OPEN',
-        requests: 0,
-        acceptedRequests: 0,
-        isFavorite: false,
-        team: null,
-        market: {},
-      } as unknown as IdeaMarket
-    })
-
     isLoading.value = true
-    const response = await IdeasMarketService.sendIdeaOnMarket(ideasMarket, token)
+
+    const { id, status } = market.value
+
+    const response = await MarketsService.updateMarketStatus(id, status, token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -157,7 +148,7 @@ const sendIdeasToMarket = handleSubmit(async () => {
     <div class="send-ideas-on-market-modal bg-white rounded p-3">
       <div class="send-ideas-on-market-modal__idea-date w-100">
         <Typography class-name="fs-5 w-100 text-secondary border-bottom">
-          Выберите биржу
+          Закрытие биржи
         </Typography>
         <Button
           variant="close"
@@ -165,13 +156,11 @@ const sendIdeasToMarket = handleSubmit(async () => {
         />
       </div>
 
-      <div class="w-100">
-        <Combobox
-          name="sendToIdeasMarket"
-          label="Биржа*"
-          :options="marketsNames"
-          placeholder="Выберите биржу"
-        />
+      <div>
+        <Typography class-name="fs-6 w-100 text-secondary border-bottom">
+          *при закрытии биржи идеи, не нашедшие команды, попадут обратно в список
+          идей
+        </Typography>
       </div>
 
       <div class="send-ideas-on-market-modal__ideas d-flex flex-column gap-2 w-100">
@@ -191,7 +180,7 @@ const sendIdeasToMarket = handleSubmit(async () => {
         @click="sendIdeasToMarket"
         :is-loading="isLoading"
       >
-        Отправить на биржу
+        Закрыть биржу
       </Button>
     </div>
   </ModalLayout>
