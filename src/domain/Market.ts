@@ -1,4 +1,5 @@
 type MarketStatus = 'NEW' | 'ACTIVE' | 'DONE'
+
 interface Market {
   id: string
   name: string
@@ -6,4 +7,5 @@ interface Market {
   finishDate: string
   status: MarketStatus
 }
+
 export { Market, MarketStatus }
