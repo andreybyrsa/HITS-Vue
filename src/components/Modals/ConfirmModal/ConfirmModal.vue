@@ -50,6 +50,8 @@ function clickAction() {
 
 <style lang="scss">
 .confirm-modal {
+  max-width: 450px;
+
   @include flexible(
     stretch,
     stretch,

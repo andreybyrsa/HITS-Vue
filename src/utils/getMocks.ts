@@ -103,22 +103,22 @@ function getMocks(): Mocks {
     {
       id: '0',
       name: 'Осенняя биржа',
-      startDate: '01.10.2023',
-      finishDate: '01.12.2023',
+      startDate: '2023-10-10T11:02:17Z',
+      finishDate: '2023-10-25T11:02:17Z',
       status: 'DONE',
     },
     {
       id: '1',
       name: 'Зимняя биржа',
-      startDate: '01.12.2023',
-      finishDate: '01.03.2024',
+      startDate: '2023-10-12T11:02:17Z',
+      finishDate: '2023-10-13T11:02:17Z',
       status: 'ACTIVE',
     },
     {
       id: '2',
       name: 'Весенняя биржа',
-      startDate: '01.03.2024',
-      finishDate: '01.06.2024',
+      startDate: '2023-10-13T11:02:17Z',
+      finishDate: '2023-10-14T11:02:17Z',
       status: 'NEW',
     },
   ]

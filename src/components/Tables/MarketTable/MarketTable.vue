@@ -8,6 +8,12 @@
     :dropdown-actions-menu="dropdownMarketActions"
   />
 
+  <MarketModal
+    :is-opened="isOpenedMarketModal"
+    :market="currentMarket"
+    @close-modal="closeMarketModal"
+  />
+
   <ConfirmModal
     :is-opened="isOpenedStartMarketConfirmation"
     :text-question="startMarketConfirmationText"
@@ -29,8 +35,6 @@
     @close-modal="closeDeletingMarketModal"
     @delete="handleDeleteMarket"
   />
-
-  <!-- CREATE & UPDATE MARKET-MODAL -->
 </template>
 
 <script lang="ts" setup>
@@ -48,6 +52,7 @@ import {
 import { Filter } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
+import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 
 import { Market, MarketStatus } from '@Domain/Market'
 
@@ -72,10 +77,9 @@ const router = useRouter()
 const startMarketConfirmationText =
   'Вы действительно хотите запустить биржу? Активную биржу можно будет ТОЛЬКО завершить.'
 const finishMarketConfirmationText =
-  'Вы действительно хотите завершить биржу? Завершённую биржу НЕЛЬЗЯ заново запустить. Идеи, не нашедшие команды, попадут обратно в список идей.'
+  'Вы действительно хотите завершить биржу? Идеи, не нашедшие команды, попадут обратно в список идей.'
 
-const isOpenedCreatingMarketModal = ref(false)
-const isOpenedUpdatingMarketModal = ref(false)
+const isOpenedMarketModal = ref(false)
 const isOpenedDeletingMarketModal = ref(false)
 
 const isOpenedStartMarketConfirmation = ref(false)
@@ -89,7 +93,7 @@ const marketTableHeader = computed<TableHeader>(() => ({
       label: 'Создать биржу',
       variant: 'primary',
       prependIconName: 'bi bi-plus-lg',
-      click: () => openModalAndStoreMarket(isOpenedCreatingMarketModal, null),
+      click: () => openModalAndStoreMarket(isOpenedMarketModal, null),
     },
   ],
 }))
@@ -127,16 +131,18 @@ const marketTableColumns: TableColumn<Market>[] = [
 const dropdownMarketActions: DropdownMenuAction<Market>[] = [
   {
     label: 'Запустить',
+    className: 'text-success',
     statement: (market: Market) => checkMarketStatus(market, 'NEW'),
     click: (market) =>
       openModalAndStoreMarket(isOpenedStartMarketConfirmation, market),
   },
   {
     label: 'Редактировать',
-    click: (market) => openModalAndStoreMarket(isOpenedUpdatingMarketModal, market),
+    click: (market) => openModalAndStoreMarket(isOpenedMarketModal, market),
   },
   {
     label: 'Завершить',
+    className: 'text-danger',
     statement: (market: Market) => checkMarketStatus(market, 'ACTIVE'),
     click: (market) =>
       openModalAndStoreMarket(isOpenedFinishMarketConfirmation, market),
@@ -193,8 +199,8 @@ function openModalAndStoreMarket(refValue: Ref<boolean>, market: Market | null) 
   }
 }
 
-function closeUpdatingMarketModal() {
-  isOpenedUpdatingMarketModal.value = false
+function closeMarketModal() {
+  isOpenedMarketModal.value = false
   currentMarket.value = null
 }
 function closeDeletingMarketModal() {
