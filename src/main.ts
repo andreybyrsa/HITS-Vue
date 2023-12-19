@@ -11,13 +11,11 @@ import collapseDirective from '@Utils/collapse'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
-import { formToJSON } from 'axios'
 
 const app = createApp(App)
 
-const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'PRODUCTION'
-const API_URL: 'http://localhost:80/api/v1' | 'https://hits1.tyuiu.ru/api/v1' =
-  'http://localhost:80/api/v1'
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
+const API_URL = process.env.API_URL ?? 'http://localhost:80/api/v1'
 
 const pinia = createPinia()
 pinia.use(({ store }) => {

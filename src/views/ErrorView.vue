@@ -18,7 +18,7 @@ function navigateToHomePage() {
 <template>
   <PageLayout>
     <template #content>
-      <div class="error-page w-100">
+      <div class="error-page">
         <img
           :src="develop"
           alt="Ошибка"
@@ -43,8 +43,6 @@ function navigateToHomePage() {
 
 <style lang="scss">
 .error-page {
-  height: 80%;
-
   @include flexible(center, center, column, $gap: 8px);
 
   &__img {

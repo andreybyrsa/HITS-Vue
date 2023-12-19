@@ -136,7 +136,10 @@ function closeRequestToIdeaModal() {
 </script>
 
 <template>
-  <PageLayout content-class-name="market-page__content p-3 bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="market-page__content p-3 bg-white"
+  >
     <template #leftSideBar>
       <LeftSideBar />
     </template>
