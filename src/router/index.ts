@@ -16,7 +16,7 @@ import CompaniesView from '@Views/Admin/CompaniesView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
-import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
+import IdeaMarketModal from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
@@ -143,7 +143,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: ':ideaMarketId',
             name: 'market-idea-modal',
-            component: MarketModal,
+            component: IdeaMarketModal,
             meta: {
               roles: [
                 'INITIATOR',

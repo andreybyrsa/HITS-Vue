@@ -3,13 +3,13 @@ import { onMounted, ref, Ref, VueElement } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
-import { MarketModalProps } from '@Components/Modals/MarketModal/MarketModal.types'
-import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.vue'
-import MarketModalPlaceholder from '@Components/Modals/MarketModal/MarketModalPlaceholder.vue'
-import MarketRightSide from '@Components/Modals/MarketModal/MarketRightSide.vue'
+import { IdeaMarketModalProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
+import IdeaMarketDescription from '@Components/Modals/IdeaMarketModal/IdeaMarketDescription.vue'
+import IdeaMarketModalPlaceholder from '@Components/Modals/IdeaMarketModal/IdeaMarketModalPlaceholder.vue'
+import IdeaMarketRightSide from '@Components/Modals/IdeaMarketModal/IdeaMarketRightSide.vue'
 import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
-import MarketModalTables from '@Components/Modals/MarketModal/MarketModalTables.vue'
-import MarketAdvertisements from '@Components/Modals/MarketModal/MarketAdvertisements.vue'
+import IdeaMarketModalTables from '@Components/Modals/IdeaMarketModal/IdeaMarketModalTables.vue'
+import IdeaMarketAdverts from '@Components/Modals/IdeaMarketModal/IdeaMarketAdverts.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
@@ -27,9 +27,9 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
-defineProps<MarketModalProps>()
+defineProps<IdeaMarketModalProps>()
 
-const MarketModalRef = ref<VueElement | null>(null)
+const IdeaMarketModalRef = ref<VueElement | null>(null)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -107,16 +107,16 @@ function closeMarketModal() {
   >
     <div
       v-if="ideaMarket"
-      ref="MarketModalRef"
-      class="market-modal p-3 h-100 overflow-y-scroll"
+      ref="IdeaMarketModalRef"
+      class="idea-market-modal p-3 h-100 overflow-y-scroll"
     >
-      <div class="market-modal__left-side w-75">
-        <MarketDescription
+      <div class="idea-market-modal__left-side w-75">
+        <IdeaMarketDescription
           :idea-market="ideaMarket"
           @close-modal="closeMarketModal"
         />
 
-        <MarketModalTables
+        <IdeaMarketModalTables
           :idea-market="ideaMarket"
           :request-teams="requestTeams"
           v-model:skillsRequestTeam="skillsRequestTeam"
@@ -130,14 +130,14 @@ function closeMarketModal() {
           :owner-teams="ownerTeams"
         />
 
-        <MarketAdvertisements
+        <IdeaMarketAdverts
           :idea-market="ideaMarket"
-          :idea-market-modal-ref="MarketModalRef"
+          :idea-market-modal-ref="IdeaMarketModalRef"
         />
       </div>
 
       <div class="market-modal__right-side w-25 rounded">
-        <MarketRightSide
+        <IdeaMarketRightSide
           :idea="ideaMarket"
           :skills="ideaMarket.stack"
           v-model:skillsRequestTeam="skillsRequestTeam"
@@ -146,12 +146,12 @@ function closeMarketModal() {
       </div>
     </div>
 
-    <MarketModalPlaceholder v-else />
+    <IdeaMarketModalPlaceholder v-else />
   </ModalLayout>
 </template>
 
 <style lang="scss" scoped>
-.market-modal {
+.idea-market-modal {
   position: relative;
 
   width: 80%;

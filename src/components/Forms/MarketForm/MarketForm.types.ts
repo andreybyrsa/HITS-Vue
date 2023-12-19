@@ -1,12 +1,10 @@
-import { Market, MarketStatus } from '@Domain/Market'
+import { Market } from '@Domain/Market'
 
 interface MarketInputType {
   key: 'startDate' | 'finishDate' | 'name'
   type?: string
   name: 'startDate' | 'finishDate' | 'name'
   placeholder: string
-  prepend?: string
-  prependIcon?: string
 }
 
 interface MarketFormProps {

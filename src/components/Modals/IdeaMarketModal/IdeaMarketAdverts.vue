@@ -2,8 +2,8 @@
 import { storeToRefs } from 'pinia'
 import { vIntersectionObserver } from '@vueuse/components'
 
-import { MarketAdvertisementsProps } from '@Components/Modals/MarketModal/MarketModal.types'
-import MarketAdvertisementsPlaceholder from '@Components/Modals/MarketModal/MarketAdvertisementsPlaceholder.vue'
+import { IdeaMarketAdvertsProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
+import MarketAdvertisementsPlaceholder from '@Components/Modals/IdeaMarketModal/IdeaMarketModalPlaceholder.vue'
 import Advertisement from '@Components/Advertisement/Advertisement.vue'
 import AdvertisementsForm from '@Components/Forms/AdvertisementsForm/AdvertisementsForm.vue'
 import { Action } from '@Components/ActionsList/ActionsList.types'
@@ -13,7 +13,7 @@ import { IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import useUserStore from '@Store/user/userStore'
 import useIdeaMarketAdvertisementsStore from '@Store/ideaMarketAdvertisements/ideaMarketAdvertisementsStore'
 
-const props = defineProps<MarketAdvertisementsProps>()
+const props = defineProps<IdeaMarketAdvertsProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

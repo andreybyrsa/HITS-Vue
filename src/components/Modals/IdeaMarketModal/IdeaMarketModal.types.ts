@@ -4,68 +4,68 @@ import { IdeaMarket } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Skill } from '@Domain/Skill'
 
-interface MarketModalProps {
+interface IdeaMarketModalProps {
   isOpened: boolean
 }
 
-interface MarketDescriptionProps {
+interface IdeaMarketDescriptionProps {
   ideaMarket: IdeaMarket
 }
 
-interface MarketTablesProps {
+interface IdeaMarketTablesProps {
   ideaMarket: IdeaMarket
   requestTeams?: RequestTeamToIdea[]
 }
 
-interface MarketInfoProps {
+interface IdeaMarketInfoProps {
   ideaMarket: IdeaMarket
 }
 
-interface MarketModalCollapseType {
+interface IdeaMarketCollapseType {
   key: number
   id: number
   ideaKey: keyof IdeaMarket
   text: string
 }
 
-interface MarketModalTabType {
+interface IdeaMarketTabType {
   id: string
   key: keyof IdeaMarket
   name: string
   icon: string
 }
 
-interface MarketAdvertisementsProps {
+interface IdeaMarketAdvertsProps {
   ideaMarket: IdeaMarket
 
   ideaMarketModalRef: VueElement | null
 }
 
-interface MarketRightSideProps {
+interface IdeaMarketRightSideProps {
   idea: IdeaMarket
   skills: Skill[]
   skillsTeam?: Skill[]
 }
 
-interface MarketSkillsradarChartsProps {
+interface IdeaMarketSkillsProps {
   skills: Skill[]
   skillsTeam?: Skill[]
   idea: IdeaMarket
 }
 
-interface MarketModalEmits {
+interface IdeaMarketModalEmits {
   (event: 'close-modal'): void
 }
 
 export {
-  MarketModalProps,
-  MarketDescriptionProps,
-  MarketTablesProps,
-  MarketAdvertisementsProps,
-  MarketInfoProps,
-  MarketModalCollapseType,
-  MarketModalTabType,
-  MarketSkillsradarChartsProps,
-  MarketRightSideProps,
-  MarketModalEmits,
+  IdeaMarketModalProps,
+  IdeaMarketDescriptionProps,
+  IdeaMarketTablesProps,
+  IdeaMarketAdvertsProps,
+  IdeaMarketInfoProps,
+  IdeaMarketCollapseType,
+  IdeaMarketTabType,
+  IdeaMarketSkillsProps,
+  IdeaMarketRightSideProps,
+  IdeaMarketModalEmits,
 }

@@ -1,21 +1,36 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { watchImmediate } from '@vueuse/core'
 import { useForm } from 'vee-validate'
+
+import MarketInputs from '@Components/Forms/MarketForm/MarketFormInputs'
 import Button from '@Components/Button/Button.vue'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
-import Validation from '@Utils/Validation'
-import MarketInputs from './MarketFormInputs'
 import Input from '@Components/Inputs/Input/Input.vue'
 import {
   MarketFormProps,
   MarketFormEmits,
 } from '@Components/Forms/MarketForm/MarketForm.types'
 import Typography from '@Components/Typography/Typography.vue'
-import { watchImmediate } from '@vueuse/core'
+
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
+import { Market } from '@Domain/Market'
+
 import useMarketsStore from '@Store/markets/marketsStore'
 import useUserStore from '@Store/user/userStore'
-import { Market } from '@Domain/Market'
-import { storeToRefs } from 'pinia'
+
+import Validation from '@Utils/Validation'
+
+const props = defineProps<MarketFormProps>()
+const emit = defineEmits<MarketFormEmits>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const marketsStore = useMarketsStore()
+
+const isLoading = ref(false)
 
 const { handleSubmit, setValues } = useForm<Market>({
   validationSchema: {
@@ -28,16 +43,6 @@ const { handleSubmit, setValues } = useForm<Market>({
   },
 })
 
-const marketsStore = useMarketsStore()
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
-const isLoading = ref(false)
-
-const props = defineProps<MarketFormProps>()
-
-const emit = defineEmits<MarketFormEmits>()
-
 watchImmediate(
   () => props.market,
   async (market) => {
@@ -49,8 +54,10 @@ watchImmediate(
 
 const createIdeaMarket = handleSubmit(async (values) => {
   const currentUser = user.value
+
   if (currentUser?.token) {
     const { token } = currentUser
+
     isLoading.value = true
     await marketsStore.createMarket(values, token)
     isLoading.value = false
@@ -59,8 +66,10 @@ const createIdeaMarket = handleSubmit(async (values) => {
 
 const updateIdeaMarket = handleSubmit(async (values) => {
   const currentUser = user.value
+
   if (currentUser?.token) {
     const { token } = currentUser
+
     isLoading.value = true
     await marketsStore.updateMarket(values, token)
     isLoading.value = false
@@ -74,51 +83,45 @@ const closeForm = () => {
 
 <template>
   <FormLayout>
-    <div class="my-div">
-      <Typography
-        class="name"
-        v-if="!props.market"
-        class-name="fs-3 text-primary text-center"
-        >Создание биржи</Typography
-      >
-      <Typography
-        class="name"
-        v-if="props.market"
-        class-name="fs-3 text-primary text-center"
-        >Редактирование биржи</Typography
-      >
+    <div class="d-flex align-items-center justify-content-between">
+      <Typography class-name="fs-3 text-primary text-center">
+        {{ !props.market ? 'Создание биржи' : 'Редактирование биржи' }}
+      </Typography>
+
       <Button
-        class="my-button"
-        @click="closeForm"
         variant="close"
+        @click="closeForm"
       ></Button>
     </div>
+
     <Input
       v-for="input in MarketInputs"
       :key="input.key"
-      validate-on-update
+      class-name="rounded-end"
       :type="input.type"
       :name="input.name"
-      class-name="rounded-end"
       :placeholder="input.placeholder"
-      :prepend="input.prepend"
+      validate-on-update
     />
+
     <Button
       v-if="!props.market"
       type="submit"
       variant="primary"
       @click="createIdeaMarket"
       :is-loading="isLoading"
-      >Создать биржу</Button
     >
+      Создать биржу
+    </Button>
     <Button
       v-if="props.market"
       type="submit"
       variant="primary"
       @click="updateIdeaMarket"
       :is-loading="isLoading"
-      >Редактировать биржу</Button
     >
+      Редактировать биржу
+    </Button>
   </FormLayout>
 </template>
 

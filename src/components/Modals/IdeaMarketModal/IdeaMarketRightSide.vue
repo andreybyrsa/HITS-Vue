@@ -1,17 +1,15 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import { MarketRightSideProps } from '@Components/Modals/MarketModal/MarketModal.types'
-
-import MarketSkillsRadarCharts from '@Components/Modals/MarketModal/MarketSkillsRadarCharts.vue'
-import MarketInfo from '@Components/Modals/MarketModal/MarketInfo.vue'
-
+import { IdeaMarketRightSideProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
+import IdeaMarketSkills from '@Components/Modals/IdeaMarketModal/IdeaMarketSkills.vue'
+import IdeaMarketInfo from '@Components/Modals/IdeaMarketModal/IdeaMarketInfo.vue'
 import Button from '@Components/Button/Button.vue'
 
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
-defineProps<MarketRightSideProps>()
+defineProps<IdeaMarketRightSideProps>()
 
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
@@ -43,7 +41,7 @@ function openMarketInfo() {
   </div>
 
   <div v-if="isChangeContent">
-    <MarketSkillsRadarCharts
+    <IdeaMarketSkills
       :skills="skills"
       v-model:skillsRequestTeam="skillsRequestTeam"
       v-model:skillsAcceptedTeam="skillsAcceptedTeam"
@@ -51,7 +49,7 @@ function openMarketInfo() {
     />
   </div>
 
-  <MarketInfo
+  <IdeaMarketInfo
     v-else
     :idea-market="idea"
   />
