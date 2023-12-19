@@ -18,7 +18,7 @@ import { IdeaMarket } from '@Domain/IdeaMarket'
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
-import getMarketStatus from '@Utils/getMarketStatus'
+import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
 
 const props = defineProps<MarketInfoProps>()
 
@@ -32,7 +32,7 @@ const isCopiedLink = ref(false)
 
 const route = useRoute()
 
-const marketStatus = getMarketStatus()
+const marketStatus = getIdeaMarketStatus()
 
 function getFormattedDate(date: string) {
   if (date) {
