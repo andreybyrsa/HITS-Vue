@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { RouteRecordRaw } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-import Icon from '@Components/Icon/Icon.vue'
+import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
+import Button from '@Components/Button/Button.vue'
 
 import ProfileService from '@Services/ProfileService'
 
@@ -19,6 +20,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const userRolesInfo = getUserRolesInfo()
+
+const isOpenedRoleModal = ref(false)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -48,46 +51,67 @@ function navigateToProfile() {
     navigateToAliasRoute(`/profile/${id}`, profileRoute)
   }
 }
+
+function openRoleModal() {
+  isOpenedRoleModal.value = true
+}
+
+function closeRoleModal() {
+  isOpenedRoleModal.value = false
+}
 </script>
 
 <template>
-  <div class="px-3 py-1 bg-white d-flex">
-    <div
-      class="user-info p-2 rounded-3 d-flex gap-2 align-items-center cursor-pointer"
-      @click="navigateToProfile"
-    >
+  <div class="p-3 bg-white d-flex">
+    <div class="user-info d-flex gap-2 align-items-center">
       <div class="user-info__image rounded-circle overflow-hidden">
-        <LoadingPlaceholder height="small" />
+        <LoadingPlaceholder class-name="user-info__image-placeholder" />
       </div>
 
-      <div class="d-flex flex-column">
-        <div class="d-flex gap-1 fw-semibold">
-          <Typography>{{ user?.firstName }}</Typography>
-          <Typography>{{ user?.lastName }}</Typography>
+      <div class="d-flex gap-1 flex-column">
+        <div
+          class="user-info__name fw-semibold cursor-pointer"
+          @click="navigateToProfile"
+        >
+          <Typography>{{ user?.firstName }} {{ user?.lastName }}</Typography>
         </div>
 
-        <div class="d-flex gap-1 text-success">
-          <Icon class-name="bi bi-circle-fill opacity-75" />
-          <Typography v-if="user?.role">
+        <Button
+          class-name="btn-sm rounded-4 py-1"
+          variant="outline-success"
+          prepend-icon-name="bi bi-circle-fill fs-6"
+          @click="openRoleModal"
+        >
+          <template v-if="user?.role">
             {{ userRolesInfo.translatedRoles[user?.role] }}
-          </Typography>
-        </div>
+          </template>
+        </Button>
       </div>
     </div>
   </div>
+
+  <RoleModal
+    :is-opened="isOpenedRoleModal"
+    @close-modal="closeRoleModal"
+  />
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .user-info {
-  &:hover {
-    background-color: rgba($color: $secondary-color, $alpha: 0.3);
+  &__image {
+    @include fixedHeight(58px);
+    @include fixedWidth(58px);
 
-    transition: background-color ease-out;
+    &-placeholder {
+      @include fixedHeight(58px);
+    }
   }
 
-  &__image {
-    @include fixedHeight(50px);
-    @include fixedWidth(50px);
+  &__name {
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 5px;
+    }
   }
 }
 </style>
