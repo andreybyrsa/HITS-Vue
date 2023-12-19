@@ -101,7 +101,6 @@ const handleCreateTeam = handleSubmit(async (values) => {
 
       const responseInvitation = await TeamService.createInvitationsToTeam(
         invitationsToTeam,
-        response.id,
         token,
       )
 

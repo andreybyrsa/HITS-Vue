@@ -62,7 +62,7 @@ async function inviteUsersInTeam() {
       }),
     ) as TeamInvitation[]
 
-    await invitatinUsers.inviteUsers(invitationsToTeam, teamId.toString(), token)
+    await invitatinUsers.inviteUsers(invitationsToTeam, token)
 
     selectedUsers.value = []
     isLoading.value = false
