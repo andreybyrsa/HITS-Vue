@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
-import { Idea } from '@Domain/Idea'
+import { Idea, IdeaStatusType } from '@Domain/Idea'
 import RolesTypes from '@Domain/Roles'
-import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 import IdeasService from '@Services/IdeasService'
 
@@ -62,7 +61,7 @@ const useIdeasStore = defineStore('ideas', {
   actions: {
     async updateIdeaStatus(
       id: string,
-      status: IdeaStatusTypes,
+      status: IdeaStatusType,
       role: RolesTypes,
       token: string,
     ) {
@@ -111,6 +110,21 @@ const useIdeasStore = defineStore('ideas', {
         if (deletingIdeaIndex !== -1) {
           this.ideas.splice(deletingIdeaIndex, 1)
         }
+      }
+    },
+
+    async checkIdea(id: string, token: string, email: string) {
+      const responseCheckedBy = await IdeasService.checkIdea(id, email, token)
+
+      if (responseCheckedBy instanceof Error) {
+        useNotificationsStore().createSystemNotification(
+          'Система',
+          responseCheckedBy.message,
+        )
+      } else {
+        const currentIdea = this.ideas.find((idea) => idea.id === id)
+
+        currentIdea?.checkedBy.push(email)
       }
     },
   },

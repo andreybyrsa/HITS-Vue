@@ -48,7 +48,7 @@ import SkillsService from '@Services/SkillsService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import getSkills from '@Utils/getSkills'
+import { getSkillsInfo, getSkillInfoStyle } from '@Utils/skillsInfo'
 
 const skills = defineModel<Skill[]>({ required: true })
 
@@ -66,7 +66,7 @@ const isOpenedDeletingModal = ref(false)
 const filterByType = ref<SkillType[]>([])
 const filterByIsConfirmed = ref<boolean>()
 
-const availableSkills = getSkills()
+const availableSkills = getSkillsInfo()
 
 const skillsTableHeader: TableHeader = {
   label: 'Список компетенций',
@@ -91,7 +91,7 @@ const skillTableColumns: TableColumn<Skill>[] = [
     key: 'type',
     label: 'Категория',
     getRowCellFormat: getSkillTypeFormat,
-    getRowCellStyle: getSKillTypeStyle,
+    getRowCellStyle: getSkillTypeStyle,
   },
   {
     key: 'confirmed',
@@ -129,6 +129,7 @@ const skillsFilters: Filter<Skill>[] = [
     refValue: filterByType,
     isUniqueChoice: false,
     checkFilter: checkSkillType,
+    statement: () => true,
   },
   {
     category: 'Статус',
@@ -139,6 +140,7 @@ const skillsFilters: Filter<Skill>[] = [
     refValue: filterByIsConfirmed,
     isUniqueChoice: true,
     checkFilter: checkSkillConfirmed,
+    statement: () => true,
   },
 ]
 
@@ -153,27 +155,10 @@ function getSkillStatusFormat(isConfirmed: boolean) {
   return 'На рассмотрении'
 }
 
-function getSKillTypeStyle(skillType: SkillType) {
-  const initialClass = ['px-2', 'py-1', 'rounded-4']
-  if (skillType === 'LANGUAGE') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
+function getSkillTypeStyle(skillType: SkillType) {
+  const skillTypeClass = getSkillInfoStyle(skillType)
 
-  if (skillType === 'FRAMEWORK') {
-    initialClass.push('bg-info-subtle', 'text-info')
-    return initialClass
-  }
-
-  if (skillType === 'DATABASE') {
-    initialClass.push('bg-warning-subtle', 'text-warning')
-    return initialClass
-  }
-
-  if (skillType === 'DEVOPS') {
-    initialClass.push('bg-danger-subtle', 'text-danger')
-    return initialClass
-  }
+  return ['px-2', 'py-1', 'rounded-4', ...skillTypeClass]
 }
 
 function getSkillStatusStyle(isConfirmed: boolean) {

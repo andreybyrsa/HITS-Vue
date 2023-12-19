@@ -4,14 +4,7 @@
     :columns="ideaMarketTeamColumns"
     :search-by="['name']"
     :dropdown-actions-menu="dropdownIdeaMarketTeamActions"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedConfirmModal"
-    text-button="Исключить"
-    text-question="Вы действительно исключить команду?"
-    @close-modal="closeConfirmModal"
-    @action="kickTeamFromIdeaMarket"
+    v-model="selectedTeam"
   />
 </template>
 
@@ -25,38 +18,33 @@ import Table from '@Components/Table/Table.vue'
 import IdeaMarketTeamsTableProps from '@Components/Tables/IdeaMarketTeamsTable/IdeaMarketTeamsTable.types'
 import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
-import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
-import getSkillStyle from '@Utils/getSkillsStyle'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
+import { Skill } from '@Domain/Skill'
 import { Team, TeamMember } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
-import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 import mutableSort from '@Utils/mutableSort'
-import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-import { Skill } from '@Domain/Skill'
+import { getSkillInfoStyle } from '@Utils/skillsInfo'
 
 const props = defineProps<IdeaMarketTeamsTableProps>()
-const skillsAcceptedTeam = defineModel<Team>()
+const skillsTeam = defineModel<Team>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const ideasMarketStore = useIdeasMarketStore()
-
 const ideaMarketTeams = ref<Team[]>([])
+const selectedTeam = ref<Team[]>([])
 
 const router = useRouter()
-
-const isOpenedConfirmModal = ref(false)
 
 watchImmediate(
   () => props.ideaMarket,
   (ideaMarket) => {
     if (ideaMarket.team) {
       ideaMarketTeams.value = [ideaMarket.team]
-      skillsAcceptedTeam.value = ideaMarket.team
+      skillsTeam.value = ideaMarket.team
     }
   },
 )
@@ -89,8 +77,15 @@ const ideaMarketTeamColumns: TableColumn<Team>[] = [
     label: 'Кометенции',
     size: 'col-4',
     contentClassName: 'justify-content-center align-items-center',
-    getRowCellStyle: getSkillStyle,
+    getRowCellStyle: getSkillsStyle,
     getRowCellFormat: getSkillsFormat,
+  },
+]
+
+const dropdownIdeaMarketTeamActions: DropdownMenuAction<Team>[] = [
+  {
+    label: 'Профиль команды',
+    click: navigateToTeamModal,
   },
 ]
 
@@ -99,24 +94,17 @@ function getSkillsFormat(skills: Skill[], index: number) {
   return currentSkill.name
 }
 
-const dropdownIdeaMarketTeamActions: DropdownMenuAction<Team>[] = [
-  {
-    label: 'Профиль команды',
-    click: navigateToTeamModal,
-  },
-
-  {
-    label: 'Исключить',
-    className: 'text-danger',
-    statement: checkRecruitmentIdeaStatus,
-    click: openConfirmModal,
-  },
-]
-
 function getLeaderFormat(leader: TeamMember | null) {
   if (leader) {
     return `${leader.firstName} ${leader.lastName}`
   }
+}
+
+function getSkillsStyle(skills: Skill[], index: number) {
+  const { type } = skills[index]
+  const skillTypeClass = getSkillInfoStyle(type)
+
+  return ['px-2', 'py-1', 'rounded', 'd-flex', 'gap-1', ...skillTypeClass]
 }
 
 function getLeaderStyle(leader: TeamMember | null) {
@@ -161,27 +149,5 @@ function navigateToLeaderProfile(team: Team) {
     router.addRoute('market', leaderModalRoute)
     router.push({ path: `/market/${teamLeader.id}` })
   }
-}
-
-function openConfirmModal() {
-  isOpenedConfirmModal.value = true
-}
-function closeConfirmModal() {
-  isOpenedConfirmModal.value = false
-}
-
-async function kickTeamFromIdeaMarket() {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = props.ideaMarket
-
-    await ideasMarketStore.kickTeamFromIdeaMarket(id, token)
-  }
-}
-
-function checkRecruitmentIdeaStatus() {
-  return props.ideaMarket.status === 'RECRUITMENT_IS_OPEN'
 }
 </script>

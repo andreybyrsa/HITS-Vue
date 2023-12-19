@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useDateFormat } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 
 import { MODE } from '@Main'
@@ -13,12 +12,14 @@ import Button from '@Components/Button/Button.vue'
 import MarketInfoTabs from '@Components/Modals/MarketModal/MarketInfoIdeaTabs'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 import getMarketStatus from '@Utils/getMarketStatus'
+import { Market } from '@Domain/Market'
+import { useDateFormat } from '@vueuse/core'
 
 const props = defineProps<MarketInfoProps>()
 
@@ -41,8 +42,8 @@ function getFormattedDate(date: string) {
   }
 }
 
-function valueTab(key: keyof IdeaMarket) {
-  const { customer, initiator, status, startDate, finishDate } = props.ideaMarket
+function valueTab(key: keyof IdeaMarket | keyof Market) {
+  const { customer, initiator, status } = props.ideaMarket
 
   if (key === 'customer') {
     return customer
@@ -54,10 +55,10 @@ function valueTab(key: keyof IdeaMarket) {
     return marketStatus.translatedStatus[status]
   }
   if (key === 'startDate') {
-    return getFormattedDate(startDate)
+    return getFormattedDate(props.market.startDate)
   }
   if (key === 'finishDate') {
-    return getFormattedDate(finishDate)
+    return getFormattedDate(props.market.finishDate)
   }
 }
 

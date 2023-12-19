@@ -9,12 +9,15 @@ import RequestTeamCollapse from '@Components/Forms/RequestToIdeaForm/RequestTeam
 
 import useUserStore from '@Store/user/userStore'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+import { Team } from '@Domain/Team'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const requestsToIdeaStore = useRequestsToIdeaStore()
 const { requests } = storeToRefs(requestsToIdeaStore)
+
+const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
 const router = useRouter()
 
@@ -68,6 +71,7 @@ function getAccessToCreateTeam() {
           :team="team"
           :idea="ideaMarket"
           v-model:requestTeams="requests"
+          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
           :isDisabledButtonSkills="$route.name === 'market'"
         />
       </div>

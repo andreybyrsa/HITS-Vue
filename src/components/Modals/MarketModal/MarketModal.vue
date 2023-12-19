@@ -4,29 +4,31 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import { MarketModalProps } from '@Components/Modals/MarketModal/MarketModal.types'
-import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.vue'
 import MarketModalPlaceholder from '@Components/Modals/MarketModal/MarketModalPlaceholder.vue'
 import MarketRightSide from '@Components/Modals/MarketModal/MarketRightSide.vue'
 import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
 import MarketModalTables from '@Components/Modals/MarketModal/MarketModalTables.vue'
+import MarketAdvertisements from '@Components/Modals/MarketModal/MarketAdvertisements.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { Team } from '@Domain/Team'
-import Comment from '@Domain/Comment'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
-import useCommentsStore from '@Store/comments/commentsStore'
+import useIdeaMarketAdvertisementsStore from '@Store/ideaMarketAdvertisements/ideaMarketAdvertisementsStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import useCommentsStore from '@Store/comments/commentsStore'
+import { Market } from '@Domain/Market'
+import MarketService from '@Services/MarketsService'
 
 defineProps<MarketModalProps>()
 
@@ -36,8 +38,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const ideasMarketStore = useIdeasMarketStore()
-
 const requestsToIdeaStore = useRequestsToIdeaStore()
+const ideaMarketAdvertisementsStore = useIdeaMarketAdvertisementsStore()
 
 const notificationsStore = useNotificationsStore()
 
@@ -46,6 +48,7 @@ const router = useRouter()
 
 const ideaMarket = ref<IdeaMarket>()
 const requestTeams = ref<RequestTeamToIdea[]>()
+const market = ref<Market>()
 const ownerTeams = ref<Team[]>()
 
 const skillsRequestTeam = ref<RequestTeamToIdea[]>([])
@@ -70,16 +73,23 @@ onMounted(async () => {
   if (currentUser?.token && currentUser.role) {
     const { token, role } = currentUser
     const id = route.params.id.toString()
+    const marketId = route.params.marketId.toString()
 
     const marketParallelRequests = [
-      () => ideasMarketStore.getMarketIdea(id, role, token),
+      () => ideasMarketStore.getMarketIdea(id, marketId, role, token),
       () => requestsToIdeaStore.getRequestsToIdea(id, token),
-      () => TeamService.getOwnerTeams(token),
-      () => useCommentsStore().getComments(id, token),
+      () => TeamService.getOwnerTeams(id, token),
+      () => MarketService.getMarket(marketId, token),
+      () => ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(id, token),
     ]
 
     await makeParallelRequests<
-      RequestTeamToIdea[] | Team[] | IdeaMarket | Comment[] | Error
+      | RequestTeamToIdea[]
+      | Team[]
+      | Market
+      | IdeaMarket
+      | IdeaMarketAdvertisement[]
+      | Error
     >(marketParallelRequests).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
@@ -88,6 +98,8 @@ onMounted(async () => {
           checkResponseStatus(response, requestTeams)
         } else if (response.id === 2) {
           checkResponseStatus(response, ownerTeams)
+        } else if (response.id === 3) {
+          checkResponseStatus(response, market)
         }
       })
     })
@@ -96,7 +108,7 @@ onMounted(async () => {
 
 function closeMarketModal() {
   isOpenedMarketModal.value = false
-  router.push('/market')
+  router.push(`/market/${route.params.marketId}`)
 
   useCommentsStore().disconnectRsocket()
 }
@@ -131,17 +143,21 @@ function closeMarketModal() {
           :idea-market="ideaMarket"
           :requests="requestTeams"
           :owner-teams="ownerTeams"
+          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
         />
 
-        <IdeaComments
-          :news="user?.id === ideaMarket.id"
-          :idea="ideaMarket"
-          :idea-modal-ref="MarketModalRef"
+        <MarketAdvertisements
+          :idea-market="ideaMarket"
+          :idea-market-modal-ref="MarketModalRef"
         />
       </div>
 
-      <div class="market-modal__right-side w-25 rounded">
+      <div
+        v-if="market"
+        class="market-modal__right-side w-25 rounded"
+      >
         <MarketRightSide
+          :market="market"
           :idea="ideaMarket"
           :skills="ideaMarket.stack"
           v-model:skillsRequestTeam="skillsRequestTeam"

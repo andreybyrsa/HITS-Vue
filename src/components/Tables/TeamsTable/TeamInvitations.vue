@@ -10,6 +10,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 
 import Table from '@Components/Table/Table.vue'
@@ -17,13 +18,28 @@ import { TeamInvitationsProps } from '@Components/Modals/TeamModal/TeamModal.typ
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
-import { RequestToTeamStatus, TeamInvitation } from '@Domain/Team'
+import { InvitationToTeamStatus, TeamInvitation } from '@Domain/Team'
+
+import useUserStore from '@Store/user/userStore'
+import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
+
+import {
+  getInvitationsToTeamStatus,
+  getInvitationToTeamStatusStyle,
+} from '@Utils/invitaionsToTeamStatus'
 
 const props = defineProps<TeamInvitationsProps>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const invitationsToTeamStore = useInvitationUsersStore()
 
 const teamInvitations = ref<TeamInvitation[]>([])
 
 const router = useRouter()
+
+const invitationsToTeamStatus = getInvitationsToTeamStatus()
 
 watchImmediate(
   () => props.invitations,
@@ -39,7 +55,7 @@ const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
     size: 'col-1',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getStatusFormat,
-    getRowCellStyle: getStatusStyle,
+    getRowCellStyle: getInvitationToTeamStatusStyle,
   },
   {
     key: 'email',
@@ -62,41 +78,18 @@ const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
   },
 ]
 
-function getStatusStyle(status: RequestToTeamStatus) {
-  const initialClass = ['px-2', 'py-1', 'rounded-4']
-
-  if (status === 'NEW') {
-    initialClass.push('bg-primary-subtle', 'text-primary')
-    return initialClass
-  }
-
-  if (status === 'ACCEPTED') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
-
-  if (status === 'CANCELED') {
-    initialClass.push('bg-danger-subtle', 'text-danger')
-    return initialClass
-  }
-}
-
-function getStatusFormat(status: RequestToTeamStatus) {
-  if (status === 'NEW') {
-    return 'Новая'
-  }
-
-  if (status === 'ACCEPTED') {
-    return 'Принята'
-  }
-
-  if (status === 'CANCELED') {
-    return 'Отклонена'
-  }
+function getStatusFormat(status: InvitationToTeamStatus) {
+  return invitationsToTeamStatus.translatedInvitations[status]
 }
 
 const dropdownTeamInvitationActions: DropdownMenuAction<TeamInvitation>[] = [
   { label: 'Перейти на профиль', click: navigateToUserProfile },
+  {
+    label: 'Отозвать',
+    className: 'text-danger',
+    statement: checkWithdrawAction,
+    click: withdrawTeamInvitation,
+  },
 ]
 
 function navigateToUserProfile(invitation: TeamInvitation) {
@@ -112,5 +105,30 @@ function navigateToUserProfile(invitation: TeamInvitation) {
 
   router.addRoute('teams-list', profileRoute)
   router.push({ path: `/profile/${invitation.userId}` })
+}
+
+function checkWithdrawAction(teaminvitation: TeamInvitation) {
+  const currentUser = user.value
+  const { owner } = props.team
+
+  return (
+    currentUser?.id === owner.id &&
+    currentUser.role === 'TEAM_OWNER' &&
+    teaminvitation.status === 'NEW'
+  )
+}
+
+async function withdrawTeamInvitation(teaminvitation: TeamInvitation) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    await invitationsToTeamStore.updateInvitationStatus(
+      teaminvitation,
+      'WITHDRAWN',
+      token,
+    )
+  }
 }
 </script>

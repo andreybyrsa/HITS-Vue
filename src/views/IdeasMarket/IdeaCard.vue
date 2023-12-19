@@ -12,8 +12,7 @@ import {
   IdeaCardEmits,
 } from '@Views/IdeasMarket/IdeasMarketView.types'
 
-import IdeaMarket from '@Domain/IdeaMarket'
-import IdeasMarketStatusTypes from '@Domain/MarketStatus'
+import { IdeaMarket, IdeaMarketStatusType } from '@Domain/IdeaMarket'
 
 import getMarketStatus from '@Utils/getMarketStatus'
 
@@ -21,6 +20,7 @@ import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { useRoute } from 'vue-router'
 
 const availableStatus = getMarketStatus()
 
@@ -39,7 +39,7 @@ function getFormattedDate(date: string) {
     return formattedDate.value
   }
 }
-function getTranslatedStatus(status: IdeasMarketStatusTypes) {
+function getTranslatedStatus(status: IdeaMarketStatusType) {
   return availableStatus.translatedStatus[status]
 }
 
@@ -92,6 +92,8 @@ function checkIdeaOwned() {
     user.value?.role === 'TEAM_OWNER' && props.idea.status === 'RECRUITMENT_IS_OPEN'
   )
 }
+
+const route = useRoute()
 </script>
 
 <template>
@@ -102,14 +104,16 @@ function checkIdeaOwned() {
           <Typography>#{{ idea.position }}</Typography>
         </div>
         <div class="idea-title">
-          <router-link :to="'market/' + idea.id">{{ idea.name }}</router-link>
+          <router-link :to="`${route.params.marketId}/${idea.id}`">{{
+            idea.name
+          }}</router-link>
         </div>
         <div class="idea-description">
           {{ idea.description }}
         </div>
         <div class="idea-creator">
           <Icon class-name="bi bi-person-circle fs-5" /> Инициатор:
-          {{ idea.initiator.firstName }} {{ idea.initiator.lastName }}
+          {{ idea.initiator?.firstName }} {{ idea.initiator?.lastName }}
         </div>
         <div class="idea-stacks">
           <Skills :skills="idea?.stack" />
@@ -120,7 +124,14 @@ function checkIdeaOwned() {
           <Icon class-name="bi bi-clock-history fs-5" />
 
           <Typography>
-            Дата старта: {{ getFormattedDate(idea.startDate) }}
+            Дата старта: {{ getFormattedDate(market.startDate) }}
+          </Typography>
+        </div>
+        <div class="idea-start-date">
+          <Icon class-name="bi bi-clock-history fs-5" />
+
+          <Typography>
+            Дата окнчания: {{ getFormattedDate(market.finishDate) }}
           </Typography>
         </div>
 

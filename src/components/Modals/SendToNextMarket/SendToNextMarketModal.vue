@@ -13,7 +13,7 @@ import Validation from '@Utils/Validation'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
@@ -51,56 +51,30 @@ function checkResponseStatus<T>(
   }
 }
 
-onMounted(async () => {
-  const currentUser = user.value
+// onMounted(async () => {
+//   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { id } = currentUser
+//   if (currentUser?.token) {
+//     const { token, id } = currentUser
 
-    const response = await MarketsService.fetchMarkets(id)
+//     const profileParallelRequests = [() => MarketsService.fetchMarkets(token)]
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    markets.value = response
-  }
-})
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token, id } = currentUser
-
-    const profileParallelRequests = [
-      () => MarketsService.fetchMarkets(id),
-      () => MarketsService.fetchMarket(id),
-      () => IdeasMarketService.fetchIdeasMarket(token),
-    ]
-
-    await makeParallelRequests<Market[] | Market | IdeaMarket[] | Error>(
-      profileParallelRequests,
-    ).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, markets)
-        }
-        if (response.id == 1) {
-          checkResponseStatus(response, market)
-        }
-        if (response.id === 2) {
-          checkResponseStatus(response, checkedIdeasMarket)
-        }
-      })
-    })
-  }
-  checkedIdeasMarket.value.forEach((idea) => {
-    if (idea.team == null) {
-      noTeamIdeas.value.push(idea)
-    }
-  })
-})
+//     await makeParallelRequests<Market[] | Market | IdeaMarket[] | Error>(
+//       profileParallelRequests,
+//     ).then((responses) => {
+//       responses.forEach((response) => {
+//         if (response.id === 0) {
+//           checkResponseStatus(response, markets)
+//         }
+//       })
+//     })
+//   }
+//   checkedIdeasMarket.value.forEach((idea) => {
+//     if (idea.team == null) {
+//       noTeamIdeas.value.push(idea)
+//     }
+//   })
+// })
 
 // watchImmediate(
 //   () => props.checkedIdeasMarket,
@@ -120,7 +94,7 @@ const { handleSubmit } = useForm({
 const sendIdeasToMarket = handleSubmit(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && market.value) {
     const { token } = currentUser
 
     isLoading.value = true
@@ -157,26 +131,27 @@ const sendIdeasToMarket = handleSubmit(async () => {
       </div>
 
       <div>
-        <Typography class-name="fs-6 w-100 text-secondary border-bottom">
-          *при закрытии биржи идеи, не нашедшие команды, попадут обратно в список
-          идей
+        <Typography class-name="fs-6 w-100 text-danger">
+          Идеи, не нашедшие команды, попадут обратно в список идей*
         </Typography>
       </div>
 
-      <div class="send-ideas-on-market-modal__ideas d-flex flex-column gap-2 w-100">
+      <div
+        class="send-ideas-on-market-modal__ideas d-flex flex-column w-100 flex-wrap gap-2"
+      >
         <div
-          v-for="(idea, index) in noTeamIdeas"
+          v-for="(idea, index) in props.checkedIdeasMarket"
           :key="index"
           class="d-flex gap-2 w-100"
         >
-          <Typography class-name="text-primary w-100 border rounded p-2">
+          <Typography class-name="text-primary border rounded p-2 w-100">
             {{ idea.name }}
           </Typography>
         </div>
       </div>
 
       <Button
-        variant="primary"
+        variant="danger"
         @click="sendIdeasToMarket"
         :is-loading="isLoading"
       >

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
+import { useRoute, useRouter } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
@@ -13,7 +14,7 @@ import RolesTypes from '@Domain/Roles'
 
 import useUserStore from '@Store/user/userStore'
 
-import getRoles from '@Utils/getRoles'
+import { getUserRolesInfo, getRouteByUserRole } from '@Utils/userRolesInfo'
 
 defineProps<RoleModalProps>()
 
@@ -22,7 +23,10 @@ const emit = defineEmits<RoleModalEmits>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const userRoles = getRoles()
+const router = useRouter()
+const route = useRoute()
+
+const userRoles = getUserRolesInfo()
 
 function getTranslatedRole(currentRole: RolesTypes) {
   return userRoles.translatedRoles[currentRole]
@@ -30,6 +34,13 @@ function getTranslatedRole(currentRole: RolesTypes) {
 
 function handleChooseRole(currentRole: RolesTypes) {
   userStore.setRole(currentRole)
+
+  const requiredRouteRoles = route.meta?.roles ?? []
+
+  if (requiredRouteRoles.length && !requiredRouteRoles.includes(currentRole)) {
+    router.push(getRouteByUserRole(currentRole))
+  }
+
   emit('close-modal')
 }
 </script>

@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import IdeasTable from '@Components/Tables/IdeasTable/IdeasTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
+import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -48,9 +49,16 @@ watchImmediate(
 </script>
 
 <template>
-  <PageLayout content-class-name="ideas-page__content p-3 bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="ideas-page__content bg-white p-3"
+  >
     <template #leftSideBar>
       <LeftSideBar />
+    </template>
+
+    <template #header>
+      <Header></Header>
     </template>
 
     <template #content>
@@ -68,8 +76,6 @@ watchImmediate(
 <style lang="scss">
 .ideas-page {
   &__content {
-    overflow-y: scroll;
-
     @include flexible(stretch, flex-start, column);
   }
 }

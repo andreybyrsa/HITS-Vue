@@ -1,16 +1,16 @@
 import RolesTypes from '@Domain/Roles'
-import IdeaStatusTypes from '@Domain/IdeaStatus'
+import { IdeaStatusType } from '@Domain/Idea'
 
-import getStatus from '@Utils/getStatus'
+import { getIdeaStatus } from '@Utils/ideaStatus'
 
-const status = getStatus().status
+const status = getIdeaStatus().status
 
 interface ModeButtonsType {
   id: number
   text: string
 
   roles: RolesTypes[]
-  status: IdeaStatusTypes[]
+  status: IdeaStatusType[]
 }
 
 const modeButtons: ModeButtonsType[] = [

@@ -48,13 +48,6 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'],
   },
   {
-    id: 6,
-    text: 'Биржа идей',
-    to: '/market',
-    iconName: 'bi bi-basket3',
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
-  },
-  {
     id: 7,
     text: 'Админ панель',
     to: '/admin',

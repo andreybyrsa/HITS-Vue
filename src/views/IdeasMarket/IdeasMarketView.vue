@@ -13,19 +13,21 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import IdeaCardsPlaceholder from '@Views/IdeasMarket/IdeaCardsPlaceholder.vue'
 import IdeaCard from '@Views/IdeasMarket/IdeaCard.vue'
 
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket, IdeaMarketStatusType } from '@Domain/IdeaMarket'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import MarketService from '@Services/MarketsService'
+import { Market } from '@Domain/Market'
+import { useRoute } from 'vue-router'
 
 import Button from '@Components/Button/Button.vue'
 import SendToNextMarketModal from '@Components/Modals/SendToNextMarket/SendToNextMarketModal.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
-import IdeaMarketStatusTypes from '@Domain/MarketStatus'
 import getMarketStatus from '@Utils/getMarketStatus'
 
 const userStore = useUserStore()
@@ -35,12 +37,15 @@ const availableStatus = getMarketStatus()
 
 const ideasMarketStore = useIdeasMarketStore()
 
-const filterByIdeaMarketStatus = ref<IdeaMarketStatusTypes[]>([])
+const filterByIdeaMarketStatus = ref<IdeaMarketStatusType>()
 
 const notificationsStore = useNotificationsStore()
 
 const ideas = ref<IdeaMarket[]>([])
+const market = ref<Market>()
 const isAllIdeas = ref(true)
+
+const route = useRoute()
 
 const searchedValue = ref('')
 
@@ -49,6 +54,12 @@ const isOpenedRequestToIdeaModal = ref(false)
 const isOpenedSendToNextMarketModal = ref(false)
 
 const searchedIdeas = computed(() => {
+  if (filterByIdeaMarketStatus.value) {
+    return ideas.value.filter(
+      ({ status }) => status === filterByIdeaMarketStatus.value,
+    )
+  }
+
   if (!searchedValue.value) {
     return ideas.value
   }
@@ -68,7 +79,7 @@ const ideasMarketFilters: Filter<IdeaMarket>[] = [
       value: IdeasMarketStatus,
     })),
     refValue: filterByIdeaMarketStatus,
-    isUniqueChoice: false,
+    isUniqueChoice: true,
     checkFilter: checkIdeaMarketStatus,
   },
 ]
@@ -76,7 +87,7 @@ const ideasMarketFilters: Filter<IdeaMarket>[] = [
 onMounted(async () => getIdeasByRole())
 
 watch(
-  () => user.value?.role,
+  () => user.value?.role && route.params,
   async () => {
     if (isAllIdeas.value) getIdeasByRole()
   },
@@ -87,15 +98,29 @@ async function getIdeasByRole() {
 
   if (currentUser?.token && currentUser.role) {
     const { token, role } = currentUser
+    const marketId = route.params.marketId.toString()
 
     ideas.value = []
-    const response = await ideasMarketStore.getMarketIdeas(role, token)
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
+    const responseMarket = await MarketService.getMarket(marketId, token)
+    if (responseMarket instanceof Error) {
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        responseMarket.message,
+      )
+    }
+    market.value = responseMarket
+
+    const responseIdeas = await ideasMarketStore.getMarketIdeas(
+      marketId.toString(),
+      role,
+      token,
+    )
+    if (responseIdeas instanceof Error) {
+      return
     }
 
-    ideas.value = response
+    ideas.value = responseIdeas
   }
 }
 
@@ -150,16 +175,23 @@ function closeSendToNextMarketModal() {
 function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
   return ideaMarket.status === status
 }
+
+function findIdeaWithoutTeam(ideas: IdeaMarket[]) {
+  return ideas.filter(({ team }) => team === null)
+}
 </script>
 
 <template>
-  <PageLayout content-class-name="market-page__content p-3 bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="market-page__content p-3 bg-white"
+  >
     <template #leftSideBar>
       <LeftSideBar />
     </template>
 
     <template #content>
-      <Typography class-name="fs-2 text-primary w-75">Биржа идей</Typography>
+      <Typography class-name="fs-2 text-primary w-75">{{ market?.name }}</Typography>
 
       <div class="market-page__navigation nav nav-underline mb-3">
         <div
@@ -192,7 +224,8 @@ function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
         </div>
         <div>
           <Button
-            variant="primary"
+            v-if="user?.role === 'PROJECT_OFFICE' || user?.role === 'ADMIN'"
+            variant="danger"
             @click="openSendToNextMarketModal"
             >Закрыть биржу</Button
           >
@@ -201,12 +234,13 @@ function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
 
       <div class="idea-cards-filter">
         <div class="idea-cards row">
-          <template v-if="searchedIdeas">
+          <template v-if="searchedIdeas && market">
             <IdeaCard
               v-for="idea in searchedIdeas"
               :key="idea.id"
               :idea="idea"
               :is-all-ideas="isAllIdeas"
+              :market="market"
               v-model:ideas="searchedIdeas"
               @send-quick-request="openRequestToIdeaModal"
             />
@@ -229,7 +263,7 @@ function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
       />
 
       <SendToNextMarketModal
-        :checked-ideas-market="ideas"
+        :checked-ideas-market="findIdeaWithoutTeam(ideas)"
         :is-opened="isOpenedSendToNextMarketModal"
         @close-modal="closeSendToNextMarketModal"
       />

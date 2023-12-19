@@ -54,6 +54,7 @@ function openMarketInfo() {
   <MarketInfo
     v-else
     :idea-market="idea"
+    :market="market"
   />
 </template>
 

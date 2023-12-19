@@ -42,15 +42,15 @@ import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
-import { Idea } from '@Domain/Idea'
-import IdeaStatusTypes from '@Domain/IdeaStatus'
+import { Idea, IdeaStatusType } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
-import getStatus from '@Utils/getStatus'
-import getStatusStyle from '@Utils/getStatusStyle'
+import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 import mutableSort from '@Utils/mutableSort'
+import getFiltersByRoles from '@Utils/getFiltersByRoles'
+import IdeasService from '@Services/IdeasService'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -64,15 +64,18 @@ const ideaStore = useIdeasStore()
 const ideasData = ref<Idea[]>([])
 const checkedIdeas = ref<Idea[]>([])
 const sendingIdeasOnMarket = ref<Idea[]>([])
+const filtersByRoles = getFiltersByRoles()
 
-const availableStatus = getStatus()
+const availableStatus = getIdeaStatus()
 
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
-const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
+const filterByIdeaStatus = ref<IdeaStatusType[]>([])
 
 const isOpenSendIdeasModal = ref<boolean>(false)
+
+const filterByConfirmedExpert = ref<boolean>(true)
 
 watchImmediate(
   () => props.ideas,
@@ -95,7 +98,22 @@ const ideasTableHeader = computed<TableHeader>(() => ({
   ],
 }))
 
+watchImmediate(
+  () => user.value?.role,
+  (role) => {
+    if (role) {
+      filterByIdeaStatus.value = filtersByRoles.filter[role]
+      filterByConfirmedExpert.value = filtersByRoles.filterByExpert[role]
+    }
+  },
+)
+
 const ideaTableColumns: TableColumn<Idea>[] = [
+  {
+    key: 'checkedBy',
+    label: '',
+    getRowCellStyle: getCkeckedIdeaStyle,
+  },
   {
     key: 'name',
     label: 'Название',
@@ -106,7 +124,7 @@ const ideaTableColumns: TableColumn<Idea>[] = [
     key: 'status',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellStyle: getStatusStyle,
+    getRowCellStyle: getIdeaStatusStyle,
     getRowCellFormat: getTranslatedStatus,
   },
   {
@@ -182,8 +200,50 @@ const ideasFilters: Filter<Idea>[] = [
     refValue: filterByIdeaStatus,
     isUniqueChoice: false,
     checkFilter: checkIdeaStatus,
+    statement: () => true,
+  },
+  {
+    category: 'Экспертиза',
+    choices: [
+      {
+        label: 'Неутвержденные мною идеи',
+        value: true,
+      },
+    ],
+    refValue: filterByConfirmedExpert,
+    isUniqueChoice: false,
+    checkFilter: () => true,
+    statement: () => user.value?.role === 'EXPERT',
   },
 ]
+
+watchImmediate(filterByConfirmedExpert, async (value) => {
+  if (value) {
+    const currentUser = user.value
+
+    if (currentUser?.token) {
+      const { token } = currentUser
+
+      const response = await IdeasService.getExpertNotConfirmedRating(token)
+
+      if (response instanceof Error) {
+        return
+      }
+
+      ideasData.value = response
+    }
+  } else ideasData.value = props.ideas
+})
+
+function getCkeckedIdeaStyle(emails: string) {
+  const initialClass = ['text-secondary']
+  const emailUser = user.value?.email
+
+  if (emailUser && emails.includes(emailUser)) {
+    initialClass.splice(0, 1, 'text-success')
+    return initialClass
+  } else return initialClass
+}
 
 function sortByCreatedAt() {
   mutableSort(ideasData.value, (ideaData: Idea) =>
@@ -205,7 +265,7 @@ function sortByRating() {
   mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
 }
 
-function getTranslatedStatus(status: IdeaStatusTypes) {
+function getTranslatedStatus(status: IdeaStatusType) {
   return availableStatus.translatedStatus[status].toString()
 }
 

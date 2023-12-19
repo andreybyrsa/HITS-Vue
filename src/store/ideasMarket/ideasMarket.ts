@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 import RolesTypes from '@Domain/Roles'
-import IdeaMarketStatusTypes from '@Domain/MarketStatus'
+import { IdeaMarketStatusType } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
@@ -18,10 +18,11 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
 
   getters: {
     getMarketIdeas() {
-      return async (role: RolesTypes, token: string) => {
-        const currentServiceKey =
-          role === 'INITIATOR' ? 'getAllInitiatorMarketIdeas' : 'fetchIdeasMarket'
-        const response = await IdeasMarketService[currentServiceKey](token)
+      return async (marketId: string, role: RolesTypes, token: string) => {
+        const response =
+          role === 'INITIATOR'
+            ? await IdeasMarketService.getAllInitiatorMarketIdeas(token)
+            : await IdeasMarketService.fetchIdeasMarket(marketId, token)
 
         if (response instanceof Error) {
           return response
@@ -33,7 +34,12 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
     },
 
     getMarketIdea() {
-      return async (id: string, role: RolesTypes, token: string) => {
+      return async (
+        id: string,
+        marketId: string,
+        role: RolesTypes,
+        token: string,
+      ) => {
         const ideaMarket = await IdeasMarketService.getIdeaMarket(id, token)
 
         if (ideaMarket instanceof Error) {
@@ -51,7 +57,7 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
           })
         }
 
-        const ideasMarket = await this.getMarketIdeas(role, token)
+        const ideasMarket = await this.getMarketIdeas(marketId, role, token)
 
         if (ideasMarket instanceof Error) {
           useNotificationsStore().createSystemNotification(
@@ -72,7 +78,7 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
   actions: {
     async updateIdeaMarketStatus(
       id: string,
-      status: IdeaMarketStatusTypes,
+      status: IdeaMarketStatusType,
       token: string,
     ) {
       const response = await IdeasMarketService.updateIdeaMarketStatus(
@@ -84,19 +90,18 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const currentIdeaMarket = this.ideasMarket.find(
-          (ideaMarket) => ideaMarket.id === id,
-        )
-
-        if (currentIdeaMarket) {
-          currentIdeaMarket.status = status
-        }
+        this.ideasMarket.map((idea) => {
+          if (idea.id === id) {
+            idea.status = status
+          }
+        })
       }
     },
 
     async setIdeaMarketTeam(requestToIdea: RequestTeamToIdea, token: string) {
       const { ideaMarketId } = requestToIdea
       const response = await IdeasMarketService.postIdeaMarketTeam(
+        ideaMarketId,
         requestToIdea,
         token,
       )
@@ -104,13 +109,11 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const currentIdeaMarket = this.ideasMarket.find(
-          ({ id }) => id === ideaMarketId,
-        )
-
-        if (currentIdeaMarket) {
-          currentIdeaMarket.team = response
-        }
+        this.ideasMarket.map((idea) => {
+          if (idea.id === ideaMarketId) {
+            idea.team = response.team
+          }
+        })
       }
     },
 

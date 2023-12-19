@@ -9,8 +9,8 @@ interface Filter<DataType> {
   choices: FilterChoice[]
   refValue: Ref<FilterValue | FilterValue[] | undefined>
   searchValue?: Ref<string>
+  statement?: () => boolean
   checkFilter: (data: DataType, filter: FilterValue) => void
-  statement?: boolean
 }
 
 interface FilterBarProps<DataType> {

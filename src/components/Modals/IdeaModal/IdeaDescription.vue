@@ -8,6 +8,7 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Skills from '@Components/Skills/Skills.vue'
+
 import { Idea } from '@Domain/Idea'
 
 defineProps<IdeaDescriptionProps>()

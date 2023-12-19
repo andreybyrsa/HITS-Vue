@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia'
 import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import IdeaFormPlaceholder from '@Components/Forms/IdeaForm/IdeaFormPlaceholder.vue'
+import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -45,9 +46,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <PageLayout content-class-name="edit-idea-page__content">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="edit-idea-page__content"
+  >
     <template #leftSideBar>
       <LeftSideBar />
+    </template>
+
+    <template #header>
+      <Header></Header>
     </template>
 
     <template #content>

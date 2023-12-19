@@ -1,6 +1,6 @@
 import { Skill } from '@Domain/Skill'
 
-type RequestToIdeaStatus = 'NEW' | 'ACCEPTED' | 'CANCELED'
+type RequestToIdeaStatus = 'NEW' | 'ACCEPTED' | 'CANCELED' | 'ANNULLED' | 'WITHDRAWN'
 
 interface RequestTeamToIdea {
   ideaMarketId: string

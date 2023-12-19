@@ -49,8 +49,7 @@ import UsersGroupsService from '@Services/UsersGroupsService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import getRoles from '@Utils/getRoles'
-import getRolesStyle from '@Utils/getRolesStyle'
+import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils/userRolesInfo'
 
 const usersGroups = defineModel<UsersGroup[]>({ required: true })
 
@@ -65,7 +64,7 @@ const isOpenedCreatingGroupModal = ref(false)
 const isOpenedUpdatingGroupModal = ref(false)
 const isOpenedDeletingGroupModal = ref(false)
 
-const availableRoles = getRoles()
+const availableRoles = getUserRolesInfo()
 const rolesFilter = ref<RolesTypes[]>([])
 
 const usersGroupsTableHeader: TableHeader = {
@@ -92,7 +91,7 @@ const usersGroupsTableColumns: TableColumn<UsersGroup>[] = [
     key: 'roles',
     label: 'Роли',
     size: 'col-5',
-    getRowCellStyle: getRolesStyle,
+    getRowCellStyle: getUserRoleInfoStyle,
     getRowCellFormat: getGroupRolesFormat,
   },
 ]
@@ -121,6 +120,7 @@ const usersGroupsFilters: Filter<UsersGroup>[] = [
     refValue: rolesFilter,
     isUniqueChoice: false,
     checkFilter: checkUsersGroupRoles,
+    statement: () => true,
   },
 ]
 

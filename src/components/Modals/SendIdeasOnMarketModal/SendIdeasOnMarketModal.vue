@@ -16,8 +16,7 @@ import Validation from '@Utils/Validation'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { Idea } from '@Domain/Idea'
-import IdeaMarket from '@Domain/IdeaMarket'
-import { Market } from '@Domain/Market'
+import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
 import MarketsService from '@Services/MarketsService'
@@ -25,6 +24,7 @@ import MarketsService from '@Services/MarketsService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import { Market } from '@Domain/Market'
 
 const props = defineProps<SendIdeasOnMarketModalProps>()
 const emit = defineEmits<SendIdeasOnMarketModalEmits>()
@@ -40,22 +40,22 @@ const checkedIdeas = ref<Idea[]>([])
 
 const isLoading = ref(false)
 
-const markets = ref<Market[]>([])
-const marketsNames = computed(() => markets.value.map((market) => market.name))
+const marketsActive = ref<Market[]>([])
+const selectedMarketActive = ref<Market>()
 
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { id } = currentUser
+    const { token } = currentUser
 
-    const response = await MarketsService.fetchMarkets(id)
+    const response = await MarketsService.getAllActiveMarkets(token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    markets.value = response
+    marketsActive.value = response
   }
 })
 
@@ -76,24 +76,18 @@ const { handleSubmit } = useForm({
 
 const sendIdeasToMarket = handleSubmit(async () => {
   const currentUser = user.value
+  const currentMarket = selectedMarketActive.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && currentMarket) {
     const { token } = currentUser
-
-    const ideasMarket: IdeaMarket[] = checkedIdeas.value.map((idea) => {
-      return {
-        ...idea,
-        position: 0,
-        status: 'RECRUITMENT_IS_OPEN',
-        requests: 0,
-        acceptedRequests: 0,
-        isFavorite: false,
-        market: {},
-      } as unknown as IdeaMarket
-    })
-
+    const { id } = currentMarket
     isLoading.value = true
-    const response = await IdeasMarketService.sendIdeaOnMarket(ideasMarket, token)
+
+    const response = await IdeasMarketService.sendIdeaOnMarket(
+      id,
+      checkedIdeas.value,
+      token,
+    )
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -136,10 +130,12 @@ function deleteIdea(ideaId: string) {
 
       <div class="w-100">
         <Combobox
-          name="sendToIdeasMarket"
+          name="marketToSend"
           label="Биржа*"
-          :options="marketsNames"
+          :options="marketsActive"
+          :displayBy="(['name'] as never)"
           placeholder="Выберите биржу"
+          v-model="selectedMarketActive"
         />
       </div>
 
