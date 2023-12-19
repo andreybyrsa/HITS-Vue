@@ -1,7 +1,14 @@
 <template>
-  <PageLayout content-class-name="users-groups-page__content p-3 bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="p-3 bg-white"
+  >
     <template #leftSideBar>
       <LeftSideBar />
+    </template>
+
+    <template #header>
+      <Header></Header>
     </template>
 
     <template #content>
@@ -23,6 +30,7 @@ import { storeToRefs } from 'pinia'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import UsersGroupsTable from '@Components/Tables/UsersGroupsTable/UsersGroupsTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
+import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -57,11 +65,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style lang="scss">
-.users-groups-page {
-  &__content {
-    overflow-y: scroll;
-  }
-}
-</style>
