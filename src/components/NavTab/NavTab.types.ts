@@ -1,7 +1,7 @@
 import RolesTypes from '@Domain/Roles'
 
 interface NavRoute {
-  id: number
+  name: string
   to: string
   text: string
   iconName: string

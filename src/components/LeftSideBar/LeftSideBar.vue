@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, VueElement } from 'vue'
+import { onMounted, ref, VueElement } from 'vue'
 import { watchImmediate, useElementHover } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -17,11 +17,17 @@ import RolesTypes from '@Domain/Roles'
 import useUserStore from '@Store/user/userStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
+import MarketService from '@Services/MarketService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const notificationsStore = useNotificationsStore()
+
 const router = useRouter()
+
+const tabs = ref(LeftSideBarTabs)
 
 const isOpenedRoleModal = ref(false)
 const isOpenedNotificationsModal = ref(false)
@@ -33,6 +39,41 @@ const LeftSideBarClassName = ref<string[]>()
 
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
+})
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, role } = currentUser
+    const index = tabs.value.findIndex(({ name }) => name === 'markets')
+
+    const response = await MarketService.getAllActiveMarkets(token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    if (
+      role !== 'ADMIN' &&
+      role !== 'PROJECT_OFFICE' &&
+      response.length === 0 &&
+      index !== -1
+    ) {
+      tabs.value.splice(index, 1)
+    } else if (index !== -1) {
+      response.forEach(({ id, name }) => {
+        const tab: LeftSideBarTabType = {
+          name: `market-${id}`,
+          text: name,
+          roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+          iconName: 'bi bi-basket3',
+          to: `/market/${id}`,
+        }
+        tabs.value[index].routes?.push(tab)
+      })
+    }
+  }
 })
 
 watchImmediate(isHovered, (value, prevValue) => {
@@ -85,8 +126,8 @@ function handleCloseNotificationModal() {
   >
     <ul class="left-side-bar__content nav nav-pills w-100 gap-2">
       <template
-        v-for="tab in LeftSideBarTabs"
-        :key="tab.id"
+        v-for="(tab, index) in tabs"
+        :key="index"
       >
         <NavTab
           v-if="checkUserRole(tab)"
