@@ -17,7 +17,7 @@
   <ConfirmModal
     :is-opened="isOpenedAcceptModal"
     text-button="Принять заявку"
-    text-question="Вы действительно хотите принять заявку?"
+    text-question="Команду можно выбрать только один раз"
     @close-modal="closeAcceptModal"
     @action="acceptRequestToIdea(currentRequestToIdea)"
   />
@@ -25,7 +25,7 @@
   <ConfirmModal
     :is-opened="isOpenedCancelModal"
     text-button="Отклонить заявку"
-    text-question="Вы действительно хотите отклонить заявку?"
+    text-question="Эта команда больше не сможет подать заявку"
     @close-modal="closeCancelModal"
     @action="cancelRequestToIdea(currentRequestToIdea)"
   />
@@ -44,18 +44,18 @@ import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
 
-import getSkillStyle from '@Utils/getSkillsStyle'
-
+import { Skill } from '@Domain/Skill'
 import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
 
 import useUserStore from '@Store/user/userStore'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
 import mutableSort from '@Utils/mutableSort'
-import { Skill } from '@Domain/Skill'
+import { getSkillInfoStyle } from '@Utils/skillsInfo'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const props = defineProps<RequestsToIdeaTableProps>()
-const skillsRequestTeam = defineModel<RequestTeamToIdea[]>()
+const selectedTeam = defineModel<RequestTeamToIdea[]>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -82,7 +82,9 @@ watchImmediate(
 
 watchImmediate(
   () => selectedRequest.value,
-  () => (skillsRequestTeam.value = selectedRequest.value),
+  () => {
+    selectedTeam.value = selectedRequest.value
+  },
 )
 
 const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
@@ -96,15 +98,14 @@ const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
   {
     key: 'status',
     label: 'Статус',
-    size: 'col-1',
-    contentClassName: 'justify-content-center align-items-center text-center',
+    size: 'col-3',
+    contentClassName: 'justify-content-start align-items-center',
     getRowCellFormat: getStatusFormat,
     getRowCellStyle: getStatusStyle,
   },
   {
     key: 'membersCount',
     label: 'Участники',
-    size: 'col-1',
     contentClassName: 'justify-content-center align-items-center text-center',
     headerCellClick: sortByMembersCount,
   },
@@ -113,15 +114,10 @@ const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
     label: 'Кометенции',
     size: 'col-4',
     contentClassName: 'justify-content-center align-items-center',
-    getRowCellStyle: getSkillStyle,
+    getRowCellStyle: getSkillsStyle,
     getRowCellFormat: getSkillsFormat,
   },
 ]
-
-function getSkillsFormat(skills: Skill[], index: number) {
-  const currentSkill = skills[index]
-  return currentSkill.name
-}
 
 const dropdownRequestActions: DropdownMenuAction<RequestTeamToIdea>[] = [
   {
@@ -146,6 +142,11 @@ const dropdownRequestActions: DropdownMenuAction<RequestTeamToIdea>[] = [
   },
 ]
 
+function getSkillsFormat(skills: Skill[], index: number) {
+  const currentSkill = skills[index]
+  return currentSkill.name
+}
+
 function getStatusFormat(status: RequestToIdeaStatus) {
   if (status === 'NEW') {
     return 'Новая'
@@ -158,6 +159,28 @@ function getStatusFormat(status: RequestToIdeaStatus) {
   if (status === 'CANCELED') {
     return 'Отклонена'
   }
+
+  if (status === 'ANNULLED') {
+    return 'Аннулирована'
+  }
+
+  if (status === 'WITHDRAWN') {
+    return 'Отозвана'
+  }
+}
+
+function getSkillsStyle(skills: Skill[], index: number) {
+  const { type } = skills[index]
+  const skillTypeClass = getSkillInfoStyle(type)
+
+  return [
+    'px-2',
+    'py-1',
+    'rounded',
+    'text-center',
+    'align-self-start',
+    ...skillTypeClass,
+  ]
 }
 
 function getStatusStyle(status: RequestToIdeaStatus) {
@@ -173,8 +196,18 @@ function getStatusStyle(status: RequestToIdeaStatus) {
     return initialClass
   }
 
+  if (status === 'ANNULLED') {
+    initialClass.push('bg-secondary-subtle', 'text-secondary')
+    return initialClass
+  }
+
   if (status === 'CANCELED') {
     initialClass.push('bg-danger-subtle', 'text-danger')
+    return initialClass
+  }
+
+  if (status === 'WITHDRAWN') {
+    initialClass.push('bg-warning-subtle', 'text-warning')
     return initialClass
   }
 }
@@ -231,8 +264,9 @@ async function cancelRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
 
   if (currentUser?.token && requestToIdea) {
     const { token } = currentUser
+    const { id } = requestToIdea
 
-    await requestsToIdeaStore.cancelRequestToIdea(requestToIdea, token)
+    await requestsToIdeaStore.updateRequestToIdea(id, 'CANCELED', token)
   }
 }
 

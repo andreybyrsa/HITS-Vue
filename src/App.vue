@@ -118,6 +118,10 @@ p {
   @include flexible(center, center);
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 input[type='checkbox'] {
   cursor: pointer;
 

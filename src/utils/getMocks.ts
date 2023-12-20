@@ -3,12 +3,9 @@ import Profile from '@Domain/Profile'
 import UsersGroup from '@Domain/UsersGroup'
 import Company from '@Domain/Company'
 import UsersSkills from '@Domain/UsersSkills'
-
 import { Skill } from '@Domain/Skill'
-
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Comment from '@Domain/Comment'
-
 import {
   RequestToTeam,
   Team,
@@ -16,9 +13,9 @@ import {
   TeamMember,
   TeamSkills,
 } from '@Domain/Team'
-
 import Notification from '@Domain/Notification'
-import IdeaMarket from '@Domain/IdeaMarket'
+import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
+import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 interface Mocks {
@@ -27,40 +24,37 @@ interface Mocks {
   profiles: Profile[]
   usersGroups: UsersGroup[]
   usersSkills: UsersSkills[]
-
   companies: Company[]
-
+  market: Market[]
   skills: Skill[]
-
   ideas: Idea[]
   ideasSkills: IdeaSkills[]
   ideasMarket: IdeaMarket[]
+  ideaMarketAdvertisements: IdeaMarketAdvertisement[]
+
   ratings: Rating[]
   comments: Comment[]
-
   teams: Team[]
   teamMembers: TeamMember[]
   teamInvitations: TeamInvitation[]
   requestsToTeam: RequestToTeam[]
   RequestTeams: RequestTeamToIdea[]
   teamSkills: TeamSkills[]
-
   notifications: Notification[]
 }
-
 function getMocks(): Mocks {
   const users: User[] = [
     {
-      id: '0',
+      id: '277922d4-e08a-430b-9b94-949dc32681b4',
       token: '10296538',
-      email: 'admin@mail.com',
-      firstName: 'Админ',
-      lastName: 'Админ',
+      email: 'kirill.vlasov.05@inbox.ru',
+      firstName: 'Кирилл',
+      lastName: 'Власов',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     },
     {
       id: '1',
-      token: '613098',
+      token: '1',
       email: '1@mail.com',
       firstName: 'Иван',
       lastName: 'Иванович',
@@ -107,7 +101,6 @@ function getMocks(): Mocks {
     //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     // },
   ]
-
   const skills: Skill[] = [
     {
       id: '0',
@@ -230,7 +223,6 @@ function getMocks(): Mocks {
       confirmed: true,
     },
   ]
-
   const teamMembers: TeamMember[] = [
     {
       id: '0',
@@ -269,11 +261,10 @@ function getMocks(): Mocks {
       skills: [],
     },
   ]
-
   const teams: Team[] = [
     {
       id: '0',
-      name: 'Лидер',
+      name: 'Чемпионы',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
       description:
@@ -284,6 +275,7 @@ function getMocks(): Mocks {
       members: [...teamMembers],
       skills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
+      isRefused: false,
     },
     {
       id: '4',
@@ -298,6 +290,7 @@ function getMocks(): Mocks {
       members: [teamMembers[0], teamMembers[2]],
       skills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
+      isRefused: false,
     },
     {
       id: '5',
@@ -312,6 +305,7 @@ function getMocks(): Mocks {
       members: [teamMembers[0], teamMembers[2]],
       skills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
+      isRefused: false,
     },
     {
       id: '6',
@@ -326,6 +320,7 @@ function getMocks(): Mocks {
       members: [teamMembers[0], teamMembers[2]],
       skills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
+      isRefused: false,
     },
     {
       id: '7',
@@ -340,6 +335,7 @@ function getMocks(): Mocks {
       members: [teamMembers[0], teamMembers[2]],
       skills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
+      isRefused: false,
     },
     {
       id: '1',
@@ -381,6 +377,7 @@ function getMocks(): Mocks {
         skills[12],
         skills[13],
       ],
+      isRefused: false,
     },
     {
       id: '2',
@@ -395,52 +392,13 @@ function getMocks(): Mocks {
       members: [teamMembers[1], teamMembers[2]],
       skills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
       wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
+      isRefused: false,
     },
   ]
-
   const ideasMarket: IdeaMarket[] = [
     {
-      id: '1',
-      position: 1,
-      name: 'Создать электрический самолет',
-      initiator: users[2],
-      problem:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      solution:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      result:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      description:
-        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      team: null,
-      stack: [
-        skills[0],
-        skills[2],
-        skills[3],
-        skills[6],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-        skills[12],
-        skills[14],
-        skills[15],
-        skills[16],
-        skills[17],
-        skills[18],
-      ],
-      customer: 'ВШЦТ',
-      createdAt: '2023-10-21T11:02:17Z',
-      maxTeamSize: 10,
-      status: 'RECRUITMENT_IS_OPEN',
-      requests: 111,
-      acceptedRequests: 4,
-      isFavorite: false,
-      startDate: '2023-10-20T11:02:17Z',
-      finishDate: '2024-01-20T11:02:17Z',
-    },
-    {
       id: '2',
+      marketId: '201',
       position: 2,
       name: 'Создать машину времени',
       initiator: users[0],
@@ -452,7 +410,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
         'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
-      team: teams[0],
+      team: null,
       stack: [
         skills[0],
         skills[2],
@@ -476,13 +434,51 @@ function getMocks(): Mocks {
       requests: 222,
       acceptedRequests: 5,
       isFavorite: false,
-      startDate: '2023-10-20T11:02:17Z',
-      finishDate: '2024-01-20T11:02:17Z',
     },
     {
       id: '3',
+      marketId: '201',
       position: 3,
-      name: 'Создать киборга',
+      name: 'Реактор',
+      initiator: users[0],
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
+      team: null,
+      stack: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+        skills[12],
+        skills[14],
+        skills[15],
+        skills[16],
+        skills[17],
+        skills[18],
+      ],
+      customer: 'ВШЦТ',
+      createdAt: '2023-10-21T11:02:17Z',
+      maxTeamSize: 10,
+      status: 'RECRUITMENT_IS_OPEN',
+      requests: 222,
+      acceptedRequests: 5,
+      isFavorite: false,
+    },
+    {
+      id: '3',
+      marketId: '201',
+      position: 3,
+      name: 'Карандаш',
       initiator: users[1],
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -491,23 +487,65 @@ function getMocks(): Mocks {
       result:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       description:
-        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики...',
-      team: teams[1],
-      stack: [skills[1], skills[2], skills[4], skills[9], skills[10]],
+        'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
+      team: null,
+      stack: [
+        skills[0],
+        skills[2],
+        skills[3],
+        skills[6],
+        skills[7],
+        skills[8],
+        skills[9],
+        skills[11],
+        skills[12],
+        skills[14],
+        skills[15],
+        skills[16],
+        skills[17],
+        skills[18],
+      ],
       customer: 'ВШЦТ',
       createdAt: '2023-10-21T11:02:17Z',
       maxTeamSize: 10,
       status: 'RECRUITMENT_IS_OPEN',
-      requests: 0,
-      acceptedRequests: 0,
+      requests: 222,
+      acceptedRequests: 5,
       isFavorite: false,
-      startDate: '2023-10-20T11:02:17Z',
-      finishDate: '2024-01-20T11:02:17Z',
     },
   ]
 
+  const market: Market[] = [
+    {
+      id: '200',
+      name: 'Летняя биржа 2023',
+      startDate: '2023-10-25T11:02:17Z',
+      finishDate: '2023-10-25T11:02:17Z',
+      status: 'DONE',
+    },
+    {
+      id: '201',
+      name: 'Осенняя биржа 2023',
+      startDate: '2023-10-25T11:02:17Z',
+      finishDate: '2023-10-25T11:02:17Z',
+      status: 'ACTIVE',
+    },
+    {
+      id: '202',
+      name: 'Зимняя биржа 2024',
+      startDate: '2023-10-25T11:02:17Z',
+      finishDate: '2023-10-25T11:02:17Z',
+      status: 'NEW',
+    },
+    {
+      id: '203',
+      name: 'Весенняя биржа 2024',
+      startDate: '2023-10-25T11:02:17Z',
+      finishDate: '2023-10-25T11:02:17Z',
+      status: 'NEW',
+    },
+  ]
   const usersEmails: string[] = users.map((user) => user.email)
-
   const usersSkills: UsersSkills[] = [
     {
       idUsers: '0',
@@ -536,6 +574,36 @@ function getMocks(): Mocks {
     {
       idUsers: '6',
       skills: [skills[2], skills[2], skills[7], skills[11]],
+    },
+  ]
+
+  const ideaMarketAdvertisements: IdeaMarketAdvertisement[] = [
+    {
+      id: '0',
+      ideaMarketId: ideasMarket[0].id,
+      createdAt: '2023-03-11T11:02:17Z',
+
+      text: 'Для выполнения данной идеи требуются только бекендеры!',
+      sender: users[2],
+      checkedBy: [users[2].email],
+    },
+    {
+      id: '1',
+      ideaMarketId: ideasMarket[0].id,
+      createdAt: '2023-03-12T11:02:17Z',
+
+      text: 'Скоро набор закроется, быстрее подавайте заявки!',
+      sender: users[2],
+      checkedBy: [users[2].email],
+    },
+    {
+      id: '2',
+      ideaMarketId: ideasMarket[1].id,
+      createdAt: '2023-03-18T11:02:17Z',
+
+      text: 'Требуются фронтендеры, бекендеры и желающие научиться новым компетенциям.',
+      sender: users[0],
+      checkedBy: [users[0].email],
     },
   ]
 
@@ -578,7 +646,6 @@ function getMocks(): Mocks {
       ],
     },
   ]
-
   const teamInvitations: TeamInvitation[] = [
     {
       id: '0',
@@ -646,7 +713,6 @@ function getMocks(): Mocks {
       lastName: 'Байрамов',
     },
   ]
-
   const usersGroups: UsersGroup[] = [
     {
       id: '0',
@@ -661,13 +727,11 @@ function getMocks(): Mocks {
       roles: ['ADMIN', 'EXPERT'],
     },
   ]
-
   const comments: Comment[] = [
     {
       id: '0',
       ideaId: '0',
       createdAt: '2023-10-20T11:02:17Z',
-
       senderEmail: 'andrey@mail.com',
       text: 'Комментарий 1',
       checkedBy: [],
@@ -676,7 +740,6 @@ function getMocks(): Mocks {
       id: '1',
       ideaId: '0',
       createdAt: '2023-10-21T11:02:17Z',
-
       senderEmail: 'timyr@mail.com',
       text: 'Комментарий 2',
       checkedBy: ['0', '1'],
@@ -685,7 +748,6 @@ function getMocks(): Mocks {
       id: '2',
       ideaId: '1',
       createdAt: '2023-10-21T11:02:17Z',
-
       senderEmail: 'kirill.vlasov.05@inbox.ru',
       text: 'Требуются Frontend разработчики!',
       checkedBy: [],
@@ -694,7 +756,6 @@ function getMocks(): Mocks {
       id: '2',
       ideaId: '2',
       createdAt: '2023-10-21T11:02:17Z',
-
       senderEmail: 'kirill.vlasov.05@inbox.ru',
       text: 'Скоро закроется набор!',
       checkedBy: [],
@@ -704,38 +765,44 @@ function getMocks(): Mocks {
     {
       id: '0',
       ideaId: '0',
-      expertId: '0',
+      expertId: users[0].id,
+      expertFirstName: users[0].firstName,
+      expertLastName: users[0].lastName,
       budget: 1,
       technicalRealizability: null,
       suitability: 2,
       rating: 8 / 5,
       originality: 3,
       marketValue: 1,
-      confirmed: false,
+      isConfirmed: false,
     },
     {
       id: '1',
       ideaId: '0',
-      expertId: '1',
+      expertId: users[1].id,
+      expertFirstName: users[1].firstName,
+      expertLastName: users[1].lastName,
       budget: 2,
       technicalRealizability: 4,
       suitability: 5,
       rating: 14 / 5,
       originality: 1,
       marketValue: 2,
-      confirmed: true,
+      isConfirmed: true,
     },
     {
       id: '2',
       ideaId: '1',
-      expertId: '2',
+      expertId: users[0].id,
+      expertFirstName: users[0].firstName,
+      expertLastName: users[0].lastName,
       budget: 1,
       technicalRealizability: 1,
       suitability: 5,
       rating: null,
       originality: null,
       marketValue: null,
-      confirmed: false,
+      isConfirmed: false,
     },
   ]
   const ideas: Idea[] = [
@@ -764,11 +831,12 @@ function getMocks(): Mocks {
       suitability: 1,
       preAssessment: 1,
       rating: null,
+      checkedBy: [users[0].email],
     },
     {
       id: '1',
       initiatorEmail: '1@mail.com',
-      name: 'Реактор железного человека',
+      name: 'Моя новая идея',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -779,7 +847,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       createdAt: '2023-10-24T11:02:17Z',
       modifiedAt: '2023-10-25T11:02:17Z',
-      status: 'NEW',
+      status: 'ON_APPROVAL',
       maxTeamSize: 4,
       minTeamSize: 3,
       customer: 'ВШЦТ',
@@ -790,6 +858,7 @@ function getMocks(): Mocks {
       suitability: 3,
       preAssessment: 4,
       rating: 2,
+      checkedBy: [users[0].email],
     },
     {
       id: '2',
@@ -816,11 +885,40 @@ function getMocks(): Mocks {
       suitability: 3,
       preAssessment: 4,
       rating: 4,
+      checkedBy: [users[0].email],
     },
     {
       id: '3',
       initiatorEmail: '3@mail.com',
       name: 'Раскладушка',
+      problem:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      solution:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      result:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
+      createdAt: '2023-10-25T11:02:17Z',
+      modifiedAt: '2023-10-25T11:02:17Z',
+      status: 'CONFIRMED',
+      maxTeamSize: 5,
+      minTeamSize: 5,
+      customer: 'ВШЦТ',
+      contactPerson: 'ВШЦТ',
+      experts: null,
+      projectOffice: null,
+      budget: 4,
+      suitability: 3,
+      preAssessment: 4,
+      rating: 4,
+      checkedBy: [users[0].email],
+    },
+    {
+      id: '7',
+      checkedBy: ['admin@mail.com', '3@mail.com'],
+      initiatorEmail: '3@mail.com',
+      name: 'Земляника',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       solution:
@@ -857,7 +955,7 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       createdAt: '2023-10-25T11:02:17Z',
       modifiedAt: '2023-10-25T11:02:17Z',
-      status: 'CONFIRMED',
+      status: 'ON_MARKET',
       maxTeamSize: 5,
       minTeamSize: 5,
       customer: 'ВШЦТ',
@@ -868,8 +966,10 @@ function getMocks(): Mocks {
       suitability: 3,
       preAssessment: 4,
       rating: 4,
+      checkedBy: [users[0].email],
     },
   ]
+
   const ideasSkills: IdeaSkills[] = [
     { ideaId: '0', skills: [...skills] },
     {
@@ -881,7 +981,6 @@ function getMocks(): Mocks {
       skills: [...skills],
     },
   ]
-
   const profiles: Profile[] = [
     {
       ...users[0],
@@ -950,7 +1049,6 @@ function getMocks(): Mocks {
       ],
     },
   ]
-
   const notifications: Notification[] = [
     {
       id: '0',
@@ -993,14 +1091,12 @@ function getMocks(): Mocks {
       createdAt: '2023-10-30T11:02:17Z',
     },
   ]
-
   const RequestTeams: RequestTeamToIdea[] = [
     {
-      id: '0',
-      ideaMarketId: '1',
+      id: '2',
+      ideaMarketId: '2',
       teamId: '0',
       status: 'NEW',
-
       name: 'Первые разрабы мира',
       membersCount: 4,
       skills: [
@@ -1018,15 +1114,15 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
     {
-      id: '1',
-      ideaMarketId: '1',
+      id: '3',
+      ideaMarketId: '3',
+      teamId: '0',
       status: 'NEW',
-      teamId: '1',
 
-      name: 'Программисты из apple',
+      name: 'Чемпионы',
       membersCount: 4,
       skills: [
-        skills[3],
+        skills[0],
         skills[4],
         skills[6],
         skills[7],
@@ -1043,7 +1139,6 @@ function getMocks(): Mocks {
       ideaMarketId: '1',
       status: 'NEW',
       teamId: '2',
-
       name: 'Удальцы',
       membersCount: 4,
       skills: [
@@ -1065,7 +1160,6 @@ function getMocks(): Mocks {
       ideaMarketId: '1',
       status: 'NEW',
       teamId: '3',
-
       name: 'Молодцы',
       membersCount: 4,
       skills: [
@@ -1087,7 +1181,6 @@ function getMocks(): Mocks {
       ideaMarketId: '2',
       status: 'NEW',
       teamId: '4',
-
       name: 'Хорошая компания',
       membersCount: 4,
       skills: [
@@ -1109,7 +1202,6 @@ function getMocks(): Mocks {
       ideaMarketId: '2',
       status: 'NEW',
       teamId: '5',
-
       name: 'Негатив',
       membersCount: 4,
       skills: [
@@ -1131,7 +1223,6 @@ function getMocks(): Mocks {
       ideaMarketId: '2',
       status: 'NEW',
       teamId: '6',
-
       name: 'Позитив',
       membersCount: 4,
       skills: [
@@ -1153,7 +1244,6 @@ function getMocks(): Mocks {
       ideaMarketId: '2',
       status: 'NEW',
       teamId: '13',
-
       name: 'Смешарики',
       membersCount: 4,
       skills: [
@@ -1171,7 +1261,6 @@ function getMocks(): Mocks {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
     },
   ]
-
   const companies: Company[] = [
     {
       id: '0',
@@ -1192,17 +1281,17 @@ function getMocks(): Mocks {
       users: [users[1]],
     },
   ]
-
   return {
     users,
     usersEmails,
     profiles,
+    market,
     skills,
     usersSkills,
     teamSkills,
+    ideaMarketAdvertisements,
     usersGroups,
     companies,
-
     ideas,
     ideasSkills,
     ideasMarket,
@@ -1214,7 +1303,6 @@ function getMocks(): Mocks {
     requestsToTeam,
     RequestTeams,
     teamInvitations,
-
     notifications,
   }
 }

@@ -18,7 +18,7 @@ function setIdeaRating(ideaRating: Rating, newRating: Rating) {
     technicalRealizability,
     suitability,
     budget,
-    confirmed,
+    isConfirmed,
   } = newRating
 
   ideaRating.rating = rating
@@ -27,7 +27,7 @@ function setIdeaRating(ideaRating: Rating, newRating: Rating) {
   ideaRating.technicalRealizability = technicalRealizability
   ideaRating.suitability = suitability
   ideaRating.budget = budget
-  ideaRating.confirmed = confirmed
+  ideaRating.isConfirmed = isConfirmed
 }
 
 const useRatingsStore = defineStore('ratings', {
@@ -96,11 +96,13 @@ const useRatingsStore = defineStore('ratings', {
         )
 
         if (currentRating) {
-          setIdeaRating(currentRating, { ...rating, confirmed: true })
+          setIdeaRating(currentRating, { ...rating, isConfirmed: true })
         }
 
         if (
-          currentIdeaRatings?.ideaRatings.every((ideaRating) => ideaRating.confirmed)
+          currentIdeaRatings?.ideaRatings.every(
+            (ideaRating) => ideaRating.isConfirmed,
+          )
         ) {
           const ideaRatingsSum = currentIdeaRatings.ideaRatings.reduce(
             (prevSum, ideaRating) =>

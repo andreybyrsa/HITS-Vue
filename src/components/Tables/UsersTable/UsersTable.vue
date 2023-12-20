@@ -1,5 +1,6 @@
 <template>
   <Table
+    :header="usersTableHeader"
     :columns="usersTableColumns"
     :data="users"
     :search-by="['email', 'firstName', 'lastName']"
@@ -19,23 +20,32 @@
 import { ref } from 'vue'
 
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
-import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
+import {
+  DropdownMenuAction,
+  TableColumn,
+  TableHeader,
+} from '@Components/Table/Table.types'
 import Table from '@Components/Table/Table.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 
 import { User } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
-import getRoles from '@Utils/getRoles'
-import getRolesStyle from '@Utils/getRolesStyle'
+import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils/userRolesInfo'
 
 const users = defineModel<User[]>({ required: true })
 
 const rolesFilter = ref<RolesTypes[]>([])
-const availableRoles = getRoles()
 
 const updatingUser = ref<User | null>(null)
 const isOpenedUpdatingUserModal = ref(false)
+
+const availableRoles = getUserRolesInfo()
+
+const usersTableHeader: TableHeader = {
+  label: 'Список пользователей',
+  countData: true,
+}
 
 const usersTableColumns: TableColumn<User>[] = [
   {
@@ -56,7 +66,7 @@ const usersTableColumns: TableColumn<User>[] = [
     key: 'roles',
     label: 'Роли',
     size: 'col-5',
-    getRowCellStyle: getRolesStyle,
+    getRowCellStyle: getUserRoleInfoStyle,
     getRowCellFormat: getUserRolesFormat,
   },
 ]
@@ -71,15 +81,14 @@ const dropdownUsersActions: DropdownMenuAction<User>[] = [
 const usersFilters: Filter<User>[] = [
   {
     category: 'Роли',
-    choices: [
-      { label: 'Инициатор', value: 'INITIATOR' },
-      { label: 'Проектный офис', value: 'PROJECT_OFFICE' },
-      { label: 'Эксперт', value: 'EXPERT' },
-      { label: 'Админ', value: 'ADMIN' },
-    ],
+    choices: availableRoles.roles.map((role) => ({
+      label: availableRoles.translatedRoles[role],
+      value: role,
+    })),
     refValue: rolesFilter,
     isUniqueChoice: false,
     checkFilter: checkUserRoles,
+    statement: () => true,
   },
 ]
 

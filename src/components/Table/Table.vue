@@ -14,16 +14,28 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 const props = defineProps<TableProps<DataType>>()
 
 const data = ref<DataType[]>([]) as Ref<DataType[]>
-const searchedData = computed(() => searchDataByKeys())
 const checkedData = defineModel<DataType[]>({
   default: [],
   required: false,
   local: true,
 }) as Ref<DataType[]>
+
+const searchedData = computed(() => searchDataByKeys())
+const tableLabel = computed(() => {
+  const label = props.header?.label
+  const countData = props.header?.countData
+
+  if (countData) {
+    return `${label}: ${searchedData.value.length}`
+  }
+
+  return label
+})
 
 const searchedValue = ref('')
 const filtersRefs = ref<Ref<FilterValue | FilterValue[] | undefined>[]>([])
@@ -187,11 +199,42 @@ function checkDropdownActionStatement(
   }
   return true
 }
+
+function checkHeaderButtonStatement(statement?: boolean) {
+  return statement !== undefined ? statement : true
+}
 </script>
 
 <template>
-  <div class="w-100">
-    <div class="bg-white py-2 d-flex justify-content-between">
+  <div class="w-100 bg-white">
+    <div
+      v-if="header"
+      class="table__header w-100"
+    >
+      <Typography class-name="fs-2 text-primary">{{ tableLabel }}</Typography>
+
+      <div
+        v-if="header.buttons"
+        class="d-flex gap-3"
+      >
+        <template
+          v-for="(headerButton, index) in header.buttons"
+          :key="index"
+        >
+          <Button
+            v-if="checkHeaderButtonStatement(headerButton.statement)"
+            :variant="headerButton.variant"
+            :prepend-icon-name="headerButton.prependIconName"
+            :append-icon-name="headerButton.appendIconName"
+            @click="headerButton.click"
+          >
+            {{ headerButton.label }}
+          </Button>
+        </template>
+      </div>
+    </div>
+
+    <div class="py-2 d-flex justify-content-between">
       <div
         v-if="searchBy"
         class="w-50"
@@ -283,7 +326,7 @@ function checkDropdownActionStatement(
               <td
                 v-for="column in columns"
                 :key="column.key"
-                class="py-3 col"
+                class="py-3 col align-self-center"
               >
                 <div
                   :class="`${column.contentClassName ?? ''} flex-wrap d-flex gap-1`"
@@ -300,16 +343,17 @@ function checkDropdownActionStatement(
                         )
                       "
                     >
-                      {{
-                        getRowCellFormat(
-                          row[column.key],
-                          column.getRowCellFormat,
-                          +index.toString(),
-                        )
-                      }}
+                      <div v-if="column.key != 'checkedBy'">
+                        {{
+                          getRowCellFormat(
+                            row[column.key],
+                            column.getRowCellFormat,
+                            +index.toString(),
+                          )
+                        }}
+                      </div>
                     </div>
                   </template>
-
                   <div
                     v-else
                     :class="[
@@ -320,6 +364,15 @@ function checkDropdownActionStatement(
                   >
                     {{ getRowCellFormat(row[column.key], column.getRowCellFormat) }}
                   </div>
+
+                  <Icon
+                    v-if="column.key == 'checkedBy'"
+                    class-name="bi
+                  bi-circle-fill fs-6"
+                    :class="[
+                      getRowCellStyle(row[column.key], column.getRowCellStyle),
+                    ]"
+                  />
                 </div>
               </td>
 
@@ -364,6 +417,10 @@ function checkDropdownActionStatement(
 
 <style lang="scss" scoped>
 .table {
+  &__header {
+    @include flexible(center, space-between, $gap: 16px);
+  }
+
   &__header-icon {
     cursor: pointer;
   }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
@@ -10,18 +10,20 @@ import {
 } from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import Validation from '@Utils/Validation'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import { Idea } from '@Domain/Idea'
-import IdeaMarket from '@Domain/IdeaMarket'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
+import MarketsService from '@Services/MarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import { Market } from '@Domain/Market'
 
 const props = defineProps<SendIdeasOnMarketModalProps>()
 const emit = defineEmits<SendIdeasOnMarketModalEmits>()
@@ -37,6 +39,25 @@ const checkedIdeas = ref<Idea[]>([])
 
 const isLoading = ref(false)
 
+const marketsActive = ref<Market[]>([])
+const selectedMarketActive = ref<Market>()
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await MarketsService.getAllActiveMarkets(token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    marketsActive.value = response
+  }
+})
+
 watchImmediate(
   () => props.checkedIdeas,
   (ideas) => {
@@ -47,36 +68,25 @@ watchImmediate(
 
 const { handleSubmit } = useForm({
   validationSchema: {
-    dateStart: (value: string) => value?.length > 0 || 'Поле не заполнено',
-    dateFinish: (value: string) => value?.length > 0 || 'Поле не заполнено',
-  },
-  initialValues: {
-    dateStart: '',
-    dateFinish: '',
+    marketToSend: (value: Market) =>
+      Validation.checkIsEmptyValue(value) || 'Выберите биржу',
   },
 })
 
-const sendIdeasToMarket = handleSubmit(async (values) => {
+const sendIdeasToMarket = handleSubmit(async () => {
   const currentUser = user.value
+  const currentMarket = selectedMarketActive.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && currentMarket) {
     const { token } = currentUser
-
-    const ideasMarket: IdeaMarket[] = checkedIdeas.value.map((idea) => {
-      return {
-        ...idea,
-        position: 0,
-        status: 'RECRUITMENT_IS_OPEN',
-        requests: 0,
-        acceptedRequests: 0,
-        isFavorite: false,
-        startDate: values.dateStart,
-        finishDate: values.dateFinish,
-      } as unknown as IdeaMarket
-    })
-
+    const { id } = currentMarket
     isLoading.value = true
-    const response = await IdeasMarketService.sendIdeaOnMarket(ideasMarket, token)
+
+    const response = await IdeasMarketService.sendIdeaOnMarket(
+      id,
+      checkedIdeas.value,
+      token,
+    )
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -109,7 +119,7 @@ function deleteIdea(ideaId: string) {
     <div class="send-ideas-on-market-modal bg-white rounded p-3">
       <div class="send-ideas-on-market-modal__idea-date w-100">
         <Typography class-name="fs-5 w-100 text-secondary border-bottom">
-          Укажите сроки набора команд
+          Выберите биржу
         </Typography>
         <Button
           variant="close"
@@ -117,24 +127,17 @@ function deleteIdea(ideaId: string) {
         />
       </div>
 
-      <div class="d-flex gap-2 w-100">
-        <Input
-          name="dateStart"
-          type="date"
-          label="Дата старта*"
-          class-name="rounded"
-          placeholder="Дата старта"
-          validate-on-update
-        />
-        <Input
-          name="dateFinish"
-          type="date"
-          label="Дата окончания*"
-          class-name="rounded"
-          placeholder="Дата окончания"
-          validate-on-update
+      <div class="w-100">
+        <Combobox
+          name="marketToSend"
+          label="Биржа*"
+          :options="marketsActive"
+          :displayBy="(['name'] as never)"
+          placeholder="Выберите биржу"
+          v-model="selectedMarketActive"
         />
       </div>
+
       <div class="send-ideas-on-market-modal__ideas d-flex flex-column gap-2 w-100">
         <div
           v-for="(idea, index) in checkedIdeas"

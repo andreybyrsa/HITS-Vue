@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { useForm } from 'vee-validate'
+import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
@@ -9,14 +10,13 @@ import Typography from '@Components/Typography/Typography.vue'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
-import useUserStore from '@Store/user/userStore'
-
-import Input from '@Components/Inputs/Input/Input.vue'
 import TeamService from '@Services/TeamService'
-import { useRouter } from 'vue-router'
+
+import useUserStore from '@Store/user/userStore'
 
 const router = useRouter()
 
@@ -26,9 +26,7 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await TeamService.getTeams(token)
-
-    console.log(response)
+    await TeamService.getTeams(token)
   }
 })
 
@@ -59,7 +57,7 @@ function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
 }
 
-const a = ref([{ id: '1', lang: 'React' }])
+const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
 </script>
 
 <template>
@@ -70,6 +68,7 @@ const a = ref([{ id: '1', lang: 'React' }])
 
     <template #content>
       <router-view></router-view>
+
       <Button @click="switchContent"> Проверка KeepAlive </Button>
       <KeepAlive>
         <Input

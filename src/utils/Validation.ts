@@ -37,6 +37,15 @@ class Validation {
     }
     return true
   }
+
+  checkDate(date: string) {
+    const currentDate = new Date()
+    const checkedDate = new Date(date)
+    if (currentDate <= checkedDate) {
+      return true
+    }
+    return 'Дата не может быть раньше текущей'
+  }
 }
 
 const ValidationController = new Validation()

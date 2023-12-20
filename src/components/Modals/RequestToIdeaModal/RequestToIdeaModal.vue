@@ -57,7 +57,7 @@ watch(
       const { id } = props.ideaMarket
 
       const parallelRequests = [
-        () => TeamService.getOwnerTeams(token),
+        () => TeamService.getOwnerTeams(id, token),
         () => requestsToIdeaStore.getRequestsToIdea(id, token),
       ]
 

@@ -87,7 +87,7 @@ const confirmExpertRating = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { ideaId }, requestData: { ...rating, confirmed: true } },
+      { params: { ideaId }, requestData: { ...rating, isConfirmed: true } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

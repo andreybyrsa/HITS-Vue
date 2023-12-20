@@ -1,12 +1,17 @@
 <template>
-  <PageLayout content-class-name="users-page__content p-3 bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="p-3 bg-white"
+  >
     <template #leftSideBar>
       <LeftSideBar />
     </template>
 
-    <template #content>
-      <Typography class-name="fs-2 text-primary">Список пользователей</Typography>
+    <template #header>
+      <Header></Header>
+    </template>
 
+    <template #content>
       <UsersTable
         v-if="users"
         v-model="users"
@@ -23,9 +28,9 @@ import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import UsersTable from '@Components/Tables/UsersTable/UsersTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
+import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -57,11 +62,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style lang="scss">
-.users-page {
-  &__content {
-    overflow-y: scroll;
-  }
-}
-</style>

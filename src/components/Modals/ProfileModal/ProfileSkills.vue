@@ -102,10 +102,10 @@ const handleSaveSkills = async () => {
         v-model:stack="selectedSkills"
       />
 
-      <SkillsRadarCharts
+      <!-- <SkillsRadarCharts
         v-else
         :skills="profileSkills"
-      />
+      /> -->
     </div>
   </div>
 </template>

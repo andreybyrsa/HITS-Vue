@@ -88,7 +88,7 @@ const searchedSelectedUsers = computed(() => {
           @click="emit('unselectUser', user.value, index)"
         >
           <Typography>
-            {{ user.value.lastName }} {{ user.value.firstName }}
+            {{ user.value.firstName }} {{ user.value.lastName }}
           </Typography>
         </div>
       </div>

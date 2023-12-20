@@ -34,9 +34,16 @@ function clickAction() {
     @on-outside-close="emit('close-modal')"
   >
     <div class="confirm-modal p-3 rounded bg-white">
-      <Typography class-name="text-center text-danger">
-        {{ textQuestion + '*' }}
-      </Typography>
+      <div class="confirm-modal__header">
+        <Typography class-name="text-center text-danger">
+          {{ textQuestion + '*' }}
+        </Typography>
+        <Button
+          variant="close"
+          @click="emit('close-modal')"
+        />
+      </div>
+
       <Button
         variant="light"
         :isLoading="isLoading"
@@ -50,6 +57,8 @@ function clickAction() {
 
 <style lang="scss">
 .confirm-modal {
+  max-width: 450px;
+
   @include flexible(
     stretch,
     stretch,
@@ -58,5 +67,9 @@ function clickAction() {
     $align-self: center,
     $justify-self: center
   );
+
+  &__header {
+    @include flexible(flex-start, space-between, $gap: 16px);
+  }
 }
 </style>

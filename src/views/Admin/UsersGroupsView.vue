@@ -1,32 +1,21 @@
 <template>
-  <PageLayout content-class-name="users-groups-page__content p-3 bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="p-3 bg-white"
+  >
     <template #leftSideBar>
       <LeftSideBar />
     </template>
 
+    <template #header>
+      <Header></Header>
+    </template>
+
     <template #content>
-      <div class="users-groups-page__header">
-        <Typography class-name="fs-2 text-primary">Группы пользователей</Typography>
-
-        <Button
-          variant="primary"
-          prepend-icon-name="bi bi-plus-lg"
-          @click="openCreatingGroupModal"
-        >
-          Создать группу
-        </Button>
-      </div>
-
-      <template v-if="usersGroups">
-        <UsersGroupsTable v-model="usersGroups" />
-
-        <UsersGroupModal
-          :isOpened="isOpenedCreatingGroupModal"
-          v-model="usersGroups"
-          @close-modal="closeCreatingGroupModal"
-        />
-      </template>
-
+      <UsersGroupsTable
+        v-if="usersGroups"
+        v-model="usersGroups"
+      />
       <TablePlaceholder v-else />
 
       <router-view />
@@ -39,11 +28,9 @@ import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import UsersGroupsTable from '@Components/Tables/UsersGroupsTable/UsersGroupsTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
-import UsersGroupModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
-import Button from '@Components/Button/Button.vue'
+import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -59,8 +46,6 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const usersGroups = ref<UsersGroup[]>()
-
-const isOpenedCreatingGroupModal = ref(false)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -79,23 +64,4 @@ onMounted(async () => {
     usersGroups.value = responseGroups
   }
 })
-
-function openCreatingGroupModal() {
-  isOpenedCreatingGroupModal.value = true
-}
-function closeCreatingGroupModal() {
-  isOpenedCreatingGroupModal.value = false
-}
 </script>
-
-<style lang="scss">
-.users-groups-page {
-  &__header {
-    @include flexible(center, space-between);
-  }
-
-  &__content {
-    overflow-y: scroll;
-  }
-}
-</style>

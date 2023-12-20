@@ -1,5 +1,6 @@
 <template>
   <Table
+    :header="teamsTableHeader"
     :columns="teamTableColumns"
     :data="teams"
     :search-by="['name', 'description']"
@@ -21,7 +22,11 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
 import Table from '@Components/Table/Table.vue'
-import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import {
+  TableColumn,
+  DropdownMenuAction,
+  TableHeader,
+} from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
@@ -99,6 +104,20 @@ onMounted(async () => {
   }
 })
 
+const teamsTableHeader = computed<TableHeader>(() => ({
+  label: 'Список команд',
+  countData: true,
+  buttons: [
+    {
+      label: 'Создать команду',
+      variant: 'primary',
+      prependIconName: 'bi bi-plus-lg',
+      click: navigateToCreateTeamForm,
+      statement: checkCreateTeamButton(),
+    },
+  ],
+}))
+
 const teamTableColumns: TableColumn<Team>[] = [
   {
     key: 'closed',
@@ -136,7 +155,7 @@ const dropdownTeamsActions: DropdownMenuAction<Team>[] = [
   {
     label: 'Редактировать',
     statement: checkUpdateTeamAction,
-    click: navigateToTeamForm,
+    click: navigateToUpdateTeamForm,
   },
   {
     label: 'Удалить',
@@ -325,7 +344,11 @@ function navigateToTeamModal(team: Team) {
   router.push(`/teams/list/${team.id}`)
 }
 
-function navigateToTeamForm(team: Team) {
+function navigateToCreateTeamForm() {
+  router.push('/teams/create')
+}
+
+function navigateToUpdateTeamForm(team: Team) {
   router.push(`/teams/update/${team.id}`)
 }
 
@@ -346,6 +369,14 @@ async function handleDeleteTeam() {
 
     await teamsStore.deleteTeam(deletingTeamId.value, token)
   }
+}
+
+function checkCreateTeamButton() {
+  const currentUser = user.value
+
+  return currentUser?.role
+    ? ['TEAM_OWNER', 'ADMIN'].includes(currentUser.role)
+    : false
 }
 
 function checkUpdateTeamAction(team: Team) {

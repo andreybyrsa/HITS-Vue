@@ -13,7 +13,7 @@ import ProfileService from '@Services/ProfileService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import getRoles from '@Utils/getRoles'
+import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 const props = defineProps<ProfileInfoProps>()
 
@@ -22,7 +22,7 @@ const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
 
-const userRoles = getRoles()
+const userRoles = getUserRolesInfo()
 
 const isOwnProfile = computed(() => props.profile.email === user.value?.email)
 

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
 
 import RequestToIdeaService from '@Services/RequestToIdeaService'
 import { Team } from '@Domain/Team'
@@ -8,6 +8,9 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import InitialState from '@Store/requestsToIdea/initialState'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
+import { makeParallelRequests } from '@Utils/makeParallelRequests'
+import Success from '@Domain/ResponseMessage'
+import useTeamStore from '@Store/teams/teamsStore'
 
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({
@@ -52,8 +55,38 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
     },
 
     async acceptRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
-      const { id } = requestToIdea
-      const response = await RequestToIdeaService.updateRequestToIdeaStatus(
+      const { id, ideaMarketId, teamId } = requestToIdea
+      const ideasMarketStore = useIdeasMarketStore()
+
+      const responseAcceptRequest =
+        await RequestToIdeaService.acceptRequestToIdeaStatus(
+          ideaMarketId,
+          teamId,
+          token,
+        )
+      if (responseAcceptRequest instanceof Error) {
+        useNotificationsStore().createSystemNotification(
+          'Система',
+          responseAcceptRequest.message,
+        )
+      } else {
+        const currentRequestToIdea = this.requests.find(
+          (request) => request.id === id,
+        )
+        if (currentRequestToIdea) {
+          currentRequestToIdea.status = 'ACCEPTED'
+        }
+
+        const ideaMarket = ideasMarketStore.ideasMarket.find(
+          (idea) => idea.id === ideaMarketId,
+        )
+        if (ideaMarket) {
+          ideaMarket.status = 'RECRUITMENT_IS_CLOSED'
+          ideaMarket.team = responseAcceptRequest
+        }
+      }
+
+      const response = RequestToIdeaService.updateRequestToIdeaStatus(
         id,
         'ACCEPTED',
         token,
@@ -61,25 +94,17 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentRequestToIdea = this.requests.find(
-          (request) => request.id === id,
-        )
-
-        if (currentRequestToIdea) {
-          currentRequestToIdea.status = 'ACCEPTED'
-        }
-
-        const ideasMarketStore = useIdeasMarketStore()
-        await ideasMarketStore.setIdeaMarketTeam(requestToIdea, token)
       }
     },
 
-    async cancelRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
-      const { id } = requestToIdea
+    async updateRequestToIdea(
+      requestId: string,
+      status: RequestToIdeaStatus,
+      token: string,
+    ) {
       const response = await RequestToIdeaService.updateRequestToIdeaStatus(
-        id,
-        'CANCELED',
+        requestId,
+        status,
         token,
       )
 
@@ -87,11 +112,11 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         const currentRequestToIdea = this.requests.find(
-          (request) => request.id === id,
+          (request) => request.id === requestId,
         )
 
         if (currentRequestToIdea) {
-          currentRequestToIdea.status = 'CANCELED'
+          currentRequestToIdea.status = status
         }
       }
     },

@@ -14,7 +14,7 @@ import useUserStore from '@Store/user/userStore'
 
 import modeButtons from '@Components/Modals/IdeaModal/IdeaInfo.types'
 
-import getStatus from '@Utils/getStatus'
+import { getIdeaStatus } from '@Utils/ideaStatus'
 
 const props = defineProps<IdeaInfoProps>()
 
@@ -23,7 +23,7 @@ const { user } = storeToRefs(userStore)
 
 const route = useRoute()
 
-const status = getStatus()
+const status = getIdeaStatus()
 
 const isCopiedLink = ref(false)
 
@@ -57,12 +57,12 @@ function copyLink() {
   isCopiedLink.value = true
 }
 
-function getIdeaStatus() {
+function getIdeaModalStatus() {
   const { idea, expertRatings } = props
 
   if (idea.status === 'ON_CONFIRMATION' && expertRatings) {
     const confirmedRatings = expertRatings.reduce(
-      (prevValue, value) => (value.confirmed ? (prevValue += 1) : prevValue),
+      (prevValue, value) => (value.isConfirmed ? (prevValue += 1) : prevValue),
       0,
     )
     return `Утвердили ${confirmedRatings}/${expertRatings.length}`
@@ -70,11 +70,41 @@ function getIdeaStatus() {
 
   return status.translatedStatus[idea.status]
 }
+
+function getExpertRatingicon(isConfirmed: boolean) {
+  let initialClassName = 'text-secondary fs-3 opacity-25'
+
+  if (isConfirmed) {
+    return (initialClassName += ' bi bi-check-lg text-success opacity-50')
+  }
+
+  return (initialClassName += ' bi bi-clock-history opacity-25')
+}
+
+function getRatingColor(rating: number | null) {
+  if (rating) {
+    if (rating >= 4.0) {
+      return 'text-success'
+    }
+    if (rating < 4.0 && rating >= 3.0) {
+      return 'text-warning'
+    }
+    return 'text-danger'
+  }
+}
+
+function getAccessToExpertsInfo() {
+  const currentUser = user.value
+  return (
+    props.expertRatings &&
+    (currentUser?.role === 'PROJECT_OFFICE' || currentUser?.role === 'ADMIN')
+  )
+}
 </script>
 
 <template>
   <Typography class-name="p-2 bg-primary rounded-top fs-4 text-center text-white">
-    {{ getIdeaStatus() }}
+    {{ getIdeaModalStatus() }}
   </Typography>
 
   <div class="idea-info w-100 pb-3 px-3">
@@ -102,6 +132,36 @@ function getIdeaStatus() {
 
         <Typography class-name="text-primary">
           {{ idea.initiatorEmail }}
+        </Typography>
+      </div>
+    </div>
+
+    <div v-if="getAccessToExpertsInfo()">
+      <Typography class-name="border-bottom text-secondary d-block">
+        Эксперты
+      </Typography>
+
+      <div
+        v-for="{
+          id,
+          expertFirstName,
+          expertLastName,
+          rating,
+          isConfirmed,
+        } in expertRatings"
+        :key="id"
+        class="idea-info__sub-info pt-2"
+      >
+        <Icon :class-name="getExpertRatingicon(isConfirmed)" />
+
+        <Typography class-name="text-primary">
+          {{ `${expertFirstName} ${expertLastName}` }}
+        </Typography>
+        <Typography
+          v-if="rating"
+          :class-name="getRatingColor(rating)"
+        >
+          {{ rating.toFixed(1) }}
         </Typography>
       </div>
     </div>
