@@ -1,219 +1,161 @@
 <script lang="ts" setup>
-import { onMounted, ref, Ref, VueElement } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onUpdated, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useDateFormat } from '@vueuse/core'
+import { useForm } from 'vee-validate'
 
-import { MarketModalProps } from '@Components/Modals/MarketModal/MarketModal.types'
-import MarketDescription from '@Components/Modals/MarketModal/MarketDescription.vue'
-import MarketModalPlaceholder from '@Components/Modals/MarketModal/MarketModalPlaceholder.vue'
-import MarketRightSide from '@Components/Modals/MarketModal/MarketRightSide.vue'
-import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
-import MarketModalTables from '@Components/Modals/MarketModal/MarketModalTables.vue'
-import MarketAdvertisements from '@Components/Modals/MarketModal/MarketAdvertisements.vue'
+import {
+  MarketModalProps,
+  MarketModalEmits,
+  marketModalInputs,
+} from '@Components/Modals/MarketModal/MarketModal.types'
+import Button from '@Components/Button/Button.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
-import { Team } from '@Domain/Team'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
-
-import TeamService from '@Services/TeamService'
+import { Market } from '@Domain/Market'
 
 import useUserStore from '@Store/user/userStore'
-import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
-import useIdeaMarketAdvertisementsStore from '@Store/ideaMarketAdvertisements/ideaMarketAdvertisementsStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useMarketsStore from '@Store/markets/marketsStore'
 
-import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
-import useCommentsStore from '@Store/comments/commentsStore'
-import { Market } from '@Domain/Market'
-import MarketService from '@Services/MarketService'
+import Validation from '@Utils/Validation'
 
-defineProps<MarketModalProps>()
-
-const MarketModalRef = ref<VueElement | null>(null)
+const props = defineProps<MarketModalProps>()
+const emit = defineEmits<MarketModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const ideasMarketStore = useIdeasMarketStore()
-const requestsToIdeaStore = useRequestsToIdeaStore()
-const ideaMarketAdvertisementsStore = useIdeaMarketAdvertisementsStore()
+const marketsStore = useMarketsStore()
 
-const notificationsStore = useNotificationsStore()
+const isLoading = ref(false)
 
-const route = useRoute()
-const router = useRouter()
+const { handleSubmit, setValues } = useForm<Market>({
+  validationSchema: {
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Неверно введено название',
+    startDate: (value: string) =>
+      Validation.checkDate(value) || 'Неверно введена дата',
+    finishDate: (value: string) =>
+      Validation.checkDate(value) || 'Неверно введена дата',
+  },
+})
 
-const ideaMarket = ref<IdeaMarket>()
-const requestTeams = ref<RequestTeamToIdea[]>()
-const market = ref<Market>()
-const ownerTeams = ref<Team[]>()
+onUpdated(() => {
+  const { isOpened, market } = props
 
-const skillsRequestTeam = ref<RequestTeamToIdea[]>([])
-const skillsAcceptedTeam = ref<Team>()
+  if (isOpened && market) {
+    const startDate = useDateFormat(new Date(market.startDate), 'YYYY-MM-DD').value
+    const finishDate = useDateFormat(new Date(market.finishDate), 'YYYY-MM-DD').value
 
-const isOpenedMarketModal = ref(true)
-
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentUser.role) {
-    const { token, role } = currentUser
-    const ideaMarketId = route.params.ideaMarketId.toString()
-    const marketId = route.params.marketId.toString()
-
-    const marketParallelRequests = [
-      () => ideasMarketStore.getMarketIdea(ideaMarketId, marketId, role, token),
-      () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId, token),
-      () => TeamService.getOwnerTeams(ideaMarketId, token),
-      () => MarketService.getMarket(marketId, token),
-      () =>
-        ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(
-          ideaMarketId,
-          token,
-        ),
-    ]
-
-    await makeParallelRequests<
-      | RequestTeamToIdea[]
-      | Team[]
-      | Market
-      | IdeaMarket
-      | IdeaMarketAdvertisement[]
-      | Error
-    >(marketParallelRequests).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, ideaMarket)
-        } else if (response.id === 1) {
-          checkResponseStatus(response, requestTeams)
-        } else if (response.id === 2) {
-          checkResponseStatus(response, ownerTeams)
-        } else if (response.id === 3) {
-          checkResponseStatus(response, market)
-        }
-      })
-    })
+    setValues({ ...market, startDate, finishDate })
   }
 })
 
-function closeMarketModal() {
-  isOpenedMarketModal.value = false
-  router.push(`/market/${route.params.marketId}`)
+const createMarket = handleSubmit(async (values) => {
+  const currentUser = user.value
 
-  useCommentsStore().disconnectRsocket()
-}
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    isLoading.value = true
+    await marketsStore.createMarket({ ...values, status: 'NEW' }, token)
+    isLoading.value = false
+
+    emit('close-modal')
+  }
+})
+
+const updateMarket = handleSubmit(async (values) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    isLoading.value = true
+    await marketsStore.updateMarket(values, token)
+    isLoading.value = false
+
+    emit('close-modal')
+  }
+})
 </script>
 
 <template>
   <ModalLayout
-    :is-opened="isOpenedMarketModal"
-    appear-on-render
-    @on-outside-close="closeMarketModal"
+    :is-opened="isOpened"
+    @on-outside-close="emit('close-modal')"
   >
-    <div
-      v-if="ideaMarket"
-      ref="MarketModalRef"
-      class="market-modal p-3 h-100 overflow-y-scroll"
+    <FormLayout
+      v-if="isOpened"
+      class-name="market-modal"
     >
-      <div class="market-modal__left-side w-75">
-        <MarketDescription
-          :idea-market="ideaMarket"
-          @close-modal="closeMarketModal"
-        />
+      <div class="d-flex align-items-center justify-content-between">
+        <Typography class-name="fs-3 text-primary text-center">
+          {{ !market ? 'Создание биржи' : 'Редактирование биржи' }}
+        </Typography>
 
-        <MarketModalTables
-          :idea-market="ideaMarket"
-          :request-teams="requestTeams"
-          v-model:skillsRequestTeam="skillsRequestTeam"
-          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
-        />
-
-        <RequestToIdeaForm
-          v-if="requestTeams && ownerTeams"
-          :idea-market="ideaMarket"
-          :requests="requestTeams"
-          :owner-teams="ownerTeams"
-          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
-        />
-
-        <MarketAdvertisements
-          :idea-market="ideaMarket"
-          :idea-market-modal-ref="MarketModalRef"
-        />
+        <Button
+          variant="close"
+          @click="emit('close-modal')"
+        ></Button>
       </div>
 
-      <div
-        v-if="market"
-        class="market-modal__right-side w-25 rounded"
+      <Input
+        v-for="(input, index) in marketModalInputs"
+        :key="index"
+        class-name="rounded-end"
+        :type="input.type"
+        :name="input.name"
+        :placeholder="input.placeholder"
+        validate-on-update
+      />
+
+      <Button
+        v-if="!market"
+        type="submit"
+        variant="primary"
+        @click="createMarket"
+        :is-loading="isLoading"
       >
-        <MarketRightSide
-          :market="market"
-          :idea="ideaMarket"
-          :skills="ideaMarket.stack"
-          v-model:skillsRequestTeam="skillsRequestTeam"
-          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
-        />
-      </div>
-    </div>
-
-    <MarketModalPlaceholder v-else />
+        Создать биржу
+      </Button>
+      <Button
+        v-if="market"
+        type="submit"
+        variant="primary"
+        @click="updateMarket"
+        :is-loading="isLoading"
+      >
+        Сохранить изменения
+      </Button>
+    </FormLayout>
   </ModalLayout>
 </template>
 
 <style lang="scss" scoped>
 .market-modal {
-  position: relative;
-
-  width: 80%;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-  background-color: #e9e9e9;
-
   @include flexible(
+    stretch,
+    flex-start,
     column,
-    $gap: 16px,
-    $align-self: stretch,
-    $justify-self: flex-end
+    $align-self: center,
+    $justify-self: center,
+    $gap: 16px
   );
 
-  transition: all 0.3s ease-out;
+  transition: all $default-transition-settings;
 
-  &__left-side {
-    height: fit-content;
-
-    @include flexible(stretch, flex-start, column, $gap: 16px);
-
-    &-block {
-      @include flexible(center, center);
-      width: 100%;
-      height: 500px;
-    }
-  }
-
-  &__right-side {
-    height: fit-content;
-    overflow: hidden;
-
-    @include flexible(stretch, flex-start, column, $gap: 16px);
+  &__header {
+    @include flexible(center, space-between);
   }
 }
 
 .modal-layout-enter-from .market-modal,
 .modal-layout-leave-to .market-modal {
-  transform: translateX(100%);
+  transform: scale(0.9);
 }
 </style>

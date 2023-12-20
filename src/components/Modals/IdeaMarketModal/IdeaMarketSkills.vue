@@ -3,13 +3,13 @@ import { computed } from 'vue'
 
 import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
-import { MarketSkillsradarChartsProps } from '@Components/Modals/MarketModal/MarketModal.types'
+import { IdeaMarketSkillsProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 
 import { Skill } from '@Domain/Skill'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
-const props = defineProps<MarketSkillsradarChartsProps>()
+const props = defineProps<IdeaMarketSkillsProps>()
 
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')

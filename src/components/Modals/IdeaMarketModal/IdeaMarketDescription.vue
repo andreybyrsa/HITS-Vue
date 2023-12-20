@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 
-import marketModalCollapses from '@Components/Modals/MarketModal/MarketModalCollapses'
+import ideaMarketCollapses from '@Components/Modals/IdeaMarketModal/IdeaMarketModalCollapses'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import {
-  MarketDescriptionProps,
-  MarketModalEmits,
-} from '@Components/Modals/MarketModal/MarketModal.types'
+  IdeaMarketDescriptionProps,
+  IdeaMarketModalEmits,
+} from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 
 import useUserStore from '@Store/user/userStore'
 
-defineProps<MarketDescriptionProps>()
-const emit = defineEmits<MarketModalEmits>()
+defineProps<IdeaMarketDescriptionProps>()
+const emit = defineEmits<IdeaMarketModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -52,7 +52,7 @@ function getAccessToViewDescription() {
       class="list-group rounded-3"
     >
       <li
-        v-for="collapse in marketModalCollapses"
+        v-for="collapse in ideaMarketCollapses"
         :key="collapse.key"
         class="list-group-item p-0 overflow-hidden"
       >

@@ -2,13 +2,14 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { MarketTablesProps } from '@Components/Modals/MarketModal/MarketModal.types'
+import { IdeaMarketTablesProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 import RequestsToIdeaTable from '@Components/Tables/RequestsToIdeaTable/RequestsToIdeaTable.vue'
-
-import useUserStore from '@Store/user/userStore'
 import IdeaMarketTeamsTable from '@Components/Tables/IdeaMarketTeamsTable/IdeaMarketTeamsTable.vue'
+
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
+
+import useUserStore from '@Store/user/userStore'
 
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
@@ -16,7 +17,7 @@ const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const props = defineProps<MarketTablesProps>()
+const props = defineProps<IdeaMarketTablesProps>()
 
 const isAcceptedTeamsTable = ref(true)
 const isRequestsToIdeaTable = ref(false)

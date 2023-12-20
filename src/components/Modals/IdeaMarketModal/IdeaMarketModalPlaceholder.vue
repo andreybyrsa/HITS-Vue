@@ -4,8 +4,10 @@ import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 </script>
 
 <template>
-  <div class="market-modal market-modal-placeholder p-3 h-100 overflow-y-scroll">
-    <div class="market-modal-placeholder__left-side w-75 h-100">
+  <div
+    class="idea-market-modal idea-market-modal-placeholder p-3 h-100 overflow-y-scroll"
+  >
+    <div class="idea-market-modal-placeholder__left-side w-75 h-100">
       <div class="w-75">
         <LoadingPlaceholder />
       </div>
@@ -32,7 +34,7 @@ import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
       </div>
     </div>
 
-    <div class="market-modal-placeholder__right-side p-2 w-25 bg-white rounded">
+    <div class="idea-market-modal-placeholder__right-side p-2 w-25 bg-white rounded">
       <div class="d-flex gap-2 w-100 px-1 pt-1">
         <div class="bg-primary w-50 py-3 rounded-3"></div>
         <div class="bg-primary w-50 py-3 rounded-3"></div>
@@ -76,7 +78,7 @@ import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 </template>
 
 <style lang="scss" scoped>
-.market-modal-placeholder {
+.idea-market-modal-placeholder {
   &__left-side {
     height: fit-content;
 

@@ -1,6 +1,6 @@
-import { MarketModalTabType } from '@Components/Modals/MarketModal/MarketModal.types'
+import { IdeaMarketTabType } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 
-const MarketInfoTabs: MarketModalTabType[] = [
+const IdeaMarketInfoTabs: IdeaMarketTabType[] = [
   {
     id: '0',
     key: 'customer',
@@ -33,4 +33,4 @@ const MarketInfoTabs: MarketModalTabType[] = [
   },
 ]
 
-export default MarketInfoTabs
+export default IdeaMarketInfoTabs

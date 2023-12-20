@@ -101,7 +101,6 @@ function getMocks(): Mocks {
     //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
     // },
   ]
-
   const skills: Skill[] = [
     {
       id: '0',

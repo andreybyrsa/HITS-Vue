@@ -5,11 +5,11 @@ import { useRoute } from 'vue-router'
 
 import { MODE } from '@Main'
 
-import { MarketInfoProps } from '@Components/Modals/MarketModal/MarketModal.types'
+import { IdeaMarketInfoProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
-import MarketInfoTabs from '@Components/Modals/MarketModal/MarketInfoIdeaTabs'
+import IdeaMarketInfoTabs from '@Components/Modals/IdeaMarketModal/IdeaMarketInfoTabs'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
 import { IdeaMarket } from '@Domain/IdeaMarket'
@@ -21,7 +21,7 @@ import { Market } from '@Domain/Market'
 import { useDateFormat } from '@vueuse/core'
 import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
 
-const props = defineProps<MarketInfoProps>()
+const props = defineProps<IdeaMarketInfoProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -112,7 +112,7 @@ function closeConfirmModal() {
 
     <div class="exchange-info w-100 p-3">
       <div
-        v-for="tab in MarketInfoTabs"
+        v-for="tab in IdeaMarketInfoTabs"
         :key="tab.id"
       >
         <Typography class-name="border-bottom text-secondary d-block">
