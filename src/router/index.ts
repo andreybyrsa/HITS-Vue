@@ -34,8 +34,6 @@ import ErrorView from '@Views/ErrorView.vue'
 
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
-import DevView from '@Views/DevView.vue'
-
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
@@ -226,10 +224,6 @@ const routes: RouteRecordRaw[] = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
-  },
-  {
-    path: '/dev',
-    component: DevView,
   },
   {
     path: '/error',
