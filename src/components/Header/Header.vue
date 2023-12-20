@@ -15,11 +15,14 @@ import useUserStore from '@Store/user/userStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import { useRoute } from 'vue-router'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const userRolesInfo = getUserRolesInfo()
+
+const route = useRoute()
 
 const isOpenedRoleModal = ref(false)
 
@@ -39,6 +42,7 @@ onMounted(async () => {
 
 function navigateToProfile() {
   const currentUser = user.value
+  const { name } = route
   const profileRoute: RouteRecordRaw = {
     name: 'profile',
     path: 'profil/:id',
@@ -46,9 +50,9 @@ function navigateToProfile() {
     component: ProfileModal,
   }
 
-  if (currentUser) {
+  if (currentUser && name) {
     const { id } = currentUser
-    navigateToAliasRoute(`/profile/${id}`, profileRoute)
+    navigateToAliasRoute(name.toString(), `/profile/${id}`, profileRoute)
   }
 }
 
