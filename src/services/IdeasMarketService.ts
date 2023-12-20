@@ -49,7 +49,7 @@ const fetchIdeasMarket = async (
 ): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
     .get<IdeaMarket[]>(
-      `/market/idea/market/${marketId}`,
+      `/market/idea/market/${marketId}/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -65,10 +65,13 @@ const fetchIdeasMarket = async (
     })
 }
 
-const fetchFavoritesIdeas = async (token: string): Promise<IdeaMarket[] | Error> => {
+const fetchFavoritesIdeas = async (
+  marketId: string,
+  token: string,
+): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
     .get<IdeaMarket[]>(
-      '/market/favorite',
+      `/market/idea/favourite/${marketId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -101,11 +104,12 @@ const getIdeaMarket = async (
 }
 
 const getAllInitiatorMarketIdeas = async (
+  marketId: string,
   token: string,
 ): Promise<IdeaMarket[] | Error> => {
   return await ideasMarketAxios
     .get<IdeaMarket[]>(
-      '/market/idea/initiator/all',
+      `/market/idea/market/${marketId}/initiator`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -187,8 +191,8 @@ const sendIdeaOnMarket = async (
         return new Error(error)
       })
   }
-  return await axios
-    .post(`/market/idea/send/${marketId}`, ideas, {
+  return axios
+    .post(`${API_URL}/market/idea/send/${marketId}`, ideas, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -249,7 +253,7 @@ const addIdeaToFavorites = async (
 ): Promise<Success | Error> => {
   return await ideasMarketAxios
     .putNoRequestBody<Success>(
-      `/market/favorite/${id}`,
+      `/market/idea/favorite/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { isFavorite: true } },
     )
@@ -321,7 +325,7 @@ const removeIdeaFromFavorites = async (
 ): Promise<Success | Error> => {
   return await ideasMarketAxios
     .delete(
-      `/market/unfavorite/${id}`,
+      `/market/idea/unfavorite/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { isFavorite: false } },
     )

@@ -42,7 +42,7 @@ function getFormattedDate(date: string) {
   }
 }
 
-function valueTab(key: keyof IdeaMarket | keyof Market) {
+function valueTab(key: string) {
   const { customer, initiator, status } = props.ideaMarket
 
   if (key === 'customer') {
@@ -55,10 +55,10 @@ function valueTab(key: keyof IdeaMarket | keyof Market) {
     return marketStatus.translatedStatus[status]
   }
   if (key === 'startDate') {
-    return getFormattedDate(props.market.startDate)
+    return getFormattedDate(props.market?.startDate)
   }
   if (key === 'finishDate') {
-    return getFormattedDate(props.market.finishDate)
+    return getFormattedDate(props.market?.finishDate)
   }
 }
 
@@ -109,7 +109,6 @@ function closeConfirmModal() {
     <div class="exchange-header w-100 bg-primary rounded-top fs-5 text-white p-2">
       Информация
     </div>
-
     <div class="exchange-info w-100 p-3">
       <div
         v-for="tab in IdeaMarketInfoTabs"

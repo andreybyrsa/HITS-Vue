@@ -14,7 +14,6 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { Market } from '@Domain/Market'
 
@@ -89,9 +88,9 @@ const updateMarket = handleSubmit(async (values) => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <FormLayout
+    <div
       v-if="isOpened"
-      class-name="market-modal"
+      class="market-modal bg-white rounded p-3"
     >
       <div class="d-flex align-items-center justify-content-between">
         <Typography class-name="fs-3 text-primary text-center">
@@ -107,6 +106,7 @@ const updateMarket = handleSubmit(async (values) => {
       <Input
         v-for="(input, index) in marketModalInputs"
         :key="index"
+        :label="input.label"
         class-name="rounded-end"
         :type="input.type"
         :name="input.name"
@@ -132,12 +132,13 @@ const updateMarket = handleSubmit(async (values) => {
       >
         Сохранить изменения
       </Button>
-    </FormLayout>
+    </div>
   </ModalLayout>
 </template>
 
 <style lang="scss" scoped>
 .market-modal {
+  width: 400px;
   @include flexible(
     stretch,
     flex-start,

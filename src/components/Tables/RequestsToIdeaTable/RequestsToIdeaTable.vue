@@ -52,6 +52,7 @@ import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
 import mutableSort from '@Utils/mutableSort'
 import { getSkillInfoStyle } from '@Utils/skillsInfo'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const props = defineProps<RequestsToIdeaTableProps>()
 const selectedTeam = defineModel<RequestTeamToIdea[]>()

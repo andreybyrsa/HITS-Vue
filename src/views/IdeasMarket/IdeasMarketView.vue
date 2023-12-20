@@ -25,7 +25,7 @@ import { Market } from '@Domain/Market'
 import { useRoute } from 'vue-router'
 
 import Button from '@Components/Button/Button.vue'
-import SendToNextMarketModal from '@Components/Modals/SendToNextMarket/SendToNextMarketModal.vue'
+import ReturnIdeasMarketModal from '@Components/Modals/ReturnIdeasMarketModal/ReturnIdeasMarketModal.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
@@ -52,6 +52,10 @@ const searchedValue = ref('')
 const ideaMarket = ref<IdeaMarket | null>(null)
 const isOpenedRequestToIdeaModal = ref(false)
 const isOpenedSendToNextMarketModal = ref(false)
+
+const openIdeasMarket = computed(() =>
+  ideas.value.filter(({ status }) => status === 'RECRUITMENT_IS_OPEN'),
+)
 
 const searchedIdeas = computed(() => {
   if (filterByIdeaMarketStatus.value) {
@@ -128,9 +132,10 @@ async function getFavoritesIdeas() {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
+    const marketId = route.params.marketId.toString()
 
     ideas.value = []
-    const response = await IdeasMarketService.fetchFavoritesIdeas(token)
+    const response = await IdeasMarketService.fetchFavoritesIdeas(marketId, token)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -164,11 +169,11 @@ function closeRequestToIdeaModal() {
   isOpenedRequestToIdeaModal.value = false
 }
 
-function openSendToNextMarketModal() {
+function openReturnIdeasMarketModal() {
   isOpenedSendToNextMarketModal.value = true
 }
 
-function closeSendToNextMarketModal() {
+function closeReturnIdeasMarketModal() {
   isOpenedSendToNextMarketModal.value = false
 }
 
@@ -176,8 +181,10 @@ function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
   return ideaMarket.status === status
 }
 
-function findIdeaWithoutTeam(ideas: IdeaMarket[]) {
-  return ideas.filter(({ team }) => team === null)
+function getAccessToCloseMarket() {
+  const role = user.value?.role
+  const marketStatus = market.value?.status
+  return (role === 'ADMIN' || role === 'PROJECT_OFFICE') && marketStatus === 'ACTIVE'
 }
 </script>
 
@@ -224,11 +231,11 @@ function findIdeaWithoutTeam(ideas: IdeaMarket[]) {
         </div>
         <div>
           <Button
-            v-if="user?.role === 'PROJECT_OFFICE' || user?.role === 'ADMIN'"
+            v-if="getAccessToCloseMarket()"
             variant="danger"
-            @click="openSendToNextMarketModal"
-            >Закрыть биржу</Button
-          >
+            @click="openReturnIdeasMarketModal"
+            >Закрыть биржу
+          </Button>
         </div>
       </div>
 
@@ -262,10 +269,12 @@ function findIdeaWithoutTeam(ideas: IdeaMarket[]) {
         @close-modal="closeRequestToIdeaModal"
       />
 
-      <SendToNextMarketModal
-        :checked-ideas-market="findIdeaWithoutTeam(ideas)"
+      <ReturnIdeasMarketModal
+        v-if="market"
+        :ideasMarket="openIdeasMarket"
+        :market="market"
         :is-opened="isOpenedSendToNextMarketModal"
-        @close-modal="closeSendToNextMarketModal"
+        @close-modal="closeReturnIdeasMarketModal"
       />
 
       <router-view />

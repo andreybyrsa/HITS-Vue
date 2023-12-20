@@ -26,6 +26,8 @@ import useIdeaMarketAdvertisementsStore from '@Store/ideaMarketAdvertisements/id
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import { Market } from '@Domain/Market'
+import MarketService from '@Services/MarketService'
 
 defineProps<IdeaMarketModalProps>()
 
@@ -46,6 +48,7 @@ const router = useRouter()
 const ideaMarket = ref<IdeaMarket>()
 const requestTeams = ref<RequestTeamToIdea[]>()
 const ownerTeams = ref<Team[]>()
+const market = ref<Market>()
 
 const skillsRequestTeam = ref<RequestTeamToIdea[]>([])
 const skillsAcceptedTeam = ref<Team>()
@@ -68,17 +71,28 @@ onMounted(async () => {
 
   if (currentUser?.token && currentUser.role) {
     const { token, id: userId, role } = currentUser
-    const id = route.params.id.toString()
+    const ideaMarketId = route.params.ideaMarketId.toString()
+    const marketId = route.params.marketId.toString()
 
     const marketParallelRequests = [
-      () => ideasMarketStore.getMarketIdea(id, role, token),
-      () => requestsToIdeaStore.getRequestsToIdea(id, token),
+      () => ideasMarketStore.getMarketIdea(ideaMarketId, role, token),
+      () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId, token),
       () => TeamService.getOwnerTeams(userId, token),
-      () => ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(id, token),
+      () => MarketService.getMarket(marketId, token),
+      () =>
+        ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(
+          ideaMarketId,
+          token,
+        ),
     ]
 
     await makeParallelRequests<
-      RequestTeamToIdea[] | Team[] | IdeaMarket | IdeaMarketAdvertisement[] | Error
+      | RequestTeamToIdea[]
+      | Team[]
+      | IdeaMarket
+      | Market
+      | IdeaMarketAdvertisement[]
+      | Error
     >(marketParallelRequests).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
@@ -87,6 +101,8 @@ onMounted(async () => {
           checkResponseStatus(response, requestTeams)
         } else if (response.id === 2) {
           checkResponseStatus(response, ownerTeams)
+        } else if (response.id === 3) {
+          checkResponseStatus(response, market)
         }
       })
     })
@@ -95,7 +111,7 @@ onMounted(async () => {
 
 function closeMarketModal() {
   isOpenedMarketModal.value = false
-  router.push('/market')
+  router.push(`/market/${market.value?.id}`)
 }
 </script>
 
@@ -136,9 +152,13 @@ function closeMarketModal() {
         />
       </div>
 
-      <div class="market-modal__right-side w-25 rounded">
+      <div
+        v-if="market"
+        class="market-modal__right-side w-25 rounded"
+      >
         <IdeaMarketRightSide
           :idea="ideaMarket"
+          :market="market"
           :skills="ideaMarket.stack"
           v-model:skillsRequestTeam="skillsRequestTeam"
           v-model:skillsAcceptedTeam="skillsAcceptedTeam"

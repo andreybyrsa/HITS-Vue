@@ -41,7 +41,7 @@
 import { Ref, computed, ref } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import Table from '@Components/Table/Table.vue'
 import {
@@ -73,6 +73,7 @@ const marketStatusInfo = getMarketStatus()
 const filterByMarketStatus = ref<MarketStatus[]>([])
 
 const router = useRouter()
+const route = useRoute()
 
 const startMarketConfirmationText =
   'Вы действительно хотите запустить биржу? Активную биржу можно будет ТОЛЬКО завершить.'
@@ -130,6 +131,11 @@ const marketTableColumns: TableColumn<Market>[] = [
 
 const dropdownMarketActions: DropdownMenuAction<Market>[] = [
   {
+    label: 'Перейти на биржу',
+    className: 'text-primary',
+    click: navigateToMarket,
+  },
+  {
     label: 'Запустить',
     className: 'text-success',
     statement: (market: Market) => checkMarketStatus(market, 'NEW'),
@@ -170,6 +176,9 @@ const marketFilters: Filter<Market>[] = [
   },
 ]
 
+function navigateToMarket(market: Market) {
+  router.push(`/market/${market.id}`)
+}
 function sortByStartDate() {
   mutableSort(markets.value, (marketData: Market) =>
     new Date(marketData.startDate).getTime(),
@@ -213,10 +222,6 @@ function closeStartMarketConfirmationModal() {
 }
 function closeFinishMarketConfirmationModal() {
   isOpenedFinishMarketConfirmation.value = false
-}
-
-function navigateToMarket(market: Market) {
-  router.push(`/market/${market.id}`)
 }
 
 async function handleDeleteMarket() {

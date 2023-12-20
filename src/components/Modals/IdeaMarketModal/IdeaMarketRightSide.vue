@@ -9,7 +9,7 @@ import Button from '@Components/Button/Button.vue'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
-defineProps<IdeaMarketRightSideProps>()
+const props = defineProps<IdeaMarketRightSideProps>()
 
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
@@ -52,7 +52,7 @@ function openMarketInfo() {
   <IdeaMarketInfo
     v-else
     :idea-market="idea"
-    :market="market"
+    :market="props.market"
   />
 </template>
 

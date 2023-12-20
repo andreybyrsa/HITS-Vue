@@ -94,6 +94,7 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: ':teamId',
+            name: 'team',
             component: TeamModal,
             meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
           },

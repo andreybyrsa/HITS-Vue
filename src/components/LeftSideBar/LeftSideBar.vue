@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, VueElement } from 'vue'
+import { onMounted, ref, VueElement, watch } from 'vue'
 import { watchImmediate, useElementHover } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -19,9 +19,14 @@ import useUserStore from '@Store/user/userStore'
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import MarketService from '@Services/MarketService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useMarketsStore from '@Store/markets/marketsStore'
+import { Market } from '@Domain/Market'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const marketsStore = useMarketsStore()
+const { markets } = storeToRefs(marketsStore)
 
 const notificationsStore = useNotificationsStore()
 
@@ -41,7 +46,32 @@ const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
 })
 
-onMounted(async () => {
+watch(
+  markets,
+  () => {
+    const currentMarkets = markets.value.filter(({ status }) => status === 'ACTIVE')
+    const index = tabs.value.findIndex(({ name }) => name === 'markets')
+    if (index !== -1) updateActiveMarketRoute(currentMarkets, index)
+  },
+  { deep: true },
+)
+
+onMounted(getActiveMarkets)
+
+function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
+  const initialMarketRoutes: LeftSideBarTabType[] =
+    LeftSideBarTabs[index].routes ?? []
+  const marketRoutes: LeftSideBarTabType[] = activeMarkets.map(({ id, name }) => ({
+    name: `market-${id}`,
+    text: name,
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    iconName: 'bi bi-basket3',
+    to: `/market/${id}`,
+  }))
+  tabs.value[index].routes = [...initialMarketRoutes, ...marketRoutes]
+}
+
+async function getActiveMarkets() {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -62,19 +92,10 @@ onMounted(async () => {
     ) {
       tabs.value.splice(index, 1)
     } else if (index !== -1) {
-      const initialMarketRoutes: LeftSideBarTabType[] =
-        LeftSideBarTabs[index].routes ?? []
-      const marketRoutes: LeftSideBarTabType[] = response.map(({ id, name }) => ({
-        name: `market-${id}`,
-        text: name,
-        roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
-        iconName: 'bi bi-basket3',
-        to: `/market/${id}`,
-      }))
-      tabs.value[index].routes = [...initialMarketRoutes, ...marketRoutes]
+      updateActiveMarketRoute(response, index)
     }
   }
-})
+}
 
 watchImmediate(isHovered, (value, prevValue) => {
   const opendAnimationClass = value ? 'left-side-bar--opened' : ''

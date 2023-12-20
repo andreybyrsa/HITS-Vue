@@ -108,8 +108,8 @@ const route = useRoute()
             idea.name
           }}</router-link>
         </div>
-        <div class="idea-description">
-          {{ idea.description }}
+        <div class="idea-solution">
+          {{ idea.solution }}
         </div>
         <div class="idea-creator">
           <Icon class-name="bi bi-person-circle fs-5" /> Инициатор:
@@ -206,7 +206,7 @@ const route = useRoute()
     font-size: 20px;
     font-weight: bold;
   }
-  .idea-description {
+  .idea-solution {
     margin-top: 10px;
   }
   .idea-creator {

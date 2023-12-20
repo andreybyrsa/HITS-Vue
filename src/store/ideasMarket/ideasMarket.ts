@@ -21,7 +21,7 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
       return async (marketId: string, role: RolesTypes, token: string) => {
         const response =
           role === 'INITIATOR'
-            ? await IdeasMarketService.getAllInitiatorMarketIdeas(token)
+            ? await IdeasMarketService.getAllInitiatorMarketIdeas(marketId, token)
             : await IdeasMarketService.fetchIdeasMarket(marketId, token)
 
         if (response instanceof Error) {
@@ -34,13 +34,8 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
     },
 
     getMarketIdea() {
-      return async (
-        id: string,
-        marketId: string,
-        role: RolesTypes,
-        token: string,
-      ) => {
-        const ideaMarket = await IdeasMarketService.getIdeaMarket(id, token)
+      return async (marketId: string, role: RolesTypes, token: string) => {
+        const ideaMarket = await IdeasMarketService.getIdeaMarket(marketId, token)
 
         if (ideaMarket instanceof Error) {
           useNotificationsStore().createSystemNotification(
@@ -53,7 +48,7 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
         if (this.ideasMarket.length) {
           return findOneAndUpdate(this.ideasMarket, ideaMarket, {
             key: 'id',
-            value: id,
+            value: marketId,
           })
         }
 
@@ -69,7 +64,7 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
 
         return findOneAndUpdate(this.ideasMarket, ideaMarket, {
           key: 'id',
-          value: id,
+          value: marketId,
         })
       }
     },

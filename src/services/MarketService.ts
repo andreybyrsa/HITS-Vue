@@ -110,7 +110,7 @@ const updateMarketStatus = async (
 ): Promise<Success | Error> => {
   return marketAxios
     .putNoRequestBody<Success>(
-      `/market/${id}/${status}`,
+      `/market/status/${id}/${status}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
