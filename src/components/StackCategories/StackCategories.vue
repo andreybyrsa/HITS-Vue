@@ -121,7 +121,7 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
       class-name="text-primary"
       :hint="hint"
     >
-      Стек технологий*
+      {{ label ?? 'Стек технологий*' }}
     </Typography>
 
     <div
