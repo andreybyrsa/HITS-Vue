@@ -18,6 +18,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useDateFormat } from '@vueuse/core'
 
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import {
@@ -32,6 +33,7 @@ import { User } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
 import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils/userRolesInfo'
+import mutableSort from '@Utils/mutableSort'
 
 const users = defineModel<User[]>({ required: true })
 
@@ -63,6 +65,12 @@ const usersTableColumns: TableColumn<User>[] = [
     label: 'Фамилия',
   },
   {
+    key: 'createdAt',
+    label: 'Дата регистрации',
+    getRowCellFormat: getFormattedDate,
+    headerCellClick: sortByCreatedAt,
+  },
+  {
     key: 'roles',
     label: 'Роли',
     size: 'col-5',
@@ -91,6 +99,17 @@ const usersFilters: Filter<User>[] = [
     statement: () => true,
   },
 ]
+
+function getFormattedDate(date: string) {
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
+  }
+}
+
+function sortByCreatedAt() {
+  mutableSort(users.value, (user: User) => new Date(user.createdAt ?? '').getTime())
+}
 
 function getUserEmailStyle() {
   return 'text-primary'

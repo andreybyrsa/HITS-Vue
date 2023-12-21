@@ -5,7 +5,6 @@ import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
-import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import UsersView from '@Views/Admin/UsersView.vue'
@@ -195,16 +194,9 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/change-email',
+    path: '/change-email/:slug',
     name: 'change-email',
     component: ChangeEmailView,
-    children: [
-      {
-        path: ':slug',
-        name: 'change-email-confirmation',
-        component: NewEmail,
-      },
-    ],
   },
   {
     path: '/last-activity-note',
