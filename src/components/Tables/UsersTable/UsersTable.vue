@@ -66,6 +66,7 @@ const usersTableColumns: TableColumn<User>[] = [
   },
   {
     key: 'createdAt',
+    contentClassName: 'justify-content-center align-items-center text-center',
     label: 'Дата регистрации',
     getRowCellFormat: getFormattedDate,
     headerCellClick: sortByCreatedAt,
