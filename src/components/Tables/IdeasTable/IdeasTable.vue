@@ -216,23 +216,26 @@ const ideasFilters: Filter<Idea>[] = [
   },
 ]
 
-watchImmediate(filterByConfirmedExpert, async (value) => {
-  if (value) {
-    const currentUser = user.value
+watchImmediate(
+  () => filterByConfirmedExpert.value,
+  async (value) => {
+    if (value) {
+      const currentUser = user.value
 
-    if (currentUser?.token) {
-      const { token } = currentUser
+      if (currentUser?.token) {
+        const { token } = currentUser
 
-      const response = await IdeasService.getExpertNotConfirmedRating(token)
+        const response = await IdeasService.getExpertNotConfirmedRating(token)
 
-      if (response instanceof Error) {
-        return
+        if (response instanceof Error) {
+          return
+        }
+
+        ideasData.value = response
       }
-
-      ideasData.value = response
-    }
-  } else ideasData.value = props.ideas
-})
+    } else ideasData.value = props.ideas
+  },
+)
 
 function getCkeckedIdeaStyle(checkedBy: boolean) {
   const initialClass = ['bi bi-circle-fill', 'fs-6', 'mt-1', 'text-secondary']
