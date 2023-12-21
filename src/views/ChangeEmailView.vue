@@ -1,97 +1,173 @@
 <script lang="ts" setup>
+import { ref, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
+import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
-import { ChangeEmailProps, ChangeEmailEmits } from '@Views/ChangeEmailView.types'
-
-import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
+import Button from '@Components/Button/Button.vue'
+import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
+import Header from '@Components/Header/Header.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import { NewEmailForm } from '@Domain/Invitation'
 
+import ManageUsersService from '@Services/ManageUsersService'
 import InvitationService from '@Services/InvitationService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-defineProps<ChangeEmailProps>()
-const emit = defineEmits<ChangeEmailEmits>()
+import { ChangeStatusCode, getChangeStatusCode } from '@Utils/changeStatusCodeInfo'
+import LoadingSpinner from '@Components/LoadingSpinner/LoadingSpinner.vue'
+import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const { handleSubmit } = useForm<NewEmailForm>({
+const notificationsStore = useNotificationsStore()
+
+const router = useRouter()
+const route = useRoute()
+const { slug } = route.params
+
+const changeStatusCodeInfo = getChangeStatusCode()
+
+const isOpenedCodeModal = ref(false)
+const isChangingEmail = ref(false)
+const isFethingDataToChangeEmail = ref(false)
+
+const { setFieldValue, handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
-    newEmail: (value: string) =>
-      Validation.checkEmail(value) || 'Неверно введена почта',
-    oldEmail: (value: string) =>
-      Validation.checkEmail(value) || 'Неверно введена почта',
+    oldEmail: (value: string) => Validation.checkEmail(value),
+    code: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Неверно введен код',
+    newEmail: (value: string) => Validation.checkEmail(value),
+    key: (value: string) => Validation.checkIsEmptyValue(value),
   },
-  initialValues: { oldEmail: user.value?.email },
+  initialValues: { key: slug.toString() },
 })
 
-const sendChangingUrl = handleSubmit(async (values) => {
+onMounted(async () => {
+  const { slug } = route.params
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await InvitationService.sendUrlToChangeEmail(values, token)
+
+    isFethingDataToChangeEmail.value = true
+    const response = await InvitationService.getInfoToChangeEmail(slug, token)
 
     if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    useNotificationsStore().createSystemNotification(
+    isFethingDataToChangeEmail.value = false
+
+    const { newEmail, oldEmail } = response
+    isOpenedCodeModal.value = true
+
+    setFieldValue('newEmail', newEmail)
+    setFieldValue('oldEmail', oldEmail)
+
+    notificationsStore.createSystemNotification(
       'Система',
-      'Ссылка для изменения почты отправлена на новую почту',
+      'На старую почту отправлен код аутентификации',
     )
+  }
+})
+
+const handleChangeEmail = handleSubmit(async (values) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, role } = currentUser
+
+    isChangingEmail.value = true
+    const response = await ManageUsersService.updateUserEmail(values, token)
+    isChangingEmail.value = false
+
+    if (response instanceof Error) {
+      const messageResponse = response.message as ChangeStatusCode
+      const messageText = changeStatusCodeInfo.translatedStatus[messageResponse]
+
+      if (messageResponse === 'CHANGE_FAILED' && role) {
+        router.push(getRouteByUserRole(role))
+      }
+      return notificationsStore.createSystemNotification('Система', messageText)
+    }
+
+    notificationsStore.createSystemNotification(
+      'Система',
+      'Успешное изменение почты',
+    )
+    userStore.logoutUser()
   }
 })
 </script>
 
 <template>
-  <ModalLayout
-    :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
-    class-name="change-email-page"
+  <PageLayout
+    content-class-name="d-flex align-items-center justify-content-center bg-white p-3"
   >
-    <div class="change-email-page__content">
-      <FormLayout>
+    <template #header>
+      <Header></Header>
+    </template>
+
+    <template #leftSideBar>
+      <LeftSideBar />
+    </template>
+
+    <template #content>
+      <FormLayout class-name="change-email-view__form position-relative p-3 rounded">
         <Typography class-name="fs-3 text-primary text-center">
-          Изменение почты
+          Новая почта
         </Typography>
+
         <Input
-          type="email"
-          name="newEmail"
+          type="text"
+          name="code"
           class-name="rounded-end"
-          placeholder="Введите ваш новый email"
-          prepend="@"
-        />
-        <Button
-          type="submit"
-          variant="primary"
-          @click="sendChangingUrl"
+          placeholder="Введите код аутентификации"
         >
-          Отправить
+          <template #prepend>
+            <i class="bi bi-shield-check"></i>
+          </template>
+        </Input>
+
+        <Button
+          variant="primary"
+          type="submit"
+          :is-loading="isChangingEmail"
+          @click="handleChangeEmail"
+        >
+          Подтвердить
         </Button>
+
+        <div
+          v-if="isFethingDataToChangeEmail"
+          class="position-absolute top-0 bottom-0 start-0 end-0 d-flex align-items-center justify-content-center rounded bg-secondary bg-opacity-25"
+        >
+          <LoadingSpinner
+            class-name="text-secondary"
+            :is-loading="isFethingDataToChangeEmail"
+          />
+        </div>
       </FormLayout>
-    </div>
-  </ModalLayout>
+
+      <router-view />
+    </template>
+  </PageLayout>
 </template>
 
 <style lang="scss">
-.change-email-page {
-  &__content {
-    @include flexible(center, center);
+.change-email-view {
+  &__form {
+    width: 400px;
   }
 }
 </style>
