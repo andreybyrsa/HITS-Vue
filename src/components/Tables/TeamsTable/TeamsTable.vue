@@ -185,7 +185,7 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     refValue: filterByVacancies,
     isUniqueChoice: true,
     checkFilter: () => true,
-    statement: user.value?.role !== 'INITIATOR',
+    statement: () => user.value?.role !== 'INITIATOR',
   },
   {
     category: 'Стек технологий',
