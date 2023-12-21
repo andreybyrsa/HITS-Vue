@@ -84,12 +84,7 @@ async function getActiveMarkets() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (
-      role !== 'ADMIN' &&
-      role !== 'PROJECT_OFFICE' &&
-      response.length === 0 &&
-      index !== -1
-    ) {
+    if (role?.length === 0 && response.length === 0 && index !== -1) {
       tabs.value.splice(index, 1)
     } else if (index !== -1) {
       updateActiveMarketRoute(response, index)
@@ -128,10 +123,6 @@ function handleOpenRoleModal() {
 
 function handleCloseRoleModal() {
   isOpenedRoleModal.value = false
-}
-
-function handleOpenNotificationModal() {
-  isOpenedNotificationsModal.value = true
 }
 
 function handleCloseNotificationModal() {

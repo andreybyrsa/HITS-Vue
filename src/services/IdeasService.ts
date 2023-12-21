@@ -204,11 +204,7 @@ const updateIdeaSkills = async (
     })
 }
 
-const checkIdea = async (
-  id: string,
-  email: string,
-  token: string,
-): Promise<void | Error> => {
+const checkIdea = async (id: string, token: string): Promise<void | Error> => {
   return await ideasAxios
     .putNoRequestBody<void>(
       `/idea/check/${id}`,
@@ -216,7 +212,7 @@ const checkIdea = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { id }, requestData: { checkedBy: [email] } },
+      { params: { id }, requestData: { isChecked: true } },
     )
     .then((response) => response.data)
     .catch(({ response }) => {

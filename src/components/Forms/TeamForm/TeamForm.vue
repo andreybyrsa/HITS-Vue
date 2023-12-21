@@ -189,6 +189,7 @@ watchImmediate(
 
       <div class="w-100 d-flex flex-column gap-3">
         <StackCategories
+          label="Желаемые компетенции*"
           :skills="wantedSkills"
           v-model:stack="stackTechnologies"
         />

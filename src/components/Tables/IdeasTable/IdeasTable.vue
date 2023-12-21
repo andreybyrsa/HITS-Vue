@@ -107,12 +107,12 @@ watchImmediate(
     }
   },
 )
-
 const ideaTableColumns: TableColumn<Idea>[] = [
   {
-    key: 'checkedBy',
+    key: 'isChecked',
     label: '',
     getRowCellStyle: getCkeckedIdeaStyle,
+    getRowCellFormat: () => '',
   },
   {
     key: 'name',
@@ -200,7 +200,6 @@ const ideasFilters: Filter<Idea>[] = [
     refValue: filterByIdeaStatus,
     isUniqueChoice: false,
     checkFilter: checkIdeaStatus,
-    statement: () => true,
   },
   {
     category: 'Экспертиза',
@@ -213,7 +212,7 @@ const ideasFilters: Filter<Idea>[] = [
     refValue: filterByConfirmedExpert,
     isUniqueChoice: false,
     checkFilter: () => true,
-    statement: () => user.value?.role === 'EXPERT',
+    statement: computed(() => user.value?.role === 'EXPERT'),
   },
 ]
 
@@ -235,12 +234,11 @@ watchImmediate(filterByConfirmedExpert, async (value) => {
   } else ideasData.value = props.ideas
 })
 
-function getCkeckedIdeaStyle(emails: string) {
-  const initialClass = ['text-secondary']
-  const emailUser = user.value?.email
+function getCkeckedIdeaStyle(checkedBy: boolean) {
+  const initialClass = ['bi bi-circle-fill', 'fs-6', 'mt-1', 'text-secondary']
 
-  if (emailUser && emails.includes(emailUser)) {
-    initialClass.splice(0, 1, 'text-success')
+  if (checkedBy) {
+    initialClass.splice(3, 1, 'text-success')
     return initialClass
   } else return initialClass
 }
@@ -264,6 +262,10 @@ function sortByPreAssessment() {
 function sortByRating() {
   mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
 }
+
+// function getChecked() {
+//   return undefined
+// }
 
 function getTranslatedStatus(status: IdeaStatusType) {
   return availableStatus.translatedStatus[status].toString()

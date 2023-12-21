@@ -6,7 +6,7 @@
     :search-by="['name', 'description']"
     :filters="teamsFilters"
     :dropdown-actions-menu="dropdownTeamsActions"
-  ></Table>
+  />
 
   <DeleteModal
     :is-opened="isOpenedTeamDeleteModal"
@@ -60,6 +60,7 @@ const profile = ref<Profile>()
 const deletingTeamId = ref<string | null>(null)
 
 const filterByIsClosed = ref<boolean>()
+const filterByOwnerTeams = ref<string>()
 const filterByVacancies = ref<boolean>(false)
 const filterBySkills = ref<string[]>([])
 
@@ -167,6 +168,14 @@ const dropdownTeamsActions: DropdownMenuAction<Team>[] = [
 
 const teamsFilters = computed<Filter<Team>[]>(() => [
   {
+    category: 'Владелец команды',
+    choices: [{ label: 'Мои команды', value: user.value?.id ?? '' }],
+    refValue: filterByOwnerTeams,
+    isUniqueChoice: true,
+    checkFilter: checkOwnerTeams,
+    statement: computed(() => user.value?.role === 'TEAM_OWNER'),
+  },
+  {
     category: 'Статус',
     choices: [
       { label: 'Открытая команда', value: false },
@@ -185,7 +194,7 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     refValue: filterByVacancies,
     isUniqueChoice: true,
     checkFilter: () => true,
-    statement: user.value?.role !== 'INITIATOR',
+    statement: computed(() => user.value?.role !== 'INITIATOR'),
   },
   {
     category: 'Стек технологий',
@@ -399,6 +408,10 @@ function checkDeleteTeamAction(team: Team) {
 
 function checkTeamStatus(team: Team, status: FilterValue) {
   return team.closed === status
+}
+
+function checkOwnerTeams(team: Team, userId: FilterValue) {
+  return team.owner.id === userId
 }
 
 // function checkTeamVacancies(team: Team, isFilteringByVacancies: FilterValue) {

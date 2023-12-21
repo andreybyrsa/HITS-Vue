@@ -7,6 +7,7 @@ interface User {
   email: string
   firstName: string
   lastName: string
+  createdAt?: string
 
   roles: RolesTypes[]
   role?: RolesTypes

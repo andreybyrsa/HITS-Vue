@@ -2,13 +2,12 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-import { watchImmediate } from '@vueuse/core'
+import { useDateFormat, watchImmediate } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-
-import ChangeEmailView from '@Views/ChangeEmailView.vue'
+import NewEmailRequestModal from '@Components/Modals/NewEmailRequestModal/NewEmailRequestModal.vue'
 
 import { User } from '@Domain/User'
 import Profile from '@Domain/Profile'
@@ -81,8 +80,19 @@ function toogleUpdatingUserInfo(value: boolean) {
   }
 }
 
+function openChangeEmailModal() {
+  isOpenedChangeEmailModal.value = true
+}
+
 function handleCloseChangeEmailModal() {
   isOpenedChangeEmailModal.value = false
+}
+
+function getFormattedDate(date: string) {
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
+  }
 }
 </script>
 
@@ -116,12 +126,24 @@ function handleCloseChangeEmailModal() {
     </div>
 
     <div class="content p-2">
-      <Input
-        name="email"
-        class-name="rounded-end w-100"
-        label="Почта"
-        :disabled="true"
-      />
+      <div class="w-100 d-flex flex-column gap-2">
+        <div class="d-flex gap-1">
+          <Typography class-name="text-primary">Почта:</Typography>
+          <div
+            class="link text-secondary cursor-pointer"
+            @click="openChangeEmailModal"
+          >
+            изменить
+          </div>
+        </div>
+
+        <Input
+          name="email"
+          class-name="rounded-end w-100"
+          :disabled="true"
+        />
+      </div>
+
       <Input
         name="firstName"
         class-name="rounded-end w-100"
@@ -138,10 +160,17 @@ function handleCloseChangeEmailModal() {
         :disabled="!isUpdatingUserInfo"
         validate-on-update
       />
+
+      <div class="d-flex gap-1">
+        <Typography class-name="text-primary">Дата регистрации:</Typography>
+        <Typography class-name="text-secondary">
+          {{ getFormattedDate(profile.createdAt ?? '') }}
+        </Typography>
+      </div>
     </div>
   </div>
 
-  <ChangeEmailView
+  <NewEmailRequestModal
     :isOpened="isOpenedChangeEmailModal"
     @close-modal="handleCloseChangeEmailModal"
   />
@@ -157,5 +186,12 @@ function handleCloseChangeEmailModal() {
 .content {
   width: 100%;
   @include flexible(flex-start, flex-start, column, $gap: 16px);
+}
+
+.link {
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 }
 </style>

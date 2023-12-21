@@ -331,7 +331,11 @@ function checkHeaderButtonStatement(statement?: boolean) {
                 <div
                   :class="`${column.contentClassName ?? ''} flex-wrap d-flex gap-1`"
                 >
-                  <template v-if="row[column.key] instanceof Array">
+                  <div
+                    v-if="
+                      column.key != 'checkedBy' && row[column.key] instanceof Array
+                    "
+                  >
                     <div
                       v-for="(value, index) in row[column.key]"
                       :key="index"
@@ -343,17 +347,15 @@ function checkHeaderButtonStatement(statement?: boolean) {
                         )
                       "
                     >
-                      <div v-if="column.key != 'checkedBy'">
-                        {{
-                          getRowCellFormat(
-                            row[column.key],
-                            column.getRowCellFormat,
-                            +index.toString(),
-                          )
-                        }}
-                      </div>
+                      {{
+                        getRowCellFormat(
+                          row[column.key],
+                          column.getRowCellFormat,
+                          +index.toString(),
+                        )
+                      }}
                     </div>
-                  </template>
+                  </div>
                   <div
                     v-else
                     :class="[
@@ -364,15 +366,6 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   >
                     {{ getRowCellFormat(row[column.key], column.getRowCellFormat) }}
                   </div>
-
-                  <Icon
-                    v-if="column.key == 'checkedBy'"
-                    class-name="bi
-                  bi-circle-fill fs-6"
-                    :class="[
-                      getRowCellStyle(row[column.key], column.getRowCellStyle),
-                    ]"
-                  />
                 </div>
               </td>
 

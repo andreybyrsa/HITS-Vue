@@ -71,7 +71,7 @@ function searchByCategory(value: string | undefined, choices: FilterChoice[]) {
   return choices
 }
 
-function chechFilterCategoryStatement(statement?: () => boolean) {
+function chechFilterCategoryStatement(statement?: boolean) {
   if (statement !== undefined) {
     return statement
   }
@@ -93,7 +93,7 @@ function chechFilterCategoryStatement(statement?: () => boolean) {
       :key="index"
     >
       <div
-        v-if="chechFilterCategoryStatement(filter.statement)"
+        v-if="chechFilterCategoryStatement(filter.statement?.value)"
         class="w-100"
       >
         <Typography class-name="fw-semibold">{{ filter.category }}</Typography>

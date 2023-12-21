@@ -113,19 +113,10 @@ const useIdeasStore = defineStore('ideas', {
       }
     },
 
-    async checkIdea(id: string, token: string, email: string) {
-      const responseCheckedBy = await IdeasService.checkIdea(id, email, token)
+    checkIdea(id: string) {
+      const currentIdea = this.ideas.find((idea) => idea.id === id)
 
-      if (responseCheckedBy instanceof Error) {
-        useNotificationsStore().createSystemNotification(
-          'Система',
-          responseCheckedBy.message,
-        )
-      } else {
-        const currentIdea = this.ideas.find((idea) => idea.id === id)
-
-        currentIdea?.checkedBy.push(email)
-      }
+      if (currentIdea) currentIdea.isChecked = true
     },
   },
 })

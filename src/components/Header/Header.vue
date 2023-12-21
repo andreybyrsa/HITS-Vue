@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { RouteRecordRaw } from 'vue-router'
+import { useRoute, RouteRecordRaw } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
@@ -15,7 +15,6 @@ import useUserStore from '@Store/user/userStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
-import { useRoute } from 'vue-router'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -84,6 +83,7 @@ function closeRoleModal() {
           class-name="btn-sm rounded-4 py-1"
           variant="outline-success"
           prepend-icon-name="bi bi-circle-fill fs-6"
+          :disabled="user?.roles.length === 1"
           @click="openRoleModal"
         >
           <template v-if="user?.role">
