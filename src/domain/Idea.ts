@@ -34,7 +34,8 @@ interface Idea {
   preAssessment: number
   rating: number | null
 
-  checkedBy: string[]
+  isChecked: boolean
+  isActive: boolean
 }
 
 interface Rating {

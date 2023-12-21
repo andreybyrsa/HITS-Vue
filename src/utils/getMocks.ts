@@ -225,7 +225,7 @@ function getMocks(): Mocks {
   ]
   const teamMembers: TeamMember[] = [
     {
-      id: '0',
+      id: '277922d4-e08a-430b-9b94-949dc32681b4',
       teamId: '1',
       userId: '1',
       email: 'timyr@mail.com',
@@ -831,7 +831,8 @@ function getMocks(): Mocks {
       suitability: 1,
       preAssessment: 1,
       rating: null,
-      checkedBy: [users[0].email],
+      isChecked: true,
+      isActive: false,
     },
     {
       id: '1',
@@ -858,7 +859,8 @@ function getMocks(): Mocks {
       suitability: 3,
       preAssessment: 4,
       rating: 2,
-      checkedBy: [users[0].email],
+      isChecked: false,
+      isActive: false,
     },
     {
       id: '2',
@@ -885,7 +887,8 @@ function getMocks(): Mocks {
       suitability: 3,
       preAssessment: 4,
       rating: 4,
-      checkedBy: [users[0].email],
+      isChecked: false,
+      isActive: false,
     },
     {
       id: '3',
@@ -912,11 +915,12 @@ function getMocks(): Mocks {
       suitability: 3,
       preAssessment: 4,
       rating: 4,
-      checkedBy: [users[0].email],
+      isChecked: false,
+      isActive: false,
     },
     {
       id: '7',
-      checkedBy: ['admin@mail.com', '3@mail.com'],
+      isChecked: true,
       initiatorEmail: '3@mail.com',
       name: 'Земляника',
       problem:
@@ -940,6 +944,7 @@ function getMocks(): Mocks {
       suitability: 3,
       preAssessment: 4,
       rating: 4,
+      isActive: false,
     },
     {
       id: '4',
@@ -966,7 +971,8 @@ function getMocks(): Mocks {
       suitability: 3,
       preAssessment: 4,
       rating: 4,
-      checkedBy: [users[0].email],
+      isChecked: false,
+      isActive: true,
     },
   ]
 

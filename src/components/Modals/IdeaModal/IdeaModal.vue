@@ -61,7 +61,7 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser?.role) {
-    const { token, role, email } = currentUser
+    const { token, role } = currentUser
     const id = route.params.id.toString()
 
     const ideaParallelRequests = [
@@ -69,7 +69,6 @@ onMounted(async () => {
       () => IdeasService.getIdeaSkills(id, token),
       () => ratingsStore.getIdeaRatings(id, token),
       () => commentsStore.getComments(id, token),
-      () => ideasStore.checkIdea(id, token, email),
     ]
 
     await makeParallelRequests<
@@ -85,6 +84,7 @@ onMounted(async () => {
         }
       })
     })
+    ideasStore.checkIdea(id)
   }
 })
 

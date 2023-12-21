@@ -88,7 +88,6 @@ const usersFilters: Filter<User>[] = [
     refValue: rolesFilter,
     isUniqueChoice: false,
     checkFilter: checkUserRoles,
-    statement: () => true,
   },
 ]
 
