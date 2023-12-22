@@ -1,83 +1,144 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, Ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
 
-import Typography from '@Components/Typography/Typography.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
-import Icon from '@Components/Icon/Icon.vue'
 import RequestToIdeaModal from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.vue'
+import FilterBar from '@Components/FilterBar/FilterBar.vue'
+import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
+import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
-import IdeaCardsPlaceholder from '@Views/IdeasMarket/IdeaCardsPlaceholder.vue'
-import IdeaCard from '@Views/IdeasMarket/IdeaCard.vue'
+import IdeaMarketCard from '@Views/IdeasMarket/IdeaMarketCard.vue'
+import IdeaMarketCardsPlaceholder from '@Views/IdeasMarket/IdeaMarketCardsPlaceholder.vue'
+import IdeasMarketHeader from '@Views/IdeasMarket/IdeasMarketHeader.vue'
 
 import { IdeaMarket, IdeaMarketStatusType } from '@Domain/IdeaMarket'
+import { Market } from '@Domain/Market'
 
 import IdeasMarketService from '@Services/IdeasMarketService'
+import MarketService from '@Services/MarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import MarketService from '@Services/MarketService'
-import { Market } from '@Domain/Market'
-import { useRoute } from 'vue-router'
 
-import Button from '@Components/Button/Button.vue'
-import ReturnIdeasMarketModal from '@Components/Modals/ReturnIdeasMarketModal/ReturnIdeasMarketModal.vue'
-import FilterBar from '@Components/FilterBar/FilterBar.vue'
-import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
+import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const availableStatus = getIdeaMarketStatus()
-
 const ideasMarketStore = useIdeasMarketStore()
-
-const filterByIdeaMarketStatus = ref<IdeaMarketStatusType>()
 
 const notificationsStore = useNotificationsStore()
 
-const ideas = ref<IdeaMarket[]>([])
-const market = ref<Market>()
-const isAllIdeas = ref(true)
-
 const route = useRoute()
 
-const searchedValue = ref('')
-
+const ideasMarket = ref<IdeaMarket[] | null>(null)
+const market = ref<Market | null>(null)
 const ideaMarket = ref<IdeaMarket | null>(null)
-const isOpenedRequestToIdeaModal = ref(false)
-const isOpenedSendToNextMarketModal = ref(false)
 
-const openIdeasMarket = computed(() =>
-  ideas.value.filter(({ status }) => status === 'RECRUITMENT_IS_OPEN'),
+const availableStatus = getIdeaMarketStatus()
+
+const searchedValue = ref('')
+const filterByIdeaMarketStatus = ref<IdeaMarketStatusType>()
+
+const isAllIdeas = ref(true)
+const isOpenedRequestToIdeaModal = ref(false)
+
+onMounted(getIdeasMarket)
+
+watch(
+  () => user.value?.role,
+  async () => {
+    if (isAllIdeas.value) {
+      return await getIdeasMarket()
+    }
+  },
 )
 
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
+}
+
+async function getIdeasMarket() {
+  const currentUser = user.value
+
+  if (currentUser?.token && currentUser?.role) {
+    const { token, role } = currentUser
+    const marketId = route.params.marketId.toString()
+
+    ideasMarket.value = null
+    market.value = null
+
+    const ideasMarketParallelRequests = [
+      () => ideasMarketStore.getMarketIdeas(marketId, role, token),
+      () => MarketService.getMarket(marketId, token),
+    ]
+
+    await makeParallelRequests<IdeaMarket[] | Market | Error>(
+      ideasMarketParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, ideasMarket)
+        } else if (response.id === 1) {
+          checkResponseStatus(response, market)
+        }
+      })
+    })
+  }
+}
+
+async function getFavoriteIdeasMarket() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const marketId = route.params.marketId.toString()
+
+    ideasMarket.value = null
+    const response = await IdeasMarketService.fetchFavoritesIdeas(marketId, token)
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    ideasMarket.value = response
+  }
+}
+
 const searchedIdeas = computed(() => {
-  if (filterByIdeaMarketStatus.value) {
-    return ideas.value.filter(
-      ({ status }) => status === filterByIdeaMarketStatus.value,
-    )
+  if (searchedValue.value) {
+    const lowercaseSearch = searchedValue.value.toLowerCase().trim()
+
+    return ideasMarket.value?.filter((idea) => {
+      const ideaName = idea.name.toLowerCase().trim()
+
+      const isMatchedToFilter = filterByIdeaMarketStatus.value
+        ? checkIdeaMarketStatus(idea, filterByIdeaMarketStatus.value)
+        : true
+
+      return ideaName.includes(lowercaseSearch) && isMatchedToFilter
+    })
   }
 
-  if (!searchedValue.value) {
-    return ideas.value
-  }
-
-  const lowercaseSearch = searchedValue.value.toLowerCase().trim()
-  return ideas.value?.filter((idea) => {
-    const ideaName = idea.name.toLocaleLowerCase().trim()
-    return ideaName.includes(lowercaseSearch)
-  })
+  return ideasMarket.value
 })
 
 const ideasMarketFilters: Filter<IdeaMarket>[] = [
   {
-    category: 'Статус',
+    category: 'Статус идеи',
     choices: availableStatus.status.map((IdeasMarketStatus) => ({
       label: availableStatus.translatedStatus[IdeasMarketStatus],
       value: IdeasMarketStatus,
@@ -88,71 +149,8 @@ const ideasMarketFilters: Filter<IdeaMarket>[] = [
   },
 ]
 
-onMounted(async () => getIdeasByRole())
-
-watch(
-  () => user.value?.role && route.params,
-  async () => {
-    if (isAllIdeas.value) getIdeasByRole()
-  },
-)
-
-async function getIdeasByRole() {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentUser.role) {
-    const { token, role } = currentUser
-    const marketId = route.params.marketId.toString()
-
-    ideas.value = []
-
-    const responseMarket = await MarketService.getMarket(marketId, token)
-    if (responseMarket instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        responseMarket.message,
-      )
-    }
-    market.value = responseMarket
-
-    const responseIdeas = await ideasMarketStore.getMarketIdeas(
-      marketId.toString(),
-      role,
-      token,
-    )
-    if (responseIdeas instanceof Error) {
-      return
-    }
-
-    ideas.value = responseIdeas
-  }
-}
-
-async function getFavoritesIdeas() {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const marketId = route.params.marketId.toString()
-
-    ideas.value = []
-    const response = await IdeasMarketService.fetchFavoritesIdeas(marketId, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    ideas.value = response
-  }
-}
-
-function getNavTabClass(isAllIdeas: boolean) {
-  const initialClass = ['nav-link', 'header-link']
-  if (isAllIdeas) {
-    initialClass.push('active', 'text-primary')
-    return initialClass
-  }
-  initialClass.push('text-dark')
-  return initialClass
+function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
+  return ideaMarket.status === status
 }
 
 async function switchNavTab(value: boolean, callback: () => Promise<void>) {
@@ -168,97 +166,50 @@ function closeRequestToIdeaModal() {
   ideaMarket.value = null
   isOpenedRequestToIdeaModal.value = false
 }
-
-function openReturnIdeasMarketModal() {
-  isOpenedSendToNextMarketModal.value = true
-}
-
-function closeReturnIdeasMarketModal() {
-  isOpenedSendToNextMarketModal.value = false
-}
-
-function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
-  return ideaMarket.status === status
-}
-
-function getAccessToCloseMarket() {
-  const role = user.value?.role
-  const marketStatus = market.value?.status
-  return (role === 'ADMIN' || role === 'PROJECT_OFFICE') && marketStatus === 'ACTIVE'
-}
 </script>
 
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
-    content-class-name="market-page__content p-3 bg-white"
+    content-class-name="ideas-market-view__content p-3 bg-white"
   >
+    <template #header>
+      <Header></Header>
+    </template>
+
     <template #leftSideBar>
       <LeftSideBar />
     </template>
 
     <template #content>
-      <Typography class-name="fs-2 text-primary w-75">{{ market?.name }}</Typography>
+      <IdeasMarketHeader
+        :market="market"
+        :is-all-ideas="isAllIdeas"
+        v-model="searchedValue"
+        @switch-to-all="switchNavTab(true, getIdeasMarket)"
+        @switch-to-favourites="switchNavTab(false, getFavoriteIdeasMarket)"
+      />
 
-      <div class="market-page__navigation nav nav-underline mb-3">
-        <div
-          :class="getNavTabClass(isAllIdeas === true)"
-          @click="switchNavTab(true, getIdeasByRole)"
-        >
-          Все
-        </div>
-        <div
-          :class="getNavTabClass(isAllIdeas === false)"
-          @click="switchNavTab(false, getFavoritesIdeas)"
-        >
-          Избранное
-        </div>
-      </div>
-
-      <div class="search-and-close-market mb-3 w-100">
-        <div class="w-50">
-          <Input
-            name="search"
-            class-name="rounded-end"
-            no-form-controlled
-            v-model="searchedValue"
-            placeholder="Поиск"
-          >
-            <template #prepend>
-              <Icon class-name="bi bi-search" />
+      <div class="w-100 d-flex justify-content-stretch align-items-start">
+        <div class="w-100 d-grid">
+          <div class="row g-3 row-cols-1 row-cols-sm-1 row-cols-lg-2">
+            <template v-if="searchedIdeas">
+              <IdeaMarketCard
+                v-for="idea in searchedIdeas"
+                :key="idea.id"
+                :idea-market="idea"
+                :is-all-ideas="isAllIdeas"
+                v-model:ideas="searchedIdeas"
+                @send-quick-request="openRequestToIdeaModal"
+              />
             </template>
-          </Input>
-        </div>
-        <div>
-          <Button
-            v-if="getAccessToCloseMarket()"
-            variant="danger"
-            @click="openReturnIdeasMarketModal"
-            >Закрыть биржу
-          </Button>
-        </div>
-      </div>
 
-      <div class="idea-cards-filter">
-        <div class="idea-cards row">
-          <template v-if="searchedIdeas && market">
-            <IdeaCard
-              v-for="idea in searchedIdeas"
-              :key="idea.id"
-              :idea="idea"
-              :is-all-ideas="isAllIdeas"
-              :market="market"
-              v-model:ideas="searchedIdeas"
-              @send-quick-request="openRequestToIdeaModal"
-            />
-          </template>
-
-          <IdeaCardsPlaceholder v-else />
+            <IdeaMarketCardsPlaceholder v-else />
+          </div>
         </div>
 
         <FilterBar
-          v-if="ideasMarketFilters"
-          class-name="ms-2 border-start h-100"
+          class-name="ms-3 border-start"
           :filters="ideasMarketFilters"
         />
       </div>
@@ -269,45 +220,17 @@ function getAccessToCloseMarket() {
         @close-modal="closeRequestToIdeaModal"
       />
 
-      <ReturnIdeasMarketModal
-        v-if="market"
-        :ideasMarket="openIdeasMarket"
-        :market="market"
-        :is-opened="isOpenedSendToNextMarketModal"
-        @close-modal="closeReturnIdeasMarketModal"
-      />
-
       <router-view />
     </template>
   </PageLayout>
 </template>
 
-<style lang="scss" scoped>
-.header-link {
-  cursor: pointer;
-}
-
-.market-page {
-  &__navigation {
-    @include flexible(none, center, $gap: 16px);
-  }
-
+<style lang="scss">
+.ideas-market-view {
   &__content {
     overflow-y: scroll;
+
     @include flexible(stretch, flex-start, column);
   }
-}
-
-.idea-cards {
-  width: 100%;
-  grid-row-gap: 20px;
-}
-
-.idea-cards-filter {
-  @include flexible(stretch, flex-start, $gap: 8px);
-}
-
-.search-and-close-market {
-  @include flexible(center, space-between, $gap: 8px);
 }
 </style>

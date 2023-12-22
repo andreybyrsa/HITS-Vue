@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 import {
-  ReturnIdeasMarketModalProps,
-  ReturnIdeasMarketModalEmits,
-} from '@Components/Modals/ReturnIdeasMarketModal/ReturnIdeasMarketModal.types'
+  CloseIdeasMarketModalProps,
+  CloseIdeasMarketModalEmits,
+} from '@Components/Modals/CloseIdeasMarketModal/CloseIdeasMarketModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 
@@ -13,10 +14,9 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
 import useMarketsStore from '@Store/markets/marketsStore'
-import { useRouter } from 'vue-router'
 
-const props = defineProps<ReturnIdeasMarketModalProps>()
-const emit = defineEmits<ReturnIdeasMarketModalEmits>()
+const props = defineProps<CloseIdeasMarketModalProps>()
+const emit = defineEmits<CloseIdeasMarketModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -27,7 +27,7 @@ const isLoading = ref(false)
 
 const router = useRouter()
 
-const closeMarket = async () => {
+async function closeIdeasMarket() {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -51,8 +51,11 @@ const closeMarket = async () => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="return-ideas-on-market-modal bg-white rounded p-3">
-      <div class="return-ideas-on-market-modal__idea-date w-100">
+    <div
+      v-if="isOpened"
+      class="close-ideas-market-modal bg-white rounded p-3"
+    >
+      <div class="close-ideas-market-modal__idea-date w-100">
         <Typography class-name="fs-5 w-100 text-secondary border-bottom">
           Закрытие биржи
         </Typography>
@@ -68,23 +71,23 @@ const closeMarket = async () => {
         </Typography>
       </div>
 
-      <div
-        class="return-ideas-on-market-modal__ideas d-flex flex-column w-100 gap-2"
-      >
+      <div class="close-ideas-market-modal__ideas d-flex flex-column w-100 gap-2">
         <div
           v-for="(idea, index) in props.ideasMarket"
           :key="index"
           class="d-flex gap-2 w-100"
         >
-          <Typography class-name="text border rounded p-2 w-100">
-            {{ idea.name }}
-          </Typography>
+          <div class="close-ideas-market-modal__ideas-name border rounded p-2 w-100">
+            <Typography>
+              {{ idea.name }}
+            </Typography>
+          </div>
         </div>
       </div>
 
       <Button
         variant="danger"
-        @click="closeMarket"
+        @click="closeIdeasMarket"
         :is-loading="isLoading"
       >
         Закрыть биржу
@@ -93,14 +96,8 @@ const closeMarket = async () => {
   </ModalLayout>
 </template>
 
-<style lang="scss">
-.text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.return-ideas-on-market-modal {
+<style lang="scss" scoped>
+.close-ideas-market-modal {
   width: 500px;
 
   @include flexible(
@@ -121,11 +118,15 @@ const closeMarket = async () => {
   &__ideas {
     max-height: 192px;
     overflow-y: scroll;
+
+    &-name {
+      @include textEllipsis(1);
+    }
   }
 }
 
-.modal-layout-enter-from .return-ideas-on-market-modal,
-.modal-layout-leave-to .return-ideas-on-market-modal {
+.modal-layout-enter-from .close-ideas-market-modal,
+.modal-layout-leave-to .close-ideas-market-modal {
   transform: scale(0.9);
 }
 </style>

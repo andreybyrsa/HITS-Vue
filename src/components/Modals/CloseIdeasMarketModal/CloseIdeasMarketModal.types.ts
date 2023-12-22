@@ -1,14 +1,14 @@
 import { IdeaMarket } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 
-interface ReturnIdeasMarketModalProps {
+interface CloseIdeasMarketModalProps {
+  isOpened: boolean
   market: Market
   ideasMarket: IdeaMarket[]
-  isOpened: boolean
 }
 
-interface ReturnIdeasMarketModalEmits {
+interface CloseIdeasMarketModalEmits {
   (event: 'close-modal'): void
 }
 
-export { ReturnIdeasMarketModalProps, ReturnIdeasMarketModalEmits }
+export { CloseIdeasMarketModalProps, CloseIdeasMarketModalEmits }
