@@ -122,6 +122,13 @@ p {
   cursor: pointer;
 }
 
+.bs-link {
+  :hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
 input[type='checkbox'] {
   cursor: pointer;
 
