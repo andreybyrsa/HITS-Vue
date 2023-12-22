@@ -27,7 +27,7 @@ const isLoading = ref(false)
 
 const router = useRouter()
 
-const sendIdeasToMarket = async () => {
+const closeMarket = async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -51,8 +51,8 @@ const sendIdeasToMarket = async () => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="send-ideas-on-market-modal bg-white rounded p-3">
-      <div class="send-ideas-on-market-modal__idea-date w-100">
+    <div class="return-ideas-on-market-modal bg-white rounded p-3">
+      <div class="return-ideas-on-market-modal__idea-date w-100">
         <Typography class-name="fs-5 w-100 text-secondary border-bottom">
           Закрытие биржи
         </Typography>
@@ -69,14 +69,14 @@ const sendIdeasToMarket = async () => {
       </div>
 
       <div
-        class="send-ideas-on-market-modal__ideas d-flex flex-column w-100 flex-wrap gap-2"
+        class="return-ideas-on-market-modal__ideas d-flex flex-column w-100 gap-2"
       >
         <div
           v-for="(idea, index) in props.ideasMarket"
           :key="index"
           class="d-flex gap-2 w-100"
         >
-          <Typography class-name="text-primary border rounded p-2 w-100">
+          <Typography class-name="text border rounded p-2 w-100">
             {{ idea.name }}
           </Typography>
         </div>
@@ -84,7 +84,7 @@ const sendIdeasToMarket = async () => {
 
       <Button
         variant="danger"
-        @click="sendIdeasToMarket"
+        @click="closeMarket"
         :is-loading="isLoading"
       >
         Закрыть биржу
@@ -94,10 +94,14 @@ const sendIdeasToMarket = async () => {
 </template>
 
 <style lang="scss">
-.send-ideas-on-market-modal {
+.text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.return-ideas-on-market-modal {
   width: 500px;
-  max-height: 400px;
-  overflow-y: scroll;
 
   @include flexible(
     flex-start,
@@ -120,8 +124,8 @@ const sendIdeasToMarket = async () => {
   }
 }
 
-.modal-layout-enter-from .letter-modal,
-.modal-layout-leave-to .letter-modal {
+.modal-layout-enter-from .return-ideas-on-market-modal,
+.modal-layout-leave-to .return-ideas-on-market-modal {
   transform: scale(0.9);
 }
 </style>

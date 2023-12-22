@@ -400,7 +400,7 @@ function getMocks(): Mocks {
       id: '2',
       marketId: '201',
       position: 2,
-      name: 'Создать машину времени',
+      name: 'Создать машину времени aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa',
       initiator: users[0],
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
