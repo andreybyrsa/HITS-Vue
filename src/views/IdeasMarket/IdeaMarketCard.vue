@@ -112,7 +112,7 @@ function getIdeaMarketStatusStyle() {
 
 <template>
   <div class="idea-market col">
-    <div class="p-3 w-100 rounded border shadow-sm d-flex flex-column gap-2">
+    <div class="p-3 w-100 h-100 rounded border shadow-sm d-flex flex-column gap-2">
       <div class="d-flex flex-column">
         <div class="w-100 d-flex align-items-start justify-content-between gap-2">
           <div
