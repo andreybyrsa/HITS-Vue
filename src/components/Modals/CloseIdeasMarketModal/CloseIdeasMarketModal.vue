@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 import {
-  ReturnIdeasMarketModalProps,
-  ReturnIdeasMarketModalEmits,
-} from '@Components/Modals/ReturnIdeasMarketModal/ReturnIdeasMarketModal.types'
+  CloseIdeasMarketModalProps,
+  CloseIdeasMarketModalEmits,
+} from '@Components/Modals/CloseIdeasMarketModal/CloseIdeasMarketModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 
@@ -13,10 +14,9 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import useUserStore from '@Store/user/userStore'
 import useMarketsStore from '@Store/markets/marketsStore'
-import { useRouter } from 'vue-router'
 
-const props = defineProps<ReturnIdeasMarketModalProps>()
-const emit = defineEmits<ReturnIdeasMarketModalEmits>()
+const props = defineProps<CloseIdeasMarketModalProps>()
+const emit = defineEmits<CloseIdeasMarketModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -27,7 +27,7 @@ const isLoading = ref(false)
 
 const router = useRouter()
 
-const sendIdeasToMarket = async () => {
+async function closeIdeasMarket() {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -51,8 +51,11 @@ const sendIdeasToMarket = async () => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="send-ideas-on-market-modal bg-white rounded p-3">
-      <div class="send-ideas-on-market-modal__idea-date w-100">
+    <div
+      v-if="isOpened"
+      class="close-ideas-market-modal bg-white rounded p-3"
+    >
+      <div class="close-ideas-market-modal__idea-date w-100">
         <Typography class-name="fs-5 w-100 text-secondary border-bottom">
           Закрытие биржи
         </Typography>
@@ -69,7 +72,7 @@ const sendIdeasToMarket = async () => {
       </div>
 
       <div
-        class="send-ideas-on-market-modal__ideas d-flex flex-column w-100 flex-wrap gap-2"
+        class="close-ideas-market-modal__ideas d-flex flex-column w-100 flex-wrap gap-2"
       >
         <div
           v-for="(idea, index) in props.ideasMarket"
@@ -84,7 +87,7 @@ const sendIdeasToMarket = async () => {
 
       <Button
         variant="danger"
-        @click="sendIdeasToMarket"
+        @click="closeIdeasMarket"
         :is-loading="isLoading"
       >
         Закрыть биржу
@@ -93,8 +96,8 @@ const sendIdeasToMarket = async () => {
   </ModalLayout>
 </template>
 
-<style lang="scss">
-.send-ideas-on-market-modal {
+<style lang="scss" scoped>
+.close-ideas-market-modal {
   width: 500px;
   max-height: 400px;
   overflow-y: scroll;
@@ -120,8 +123,8 @@ const sendIdeasToMarket = async () => {
   }
 }
 
-.modal-layout-enter-from .letter-modal,
-.modal-layout-leave-to .letter-modal {
+.modal-layout-enter-from .close-ideas-market-modal,
+.modal-layout-leave-to .close-ideas-market-modal {
   transform: scale(0.9);
 }
 </style>
