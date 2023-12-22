@@ -1,9 +1,0 @@
-services:
-  hits-frontend:
-    container_name: hits-frontend
-    platform: linux/x86_64
-    image: andreybyrsa/hits:latest
-    environment:
-      - API_URL="http://localhost:8080"
-    ports:
-      - '80:80'
