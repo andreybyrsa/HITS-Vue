@@ -59,9 +59,9 @@ onMounted(async () => {
 })
 
 watchImmediate(
-  () => props.checkedIdeas,
-  (ideas) => {
-    checkedIdeas.value = ideas
+  () => props.ideas,
+  (value) => {
+    checkedIdeas.value = value
   },
   { deep: true },
 )
@@ -96,11 +96,10 @@ const sendIdeasToMarket = handleSubmit(async () => {
 
     isLoading.value = false
     emit('close-modal')
-    emit('reset-checked-ideas')
   }
 })
 
-function deleteIdea(ideaId: string) {
+function resetIdea(ideaId: string) {
   const ideaIndex = checkedIdeas.value.findIndex(({ id }) => id === ideaId)
 
   if (ideaIndex !== -1) {
@@ -119,7 +118,7 @@ function deleteIdea(ideaId: string) {
     <div class="send-ideas-on-market-modal bg-white rounded p-3">
       <div class="send-ideas-on-market-modal__idea-date w-100">
         <Typography class-name="fs-5 w-100 text-secondary border-bottom">
-          Выберите биржу
+          Отправить {{ checkedIdeas.length === 1 ? 'идею' : 'идеи' }} на биржу
         </Typography>
         <Button
           variant="close"
@@ -139,24 +138,27 @@ function deleteIdea(ideaId: string) {
       </div>
 
       <div class="send-ideas-on-market-modal__ideas d-flex flex-column gap-2 w-100">
+        <Typography class-name="w-100 text-primary">
+          {{ checkedIdeas.length === 1 ? 'Выбранная идея' : 'Выбранные идеи' }}*
+        </Typography>
         <div
-          v-for="(idea, index) in checkedIdeas"
+          v-for="(idea, index) in ideas"
           :key="index"
           class="d-flex gap-2 w-100"
         >
-          <Typography class-name="text-primary w-100 border rounded p-2">
+          <Typography class-name=" w-100 border rounded p-2">
             {{ idea.name }}
           </Typography>
           <Button
             variant="outline-danger"
             append-icon-name="bi bi-x"
-            @click="deleteIdea(idea.id)"
+            @click="resetIdea(idea.id)"
           />
         </div>
       </div>
 
       <Button
-        variant="primary"
+        variant="success"
         @click="sendIdeasToMarket"
         :is-loading="isLoading"
       >
@@ -169,8 +171,6 @@ function deleteIdea(ideaId: string) {
 <style lang="scss">
 .send-ideas-on-market-modal {
   width: 500px;
-  max-height: 400px;
-  overflow-y: scroll;
 
   @include flexible(
     flex-start,
@@ -193,8 +193,8 @@ function deleteIdea(ideaId: string) {
   }
 }
 
-.modal-layout-enter-from .letter-modal,
-.modal-layout-leave-to .letter-modal {
+.modal-layout-enter-from .send-ideas-on-market-modal,
+.modal-layout-leave-to .send-ideas-on-market-modal {
   transform: scale(0.9);
 }
 </style>

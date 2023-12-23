@@ -71,17 +71,17 @@ async function closeIdeasMarket() {
         </Typography>
       </div>
 
-      <div
-        class="close-ideas-market-modal__ideas d-flex flex-column w-100 flex-wrap gap-2"
-      >
+      <div class="close-ideas-market-modal__ideas d-flex flex-column w-100 gap-2">
         <div
           v-for="(idea, index) in props.ideasMarket"
           :key="index"
           class="d-flex gap-2 w-100"
         >
-          <Typography class-name="text-primary border rounded p-2 w-100">
-            {{ idea.name }}
-          </Typography>
+          <div class="close-ideas-market-modal__ideas-name border rounded p-2 w-100">
+            <Typography>
+              {{ idea.name }}
+            </Typography>
+          </div>
         </div>
       </div>
 
@@ -99,8 +99,6 @@ async function closeIdeasMarket() {
 <style lang="scss" scoped>
 .close-ideas-market-modal {
   width: 500px;
-  max-height: 400px;
-  overflow-y: scroll;
 
   @include flexible(
     flex-start,
@@ -120,6 +118,10 @@ async function closeIdeasMarket() {
   &__ideas {
     max-height: 192px;
     overflow-y: scroll;
+
+    &-name {
+      @include textEllipsis(1);
+    }
   }
 }
 

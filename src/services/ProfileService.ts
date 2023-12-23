@@ -34,11 +34,11 @@ const getUserProfile = async (
 }
 
 const getProfileAvatar = async (
-  email: string,
+  id: string,
   token: string,
 ): Promise<string | Error> => {
   return await axios
-    .get(`${API_URL}/profile/avatar/get/${email}`, {
+    .get(`${API_URL}/profile/avatar/get/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

@@ -1,13 +1,12 @@
 import { Idea } from '@Domain/Idea'
 
 interface SendIdeasOnMarketModalProps {
-  checkedIdeas: Idea[]
+  ideas: Idea[]
   isOpened: boolean
 }
 
 interface SendIdeasOnMarketModalEmits {
   (event: 'close-modal'): void
-  (event: 'reset-checked-ideas'): void
 }
 
 export { SendIdeasOnMarketModalProps, SendIdeasOnMarketModalEmits }
