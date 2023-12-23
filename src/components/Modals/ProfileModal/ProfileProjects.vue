@@ -1,13 +1,16 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
-import { ProfileProjectsProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
-defineProps<ProfileProjectsProps>()
+import useProfileStore from '@Store/profile/profileStore'
+
+const profileStore = useProfileStore()
+const { profile } = storeToRefs(profileStore)
 
 const router = useRouter()
 
@@ -23,7 +26,7 @@ function navigateToProjectModal(projectId: string) {
     </div>
 
     <div
-      v-if="profile.projects"
+      v-if="profile?.projects"
       class="profile-projects__content mt-3"
     >
       <template v-if="profile.projects.length > 0">

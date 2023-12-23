@@ -1,15 +1,18 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
-import { ProfileIdeasProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
+import useProfileStore from '@Store/profile/profileStore'
+
 import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 
-defineProps<ProfileIdeasProps>()
+const profileStore = useProfileStore()
+const { profile } = storeToRefs(profileStore)
 
 const router = useRouter()
 const status = getIdeaStatus()
@@ -26,7 +29,7 @@ function navigateToIdeaModal(ideaId: string) {
     </div>
 
     <div
-      v-if="profile.ideas"
+      v-if="profile?.ideas"
       class="profile-ideas__content mt-3"
     >
       <template v-if="profile.ideas.length > 0">

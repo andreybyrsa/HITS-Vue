@@ -3,40 +3,39 @@ import { ref, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
-import { ProfileSkillProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
 import { Skill } from '@Domain/Skill'
 
-import ProfileService from '@Services/ProfileService'
-
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
-
-const props = defineProps<ProfileSkillProps>()
+import useProfileStore from '@Store/profile/profileStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const notificationsStore = useNotificationsStore()
+const profileStore = useProfileStore()
+const { profile } = storeToRefs(profileStore)
 
 const profileSkills = ref<SkillsArea[]>([])
 const selectedSkills = ref<Skill[]>([])
 
-const isOwnProfile = computed(() => props.profile.email === user.value?.email)
+const isOwnProfile = computed(() => profile.value?.email === user.value?.email)
 const isUpdatingSkills = ref(false)
 
 watchImmediate(
-  () => props.profile.skills,
+  () => profile.value?.skills,
   (skills) => {
-    profileSkills.value = [
-      { label: 'Фактические компетенции', skills, alphaOpacity: 50 },
-    ]
+    if (skills) {
+      profileSkills.value = [
+        { label: 'Фактические компетенции', skills, alphaOpacity: 50 },
+      ]
+    }
   },
+  { deep: true },
 )
 
 function toogleUpdatingSkills(value: boolean) {
@@ -49,17 +48,9 @@ const handleSaveSkills = async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await ProfileService.saveProfileSkills(
-      selectedSkills.value,
-      token,
-    )
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    toogleUpdatingSkills(false)
-    profileSkills.value[0].skills = selectedSkills.value
+    await profileStore
+      .saveProfileSkills(selectedSkills.value, token)
+      .then(() => toogleUpdatingSkills(false))
   }
 }
 </script>

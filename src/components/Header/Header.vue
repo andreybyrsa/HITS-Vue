@@ -9,15 +9,17 @@ import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import Button from '@Components/Button/Button.vue'
 
-import ProfileService from '@Services/ProfileService'
-
 import useUserStore from '@Store/user/userStore'
+import useProfileStore from '@Store/profile/profileStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const profileStore = useProfileStore()
+const { avatar } = storeToRefs(profileStore)
 
 const userRolesInfo = getUserRolesInfo()
 
@@ -29,13 +31,9 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { email, token } = currentUser
+    const { id, token } = currentUser
 
-    const response = await ProfileService.getProfileAvatar(email, token)
-
-    if (typeof response === 'string') {
-      console.log(response)
-    }
+    await profileStore.getProfileAvatar(id, token)
   }
 })
 
@@ -47,6 +45,9 @@ function navigateToProfile() {
     path: 'profil/:id',
     alias: '/profile/:id',
     component: ProfileModal,
+    props: {
+      canGoBack: true,
+    },
   }
 
   if (currentUser && name) {
@@ -68,7 +69,17 @@ function closeRoleModal() {
   <div class="p-3 bg-white d-flex">
     <div class="user-info d-flex gap-2 align-items-center">
       <div class="user-info__image rounded-circle overflow-hidden">
-        <LoadingPlaceholder class-name="user-info__image-placeholder" />
+        <img
+          v-if="avatar"
+          class="border rounded-circle object-fit-contain"
+          :src="avatar"
+          width="58"
+          height="58"
+        />
+        <LoadingPlaceholder
+          v-else
+          class-name="user-info__image-placeholder"
+        />
       </div>
 
       <div class="d-flex gap-1 flex-column">

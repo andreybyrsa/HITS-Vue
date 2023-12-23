@@ -6,7 +6,6 @@ import { useRouter, useRoute } from 'vue-router'
 import ProfileAvatar from '@Components/Modals/ProfileModal/ProfileAvatar.vue'
 import ProfileInfo from '@Components/Modals/ProfileModal/ProfileInfo.vue'
 import ProfileSkills from '@Components/Modals/ProfileModal/ProfileSkills.vue'
-import ProfileProjects from '@Components/Modals/ProfileModal/ProfileProjects.vue'
 import ProfileIdeas from '@Components/Modals/ProfileModal/ProfileIdeas.vue'
 import ProfileModalPlaceholder from '@Components/Modals/ProfileModal/ProfileModalPlaceholder.vue'
 import Button from '@Components/Button/Button.vue'
@@ -17,9 +16,8 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import Profile from '@Domain/Profile'
 
-import ProfileService from '@Services/ProfileService'
-
 import useUserStore from '@Store/user/userStore'
+import useProfileStore from '@Store/profile/profileStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
@@ -29,15 +27,18 @@ const props = defineProps<ProfileModalProps>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const profileStore = useProfileStore()
+const { profile } = storeToRefs(profileStore)
+
 const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
 const route = useRoute()
 
-const profile = ref<Profile>()
+const DBProfile = ref<Profile>()
+const DBProfileAvatar = ref<string>()
 
 const isOpenedProfileModal = ref(true)
-const isOwnProfile = ref<boolean>()
 
 function checkResponseStatus<T>(
   data: RequestResult<T>,
@@ -55,27 +56,25 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const profileId = route.params.id.toString()
-    const { token, id } = currentUser
+    const { token } = currentUser
 
     const profileParallelRequests = [
-      () => ProfileService.getUserProfile(profileId, token),
-      () => ProfileService.getProfileAvatar(profileId, token),
+      () => profileStore.getUserProfile(profileId, token),
+      () => profileStore.getProfileAvatar(profileId, token),
     ]
 
-    await makeParallelRequests<Profile | string | Error>(
+    await makeParallelRequests<Profile | string | null | Error>(
       profileParallelRequests,
     ).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
-          checkResponseStatus(response, profile)
+          checkResponseStatus(response, DBProfile)
         }
         if (response.id === 1) {
-          console.log(response.value)
+          checkResponseStatus(response, DBProfileAvatar)
         }
       })
     })
-
-    isOwnProfile.value = profileId === id
   }
 })
 
@@ -99,12 +98,12 @@ function handleCloseProfileModal() {
   >
     <div class="profile-modal p-3 overflow-y-scroll">
       <div
-        v-if="profile"
+        v-if="DBProfile"
         class="w-100"
       >
         <div class="profile-modal__header mb-3">
           <Button
-            class-name="btn-primary"
+            variant="primary"
             prepend-icon-name="bi bi-backspace-fill"
             @click="handleCloseProfileModal"
           >
@@ -114,21 +113,19 @@ function handleCloseProfileModal() {
           <Typography
             class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-scroll-hidden"
           >
-            {{ profile.firstName }} {{ profile.lastName }}
+            {{ profile?.firstName }} {{ profile?.lastName }}
           </Typography>
         </div>
 
         <div class="profile-modal__content">
-          <ProfileAvatar :profile="profile" />
+          <ProfileAvatar />
 
           <div class="profile-modal__info">
-            <ProfileInfo v-model="profile" />
+            <ProfileInfo />
 
-            <ProfileSkills :profile="profile" />
+            <ProfileSkills />
 
-            <ProfileIdeas :profile="profile" />
-
-            <ProfileProjects :profile="profile" />
+            <ProfileIdeas />
           </div>
         </div>
       </div>
