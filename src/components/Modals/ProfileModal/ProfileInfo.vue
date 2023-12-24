@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
+import { useRoute } from 'vue-router'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
@@ -10,23 +11,27 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import NewEmailRequestModal from '@Components/Modals/NewEmailRequestModal/NewEmailRequestModal.vue'
 
 import { User } from '@Domain/User'
-import Profile from '@Domain/Profile'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
 import useUserStore from '@Store/user/userStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
 
-const profile = defineModel<Profile>({ required: true })
-
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+
 const notificationsStore = useNotificationsStore()
 
-const isOwnProfile = computed(() => profile.value.email === user.value?.email)
+const isOwnProfile = computed(() => profile.value?.email === user.value?.email)
 const isUpdatingUserInfo = ref(false)
 const isOpenedChangeEmailModal = ref(false)
 
@@ -42,42 +47,35 @@ const { setValues, handleSubmit } = useForm<User>({
 watchImmediate(profile, () => setUserValues())
 
 const handleEditUser = handleSubmit(async (values) => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const response = await ManageUsersService.updateUserInfo(values, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    const { firstName, lastName } = values
-
-    userStore.setUser({ ...currentUser, firstName, lastName })
-    profile.value.firstName = firstName
-    profile.value.lastName = lastName
-
-    toogleUpdatingUserInfo(false)
-  }
+  // const currentUser = user.value
+  // if (currentUser?.token) {
+  //   const { token } = currentUser
+  //   const response = await ManageUsersService.updateUserInfo(values, token)
+  //   if (response instanceof Error) {
+  //     return notificationsStore.createSystemNotification('Система', response.message)
+  //   }
+  //   const { firstName, lastName } = values
+  //   userStore.setUser({ ...currentUser, firstName, lastName })
+  //   profile.value.firstName = firstName
+  //   profile.value.lastName = lastName
+  //   toogleUpdatingUserInfo(false)
+  // }
 })
 
 function setUserValues() {
-  if (profile.value.email === user.value?.email) {
+  if (profile.value?.email === user.value?.email) {
     setValues({ ...user.value })
-  } else {
+  } else if (profile.value) {
     const { email, firstName, lastName } = profile.value
     setValues({ email, firstName, lastName })
   }
 }
 
 function toogleUpdatingUserInfo(value: boolean) {
-  isUpdatingUserInfo.value = value
-
-  if (!value) {
-    setUserValues()
-  }
+  // isUpdatingUserInfo.value = value
+  // if (!value) {
+  //   setUserValues()
+  // }
 }
 
 function openChangeEmailModal() {
@@ -130,6 +128,7 @@ function getFormattedDate(date: string) {
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Почта:</Typography>
           <div
+            v-if="isOwnProfile"
             class="link text-secondary cursor-pointer"
             @click="openChangeEmailModal"
           >
@@ -140,7 +139,7 @@ function getFormattedDate(date: string) {
         <Input
           name="email"
           class-name="rounded-end w-100"
-          :disabled="true"
+          disabled
         />
       </div>
 
@@ -164,7 +163,7 @@ function getFormattedDate(date: string) {
       <div class="d-flex gap-1">
         <Typography class-name="text-primary">Дата регистрации:</Typography>
         <Typography class-name="text-secondary">
-          {{ getFormattedDate(profile.createdAt ?? '') }}
+          {{ getFormattedDate(profile?.createdAt ?? '') }}
         </Typography>
       </div>
     </div>

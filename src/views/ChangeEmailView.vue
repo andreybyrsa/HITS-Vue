@@ -9,6 +9,7 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Header from '@Components/Header/Header.vue'
+import LoadingWrapper from '@Components/LoadingWrapper/LoadingWrapper.vue'
 
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
@@ -23,7 +24,6 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
 import { ChangeStatusCode, getChangeStatusCode } from '@Utils/changeStatusCodeInfo'
-import LoadingSpinner from '@Components/LoadingSpinner/LoadingSpinner.vue'
 import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
 const userStore = useUserStore()
@@ -148,15 +148,7 @@ const handleChangeEmail = handleSubmit(async (values) => {
           Подтвердить
         </Button>
 
-        <div
-          v-if="isFethingDataToChangeEmail"
-          class="position-absolute top-0 bottom-0 start-0 end-0 d-flex align-items-center justify-content-center rounded bg-secondary bg-opacity-25"
-        >
-          <LoadingSpinner
-            class-name="text-secondary"
-            :is-loading="isFethingDataToChangeEmail"
-          />
-        </div>
+        <LoadingWrapper :is-loading="isFethingDataToChangeEmail" />
       </FormLayout>
 
       <router-view />
