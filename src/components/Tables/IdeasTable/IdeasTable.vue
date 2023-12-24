@@ -18,9 +18,8 @@
 
   <SendIdeasOnMarketModal
     :is-opened="isOpenSendIdeasModal"
-    :checked-ideas="sendingIdeasOnMarket"
+    :ideas="sendingIdeasOnMarket"
     @close-modal="closeSendIdeasModal"
-    @reset-checked-ideas="resetCheckedIdeas"
   />
 </template>
 
@@ -301,9 +300,6 @@ function openSendIdeasModal(ideas: Idea[]) {
 }
 function closeSendIdeasModal() {
   isOpenSendIdeasModal.value = false
-}
-function resetCheckedIdeas() {
-  checkedIdeas.value = []
 }
 
 function navigateToIdeaModal(idea: Idea) {

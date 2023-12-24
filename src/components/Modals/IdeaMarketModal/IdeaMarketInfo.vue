@@ -12,12 +12,9 @@ import Button from '@Components/Button/Button.vue'
 import IdeaMarketInfoTabs from '@Components/Modals/IdeaMarketModal/IdeaMarketInfoTabs'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
-import { IdeaMarket } from '@Domain/IdeaMarket'
-
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
-import { Market } from '@Domain/Market'
 import { useDateFormat } from '@vueuse/core'
 import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
 
@@ -105,7 +102,7 @@ function closeConfirmModal() {
 </script>
 
 <template>
-  <div class="bg-white rounded">
+  <div class="bg-white rounded w-100 mb-1">
     <div class="exchange-header w-100 bg-primary rounded-top fs-5 text-white p-2">
       Информация
     </div>

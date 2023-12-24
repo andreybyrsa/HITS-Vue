@@ -28,17 +28,6 @@ function navigateToTeamForm() {
   router.push('/teams/create')
 }
 
-function getAccessRequestToIdea() {
-  const currentUser = user.value
-
-  if (currentUser) {
-    const { role } = currentUser
-    const { status } = props.ideaMarket
-
-    return role === 'TEAM_OWNER' && status === 'RECRUITMENT_IS_OPEN'
-  }
-}
-
 function getAccessToCreateTeam() {
   const currentUser = user.value
 
@@ -56,10 +45,7 @@ function getAccessToCreateTeam() {
 </script>
 
 <template>
-  <div
-    v-if="getAccessRequestToIdea()"
-    class="d-flex w-100 bg-white rounded-3"
-  >
+  <div class="d-flex w-100 bg-white rounded-3">
     <div class="w-100 d-flex flex-column">
       <Typography class-name="fs-6 py-2 px-3 border-bottom">
         Ваши команды

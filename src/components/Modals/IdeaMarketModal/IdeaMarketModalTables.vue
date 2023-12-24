@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
 
 import { IdeaMarketTablesProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 import RequestsToIdeaTable from '@Components/Tables/RequestsToIdeaTable/RequestsToIdeaTable.vue'
@@ -9,15 +8,10 @@ import IdeaMarketTeamsTable from '@Components/Tables/IdeaMarketTeamsTable/IdeaMa
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
-import useUserStore from '@Store/user/userStore'
-
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
-const props = defineProps<IdeaMarketTablesProps>()
+defineProps<IdeaMarketTablesProps>()
 
 const isAcceptedTeamsTable = ref(true)
 const isRequestsToIdeaTable = ref(false)
@@ -41,24 +35,10 @@ function getNavLinkStyle(isCurrentTable: boolean) {
     { 'text-secondary': !isCurrentTable },
   ]
 }
-
-function getAccessToTables() {
-  const currentUser = user.value
-
-  if (currentUser) {
-    const { id, role } = currentUser
-    const { id: initiatorId } = props.ideaMarket.initiator
-
-    return id === initiatorId && role === 'INITIATOR'
-  }
-}
 </script>
 
 <template>
-  <div
-    v-if="getAccessToTables()"
-    class="bg-white rounded-3"
-  >
+  <div class="bg-white rounded-3">
     <div class="border-bottom px-3">
       <ul class="nav nav-underline">
         <div

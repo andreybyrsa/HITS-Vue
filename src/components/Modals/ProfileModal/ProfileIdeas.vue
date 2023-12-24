@@ -1,17 +1,23 @@
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
-import { ProfileIdeasProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
+import useProfilesStore from '@Store/profiles/profilesStore'
+
 import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 
-defineProps<ProfileIdeasProps>()
-
 const router = useRouter()
+const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+
 const status = getIdeaStatus()
 
 function navigateToIdeaModal(ideaId: string) {
@@ -26,7 +32,7 @@ function navigateToIdeaModal(ideaId: string) {
     </div>
 
     <div
-      v-if="profile.ideas"
+      v-if="profile?.ideas"
       class="profile-ideas__content mt-3"
     >
       <template v-if="profile.ideas.length > 0">

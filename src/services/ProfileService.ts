@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { API_URL } from '@Main'
 
-import Profile from '@Domain/Profile'
+import { Profile, ProfileFullName } from '@Domain/Profile'
 import { Skill } from '@Domain/Skill'
 
 import useUserStore from '@Store/user/userStore'
@@ -10,6 +10,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import Success from '@Domain/ResponseMessage'
 
 const profileUserAxios = defineAxios(getMocks().profiles)
 
@@ -34,11 +35,11 @@ const getUserProfile = async (
 }
 
 const getProfileAvatar = async (
-  email: string,
+  id: string,
   token: string,
 ): Promise<string | Error> => {
   return await axios
-    .get(`${API_URL}/profile/avatar/get/${email}`, {
+    .get(`${API_URL}/profile/avatar/get/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -84,12 +85,29 @@ const uploadProfileAvatar = async (
     })
 }
 
+const updateUserFullName = async (
+  fullName: ProfileFullName,
+  token: string,
+): Promise<Success | Error> => {
+  return await axios
+    .put(`${API_URL}/profile/fullname/update`, fullName, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch(({ response }) => {
+      const error = response?.data?.error ?? 'Ошибка изменения данных'
+      return new Error(error)
+    })
+}
+
 const ProfileService = {
   getUserProfile,
   getProfileAvatar,
 
   saveProfileSkills,
   uploadProfileAvatar,
+  updateUserFullName,
 }
 
 export default ProfileService

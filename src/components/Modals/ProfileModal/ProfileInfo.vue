@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
+import { useRoute } from 'vue-router'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
@@ -10,24 +11,24 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import NewEmailRequestModal from '@Components/Modals/NewEmailRequestModal/NewEmailRequestModal.vue'
 
 import { User } from '@Domain/User'
-import Profile from '@Domain/Profile'
-
-import ManageUsersService from '@Services/ManageUsersService'
 
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 import Validation from '@Utils/Validation'
-
-const profile = defineModel<Profile>({ required: true })
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const notificationsStore = useNotificationsStore()
+const route = useRoute()
+const profileId = route.params.id.toString()
 
-const isOwnProfile = computed(() => profile.value.email === user.value?.email)
-const isUpdatingUserInfo = ref(false)
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+
+const isOwnProfile = computed(() => profile.value?.email === user.value?.email)
+const isUpdatingUserName = ref(false)
+const isUpdatingUserLastname = ref(false)
 const isOpenedChangeEmailModal = ref(false)
 
 const { setValues, handleSubmit } = useForm<User>({
@@ -47,34 +48,30 @@ const handleEditUser = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const response = await ManageUsersService.updateUserInfo(values, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    const { firstName, lastName } = values
-
-    userStore.setUser({ ...currentUser, firstName, lastName })
-    profile.value.firstName = firstName
-    profile.value.lastName = lastName
-
-    toogleUpdatingUserInfo(false)
+    await profilesStore.updateUserFullName(values, token)
+    isUpdatingUserName.value = false
+    isUpdatingUserLastname.value = false
   }
 })
 
 function setUserValues() {
-  if (profile.value.email === user.value?.email) {
+  if (profile.value?.email === user.value?.email) {
     setValues({ ...user.value })
-  } else {
+  } else if (profile.value) {
     const { email, firstName, lastName } = profile.value
     setValues({ email, firstName, lastName })
   }
 }
 
-function toogleUpdatingUserInfo(value: boolean) {
-  isUpdatingUserInfo.value = value
+function toogleUpdateUserName(value: boolean) {
+  isUpdatingUserName.value = value
+  if (!value) {
+    setUserValues()
+  }
+}
 
+function toogleUpdateUserLastname(value: boolean) {
+  isUpdatingUserLastname.value = value
   if (!value) {
     setUserValues()
   }
@@ -102,23 +99,23 @@ function getFormattedDate(date: string) {
       <Typography class-name="fs-4 text-primary">Информация</Typography>
       <div class="d-flex justify-content-end gap-2">
         <Button
-          v-if="isOwnProfile && !isUpdatingUserInfo"
-          variant="light"
-          @click="toogleUpdatingUserInfo(true)"
-        >
-          Изменить
-        </Button>
-        <Button
-          v-if="isUpdatingUserInfo"
-          variant="primary"
+          v-if="isUpdatingUserName || isUpdatingUserLastname"
+          variant="success"
           @click="handleEditUser"
         >
           Сохранить
         </Button>
         <Button
-          v-if="isUpdatingUserInfo"
+          v-if="isUpdatingUserName"
           variant="danger"
-          @click="toogleUpdatingUserInfo(false)"
+          @click="toogleUpdateUserName(false)"
+        >
+          Отменить
+        </Button>
+        <Button
+          v-if="isUpdatingUserLastname"
+          variant="danger"
+          @click="toogleUpdateUserLastname(false)"
         >
           Отменить
         </Button>
@@ -130,6 +127,7 @@ function getFormattedDate(date: string) {
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Почта:</Typography>
           <div
+            v-if="isOwnProfile"
             class="link text-secondary cursor-pointer"
             @click="openChangeEmailModal"
           >
@@ -140,31 +138,56 @@ function getFormattedDate(date: string) {
         <Input
           name="email"
           class-name="rounded-end w-100"
-          :disabled="true"
+          disabled
         />
       </div>
 
-      <Input
-        name="firstName"
-        class-name="rounded-end w-100"
-        label="Имя"
-        placeholder="Введите ваше имя"
-        :disabled="!isUpdatingUserInfo"
-        validate-on-update
-      />
-      <Input
-        name="lastName"
-        class-name="rounded-end w-100"
-        label="Фамилия"
-        placeholder="Введите вашу Фамилия"
-        :disabled="!isUpdatingUserInfo"
-        validate-on-update
-      />
+      <div class="w-100 d-flex flex-column gap-2">
+        <div class="d-flex gap-1">
+          <Typography class-name="text-primary">Имя:</Typography>
+          <div
+            v-if="isOwnProfile && !isUpdatingUserName && !isUpdatingUserLastname"
+            class="link text-secondary cursor-pointer"
+            @click="toogleUpdateUserName(true)"
+          >
+            изменить
+          </div>
+        </div>
+
+        <Input
+          name="firstName"
+          class-name="rounded-end w-100"
+          placeholder="Введите ваше имя"
+          :disabled="!isUpdatingUserName"
+          validate-on-update
+        />
+      </div>
+
+      <div class="w-100 d-flex flex-column gap-2">
+        <div class="d-flex gap-1">
+          <Typography class-name="text-primary">Фамилия:</Typography>
+          <div
+            v-if="isOwnProfile && !isUpdatingUserLastname && !isUpdatingUserName"
+            class="link text-secondary cursor-pointer"
+            @click="toogleUpdateUserLastname(true)"
+          >
+            изменить
+          </div>
+        </div>
+
+        <Input
+          name="lastName"
+          class-name="rounded-end w-100"
+          placeholder="Введите вашу фамилия"
+          :disabled="!isUpdatingUserLastname"
+          validate-on-update
+        />
+      </div>
 
       <div class="d-flex gap-1">
         <Typography class-name="text-primary">Дата регистрации:</Typography>
         <Typography class-name="text-secondary">
-          {{ getFormattedDate(profile.createdAt ?? '') }}
+          {{ getFormattedDate(profile?.createdAt ?? '') }}
         </Typography>
       </div>
     </div>
@@ -179,6 +202,7 @@ function getFormattedDate(date: string) {
 <style lang="scss" scoped>
 .header {
   width: 100%;
+  height: 42px;
   display: flex;
   justify-content: space-between;
   align-items: center;

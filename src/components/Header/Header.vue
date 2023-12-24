@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, RouteRecordRaw } from 'vue-router'
 
@@ -9,15 +9,19 @@ import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import Button from '@Components/Button/Button.vue'
 
-import ProfileService from '@Services/ProfileService'
-
 import useUserStore from '@Store/user/userStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const profilesStore = useProfilesStore()
+const avatar = computed(() =>
+  profilesStore.getProfileAvatarByUserId(user.value?.id ?? ''),
+)
 
 const userRolesInfo = getUserRolesInfo()
 
@@ -29,13 +33,9 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { email, token } = currentUser
+    const { id, token } = currentUser
 
-    const response = await ProfileService.getProfileAvatar(email, token)
-
-    if (typeof response === 'string') {
-      console.log(response)
-    }
+    await profilesStore.fetchProfileAvatar(id, token)
   }
 })
 
@@ -47,6 +47,9 @@ function navigateToProfile() {
     path: 'profil/:id',
     alias: '/profile/:id',
     component: ProfileModal,
+    props: {
+      canGoBack: true,
+    },
   }
 
   if (currentUser && name) {
@@ -68,7 +71,17 @@ function closeRoleModal() {
   <div class="p-3 bg-white d-flex">
     <div class="user-info d-flex gap-2 align-items-center">
       <div class="user-info__image rounded-circle overflow-hidden">
-        <LoadingPlaceholder class-name="user-info__image-placeholder" />
+        <img
+          v-if="avatar"
+          class="border rounded-circle object-fit-contain"
+          :src="avatar"
+          width="58"
+          height="58"
+        />
+        <LoadingPlaceholder
+          v-else
+          class-name="user-info__image-placeholder"
+        />
       </div>
 
       <div class="d-flex gap-1 flex-column">
@@ -80,7 +93,7 @@ function closeRoleModal() {
         </div>
 
         <Button
-          class-name="btn-sm rounded-4 py-1"
+          class-name="user-info__role btn-sm rounded-4 py-1"
           variant="outline-success"
           prepend-icon-name="bi bi-circle-fill fs-6"
           :disabled="user?.roles.length === 1"
@@ -116,6 +129,10 @@ function closeRoleModal() {
       text-decoration: underline;
       text-underline-offset: 5px;
     }
+  }
+
+  &__role {
+    width: fit-content;
   }
 }
 </style>
