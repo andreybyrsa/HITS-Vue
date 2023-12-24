@@ -777,7 +777,7 @@ function getMocks(): Mocks {
     },
     {
       id: '201',
-      name: 'Осенняя биржа 2023',
+      name: 'Осенняя биржа 2023 (asd ads asd asd asd asd asd)',
       startDate: '2023-10-25T11:02:17Z',
       finishDate: '2023-10-25T11:02:17Z',
       status: 'ACTIVE',
