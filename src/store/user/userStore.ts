@@ -56,6 +56,7 @@ const useUserStore = defineStore('user', {
       this.user = user
       LocalStorageUser.setLocalStorageUser(this.user)
     },
+
     setRole(role: RolesTypes) {
       if (this.user) {
         this.user.role = role
