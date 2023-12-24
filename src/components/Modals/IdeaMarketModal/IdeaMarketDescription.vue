@@ -40,11 +40,11 @@ function getAccessToViewDescription() {
         Назад
       </Button>
 
-      <Typography
-        class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap"
-      >
-        {{ ideaMarket.name }}
-      </Typography>
+      <div class="idea-description__header-text p-2 w-100 bg-white rounded-3">
+        <Typography class-name="fs-4 text-primary">
+          {{ ideaMarket.name }}
+        </Typography>
+      </div>
     </div>
 
     <ul
@@ -78,6 +78,10 @@ function getAccessToViewDescription() {
 
   &__header {
     @include flexible(stretch, flex-start, $gap: 16px);
+
+    &-text {
+      @include textEllipsis(1);
+    }
   }
 }
 

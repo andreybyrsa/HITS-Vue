@@ -46,8 +46,8 @@ const route = useRoute()
 const router = useRouter()
 
 const ideaMarket = ref<IdeaMarket>()
-const requestTeams = ref<RequestTeamToIdea[]>()
-const ownerTeams = ref<Team[]>()
+const requestTeams = ref<RequestTeamToIdea[]>([])
+const ownerTeams = ref<Team[]>([])
 const market = ref<Market>()
 
 const skillsRequestTeam = ref<RequestTeamToIdea[]>([])
@@ -113,6 +113,28 @@ function closeMarketModal() {
   isOpenedMarketModal.value = false
   router.push(`/market/${market.value?.id}`)
 }
+
+function getAccessRequestToIdea() {
+  const currentUser = user.value
+
+  if (currentUser && ideaMarket.value) {
+    const { role } = currentUser
+    const { status } = ideaMarket.value
+
+    return role === 'TEAM_OWNER' && status === 'RECRUITMENT_IS_OPEN'
+  }
+}
+
+function getAccessToTables() {
+  const currentUser = user.value
+
+  if (currentUser && ideaMarket.value) {
+    const { id, role } = currentUser
+    const { id: initiatorId } = ideaMarket.value?.initiator
+
+    return id === initiatorId && role === 'INITIATOR'
+  }
+}
 </script>
 
 <template>
@@ -133,6 +155,7 @@ function closeMarketModal() {
         />
 
         <IdeaMarketModalTables
+          v-if="getAccessToTables()"
           :idea-market="ideaMarket"
           :request-teams="requestTeams"
           v-model:skillsRequestTeam="skillsRequestTeam"
@@ -140,7 +163,7 @@ function closeMarketModal() {
         />
 
         <RequestToIdeaForm
-          v-if="requestTeams && ownerTeams"
+          v-if="getAccessRequestToIdea()"
           :idea-market="ideaMarket"
           :requests="requestTeams"
           :owner-teams="ownerTeams"
@@ -201,15 +224,12 @@ function closeMarketModal() {
   }
 
   &__right-side {
-    height: fit-content;
-    overflow: hidden;
-
     @include flexible(stretch, flex-start, column, $gap: 16px);
   }
 }
 
-.modal-layout-enter-from .market-modal,
-.modal-layout-leave-to .market-modal {
+.modal-layout-enter-from .idea-market-modal,
+.modal-layout-leave-to .idea-market-modal {
   transform: translateX(100%);
 }
 </style>

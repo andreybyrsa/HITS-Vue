@@ -126,7 +126,7 @@ function checkAdvertisementsOwned() {
           v-for="advertisement in ideaMarketAdvertisements"
           :key="advertisement.id"
           :class-name="
-            checkAdvertisementsOwned() ? 'current-user-advertisement' : ''
+            checkAdvertisementsOwned() ? 'current-user-advertisement' : 'mb-3'
           "
           :advertisement="advertisement"
           :text="advertisement.text"

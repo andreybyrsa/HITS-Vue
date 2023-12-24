@@ -40,7 +40,7 @@ function filterSkillsTeams() {
 </script>
 
 <template>
-  <div class="bg-white rounded">
+  <div class="bg-white rounded w-100 mb-3">
     <div
       class="market-skills-radar-charts w-100 bg-primary rounded-top fs-5 text-white p-2 mb-2"
     >
