@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { Ref, ref, computed, VueElement } from 'vue'
+import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import Icon from '@Components/Icon/Icon.vue'
@@ -8,15 +9,19 @@ import LoadingWrapper from '@Components/LoadingWrapper/LoadingWrapper.vue'
 import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 import useUserStore from '@Store/user/userStore'
-import useProfileStore from '@Store/profile/profileStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const profileStore = useProfileStore()
-const { profile, avatar } = storeToRefs(profileStore)
+const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+const avatar = computed(() => profilesStore.getProfileAvatarByUserId(profileId))
 
 const userRoles = getUserRolesInfo()
 
@@ -36,13 +41,13 @@ async function handleFileUpload(event: HTMLTargetEvent) {
   const file = event.target.files?.[0]
 
   if (currentUser?.token && file) {
-    const { token } = currentUser
+    const { token, id } = currentUser
 
     const formData = new FormData()
     formData.append('file', file)
 
     isLoadingAvatar.value = true
-    await profileStore.uploadAvatar(file, formData, token)
+    await profilesStore.uploadAvatar(id, file, formData, token)
     isLoadingAvatar.value = false
   }
 }
@@ -60,6 +65,7 @@ async function handleFileUpload(event: HTMLTargetEvent) {
 
     <div class="d-flex justify-content-center w-100">
       <button
+        v-if="isOwnProfile"
         class="position-relative p-0 border-radius-circle"
         @click="openFileInput"
       >
@@ -80,6 +86,23 @@ async function handleFileUpload(event: HTMLTargetEvent) {
           :is-loading="isLoadingAvatar"
         />
       </button>
+
+      <div
+        v-else
+        class="p-0 border-radius-circle"
+      >
+        <img
+          v-if="avatar"
+          class="border rounded-circle object-fit-contain"
+          :src="avatar"
+          width="150"
+          height="150"
+        />
+        <Icon
+          v-else
+          class-name="profile-avatar__placeholder-icon bi bi-person-circle"
+        />
+      </div>
     </div>
 
     <div class="w-100 d-flex flex-wrap justify-content-center gap-1">

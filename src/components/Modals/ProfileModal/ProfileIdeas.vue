@@ -1,20 +1,23 @@
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
-import useProfileStore from '@Store/profile/profileStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 
-const profileStore = useProfileStore()
-const { profile } = storeToRefs(profileStore)
-
 const router = useRouter()
+const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+
 const status = getIdeaStatus()
 
 function navigateToIdeaModal(ideaId: string) {

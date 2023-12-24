@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, Ref, onMounted } from 'vue'
+import { ref, Ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -17,7 +17,7 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Profile from '@Domain/Profile'
 
 import useUserStore from '@Store/user/userStore'
-import useProfileStore from '@Store/profile/profileStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
@@ -27,13 +27,14 @@ const props = defineProps<ProfileModalProps>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const profileStore = useProfileStore()
-const { profile } = storeToRefs(profileStore)
-
-const notificationsStore = useNotificationsStore()
-
 const router = useRouter()
 const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+
+const notificationsStore = useNotificationsStore()
 
 const DBProfile = ref<Profile>()
 const DBProfileAvatar = ref<string>()
@@ -55,15 +56,14 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const profileId = route.params.id.toString()
     const { token } = currentUser
 
     const profileParallelRequests = [
-      () => profileStore.getUserProfile(profileId, token),
-      () => profileStore.getProfileAvatar(profileId, token),
+      () => profilesStore.fetchUserProfile(profileId, token),
+      () => profilesStore.fetchProfileAvatar(profileId, token),
     ]
 
-    await makeParallelRequests<Profile | string | null | Error>(
+    await makeParallelRequests<Profile | string | Error>(
       profileParallelRequests,
     ).then((responses) => {
       responses.forEach((response) => {

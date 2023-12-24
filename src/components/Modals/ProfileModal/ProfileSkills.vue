@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
 
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -12,13 +13,16 @@ import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart
 import { Skill } from '@Domain/Skill'
 
 import useUserStore from '@Store/user/userStore'
-import useProfileStore from '@Store/profile/profileStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const profileStore = useProfileStore()
-const { profile } = storeToRefs(profileStore)
+const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
 
 const profileSkills = ref<SkillsArea[]>([])
 const selectedSkills = ref<Skill[]>([])
@@ -46,10 +50,10 @@ const handleSaveSkills = async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token } = currentUser
+    const { token, id } = currentUser
 
-    await profileStore
-      .saveProfileSkills(selectedSkills.value, token)
+    await profilesStore
+      .saveProfileSkills(id, selectedSkills.value, token)
       .then(() => toogleUpdatingSkills(false))
   }
 }
