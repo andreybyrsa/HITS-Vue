@@ -110,8 +110,7 @@ const profilesStore = defineStore('profiles', {
           currentProfile.firstName = firstName
           currentProfile.lastName = lastName
 
-          currentUser.firstName = firstName
-          currentUser.lastName = lastName
+          userStore.setUser({ ...currentUser, firstName, lastName })
         }
       }
     },
