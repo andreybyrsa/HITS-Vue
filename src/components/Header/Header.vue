@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, RouteRecordRaw } from 'vue-router'
 
@@ -10,7 +10,7 @@ import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import Button from '@Components/Button/Button.vue'
 
 import useUserStore from '@Store/user/userStore'
-import useProfileStore from '@Store/profile/profileStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
@@ -18,8 +18,10 @@ import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const profileStore = useProfileStore()
-const { avatar } = storeToRefs(profileStore)
+const profilesStore = useProfilesStore()
+const avatar = computed(() =>
+  profilesStore.getProfileAvatarByUserId(user.value?.id ?? ''),
+)
 
 const userRolesInfo = getUserRolesInfo()
 
@@ -33,7 +35,7 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { id, token } = currentUser
 
-    await profileStore.getProfileAvatar(id, token)
+    await profilesStore.fetchProfileAvatar(id, token)
   }
 })
 

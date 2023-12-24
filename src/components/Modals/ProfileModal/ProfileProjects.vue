@@ -1,18 +1,20 @@
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
-import useProfileStore from '@Store/profile/profileStore'
-
-const profileStore = useProfileStore()
-const { profile } = storeToRefs(profileStore)
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 const router = useRouter()
+const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
 
 function navigateToProjectModal(projectId: string) {
   router.push(`/projects/list/${projectId}`)

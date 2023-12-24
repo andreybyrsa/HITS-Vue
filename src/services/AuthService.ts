@@ -1,5 +1,7 @@
 import axios from 'axios'
+
 import { API_URL } from '@Main'
+
 import { User, LoginUser, RegisterUser } from '@Domain/User'
 
 const loginUser = async (user: LoginUser): Promise<User | Error> => {

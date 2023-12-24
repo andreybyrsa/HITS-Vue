@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
+import { useRoute } from 'vue-router'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
@@ -14,7 +15,7 @@ import { User } from '@Domain/User'
 import ManageUsersService from '@Services/ManageUsersService'
 
 import useUserStore from '@Store/user/userStore'
-import useProfileStore from '@Store/profile/profileStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
@@ -22,8 +23,11 @@ import Validation from '@Utils/Validation'
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const profileStore = useProfileStore()
-const { profile } = storeToRefs(profileStore)
+const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
 
 const notificationsStore = useNotificationsStore()
 
