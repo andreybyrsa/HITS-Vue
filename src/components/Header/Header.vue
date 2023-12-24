@@ -93,7 +93,7 @@ function closeRoleModal() {
         </div>
 
         <Button
-          class-name="btn-sm rounded-4 py-1"
+          class-name="user-info__role btn-sm rounded-4 py-1"
           variant="outline-success"
           prepend-icon-name="bi bi-circle-fill fs-6"
           :disabled="user?.roles.length === 1"
@@ -129,6 +129,10 @@ function closeRoleModal() {
       text-decoration: underline;
       text-underline-offset: 5px;
     }
+  }
+
+  &__role {
+    width: fit-content;
   }
 }
 </style>

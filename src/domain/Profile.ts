@@ -9,4 +9,9 @@ interface Profile extends User {
   projects: Project[]
 }
 
-export default Profile
+interface ProfileFullName {
+  lastName: string
+  firstName: string
+}
+
+export { Profile, ProfileFullName }

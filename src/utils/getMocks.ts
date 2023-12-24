@@ -1,5 +1,5 @@
 import { User } from '@Domain/User'
-import Profile from '@Domain/Profile'
+import { Profile } from '@Domain/Profile'
 import UsersGroup from '@Domain/UsersGroup'
 import Company from '@Domain/Company'
 import UsersSkills from '@Domain/UsersSkills'

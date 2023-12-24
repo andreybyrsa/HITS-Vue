@@ -1,4 +1,4 @@
-import Profile from '@Domain/Profile'
+import { Profile } from '@Domain/Profile'
 
 type StoredAvatar = { id: string; avatar: string }
 

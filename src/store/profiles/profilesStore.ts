@@ -8,6 +8,9 @@ import { InitialState, StoredAvatar } from '@Store/profiles/initialState'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
+import { ProfileFullName } from '@Domain/Profile'
+import { User } from '@Domain/User'
+import useUserStore from '@Store/user/userStore'
 
 const profilesStore = defineStore('profiles', {
   state: (): InitialState => ({ avatars: [], profiles: [] }),
@@ -85,6 +88,30 @@ const profilesStore = defineStore('profiles', {
 
         if (currentProfile) {
           currentProfile.skills = skills
+        }
+      }
+    },
+
+    async updateUserFullName(user: User, token: string) {
+      const userStore = useUserStore()
+      const { id: userId, lastName, firstName } = user
+
+      const fullName: ProfileFullName = { lastName, firstName }
+
+      const response = await ProfileService.updateUserFullName(fullName, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentProfile = this.profiles.find(({ id }) => id === userId)
+        const currentUser = userStore.user
+
+        if (currentProfile && currentUser) {
+          currentProfile.firstName = firstName
+          currentProfile.lastName = lastName
+
+          currentUser.firstName = firstName
+          currentUser.lastName = lastName
         }
       }
     },

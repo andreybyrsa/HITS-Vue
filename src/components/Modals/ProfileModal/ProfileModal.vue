@@ -14,7 +14,7 @@ import { ProfileModalProps } from '@Components/Modals/ProfileModal/ProfileModal.
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import Profile from '@Domain/Profile'
+import { Profile } from '@Domain/Profile'
 
 import useUserStore from '@Store/user/userStore'
 import useProfilesStore from '@Store/profiles/profilesStore'
