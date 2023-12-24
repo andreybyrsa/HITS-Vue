@@ -331,11 +331,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
                 <div
                   :class="`${column.contentClassName ?? ''} flex-wrap d-flex gap-1`"
                 >
-                  <div
-                    v-if="
-                      column.key != 'checkedBy' && row[column.key] instanceof Array
-                    "
-                  >
+                  <template v-if="row[column.key] instanceof Array">
                     <div
                       v-for="(value, index) in row[column.key]"
                       :key="index"
@@ -355,7 +351,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
                         )
                       }}
                     </div>
-                  </div>
+                  </template>
                   <div
                     v-else
                     :class="[

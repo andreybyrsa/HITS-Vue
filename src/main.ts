@@ -14,7 +14,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const app = createApp(App)
 
-const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'PRODUCTION'
 const API_URL = process.env.API_URL ?? 'http://localhost:80/api/v1'
 
 const pinia = createPinia()

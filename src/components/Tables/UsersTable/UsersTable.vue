@@ -18,6 +18,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useRoute, RouteRecordRaw } from 'vue-router'
 import { useDateFormat } from '@vueuse/core'
 
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
@@ -28,12 +29,14 @@ import {
 } from '@Components/Table/Table.types'
 import Table from '@Components/Table/Table.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import { User } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
 import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils/userRolesInfo'
 import mutableSort from '@Utils/mutableSort'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const users = defineModel<User[]>({ required: true })
 
@@ -41,6 +44,8 @@ const rolesFilter = ref<RolesTypes[]>([])
 
 const updatingUser = ref<User | null>(null)
 const isOpenedUpdatingUserModal = ref(false)
+
+const route = useRoute()
 
 const availableRoles = getUserRolesInfo()
 
@@ -82,6 +87,10 @@ const usersTableColumns: TableColumn<User>[] = [
 
 const dropdownUsersActions: DropdownMenuAction<User>[] = [
   {
+    label: 'Перейти на профиль',
+    click: navigateToUserProfile,
+  },
+  {
     label: 'Редактировать',
     click: handleOpenUpdatingModal,
   },
@@ -99,6 +108,24 @@ const usersFilters: Filter<User>[] = [
     checkFilter: checkUserRoles,
   },
 ]
+
+function navigateToUserProfile(user: User) {
+  const profileRoute: RouteRecordRaw = {
+    name: 'profile',
+    path: 'profil/:id',
+    alias: '/profile/:id',
+    component: ProfileModal,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  const { id } = user
+  const { name } = route
+  if (name) {
+    navigateToAliasRoute(name.toString(), `/profile/${id}`, profileRoute)
+  }
+}
 
 function getFormattedDate(date: string) {
   if (date) {
