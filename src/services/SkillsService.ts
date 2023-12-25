@@ -1,4 +1,9 @@
+import axios from 'axios'
+
+import { API_URL } from '@Main'
+
 import { Skill, SkillType } from '@Domain/Skill'
+import { TeamMember } from '@Domain/Team'
 import Success from '@Domain/ResponseMessage'
 
 import useUserStore from '@Store/user/userStore'
@@ -6,9 +11,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import { TeamMember } from '@Domain/Team'
-import axios from 'axios'
-import { API_URL } from '@Main'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const skillsAxios = defineAxios(getMocks().skills)
 
@@ -25,36 +28,31 @@ function mockSkillsByTypeMather(skills: Skill[], type: SkillType) {
 }
 
 const getAllUsersSkills = async (token: string): Promise<TeamMember[] | Error> => {
-  return await axios
+  return axios
     .get(`${API_URL}/team/users`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error =
-        response?.data?.error ?? 'Ошибка получения компетенций пользователей'
-      return new Error(error)
-    })
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка получения компетенций пользователей'),
+    )
 }
 
 const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
-  return await skillsAxios
+  return skillsAxios
     .get('/skill/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения компетенций'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения компетенций'))
 }
 
 const getAllConfirmedOrCreatorSkills = async (
   token: string,
 ): Promise<Record<SkillType, Skill[]> | Error> => {
-  return await skillsAxios
+  return skillsAxios
     .get<Record<SkillType, Skill[]>>(
       '/skill/all-confirmed-or-creator',
       {
@@ -64,17 +62,14 @@ const getAllConfirmedOrCreatorSkills = async (
       { formatter: mockSkillsFormatter },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения компетенций'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения компетенций'))
 }
 
 const getSkillsByType = async (
   skillType: SkillType,
   token: string,
 ): Promise<Skill[] | Error> => {
-  return await skillsAxios
+  return skillsAxios
     .get<Skill[]>(
       `/skill/${skillType}`,
       {
@@ -84,39 +79,30 @@ const getSkillsByType = async (
       { formatter: (data) => mockSkillsByTypeMather(data, skillType) },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения компетенций'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения компетенций'))
 }
 
 const createSkill = async (skill: Skill, token: string): Promise<Skill | Error> => {
-  return await skillsAxios
+  return skillsAxios
     .post('/skill/add', skill, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка добавления компетенции'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления компетенции'))
 }
 
 const createNoConfirmedSkill = async (
   skill: Skill,
   token: string,
 ): Promise<Skill | Error> => {
-  return await skillsAxios
+  return skillsAxios
     .post('/skill/add/no-confirmed', skill, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка добавления компетенции'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления компетенции'))
 }
 
 const confirmSkill = async (
@@ -124,7 +110,7 @@ const confirmSkill = async (
   id: string,
   token: string,
 ): Promise<Skill | Error> => {
-  return await skillsAxios
+  return skillsAxios
     .put(
       `/skill/confirm/${id}`,
       skill,
@@ -135,10 +121,7 @@ const confirmSkill = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка подтверждения компетенции'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка утверждения компетенции'))
 }
 
 const updateSkill = async (
@@ -146,7 +129,7 @@ const updateSkill = async (
   id: string,
   token: string,
 ): Promise<Skill | Error> => {
-  return await skillsAxios
+  return skillsAxios
     .put(
       `/skill/update/${id}`,
       skill,
@@ -157,14 +140,11 @@ const updateSkill = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка редактирования компетенции'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования компетенции'))
 }
 
 const deleteSkill = async (id: string, token: string): Promise<Success | Error> => {
-  return await skillsAxios
+  return skillsAxios
     .delete(
       `/skill/delete/${id}`,
       {
@@ -174,10 +154,7 @@ const deleteSkill = async (id: string, token: string): Promise<Success | Error> 
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления компетенции'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления компетенции'))
 }
 
 const SkillsService = {

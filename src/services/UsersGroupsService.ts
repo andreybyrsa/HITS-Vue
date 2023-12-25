@@ -6,27 +6,27 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const usersGroupsAxios = defineAxios(getMocks().usersGroups)
 
 const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
-  return await usersGroupsAxios
+  return usersGroupsAxios
     .get('/group/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения групп пользователей'
-      return new Error(error)
-    })
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка получения групп пользователей'),
+    )
 }
 
 const getUsersGroup = async (
   id: string,
   token: string,
 ): Promise<UserGroup | Error> => {
-  return await usersGroupsAxios
+  return usersGroupsAxios
     .get(
       `/group/${id}`,
       {
@@ -36,26 +36,24 @@ const getUsersGroup = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения группы пользователей'
-      return new Error(error)
-    })
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка получения группы пользователей'),
+    )
 }
 
 const createUsersGroup = async (
   usersData: UserGroup,
   token: string,
 ): Promise<UserGroup | Error> => {
-  return await usersGroupsAxios
+  return usersGroupsAxios
     .post('/group/create', usersData, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка создания группы пользователей'
-      return new Error(error)
-    })
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка создания группы пользователей'),
+    )
 }
 
 const updateUsersGroup = async (
@@ -63,7 +61,7 @@ const updateUsersGroup = async (
   token: string,
   id: string,
 ): Promise<UserGroup | Error> => {
-  return await usersGroupsAxios
+  return usersGroupsAxios
     .put(
       `/group/update/${id}`,
       usersGroup,
@@ -74,18 +72,16 @@ const updateUsersGroup = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error =
-        response?.data?.error ?? 'Ошибка редактирования группы пользователей'
-      return new Error(error)
-    })
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка редактирования группы пользователей'),
+    )
 }
 
 const deleteUsersGroup = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await usersGroupsAxios
+  return usersGroupsAxios
     .delete(
       `/group/delete/${id}`,
       {
@@ -95,17 +91,19 @@ const deleteUsersGroup = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления группы пользователей'
-      return new Error(error)
-    })
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка удаления группы пользователей'),
+    )
 }
 
 const UsersGroupsService = {
   getUsersGroups,
   getUsersGroup,
+
   createUsersGroup,
+
   updateUsersGroup,
+
   deleteUsersGroup,
 }
 

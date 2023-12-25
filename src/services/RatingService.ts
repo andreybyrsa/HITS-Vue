@@ -5,6 +5,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 function filterRatingsById(ideaId: string, ratings: Rating[]) {
   return ratings.filter((rating) => rating.ideaId === ideaId)
@@ -16,7 +17,7 @@ const getAllIdeaRatings = async (
   ideaId: string,
   token: string,
 ): Promise<Rating[] | Error> => {
-  return await ratingsAxios
+  return ratingsAxios
     .get<Rating[]>(
       `/rating/all/${ideaId}`,
       {
@@ -26,17 +27,14 @@ const getAllIdeaRatings = async (
       { formatter: (ratings) => filterRatingsById(ideaId, ratings) },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения оценок'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения рейтингов'))
 }
 
 const getExpertRating = async (
   ideaId: string,
   token: string,
 ): Promise<Rating | Error> => {
-  return await ratingsAxios
+  return ratingsAxios
     .get(
       `/rating/${ideaId}`,
       {
@@ -46,10 +44,7 @@ const getExpertRating = async (
       { params: { ideaId } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения оценки'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения рейтинга'))
 }
 
 const saveExpertRating = async (
@@ -57,7 +52,7 @@ const saveExpertRating = async (
   ideaId: string,
   token: string,
 ): Promise<void | Error> => {
-  return await ratingsAxios
+  return ratingsAxios
     .put<void>(
       '/rating/save',
       rating,
@@ -68,10 +63,7 @@ const saveExpertRating = async (
       { params: { ideaId } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка сохранения оценки'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка сохранения рейтинга'))
 }
 
 const confirmExpertRating = async (
@@ -79,7 +71,7 @@ const confirmExpertRating = async (
   ideaId: string,
   token: string,
 ): Promise<void | Error> => {
-  return await ratingsAxios
+  return ratingsAxios
     .put<void>(
       '/rating/confirm',
       rating,
@@ -90,15 +82,13 @@ const confirmExpertRating = async (
       { params: { ideaId }, requestData: { ...rating, isConfirmed: true } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка утверждения оценки'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка утверждения рейтинга'))
 }
 
 const RatingService = {
   getAllIdeaRatings,
   getExpertRating,
+
   saveExpertRating,
   confirmExpertRating,
 }

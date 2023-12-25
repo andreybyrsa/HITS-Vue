@@ -6,38 +6,45 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const ideasAxios = defineAxios(getMocks().ideas)
 const ideaSkillsAxios = defineAxios(getMocks().ideasSkills)
 
 const getIdeas = async (token: string): Promise<Idea[] | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .get('/idea/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идей'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей'))
 }
 
 const getInitiatorIdeas = async (token: string): Promise<Idea[] | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .get('/idea/initiator/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идей'
-      return new Error(error)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей'))
+}
+
+const getExpertNotConfirmedIdeas = async (
+  token: string,
+): Promise<Idea[] | Error> => {
+  return ideasAxios
+    .get(`/idea/all/on-confirmation`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения идей'))
 }
 
 const getIdea = async (id: string, token: string): Promise<Idea | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .get(
       `/idea/${id}`,
       {
@@ -47,17 +54,14 @@ const getIdea = async (id: string, token: string): Promise<Idea | Error> => {
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идеи'))
 }
 
 const getInitiatorIdea = async (
   id: string,
   token: string,
 ): Promise<Idea | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .get(
       `/idea/initiator/${id}`,
       {
@@ -67,17 +71,14 @@ const getInitiatorIdea = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идеи'))
 }
 
 const getIdeaSkills = async (
   ideaId: string,
   token: string,
 ): Promise<IdeaSkills | Error> => {
-  return await ideaSkillsAxios
+  return ideaSkillsAxios
     .get(
       `/idea/skills/${ideaId}`,
       {
@@ -87,55 +88,43 @@ const getIdeaSkills = async (
       { params: { ideaId } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки компетенций идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки компетенций идеи'))
 }
 
 const createIdeaSkills = async (
   ideaSkills: IdeaSkills,
   token: string,
 ): Promise<IdeaSkills | Error> => {
-  return await ideaSkillsAxios
+  return ideaSkillsAxios
     .post('/idea/skills/add', ideaSkills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки компетенций идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка создания компетенций идеи'))
 }
 
 const saveAndSendIdeaOnApproval = async (
   idea: Idea,
   token: string,
 ): Promise<Idea | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .post('/idea/add', idea, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка добавления идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления идеи'))
 }
 
 const saveIdeaDraft = async (idea: Idea, token: string): Promise<Idea | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .post('/idea/draft/add', idea, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка добавления идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления идеи'))
 }
 
 const updateIdea = async (
@@ -143,7 +132,7 @@ const updateIdea = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .put<Success>(
       `/idea/initiator/update/${id}`,
       idea,
@@ -154,10 +143,7 @@ const updateIdea = async (
       { params: { id }, responseData: { success: 'Успешное обновление идеи' } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка редактирования идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования идеи'))
 }
 
 const updateIdeaByAdmin = async (
@@ -165,7 +151,7 @@ const updateIdeaByAdmin = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .put<Success>(
       `/idea/admin/update/${id}`,
       idea,
@@ -176,10 +162,7 @@ const updateIdeaByAdmin = async (
       { params: { id }, responseData: { success: 'Успешное обновление идеи' } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка редактирования идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования идеи'))
 }
 
 const updateIdeaSkills = async (
@@ -187,7 +170,7 @@ const updateIdeaSkills = async (
   ideaSkills: IdeaSkills,
   token: string,
 ): Promise<IdeaSkills | Error> => {
-  return await ideaSkillsAxios
+  return ideaSkillsAxios
     .put(
       '/idea/skills/update',
       ideaSkills,
@@ -198,14 +181,11 @@ const updateIdeaSkills = async (
       { params: { ideaId } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки компетенций идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления компетенций идеи'))
 }
 
 const checkIdea = async (id: string, token: string): Promise<void | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .putNoRequestBody<void>(
       `/idea/check/${id}`,
       {
@@ -215,25 +195,7 @@ const checkIdea = async (id: string, token: string): Promise<void | Error> => {
       { params: { id }, requestData: { isChecked: true } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка просмотра комментария'
-      return new Error(error)
-    })
-}
-
-const getExpertNotConfirmedRating = async (
-  token: string,
-): Promise<Idea[] | Error> => {
-  return await ideasAxios
-    .get(`/idea/all/on-confirmation`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения идей'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка просмотра идеи'))
 }
 
 const sendIdeaOnApproval = async (
@@ -241,7 +203,7 @@ const sendIdeaOnApproval = async (
   status: IdeaStatusType,
   token: string,
 ): Promise<Success | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .putNoRequestBody<Success>(
       `/idea/initiator/send/${id}`,
       {
@@ -255,10 +217,9 @@ const sendIdeaOnApproval = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка отправки идеи на согласование'
-      return new Error(error)
-    })
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка отправки идеи на согласование'),
+    )
 }
 
 const updateIdeaStatus = async (
@@ -266,7 +227,7 @@ const updateIdeaStatus = async (
   status: IdeaStatusType,
   token: string,
 ): Promise<Success | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .put<Success>(
       `/idea/status/update/${id}`,
       { status: status },
@@ -277,17 +238,14 @@ const updateIdeaStatus = async (
       { params: { id }, responseData: { success: 'Статус идеи изменен' } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка редактирования идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления статуса идеи'))
 }
 
 const deleteIdeaByAdmin = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .delete(
       `/idea/admin/delete/${id}`,
       {
@@ -297,14 +255,11 @@ const deleteIdeaByAdmin = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления идеи'))
 }
 
 const deleteIdea = async (id: string, token: string): Promise<Success | Error> => {
-  return await ideasAxios
+  return ideasAxios
     .delete(
       `/idea/delete/${id}`,
       {
@@ -314,10 +269,7 @@ const deleteIdea = async (id: string, token: string): Promise<Success | Error> =
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления идеи'))
 }
 
 const IdeasService = {
@@ -326,7 +278,7 @@ const IdeasService = {
   getIdea,
   getInitiatorIdea,
   getIdeaSkills,
-  getExpertNotConfirmedRating,
+  getExpertNotConfirmedIdeas,
 
   saveIdeaDraft,
   createIdeaSkills,

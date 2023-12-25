@@ -19,10 +19,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-
-function formatTeamsByOwner(teams: Team[], userId: string) {
-  return teams.filter(({ owner }) => owner.id === userId)
-}
+import handleAxiosError from '@Utils/handleAxiosError'
 
 function formatTeamInvitationsByTeamId(
   invitations: TeamInvitation[],
@@ -79,26 +76,20 @@ const getTeams = async (token: string): Promise<Team[] | Error> => {
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения команд'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения команд'))
 }
 
 const getOwnerTeams = async (
   ideaMarketId: string,
   token: string,
 ): Promise<Team[] | Error> => {
-  return await teamsAxios
+  return teamsAxios
     .get(`/team/owner/all/${ideaMarketId}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения команд'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения команд'))
 }
 
 const getTeam = async (id: string, token: string): Promise<Team | Error> => {
@@ -112,10 +103,7 @@ const getTeam = async (id: string, token: string): Promise<Team | Error> => {
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения команды'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения команды'))
 }
 
 const getTeamInvitations = async (
@@ -135,10 +123,7 @@ const getTeamInvitations = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения приглашений'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения приглашений'))
 }
 
 const getRequestsToTeam = async (
@@ -157,10 +142,7 @@ const getRequestsToTeam = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения заявок'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения заявок'))
 }
 
 // --- POST --- //
@@ -171,10 +153,7 @@ const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка создания команды'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка создания команды'))
 }
 
 const createInvitationsToTeam = async (
@@ -191,10 +170,7 @@ const createInvitationsToTeam = async (
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка приглашения участников'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка приглашения участников'))
 }
 
 const createRequestToTeam = async (
@@ -211,10 +187,7 @@ const createRequestToTeam = async (
       { requestData: requestToTeam },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка подачи заявки'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка подачи заявки'))
 }
 
 const addTeamMember = async (
@@ -241,10 +214,7 @@ const addTeamMember = async (
       { requestData: teamMember },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка добавления участника'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления участника'))
 }
 
 const filterBySkillsAndRole = async (
@@ -258,10 +228,7 @@ const filterBySkillsAndRole = async (
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка фильтрации команд'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
 }
 
 const filterByVacancies = async (
@@ -274,10 +241,7 @@ const filterByVacancies = async (
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка фильтрации команд'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
 }
 
 // --- PUT --- //
@@ -297,10 +261,7 @@ const updateTeam = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка обновления команды'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления команды'))
 }
 
 // const updateTeamSkills = async (
@@ -340,10 +301,7 @@ const appointLeaderTeam = async (
       { params: { id: teamId }, requestData: { leader: teamMember } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка назначения лидера'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка назначения лидера'))
 }
 
 const updateRequestToTeamStatus = async (
@@ -367,10 +325,7 @@ const updateRequestToTeamStatus = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка изменения статуса заявки'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса заявки'))
 }
 
 const updateInvitationToTeamStatus = async (
@@ -394,10 +349,9 @@ const updateInvitationToTeamStatus = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка изменения статуса приглашения'
-      return new Error(error)
-    })
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка изменения статуса приглашения'),
+    )
 }
 
 // --- DELETE --- //
@@ -412,10 +366,7 @@ const deleteTeam = async (id: string, token: string): Promise<Success | Error> =
       { params: { id }, responseData: { success: 'Успешное удаление' } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления команды'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления команды'))
 }
 
 const kickTeamMember = async (
@@ -444,10 +395,7 @@ const kickTeamMember = async (
       { params: { id: teamMemberId } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка исключения участника команды'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка исключения участника команды'))
 }
 
 const leaveFromTeam = async (
@@ -476,10 +424,7 @@ const leaveFromTeam = async (
       { params: { id: teamMemberId } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка выхода из команды'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка выхода из команды'))
 }
 
 const TeamService = {
