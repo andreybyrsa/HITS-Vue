@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
@@ -10,13 +10,23 @@ import {
   DeleteModalProps,
 } from '@Components/Modals/DeleteModal/DeleteModal.types'
 
-defineProps<DeleteModalProps>()
+const props = defineProps<DeleteModalProps>()
 
 const emit = defineEmits<DeleteModalEmits>()
 
 const isLoading = ref<boolean>(false)
 
 const { enter } = useMagicKeys()
+
+const deletingText = computed(() => {
+  const { itemName } = props
+  const initialText = 'Вы действительно хотите удалить'
+
+  if (itemName) {
+    return `${initialText} "${itemName}"?`
+  }
+  return initialText + '?'
+})
 
 watch(enter, () => {
   emit('close-modal')
@@ -37,7 +47,7 @@ async function handleDelete() {
   >
     <div class="delete-modal p-3 rounded bg-white">
       <Typography class-name="text-center">
-        Вы действительно хотите удалить?
+        {{ deletingText }}
       </Typography>
       <Button
         variant="danger"
@@ -52,6 +62,8 @@ async function handleDelete() {
 
 <style lang="scss">
 .delete-modal {
+  max-width: 450px;
+
   @include flexible(
     stretch,
     stretch,
