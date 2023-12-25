@@ -63,7 +63,7 @@ function navigateToIdeaModal(ideaId: string) {
                 class="fs-5 profile-ideas__idea-link"
                 @click="navigateToIdeaModal(idea.id)"
               >
-                Lorem ipsum dolor sit amet consectetur
+                {{ idea.name }}
               </div>
               <div :class="[getIdeaStatusStyle(idea.status), 'fs-6', 'text-center']">
                 {{ status.translatedStatus[idea.status] }}
