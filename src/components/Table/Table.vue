@@ -277,7 +277,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
       <div class="w-100">
         <table class="table table-hover mb-0">
           <thead>
-            <tr>
+            <tr class="table__lables">
               <th class="py-3 col">
                 <div @click="checkAllRows">
                   <Checkbox
@@ -408,6 +408,14 @@ function checkHeaderButtonStatement(statement?: boolean) {
 .table {
   &__header {
     @include flexible(center, space-between, $gap: 16px);
+  }
+
+  &__lables {
+    @include position(sticky, $top: 92px, $z-index: 1);
+
+    > th {
+      box-shadow: inset 0 -1px 0 #dee2e6;
+    }
   }
 
   &__header-icon {
