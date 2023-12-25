@@ -14,111 +14,94 @@ import Success from '@Domain/ResponseMessage'
 import useUserStore from '@Store/user/userStore'
 
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const getInvitationInfo = async (
   slug: string | string[],
 ): Promise<InvitationInfo | Error> => {
-  return await axios
+  return axios
     .get(`${API_URL}/profile/get/invitation/${slug}`)
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка приглашения'
-      return new Error(error)
-    })
-}
-
-const deleteInvitationInfo = async (slug: string | string[]) => {
-  return await axios
-    .delete(`${API_URL}/profile/delete/invitation/${slug}`)
-    .catch<Error>(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления приглашения'
-      return new Error(error)
-    })
-}
-
-const inviteUserByEmail = async (
-  userData: InviteUserForm,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .post(`${API_URL}/profile/send/email`, userData, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка приглашения пользователя'
-      return new Error(error)
-    })
-}
-
-const inviteUsers = async (
-  usersData: InviteUsersForm,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .post(`${API_URL}/profile/send/emails`, usersData, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка приглашения пользователей'
-      return new Error(error)
-    })
-}
-
-const sendRecoveryEmail = async (
-  recoveryData: RecoveryData,
-): Promise<string | Error> => {
-  return await axios
-    .post(`${API_URL}/profile/send/change/password`, recoveryData)
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка отправки почты'
-      return new Error(error)
-    })
-}
-
-const sendUrlToChangeEmail = async (
-  userData: NewEmailForm,
-  token: string,
-): Promise<Success | Error> => {
-  return await axios
-    .post(`${API_URL}/profile/send/change/email`, userData, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка отправки ссылки для смены почты'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка приглашения'))
 }
 
 const getInfoToChangeEmail = async (
   slug: string | string[],
   token: string,
 ): Promise<NewEmailForm | Error> => {
-  return await axios
+  return axios
     .get(`${API_URL}/profile/change/email/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка приглашения'
-      return new Error(error)
+    .catch((error) => handleAxiosError(error, 'Ошибка приглашения'))
+}
+
+const inviteUserByEmail = async (
+  userData: InviteUserForm,
+  token: string,
+): Promise<Success | Error> => {
+  return axios
+    .post(`${API_URL}/profile/send/email`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка приглашения пользователя'))
+}
+
+const inviteUsers = async (
+  usersData: InviteUsersForm,
+  token: string,
+): Promise<Success | Error> => {
+  return axios
+    .post(`${API_URL}/profile/send/emails`, usersData, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка приглашения пользователей'))
+}
+
+const sendRecoveryEmail = async (
+  recoveryData: RecoveryData,
+): Promise<string | Error> => {
+  return axios
+    .post(`${API_URL}/profile/send/change/password`, recoveryData)
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка отправки почты'))
+}
+
+const sendUrlToChangeEmail = async (
+  userData: NewEmailForm,
+  token: string,
+): Promise<Success | Error> => {
+  return axios
+    .post(`${API_URL}/profile/send/change/email`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка отправки ссылки для смены почты'),
+    )
+}
+
+const deleteInvitationInfo = async (slug: string | string[]) => {
+  return axios
+    .delete(`${API_URL}/profile/delete/invitation/${slug}`)
+    .catch<Error>((error) => handleAxiosError(error, 'Ошибка удаления приглашения'))
 }
 
 const InvitationService = {
   getInvitationInfo,
-  deleteInvitationInfo,
+  getInfoToChangeEmail,
 
   inviteUserByEmail,
   inviteUsers,
   sendRecoveryEmail,
   sendUrlToChangeEmail,
-  getInfoToChangeEmail,
+
+  deleteInvitationInfo,
 }
 
 export default InvitationService

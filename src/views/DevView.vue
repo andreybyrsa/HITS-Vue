@@ -51,7 +51,9 @@ const { values, handleSubmit } = useForm({
   },
 })
 
-const fieldSubmit = handleSubmit((values) => console.log(values))
+const fieldSubmit = handleSubmit((values) => {
+  const a = values
+})
 
 function handleLogin() {
   userStore.loginUser({ email: 'new2@mail.com', password: '12345' })

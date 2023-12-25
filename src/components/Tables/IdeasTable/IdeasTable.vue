@@ -12,6 +12,7 @@
 
   <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
+    :item-name="deletingIdeaName"
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
   />
@@ -43,13 +44,14 @@ import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/Se
 
 import { Idea, IdeaStatusType } from '@Domain/Idea'
 
+import IdeasService from '@Services/IdeasService'
+
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
 import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 import mutableSort from '@Utils/mutableSort'
 import getFiltersByRoles from '@Utils/getFiltersByRoles'
-import IdeasService from '@Services/IdeasService'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -67,6 +69,7 @@ const filtersByRoles = getFiltersByRoles()
 
 const availableStatus = getIdeaStatus()
 
+const deletingIdeaName = ref<string>()
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
@@ -224,7 +227,7 @@ watchImmediate(
       if (currentUser?.token) {
         const { token } = currentUser
 
-        const response = await IdeasService.getExpertNotConfirmedRating(token)
+        const response = await IdeasService.getExpertNotConfirmedIdeas(token)
 
         if (response instanceof Error) {
           return
@@ -264,10 +267,6 @@ function sortByPreAssessment() {
 function sortByRating() {
   mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
 }
-
-// function getChecked() {
-//   return undefined
-// }
 
 function getTranslatedStatus(status: IdeaStatusType) {
   return availableStatus.translatedStatus[status].toString()
@@ -316,6 +315,7 @@ function navigateToUpdateIdeaForm(idea: Idea) {
 
 function handleOpenDeleteModal(idea: Idea) {
   deletingIdeaId.value = idea.id
+  deletingIdeaName.value = idea.name
   isOpenedIdeaDeleteModal.value = true
 }
 

@@ -9,6 +9,7 @@ import IdeaActions from '@Components/Modals/IdeaModal/IdeaActions.vue'
 import IdeaInfo from '@Components/Modals/IdeaModal/IdeaInfo.vue'
 import IdeaModalPlaceholder from '@Components/Modals/IdeaModal/IdeaModalPlaceholder.vue'
 import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
+import { IdeaModalProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
@@ -24,6 +25,8 @@ import useCommentsStore from '@Store/comments/commentsStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+
+const props = defineProps<IdeaModalProps>()
 
 const notificationsStore = useNotificationsStore()
 
@@ -105,9 +108,13 @@ function getAccessToConfirmation() {
 
 function handleCloseIdeaModal() {
   isOpenedIdeaModal.value = false
-  router.push('/ideas/list')
-
   commentsStore.disconnectRsocket()
+
+  if (props.canGoBack) {
+    return router.go(-1)
+  }
+
+  router.push({ name: 'ideas-list' })
 }
 </script>
 

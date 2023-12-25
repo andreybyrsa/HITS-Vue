@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 import { API_URL, MODE } from '@Main'
 
 import Success from '@Domain/ResponseMessage'
@@ -7,14 +9,14 @@ import {
   IdeaMarketStatusType,
 } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { Idea } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import { Idea } from '@Domain/Idea'
-import axios from 'axios'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const { ideasMarket, ideaMarketAdvertisements } = getMocks()
 
@@ -47,7 +49,7 @@ const fetchIdeasMarket = async (
   marketId: string,
   token: string,
 ): Promise<IdeaMarket[] | Error> => {
-  return await ideasMarketAxios
+  return ideasMarketAxios
     .get<IdeaMarket[]>(
       `/market/idea/market/${marketId}/all`,
       {
@@ -59,17 +61,14 @@ const fetchIdeasMarket = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идей'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей на бирже'))
 }
 
 const fetchFavoritesIdeas = async (
   marketId: string,
   token: string,
 ): Promise<IdeaMarket[] | Error> => {
-  return await ideasMarketAxios
+  return ideasMarketAxios
     .get<IdeaMarket[]>(
       `/market/idea/favourite/${marketId}`,
       {
@@ -78,17 +77,14 @@ const fetchFavoritesIdeas = async (
       { formatter: formatFavoriteIdea },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идей'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки избранных идей'))
 }
 
 const getIdeaMarket = async (
   id: string,
   token: string,
 ): Promise<IdeaMarket | Error> => {
-  return await ideasMarketAxios
+  return ideasMarketAxios
     .get<IdeaMarket>(
       `/market/idea/${id}`,
       {
@@ -97,17 +93,14 @@ const getIdeaMarket = async (
       { params: { id: id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идеи'))
 }
 
 const getAllInitiatorMarketIdeas = async (
   marketId: string,
   token: string,
 ): Promise<IdeaMarket[] | Error> => {
-  return await ideasMarketAxios
+  return ideasMarketAxios
     .get<IdeaMarket[]>(
       `/market/idea/market/${marketId}/initiator`,
       {
@@ -118,10 +111,7 @@ const getAllInitiatorMarketIdeas = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки идей'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей на бирже'))
 }
 
 const getIdeaMarketAdvertisements = async (
@@ -141,10 +131,7 @@ const getIdeaMarketAdvertisements = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки объявлений'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки объявлений'))
 }
 
 // --- POST --- //
@@ -180,27 +167,23 @@ const sendIdeaOnMarket = async (
         isFavorite: false,
       }
     }) as IdeaMarket[]
-    return await ideasMarketAxios
+
+    return ideasMarketAxios
       .post(`/market/idea/send/${marketId}`, ideasMarket, {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       })
       .then((response) => response.data)
-      .catch(({ response }) => {
-        const error = response?.data?.error ?? 'Ошибка отправки идей на биржу'
-        return new Error(error)
-      })
+      .catch((error) => handleAxiosError(error, 'Ошибка отправки идей на биржу'))
   }
+
   return axios
     .post(`${API_URL}/market/idea/send/${marketId}`, ideas, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка отправки идей на биржу'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка отправки идей на биржу'))
 }
 
 const postIdeaMarketTeam = async (
@@ -211,7 +194,7 @@ const postIdeaMarketTeam = async (
   const { ideaMarketId, teamId } = requestToIdea
   const team = getMocks().teams.find((team) => team.id === teamId)
 
-  return await ideasMarketAxios
+  return ideasMarketAxios
     .put<IdeaMarket>(
       `${API_URL}/market/accept/request/${ideaMarketId}/${teamId}`,
       { team: team },
@@ -224,10 +207,7 @@ const postIdeaMarketTeam = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка добавления команды'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления команды'))
 }
 
 const postIdeaMarketAdvertisement = async (
@@ -240,10 +220,7 @@ const postIdeaMarketAdvertisement = async (
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка добавления объявления'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления объявления'))
 }
 
 // --- PUT --- //
@@ -251,17 +228,14 @@ const addIdeaToFavorites = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await ideasMarketAxios
+  return ideasMarketAxios
     .putNoRequestBody<Success>(
       `/market/idea/favorite/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { isFavorite: true } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки избранных идей'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления идеи в избранное'))
 }
 
 const updateIdeaMarketStatus = async (
@@ -269,31 +243,27 @@ const updateIdeaMarketStatus = async (
   status: IdeaMarketStatusType,
   token: string,
 ): Promise<Success | Error> => {
-  return await ideasMarketAxios
+  return ideasMarketAxios
     .putNoRequestBody<Success>(
       `/market/idea-status/${id}/${status}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { status: status } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки избранных идей'
-      return new Error(error)
-    })
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка обновления статуса идеи на бирже'),
+    )
 }
 
 const kickTeamFromIdeaMarket = async (ideaMarketId: string, token: string) => {
-  return await ideasMarketAxios
+  return ideasMarketAxios
     .putNoRequestBody(
       `/market/reset/team/${ideaMarketId}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { team: null } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка исключения команды из идеи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка исключения команды из идеи'))
 }
 
 const checkIdeaMarketAdvertisement = async (
@@ -312,10 +282,7 @@ const checkIdeaMarketAdvertisement = async (
       { params: { id }, requestData: ideaMarketAdvertisement },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка прочтения объявления'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка просмотра объявления'))
 }
 
 // --- DELETE --- ///
@@ -323,17 +290,14 @@ const removeIdeaFromFavorites = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await ideasMarketAxios
+  return ideasMarketAxios
     .delete(
       `/market/idea/unfavorite/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { isFavorite: false } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка обновления избранных идей'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления избранных идей'))
 }
 
 const deleteIdeaMarketAdvertisement = async (
@@ -350,10 +314,7 @@ const deleteIdeaMarketAdvertisement = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления объявления'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления объявления'))
 }
 
 const IdeasMarketService = {

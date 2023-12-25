@@ -32,6 +32,7 @@
 
   <DeleteModal
     :is-opened="isOpenedDeletingMarketModal"
+    :item-name="currentMarket?.name"
     @close-modal="closeDeletingMarketModal"
     @delete="handleDeleteMarket"
   />
@@ -41,7 +42,7 @@
 import { Ref, computed, ref } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 import Table from '@Components/Table/Table.vue'
 import {
@@ -73,7 +74,6 @@ const marketStatusInfo = getMarketStatus()
 const filterByMarketStatus = ref<MarketStatus[]>([])
 
 const router = useRouter()
-const route = useRoute()
 
 const startMarketConfirmationText =
   'Вы действительно хотите запустить биржу? Активную биржу можно будет ТОЛЬКО завершить.'

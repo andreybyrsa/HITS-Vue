@@ -1,17 +1,18 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute, RouteRecordRaw } from 'vue-router'
 
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
 import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
-const router = useRouter()
 const route = useRoute()
 const profileId = route.params.id.toString()
 
@@ -21,7 +22,20 @@ const profile = computed(() => profilesStore.getProfileByUserId(profileId))
 const status = getIdeaStatus()
 
 function navigateToIdeaModal(ideaId: string) {
-  router.push(`/ideas/list/${ideaId}`)
+  const nestedRouteName = route.matched[route.matched.length - 2].name?.toString()
+  const ideaModalRoute: RouteRecordRaw = {
+    name: 'idea-modal',
+    path: 'ideas/list/:id',
+    alias: '/ideas/list/:id',
+    component: IdeaModal,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  if (nestedRouteName) {
+    navigateToAliasRoute(nestedRouteName, `/ideas/list/${ideaId}`, ideaModalRoute)
+  }
 }
 </script>
 
@@ -42,12 +56,14 @@ function navigateToIdeaModal(ideaId: string) {
           :key="idea.id"
         >
           <div class="w-100 d-flex justify-content-between align-items-center gap-3">
-            <div class="d-flex gap-2 align-items-center">
+            <div
+              class="w-100 d-flex gap-2 align-items-center justify-content-between"
+            >
               <div
                 class="fs-5 profile-ideas__idea-link"
                 @click="navigateToIdeaModal(idea.id)"
               >
-                {{ idea.name }}
+                Lorem ipsum dolor sit amet consectetur
               </div>
               <div :class="[getIdeaStatusStyle(idea.status), 'fs-6', 'text-center']">
                 {{ status.translatedStatus[idea.status] }}
