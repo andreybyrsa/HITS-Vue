@@ -1,5 +1,6 @@
 <template>
   <Table
+    class-name="p-3"
     :header="usersGroupsTableHeader"
     :columns="usersGroupsTableColumns"
     :data="usersGroups"
@@ -22,6 +23,7 @@
 
   <DeleteModal
     :is-opened="isOpenedDeletingGroupModal"
+    :item-name="currentDeleteGroupName"
     @delete="handleDeleteGroup"
     @close-modal="closeDeletingGroupModal"
   />
@@ -59,6 +61,7 @@ const notificationsStore = useNotificationsStore()
 
 const currentGroupId = ref()
 const currentDeleteGroupId = ref<string | null>(null)
+const currentDeleteGroupName = ref<string>()
 
 const isOpenedCreatingGroupModal = ref(false)
 const isOpenedUpdatingGroupModal = ref(false)
@@ -120,7 +123,6 @@ const usersGroupsFilters: Filter<UsersGroup>[] = [
     refValue: rolesFilter,
     isUniqueChoice: false,
     checkFilter: checkUsersGroupRoles,
-    statement: () => true,
   },
 ]
 
@@ -155,6 +157,7 @@ function closeUpdatingGroupModal() {
 function openDeletingGroupModal(usersGroup: UsersGroup) {
   isOpenedDeletingGroupModal.value = true
   currentDeleteGroupId.value = usersGroup.id
+  currentDeleteGroupName.value = usersGroup.name
 }
 function closeDeletingGroupModal() {
   isOpenedDeletingGroupModal.value = false

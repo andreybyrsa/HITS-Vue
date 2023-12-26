@@ -27,7 +27,7 @@ import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 
 import { TeamMember } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
-import Profile from '@Domain/Profile'
+import { Profile } from '@Domain/Profile'
 
 import SkillsService from '@Services/SkillsService'
 import ProfileService from '@Services/ProfileService'
@@ -71,14 +71,14 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token, id } = currentUser
 
-    const profileParallelRequests = [
+    const usersInviteParallelRequests = [
       () => SkillsService.getAllSkills(token),
       () => ProfileService.getUserProfile(id, token),
       () => SkillsService.getAllUsersSkills(token),
     ]
 
     await makeParallelRequests<TeamMember[] | Skill[] | Profile | Error>(
-      profileParallelRequests,
+      usersInviteParallelRequests,
     ).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {

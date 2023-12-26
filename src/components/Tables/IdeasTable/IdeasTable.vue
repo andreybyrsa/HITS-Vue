@@ -1,5 +1,6 @@
 <template>
   <Table
+    class-name="p-3"
     :header="ideasTableHeader"
     :columns="ideaTableColumns"
     :data="ideasData"
@@ -12,6 +13,7 @@
 
   <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
+    :item-name="deletingIdeaName"
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
   />
@@ -67,6 +69,7 @@ const filtersByRoles = getFiltersByRoles()
 
 const availableStatus = getIdeaStatus()
 
+const deletingIdeaName = ref<string>()
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
@@ -331,6 +334,7 @@ function navigateToUpdateIdeaForm(idea: Idea) {
 
 function handleOpenDeleteModal(idea: Idea) {
   deletingIdeaId.value = idea.id
+  deletingIdeaName.value = idea.name
   isOpenedIdeaDeleteModal.value = true
 }
 

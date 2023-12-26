@@ -24,8 +24,10 @@ const checkedData = defineModel<DataType[]>({
   required: false,
   local: true,
 }) as Ref<DataType[]>
-
 const searchedData = computed(() => searchDataByKeys())
+
+const TableClassName = computed(() => ['w-100', 'bg-white', props.className ?? ''])
+
 const tableLabel = computed(() => {
   const label = props.header?.label
   const countData = props.header?.countData
@@ -206,7 +208,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
 </script>
 
 <template>
-  <div class="w-100 bg-white">
+  <div :class="TableClassName">
     <div
       v-if="header"
       class="table__header w-100"
@@ -277,7 +279,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
       <div class="w-100">
         <table class="table table-hover mb-0">
           <thead>
-            <tr>
+            <tr class="table__lables">
               <th class="py-3 col">
                 <div @click="checkAllRows">
                   <Checkbox
@@ -408,6 +410,14 @@ function checkHeaderButtonStatement(statement?: boolean) {
 .table {
   &__header {
     @include flexible(center, space-between, $gap: 16px);
+  }
+
+  &__lables {
+    @include position(sticky, $top: 0, $z-index: 1);
+
+    > th {
+      box-shadow: inset 0 -1px 0 #dee2e6;
+    }
   }
 
   &__header-icon {

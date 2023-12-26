@@ -43,7 +43,7 @@ onMounted(async () => {
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
-    content-class-name="markets-page__content p-3 bg-white"
+    content-class-name="markets-view__content bg-white"
   >
     <template #leftSideBar>
       <LeftSideBar />
@@ -64,9 +64,9 @@ onMounted(async () => {
 </template>
 
 <style lang="scss">
-.ideas-page {
+.markets-view {
   &__content {
-    @include flexible(stretch, flex-start, column);
+    overflow-y: scroll;
   }
 }
 </style>

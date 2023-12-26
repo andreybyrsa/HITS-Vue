@@ -1,7 +1,7 @@
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
-    content-class-name="p-3 bg-white"
+    content-class-name="skills-view__content bg-white"
   >
     <template #leftSideBar>
       <LeftSideBar />
@@ -65,3 +65,11 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style lang="scss">
+.skills-view {
+  &__content {
+    overflow-y: scroll;
+  }
+}
+</style>

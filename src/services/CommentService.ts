@@ -6,6 +6,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const commentAxios = defineAxios(getMocks().comments)
 
@@ -17,7 +18,7 @@ const getComments = async (
   ideaId: string,
   token: string,
 ): Promise<Comment[] | Error> => {
-  return await commentAxios
+  return commentAxios
     .get<Comment[]>(
       `/comment/all/${ideaId}`,
       {
@@ -27,33 +28,27 @@ const getComments = async (
       { formatter: (comments) => filterCommentsById(ideaId, comments) },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения комментариев'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения комментариев'))
 }
 
 const createComment = async (
   comment: Comment,
   token: string,
 ): Promise<Comment | Error> => {
-  return await commentAxios
+  return commentAxios
     .post('/comment/send', comment, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка добавления комментария'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления комментария'))
 }
 
 const deleteComment = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await commentAxios
+  return commentAxios
     .delete(
       `/comment/delete/${id}`,
       {
@@ -63,10 +58,7 @@ const deleteComment = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления комментария'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления комментария'))
 }
 
 const checkComment = async (
@@ -74,7 +66,7 @@ const checkComment = async (
   email: string,
   token: string,
 ): Promise<void | Error> => {
-  return await commentAxios
+  return commentAxios
     .putNoRequestBody<void>(
       `/comment/check/${id}`,
       {
@@ -84,10 +76,7 @@ const checkComment = async (
       { params: { id }, requestData: { checkedBy: [email] } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка просмотра комментария'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка просмотра комментария'))
 }
 
 const CommentService = {

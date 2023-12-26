@@ -7,6 +7,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import getMocks from '@Utils/getMocks'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const requestTeamsAxios = defineAxios(getMocks().RequestTeams)
 
@@ -19,7 +20,7 @@ const getIdeaRequests = async (
   ideaId: string,
   token: string,
 ): Promise<RequestTeamToIdea[] | Error> => {
-  return await requestTeamsAxios
+  return requestTeamsAxios
     .get<RequestTeamToIdea[]>(
       `/market/idea/requests/${ideaId}`,
       {
@@ -31,10 +32,7 @@ const getIdeaRequests = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения заявок'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения заявок'))
 }
 
 // --- POST --- //
@@ -42,15 +40,12 @@ const postRequest = async (
   team: RequestTeamToIdea,
   token: string,
 ): Promise<RequestTeamToIdea | Error> => {
-  return await requestTeamsAxios
+  return requestTeamsAxios
     .post(`/market/idea/declare`, team, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка отправки заявки'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка отправки заявки'))
 }
 
 // --- PUT --- //
@@ -59,7 +54,7 @@ const updateRequestToIdeaStatus = async (
   status: RequestToIdeaStatus,
   token: string,
 ): Promise<Success | Error> => {
-  return await requestTeamsAxios
+  return requestTeamsAxios
     .put<Success>(
       `/market/idea/change-status/request/${id}/${status}`,
       { status: status },
@@ -70,10 +65,7 @@ const updateRequestToIdeaStatus = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка изменения статуса заявки'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса заявки'))
 }
 
 const acceptRequestToIdeaStatus = async (
@@ -81,7 +73,7 @@ const acceptRequestToIdeaStatus = async (
   teamId: string,
   token: string,
 ): Promise<Team | Error> => {
-  return await requestTeamsAxios
+  return requestTeamsAxios
     .put<Team>(
       `/market/idea/accept/request/${id}/${teamId}`,
       { status: status },
@@ -91,10 +83,7 @@ const acceptRequestToIdeaStatus = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка изменения статуса заявки'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса заявки'))
 }
 
 // --- DELETE --- //
@@ -102,7 +91,7 @@ const deleteRequestTeams = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await requestTeamsAxios
+  return requestTeamsAxios
     .delete(
       `/market/delete/request/${id}`,
       {
@@ -114,10 +103,7 @@ const deleteRequestTeams = async (
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления заявки'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления заявки'))
 }
 
 const RequestTeamsServise = {
