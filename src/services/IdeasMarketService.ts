@@ -306,7 +306,7 @@ const deleteIdeaMarketAdvertisement = async (
 ): Promise<Success | Error> => {
   return ideasMarketAdvertisementAxios
     .delete(
-      `/market/delete/advertisement/${id}`,
+      `/market/idea/delete/advertisement/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

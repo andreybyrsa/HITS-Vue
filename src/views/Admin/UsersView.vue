@@ -1,7 +1,7 @@
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
-    content-class-name="p-3 bg-white"
+    content-class-name="users-view__content bg-white"
   >
     <template #leftSideBar>
       <LeftSideBar />
@@ -62,3 +62,11 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style lang="scss">
+.users-view {
+  &__content {
+    overflow-y: scroll;
+  }
+}
+</style>

@@ -1,5 +1,6 @@
 <template>
   <Table
+    class-name="px-3 pb-3 pt-1"
     :data="teamInvitations"
     :columns="teamInvitationColumns"
     :search-by="['email', 'firstName', 'lastName']"
