@@ -1,13 +1,13 @@
-import { RequestToTeamStatus } from '@Domain/Team'
+import { JoinStatus } from '@Domain/Team'
 
-interface GetRequestsToTeamType {
-  requests: RequestToTeamStatus[]
+interface GetInvitationsToTeamType {
+  requests: JoinStatus[]
   translatedRequests: {
-    [key in RequestToTeamStatus]: string
+    [key in JoinStatus]: string
   }
 }
 
-function getRequestsToTeamStatus(): GetRequestsToTeamType {
+function getJoinStatus(): GetInvitationsToTeamType {
   return {
     requests: ['NEW', 'WITHDRAWN', 'ACCEPTED', 'ANNULLED', 'CANCELED'],
     translatedRequests: {
@@ -19,7 +19,7 @@ function getRequestsToTeamStatus(): GetRequestsToTeamType {
     },
   }
 }
-function getRequestToTeamStatusStyle(status: RequestToTeamStatus) {
+function getJoinStatusStyle(status: JoinStatus) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
 
   if (status === 'NEW' || status === 'ANNULLED') {
@@ -43,4 +43,4 @@ function getRequestToTeamStatusStyle(status: RequestToTeamStatus) {
   }
 }
 
-export { getRequestsToTeamStatus, getRequestToTeamStatusStyle }
+export { getJoinStatus, getJoinStatusStyle }

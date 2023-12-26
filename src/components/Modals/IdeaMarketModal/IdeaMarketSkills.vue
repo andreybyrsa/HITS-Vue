@@ -50,7 +50,7 @@ function filterSkillsTeams() {
       class-name="w-100"
       :skills="skillsRequestTeamsData"
       :width="250"
-      :height="250"
+      :height="275"
     />
   </div>
 </template>

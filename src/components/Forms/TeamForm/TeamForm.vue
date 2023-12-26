@@ -204,7 +204,7 @@ watchImmediate(
       <SkillsRadarChart
         :skills="radarChartsSkills"
         :width="225"
-        :height="225"
+        :height="250"
       />
 
       <Button

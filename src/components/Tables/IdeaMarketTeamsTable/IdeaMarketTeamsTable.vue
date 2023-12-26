@@ -13,7 +13,6 @@
 import { ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { useRouter, RouteRecordRaw } from 'vue-router'
-import { storeToRefs } from 'pinia'
 
 import Table from '@Components/Table/Table.vue'
 import IdeaMarketTeamsTableProps from '@Components/Tables/IdeaMarketTeamsTable/IdeaMarketTeamsTable.types'
@@ -24,16 +23,11 @@ import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import { Skill } from '@Domain/Skill'
 import { Team, TeamMember } from '@Domain/Team'
 
-import useUserStore from '@Store/user/userStore'
-
 import mutableSort from '@Utils/mutableSort'
 import { getSkillInfoStyle } from '@Utils/skillsInfo'
 
 const props = defineProps<IdeaMarketTeamsTableProps>()
 const skillsTeam = defineModel<Team>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const ideaMarketTeams = ref<Team[]>([])
 const selectedTeam = ref<Team[]>([])

@@ -35,15 +35,12 @@ import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
-import { RequestToTeam, RequestToTeamStatus } from '@Domain/Team'
+import { RequestToTeam, JoinStatus } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 
-import {
-  getRequestsToTeamStatus,
-  getRequestToTeamStatusStyle,
-} from '@Utils/requestsToTeamStatus'
+import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
 
 const props = defineProps<RequestsToTeamProps>()
 
@@ -54,7 +51,7 @@ const requestsToTeamStore = useRequestsToTeamStore()
 
 const router = useRouter()
 
-const requestsToTeamStatus = getRequestsToTeamStatus()
+const requestsToTeamStatus = getJoinStatus()
 
 const requestToTeamColumns: TableColumn<RequestToTeam>[] = [
   {
@@ -63,7 +60,7 @@ const requestToTeamColumns: TableColumn<RequestToTeam>[] = [
     size: 'col-1',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getStatusFormat,
-    getRowCellStyle: getRequestToTeamStatusStyle,
+    getRowCellStyle: getJoinStatusStyle,
   },
   {
     key: 'email',
@@ -102,7 +99,7 @@ const dropdownRequestToTeamActions: DropdownMenuAction<RequestToTeam>[] = [
   },
 ]
 
-function getStatusFormat(status: RequestToTeamStatus) {
+function getStatusFormat(status: JoinStatus) {
   return requestsToTeamStatus.translatedRequests[status]
 }
 

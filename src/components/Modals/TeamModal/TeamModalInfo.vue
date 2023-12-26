@@ -168,7 +168,7 @@ function copyLink() {
     <SkillsRadarChart
       :skills="teamSkills"
       :width="250"
-      :height="250"
+      :height="275"
     />
   </div>
 </template>
