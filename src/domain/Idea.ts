@@ -1,5 +1,6 @@
 import UsersGroup from '@Domain/UsersGroup'
 import { Skill } from '@Domain/Skill'
+import { User } from '@Domain/User'
 
 type IdeaStatusType =
   | 'NEW'
@@ -11,7 +12,7 @@ type IdeaStatusType =
 
 interface Idea {
   id: string
-  initiatorEmail: string
+  initiator: User
   createdAt: string
   modifiedAt: string
 
