@@ -91,7 +91,7 @@ function getRequestsToTeam() {
       </ul>
     </div>
 
-    <div class="team-tables px-3 pb-3 pt-1">
+    <div class="team-tables">
       <TeamMembers
         v-if="isTeamMembersTable"
         :team="team"
@@ -115,6 +115,8 @@ function getRequestsToTeam() {
 <style lang="scss" scoped>
 .team-tables {
   max-height: 430px;
+
+  overflow: scroll;
 }
 .nav-link {
   cursor: pointer;

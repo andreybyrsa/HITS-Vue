@@ -43,7 +43,7 @@ onMounted(async () => {
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
-    content-class-name="teams-page__content p-3 bg-white"
+    content-class-name="teams-page__content bg-white"
   >
     <template #leftSideBar>
       <LeftSideBar />
@@ -68,6 +68,8 @@ onMounted(async () => {
 <style lang="scss">
 .teams-page {
   &__content {
+    overflow-y: scroll;
+
     @include flexible(stretch, flex-start, column);
   }
 }

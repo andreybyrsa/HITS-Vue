@@ -1,5 +1,6 @@
 <template>
   <Table
+    class-name="p-3"
     :header="marketTableHeader"
     :columns="marketTableColumns"
     :data="markets"

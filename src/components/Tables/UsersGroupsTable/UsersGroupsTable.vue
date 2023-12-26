@@ -1,5 +1,6 @@
 <template>
   <Table
+    class-name="p-3"
     :header="usersGroupsTableHeader"
     :columns="usersGroupsTableColumns"
     :data="usersGroups"
