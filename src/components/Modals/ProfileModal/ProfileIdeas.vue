@@ -83,7 +83,7 @@ function navigateToIdeaModal(ideaId: string) {
             class-name="w-100"
           >
             <Typography class-name="w-100 mt-1 border-top text-secondary">
-              {{ idea.solution }}
+              {{ idea.description }}
             </Typography>
           </Collapse>
         </div>

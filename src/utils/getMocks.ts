@@ -1066,7 +1066,7 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
-      initiatorEmail: 'admin@mail.com',
+      initiator: users[0],
       name: 'Рефактор кода',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1094,7 +1094,7 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      initiatorEmail: '1@mail.com',
+      initiator: users[1],
       name: 'Моя новая идея',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1122,7 +1122,7 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
-      initiatorEmail: '2@mail.com',
+      initiator: users[2],
       name: 'Идея 2',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1150,7 +1150,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
-      initiatorEmail: '3@mail.com',
+      initiator: users[0],
       name: 'Раскладушка',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1179,7 +1179,7 @@ function getMocks(): Mocks {
     {
       id: '7',
       isChecked: true,
-      initiatorEmail: '3@mail.com',
+      initiator: users[1],
       name: 'Земляника',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1206,7 +1206,7 @@ function getMocks(): Mocks {
     },
     {
       id: '4',
-      initiatorEmail: '3@mail.com',
+      initiator: users[2],
       name: 'Зeмляника',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',

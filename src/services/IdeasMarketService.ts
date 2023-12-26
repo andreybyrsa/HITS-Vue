@@ -145,9 +145,7 @@ const sendIdeaOnMarket = async (
       return {
         id: '',
         marketId: marketId,
-        initiator: getMocks().users.find(
-          ({ email }) => email === idea.initiatorEmail,
-        ),
+        initiator: getMocks().users.find(({ id }) => id === idea.initiator.id),
         createdAt: idea.createdAt,
         name: idea.name,
         problem: idea.problem,

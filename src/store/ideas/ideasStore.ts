@@ -57,6 +57,26 @@ const useIdeasStore = defineStore('ideas', {
         return findOneAndUpdate(this.ideas, idea, { key: 'id', value: id })
       }
     },
+
+    getIdeasExpertNotConfirmed() {
+      return async (token: string) => {
+        const response = await IdeasService.getExpertNotConfirmedIdeas(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        } else {
+          const currentExpertIdeas = this.ideas.filter((idea) =>
+            response.find((elem) => idea.id === elem.id),
+          )
+
+          return currentExpertIdeas
+        }
+      }
+    },
   },
   actions: {
     async updateIdeaStatus(
