@@ -10,10 +10,7 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
   return axios
     .post(`${API_URL}/auth/login`, user)
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка авторизации'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка авторизации'))
 }
 
 const registerUser = async (user: RegisterUser): Promise<User | Error> => {
