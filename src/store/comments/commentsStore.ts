@@ -81,8 +81,8 @@ const useCommentsStore = defineStore('comments', {
       }
     },
 
-    async checkComment(commentId: string, email: string, token: string) {
-      const response = await CommentService.checkComment(commentId, email, token)
+    async checkComment(commentId: string, userId: string, token: string) {
+      const response = await CommentService.checkComment(commentId, userId, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -90,7 +90,7 @@ const useCommentsStore = defineStore('comments', {
         const currentComment = this.comments?.find(
           (comment) => comment.id === commentId,
         )
-        currentComment?.checkedBy.push(email)
+        currentComment?.checkedBy.push(userId)
       }
     },
   },
