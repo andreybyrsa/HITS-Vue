@@ -60,7 +60,7 @@ const useIdeasStore = defineStore('ideas', {
 
     getIdeasExpertNotConfirmed() {
       return async (token: string) => {
-        const response = await IdeasService.getExpertNotConfirmedRating(token)
+        const response = await IdeasService.getExpertNotConfirmedIdeas(token)
 
         if (response instanceof Error) {
           useNotificationsStore().createSystemNotification(
