@@ -1,7 +1,5 @@
 import { AxiosError } from 'axios'
 
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
 interface ServerError {
   error: string
 }
@@ -9,7 +7,6 @@ interface ServerError {
 function handleAxiosError(
   axiosError: AxiosError<ServerError>,
   errorMessage: string,
-  showNotification?: boolean,
 ) {
   const { code, response } = axiosError
 
@@ -17,25 +14,13 @@ function handleAxiosError(
     const serverError = response?.data?.error
 
     if (serverError) {
-      return outputErrorMessage(axiosError, serverError, showNotification)
+      return new Error(serverError)
     }
 
-    return outputErrorMessage(axiosError, errorMessage, showNotification)
+    return new Error(errorMessage)
   }
 
-  return console.warn(axiosError)
-}
-
-function outputErrorMessage(
-  axiosError: AxiosError<ServerError>,
-  errorMessage: string,
-  showNotification?: boolean,
-) {
-  if (showNotification) {
-    useNotificationsStore().createSystemNotification('Система', errorMessage)
-  }
-
-  console.warn(axiosError)
+  return new Error('Ваша сессия истекла')
 }
 
 export default handleAxiosError

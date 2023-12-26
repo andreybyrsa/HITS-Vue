@@ -1,5 +1,6 @@
 <template>
   <Table
+    class-name="p-3"
     :header="companiesTableHeader"
     :columns="companiesTableColumns"
     :data="companies"
@@ -21,6 +22,7 @@
 
   <DeleteModal
     :is-opened="isOpenedDeletingCompanyModal"
+    :item-name="currentDeleteCompanyName"
     @delete="handleDeleteCompany"
     @close-modal="closeDeletingCompanyModal"
   />
@@ -54,6 +56,7 @@ const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const currentCompanyId = ref<string>()
+const currentDeleteCompanyName = ref<string>()
 const currentDeleteCompanyId = ref<string | null>(null)
 
 const isOpenedCreatingCompanyModal = ref(false)
@@ -125,6 +128,7 @@ function closeUpdatingCompanyModal() {
 function openDeletingCompanyModal(company: Company) {
   isOpenedDeletingCompanyModal.value = true
   currentDeleteCompanyId.value = company.id
+  currentDeleteCompanyName.value = company.name
 }
 function closeDeletingCompanyModal() {
   isOpenedDeletingCompanyModal.value = false

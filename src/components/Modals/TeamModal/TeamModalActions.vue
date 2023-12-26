@@ -366,6 +366,7 @@ function closeConfirmModal() {
 
     <DeleteModal
       :is-opened="isOpenedDeletingModal"
+      :item-name="team.name"
       @delete="handleDeleteTeam"
       @close-modal="closeDeletingModal"
     />

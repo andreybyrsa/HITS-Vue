@@ -2,6 +2,10 @@ import { VueElement } from 'vue'
 
 import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 
+interface IdeaModalProps {
+  canGoBack?: boolean
+}
+
 interface IdeaDescriptionProps {
   idea: Idea
   ideaSkills?: IdeaSkills
@@ -34,6 +38,7 @@ interface IdeaModalCollapseType {
 }
 
 export {
+  IdeaModalProps,
   IdeaDescriptionProps,
   IdeaActionsProps,
   IdeaCommentsProps,

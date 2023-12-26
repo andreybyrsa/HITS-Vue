@@ -51,6 +51,7 @@ function getMocks(): Mocks {
       firstName: 'Кирилл',
       lastName: 'Власов',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      createdAt: '2023-10-20T11:02:17Z',
     },
     {
       id: '1',
@@ -59,6 +60,7 @@ function getMocks(): Mocks {
       firstName: 'Иван',
       lastName: 'Иванович',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      createdAt: '2023-10-20T11:02:17Z',
     },
     {
       id: '2',
@@ -67,6 +69,7 @@ function getMocks(): Mocks {
       firstName: 'Менеджер',
       lastName: 'Менеджер',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      createdAt: '2023-10-20T11:02:17Z',
     },
     {
       id: '3',
@@ -75,6 +78,7 @@ function getMocks(): Mocks {
       firstName: 'Владелец',
       lastName: 'Владелец',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      createdAt: '2023-10-20T11:02:17Z',
     },
     {
       id: '4',
@@ -83,6 +87,7 @@ function getMocks(): Mocks {
       firstName: 'Винрит',
       lastName: 'Загрев',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      createdAt: '2023-10-20T11:02:17Z',
     },
     {
       id: '5',
@@ -91,6 +96,7 @@ function getMocks(): Mocks {
       firstName: 'Версаль',
       lastName: 'Кустерман',
       roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+      createdAt: '2023-10-20T11:02:17Z',
     },
     // {
     //   id: '6',
@@ -516,12 +522,12 @@ function getMocks(): Mocks {
     {
       id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
       initiator: {
-        id: 'd28314c1-8ea9-42be-8d2f-b0f6d2dbf229',
+        id: '1',
         email: 'barbakovom@tyuiu.ru',
         lastName: 'Барбаков',
         firstName: 'Олег',
       } as User,
-      team: null,
+      team: teams[0],
       marketId: '201',
       createdAt: '2023-12-15',
       name: 'Цифровой помощник сотрудника приемной комиссии университета',
@@ -1060,7 +1066,7 @@ function getMocks(): Mocks {
   const ideas: Idea[] = [
     {
       id: '0',
-      initiatorEmail: 'admin@mail.com',
+      initiator: users[0],
       name: 'Рефактор кода',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1088,7 +1094,7 @@ function getMocks(): Mocks {
     },
     {
       id: '1',
-      initiatorEmail: '1@mail.com',
+      initiator: users[1],
       name: 'Моя новая идея',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1116,7 +1122,7 @@ function getMocks(): Mocks {
     },
     {
       id: '2',
-      initiatorEmail: '2@mail.com',
+      initiator: users[2],
       name: 'Идея 2',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1144,7 +1150,7 @@ function getMocks(): Mocks {
     },
     {
       id: '3',
-      initiatorEmail: '3@mail.com',
+      initiator: users[0],
       name: 'Раскладушка',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1173,7 +1179,7 @@ function getMocks(): Mocks {
     {
       id: '7',
       isChecked: true,
-      initiatorEmail: '3@mail.com',
+      initiator: users[1],
       name: 'Земляника',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1200,7 +1206,7 @@ function getMocks(): Mocks {
     },
     {
       id: '4',
-      initiatorEmail: '3@mail.com',
+      initiator: users[2],
       name: 'Зeмляника',
       problem:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',

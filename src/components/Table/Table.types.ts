@@ -58,6 +58,7 @@ interface TableColumn<DataType> {
 }
 
 interface TableProps<DataType> {
+  className?: string
   header?: TableHeader
   columns: TableColumn<DataType>[]
   data: DataType[]

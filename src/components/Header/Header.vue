@@ -73,10 +73,11 @@ function closeRoleModal() {
       <div class="user-info__image rounded-circle overflow-hidden">
         <img
           v-if="avatar"
-          class="border rounded-circle object-fit-contain"
+          class="border rounded-circle object-fit-contain cursor-pointer"
           :src="avatar"
           width="58"
           height="58"
+          @click="navigateToProfile"
         />
         <LoadingPlaceholder
           v-else

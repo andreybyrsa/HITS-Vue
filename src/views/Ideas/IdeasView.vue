@@ -51,7 +51,7 @@ watchImmediate(
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
-    content-class-name="ideas-page__content bg-white p-3"
+    content-class-name="ideas-page__content bg-white"
   >
     <template #leftSideBar>
       <LeftSideBar />
@@ -76,6 +76,8 @@ watchImmediate(
 <style lang="scss">
 .ideas-page {
   &__content {
+    overflow-y: scroll;
+
     @include flexible(stretch, flex-start, column);
   }
 }

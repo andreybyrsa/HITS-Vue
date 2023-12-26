@@ -1,5 +1,6 @@
 <template>
   <Table
+    class-name="p-3"
     :header="ideasTableHeader"
     :columns="ideaTableColumns"
     :data="ideasData"
@@ -12,6 +13,7 @@
 
   <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
+    :item-name="deletingIdeaName"
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
   />
@@ -49,7 +51,7 @@ import useIdeasStore from '@Store/ideas/ideasStore'
 import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 import mutableSort from '@Utils/mutableSort'
 import getFiltersByRoles from '@Utils/getFiltersByRoles'
-import IdeasService from '@Services/IdeasService'
+import useRatingsStore from '@Store/ratings/ratingsStore'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -67,6 +69,7 @@ const filtersByRoles = getFiltersByRoles()
 
 const availableStatus = getIdeaStatus()
 
+const deletingIdeaName = ref<string>()
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
@@ -215,6 +218,29 @@ const ideasFilters: Filter<Idea>[] = [
   },
 ]
 
+const ratingsStore = useRatingsStore()
+const { ratings } = storeToRefs(ratingsStore)
+
+function checkError(ideas: Idea[] | Error) {
+  return ideas instanceof Error ? [] : ideas
+}
+
+watchImmediate(
+  ratings,
+  async () => {
+    const currentUser = user.value
+
+    if (currentUser?.token) {
+      const { token } = currentUser
+
+      const response = await ideaStore.getIdeasExpertNotConfirmed(token)
+
+      if (user.value?.role === 'EXPERT') ideasData.value = checkError(response)
+    }
+  },
+  { deep: true },
+)
+
 watchImmediate(
   () => filterByConfirmedExpert.value,
   async (value) => {
@@ -224,13 +250,9 @@ watchImmediate(
       if (currentUser?.token) {
         const { token } = currentUser
 
-        const response = await IdeasService.getExpertNotConfirmedRating(token)
+        const response = await ideaStore.getIdeasExpertNotConfirmed(token)
 
-        if (response instanceof Error) {
-          return
-        }
-
-        ideasData.value = response
+        ideasData.value = checkError(response)
       }
     } else ideasData.value = props.ideas
   },
@@ -264,10 +286,6 @@ function sortByPreAssessment() {
 function sortByRating() {
   mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
 }
-
-// function getChecked() {
-//   return undefined
-// }
 
 function getTranslatedStatus(status: IdeaStatusType) {
   return availableStatus.translatedStatus[status].toString()
@@ -316,6 +334,7 @@ function navigateToUpdateIdeaForm(idea: Idea) {
 
 function handleOpenDeleteModal(idea: Idea) {
   deletingIdeaId.value = idea.id
+  deletingIdeaName.value = idea.name
   isOpenedIdeaDeleteModal.value = true
 }
 
@@ -345,13 +364,13 @@ function checkDeleteIdeaAction(idea: Idea) {
   const currentUser = user.value
 
   if (currentUser) {
-    const { email } = currentUser
-    const { initiatorEmail, status } = idea
+    const { id } = currentUser
+    const { initiator, status } = idea
     const requiredIdeaStatus =
       status === 'NEW' || status === 'ON_EDITING' || status === 'ON_APPROVAL'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiatorEmail === email && requiredIdeaStatus
+      return initiator.id === id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
@@ -363,12 +382,12 @@ function checkUpdateIdeaAction(idea: Idea) {
   const currentUser = user.value
 
   if (currentUser) {
-    const { email } = currentUser
-    const { initiatorEmail, status } = idea
+    const { id } = currentUser
+    const { initiator, status } = idea
     const requiredIdeaStatus = status === 'NEW' || status === 'ON_EDITING'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiatorEmail === email && requiredIdeaStatus
+      return initiator.id === id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'

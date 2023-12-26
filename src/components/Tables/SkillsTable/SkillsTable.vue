@@ -1,5 +1,6 @@
 <template>
   <Table
+    class-name="p-3"
     :header="skillsTableHeader"
     :columns="skillTableColumns"
     :data="skills"
@@ -22,6 +23,7 @@
 
   <DeleteModal
     :is-opened="isOpenedDeletingModal"
+    :item-name="currentDeleteSkillName"
     @close-modal="closeDeletingModal"
     @delete="handleDeleteSkill"
   />
@@ -58,6 +60,7 @@ const notificationsStore = useNotificationsStore()
 
 const updatingSkill = ref<Skill | null>(null)
 const currentDeleteSkillId = ref<string | null>(null)
+const currentDeleteSkillName = ref<string>()
 
 const isOpenCreatingSkillModal = ref(false)
 const isOpenUpdatingSkillModal = ref(false)
@@ -108,7 +111,7 @@ const dropdownSkillsActions: DropdownMenuAction<Skill>[] = [
     click: openUpdatingSkillModal,
   },
   {
-    label: 'Одобрить',
+    label: 'Утвердить',
     statement: (skill) => checkSkillConfirmed(skill, false),
     click: handleConfirmSkill,
   },
@@ -129,7 +132,6 @@ const skillsFilters: Filter<Skill>[] = [
     refValue: filterByType,
     isUniqueChoice: false,
     checkFilter: checkSkillType,
-    statement: () => true,
   },
   {
     category: 'Статус',
@@ -140,7 +142,6 @@ const skillsFilters: Filter<Skill>[] = [
     refValue: filterByIsConfirmed,
     isUniqueChoice: true,
     checkFilter: checkSkillConfirmed,
-    statement: () => true,
   },
 ]
 
@@ -239,6 +240,7 @@ function closeUpdatingSkillModal() {
 
 function openDeletingModal(skill: Skill) {
   currentDeleteSkillId.value = skill.id
+  currentDeleteSkillName.value = skill.name
   isOpenedDeletingModal.value = true
 }
 function closeDeletingModal() {

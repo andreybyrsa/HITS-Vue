@@ -74,31 +74,6 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
             </div>
           </div>
         </div>
-
-        <div
-          class="d-flex flex-column gap-3 bg-white rounded-3 p-3"
-          v-for="value in 2"
-          :key="value"
-        >
-          <div class="profile-placeholder__right-side-header border-bottom">
-            <div class="w-25 mb-1">
-              <LoadingPlaceholder />
-            </div>
-          </div>
-
-          <div
-            v-for="index in 3"
-            :key="index"
-            class="w-100 p-2 d-flex flex-column border rounded"
-          >
-            <div class="w-75">
-              <LoadingPlaceholder />
-            </div>
-            <div class="w-50">
-              <LoadingPlaceholder />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>

@@ -6,6 +6,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import getMocks from '@Utils/getMocks'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const marketAxios = defineAxios(getMocks().market)
 
@@ -21,10 +22,7 @@ const getAllMarkets = async (token: string): Promise<Market[] | Error> => {
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки бирж'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки бирж'))
 }
 
 const getAllActiveMarkets = async (token: string): Promise<Market[] | Error> => {
@@ -40,10 +38,7 @@ const getAllActiveMarkets = async (token: string): Promise<Market[] | Error> => 
       },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки активных бирж'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки активных бирж'))
 }
 
 const getMarket = async (id: string, token: string): Promise<Market | Error> => {
@@ -57,10 +52,7 @@ const getMarket = async (id: string, token: string): Promise<Market | Error> => 
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки биржи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки биржи'))
 }
 
 // --- POST --- //
@@ -74,10 +66,7 @@ const createMarket = async (
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка создания биржи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка создания биржи'))
 }
 
 // --- PUT --- //
@@ -97,10 +86,7 @@ const updateMarket = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка редактирования биржи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования биржи'))
 }
 
 const updateMarketStatus = async (
@@ -118,10 +104,7 @@ const updateMarketStatus = async (
       { params: { id }, requestData: { status } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка смены статуса биржи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка смены статуса биржи'))
 }
 
 // --- DELETE --- //
@@ -136,10 +119,7 @@ const deleteMarket = async (id: string, token: string): Promise<Success | Error>
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления биржи'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления биржи'))
 }
 
 const MarketService = {

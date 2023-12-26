@@ -56,7 +56,7 @@ function getNavLinkStyle(isCurrentTable: boolean) {
       </ul>
     </div>
 
-    <div class="idea-market-tables px-3 pb-3 pt-1">
+    <div class="idea-market-tables">
       <IdeaMarketTeamsTable
         v-if="isAcceptedTeamsTable"
         :idea-market="ideaMarket"

@@ -12,41 +12,36 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const usersAxios = defineAxios(getMocks().users)
 const usersEmailsAxios = defineAxios(getMocks().usersEmails)
 
 const getUsers = async (token: string): Promise<User[] | Error> => {
-  return await usersAxios
+  return usersAxios
     .get('/profile/get/users', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки пользователей'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки пользователей'))
 }
 
 const getUsersEmails = async (token: string): Promise<string[] | Error> => {
-  return await usersEmailsAxios
+  return usersEmailsAxios
     .get(`/profile/get/emails`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки почт'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки почт'))
 }
 
 const updateUserInfo = async (
   newUserData: User,
   token: string,
 ): Promise<User | Error> => {
-  return await usersAxios
+  return usersAxios
     .put(
       '/profile/change/info',
       newUserData,
@@ -57,22 +52,16 @@ const updateUserInfo = async (
       { params: { id: newUserData.id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка обновления пользователя'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления пользователя'))
 }
 
 const updateUserPassword = async (
   newPasswordData: UpdateUserPassword,
 ): Promise<Success | Error> => {
-  return await axios
+  return axios
     .put(`${API_URL}/profile/change/password`, newPasswordData)
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка обновления пароля'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления пароля'))
 }
 
 const updateUserEmail = async (
@@ -84,15 +73,13 @@ const updateUserEmail = async (
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка обновления почты'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления почты'))
 }
 
 const ManageUsersService = {
   getUsers,
   getUsersEmails,
+
   updateUserInfo,
   updateUserPassword,
   updateUserEmail,

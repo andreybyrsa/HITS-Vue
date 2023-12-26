@@ -1,5 +1,6 @@
 <template>
   <Table
+    class-name="p-3"
     :header="teamsTableHeader"
     :columns="teamTableColumns"
     :data="teams"
@@ -10,6 +11,7 @@
 
   <DeleteModal
     :is-opened="isOpenedTeamDeleteModal"
+    :item-name="deletingTeamName?.toString()"
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteTeam"
   />
@@ -32,7 +34,7 @@ import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
 import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
-import Profile from '@Domain/Profile'
+import { Profile } from '@Domain/Profile'
 
 import SkillsService from '@Services/SkillsService'
 import ProfileService from '@Services/ProfileService'
@@ -58,6 +60,7 @@ const skills = ref<Skill[]>([])
 const profile = ref<Profile>()
 
 const deletingTeamId = ref<string | null>(null)
+const deletingTeamName = ref<string>()
 
 const filterByIsClosed = ref<boolean>()
 const filterByOwnerTeams = ref<string>()
@@ -363,6 +366,7 @@ function navigateToUpdateTeamForm(team: Team) {
 
 function handleOpenDeleteModal(team: Team) {
   deletingTeamId.value = team.id
+  deletingTeamName.value = team.name
   isOpenedTeamDeleteModal.value = true
 }
 
@@ -376,7 +380,7 @@ async function handleDeleteTeam() {
   if (currentUser?.token && deletingTeamId.value !== null) {
     const { token } = currentUser
 
-    await teamsStore.deleteTeam(deletingTeamId.value, token)
+    await teamsStore.deleteTeam('deletingTeamId.value', token)
   }
 }
 

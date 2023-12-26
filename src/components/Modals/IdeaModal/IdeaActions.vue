@@ -24,10 +24,10 @@ const isSendingOnConfirmation = ref(false)
 
 function getAccessToEdit() {
   if (user.value) {
-    const { email, role } = user.value
-    const { status, initiatorEmail } = props.idea
+    const { id, role } = user.value
+    const { status, initiator } = props.idea
 
-    if (role === 'INITIATOR' && email === initiatorEmail) {
+    if (role === 'INITIATOR' && id === initiator.id) {
       return status === 'NEW' || status === 'ON_EDITING'
     }
 

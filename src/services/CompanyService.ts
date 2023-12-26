@@ -7,6 +7,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const companiesAxios = defineAxios(getMocks().companies)
 const usersAxios = defineAxios(getMocks().users)
@@ -16,23 +17,20 @@ function formatOwnerCompanies(owenId: string, companies: Company[]) {
 }
 
 const getCompanies = async (token: string): Promise<Company[] | Error> => {
-  return await companiesAxios
+  return companiesAxios
     .get('/company/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения компаний'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения компаний'))
 }
 
 const getOwnerCompanies = async (
   id: string,
   token: string,
 ): Promise<Company[] | Error> => {
-  return await companiesAxios
+  return companiesAxios
     .get<Company[]>(
       '/company/owner',
       {
@@ -42,14 +40,11 @@ const getOwnerCompanies = async (
       { formatter: (companies) => formatOwnerCompanies(id, companies) },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения компаний'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения компаний'))
 }
 
 const getCompany = async (id: string, token: string): Promise<Company | Error> => {
-  return await companiesAxios
+  return companiesAxios
     .get(
       `/company/${id}`,
       {
@@ -59,42 +54,33 @@ const getCompany = async (id: string, token: string): Promise<Company | Error> =
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения компании'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения компании'))
 }
 
 const getCompanyStaff = async (
   id: string,
   token: string,
 ): Promise<User[] | Error> => {
-  return await usersAxios
+  return usersAxios
     .get(`/company/staff/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка получения контактных лиц'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка получения контактных лиц'))
 }
 
 const createCompany = async (
   company: Company,
   token: string,
 ): Promise<Company | Error> => {
-  return await companiesAxios
+  return companiesAxios
     .post('/company/create', company, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка создания компании'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка создания компании'))
 }
 
 const updateCompany = async (
@@ -102,7 +88,7 @@ const updateCompany = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await companiesAxios
+  return companiesAxios
     .put<Success>(
       `/company/update/${id}`,
       company,
@@ -113,17 +99,14 @@ const updateCompany = async (
       { params: { id }, responseData: { success: 'Успешное обновление компании' } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка обновления компании'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления компании'))
 }
 
 const deleteCompany = async (
   id: string,
   token: string,
 ): Promise<Success | Error> => {
-  return await companiesAxios
+  return companiesAxios
     .delete(
       `/company/delete/${id}`,
       {
@@ -133,10 +116,7 @@ const deleteCompany = async (
       { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка удаления компании'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления компании'))
 }
 
 const CompanyService = {
