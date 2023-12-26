@@ -24,8 +24,8 @@ const { comments } = storeToRefs(commentsStore)
 const commentFormInitialState = {
   ideaId: props.idea.id,
   text: '',
-  senderEmail: user.value?.email,
-  checkedBy: user.value ? [user.value.email] : [],
+  sender: user.value ? user.value : {},
+  checkedBy: user.value ? [user.value.id] : [],
 } as Comment
 
 const commentDropdownActions: Action<Comment>[] = [
@@ -65,8 +65,8 @@ const handleCheckComment = async (commentId: string) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token, email } = currentUser
-    await commentsStore.checkComment(commentId, email, token)
+    const { token, id } = currentUser
+    await commentsStore.checkComment(commentId, id, token)
   }
 }
 
@@ -75,17 +75,11 @@ const onIntersectionObserver = async (
   comment: Comment,
 ) => {
   if (user.value) {
-    const { email } = user.value
+    const { id } = user.value
 
-    if (!comment.checkedBy.includes(email) && isIntersecting) {
+    if (!comment.checkedBy.includes(id) && isIntersecting) {
       await handleCheckComment(comment.id)
     }
-  }
-}
-
-function checkIsUserComment(senderEmail: string) {
-  if (user.value?.email === senderEmail) {
-    return 'current-user-comment'
   }
 }
 
@@ -93,11 +87,17 @@ function checkIsActiveComment(comment: Comment) {
   const { checkedBy } = comment
   const currentUser = user.value
 
-  return currentUser && checkedBy.includes(currentUser.email) ? false : true
+  return currentUser && checkedBy.includes(currentUser.id) ? false : true
 }
 
 function checkCommentOwned(comment: Comment) {
-  return comment.senderEmail === user.value?.email
+  const { sender } = comment
+  return sender.email === user.value?.email
+}
+
+function getCommentSender(comment: Comment) {
+  const { sender } = comment
+  return `${sender.firstName} ${sender.lastName}`
 }
 </script>
 
@@ -114,10 +114,10 @@ function checkCommentOwned(comment: Comment) {
         <Advertisement
           v-for="comment in comments"
           :key="comment.id"
-          :class-name="checkIsUserComment(comment.senderEmail)"
+          :class-name="checkCommentOwned(comment) ? 'current-user-comment' : ''"
           :advertisement="comment"
           :text="comment.text"
-          :sender="comment.senderEmail"
+          :sender="getCommentSender(comment)"
           :created-at="comment.createdAt"
           :is-active="checkIsActiveComment(comment)"
           :has-access-to-actions="checkCommentOwned(comment)"

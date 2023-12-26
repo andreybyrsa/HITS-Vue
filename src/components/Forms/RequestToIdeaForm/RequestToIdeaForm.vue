@@ -12,7 +12,6 @@ import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 import { Team } from '@Domain/Team'
 
 const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const requestsToIdeaStore = useRequestsToIdeaStore()
 const { requests } = storeToRefs(requestsToIdeaStore)
@@ -21,64 +20,44 @@ const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
 const router = useRouter()
 
-const props = defineProps<RequestToIdeaFormProps>()
+defineProps<RequestToIdeaFormProps>()
 
 function navigateToTeamForm() {
   userStore.setRole('TEAM_OWNER')
   router.push('/teams/create')
 }
-
-function getAccessToCreateTeam() {
-  const currentUser = user.value
-
-  if (currentUser) {
-    const { role, roles } = currentUser
-    const { status } = props.ideaMarket
-
-    return (
-      role !== 'TEAM_OWNER' &&
-      roles.includes('TEAM_OWNER') &&
-      status === 'RECRUITMENT_IS_OPEN'
-    )
-  }
-}
 </script>
 
 <template>
-  <div class="d-flex w-100 bg-white rounded-3">
-    <div class="w-100 d-flex flex-column">
-      <Typography class-name="fs-6 py-2 px-3 border-bottom">
-        Ваши команды
-      </Typography>
-      <div class="d-flex flex-column gap-2 p-3">
-        <RequestTeamCollapse
-          v-for="(team, index) in ownerTeams"
-          :key="index"
-          :team="team"
-          :idea="ideaMarket"
-          v-model:requestTeams="requests"
-          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
-          :isDisabledButtonSkills="$route.name === 'market'"
-        />
-      </div>
-    </div>
+  <div
+    v-if="ownerTeams.length === 0"
+    class="d-flex bg-white rounded p-2 w-100 px-3 align-items-center justify-content-between"
+  >
+    <Typography class-name="text-danger"> *У вас нет команд </Typography>
+    <Button
+      variant="primary"
+      @click="navigateToTeamForm"
+    >
+      Создать команду?
+    </Button>
   </div>
 
   <div
-    v-if="getAccessToCreateTeam()"
-    class="d-flex w-100 px-3 align-items-center justify-content-between"
+    v-else
+    class="w-100 d-flex flex-column bg-white rounded-3"
   >
-    <template>
-      <Typography class-name="text-danger">
-        *Вы не являетесь владельцем команды.
-      </Typography>
-      <Button
-        variant="primary"
-        @click="navigateToTeamForm"
-      >
-        Создать команду?
-      </Button>
-    </template>
+    <Typography class-name="fs-6 py-2 px-3 border-bottom"> Ваши команды </Typography>
+    <div class="d-flex flex-column gap-2 p-3">
+      <RequestTeamCollapse
+        v-for="(team, index) in ownerTeams"
+        :key="index"
+        :team="team"
+        :idea="ideaMarket"
+        v-model:requestTeams="requests"
+        v-model:skillsAcceptedTeam="skillsAcceptedTeam"
+        :isDisabledButtonSkills="$route.name === 'market'"
+      />
+    </div>
   </div>
 </template>
 

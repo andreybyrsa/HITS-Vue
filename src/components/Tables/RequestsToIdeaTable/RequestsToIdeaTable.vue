@@ -53,7 +53,7 @@ import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
 import mutableSort from '@Utils/mutableSort'
 import { getSkillInfoStyle } from '@Utils/skillsInfo'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
 
 const props = defineProps<RequestsToIdeaTableProps>()
 const selectedTeam = defineModel<RequestTeamToIdea[]>()
@@ -73,6 +73,8 @@ const router = useRouter()
 const isOpenedLetterModal = ref<boolean>(false)
 const isOpenedAcceptModal = ref(false)
 const isOpenedCancelModal = ref(false)
+
+const requestsToTeamStatus = getJoinStatus()
 
 watchImmediate(
   () => props.requests,
@@ -102,7 +104,7 @@ const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
     size: 'col-3',
     contentClassName: 'justify-content-start align-items-center',
     getRowCellFormat: getStatusFormat,
-    getRowCellStyle: getStatusStyle,
+    getRowCellStyle: getJoinStatusStyle,
   },
   {
     key: 'membersCount',
@@ -149,25 +151,7 @@ function getSkillsFormat(skills: Skill[], index: number) {
 }
 
 function getStatusFormat(status: RequestToIdeaStatus) {
-  if (status === 'NEW') {
-    return 'Новая'
-  }
-
-  if (status === 'ACCEPTED') {
-    return 'Принята'
-  }
-
-  if (status === 'CANCELED') {
-    return 'Отклонена'
-  }
-
-  if (status === 'ANNULLED') {
-    return 'Аннулирована'
-  }
-
-  if (status === 'WITHDRAWN') {
-    return 'Отозвана'
-  }
+  return requestsToTeamStatus.translatedRequests[status]
 }
 
 function getSkillsStyle(skills: Skill[], index: number) {
@@ -182,35 +166,6 @@ function getSkillsStyle(skills: Skill[], index: number) {
     'align-self-start',
     ...skillTypeClass,
   ]
-}
-
-function getStatusStyle(status: RequestToIdeaStatus) {
-  const initialClass = ['px-2', 'py-1', 'rounded-4']
-
-  if (status === 'NEW') {
-    initialClass.push('bg-primary-subtle', 'text-primary')
-    return initialClass
-  }
-
-  if (status === 'ACCEPTED') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
-
-  if (status === 'ANNULLED') {
-    initialClass.push('bg-secondary-subtle', 'text-secondary')
-    return initialClass
-  }
-
-  if (status === 'CANCELED') {
-    initialClass.push('bg-danger-subtle', 'text-danger')
-    return initialClass
-  }
-
-  if (status === 'WITHDRAWN') {
-    initialClass.push('bg-warning-subtle', 'text-warning')
-    return initialClass
-  }
 }
 
 function sortByMembersCount() {

@@ -39,22 +39,20 @@ function getNavLinkStyle(isCurrentTable: boolean) {
 
 <template>
   <div class="bg-white rounded-3">
-    <div class="border-bottom px-3">
-      <ul class="nav nav-underline">
-        <div
-          :class="getNavLinkStyle(isAcceptedTeamsTable)"
-          @click="switchToAcceptedTeamsTable"
-        >
-          Принятая команда
-        </div>
-        <div
-          :class="getNavLinkStyle(isRequestsToIdeaTable)"
-          @click="switchToRequestsToIdeaTable"
-        >
-          Заявки
-        </div>
-      </ul>
-    </div>
+    <ul class="nav nav-underline border-bottom px-3">
+      <div
+        :class="getNavLinkStyle(isAcceptedTeamsTable)"
+        @click="switchToAcceptedTeamsTable"
+      >
+        Принятая команда
+      </div>
+      <div
+        :class="getNavLinkStyle(isRequestsToIdeaTable)"
+        @click="switchToRequestsToIdeaTable"
+      >
+        Заявки
+      </div>
+    </ul>
 
     <div class="idea-market-tables">
       <IdeaMarketTeamsTable

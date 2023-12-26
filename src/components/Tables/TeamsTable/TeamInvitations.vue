@@ -19,15 +19,11 @@ import { TeamInvitationsProps } from '@Components/Modals/TeamModal/TeamModal.typ
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
-import { InvitationToTeamStatus, TeamInvitation } from '@Domain/Team'
+import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
 
 import useUserStore from '@Store/user/userStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-
-import {
-  getInvitationsToTeamStatus,
-  getInvitationToTeamStatusStyle,
-} from '@Utils/invitaionsToTeamStatus'
+import { JoinStatus, TeamInvitation } from '@Domain/Team'
 
 const props = defineProps<TeamInvitationsProps>()
 
@@ -40,7 +36,7 @@ const teamInvitations = ref<TeamInvitation[]>([])
 
 const router = useRouter()
 
-const invitationsToTeamStatus = getInvitationsToTeamStatus()
+const invitationsToTeamStatus = getJoinStatus()
 
 watchImmediate(
   () => props.invitations,
@@ -56,7 +52,7 @@ const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
     size: 'col-1',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getStatusFormat,
-    getRowCellStyle: getInvitationToTeamStatusStyle,
+    getRowCellStyle: getJoinStatusStyle,
   },
   {
     key: 'email',
@@ -79,8 +75,8 @@ const teamInvitationColumns: TableColumn<TeamInvitation>[] = [
   },
 ]
 
-function getStatusFormat(status: InvitationToTeamStatus) {
-  return invitationsToTeamStatus.translatedInvitations[status]
+function getStatusFormat(status: JoinStatus) {
+  return invitationsToTeamStatus.translatedRequests[status]
 }
 
 const dropdownTeamInvitationActions: DropdownMenuAction<TeamInvitation>[] = [
