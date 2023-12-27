@@ -1,4 +1,4 @@
-# HITS-vue
+# HITS-Vue
 
 ## Project setup
 
