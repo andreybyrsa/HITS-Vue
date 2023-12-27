@@ -125,6 +125,10 @@ function handleCloseRoleModal() {
   isOpenedRoleModal.value = false
 }
 
+function handleOpenNotificationModal() {
+  isOpenedNotificationsModal.value = true
+}
+
 function handleCloseNotificationModal() {
   isOpenedNotificationsModal.value = false
 }

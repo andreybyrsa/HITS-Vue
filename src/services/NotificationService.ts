@@ -11,7 +11,7 @@ const notificationsAxios = defineAxios(getMocks().notifications)
 
 const getNotifications = async (token: string): Promise<Notification[] | Error> => {
   return notificationsAxios
-    .get('/notifications/get/all', {
+    .get('/notification/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -23,7 +23,7 @@ const getFavoriteNotifications = async (
   token: string,
 ): Promise<Notification[] | Error> => {
   return notificationsAxios
-    .get('/notifications/get/favorite', {
+    .get('/notification/favourite', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -38,7 +38,7 @@ const createNotification = async (
   token: string,
 ): Promise<Notification | Error> => {
   return notificationsAxios
-    .post('/notifications/create', notification, {
+    .post('/notification/create', notification, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -90,7 +90,7 @@ const unMarkAsFavoriteNotification = async (
     )
 }
 
-const checkNotification = async (
+const readNotification = async (
   id: string,
   token: string,
 ): Promise<void | Error> => {
@@ -105,6 +105,20 @@ const checkNotification = async (
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка просмотра уведомления'))
+}
+
+const readAllNotifications = async (token: string): Promise<void | Error> => {
+  return notificationsAxios
+    .putNoRequestBody<void>(
+      `/notification/read/all`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { requestData: { isReaded: true } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка просмотра уведомлений'))
 }
 
 const closeNotification = async (
@@ -135,7 +149,8 @@ const NotificatonsService = {
 
   markAsFavoriteNotification,
   unMarkAsFavoriteNotification,
-  checkNotification,
+  readNotification,
+  readAllNotifications,
   closeNotification,
 }
 

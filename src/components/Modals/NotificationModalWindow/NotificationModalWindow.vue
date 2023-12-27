@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Ref, ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import {
@@ -9,6 +9,8 @@ import {
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import SwitchTabs from '@Components/SwitchTabs/SwithTabs.vue'
+import UnreadedNotificationsModal from '@Components/Modals/NotificationModalWindow/UnreadedNotificationsModal.vue'
 
 import Notification from '@Domain/Notification'
 import Button from '@Components/Button/Button.vue'
@@ -19,17 +21,15 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
-import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
 import { useDateFormat } from '@vueuse/core'
 import Icon from '@Components/Icon/Icon.vue'
-
-const notificationsStore = useNotificationsStore()
+import { SwitchTab } from '@Components/SwitchTabs/SwithTabs.types'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const NotificationsStore = useNotificationsStore()
-const { notifications } = storeToRefs(NotificationsStore)
+const notificationsStore = useNotificationsStore()
+const { notifications } = storeToRefs(notificationsStore)
 
 defineProps<NotificatonModalWindowProps>()
 
@@ -40,52 +40,14 @@ const unreadNotifications = ref<Notification[]>([])
 
 const favoriteNotifications = ref<Notification[]>([])
 
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
-
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const profileParallelRequests = [
-      () => NotificatonsService.getNotifications(token),
-      () => NotificatonsService.getFavoriteNotifications(token),
-    ]
-
-    await makeParallelRequests<Notification[] | Error>(profileParallelRequests).then(
-      (responses) => {
-        responses.forEach((response) => {
-          if (response.id === 0) {
-            checkResponseStatus(response, notifications)
-          } else if (response.id === 1) {
-            checkResponseStatus(response, favoriteNotifications)
-          }
-        })
-      },
-    )
+    await notificationsStore.getNotifications(token)
   }
-
-  notifications.value.forEach((notification) => {
-    if (notification.isReaded === false) {
-      unreadNotifications.value.push(notification)
-    } else {
-      if (notification.isFavourite === true) {
-        readedNotifications.value.unshift(notification)
-      } else {
-        readedNotifications.value.push(notification)
-      }
-    }
-  })
 })
 
 const showAllTab = ref(true)
@@ -95,8 +57,8 @@ const hasNewNotifications = computed(() => notifications.value.length > 0)
 const hasFavoriteNotifications = computed(
   () => favoriteNotifications.value.length > 0,
 )
-const switchTabToShow = (tab: any) => {
-  showAllTab.value = tab === 'all'
+const switchTabToShow = (isAll: boolean) => {
+  showAllTab.value = isAll
 }
 
 const markAllAsRead = async () => {
@@ -104,10 +66,10 @@ const markAllAsRead = async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await NotificatonsService.checkAllNotification(token)
+    const response = await NotificatonsService.readAllNotifications(token)
 
     if (response instanceof Error) {
-      return NotificationsStore.createSystemNotification('Система', response.message)
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     unreadNotifications.value.forEach((notification) => {
@@ -123,10 +85,10 @@ const markAsRead = async (id: string, index: number) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await NotificatonsService.checkNotification(id, token)
+    const response = await NotificatonsService.readNotification(id, token)
 
     if (response instanceof Error) {
-      return NotificationsStore.createSystemNotification('Система', response.message)
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     notifications.value.forEach((notification) => {
@@ -146,7 +108,7 @@ const addToFavorites = async (id: string, index: number) => {
     const response = await NotificatonsService.markAsFavoriteNotification(id, token)
 
     if (response instanceof Error) {
-      return NotificationsStore.createSystemNotification('Система', response.message)
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     notifications.value.forEach((notification) => {
@@ -174,7 +136,7 @@ const removeFromFavorites = async (id: string, index: number) => {
     )
 
     if (response instanceof Error) {
-      return NotificationsStore.createSystemNotification('Система', response.message)
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
 
     notifications.value.forEach((notification) => {
@@ -193,12 +155,25 @@ const removeFromFavorites = async (id: string, index: number) => {
 //   favoriteNotifications.value = []
 // }
 
-function getFormattedDate(date: Date) {
+function getFormattedDate(date: string) {
   if (date) {
     const formattedDate = useDateFormat(new Date(date), 'HH:MM DD.MM.YYYY')
     return formattedDate.value
   }
 }
+
+const tabs: SwitchTab[] = [
+  {
+    id: '0',
+    label: 'Все',
+    click: () => switchTabToShow(true),
+  },
+  {
+    id: '1',
+    label: 'Избранное',
+    click: () => switchTabToShow(false),
+  },
+]
 </script>
 
 <template>
@@ -221,43 +196,13 @@ function getFormattedDate(date: Date) {
         <Typography class-name="fs-3 text-primary">Уведомления</Typography>
       </div>
 
-      <div class="notification-window-modal__pages-headers">
-        <Button
-          class-name="border-0"
-          @click="switchTabToShow('all')"
-          :class="[showAllTab ? 'active' : '']"
-        >
-          <Typography
-            :class-name="
-              !showAllTab
-                ? 'fs-5 text-secondary'
-                : 'fs-5 text-primary border-bottom border-primary border-3'
-            "
-          >
-            Все
-          </Typography>
-        </Button>
-        <Button
-          class-name="border-0"
-          @click="switchTabToShow('favorites')"
-          :class="[!showAllTab ? 'active' : '']"
-        >
-          <Typography
-            :class-name="
-              showAllTab
-                ? 'fs-5 text-secondary'
-                : 'fs-5 text-primary border-bottom border-primary border-3'
-            "
-          >
-            Избранное
-          </Typography>
-        </Button>
-      </div>
+      <SwitchTabs :tabs="tabs" />
 
       <div class="notification-window-modal__header">
         <div v-if="showAllTab">
           <div v-if="hasNewNotifications">
-            <div class="notification-window-modal__header-unread">
+            <UnreadedNotificationsModal />
+            <!-- <div class="notification-window-modal__header-unread">
               <Typography class-name="fs-5 text-primary text-wrap"
                 >Не прочитано</Typography
               >
@@ -306,7 +251,7 @@ function getFormattedDate(date: Date) {
                   notification.message
                 }}</Typography>
               </div>
-            </div>
+            </div> -->
 
             <hr class="hr hr-blurry" />
           </div>
