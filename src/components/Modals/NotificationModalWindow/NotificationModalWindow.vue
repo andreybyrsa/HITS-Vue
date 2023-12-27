@@ -1,49 +1,36 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import {
   NotificatonModalWindowEmits,
   NotificatonModalWindowProps,
 } from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.types'
-
+import { SwitchTab } from '@Components/SwitchTabs/SwithTabs.types'
+import FavouriteNotifications from '@Components/Modals/NotificationModalWindow/FavouriteNotifications.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import SwitchTabs from '@Components/SwitchTabs/SwithTabs.vue'
 import UnreadedNotificationsModal from '@Components/Modals/NotificationModalWindow/UnreadedNotificationsModal.vue'
 import ReadedNotificationsModal from '@Components/Modals/NotificationModalWindow/ReadedNotificationsModal.vue'
-
+import NotificationTabsPlaceholder from '@Components/Modals/NotificationModalWindow/NotificationTabsPlaceholder.vue'
 import Button from '@Components/Button/Button.vue'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import { SwitchTab } from '@Components/SwitchTabs/SwithTabs.types'
-import FavouriteNotifications from './FavouriteNotifications.vue'
+defineProps<NotificatonModalWindowProps>()
+const emit = defineEmits<NotificatonModalWindowEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
-const { notifications } = storeToRefs(notificationsStore)
 
-defineProps<NotificatonModalWindowProps>()
+const isAllTabs = ref(true)
+const isLoading = ref(false)
 
-const emit = defineEmits<NotificatonModalWindowEmits>()
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    await notificationsStore.getNotifications(token)
-  }
-})
-
-const showAllTab = ref(true)
-
-const hasNewNotifications = computed(() => notifications.value.length > 0)
+onMounted(async () => await getNotification(true))
 
 async function getNotification(isAllNotifications: boolean) {
   const currentUser = user.value
@@ -52,15 +39,17 @@ async function getNotification(isAllNotifications: boolean) {
     const { token } = currentUser
 
     const currentGetterKey = isAllNotifications
-      ? 'getNotifications'
-      : 'getFavouriteNotifications'
+      ? 'fetchNotifications'
+      : 'fetchFavouriteNotifications'
 
+    isLoading.value = true
     await notificationsStore[currentGetterKey](token)
+    isLoading.value = false
   }
 }
 
 async function switchTab(isAllNotifications: boolean) {
-  showAllTab.value = isAllNotifications
+  isAllTabs.value = isAllNotifications
 
   await getNotification(isAllNotifications)
 }
@@ -84,7 +73,10 @@ const tabs: SwitchTab[] = [
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="notification-window-modal p-3 bg-white overflow-y-scroll">
+    <div
+      v-if="isOpened"
+      class="notification-window-modal p-3 bg-white overflow-y-scroll"
+    >
       <div class="w-100 d-flex justify-content-between">
         <Button
           variant="primary"
@@ -101,20 +93,22 @@ const tabs: SwitchTab[] = [
 
       <SwitchTabs :tabs="tabs" />
 
-      <div
-        v-if="showAllTab"
-        class="notification-window-modal__header w-100"
-      >
-        <div v-if="hasNewNotifications">
+      <template v-if="!isLoading">
+        <div
+          v-if="isAllTabs"
+          class="w-100 d-flex flex-column gap-3"
+        >
           <UnreadedNotificationsModal />
-        </div>
 
-        <div v-if="notifications">
+          <hr class="my-0 hr hr-blurry" />
+
           <ReadedNotificationsModal />
         </div>
-      </div>
 
-      <FavouriteNotifications v-else />
+        <FavouriteNotifications v-else />
+      </template>
+
+      <NotificationTabsPlaceholder v-else />
     </div>
   </ModalLayout>
 </template>

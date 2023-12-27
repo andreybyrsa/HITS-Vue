@@ -1,3 +1,7 @@
+import axios from 'axios'
+
+import { MODE, API_URL } from '@Main'
+
 import Notification from '@Domain/Notification'
 
 import useUserStore from '@Store/user/userStore'
@@ -6,7 +10,6 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
-import axios from 'axios'
 
 const notificationsAxios = defineAxios(getMocks().notifications)
 
@@ -58,10 +61,7 @@ const markAsFavoriteNotification = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      {
-        params: { id },
-        requestData: { isFavourite: true, isReaded: true },
-      },
+      { params: { id }, requestData: { isFavourite: true } },
     )
     .then((response) => response.data)
     .catch((error) =>
@@ -80,10 +80,7 @@ const unMarkAsFavoriteNotification = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      {
-        params: { id },
-        requestData: { isFavourite: false, isReaded: true },
-      },
+      { params: { id }, requestData: { isFavourite: false } },
     )
     .then((response) => response.data)
     .catch((error) =>
@@ -109,11 +106,14 @@ const readNotification = async (
 }
 
 const readAllNotifications = async (token: string): Promise<void | Error> => {
-  const notifications = notificationsAxios.getReactiveMocks()
-  notifications.value.forEach(
-    (notification) =>
-      notification.isReaded === false && (notification.isReaded = true),
-  )
+  if (MODE === 'DEVELOPMENT') {
+    const notifications = notificationsAxios.getReactiveMocks()
+    return notifications.value.forEach(
+      (notification) =>
+        notification.isReaded === false && (notification.isReaded = true),
+    )
+  }
+
   return axios
     .put(`/notification/read/all`, null, {
       headers: { Authorization: `Bearer ${token}` },
@@ -129,7 +129,7 @@ const closeNotification = async (
 ): Promise<void | Error> => {
   return notificationsAxios
     .putNoRequestBody<void>(
-      `/notification/show/${id}`,
+      `${API_URL}/notification/show/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

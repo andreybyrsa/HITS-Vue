@@ -12,7 +12,7 @@ const useNotificationsStore = defineStore('notification', {
     systemNotifications: [],
   }),
   getters: {
-    getNotifications() {
+    fetchNotifications() {
       return async (token: string) => {
         const response = await NotificatonsService.getNotifications(token)
 
@@ -28,7 +28,8 @@ const useNotificationsStore = defineStore('notification', {
         }
       }
     },
-    getFavouriteNotifications() {
+
+    fetchFavouriteNotifications() {
       return async (token: string) => {
         const response = await NotificatonsService.getFavoriteNotifications(token)
 
@@ -43,6 +44,18 @@ const useNotificationsStore = defineStore('notification', {
           return this.notifications
         }
       }
+    },
+
+    getReadedNotifications({ notifications }) {
+      return notifications.filter(({ isReaded }) => isReaded)
+    },
+
+    getUnreadedNotifications({ notifications }) {
+      return notifications.filter(({ isReaded }) => !isReaded)
+    },
+
+    getFavouriteNotifications({ notifications }) {
+      return notifications.filter(({ isFavourite }) => isFavourite)
     },
   },
 
@@ -103,7 +116,7 @@ const useNotificationsStore = defineStore('notification', {
       if (response instanceof Error) {
         this.createSystemNotification('Система', response.message)
       } else {
-        const currentNotification = this.systemNotifications.find(
+        const currentNotification = this.notifications.find(
           (notification) => notification.id === id,
         )
 
@@ -122,7 +135,7 @@ const useNotificationsStore = defineStore('notification', {
       if (response instanceof Error) {
         this.createSystemNotification('Система', response.message)
       } else {
-        const currentNotification = this.systemNotifications.find(
+        const currentNotification = this.notifications.find(
           (notification) => notification.id === id,
         )
 

@@ -1,20 +1,45 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
 import { useDateFormat } from '@vueuse/core'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import {
-  NotificationTabProps,
-  NotificationTabEmits,
-} from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.types'
+import { NotificationTabProps } from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.types'
+
+import Notification from '@Domain/Notification'
+
+import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 defineProps<NotificationTabProps>()
-const emit = defineEmits<NotificationTabEmits>()
+
+const notificationsStore = useNotificationsStore()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 function getFormattedDate(date: string) {
   if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'HH:MM DD.MM.YYYY')
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY в HH:MM')
     return formattedDate.value
+  }
+}
+
+async function addToFavorites(notification: Notification) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await notificationsStore.markAsFavoriteNotification(notification.id, token)
+  }
+}
+
+async function removeFromFavorites(notification: Notification) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await notificationsStore.unMarkAsFavoriteNotification(notification.id, token)
   }
 }
 </script>
@@ -33,12 +58,12 @@ function getFormattedDate(date: string) {
           <Icon
             v-if="isFavourite"
             class-name="bi bi-bookmark-fill fs-5 text-warning cursor-pointer"
-            @click="emit('icon-click', notification)"
+            @click="removeFromFavorites(notification)"
           />
           <Icon
             v-else
             class-name="bi bi-bookmark fs-5 text-warning cursor-pointer"
-            @click="emit('icon-click', notification)"
+            @click="addToFavorites(notification)"
           />
         </div>
       </div>
@@ -53,7 +78,7 @@ function getFormattedDate(date: string) {
 <style lang="scss" scoped>
 .notification-tab {
   &__date {
-    @include fixedWidth(150px);
+    @include fixedWidth(170px);
   }
 }
 </style>
