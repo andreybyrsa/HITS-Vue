@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { TeamInvitation, InvitationToTeamStatus } from '@Domain/Team'
+import { TeamInvitation, JoinStatus } from '@Domain/Team'
 
 import TeamService from '@Services/TeamService'
 
@@ -47,7 +47,7 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
 
     async updateInvitationStatus(
       invitationToTeam: TeamInvitation,
-      status: InvitationToTeamStatus,
+      status: JoinStatus,
       token: string,
     ) {
       const { id, userId } = invitationToTeam

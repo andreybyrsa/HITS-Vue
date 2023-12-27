@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { RequestToTeam, RequestToTeamStatus } from '@Domain/Team'
+import { RequestToTeam, JoinStatus } from '@Domain/Team'
 
 import InitialState from '@Store/requestsToTeam/initialState'
 import TeamService from '@Services/TeamService'
@@ -40,7 +40,7 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
 
     async updateRequestToTeamStatus(
       requestToTeam: RequestToTeam,
-      status: RequestToTeamStatus,
+      status: JoinStatus,
       token: string,
     ) {
       const { id, userId } = requestToTeam

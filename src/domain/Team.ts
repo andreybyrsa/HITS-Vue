@@ -33,19 +33,13 @@ interface TeamSkills {
   wantedSkills: Skill[]
 }
 
-type RequestToTeamStatus = 'NEW' | 'ANNULLED' | 'ACCEPTED' | 'CANCELED' | 'WITHDRAWN'
-type InvitationToTeamStatus =
-  | 'NEW'
-  | 'ANNULLED'
-  | 'ACCEPTED'
-  | 'CANCELED'
-  | 'WITHDRAWN'
+type JoinStatus = 'NEW' | 'ANNULLED' | 'ACCEPTED' | 'CANCELED' | 'WITHDRAWN'
 
 interface RequestToTeam {
   id: string
   teamId: string
   userId: string
-  status: RequestToTeamStatus
+  status: JoinStatus
   email: string
   firstName: string
   lastName: string
@@ -55,18 +49,10 @@ interface TeamInvitation {
   id: string
   teamId: string
   userId: string
-  status: InvitationToTeamStatus
+  status: JoinStatus
   email: string
   firstName: string
   lastName: string
 }
 
-export {
-  Team,
-  TeamMember,
-  TeamSkills,
-  TeamInvitation,
-  RequestToTeam,
-  RequestToTeamStatus,
-  InvitationToTeamStatus,
-}
+export { Team, TeamMember, TeamSkills, TeamInvitation, RequestToTeam, JoinStatus }

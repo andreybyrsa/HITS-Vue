@@ -7,8 +7,7 @@ import {
   Team,
   TeamInvitation,
   TeamMember,
-  RequestToTeamStatus,
-  InvitationToTeamStatus,
+  JoinStatus,
 } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 import RolesTypes from '@Domain/Roles'
@@ -307,7 +306,7 @@ const appointLeaderTeam = async (
 const updateRequestToTeamStatus = async (
   id: string,
   userId: string,
-  status: RequestToTeamStatus,
+  status: JoinStatus,
   token: string,
 ): Promise<RequestToTeam | Error> => {
   if (MODE === 'DEVELOPMENT') {
@@ -331,7 +330,7 @@ const updateRequestToTeamStatus = async (
 const updateInvitationToTeamStatus = async (
   id: string,
   userId: string,
-  status: InvitationToTeamStatus,
+  status: JoinStatus,
   token: string,
 ): Promise<TeamInvitation | Error> => {
   if (MODE === 'DEVELOPMENT') {

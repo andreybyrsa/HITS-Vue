@@ -40,7 +40,7 @@ function getAccessToViewDescription() {
         Назад
       </Button>
 
-      <div class="idea-description__header-text p-2 w-100 bg-white rounded-3">
+      <div class="idea-description__header-text p-2 w-100 bg-white rounded">
         <Typography class-name="fs-4 text-primary">
           {{ ideaMarket.name }}
         </Typography>

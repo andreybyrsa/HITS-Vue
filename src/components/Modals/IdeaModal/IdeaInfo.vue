@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouteRecordRaw, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import { MODE } from '@Main'
@@ -9,12 +9,14 @@ import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import { IdeaInfoProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
 import Button from '@Components/Button/Button.vue'
+import Profile from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import useUserStore from '@Store/user/userStore'
 
 import modeButtons from '@Components/Modals/IdeaModal/IdeaInfo.types'
 
 import { getIdeaStatus } from '@Utils/ideaStatus'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const props = defineProps<IdeaInfoProps>()
 
@@ -100,6 +102,20 @@ function getAccessToExpertsInfo() {
     (currentUser?.role === 'PROJECT_OFFICE' || currentUser?.role === 'ADMIN')
   )
 }
+
+function navigateToProfileModal(id: string) {
+  const profileModalRoute: RouteRecordRaw = {
+    name: 'profile',
+    path: 'profile/:id',
+    alias: '/profile/:id',
+    component: Profile,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  navigateToAliasRoute('ideas-list', `/profile/${id}`, profileModalRoute)
+}
 </script>
 
 <template>
@@ -130,9 +146,12 @@ function getAccessToExpertsInfo() {
       <div class="idea-info__sub-info pt-2">
         <Icon class-name="bi bi-envelope text-secondary fs-3 opacity-25" />
 
-        <Typography class-name="text-primary">
+        <div
+          class="idea-info__link text-primary"
+          @click="navigateToProfileModal(idea.initiator.id)"
+        >
           {{ idea.initiator.firstName }} {{ idea.initiator.lastName }}
-        </Typography>
+        </div>
       </div>
     </div>
 
@@ -195,6 +214,16 @@ function getAccessToExpertsInfo() {
 
   &__sub-info {
     @include flexible(center, flex-start, $gap: 8px);
+  }
+
+  &__link {
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
+    }
   }
 }
 </style>
