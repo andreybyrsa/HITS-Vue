@@ -29,7 +29,7 @@ function clickTab(tab: SwitchTab) {
 
 const wrapperClassName = computed(() => {
   return [
-    'nav nav-underline mb-3 w-100 d-flex justify-content-center',
+    'nav nav-underline w-100 d-flex justify-content-center',
     props.wrapperClassName ?? '',
   ]
 })

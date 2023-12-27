@@ -2,11 +2,13 @@
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useUserStore from '@Store/user/userStore'
 
-import Button from '@Components/Button/Button.vue'
+import NotificationTab from '@Components/Modals/NotificationModalWindow/NotificationTab.vue'
 
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+
+import Notification from '@Domain/Notification'
 
 const notificationsStore = useNotificationsStore()
 const { notifications } = storeToRefs(notificationsStore)
@@ -17,15 +19,6 @@ const { user } = storeToRefs(userStore)
 const readedNotifications = computed(() => {
   return notifications.value.filter((notification) => notification.isReaded === true)
 })
-
-const removeFromFavorites = async (id: string) => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    await notificationsStore.unMarkAsFavoriteNotification(id, token)
-  }
-}
 
 const addToFavorites = async (id: string) => {
   const currentUser = user.value
@@ -42,6 +35,15 @@ function getFormattedDate(date: string) {
     return formattedDate.value
   }
 }
+
+async function removeFromFavorites(notification: Notification) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await notificationsStore.unMarkAsFavoriteNotification(notification.id, token)
+  }
+}
 </script>
 
 <template>
@@ -51,43 +53,13 @@ function getFormattedDate(date: string) {
     </Typography>
   </div>
 
-  <div
-    v-for="(notification, index) in readedNotifications"
-    :key="index"
-    class="notification-window-modal__notification p-2"
-  >
-    <div
-      v-if="notifications"
-      class="bg-white border border-primary rounded-3 p-2"
-    >
-      <div class="notification-window-modal__title text-wrap row">
-        <div class-name="row">
-          <Typography class-name="fs-6 text-black col">
-            {{ getFormattedDate(notification.createdAt) }}
-          </Typography>
-          <Button
-            class="notification-window-modal__favorite-btn text-primary col float-end"
-            v-if="notification.isFavourite === false"
-            prepend-icon-name="bi bi-star"
-            @click="addToFavorites(notification.id)"
-          />
-          <Button
-            class="notification-window-modal__favorite-btn text-primary col float-end"
-            v-else
-            prepend-icon-name="bi bi-star-fill"
-            @click="removeFromFavorites(notification.id)"
-          />
-        </div>
-        <Typography class-name="fs-6 text-black w-50 fw-bold col-2">
-          {{ notification.title }}
-        </Typography>
-      </div>
-      <Typography class-name="fs-6 text-black">{{
-        notification.message
-      }}</Typography>
-    </div>
-    <LoadingPlaceholder v-else />
-  </div>
+  <NotificationTab
+    v-for="notification in readedNotifications"
+    :key="notification.id"
+    :notification="notification"
+    is-favourite
+    @icon-click="removeFromFavorites"
+  />
 </template>
 
 <style lang="scss" scoped>

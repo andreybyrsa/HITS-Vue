@@ -1,13 +1,16 @@
 <script lang="ts" setup>
+import { vIntersectionObserver } from '@vueuse/components'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useUserStore from '@Store/user/userStore'
 
-import Button from '@Components/Button/Button.vue'
 import Icon from '@Components/Icon/Icon.vue'
+import NotificationTab from '@Components/Modals/NotificationModalWindow/NotificationTab.vue'
 
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+
+import Notification from '@Domain/Notification'
 
 const notificationsStore = useNotificationsStore()
 const { notifications } = storeToRefs(notificationsStore)
@@ -15,7 +18,7 @@ const { notifications } = storeToRefs(notificationsStore)
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const allAnReadedNotifications = computed(() => {
+const anReadedNotifications = computed(() => {
   return notifications.value.filter(
     (notification) => notification.isReaded === false,
   )
@@ -55,12 +58,21 @@ function getFormattedDate(date: string) {
     return formattedDate.value
   }
 }
+
+async function removeFromFavorites(notification: Notification) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    await notificationsStore.unMarkAsFavoriteNotification(notification.id, token)
+  }
+}
 </script>
 
 <template>
   <div class="notification-window-modal__header-unread w-100">
     <Typography class-name="fs-5 text-primary text-wrap">
-      Не прочитано ({{ allAnReadedNotifications.length }})
+      Не прочитано ({{ anReadedNotifications.length }})
     </Typography>
 
     <div class="d-flex">
@@ -73,41 +85,15 @@ function getFormattedDate(date: string) {
       <Icon class-name="bi bi-check-all fs-3 text-primary"></Icon>
     </div>
   </div>
-  <div
-    class="notification-window-modal__new-notification p-2 rounded-3"
-    v-for="(notification, index) in allAnReadedNotifications"
-    :key="index"
-  >
-    <div
-      v-if="notification.isReaded === false"
-      class="notification-window-modal__new-notification bg-primary rounded-3 p-2"
-      style="--bs-bg-opacity: 0.55"
-    >
-      <div class="notification-window-modal__title text-wrap row">
-        <div class-name="row">
-          <Typography class-name="fs-6 text-white col"
-            >{{ getFormattedDate(notification.createdAt) }}
-          </Typography>
-          <Button
-            class="notification-window-modal__favorite-btn text-white col float-end"
-            prepend-icon-name="bi bi-check fa-2x"
-            @click="markAsRead(notification.id)"
-          />
-          <Button
-            class="notification-window-modal__check-btn text-white col float-end btn-xs"
-            prepend-icon-name="bi bi-star"
-            @click="addToFavorites(notification.id)"
-          />
-        </div>
-        <Typography class-name="fs-6 text-white w-50 fw-bold col-2">
-          {{ notification.title }}
-        </Typography>
-      </div>
-      <Typography class-name="fs-6 text-white">{{
-        notification.message
-      }}</Typography>
-    </div>
-  </div>
+
+  <NotificationTab
+    v-for="notification in anReadedNotifications"
+    :key="notification.id"
+    :notification="notification"
+    is-favourite
+    @icon-click="removeFromFavorites"
+  />
+
   <hr class="hr hr-blurry" />
 </template>
 

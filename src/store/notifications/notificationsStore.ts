@@ -28,6 +28,22 @@ const useNotificationsStore = defineStore('notification', {
         }
       }
     },
+    getFavouriteNotifications() {
+      return async (token: string) => {
+        const response = await NotificatonsService.getFavoriteNotifications(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        } else {
+          this.notifications = response
+          return this.notifications
+        }
+      }
+    },
   },
 
   actions: {
@@ -48,6 +64,7 @@ const useNotificationsStore = defineStore('notification', {
         this.notifications.push(notification)
       }
     },
+
     async readNotification(id: string, token: string) {
       const response = await NotificatonsService.readNotification(id, token)
 
@@ -63,6 +80,7 @@ const useNotificationsStore = defineStore('notification', {
         }
       }
     },
+
     async readAllNotifications(token: string) {
       const response = await NotificatonsService.readAllNotifications(token)
 
@@ -73,41 +91,6 @@ const useNotificationsStore = defineStore('notification', {
           (notification) =>
             notification.isReaded === false && (notification.isReaded = true),
         )
-      }
-    },
-    async closeNotification(id: string, token: string) {
-      const response = await NotificatonsService.closeNotification(id, token)
-
-      if (response instanceof Error) {
-        this.createSystemNotification('Система', response.message)
-      } else {
-        const currentNotification = this.notifications.find(
-          (notification) => notification.id === id,
-        )
-        if (currentNotification) {
-          currentNotification.isShowed = true
-        }
-      }
-    },
-
-    createSystemNotification(title: string, message: string) {
-      const id = (Math.random() * 1000000).toString()
-      const systemNotification = {
-        id,
-        title,
-        message,
-        isShowed: false,
-      } as Notification
-      this.systemNotifications.push(systemNotification)
-    },
-
-    closeSystemNotification(id: string) {
-      const currentNotification = this.systemNotifications.find(
-        (notification) => notification.id === id,
-      )
-
-      if (currentNotification) {
-        currentNotification.isShowed = true
       }
     },
 
@@ -146,6 +129,42 @@ const useNotificationsStore = defineStore('notification', {
         if (currentNotification) {
           currentNotification.isFavourite = false
         }
+      }
+    },
+
+    async closeNotification(id: string, token: string) {
+      const response = await NotificatonsService.closeNotification(id, token)
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        const currentNotification = this.notifications.find(
+          (notification) => notification.id === id,
+        )
+        if (currentNotification) {
+          currentNotification.isShowed = true
+        }
+      }
+    },
+
+    createSystemNotification(title: string, message: string) {
+      const id = (Math.random() * 1000000).toString()
+      const systemNotification = {
+        id,
+        title,
+        message,
+        isShowed: false,
+      } as Notification
+      this.systemNotifications.push(systemNotification)
+    },
+
+    closeSystemNotification(id: string) {
+      const currentNotification = this.systemNotifications.find(
+        (notification) => notification.id === id,
+      )
+
+      if (currentNotification) {
+        currentNotification.isShowed = true
       }
     },
   },
