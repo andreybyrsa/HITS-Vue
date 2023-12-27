@@ -48,6 +48,7 @@ const useNotificationsStore = defineStore('notification', {
         this.notifications.push(notification)
       }
     },
+
     async readNotification(id: string, token: string) {
       const response = await NotificatonsService.readNotification(id, token)
 
@@ -63,6 +64,7 @@ const useNotificationsStore = defineStore('notification', {
         }
       }
     },
+
     async readAllNotifications(token: string) {
       const response = await NotificatonsService.readAllNotifications(token)
 
@@ -75,6 +77,45 @@ const useNotificationsStore = defineStore('notification', {
         )
       }
     },
+
+    async markAsFavoriteNotification(id: string, token: string) {
+      const response = await NotificatonsService.markAsFavoriteNotification(
+        id,
+        token,
+      )
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        const currentNotification = this.systemNotifications.find(
+          (notification) => notification.id === id,
+        )
+
+        if (currentNotification) {
+          currentNotification.isFavourite = true
+        }
+      }
+    },
+
+    async unMarkAsFavoriteNotification(id: string, token: string) {
+      const response = await NotificatonsService.unMarkAsFavoriteNotification(
+        id,
+        token,
+      )
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        const currentNotification = this.systemNotifications.find(
+          (notification) => notification.id === id,
+        )
+
+        if (currentNotification) {
+          currentNotification.isFavourite = false
+        }
+      }
+    },
+
     async closeNotification(id: string, token: string) {
       const response = await NotificatonsService.closeNotification(id, token)
 
@@ -108,25 +149,6 @@ const useNotificationsStore = defineStore('notification', {
 
       if (currentNotification) {
         currentNotification.isShowed = true
-      }
-    },
-
-    async markAsFavoriteNotification(id: string, token: string) {
-      const response = await NotificatonsService.markAsFavoriteNotification(
-        id,
-        token,
-      )
-
-      if (response instanceof Error) {
-        this.createSystemNotification('Система', response.message)
-      } else {
-        const currentNotification = this.systemNotifications.find(
-          (notification) => notification.id === id,
-        )
-
-        if (currentNotification) {
-          currentNotification.isFavourite = true
-        }
       }
     },
   },

@@ -24,6 +24,7 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
 import { useDateFormat } from '@vueuse/core'
 import Icon from '@Components/Icon/Icon.vue'
 import { SwitchTab } from '@Components/SwitchTabs/SwithTabs.types'
+import FavouriteNotifications from './FavouriteNotifications.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -125,29 +126,6 @@ const addToFavorites = async (id: string, index: number) => {
   }
 }
 
-const removeFromFavorites = async (id: string, index: number) => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await NotificatonsService.unMarkAsFavoriteNotification(
-      id,
-      token,
-    )
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    notifications.value.forEach((notification) => {
-      if (notification.id === id) {
-        favoriteNotifications.value.splice(index, 1)
-        notification.isFavourite = false
-      }
-    })
-  }
-}
-
 // const removeAllFromFavorites = () => {
 //   favoriteNotifications.value.forEach((notification) => {
 //     notification.isFavourite = false
@@ -181,167 +159,73 @@ const tabs: SwitchTab[] = [
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div
-      class="notification-window-modal p-3 bg-white rounded-3 h-100 overflow-y-scroll"
-    >
-      <div class="notification-window-modal__top-btn">
+    <div class="notification-window-modal p-3 bg-white overflow-y-scroll">
+      <div class="w-100 d-flex justify-content-between">
         <Button
           variant="primary"
-          class-name="mb-3"
           prepend-icon-name="bi bi-backspace-fill"
           @click="emit('close-modal')"
         >
           Назад
         </Button>
-        <Typography class-name="fs-3 text-primary">Уведомления</Typography>
+        <Typography class-name="text-center fs-3 text-primary">
+          Уведомления
+        </Typography>
+        <div class="col-2"></div>
       </div>
 
       <SwitchTabs :tabs="tabs" />
 
-      <div class="notification-window-modal__header">
-        <div v-if="showAllTab">
-          <div v-if="hasNewNotifications">
-            <UnreadedNotificationsModal />
-            <!-- <div class="notification-window-modal__header-unread">
-              <Typography class-name="fs-5 text-primary text-wrap"
-                >Не прочитано</Typography
-              >
+      <div v-if="showAllTab">
+        <div v-if="hasNewNotifications">
+          <UnreadedNotificationsModal />
 
-              <Button
-                v-if="showAllTab"
-                variant="primary"
-                class-name="notification-window-modal__all-check-btn bg-white text-primary border-white text-center text-opacity-50   mb-3 me-2 p-0"
-                @click="markAllAsRead"
-              >
-                Прочитать все ({{ unreadNotifications.length }})
-                <Icon class-name="bi bi-check-all fs-3"></Icon>
-              </Button>
-            </div>
-            <div
-              class="notification-window-modal__new-notification p-2 mb-2 rounded-3"
-              v-for="(notification, index) in unreadNotifications"
-              :key="notification.id"
-            >
-              <div
-                v-if="notification.isReaded === false"
-                class="notification-window-modal__new-notification bg-primary rounded-3 p-2"
-                style="--bs-bg-opacity: 0.55"
-              >
-                <div class="notification-window-modal__title text-wrap row">
-                  <div class-name="row">
-                    <Typography class-name="fs-6 text-white col">{{
-                      getFormattedDate(notification.createdAt)
-                    }}</Typography>
-                    <Button
-                      class="notification-window-modal__favorite-btn text-white col float-end"
-                      prepend-icon-name="bi bi-check fa-2x"
-                      @click="markAsRead(notification.id, index)"
-                    ></Button>
-                    <Button
-                      class="notification-window-modal__check-btn text-white col float-end btn-xs"
-                      prepend-icon-name="bi bi-star"
-                      @click="addToFavorites(notification.id, index)"
-                    ></Button>
-                  </div>
-                  <Typography class-name="fs-6 text-white w-50 fw-bold col-2">
-                    {{ notification.title }}
-                  </Typography>
-                </div>
-                <Typography class-name="fs-6 text-white">{{
-                  notification.message
-                }}</Typography>
-              </div>
-            </div> -->
-
-            <hr class="hr hr-blurry" />
-          </div>
-          <div v-if="notifications">
-            <Typography class-name="fs-5 text-primary text-wrap"
-              >Прочитано</Typography
-            >
-
-            <div
-              v-for="(notification, index) in readedNotifications"
-              :key="notification.id"
-              class="notification-window-modal__notification p-2 mb-2"
-            >
-              <div
-                v-if="notifications"
-                class="bg-white border border-primary rounded-3 p-2"
-              >
-                <div class="notification-window-modal__title text-wrap row">
-                  <div class-name="row">
-                    <Typography class-name="fs-6 text-black col">
-                      {{ getFormattedDate(notification.createdAt) }}
-                    </Typography>
-                    <Button
-                      class="notification-window-modal__favorite-btn text-primary col float-end"
-                      v-if="notification.isFavourite === false"
-                      prepend-icon-name="bi bi-star"
-                      @click="addToFavorites(notification.id, index)"
-                    ></Button>
-                    <Button
-                      class="notification-window-modal__favorite-btn text-primary col float-end"
-                      v-else
-                      prepend-icon-name="bi bi-star-fill"
-                      @click="removeFromFavorites(notification.id, index)"
-                    ></Button>
-                  </div>
-                  <Typography class-name="fs-6 text-black w-50 fw-bold col-2">
-                    {{ notification.title }}
-                  </Typography>
-                </div>
-                <Typography class-name="fs-6 text-black">{{
-                  notification.message
-                }}</Typography>
-              </div>
-              <LoadingPlaceholder v-else />
-            </div>
-          </div>
+          <hr class="hr hr-blurry" />
         </div>
+        <div v-if="notifications">
+          <Typography class-name="fs-5 text-primary text-wrap">Прочитано</Typography>
 
-        <div v-else>
-          <div v-if="hasFavoriteNotifications">
+          <div
+            v-for="(notification, index) in readedNotifications"
+            :key="notification.id"
+            class="notification-window-modal__notification p-2 mb-2"
+          >
             <div
-              class="notification-window-modal__notification mx-4"
-              v-for="(notification, index) in favoriteNotifications"
-              :key="notification.id"
+              v-if="notifications"
+              class="bg-white border border-primary rounded-3 p-2"
             >
-              <div v-if="notifications">
-                <div
-                  class="notification-window-modal__title text-wrap row border border-primary bg-white rounded-3 p-2 mb-4"
-                >
-                  <div class-name="row">
-                    <Typography class-name="fs-6 text-black col">{{
-                      getFormattedDate(notification.createdAt)
-                    }}</Typography>
-                    <Button
-                      class="notification-window-modal__check-btn text-white col-1 float-end"
-                      prepend-icon-name="bi bi-star-fill text-primary"
-                      @click="removeFromFavorites(notification.id, index)"
-                    ></Button>
-                  </div>
-                  <Typography class-name="fs-6 text-black w-50 fw-bold col-2">
-                    {{ notification.title }}
+              <div class="notification-window-modal__title text-wrap row">
+                <div class-name="row">
+                  <Typography class-name="fs-6 text-black col">
+                    {{ getFormattedDate(notification.createdAt) }}
                   </Typography>
-
-                  <Typography class-name="fs-6 text-black">{{
-                    notification.message
-                  }}</Typography>
+                  <Button
+                    class="notification-window-modal__favorite-btn text-primary col float-end"
+                    v-if="notification.isFavourite === false"
+                    prepend-icon-name="bi bi-star"
+                    @click="addToFavorites(notification.id, index)"
+                  ></Button>
+                  <Button
+                    class="notification-window-modal__favorite-btn text-primary col float-end"
+                    v-else
+                    prepend-icon-name="bi bi-star-fill"
+                    @click="removeFromFavorites(notification.id, index)"
+                  ></Button>
                 </div>
+                <Typography class-name="fs-6 text-black w-50 fw-bold col-2">
+                  {{ notification.title }}
+                </Typography>
               </div>
-              <LoadingPlaceholder v-else />
+              <Typography class-name="fs-6 text-black">{{
+                notification.message
+              }}</Typography>
             </div>
-          </div>
-          <div v-else>
-            <Typography
-              class="notification-window-modal__empty-favorites p-5 text-secondary fs-4 text-wrap"
-            >
-              Добавляйте в закладки важные уведомления — нажмите на знак звёздочки
-            </Typography>
+            <LoadingPlaceholder v-else />
           </div>
         </div>
       </div>
+
+      <FavouriteNotifications v-else />
     </div>
   </ModalLayout>
 </template>
@@ -349,55 +233,21 @@ const tabs: SwitchTab[] = [
 <style lang="scss" scoped>
 .notification-window-modal {
   width: 50%;
-  justify-self: end;
-  &__check-btn {
-    @include flexible(flex-start, flex-end);
-    width: 5%;
-    font-size: 60%;
-  }
-  &__header-unread {
-    @include flexible(start, space-between);
-  }
-  &__title {
-    display: flex;
-    align-items: center;
-  }
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 
-  &__top-btn {
-    width: 59%;
-    display: flex;
-    justify-content: space-between;
-  }
-  &__pages-headers {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  &__empty-favorites {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-  }
-  &__favorite-btn {
-    @include flexible(flex-start, flex-end);
-    width: 5%;
-    font-size: 60%;
-  }
+  @include flexible(
+    $flex-direction: column,
+    $gap: 16px,
+    $align-self: stretch,
+    $justify-self: flex-end
+  );
+
+  transition: all 0.3s ease-out;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgb(209, 209, 209);
-  border-radius: 20px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #0d6efd;
-  border-radius: 20px;
-  border: 3px solid #0d6efd;
+.modal-layout-enter-from .notification-window-modal,
+.modal-layout-leave-to .notification-window-modal {
+  transform: translateX(100%);
 }
 </style>

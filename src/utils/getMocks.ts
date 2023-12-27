@@ -1322,7 +1322,7 @@ function getMocks(): Mocks {
       link: null,
       isShowed: true,
       isReaded: false,
-      isFavourite: false,
+      isFavourite: true,
       createdAt: '2023-10-25T11:02:17Z',
     },
     {
@@ -1333,7 +1333,7 @@ function getMocks(): Mocks {
       link: null,
       isShowed: false,
       isReaded: false,
-      isFavourite: false,
+      isFavourite: true,
       createdAt: '2023-10-28T11:02:17Z',
     },
     {
@@ -1344,7 +1344,7 @@ function getMocks(): Mocks {
       link: null,
       isShowed: false,
       isReaded: true,
-      isFavourite: false,
+      isFavourite: true,
       createdAt: '2023-10-20T11:02:17Z',
     },
     {
@@ -1355,7 +1355,7 @@ function getMocks(): Mocks {
       link: null,
       isShowed: true,
       isReaded: true,
-      isFavourite: false,
+      isFavourite: true,
       createdAt: '2023-10-30T11:02:17Z',
     },
   ]
