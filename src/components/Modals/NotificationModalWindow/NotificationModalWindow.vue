@@ -11,6 +11,7 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import SwitchTabs from '@Components/SwitchTabs/SwithTabs.vue'
 import UnreadedNotificationsModal from '@Components/Modals/NotificationModalWindow/UnreadedNotificationsModal.vue'
+import ReadedNotificationsModal from '@Components/Modals/NotificationModalWindow/ReadedNotificationsModal.vue'
 
 import Notification from '@Domain/Notification'
 import Button from '@Components/Button/Button.vue'
@@ -22,7 +23,6 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import { useDateFormat } from '@vueuse/core'
-import Icon from '@Components/Icon/Icon.vue'
 import { SwitchTab } from '@Components/SwitchTabs/SwithTabs.types'
 
 const userStore = useUserStore()
@@ -34,9 +34,6 @@ const { notifications } = storeToRefs(notificationsStore)
 defineProps<NotificatonModalWindowProps>()
 
 const emit = defineEmits<NotificatonModalWindowEmits>()
-
-const readedNotifications = ref<Notification[]>([])
-const unreadNotifications = ref<Notification[]>([])
 
 const favoriteNotifications = ref<Notification[]>([])
 
@@ -61,70 +58,6 @@ const switchTabToShow = (isAll: boolean) => {
   showAllTab.value = isAll
 }
 
-const markAllAsRead = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await NotificatonsService.readAllNotifications(token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    unreadNotifications.value.forEach((notification) => {
-      notification.isReaded = true
-      readedNotifications.value.push(notification)
-    })
-    unreadNotifications.value = []
-  }
-}
-
-const markAsRead = async (id: string, index: number) => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await NotificatonsService.readNotification(id, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    notifications.value.forEach((notification) => {
-      if (notification.id === id) {
-        unreadNotifications.value.splice(index, 1)
-        readedNotifications.value.push(notification)
-      }
-    })
-  }
-}
-
-const addToFavorites = async (id: string, index: number) => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await NotificatonsService.markAsFavoriteNotification(id, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    notifications.value.forEach((notification) => {
-      if (notification.id === id) {
-        if (notification.isReaded === false) {
-          unreadNotifications.value.splice(index, 1)
-          readedNotifications.value.unshift(notification)
-        }
-
-        favoriteNotifications.value.push(notification)
-        notification.isFavourite = true
-      }
-    })
-  }
-}
-
 const removeFromFavorites = async (id: string, index: number) => {
   const currentUser = user.value
 
@@ -147,13 +80,6 @@ const removeFromFavorites = async (id: string, index: number) => {
     })
   }
 }
-
-// const removeAllFromFavorites = () => {
-//   favoriteNotifications.value.forEach((notification) => {
-//     notification.isFavourite = false
-//   })
-//   favoriteNotifications.value = []
-// }
 
 function getFormattedDate(date: string) {
   if (date) {
@@ -184,16 +110,17 @@ const tabs: SwitchTab[] = [
     <div
       class="notification-window-modal p-3 bg-white rounded-3 h-100 overflow-y-scroll"
     >
-      <div class="notification-window-modal__top-btn">
+      <div class="notification-window-modal__top-btn w-100">
         <Button
           variant="primary"
-          class-name="mb-3"
           prepend-icon-name="bi bi-backspace-fill"
           @click="emit('close-modal')"
         >
           Назад
         </Button>
-        <Typography class-name="fs-3 text-primary">Уведомления</Typography>
+        <div class="fs-4 text-primary p-2 w-100 border rounded w-100">
+          Уведомления
+        </div>
       </div>
 
       <SwitchTabs :tabs="tabs" />
@@ -202,101 +129,10 @@ const tabs: SwitchTab[] = [
         <div v-if="showAllTab">
           <div v-if="hasNewNotifications">
             <UnreadedNotificationsModal />
-            <!-- <div class="notification-window-modal__header-unread">
-              <Typography class-name="fs-5 text-primary text-wrap"
-                >Не прочитано</Typography
-              >
-
-              <Button
-                v-if="showAllTab"
-                variant="primary"
-                class-name="notification-window-modal__all-check-btn bg-white text-primary border-white text-center text-opacity-50   mb-3 me-2 p-0"
-                @click="markAllAsRead"
-              >
-                Прочитать все ({{ unreadNotifications.length }})
-                <Icon class-name="bi bi-check-all fs-3"></Icon>
-              </Button>
-            </div>
-            <div
-              class="notification-window-modal__new-notification p-2 mb-2 rounded-3"
-              v-for="(notification, index) in unreadNotifications"
-              :key="notification.id"
-            >
-              <div
-                v-if="notification.isReaded === false"
-                class="notification-window-modal__new-notification bg-primary rounded-3 p-2"
-                style="--bs-bg-opacity: 0.55"
-              >
-                <div class="notification-window-modal__title text-wrap row">
-                  <div class-name="row">
-                    <Typography class-name="fs-6 text-white col">{{
-                      getFormattedDate(notification.createdAt)
-                    }}</Typography>
-                    <Button
-                      class="notification-window-modal__favorite-btn text-white col float-end"
-                      prepend-icon-name="bi bi-check fa-2x"
-                      @click="markAsRead(notification.id, index)"
-                    ></Button>
-                    <Button
-                      class="notification-window-modal__check-btn text-white col float-end btn-xs"
-                      prepend-icon-name="bi bi-star"
-                      @click="addToFavorites(notification.id, index)"
-                    ></Button>
-                  </div>
-                  <Typography class-name="fs-6 text-white w-50 fw-bold col-2">
-                    {{ notification.title }}
-                  </Typography>
-                </div>
-                <Typography class-name="fs-6 text-white">{{
-                  notification.message
-                }}</Typography>
-              </div>
-            </div> -->
-
-            <hr class="hr hr-blurry" />
           </div>
-          <div v-if="notifications">
-            <Typography class-name="fs-5 text-primary text-wrap"
-              >Прочитано</Typography
-            >
 
-            <div
-              v-for="(notification, index) in readedNotifications"
-              :key="notification.id"
-              class="notification-window-modal__notification p-2 mb-2"
-            >
-              <div
-                v-if="notifications"
-                class="bg-white border border-primary rounded-3 p-2"
-              >
-                <div class="notification-window-modal__title text-wrap row">
-                  <div class-name="row">
-                    <Typography class-name="fs-6 text-black col">
-                      {{ getFormattedDate(notification.createdAt) }}
-                    </Typography>
-                    <Button
-                      class="notification-window-modal__favorite-btn text-primary col float-end"
-                      v-if="notification.isFavourite === false"
-                      prepend-icon-name="bi bi-star"
-                      @click="addToFavorites(notification.id, index)"
-                    ></Button>
-                    <Button
-                      class="notification-window-modal__favorite-btn text-primary col float-end"
-                      v-else
-                      prepend-icon-name="bi bi-star-fill"
-                      @click="removeFromFavorites(notification.id, index)"
-                    ></Button>
-                  </div>
-                  <Typography class-name="fs-6 text-black w-50 fw-bold col-2">
-                    {{ notification.title }}
-                  </Typography>
-                </div>
-                <Typography class-name="fs-6 text-black">{{
-                  notification.message
-                }}</Typography>
-              </div>
-              <LoadingPlaceholder v-else />
-            </div>
+          <div v-if="notifications">
+            <ReadedNotificationsModal />
           </div>
         </div>
 
@@ -364,9 +200,7 @@ const tabs: SwitchTab[] = [
   }
 
   &__top-btn {
-    width: 59%;
-    display: flex;
-    justify-content: space-between;
+    @include flexible(stretch, flex-start, $gap: 16px);
   }
   &__pages-headers {
     width: 100%;

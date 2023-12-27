@@ -129,6 +129,25 @@ const useNotificationsStore = defineStore('notification', {
         }
       }
     },
+
+    async unMarkAsFavoriteNotification(id: string, token: string) {
+      const response = await NotificatonsService.unMarkAsFavoriteNotification(
+        id,
+        token,
+      )
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        const currentNotification = this.systemNotifications.find(
+          (notification) => notification.id === id,
+        )
+
+        if (currentNotification) {
+          currentNotification.isFavourite = false
+        }
+      }
+    },
   },
 })
 

@@ -6,6 +6,7 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import axios from 'axios'
 
 const notificationsAxios = defineAxios(getMocks().notifications)
 
@@ -104,21 +105,22 @@ const readNotification = async (
       { params: { id }, requestData: { isReaded: true } },
     )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка просмотра уведомления'))
+    .catch((error) => handleAxiosError(error, 'Ошибка чтения уведомления'))
 }
 
 const readAllNotifications = async (token: string): Promise<void | Error> => {
-  return notificationsAxios
-    .putNoRequestBody<void>(
-      `/notification/read/all`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { requestData: { isReaded: true } },
-    )
+  const notifications = notificationsAxios.getReactiveMocks()
+  notifications.value.forEach(
+    (notification) =>
+      notification.isReaded === false && (notification.isReaded = true),
+  )
+  return axios
+    .put(`/notification/read/all`, null, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка просмотра уведомлений'))
+    .catch((error) => handleAxiosError(error, 'Ошибка чтения всех уведомлений'))
 }
 
 const closeNotification = async (
