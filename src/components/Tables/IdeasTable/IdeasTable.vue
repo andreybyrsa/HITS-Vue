@@ -1,22 +1,32 @@
 <template>
   <Table
+    class-name="p-3"
+    :header="ideasTableHeader"
     :columns="ideaTableColumns"
     :data="ideasData"
     :search-by="['name', 'description']"
     :filters="ideasFilters"
     :checked-data-actions="checkedIdeasActions"
     :dropdown-actions-menu="dropdownIdeasActions"
-  ></Table>
+    v-model="checkedIdeas"
+  />
 
   <DeleteModal
     :is-opened="isOpenedIdeaDeleteModal"
+    :item-name="deletingIdeaName"
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteIdea"
+  />
+
+  <SendIdeasOnMarketModal
+    :is-opened="isOpenSendIdeasModal"
+    :ideas="sendingIdeasOnMarket"
+    @close-modal="closeSendIdeasModal"
   />
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -26,20 +36,22 @@ import {
   TableColumn,
   CheckedDataAction,
   DropdownMenuAction,
+  TableHeader,
 } from '@Components/Table/Table.types'
 import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
+import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
 
-import { Idea } from '@Domain/Idea'
-import IdeaStatusTypes from '@Domain/IdeaStatus'
+import { Idea, IdeaStatusType } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 
-import getStatus from '@Utils/getStatus'
-import getStatusStyle from '@Utils/getStatusStyle'
+import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 import mutableSort from '@Utils/mutableSort'
+import getFiltersByRoles from '@Utils/getFiltersByRoles'
+import useRatingsStore from '@Store/ratings/ratingsStore'
 
 const props = defineProps<IdeasTableProps>()
 
@@ -51,13 +63,21 @@ const { user } = storeToRefs(userStore)
 const ideaStore = useIdeasStore()
 
 const ideasData = ref<Idea[]>([])
+const checkedIdeas = ref<Idea[]>([])
+const sendingIdeasOnMarket = ref<Idea[]>([])
+const filtersByRoles = getFiltersByRoles()
 
-const availableStatus = getStatus()
+const availableStatus = getIdeaStatus()
 
+const deletingIdeaName = ref<string>()
 const deletingIdeaId = ref<string | null>(null)
 const isOpenedIdeaDeleteModal = ref(false)
 
-const filterByIdeaStatus = ref<IdeaStatusTypes[]>([])
+const filterByIdeaStatus = ref<IdeaStatusType[]>([])
+
+const isOpenSendIdeasModal = ref<boolean>(false)
+
+const filterByConfirmedExpert = ref<boolean>(true)
 
 watchImmediate(
   () => props.ideas,
@@ -66,7 +86,36 @@ watchImmediate(
   },
 )
 
+const ideasTableHeader = computed<TableHeader>(() => ({
+  label: 'Список идей',
+  countData: true,
+  buttons: [
+    {
+      label: 'Создать идею',
+      variant: 'primary',
+      prependIconName: 'bi bi-plus-lg',
+      click: navigateToCreateIdeaForm,
+      statement: checkTableHeaderButton(),
+    },
+  ],
+}))
+
+watchImmediate(
+  () => user.value?.role,
+  (role) => {
+    if (role) {
+      filterByIdeaStatus.value = filtersByRoles.filter[role]
+      filterByConfirmedExpert.value = filtersByRoles.filterByExpert[role]
+    }
+  },
+)
 const ideaTableColumns: TableColumn<Idea>[] = [
+  {
+    key: 'isChecked',
+    label: '',
+    getRowCellStyle: getCkeckedIdeaStyle,
+    getRowCellFormat: () => '',
+  },
   {
     key: 'name',
     label: 'Название',
@@ -77,7 +126,7 @@ const ideaTableColumns: TableColumn<Idea>[] = [
     key: 'status',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellStyle: getStatusStyle,
+    getRowCellStyle: getIdeaStatusStyle,
     getRowCellFormat: getTranslatedStatus,
   },
   {
@@ -114,14 +163,16 @@ const ideaTableColumns: TableColumn<Idea>[] = [
   },
 ]
 
-const checkedIdeasActions: CheckedDataAction<Idea>[] = [
+const checkedIdeasActions = computed<CheckedDataAction<Idea>[]>(() => [
   {
     label: 'Отправить на биржу',
     className: 'btn-primary',
-    statement: user.value?.role == 'PROJECT_OFFICE',
-    click: () => console.log('market'),
+    statement:
+      user.value?.role == 'PROJECT_OFFICE' &&
+      checkedIdeas.value.every((idea) => idea.status === 'CONFIRMED'),
+    click: openSendIdeasModal,
   },
-]
+])
 
 const dropdownIdeasActions: DropdownMenuAction<Idea>[] = [
   {
@@ -131,7 +182,7 @@ const dropdownIdeasActions: DropdownMenuAction<Idea>[] = [
   {
     label: 'Редактировать',
     statement: checkUpdateIdeaAction,
-    click: navigateToIdeaForm,
+    click: navigateToUpdateIdeaForm,
   },
   {
     label: 'Удалить',
@@ -152,7 +203,69 @@ const ideasFilters: Filter<Idea>[] = [
     isUniqueChoice: false,
     checkFilter: checkIdeaStatus,
   },
+  {
+    category: 'Экспертиза',
+    choices: [
+      {
+        label: 'Неутвержденные мною идеи',
+        value: true,
+      },
+    ],
+    refValue: filterByConfirmedExpert,
+    isUniqueChoice: false,
+    checkFilter: () => true,
+    statement: computed(() => user.value?.role === 'EXPERT'),
+  },
 ]
+
+const ratingsStore = useRatingsStore()
+const { ratings } = storeToRefs(ratingsStore)
+
+function checkError(ideas: Idea[] | Error) {
+  return ideas instanceof Error ? [] : ideas
+}
+
+watchImmediate(
+  ratings,
+  async () => {
+    const currentUser = user.value
+
+    if (currentUser?.token) {
+      const { token } = currentUser
+
+      const response = await ideaStore.getIdeasExpertNotConfirmed(token)
+
+      if (user.value?.role === 'EXPERT') ideasData.value = checkError(response)
+    }
+  },
+  { deep: true },
+)
+
+watchImmediate(
+  () => filterByConfirmedExpert.value,
+  async (value) => {
+    if (value) {
+      const currentUser = user.value
+
+      if (currentUser?.token) {
+        const { token } = currentUser
+
+        const response = await ideaStore.getIdeasExpertNotConfirmed(token)
+
+        ideasData.value = checkError(response)
+      }
+    } else ideasData.value = props.ideas
+  },
+)
+
+function getCkeckedIdeaStyle(checkedBy: boolean) {
+  const initialClass = ['bi bi-circle-fill', 'fs-6', 'mt-1', 'text-secondary']
+
+  if (checkedBy) {
+    initialClass.splice(3, 1, 'text-success')
+    return initialClass
+  } else return initialClass
+}
 
 function sortByCreatedAt() {
   mutableSort(ideasData.value, (ideaData: Idea) =>
@@ -174,7 +287,7 @@ function sortByRating() {
   mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
 }
 
-function getTranslatedStatus(status: IdeaStatusTypes) {
+function getTranslatedStatus(status: IdeaStatusType) {
   return availableStatus.translatedStatus[status].toString()
 }
 
@@ -199,16 +312,29 @@ function getRatingColor(rating: number) {
   return 'text-danger'
 }
 
+function openSendIdeasModal(ideas: Idea[]) {
+  sendingIdeasOnMarket.value = [...ideas]
+  isOpenSendIdeasModal.value = true
+}
+function closeSendIdeasModal() {
+  isOpenSendIdeasModal.value = false
+}
+
 function navigateToIdeaModal(idea: Idea) {
   router.push(`/ideas/list/${idea.id}`)
 }
 
-function navigateToIdeaForm(idea: Idea) {
+function navigateToCreateIdeaForm() {
+  router.push('/ideas/create')
+}
+
+function navigateToUpdateIdeaForm(idea: Idea) {
   router.push(`/ideas/update/${idea.id}`)
 }
 
 function handleOpenDeleteModal(idea: Idea) {
   deletingIdeaId.value = idea.id
+  deletingIdeaName.value = idea.name
   isOpenedIdeaDeleteModal.value = true
 }
 
@@ -225,17 +351,26 @@ async function handleDeleteIdea() {
   }
 }
 
+function checkTableHeaderButton() {
+  const currentUser = user.value
+
+  if (currentUser?.role) {
+    return ['INITIATOR', 'ADMIN'].includes(currentUser?.role)
+  }
+  return false
+}
+
 function checkDeleteIdeaAction(idea: Idea) {
   const currentUser = user.value
 
   if (currentUser) {
-    const { email } = currentUser
-    const { initiatorEmail, status } = idea
+    const { id } = currentUser
+    const { initiator, status } = idea
     const requiredIdeaStatus =
       status === 'NEW' || status === 'ON_EDITING' || status === 'ON_APPROVAL'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiatorEmail === email && requiredIdeaStatus
+      return initiator.id === id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'
@@ -247,12 +382,12 @@ function checkUpdateIdeaAction(idea: Idea) {
   const currentUser = user.value
 
   if (currentUser) {
-    const { email } = currentUser
-    const { initiatorEmail, status } = idea
+    const { id } = currentUser
+    const { initiator, status } = idea
     const requiredIdeaStatus = status === 'NEW' || status === 'ON_EDITING'
 
     if (currentUser.role === 'INITIATOR') {
-      return initiatorEmail === email && requiredIdeaStatus
+      return initiator.id === id && requiredIdeaStatus
     }
 
     return currentUser.role === 'ADMIN'

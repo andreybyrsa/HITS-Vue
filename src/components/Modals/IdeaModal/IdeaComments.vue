@@ -1,14 +1,11 @@
 <script lang="ts" setup>
-import { useForm } from 'vee-validate'
-import { string } from 'yup'
-import { storeToRefs } from 'pinia'
 import { vIntersectionObserver } from '@vueuse/components'
+import { storeToRefs } from 'pinia'
 
-import Typography from '@Components/Typography/Typography.vue'
 import { IdeaCommentsProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
-import CommentVue from '@Components/Comment/Comment.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
-import Button from '@Components/Button/Button.vue'
+import AdvertisementsForm from '@Components/Forms/AdvertisementsForm/AdvertisementsForm.vue'
+import Advertisement from '@Components/Advertisement/Advertisement.vue'
+import { Action } from '@Components/ActionsList/ActionsList.types'
 import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPlaceholder.vue'
 
 import Comment from '@Domain/Comment'
@@ -24,46 +21,43 @@ const { user } = storeToRefs(userStore)
 const commentsStore = useCommentsStore()
 const { comments } = storeToRefs(commentsStore)
 
-const { handleSubmit, resetForm } = useForm<Comment>({
-  validationSchema: {
-    text: string().required('Поле обязательно к заполнению'),
-  },
-  initialValues: {
-    ideaId: props.idea.id,
-    text: '',
-    senderEmail: user.value?.email,
-    checkedBy: user.value ? [user.value.email] : [],
-  },
-})
+const commentFormInitialState = {
+  ideaId: props.idea.id,
+  text: '',
+  sender: user.value ? user.value : {},
+  checkedBy: user.value ? [user.value.id] : [],
+} as Comment
 
-function checkIsUserComment(senderEmail: string) {
-  if (user.value?.email === senderEmail) {
-    return 'current-user-comment'
-  }
-}
+const commentDropdownActions: Action<Comment>[] = [
+  {
+    label: 'Удалить',
+    className: 'text-danger',
+    statement: checkCommentOwned,
+    click: handleDeleteComment,
+  },
+]
 
-const handleSendComment = handleSubmit(async (values) => {
+async function handleSendComment(values: Comment) {
   const currentUser = user.value
 
   if (currentUser?.token && props.idea) {
     const { token } = currentUser
     await commentsStore.createComment(values, token)
 
-    resetForm()
-
     props.ideaModalRef?.scrollTo({
       top: props.ideaModalRef.scrollHeight,
       behavior: 'smooth',
     })
   }
-})
+}
 
-const handleDeleteComment = async (commentId: string) => {
+async function handleDeleteComment(comment?: Comment) {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && comment) {
     const { token } = currentUser
-    await commentsStore.deleteComment(commentId, token)
+    const { id } = comment
+    await commentsStore.deleteComment(id, token)
   }
 }
 
@@ -71,8 +65,8 @@ const handleCheckComment = async (commentId: string) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token, email } = currentUser
-    await commentsStore.checkComment(commentId, email, token)
+    const { token, id } = currentUser
+    await commentsStore.checkComment(commentId, id, token)
   }
 }
 
@@ -81,63 +75,63 @@ const onIntersectionObserver = async (
   comment: Comment,
 ) => {
   if (user.value) {
-    const { email } = user.value
+    const { id } = user.value
 
-    if (!comment.checkedBy.includes(email) && isIntersecting) {
+    if (!comment.checkedBy.includes(id) && isIntersecting) {
       await handleCheckComment(comment.id)
     }
   }
 }
+
+function checkIsActiveComment(comment: Comment) {
+  const { checkedBy } = comment
+  const currentUser = user.value
+
+  return currentUser && checkedBy.includes(currentUser.id) ? false : true
+}
+
+function checkCommentOwned(comment: Comment) {
+  const { sender } = comment
+  return sender.email === user.value?.email
+}
+
+function getCommentSender(comment: Comment) {
+  const { sender } = comment
+  return `${sender.firstName} ${sender.lastName}`
+}
 </script>
 
 <template>
-  <div class="bg-white rounded-3">
-    <div class="py-2 w-100 border-bottom">
-      <Typography class-name="fs-6 px-3">Комментарии</Typography>
-    </div>
+  <AdvertisementsForm
+    title="Комментарии"
+    input-placeholder="Добавить комментарий"
+    :initial-state="commentFormInitialState"
+    :handle-send-advertisement="handleSendComment"
+    has-access-to-send
+  >
+    <template #content>
+      <template v-if="comments">
+        <Advertisement
+          v-for="comment in comments"
+          :key="comment.id"
+          :class-name="checkCommentOwned(comment) ? 'current-user-comment' : ''"
+          :advertisement="comment"
+          :text="comment.text"
+          :sender="getCommentSender(comment)"
+          :created-at="comment.createdAt"
+          :is-active="checkIsActiveComment(comment)"
+          :has-access-to-actions="checkCommentOwned(comment)"
+          :dropdown-actions="commentDropdownActions"
+          v-intersection-observer="(elem) => onIntersectionObserver(elem, comment)"
+        />
+      </template>
 
-    <div
-      v-if="comments"
-      class="d-grid gap-3 pt-3 px-3 w-100"
-    >
-      <CommentVue
-        v-for="comment in comments"
-        :key="comment.id"
-        :class-name="checkIsUserComment(comment.senderEmail)"
-        :comment="comment"
-        v-intersection-observer="(elem) => onIntersectionObserver(elem, comment)"
-        @delete-comment="handleDeleteComment(comment.id)"
-      />
-    </div>
-    <IdeaCommentsPlaceholder v-else />
-
-    <form class="comment-form p-3">
-      <Input
-        name="text"
-        class-name="rounded-end"
-        placeholder="Добавить комментарий"
-      >
-        <template #prepend>
-          <i class="bi bi-chat"></i>
-        </template>
-      </Input>
-
-      <Button
-        type="submit"
-        variant="primary"
-        @click="handleSendComment"
-      >
-        Отправить
-      </Button>
-    </form>
-  </div>
+      <IdeaCommentsPlaceholder v-else />
+    </template>
+  </AdvertisementsForm>
 </template>
 
 <style lang="scss" scoped>
-.comment-form {
-  @include flexible(flex-start, flex-start, $gap: 16px);
-}
-
 .current-user-comment {
   justify-self: end;
 }

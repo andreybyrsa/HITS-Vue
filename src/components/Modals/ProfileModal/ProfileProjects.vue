@@ -1,15 +1,20 @@
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
-import { ProfileProjectsProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import Icon from '@Components/Icon/Icon.vue'
 
-defineProps<ProfileProjectsProps>()
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 const router = useRouter()
+const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
 
 function navigateToProjectModal(projectId: string) {
   router.push(`/projects/list/${projectId}`)
@@ -23,7 +28,7 @@ function navigateToProjectModal(projectId: string) {
     </div>
 
     <div
-      v-if="profile.projects"
+      v-if="profile?.projects"
       class="profile-projects__content mt-3"
     >
       <template v-if="profile.projects.length > 0">

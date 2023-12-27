@@ -1,22 +1,20 @@
 import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
 
-import getRoles from '@Utils/getRoles'
-
 const leftSideBarTabs: LeftSideBarTabType[] = [
   {
-    id: 0,
+    name: 'ideas',
     text: 'Реестр идей',
     to: '/ideas',
     routes: [
       {
-        id: 1,
+        name: 'ideas-list',
         text: 'Список идей',
         to: '/ideas/list',
         iconName: 'bi bi-list',
-        roles: getRoles().roles,
+        roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
       },
       {
-        id: 2,
+        name: 'create-idea',
         text: 'Создать идею',
         to: '/ideas/create',
         iconName: 'bi bi-plus-lg',
@@ -24,66 +22,82 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
     ],
     iconName: 'bi bi-lightbulb',
-    roles: getRoles().roles,
+    roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
   },
   {
-    id: 3,
+    name: 'teams',
     text: 'Реестр команд',
     to: '/teams',
     routes: [
       {
-        id: 4,
+        name: 'teams-list',
         text: 'Список команд',
         to: '/teams/list',
         iconName: 'bi bi-list',
-        roles: getRoles().roles,
+        roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'],
       },
       {
-        id: 5,
+        name: 'create-team',
         text: 'Создать команду',
         to: '/teams/create',
         iconName: 'bi bi-plus-lg',
-        roles: getRoles().roles,
+        roles: ['TEAM_OWNER', 'ADMIN'],
       },
     ],
     iconName: 'bi bi-people',
-    roles: getRoles().roles,
+    roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'],
   },
   {
-    id: 7,
+    name: 'markets',
+    text: 'Реестр бирж',
+    to: '/market',
+    routes: [
+      {
+        name: 'markets-list',
+        text: 'Список бирж',
+        to: '/market/list',
+        iconName: 'bi bi-list',
+        roles: ['PROJECT_OFFICE', 'ADMIN'],
+      },
+    ],
+    iconName: 'bi bi-shop-window',
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+  },
+  {
+    name: 'admin',
     text: 'Админ панель',
     to: '/admin',
     routes: [
       {
-        id: 8,
+        name: 'admin-users',
         to: '/admin/users',
         text: 'Пользователи',
         iconName: 'bi bi-person-gear',
         roles: ['ADMIN'],
       },
       {
-        id: 9,
+        name: 'admin-add-users',
         to: '/admin/add-users',
         text: 'Добавить пользователей',
         iconName: 'bi bi-person-add',
         roles: ['ADMIN'],
       },
       {
-        id: 10,
+        name: 'admin-companies',
         to: '/admin/companies',
         text: 'Компании',
         iconName: 'bi bi-building',
         roles: ['ADMIN'],
       },
       {
-        id: 11,
+        name: 'admin-users-groups',
         to: '/admin/users-groups',
         text: 'Группы пользователей',
         iconName: 'bi bi-people',
         roles: ['ADMIN'],
       },
       {
-        id: 12,
+        name: 'admin-skills',
         to: '/admin/skills',
         text: 'Справочник компетенций',
         iconName: 'bi bi-person-badge',
@@ -92,22 +106,6 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     ],
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
-  },
-  {
-    id: 14,
-    text: 'Настройки',
-    to: '/change-email',
-    routes: [
-      {
-        id: 15,
-        to: '/change-email',
-        text: 'Изменение почты',
-        iconName: 'bi bi-pencil-square',
-        roles: getRoles().roles,
-      },
-    ],
-    iconName: 'bi bi-gear',
-    roles: getRoles().roles,
   },
 ]
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 
@@ -10,19 +10,26 @@ import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
+
 import { UpdateUserPassword } from '@Domain/ManageUsers'
 
 import ManageUsersService from '@Services/ManageUsersService'
 
-import Validation from '@Utils/Validation'
-
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-const notificationsStore = useNotificationsStore()
+import Validation from '@Utils/Validation'
+import { getChangeStatusCode, ChangeStatusCode } from '@Utils/changeStatusCodeInfo'
 
 const props = defineProps<NewPasswordModalProps>()
 
+const notificationsStore = useNotificationsStore()
+
 const router = useRouter()
+
+const changeStatusCodeInfo = getChangeStatusCode()
+
+const isLoading = ref(false)
 
 const { setValues, handleSubmit } = useForm<UpdateUserPassword>({
   validationSchema: {
@@ -43,21 +50,30 @@ watch(
 )
 
 const handleUpdatePassword = handleSubmit(async (values) => {
+  isLoading.value = true
   const response = await ManageUsersService.updateUserPassword(values)
+  isLoading.value = false
 
   if (response instanceof Error) {
-    return notificationsStore.createSystemNotification('Система', response.message)
+    const messageResponse = response.message as ChangeStatusCode
+    const messageText = changeStatusCodeInfo.translatedStatus[messageResponse]
+
+    if (messageResponse === 'CHANGE_FAILED') {
+      router.push('/login')
+    }
+    return notificationsStore.createSystemNotification('Система', messageText)
   }
 
+  notificationsStore.createSystemNotification('Система', 'Успешное изменение пароля')
   router.push('/login')
 })
 </script>
 
 <template>
   <ModalLayout :is-opened="isOpened">
-    <div
+    <FormLayout
       v-if="isOpened"
-      class="new-password-modal p-3 rounded"
+      class-name="new-password-modal p-3 rounded"
     >
       <Typography class-name="fs-3 text-primary text-center">
         Новый пароль
@@ -66,7 +82,7 @@ const handleUpdatePassword = handleSubmit(async (values) => {
       <Input
         v-for="input in newPasswordModalInputs"
         :key="input.id"
-        :type="input.type"
+        type="text"
         :name="input.name"
         class-name="rounded-end"
         :placeholder="input.placeholder"
@@ -78,11 +94,13 @@ const handleUpdatePassword = handleSubmit(async (values) => {
 
       <Button
         variant="primary"
+        type="submit"
+        :is-loading="isLoading"
         @click="handleUpdatePassword"
       >
         Изменить пароль
       </Button>
-    </div>
+    </FormLayout>
   </ModalLayout>
 </template>
 

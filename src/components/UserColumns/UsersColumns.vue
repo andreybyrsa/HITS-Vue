@@ -1,60 +1,95 @@
-<script lang="ts" setup generic="User">
+<script lang="ts" setup>
+import { ref, computed } from 'vue'
+
 import Typography from '@Components/Typography/Typography.vue'
 import {
   UsersColumnsProps,
   UsersColumnsEmits,
 } from '@Components/UserColumns/UsersColumns.types'
+import Input from '@Components/Inputs/Input/Input.vue'
 
-defineModel<User | User[]>({
-  required: false,
+const props = defineProps<UsersColumnsProps>()
+const emit = defineEmits<UsersColumnsEmits>()
+
+const searchValueByUnselectedUsers = ref('')
+const searchValueBySelectedUsers = ref('')
+
+const searchedUnselectedUsers = computed(() => {
+  if (searchValueByUnselectedUsers.value) {
+    const currentSearchValue = searchValueByUnselectedUsers.value
+      .toLowerCase()
+      .trim()
+
+    return props.unselectedUsers.filter(({ firstName, lastName }) => {
+      const userName = `${firstName} ${lastName}`.toLowerCase().trim()
+
+      return userName.includes(currentSearchValue)
+    })
+  }
+  return props.unselectedUsers
 })
 
-const props = defineProps<UsersColumnsProps<User>>()
-const emit = defineEmits<UsersColumnsEmits<User>>()
+const searchedSelectedUsers = computed(() => {
+  if (searchValueBySelectedUsers.value) {
+    const currentSearchValue = searchValueBySelectedUsers.value.toLowerCase().trim()
 
-function displayByUserField(user: User) {
-  return props.displayBy.reduce(
-    (prevValue, value) => (prevValue += `${user[value]} `),
-    '',
-  )
-}
+    return props.users.filter((user) => {
+      const { firstName, lastName } = user.value
+      const userName = `${firstName} ${lastName}`.toLowerCase().trim()
+
+      return userName.includes(currentSearchValue)
+    })
+  }
+  return props.users
+})
 </script>
 
 <template>
   <div class="d-flex justify-content-between gap-3">
     <div class="users-column w-50">
-      <Typography class-name="text-primary">Невыбранные пользователи:</Typography>
+      <Input
+        name="searchByUnselectedUsers"
+        class-name="rounded-end"
+        :label="unselectedUsersLabel"
+        placeholder="Найти"
+        v-model="searchValueByUnselectedUsers"
+      />
 
       <div
         class="users-column__unselected-users p-2 h-100 overflow-scroll border rounded-3"
       >
         <div
-          v-for="(user, index) in unselectedUsers"
-          :key="index"
           class="users-column__user px-1 rounded border"
+          v-for="(user, index) in searchedUnselectedUsers"
+          :key="index"
+          @click="emit('selectUser', user)"
         >
-          <Typography
-            class="w-100"
-            @click="emit('onSelect', user, index)"
-            >{{ displayByUserField(user) }}</Typography
-          >
+          <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
         </div>
       </div>
     </div>
 
     <div class="users-column w-50">
-      <Typography class-name="text-primary">Выбранные пользователи:</Typography>
+      <Input
+        name="searchBySelectedUsers"
+        class-name="rounded-end"
+        :label="selectedUsersLabel"
+        placeholder="Найти"
+        v-model="searchValueBySelectedUsers"
+      />
 
       <div
         class="users-column__selected-users p-2 h-100 overflow-scroll border rounded-3"
       >
         <div
           class="users-column__user px-1 rounded border"
-          v-for="(user, index) in users"
+          v-for="(user, index) in searchedSelectedUsers"
           :key="index"
-          @click="emit('onUnselect', user.value, index)"
+          @click="emit('unselectUser', user.value, index)"
         >
-          <Typography> {{ displayByUserField(user.value) }} </Typography>
+          <Typography>
+            {{ user.value.firstName }} {{ user.value.lastName }}
+          </Typography>
         </div>
       </div>
     </div>
@@ -74,19 +109,12 @@ function displayByUserField(user: User) {
 
   &__user {
     cursor: pointer;
-    @include flexible(stretch, flex-start, $gap: 8px);
 
     &:hover {
       background-color: rgba($primary-color, 0.1);
 
       transition: background-color $default-transition-settings;
     }
-  }
-
-  &__button {
-    @include position(absolute, $top: 11px, $right: 12px, $z-index: 10);
-
-    cursor: pointer;
   }
 }
 </style>

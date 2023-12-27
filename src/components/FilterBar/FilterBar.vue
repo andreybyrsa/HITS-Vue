@@ -1,11 +1,17 @@
 <script lang="ts" setup generic="DataType">
 import { Ref, computed } from 'vue'
 
-import { FilterBarProps, FilterValue } from '@Components/FilterBar/FilterBar.types'
+import {
+  FilterBarProps,
+  FilterValue,
+  FilterChoice,
+} from '@Components/FilterBar/FilterBar.types'
 import Button from '@Components/Button/Button.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
+import Icon from '@Components/Icon/Icon.vue'
 
 const props = defineProps<FilterBarProps<DataType>>()
 
@@ -51,6 +57,26 @@ function resetFilters() {
     }
   })
 }
+
+function searchByCategory(value: string | undefined, choices: FilterChoice[]) {
+  if (value) {
+    const searchValue = value.toLowerCase().trim()
+
+    return choices.filter(({ label }) => {
+      const choiceLabel = label.toLowerCase().trim()
+      return choiceLabel.includes(searchValue)
+    })
+  }
+
+  return choices
+}
+
+function chechFilterCategoryStatement(statement?: boolean) {
+  if (statement !== undefined) {
+    return statement
+  }
+  return true
+}
 </script>
 
 <template>
@@ -62,39 +88,58 @@ function resetFilters() {
       <Typography class-name="text-secondary fw-semibold">{{ title }}</Typography>
     </div>
 
-    <div
-      class="w-100"
+    <template
       v-for="(filter, index) in filters"
       :key="index"
     >
-      <Typography class-name="fw-semibold">{{ filter.category }}</Typography>
+      <div
+        v-if="chechFilterCategoryStatement(filter.statement?.value)"
+        class="w-100"
+      >
+        <Typography class-name="fw-semibold">{{ filter.category }}</Typography>
+        <Input
+          v-if="filter.searchValue"
+          :name="`search-${filter.category}`"
+          class-name="my-1 rounded-end"
+          placeholder="Найти"
+          v-model="filter.searchValue.value"
+        />
 
-      <div class="filter__choices">
-        <div
-          v-for="(choice, index) in filter.choices"
-          :key="index"
-          class="filter__choice ps-2 py-1 rounded-1"
-          @click="chooseFilter(choice.value, filter.refValue)"
-        >
-          <Radio
-            v-if="filter.isUniqueChoice"
-            :name="filter.category"
-            no-form-cotrolled
-            :label="choice.label"
-            :value="choice.value"
-            v-model="filter.refValue.value"
-          />
-          <Checkbox
-            v-else
-            :name="filter.category"
-            no-form-controlled
-            :label="choice.label"
-            :value="choice.value"
-            v-model="filter.refValue.value"
-          />
+        <div class="filter__choices">
+          <div
+            v-for="(choice, index) in searchByCategory(
+              filter.searchValue?.value,
+              filter.choices,
+            )"
+            :key="index"
+            class="filter__choice px-2 py-1 rounded-1"
+            @click="chooseFilter(choice.value, filter.refValue)"
+          >
+            <Radio
+              v-if="filter.isUniqueChoice"
+              :name="filter.category"
+              no-form-cotrolled
+              :label="choice.label"
+              :value="choice.value"
+              v-model="filter.refValue.value"
+            />
+            <Checkbox
+              v-else
+              :name="filter.category"
+              no-form-controlled
+              :label="choice.label"
+              :value="choice.value"
+              v-model="filter.refValue.value"
+            />
+
+            <Icon
+              v-if="choice.isMarked"
+              class-name="bi bi-star-fill text-warning"
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </template>
 
     <div class="w-100 d-flex justify-content-center">
       <Button
@@ -113,7 +158,7 @@ function resetFilters() {
   @include flexible(stretch, flex-start, column, $gap: 8px);
 
   &__choices {
-    max-height: 160px;
+    max-height: 192px;
 
     overflow-y: scroll;
   }
@@ -121,7 +166,7 @@ function resetFilters() {
   &__choice {
     cursor: pointer;
 
-    @include flexible(center, flex-start);
+    @include flexible(center, space-between);
 
     transition: background-color;
 

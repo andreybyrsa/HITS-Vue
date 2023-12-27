@@ -24,7 +24,7 @@ import ManageUsersService from '@Services/ManageUsersService'
 
 import useUserStore from '@Store/user/userStore'
 
-import getRoles from '@Utils/getRoles'
+import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import Validation from '@Utils/Validation'
@@ -48,7 +48,7 @@ const isLoadingGroup = ref(true)
 const isCreating = ref(false)
 const isUpdating = ref(false)
 
-const groupRoles = getRoles().roles
+const groupRoles = getUserRolesInfo().roles
 
 const usersGroupModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
@@ -119,9 +119,15 @@ onUpdated(async () => {
   }
 })
 
-function selectUser(user: User, index: number) {
-  push(user)
-  unselectedUsers.value.splice(index, 1)
+function selectUser(user: User) {
+  const selectedUserIndex = unselectedUsers.value.findIndex(
+    ({ id }) => id === user.id,
+  )
+
+  if (selectedUserIndex !== -1) {
+    push(user)
+    unselectedUsers.value.splice(selectedUserIndex, 1)
+  }
 }
 
 function unselectUser(user: User, index: number) {
@@ -218,11 +224,11 @@ const handleUpdateGroup = handleSubmit(async (values) => {
 
         <UsersColumns
           :users="fields"
-          :display-by="['lastName', 'firstName']"
-          :email="'email'"
           :unselected-users="unselectedUsers"
-          @on-select="selectUser"
-          @on-unselect="unselectUser"
+          unselected-users-label="Пользователи:"
+          selected-users-label="Пользователи в группе:"
+          @selectUser="selectUser"
+          @unselect-user="unselectUser"
         />
 
         <Combobox

@@ -8,6 +8,7 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Skills from '@Components/Skills/Skills.vue'
+
 import { Idea } from '@Domain/Idea'
 
 defineProps<IdeaDescriptionProps>()
@@ -40,7 +41,7 @@ const emit = defineEmits<IdeaDescriptionEmits>()
       <Button
         variant="light"
         class-name="collapse-controller w-100"
-        v-collapse="collapse.id"
+        v-collapse:openOnMount="collapse.id"
       >
         {{ collapse.text }}
       </Button>
@@ -55,7 +56,7 @@ const emit = defineEmits<IdeaDescriptionEmits>()
       <Button
         variant="light"
         class-name="collapse-controller w-100"
-        v-collapse="'idea-skills'"
+        v-collapse:openOnMount="'idea-skills'"
       >
         Стек технологий
       </Button>

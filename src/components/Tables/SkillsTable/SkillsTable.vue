@@ -1,5 +1,7 @@
 <template>
   <Table
+    class-name="p-3"
+    :header="skillsTableHeader"
     :columns="skillTableColumns"
     :data="skills"
     :search-by="['name']"
@@ -7,6 +9,11 @@
     :dropdown-actions-menu="dropdownSkillsActions"
   ></Table>
 
+  <SkillModal
+    :is-opened="isOpenCreatingSkillModal"
+    v-model="skills"
+    @close-modal="closeCreatingSkillModal"
+  />
   <SkillModal
     :is-opened="isOpenUpdatingSkillModal"
     :skill="updatingSkill"
@@ -16,6 +23,7 @@
 
   <DeleteModal
     :is-opened="isOpenedDeletingModal"
+    :item-name="currentDeleteSkillName"
     @close-modal="closeDeletingModal"
     @delete="handleDeleteSkill"
   />
@@ -28,7 +36,11 @@ import { storeToRefs } from 'pinia'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import Table from '@Components/Table/Table.vue'
 import SkillModal from '@Components/Modals/SkillModal/SkillModal.vue'
-import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import {
+  TableColumn,
+  DropdownMenuAction,
+  TableHeader,
+} from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 
 import { Skill, SkillType } from '@Domain/Skill'
@@ -38,7 +50,7 @@ import SkillsService from '@Services/SkillsService'
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import getSkills from '@Utils/getSkills'
+import { getSkillsInfo, getSkillInfoStyle } from '@Utils/skillsInfo'
 
 const skills = defineModel<Skill[]>({ required: true })
 
@@ -48,14 +60,29 @@ const notificationsStore = useNotificationsStore()
 
 const updatingSkill = ref<Skill | null>(null)
 const currentDeleteSkillId = ref<string | null>(null)
+const currentDeleteSkillName = ref<string>()
 
-const isOpenedDeletingModal = ref(false)
+const isOpenCreatingSkillModal = ref(false)
 const isOpenUpdatingSkillModal = ref(false)
+const isOpenedDeletingModal = ref(false)
 
 const filterByType = ref<SkillType[]>([])
 const filterByIsConfirmed = ref<boolean>()
 
-const availableSkills = getSkills()
+const availableSkills = getSkillsInfo()
+
+const skillsTableHeader: TableHeader = {
+  label: 'Список компетенций',
+  countData: true,
+  buttons: [
+    {
+      label: 'Добавить компетенцию',
+      variant: 'primary',
+      prependIconName: 'bi bi-plus-lg',
+      click: openCreatingSkillModal,
+    },
+  ],
+}
 
 const skillTableColumns: TableColumn<Skill>[] = [
   {
@@ -67,7 +94,7 @@ const skillTableColumns: TableColumn<Skill>[] = [
     key: 'type',
     label: 'Категория',
     getRowCellFormat: getSkillTypeFormat,
-    getRowCellStyle: getSKillTypeStyle,
+    getRowCellStyle: getSkillTypeStyle,
   },
   {
     key: 'confirmed',
@@ -84,7 +111,7 @@ const dropdownSkillsActions: DropdownMenuAction<Skill>[] = [
     click: openUpdatingSkillModal,
   },
   {
-    label: 'Одобрить',
+    label: 'Утвердить',
     statement: (skill) => checkSkillConfirmed(skill, false),
     click: handleConfirmSkill,
   },
@@ -129,27 +156,10 @@ function getSkillStatusFormat(isConfirmed: boolean) {
   return 'На рассмотрении'
 }
 
-function getSKillTypeStyle(skillType: SkillType) {
-  const initialClass = ['px-2', 'py-1', 'rounded-4']
-  if (skillType === 'LANGUAGE') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
+function getSkillTypeStyle(skillType: SkillType) {
+  const skillTypeClass = getSkillInfoStyle(skillType)
 
-  if (skillType === 'FRAMEWORK') {
-    initialClass.push('bg-info-subtle', 'text-info')
-    return initialClass
-  }
-
-  if (skillType === 'DATABASE') {
-    initialClass.push('bg-warning-subtle', 'text-warning')
-    return initialClass
-  }
-
-  if (skillType === 'DEVOPS') {
-    initialClass.push('bg-danger-subtle', 'text-danger')
-    return initialClass
-  }
+  return ['px-2', 'py-1', 'rounded-4', ...skillTypeClass]
 }
 
 function getSkillStatusStyle(isConfirmed: boolean) {
@@ -213,6 +223,13 @@ const handleDeleteSkill = async () => {
   }
 }
 
+function openCreatingSkillModal() {
+  isOpenCreatingSkillModal.value = true
+}
+function closeCreatingSkillModal() {
+  isOpenCreatingSkillModal.value = false
+}
+
 function openUpdatingSkillModal(skill: Skill) {
   updatingSkill.value = skill
   isOpenUpdatingSkillModal.value = true
@@ -223,6 +240,7 @@ function closeUpdatingSkillModal() {
 
 function openDeletingModal(skill: Skill) {
   currentDeleteSkillId.value = skill.id
+  currentDeleteSkillName.value = skill.name
   isOpenedDeletingModal.value = true
 }
 function closeDeletingModal() {

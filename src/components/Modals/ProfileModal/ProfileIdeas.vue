@@ -1,22 +1,41 @@
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRoute, RouteRecordRaw } from 'vue-router'
 
-import { ProfileIdeasProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
-import getStatusStyle from '@Utils/getStatusStyle'
-import getStatus from '@Utils/getStatus'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
-defineProps<ProfileIdeasProps>()
+import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
-const router = useRouter()
-const status = getStatus()
+const route = useRoute()
+const profileId = route.params.id.toString()
+
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+
+const status = getIdeaStatus()
 
 function navigateToIdeaModal(ideaId: string) {
-  router.push(`/ideas/list/${ideaId}`)
+  const nestedRouteName = route.matched[route.matched.length - 2].name?.toString()
+  const ideaModalRoute: RouteRecordRaw = {
+    name: 'idea-modal',
+    path: 'ideas/list/:id',
+    alias: '/ideas/list/:id',
+    component: IdeaModal,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  if (nestedRouteName) {
+    navigateToAliasRoute(nestedRouteName, `/ideas/list/${ideaId}`, ideaModalRoute)
+  }
 }
 </script>
 
@@ -27,7 +46,7 @@ function navigateToIdeaModal(ideaId: string) {
     </div>
 
     <div
-      v-if="profile.ideas"
+      v-if="profile?.ideas"
       class="profile-ideas__content mt-3"
     >
       <template v-if="profile.ideas.length > 0">
@@ -37,14 +56,16 @@ function navigateToIdeaModal(ideaId: string) {
           :key="idea.id"
         >
           <div class="w-100 d-flex justify-content-between align-items-center gap-3">
-            <div class="d-flex gap-2">
+            <div
+              class="w-100 d-flex gap-2 align-items-center justify-content-between"
+            >
               <div
                 class="fs-5 profile-ideas__idea-link"
                 @click="navigateToIdeaModal(idea.id)"
               >
                 {{ idea.name }}
               </div>
-              <div :class="[getStatusStyle(idea.status), 'fs-6']">
+              <div :class="[getIdeaStatusStyle(idea.status), 'fs-6', 'text-center']">
                 {{ status.translatedStatus[idea.status] }}
               </div>
             </div>
@@ -62,7 +83,7 @@ function navigateToIdeaModal(ideaId: string) {
             class-name="w-100"
           >
             <Typography class-name="w-100 mt-1 border-top text-secondary">
-              {{ idea.description }}
+              {{ idea.solution }}
             </Typography>
           </Collapse>
         </div>

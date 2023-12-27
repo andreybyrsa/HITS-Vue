@@ -4,10 +4,10 @@ import { useForm } from 'vee-validate'
 
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NewPasswordModal from '@Components/Modals/NewPasswordModal/NewPasswordModal.vue'
 
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { RecoveryData } from '@Domain/Invitation'
@@ -18,11 +18,12 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import Validation from '@Utils/Validation'
 
-const isOpenedModal = ref(false)
+const notificationsStore = useNotificationsStore()
 
+const isOpenedModal = ref(false)
 const authKey = ref('')
 
-const notificationsStore = useNotificationsStore()
+const isLoading = ref(false)
 
 const { values, handleSubmit } = useForm<RecoveryData>({
   validationSchema: {
@@ -30,9 +31,10 @@ const { values, handleSubmit } = useForm<RecoveryData>({
       Validation.checkEmail(value) || 'Неверно введена почта',
   },
 })
-
 const sendRevoveryEmail = handleSubmit(async (values) => {
+  isLoading.value = true
   const response = await InvitationService.sendRecoveryEmail(values)
+  isLoading.value = false
 
   if (response instanceof Error) {
     return notificationsStore.createSystemNotification('Система', response.message)
@@ -40,7 +42,6 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
 
   authKey.value = response
   isOpenedModal.value = true
-
   notificationsStore.createSystemNotification(
     'Система',
     'На почту отправлен код аутентификации',
@@ -67,6 +68,7 @@ const sendRevoveryEmail = handleSubmit(async (values) => {
         <Button
           type="submit"
           variant="primary"
+          :is-loading="isLoading"
           @click="sendRevoveryEmail"
         >
           Отправить

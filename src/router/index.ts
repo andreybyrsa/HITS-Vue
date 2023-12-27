@@ -5,7 +5,6 @@ import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
-import NewEmail from '@Components/Modals/NewEmailModal/NewEmailModal.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import UsersView from '@Views/Admin/UsersView.vue'
@@ -16,6 +15,7 @@ import CompaniesView from '@Views/Admin/CompaniesView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import IdeaMarketModal from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
 
@@ -23,6 +23,11 @@ import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
+
+import MarketsView from '@Views/Markets/MarketsView.vue'
+import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
+
+import HomeView from '@Views/HomeView.vue'
 
 import ErrorView from '@Views/ErrorView.vue'
 
@@ -33,12 +38,13 @@ import DevView from '@Views/DevView.vue'
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
+import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    redirect: { name: 'ideas-list' },
+    component: HomeView,
   },
   {
     path: '/ideas',
@@ -48,10 +54,17 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'ideas-list',
         component: IdeasView,
+        meta: {
+          roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        },
         children: [
           {
             path: ':id',
+            name: 'idea-modal',
             component: IdeaModal,
+            meta: {
+              roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+            },
           },
         ],
       },
@@ -77,10 +90,13 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
+        meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
         children: [
           {
             path: ':teamId',
+            name: 'team',
             component: TeamModal,
+            meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
           },
           {
             name: 'profile',
@@ -94,11 +110,52 @@ const routes: RouteRecordRaw[] = [
         name: 'create-team',
         path: 'create',
         component: NewTeamView,
+        meta: { roles: ['TEAM_OWNER', 'ADMIN'] },
       },
       {
         name: 'update-team',
         path: 'update/:id',
         component: EditTeamView,
+        meta: { roles: ['TEAM_OWNER', 'ADMIN'] },
+      },
+    ],
+  },
+  {
+    path: '/market',
+    name: 'market',
+    meta: {
+      roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'markets-list',
+        component: MarketsView,
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN'] },
+      },
+      {
+        path: ':marketId',
+        name: 'market-ideas',
+        component: IdeasMarketView,
+        meta: {
+          roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+        },
+        children: [
+          {
+            path: ':ideaMarketId',
+            name: 'market-idea-modal',
+            component: IdeaMarketModal,
+            meta: {
+              roles: [
+                'INITIATOR',
+                'MEMBER',
+                'TEAM_OWNER',
+                'PROJECT_OFFICE',
+                'ADMIN',
+              ],
+            },
+          },
+        ],
       },
     ],
   },
@@ -140,16 +197,9 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/change-email',
+    path: '/change-email/:slug',
     name: 'change-email',
     component: ChangeEmailView,
-    children: [
-      {
-        path: ':slug',
-        name: 'change-email-confirmation',
-        component: NewEmail,
-      },
-    ],
   },
   {
     path: '/last-activity-note',
@@ -196,19 +246,24 @@ router.beforeEach((to) => {
   const { user } = storeToRefs(userStore)
   const localStorageUser = LocalStorageUser.getLocalStorageUser()
 
-  const currentRouteName = to.name?.toString() ?? ''
-  const requiredRouteRoles = to.meta?.roles ?? []
-  const authRouteNames = ['login', 'register', 'forgot-password']
-
   if (localStorageUser?.token && !user.value?.token) {
     useUserStore().setUser(localStorageUser)
   }
 
+  const currentRouteName = to.name?.toString() ?? ''
+  const requiredRouteRoles = to.meta?.roles ?? []
+  const authRouteNames = ['login', 'register', 'forgot-password']
+
   if (!user.value && !authRouteNames.includes(currentRouteName)) {
     return { name: 'login' }
   }
-  if (user.value && authRouteNames.includes(currentRouteName)) {
-    return { name: 'ideas-list' }
+  if (
+    user.value?.role &&
+    (authRouteNames.includes(currentRouteName) || currentRouteName === 'home')
+  ) {
+    const { role } = user.value
+
+    return getRouteByUserRole(role)
   }
   if (requiredRouteRoles.length && user.value?.role) {
     const { role } = user.value

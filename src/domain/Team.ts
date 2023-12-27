@@ -1,22 +1,58 @@
 import { Skill } from '@Domain/Skill'
-import TeamMember from '@Domain/TeamMember'
-import { Project } from '@Components/Modals/TeamModal/TeamAction.types'
+
+interface TeamMember {
+  id: string
+  teamId: string
+  userId: string
+  email: string
+  firstName: string
+  lastName: string
+  skills: Skill[]
+}
 
 interface Team {
   id: string
-  name: string
   createdAt: string
+
+  name: string
   description: string
-  isClosed: boolean
+  closed: boolean
+  isRefused: boolean
   membersCount: number
   owner: TeamMember
   leader?: TeamMember
+
   members: TeamMember[]
-  projects?: Project[]
+  skills: Skill[]
+  wantedSkills: Skill[]
 }
+
 interface TeamSkills {
   teamId: string
   skills: Skill[]
   wantedSkills: Skill[]
 }
-export { Team, TeamSkills }
+
+type JoinStatus = 'NEW' | 'ANNULLED' | 'ACCEPTED' | 'CANCELED' | 'WITHDRAWN'
+
+interface RequestToTeam {
+  id: string
+  teamId: string
+  userId: string
+  status: JoinStatus
+  email: string
+  firstName: string
+  lastName: string
+}
+
+interface TeamInvitation {
+  id: string
+  teamId: string
+  userId: string
+  status: JoinStatus
+  email: string
+  firstName: string
+  lastName: string
+}
+
+export { Team, TeamMember, TeamSkills, TeamInvitation, RequestToTeam, JoinStatus }

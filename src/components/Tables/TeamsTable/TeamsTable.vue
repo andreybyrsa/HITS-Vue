@@ -1,52 +1,126 @@
 <template>
   <Table
+    class-name="p-3"
+    :header="teamsTableHeader"
     :columns="teamTableColumns"
     :data="teams"
-    :search-by="['name']"
+    :search-by="['name', 'description']"
     :filters="teamsFilters"
     :dropdown-actions-menu="dropdownTeamsActions"
-  ></Table>
+  />
 
   <DeleteModal
     :is-opened="isOpenedTeamDeleteModal"
+    :item-name="deletingTeamName?.toString()"
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteTeam"
   />
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed, Ref, watch } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
 import Table from '@Components/Table/Table.vue'
-import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import {
+  TableColumn,
+  DropdownMenuAction,
+  TableHeader,
+} from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
-import Team from '@Domain/Team'
+import { Team } from '@Domain/Team'
+import { Skill } from '@Domain/Skill'
+import { Profile } from '@Domain/Profile'
 
+import SkillsService from '@Services/SkillsService'
+import ProfileService from '@Services/ProfileService'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
+import useTeamStore from '@Store/teams/teamsStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-const router = useRouter()
+import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const teamsStore = useTeamStore()
+
 const notificationsStore = useNotificationsStore()
 
+const router = useRouter()
+
 const teams = defineModel<Team[]>({ required: true })
+const skills = ref<Skill[]>([])
+const profile = ref<Profile>()
 
 const deletingTeamId = ref<string | null>(null)
+const deletingTeamName = ref<string>()
 
 const filterByIsClosed = ref<boolean>()
+const filterByOwnerTeams = ref<string>()
+const filterByVacancies = ref<boolean>(false)
+const filterBySkills = ref<string[]>([])
+
+const searchBySkills = ref('')
 
 const isSortedByMembersCount = ref(false)
 const isSortedByCreatedAt = ref(false)
 const isOpenedTeamDeleteModal = ref(false)
+
+function checkResponseStatus<T>(
+  data: RequestResult<T>,
+  refValue: Ref<T | undefined>,
+) {
+  if (data.status === 'fulfilled') {
+    refValue.value = data.value
+  } else {
+    notificationsStore.createSystemNotification('Система', `${data.value}`)
+  }
+}
+
+onMounted(async () => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token, id } = currentUser
+
+    const teamsTableParallelRequests = [
+      () => SkillsService.getAllSkills(token),
+      () => ProfileService.getUserProfile(id, token),
+    ]
+
+    await makeParallelRequests<Profile | Skill[] | Error>(
+      teamsTableParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, skills)
+        } else if (response.id === 1) {
+          checkResponseStatus(response, profile)
+        }
+      })
+    })
+  }
+})
+
+const teamsTableHeader = computed<TableHeader>(() => ({
+  label: 'Список команд',
+  countData: true,
+  buttons: [
+    {
+      label: 'Создать команду',
+      variant: 'primary',
+      prependIconName: 'bi bi-plus-lg',
+      click: navigateToCreateTeamForm,
+      statement: checkCreateTeamButton(),
+    },
+  ],
+}))
 
 const teamTableColumns: TableColumn<Team>[] = [
   {
@@ -82,9 +156,28 @@ const dropdownTeamsActions: DropdownMenuAction<Team>[] = [
     label: 'Просмотреть',
     click: navigateToTeamModal,
   },
+  {
+    label: 'Редактировать',
+    statement: checkUpdateTeamAction,
+    click: navigateToUpdateTeamForm,
+  },
+  {
+    label: 'Удалить',
+    className: 'text-danger',
+    statement: checkDeleteTeamAction,
+    click: handleOpenDeleteModal,
+  },
 ]
 
-const teamsFilters: Filter<Team>[] = [
+const teamsFilters = computed<Filter<Team>[]>(() => [
+  {
+    category: 'Владелец команды',
+    choices: [{ label: 'Мои команды', value: user.value?.id ?? '' }],
+    refValue: filterByOwnerTeams,
+    isUniqueChoice: true,
+    checkFilter: checkOwnerTeams,
+    statement: computed(() => user.value?.role === 'TEAM_OWNER'),
+  },
   {
     category: 'Статус',
     choices: [
@@ -95,7 +188,119 @@ const teamsFilters: Filter<Team>[] = [
     isUniqueChoice: true,
     checkFilter: checkTeamStatus,
   },
-]
+  {
+    category: 'Компетенции',
+    choices: [
+      { label: 'Искать везде', value: false },
+      { label: 'Искать по вакансиям', value: true },
+    ],
+    refValue: filterByVacancies,
+    isUniqueChoice: true,
+    checkFilter: () => true,
+    statement: computed(() => user.value?.role !== 'INITIATOR'),
+  },
+  {
+    category: 'Стек технологий',
+    choices: skills.value
+      .map(({ name }) => ({
+        label: name,
+        value: name,
+        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+      }))
+      .sort((a, b) => +b.isMarked - +a.isMarked),
+    refValue: filterBySkills,
+    isUniqueChoice: false,
+    searchValue: searchBySkills,
+    checkFilter: () => true,
+  },
+])
+
+watch(
+  filterBySkills,
+  async () => {
+    const currentUser = user.value
+
+    const checkedSkills = getCheckedSkills()
+
+    if (currentUser?.token && currentUser.role) {
+      if (checkedSkills.length && currentUser.role) {
+        const { token, role } = currentUser
+
+        const response = await TeamService.filterBySkillsAndRole(
+          checkedSkills,
+          role,
+          token,
+        )
+
+        if (response instanceof Error) {
+          return notificationsStore.createSystemNotification(
+            'Система',
+            response.message,
+          )
+        }
+
+        teams.value = response
+      } else {
+        const { token } = currentUser
+
+        const response = await TeamService.getTeams(token)
+
+        if (response instanceof Error) {
+          return notificationsStore.createSystemNotification(
+            'Система',
+            response.message,
+          )
+        }
+
+        teams.value = response
+      }
+    }
+  },
+  { deep: true },
+)
+
+watch(filterByVacancies, async (isVacancies) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const checkedSkills = getCheckedSkills()
+
+    if (isVacancies && checkedSkills.length) {
+      const response = await TeamService.filterByVacancies(checkedSkills, token)
+
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+
+      teams.value = response
+    } else {
+      const response = await TeamService.getTeams(token)
+
+      if (response instanceof Error) {
+        return notificationsStore.createSystemNotification(
+          'Система',
+          response.message,
+        )
+      }
+
+      teams.value = response
+    }
+  }
+})
+
+function getCheckedSkills() {
+  return filterBySkills.value.reduce<Skill[]>((prevSkills, skillName) => {
+    const skill = skills.value.find(({ name }) => skillName === name)
+
+    if (skill) prevSkills.push(skill)
+
+    return prevSkills
+  }, [])
+}
 
 function sortByCreatedAt() {
   teams.value.sort((team1, team2) => {
@@ -125,9 +330,9 @@ function sortByMembersCount() {
   isSortedByMembersCount.value = !isSortedByMembersCount.value
 }
 
-function getStatusStyle(isClosed: boolean) {
+function getStatusStyle(closed: boolean) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
-  if (isClosed) {
+  if (closed) {
     initialClass.push('bg-danger-subtle', 'text-danger')
     return initialClass
   }
@@ -136,8 +341,8 @@ function getStatusStyle(isClosed: boolean) {
   return initialClass
 }
 
-function getTranslatedStatus(isClosed: boolean) {
-  return isClosed ? 'Закрыта' : 'Открыта'
+function getTranslatedStatus(closed: boolean) {
+  return closed ? 'Закрыта' : 'Открыта'
 }
 
 function getFormattedDate(date: string) {
@@ -151,6 +356,20 @@ function navigateToTeamModal(team: Team) {
   router.push(`/teams/list/${team.id}`)
 }
 
+function navigateToCreateTeamForm() {
+  router.push('/teams/create')
+}
+
+function navigateToUpdateTeamForm(team: Team) {
+  router.push(`/teams/update/${team.id}`)
+}
+
+function handleOpenDeleteModal(team: Team) {
+  deletingTeamId.value = team.id
+  deletingTeamName.value = team.name
+  isOpenedTeamDeleteModal.value = true
+}
+
 function handleCloseDeleteModal() {
   isOpenedTeamDeleteModal.value = false
 }
@@ -161,23 +380,63 @@ async function handleDeleteTeam() {
   if (currentUser?.token && deletingTeamId.value !== null) {
     const { token } = currentUser
 
-    const response = await TeamService.deleteTeam(deletingTeamId.value, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    const deletingTeamIndex = teams.value.findIndex(
-      (team) => team.id === deletingTeamId.value,
-    )
-
-    if (deletingTeamIndex !== -1) {
-      teams.value.splice(deletingTeamIndex, 1)
-    }
+    await teamsStore.deleteTeam('deletingTeamId.value', token)
   }
+}
+
+function checkCreateTeamButton() {
+  const currentUser = user.value
+
+  return currentUser?.role
+    ? ['TEAM_OWNER', 'ADMIN'].includes(currentUser.role)
+    : false
+}
+
+function checkUpdateTeamAction(team: Team) {
+  const currentUser = user.value
+  const { owner, leader } = team
+
+  return (
+    currentUser?.role === 'ADMIN' ||
+    currentUser?.id === owner.id ||
+    currentUser?.id === leader?.id
+  )
+}
+
+function checkDeleteTeamAction(team: Team) {
+  const currentUser = user.value
+  const { owner } = team
+
+  return currentUser?.role === 'ADMIN' || currentUser?.id === owner.id
 }
 
 function checkTeamStatus(team: Team, status: FilterValue) {
   return team.closed === status
 }
+
+function checkOwnerTeams(team: Team, userId: FilterValue) {
+  return team.owner.id === userId
+}
+
+// function checkTeamVacancies(team: Team, isFilteringByVacancies: FilterValue) {
+//   if (isFilteringByVacancies) {
+//     const teamSkills = team.wantedSkills
+//       .map(({ name }) => name)
+//       .filter((skillName) => !team.skills.find(({ name }) => name === skillName))
+
+//     return teamSkills.some((skillName) => filterBySkills.value.includes(skillName))
+//   }
+//   return true
+// }
+
+// function checkTeamSkill() {
+//   const { role } = currentUser
+//   if (role === 'INITIATOR') {
+//     return team.skills.some(({ name }) => name === skill)
+//   }
+//   return (
+//     team.skills.some(({ name }) => name === skill) ||
+//     team.wantedSkills.some(({ name }) => name === skill)
+//   )
+// }
 </script>

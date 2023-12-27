@@ -2,38 +2,44 @@
 import { ref, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
 
-import { ProfileSkillProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
-import SkillsRadarCharts from '@Components/Forms/TeamForm/SkillsRadarCharts.vue'
+import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
 import { Skill } from '@Domain/Skill'
 
-import ProfileService from '@Services/ProfileService'
-
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-const props = defineProps<ProfileSkillProps>()
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const notificationsStore = useNotificationsStore()
+const route = useRoute()
+const profileId = route.params.id.toString()
 
-const profileSkills = ref<Skill[]>([])
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+
+const profileSkills = ref<SkillsArea[]>([])
 const selectedSkills = ref<Skill[]>([])
 
-const isOwnProfile = computed(() => props.profile.email === user.value?.email)
+const isOwnProfile = computed(() => profile.value?.email === user.value?.email)
 const isUpdatingSkills = ref(false)
 
 watchImmediate(
-  () => props.profile.skills,
+  () => profile.value?.skills,
   (skills) => {
-    profileSkills.value = skills
+    if (skills) {
+      profileSkills.value = [
+        { label: 'Фактические компетенции', skills, alphaOpacity: 50 },
+      ]
+    }
   },
+  { deep: true },
 )
 
 function toogleUpdatingSkills(value: boolean) {
@@ -44,19 +50,11 @@ const handleSaveSkills = async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token } = currentUser
+    const { token, id } = currentUser
 
-    const response = await ProfileService.saveProfileSkills(
-      selectedSkills.value,
-      token,
-    )
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    toogleUpdatingSkills(false)
-    profileSkills.value = selectedSkills.value
+    await profilesStore
+      .saveProfileSkills(id, selectedSkills.value, token)
+      .then(() => toogleUpdatingSkills(false))
   }
 }
 </script>
@@ -95,7 +93,7 @@ const handleSaveSkills = async () => {
     <div class="content p-2">
       <StackCategories
         v-if="isUpdatingSkills"
-        :skills="profileSkills"
+        :skills="profileSkills[0].skills"
         v-model:stack="selectedSkills"
       />
 

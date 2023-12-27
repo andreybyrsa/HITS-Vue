@@ -10,6 +10,7 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/user/initialState'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
+import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
@@ -22,10 +23,10 @@ const useUserStore = defineStore('user', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-        this.user = localStorageUser
+        LocalStorageUser.setLocalStorageUser(response)
+        this.user = LocalStorageUser.getLocalStorageUser()
 
-        this.router.push({ name: 'ideas-list' })
+        this.router.push(getRouteByUserRole(response.roles))
       }
     },
 
@@ -35,10 +36,10 @@ const useUserStore = defineStore('user', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const localStorageUser = LocalStorageUser.setLocalStorageUser(response)
-        this.user = localStorageUser
+        LocalStorageUser.setLocalStorageUser(response)
+        this.user = LocalStorageUser.getLocalStorageUser()
 
-        this.router.push({ name: 'ideas-list' })
+        this.router.push(getRouteByUserRole(response.roles))
 
         await InvitationService.deleteInvitationInfo(slug)
       }
@@ -55,6 +56,7 @@ const useUserStore = defineStore('user', {
       this.user = user
       LocalStorageUser.setLocalStorageUser(this.user)
     },
+
     setRole(role: RolesTypes) {
       if (this.user) {
         this.user.role = role
@@ -71,7 +73,7 @@ const useUserStore = defineStore('user', {
           (currentActivity.getTime() - currentUser.lastLogin.getTime()) /
           (1000 * 60 * 60)
 
-        if (activityDifference > 24) {
+        if (activityDifference > 4) {
           this.logoutUser()
 
           return true

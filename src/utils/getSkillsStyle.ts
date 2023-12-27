@@ -1,7 +1,7 @@
 import { Skill } from '@Domain/Skill'
 
-function getSkillStyle(roles: Skill[], index: number) {
-  const currentSkill = roles[index]
+function getSkillStyle(skills: Skill[], index: number) {
+  const currentSkill = skills[index]
   const initialClass = [
     'px-2',
     'py-1',

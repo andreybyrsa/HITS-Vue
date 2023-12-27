@@ -1,7 +1,14 @@
 <template>
-  <PageLayout content-class-name="add-users-page__content p-3 bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="add-users-page__content p-3 bg-white"
+  >
     <template #leftSideBar>
       <LeftSideBar />
+    </template>
+
+    <template #header>
+      <Header></Header>
     </template>
 
     <template #content>
@@ -15,6 +22,7 @@
 <script lang="ts" setup>
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
+import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 </script>
@@ -22,8 +30,6 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 <style lang="scss">
 .add-users-page {
   &__content {
-    overflow-y: scroll;
-
     @include flexible(center, center);
   }
 }

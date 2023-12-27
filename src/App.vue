@@ -118,6 +118,17 @@ p {
   @include flexible(center, center);
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.bs-link {
+  :hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
 input[type='checkbox'] {
   cursor: pointer;
 

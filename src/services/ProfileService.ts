@@ -1,75 +1,69 @@
 import axios from 'axios'
 
-import Profile from '@Domain/Profile'
+import { API_URL } from '@Main'
+
+import { Profile, ProfileFullName } from '@Domain/Profile'
 import { Skill } from '@Domain/Skill'
+import Success from '@Domain/ResponseMessage'
 
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 const profileUserAxios = defineAxios(getMocks().profiles)
-const profileSkillsAxios = defineAxios(getMocks().profileSkills)
 
 const getUserProfile = async (
-  email: string,
+  id: string,
   token: string,
 ): Promise<Profile | Error> => {
-  return await profileUserAxios
+  return profileUserAxios
     .get(
-      `/profile/${email}`,
+      `/profile/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { email } },
+      { params: { id } },
     )
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки профиля'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки профиля'))
 }
 
 const getProfileAvatar = async (
-  email: string,
+  id: string,
   token: string,
 ): Promise<string | Error> => {
-  return await axios
-    .get(`/profile/avatar/get/${email}`, {
+  return axios
+    .get(`${API_URL}/profile/avatar/get/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка загрузки аватара'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
 }
 
 const saveProfileSkills = async (
-  skill: Skill[],
+  skills: Skill[],
   token: string,
 ): Promise<Skill[] | Error> => {
-  return await profileSkillsAxios
-    .post(`/profile/skills/save`, skill, {
+  return axios
+    .post(`${API_URL}/profile/skills/save`, skills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка сохранения компетенций'
-      return new Error(error)
-    })
+    .catch((error) => handleAxiosError(error, 'Ошибка сохранения компетенций'))
 }
 
 const uploadProfileAvatar = async (
   formData: FormData,
   token: string,
-): Promise<FormData | Error> => {
-  return await axios
-    .post(`/profile/avatar/upload`, formData, {
+): Promise<string | Error> => {
+  return axios
+    .post(`${API_URL}/profile/avatar/upload`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
@@ -77,10 +71,20 @@ const uploadProfileAvatar = async (
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка обновления аватара'
-      return new Error(error)
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления аватара'))
+}
+
+const updateUserFullName = async (
+  fullName: ProfileFullName,
+  token: string,
+): Promise<Success | Error> => {
+  return axios
+    .put(`${API_URL}/profile/fullname/update`, fullName, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения данных'))
 }
 
 const ProfileService = {
@@ -89,6 +93,7 @@ const ProfileService = {
 
   saveProfileSkills,
   uploadProfileAvatar,
+  updateUserFullName,
 }
 
 export default ProfileService

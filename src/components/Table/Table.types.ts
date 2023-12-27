@@ -1,3 +1,4 @@
+import { ButtonProps } from '@Components/Button/Button.types'
 import { Filter } from '@Components/FilterBar/FilterBar.types'
 
 type KeyValueFunction<T, K extends keyof T> = (
@@ -33,6 +34,18 @@ interface DropdownMenuAction<DataType> {
   click: (value: DataType) => void
 }
 
+interface HeaderButton extends ButtonProps {
+  label: string
+  statement?: boolean
+  click: () => void
+}
+
+interface TableHeader {
+  label: string
+  countData?: boolean
+  buttons?: HeaderButton[]
+}
+
 interface TableColumn<DataType> {
   key: keyof DataType
   label: string
@@ -45,6 +58,8 @@ interface TableColumn<DataType> {
 }
 
 interface TableProps<DataType> {
+  className?: string
+  header?: TableHeader
   columns: TableColumn<DataType>[]
   data: DataType[]
   searchBy?: (keyof DataType)[]
@@ -55,6 +70,7 @@ interface TableProps<DataType> {
 
 export {
   TableProps,
+  TableHeader,
   TableColumn,
   TypedFormatFunction,
   TypedStyleFunction,

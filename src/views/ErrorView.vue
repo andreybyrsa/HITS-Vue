@@ -16,36 +16,34 @@ function navigateToHomePage() {
 </script>
 
 <template>
-  <PageLayout>
+  <PageLayout content-class-name="error-view__content">
     <template #content>
-      <div class="error-page w-100">
-        <img
-          :src="develop"
-          alt="Ошибка"
-          class="error-page__img"
-        />
-        <Typography class-name="fs-2">Ошибка 404</Typography>
-        <Typography class-name="error-page__text fs-5 w-100 text-center">
-          Кажется что-то пошло не так! Страница, которую вы запрашиваете, не
-          существует. Возможна она устарела, была удалена, или был введен неверный
-          адрес в поисковой строке
-        </Typography>
-        <Button
-          variant="primary"
-          @click="navigateToHomePage"
-        >
-          Вернуться на главную страницу
-        </Button>
-      </div>
+      <img
+        :src="develop"
+        alt="Ошибка"
+        class="error-view__img"
+      />
+      <Typography class-name="fs-2">Ошибка 404</Typography>
+      <Typography class-name="error-view__text fs-5 w-100 text-center">
+        Кажется что-то пошло не так! Страница, которую вы запрашиваете, не
+        существует. Возможна она устарела, была удалена, или был введен неверный
+        адрес в поисковой строке
+      </Typography>
+      <Button
+        variant="primary"
+        @click="navigateToHomePage"
+      >
+        Вернуться на главную страницу
+      </Button>
     </template>
   </PageLayout>
 </template>
 
 <style lang="scss">
-.error-page {
-  height: 80%;
-
-  @include flexible(center, center, column, $gap: 8px);
+.error-view {
+  &__content {
+    @include flexible(center, center, column, $gap: 8px);
+  }
 
   &__img {
     width: 200px;

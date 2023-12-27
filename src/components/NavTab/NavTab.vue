@@ -94,7 +94,11 @@ function checkIsActiveRoute(to: string) {
               :class-name="route.iconName"
             />
 
-            <span v-if="label">{{ route.text }}</span>
+            <span
+              class="nav-route__span"
+              v-if="label"
+              >{{ route.text }}</span
+            >
           </router-link>
         </template>
       </div>
@@ -115,5 +119,9 @@ function checkIsActiveRoute(to: string) {
   @include fixedHeight(40px);
 
   @include flexible(center, flex-start, $gap: 4px);
+
+  &__span {
+    @include textEllipsis(1);
+  }
 }
 </style>

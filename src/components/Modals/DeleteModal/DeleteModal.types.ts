@@ -1,5 +1,6 @@
 interface DeleteModalProps {
   isOpened: boolean
+  itemName?: string
 }
 
 interface DeleteModalEmits {

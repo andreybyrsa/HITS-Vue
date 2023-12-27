@@ -1,11 +1,53 @@
-import TeamMember from '@Domain/TeamMember'
+import { Team, TeamInvitation, RequestToTeam } from '@Domain/Team'
+
+interface TeamDescriptionProps {
+  team: Team
+}
+
+interface TeamModalTables {
+  team: Team
+  invitations?: TeamInvitation[]
+  requests?: RequestToTeam[]
+}
+
+interface TeamMembersProps {
+  team: Team
+}
+
+interface TeamInvitationsProps {
+  invitations: TeamInvitation[]
+  team: Team
+}
+
+interface RequestsToTeamProps {
+  requests: RequestToTeam[]
+  team: Team
+}
+
+interface TeamModalActionsProps {
+  team: Team
+}
+
+interface TeamModalInfoProps {
+  team: Team
+}
 
 interface TeamDescriptionEmits {
-  (event: 'closeModal'): void
+  (event: 'close-modal'): void
 }
 
-interface TeamMemberInfoProps {
-  member: TeamMember
+interface TeamModalActionsEmits {
+  (event: 'close-modal'): void
 }
 
-export { TeamDescriptionEmits, TeamMemberInfoProps }
+export {
+  TeamDescriptionProps,
+  TeamModalTables,
+  TeamMembersProps,
+  TeamInvitationsProps,
+  RequestsToTeamProps,
+  TeamModalActionsProps,
+  TeamModalInfoProps,
+  TeamDescriptionEmits,
+  TeamModalActionsEmits,
+}

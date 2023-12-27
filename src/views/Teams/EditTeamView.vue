@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router'
 import TeamForm from '@Components/Forms/TeamForm/TeamForm.vue'
 import TeamFormPlaceholder from '@Components/Forms/TeamForm/TeamFormPlaceholder.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
+import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -43,16 +44,22 @@ onMounted(async () => {
 </script>
 
 <template>
-  <PageLayout content-class-name="bg-white">
+  <PageLayout
+    content-wrapper-class-name="bg-white"
+    content-class-name="bg-white"
+  >
     <template #leftSideBar>
       <LeftSideBar />
+    </template>
+
+    <template #header>
+      <Header></Header>
     </template>
 
     <template #content>
       <TeamForm
         v-if="team"
         :team="team"
-        mode="editing"
       />
 
       <TeamFormPlaceholder v-else />

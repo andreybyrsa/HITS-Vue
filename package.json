@@ -1,5 +1,5 @@
 {
-  "name": "ideas-manager-vue",
+  "name": "hits",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,10 +14,10 @@
     "@vee-validate/yup": "^4.11.1",
     "@vueuse/components": "^10.3.0",
     "@vueuse/core": "^10.3.0",
+    "apexcharts": "^3.44.0",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.1",
     "bootstrap-icons": "^1.10.5",
-    "chart.js": "^3.9.1",
     "core-js": "^3.8.3",
     "pinia": "^2.1.6",
     "rsocket-core": "^0.0.27",
@@ -25,10 +25,10 @@
     "rsocket-websocket-client": "^0.0.27",
     "vee-validate": "^4.11.1",
     "vue": "^3.3.0",
-    "vue-chart-3": "^3.1.8",
     "vue-final-form": "^4.0.1",
     "vue-loader": "^17.2.2",
     "vue-router": "^4.0.3",
+    "vue3-apexcharts": "^1.4.4",
     "yup": "^1.2.0"
   },
   "devDependencies": {
@@ -43,6 +43,8 @@
     "@vue/cli-plugin-typescript": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "@vue/eslint-config-typescript": "^9.1.0",
+    "apexcharts": "^3.44.0",
+    "chart.js": "^3.9.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^3.5.5",
@@ -52,10 +54,10 @@
     "prettier": "^2.4.1",
     "rsocket-core": "^0.0.27",
     "rsocket-websocket-client": "^0.0.27",
-    "chart.js": "^3.9.1",
-    "vue-chart-3": "^3.1.8",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
-    "typescript": "4.7.4"
+    "typescript": "4.7.4",
+    "vue-chart-3": "^3.1.8",
+    "vue3-apexcharts": "^1.4.4"
   }
 }

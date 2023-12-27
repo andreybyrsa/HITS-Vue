@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import InitialState from './initialState'
 
+import { Idea, IdeaStatusType } from '@Domain/Idea'
 import RolesTypes from '@Domain/Roles'
-import IdeaStatusTypes from '@Domain/IdeaStatus'
 
 import IdeasService from '@Services/IdeasService'
 
@@ -57,11 +57,31 @@ const useIdeasStore = defineStore('ideas', {
         return findOneAndUpdate(this.ideas, idea, { key: 'id', value: id })
       }
     },
+
+    getIdeasExpertNotConfirmed() {
+      return async (token: string) => {
+        const response = await IdeasService.getExpertNotConfirmedIdeas(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        } else {
+          const currentExpertIdeas = this.ideas.filter((idea) =>
+            response.find((elem) => idea.id === elem.id),
+          )
+
+          return currentExpertIdeas
+        }
+      }
+    },
   },
   actions: {
     async updateIdeaStatus(
       id: string,
-      status: IdeaStatusTypes,
+      status: IdeaStatusType,
       role: RolesTypes,
       token: string,
     ) {
@@ -78,6 +98,16 @@ const useIdeasStore = defineStore('ideas', {
           currentIdea.status = status
         }
       }
+    },
+
+    changeIdeasStatusOnMarket(merketIdeas: Idea[]) {
+      merketIdeas.forEach((marketIdea) => {
+        const ideaStore = this.ideas.find(({ id }) => id === marketIdea.id)
+
+        if (ideaStore) {
+          ideaStore.status = 'ON_MARKET'
+        }
+      })
     },
 
     setIdeaRating(id: string, rating: number) {
@@ -101,6 +131,12 @@ const useIdeasStore = defineStore('ideas', {
           this.ideas.splice(deletingIdeaIndex, 1)
         }
       }
+    },
+
+    checkIdea(id: string) {
+      const currentIdea = this.ideas.find((idea) => idea.id === id)
+
+      if (currentIdea) currentIdea.isChecked = true
     },
   },
 })

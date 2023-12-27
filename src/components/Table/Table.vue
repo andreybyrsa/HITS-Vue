@@ -14,13 +14,34 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 const props = defineProps<TableProps<DataType>>()
 
 const data = ref<DataType[]>([]) as Ref<DataType[]>
-const filtersRefs = ref<Ref<FilterValue | FilterValue[] | undefined>[]>([])
-const checkedData = ref<DataType[]>([]) as Ref<DataType[]>
+const checkedData = defineModel<DataType[]>({
+  default: [],
+  required: false,
+  local: true,
+}) as Ref<DataType[]>
+const searchedData = computed(() => searchDataByKeys())
+
+const TableClassName = computed(() => ['w-100', 'bg-white', props.className ?? ''])
+
+const tableLabel = computed(() => {
+  const label = props.header?.label
+  const countData = props.header?.countData
+
+  if (countData) {
+    return `${label}: ${searchedData.value.length}`
+  }
+
+  return label
+})
+
 const searchedValue = ref('')
+const filtersRefs = ref<Ref<FilterValue | FilterValue[] | undefined>[]>([])
+
 const isCheckedAll = ref(false)
 
 onMounted(() => {
@@ -33,6 +54,8 @@ watchImmediate(
   () => props.data,
   () => {
     data.value = props.data
+    checkedData.value = []
+
     searchDataByKeys()
     filterData(filtersRefs.value)
   },
@@ -44,14 +67,15 @@ watchImmediate(filtersRefs, (filters) => filterData(filters), { deep: true })
 watchImmediate(searchedValue, () => searchDataByKeys())
 
 watchImmediate(checkedData, () => {
-  if (data.value.length && data.value.length === checkedData.value.length) {
+  if (
+    searchedData.value.length &&
+    searchedData.value.length === checkedData.value.length
+  ) {
     isCheckedAll.value = true
   } else {
     isCheckedAll.value = false
   }
 })
-
-const searchedData = computed(() => searchDataByKeys())
 
 function searchDataByKeys() {
   if (props.searchBy) {
@@ -106,9 +130,9 @@ function filterData(filters: Ref<FilterValue | FilterValue[] | undefined>[]) {
 }
 
 function checkAllRows() {
-  if (data.value.length !== checkedData.value.length) {
+  if (searchedData.value.length !== checkedData.value.length) {
     isCheckedAll.value = true
-    checkedData.value = data.value
+    checkedData.value = [...searchedData.value]
   } else {
     isCheckedAll.value = false
     checkedData.value = []
@@ -177,11 +201,42 @@ function checkDropdownActionStatement(
   }
   return true
 }
+
+function checkHeaderButtonStatement(statement?: boolean) {
+  return statement !== undefined ? statement : true
+}
 </script>
 
 <template>
-  <div class="w-100">
-    <div class="bg-white p-2 d-flex justify-content-between">
+  <div :class="TableClassName">
+    <div
+      v-if="header"
+      class="table__header w-100"
+    >
+      <Typography class-name="fs-2 text-primary">{{ tableLabel }}</Typography>
+
+      <div
+        v-if="header.buttons"
+        class="d-flex gap-3"
+      >
+        <template
+          v-for="(headerButton, index) in header.buttons"
+          :key="index"
+        >
+          <Button
+            v-if="checkHeaderButtonStatement(headerButton.statement)"
+            :variant="headerButton.variant"
+            :prepend-icon-name="headerButton.prependIconName"
+            :append-icon-name="headerButton.appendIconName"
+            @click="headerButton.click"
+          >
+            {{ headerButton.label }}
+          </Button>
+        </template>
+      </div>
+    </div>
+
+    <div class="py-2 d-flex justify-content-between">
       <div
         v-if="searchBy"
         class="w-50"
@@ -222,9 +277,9 @@ function checkDropdownActionStatement(
 
     <div class="w-100 d-flex">
       <div class="w-100">
-        <table class="table table-hover">
+        <table class="table table-hover mb-0">
           <thead>
-            <tr>
+            <tr class="table__lables">
               <th class="py-3 col">
                 <div @click="checkAllRows">
                   <Checkbox
@@ -273,7 +328,7 @@ function checkDropdownActionStatement(
               <td
                 v-for="column in columns"
                 :key="column.key"
-                class="py-3 col"
+                class="py-3 col align-self-center"
               >
                 <div
                   :class="`${column.contentClassName ?? ''} flex-wrap d-flex gap-1`"
@@ -299,7 +354,6 @@ function checkDropdownActionStatement(
                       }}
                     </div>
                   </template>
-
                   <div
                     v-else
                     :class="[
@@ -354,6 +408,18 @@ function checkDropdownActionStatement(
 
 <style lang="scss" scoped>
 .table {
+  &__header {
+    @include flexible(center, space-between, $gap: 16px);
+  }
+
+  &__lables {
+    @include position(sticky, $top: 0, $z-index: 1);
+
+    > th {
+      box-shadow: inset 0 -1px 0 #dee2e6;
+    }
+  }
+
   &__header-icon {
     cursor: pointer;
   }

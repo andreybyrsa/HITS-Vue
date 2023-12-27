@@ -1,40 +1,45 @@
 <script lang="ts" setup>
-import { ref, Ref, onMounted } from 'vue'
+import { ref, Ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 
 import ProfileAvatar from '@Components/Modals/ProfileModal/ProfileAvatar.vue'
 import ProfileInfo from '@Components/Modals/ProfileModal/ProfileInfo.vue'
 import ProfileSkills from '@Components/Modals/ProfileModal/ProfileSkills.vue'
-import ProfileProjects from '@Components/Modals/ProfileModal/ProfileProjects.vue'
 import ProfileIdeas from '@Components/Modals/ProfileModal/ProfileIdeas.vue'
 import ProfileModalPlaceholder from '@Components/Modals/ProfileModal/ProfileModalPlaceholder.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import { ProfileModalProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import Profile from '@Domain/Profile'
-
-import ProfileService from '@Services/ProfileService'
+import { Profile } from '@Domain/Profile'
 
 import useUserStore from '@Store/user/userStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 
+const props = defineProps<ProfileModalProps>()
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const notificationsStore = useNotificationsStore()
-
 const router = useRouter()
 const route = useRoute()
+const profileId = route.params.id.toString()
 
-const profile = ref<Profile>()
+const profilesStore = useProfilesStore()
+const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+
+const notificationsStore = useNotificationsStore()
+
+const DBProfile = ref<Profile>()
+const DBProfileAvatar = ref<string>()
 
 const isOpenedProfileModal = ref(true)
-const isOwnProfile = ref<boolean>()
 
 function checkResponseStatus<T>(
   data: RequestResult<T>,
@@ -51,27 +56,33 @@ onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token, email } = currentUser
+    const { token } = currentUser
 
     const profileParallelRequests = [
-      () => ProfileService.getUserProfile(email, token),
+      () => profilesStore.fetchUserProfile(profileId, token),
+      () => profilesStore.fetchProfileAvatar(profileId, token),
     ]
 
-    await makeParallelRequests<Profile | Error>(profileParallelRequests).then(
-      (responses) => {
-        responses.forEach((response) => {
-          if (response.id === 0) {
-            checkResponseStatus(response, profile)
-          }
-        })
-      },
-    )
-
-    isOwnProfile.value = email === profile.value?.email
+    await makeParallelRequests<Profile | string | Error>(
+      profileParallelRequests,
+    ).then((responses) => {
+      responses.forEach((response) => {
+        if (response.id === 0) {
+          checkResponseStatus(response, DBProfile)
+        }
+        if (response.id === 1) {
+          checkResponseStatus(response, DBProfileAvatar)
+        }
+      })
+    })
   }
 })
 
 function handleCloseProfileModal() {
+  if (props.canGoBack) {
+    return router.go(-1)
+  }
+
   const parentBaseRoute = route.matched[route.matched.length - 2].path
 
   isOpenedProfileModal.value = false
@@ -87,12 +98,12 @@ function handleCloseProfileModal() {
   >
     <div class="profile-modal p-3 overflow-y-scroll">
       <div
-        v-if="profile"
+        v-if="DBProfile"
         class="w-100"
       >
         <div class="profile-modal__header mb-3">
           <Button
-            class-name="btn-primary"
+            variant="primary"
             prepend-icon-name="bi bi-backspace-fill"
             @click="handleCloseProfileModal"
           >
@@ -102,21 +113,19 @@ function handleCloseProfileModal() {
           <Typography
             class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-scroll-hidden"
           >
-            {{ profile.firstName }} {{ profile.lastName }}
+            {{ profile?.firstName }} {{ profile?.lastName }}
           </Typography>
         </div>
 
         <div class="profile-modal__content">
-          <ProfileAvatar :profile="profile" />
+          <ProfileAvatar />
 
           <div class="profile-modal__info">
-            <ProfileInfo v-model="profile" />
+            <ProfileInfo />
 
-            <ProfileSkills :profile="profile" />
+            <ProfileSkills />
 
-            <ProfileIdeas :profile="profile" />
-
-            <ProfileProjects :profile="profile" />
+            <ProfileIdeas />
           </div>
         </div>
       </div>

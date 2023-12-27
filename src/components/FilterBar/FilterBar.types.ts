@@ -1,12 +1,15 @@
-import { Ref } from 'vue'
+import { ComputedRef, Ref } from 'vue'
 
 type FilterValue = string | number | boolean | object
+type FilterChoice = { label: string; value: FilterValue; isMarked?: boolean }
 
 interface Filter<DataType> {
   category: string
   isUniqueChoice: boolean
-  choices: { label: string; value: FilterValue }[]
+  choices: FilterChoice[]
   refValue: Ref<FilterValue | FilterValue[] | undefined>
+  searchValue?: Ref<string>
+  statement?: ComputedRef<boolean>
   checkFilter: (data: DataType, filter: FilterValue) => void
 }
 
@@ -16,4 +19,4 @@ interface FilterBarProps<DataType> {
   filters: Filter<DataType>[]
 }
 
-export { FilterBarProps, Filter, FilterValue }
+export { FilterBarProps, Filter, FilterValue, FilterChoice }

@@ -1,5 +1,7 @@
 <template>
   <Table
+    class-name="p-3"
+    :header="usersTableHeader"
     :columns="usersTableColumns"
     :data="users"
     :search-by="['email', 'firstName', 'lastName']"
@@ -17,25 +19,41 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useRoute, RouteRecordRaw } from 'vue-router'
+import { useDateFormat } from '@vueuse/core'
 
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
-import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
+import {
+  DropdownMenuAction,
+  TableColumn,
+  TableHeader,
+} from '@Components/Table/Table.types'
 import Table from '@Components/Table/Table.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import { User } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
-import getRoles from '@Utils/getRoles'
-import getRolesStyle from '@Utils/getRolesStyle'
+import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils/userRolesInfo'
+import mutableSort from '@Utils/mutableSort'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const users = defineModel<User[]>({ required: true })
 
 const rolesFilter = ref<RolesTypes[]>([])
-const availableRoles = getRoles()
 
 const updatingUser = ref<User | null>(null)
 const isOpenedUpdatingUserModal = ref(false)
+
+const route = useRoute()
+
+const availableRoles = getUserRolesInfo()
+
+const usersTableHeader: TableHeader = {
+  label: 'Список пользователей',
+  countData: true,
+}
 
 const usersTableColumns: TableColumn<User>[] = [
   {
@@ -53,15 +71,26 @@ const usersTableColumns: TableColumn<User>[] = [
     label: 'Фамилия',
   },
   {
+    key: 'createdAt',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    label: 'Дата регистрации',
+    getRowCellFormat: getFormattedDate,
+    headerCellClick: sortByCreatedAt,
+  },
+  {
     key: 'roles',
     label: 'Роли',
     size: 'col-5',
-    getRowCellStyle: getRolesStyle,
+    getRowCellStyle: getUserRoleInfoStyle,
     getRowCellFormat: getUserRolesFormat,
   },
 ]
 
 const dropdownUsersActions: DropdownMenuAction<User>[] = [
+  {
+    label: 'Перейти на профиль',
+    click: navigateToUserProfile,
+  },
   {
     label: 'Редактировать',
     click: handleOpenUpdatingModal,
@@ -71,17 +100,44 @@ const dropdownUsersActions: DropdownMenuAction<User>[] = [
 const usersFilters: Filter<User>[] = [
   {
     category: 'Роли',
-    choices: [
-      { label: 'Инициатор', value: 'INITIATOR' },
-      { label: 'Проектный офис', value: 'PROJECT_OFFICE' },
-      { label: 'Эксперт', value: 'EXPERT' },
-      { label: 'Админ', value: 'ADMIN' },
-    ],
+    choices: availableRoles.roles.map((role) => ({
+      label: availableRoles.translatedRoles[role],
+      value: role,
+    })),
     refValue: rolesFilter,
     isUniqueChoice: false,
     checkFilter: checkUserRoles,
   },
 ]
+
+function navigateToUserProfile(user: User) {
+  const profileRoute: RouteRecordRaw = {
+    name: 'profile',
+    path: 'profil/:id',
+    alias: '/profile/:id',
+    component: ProfileModal,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  const { id } = user
+  const { name } = route
+  if (name) {
+    navigateToAliasRoute(name.toString(), `/profile/${id}`, profileRoute)
+  }
+}
+
+function getFormattedDate(date: string) {
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
+  }
+}
+
+function sortByCreatedAt() {
+  mutableSort(users.value, (user: User) => new Date(user.createdAt ?? '').getTime())
+}
 
 function getUserEmailStyle() {
   return 'text-primary'
