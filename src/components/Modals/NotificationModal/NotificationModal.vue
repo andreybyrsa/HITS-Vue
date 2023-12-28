@@ -12,11 +12,9 @@ const props = defineProps<NotificationModalProps>()
 const emits = defineEmits<NotificationModalEmits>()
 
 onMounted(() => {
-  if (props.timeExpired) {
-    setTimeout(
-      () => emits('close-notification', props.notification),
-      props.timeExpired,
-    )
+  const { timeExpired, notification } = props
+  if (timeExpired) {
+    setTimeout(() => emits('close-notification', notification), timeExpired)
   }
 })
 
@@ -30,7 +28,7 @@ const NotificationClassName = computed(() => ['card', 'text-primary'])
       appear
     >
       <div
-        v-if="!notification.isShowed"
+        v-if="notification.isShowed === false"
         :class="NotificationClassName"
       >
         <div class="card-header">
@@ -39,7 +37,7 @@ const NotificationClassName = computed(() => ['card', 'text-primary'])
           <Button
             variant="close"
             @click="emits('close-notification', props.notification)"
-          ></Button>
+          />
         </div>
 
         <div class="card-body">
@@ -55,7 +53,7 @@ const NotificationClassName = computed(() => ['card', 'text-primary'])
   width: 400px;
   height: min-content;
 
-  transition: opacity $default-transition-settings;
+  transition: all 0.3s ease-out;
 
   &-header {
     @include flexible(center, space-between);
@@ -64,6 +62,7 @@ const NotificationClassName = computed(() => ['card', 'text-primary'])
 
 .notification-modal-enter-from,
 .notification-modal-leave-to {
-  opacity: 0;
+  transform: scale(0.95);
+  opacity: 0.1;
 }
 </style>

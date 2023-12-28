@@ -1,4 +1,4 @@
-# ideas-manager-vue
+# HITS-Vue
 
 ## Project setup
 

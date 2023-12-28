@@ -22,7 +22,10 @@ function acceptRequest() {
 </script>
 
 <template>
-  <ModalLayout :is-opened="isOpened">
+  <ModalLayout
+    :is-opened="isOpened"
+    @on-outside-close="closeModal"
+  >
     <div class="letter-modal bg-white rounded p-3">
       <div class="d-flex justify-content-space-between align-items-center w-100">
         <Typography class-name="fs-5 text-primary w-100">
@@ -39,6 +42,7 @@ function acceptRequest() {
       </Typography>
 
       <Button
+        v-if="$route.name === 'market-idea-modal'"
         class-name="btn-success"
         @click="acceptRequest"
       >
