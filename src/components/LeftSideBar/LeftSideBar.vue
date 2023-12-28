@@ -13,22 +13,24 @@ import LeftSideBarPlaceholder from '@Components/LeftSideBar/LeftSideBarPlacehold
 import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
 
 import RolesTypes from '@Domain/Roles'
+import { Market } from '@Domain/Market'
+
+import MarketService from '@Services/MarketService'
 
 import useUserStore from '@Store/user/userStore'
-
-import { getUserRolesInfo } from '@Utils/userRolesInfo'
-import MarketService from '@Services/MarketService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useMarketsStore from '@Store/markets/marketsStore'
-import { Market } from '@Domain/Market'
+
+import { getUserRolesInfo } from '@Utils/userRolesInfo'
+
+const notificationsStore = useNotificationsStore()
+const { getUnreadedNotifications } = storeToRefs(notificationsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const marketsStore = useMarketsStore()
 const { markets } = storeToRefs(marketsStore)
-
-const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
 
@@ -125,6 +127,10 @@ function handleCloseRoleModal() {
   isOpenedRoleModal.value = false
 }
 
+function handleOpenNotificationModal() {
+  isOpenedNotificationsModal.value = true
+}
+
 function handleCloseNotificationModal() {
   isOpenedNotificationsModal.value = false
 }
@@ -163,14 +169,20 @@ function handleCloseNotificationModal() {
         {{ isHovered ? getTranslatedRole(user.role) : '' }}
       </Button>
 
-      <!-- <Button
+      <Button
         variant="light"
-        class-name="left-side-bar__button"
+        class-name="left-side-bar__button btn-light w-100 position-relative"
         @click="handleOpenNotificationModal"
         prepend-icon-name="bi bi-bell"
       >
         {{ isHovered ? 'Уведомления' : '' }}
-      </Button> -->
+        <span
+          v-if="getUnreadedNotifications.length"
+          class="position-absolute top-0 start-100 px-2 translate-middle badge rounded-pill bg-danger"
+        >
+          {{ getUnreadedNotifications.length }}
+        </span>
+      </Button>
 
       <Button
         class-name="left-side-bar__button btn-light w-100"
