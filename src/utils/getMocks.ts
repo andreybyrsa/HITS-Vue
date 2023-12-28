@@ -240,9 +240,9 @@ function getMocks(): Mocks {
       skills: [],
     },
     {
-      id: '1',
+      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
       teamId: '1',
-      userId: '233969a1-ac39-4ee2-be75-9866693e7336',
+      userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
       email: 'kirill.vlasov.05@inbox.ru',
       firstName: 'Кирилл',
       lastName: 'Власов',

@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
 import TeamInvitations from '@Components/Tables/TeamsTable/TeamInvitations.vue'
 import RequestsToTeam from '@Components/Tables/TeamsTable/RequestsToTeam.vue'
+import RequestTeamToIdea from '@Components/Tables/TeamsTable/RequestsTeamToIdea.vue'
 import { TeamModalTables } from '@Components/Modals/TeamModal/TeamModal.types'
 
 import useUserStore from '@Store/user/userStore'
@@ -17,12 +18,14 @@ const { user } = storeToRefs(userStore)
 const isTeamMembersTable = ref(true)
 const isTeamInvitationsTable = ref(false)
 const isRequestsToTeamTable = ref(false)
+const isRequestTeamToIdeaTable = ref(false)
 
 function switchToTeamMembersTable() {
   isTeamMembersTable.value = true
 
   isTeamInvitationsTable.value = false
   isRequestsToTeamTable.value = false
+  isRequestTeamToIdeaTable.value = false
 }
 
 function switchToTeamInvitationsTable() {
@@ -30,6 +33,7 @@ function switchToTeamInvitationsTable() {
 
   isTeamMembersTable.value = false
   isRequestsToTeamTable.value = false
+  isRequestTeamToIdeaTable.value = false
 }
 
 function switchToRequestsToTeamTable() {
@@ -37,6 +41,15 @@ function switchToRequestsToTeamTable() {
 
   isTeamMembersTable.value = false
   isTeamInvitationsTable.value = false
+  isRequestTeamToIdeaTable.value = false
+}
+
+function switchToRequestTeamToIdeaTable() {
+  isRequestTeamToIdeaTable.value = true
+
+  isTeamMembersTable.value = false
+  isTeamInvitationsTable.value = false
+  isRequestsToTeamTable.value = false
 }
 
 function getNavLinkStyle(isCurrentTable: boolean) {
@@ -53,14 +66,18 @@ function getTeamInvitations() {
   const currentUser = user.value
   const { owner } = props.team
 
-  return currentUser?.id === owner.id
+  return currentUser?.id === owner.id && currentUser.role === 'TEAM_OWNER'
 }
 
 function getRequestsToTeam() {
   const currentUser = user.value
   const { owner } = props.team
 
-  return !props.team.closed && currentUser?.id === owner.id
+  return (
+    !props.team.closed &&
+    currentUser?.id === owner.id &&
+    currentUser.role === 'TEAM_OWNER'
+  )
 }
 </script>
 
@@ -86,7 +103,14 @@ function getRequestsToTeam() {
           :class="getNavLinkStyle(isRequestsToTeamTable)"
           @click="switchToRequestsToTeamTable"
         >
-          Заявки
+          Заявки в команду
+        </div>
+        <div
+          v-if="getRequestsToTeam()"
+          :class="getNavLinkStyle(isRequestTeamToIdeaTable)"
+          @click="switchToRequestTeamToIdeaTable"
+        >
+          Заявки в идеи
         </div>
       </ul>
     </div>
@@ -107,6 +131,11 @@ function getRequestsToTeam() {
         v-if="isRequestsToTeamTable && requests"
         :requests="requests"
         :team="team"
+      />
+
+      <RequestTeamToIdea
+        v-if="isRequestTeamToIdeaTable && requestsTeamsToIdea"
+        :requests="requestsTeamsToIdea"
       />
     </div>
   </div>

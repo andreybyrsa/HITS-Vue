@@ -146,7 +146,9 @@ function resetIdea(ideaId: string) {
           :key="index"
           class="d-flex gap-2 w-100"
         >
-          <Typography class-name=" w-100 border rounded p-2">
+          <Typography
+            class-name="send-ideas-on-market-modal__idea-name w-100 border rounded p-2"
+          >
             {{ idea.name }}
           </Typography>
           <Button
@@ -190,6 +192,10 @@ function resetIdea(ideaId: string) {
   &__ideas {
     max-height: 192px;
     overflow-y: scroll;
+  }
+
+  &__idea-name {
+    @include textEllipsis(1);
   }
 }
 

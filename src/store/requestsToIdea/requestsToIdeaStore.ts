@@ -8,13 +8,12 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import InitialState from '@Store/requestsToIdea/initialState'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-import { makeParallelRequests } from '@Utils/makeParallelRequests'
-import Success from '@Domain/ResponseMessage'
-import useTeamStore from '@Store/teams/teamsStore'
+import TeamService from '@Services/TeamService'
 
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({
     requests: [],
+    requestsTeamsToIdea: [],
   }),
 
   getters: {
@@ -28,6 +27,18 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
 
         this.requests = response
         return this.requests
+      }
+    },
+    getTeamRequestsToIdeas() {
+      return async (teamId: string, token: string) => {
+        const response = await TeamService.getTeamRequestsToIdeas(teamId, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        this.requestsTeamsToIdea = response
+        return this.requestsTeamsToIdea
       }
     },
   },

@@ -20,6 +20,11 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 
 import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+
+const requestsToIdea = useRequestsToIdeaStore()
+const { requestsTeamsToIdea } = storeToRefs(requestsToIdea)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -62,10 +67,17 @@ onMounted(async () => {
       () => teamsStore.getTeam(id, token),
       () => requestsToTeamStore.getRequestsToTeam(id, token),
       () => invitatinUsers.getInvitationUsers(id, token),
+      () => requestsToIdea.getTeamRequestsToIdeas(id, token),
     ]
 
     await makeParallelRequests<
-      Team | TeamSkills | TeamInvitation[] | undefined | RequestToTeam[] | Error
+      | Team
+      | TeamSkills
+      | TeamInvitation[]
+      | undefined
+      | RequestToTeam[]
+      | RequestTeamToIdea[]
+      | Error
     >(ideaParallelRequests).then((responses) => {
       responses.forEach((response) => {
         if (response.id === 0) {
@@ -106,6 +118,7 @@ function closeTeamModal() {
           :team="team"
           :invitations="teamInvitations"
           :requests="requestsToTeam"
+          :requestsTeamsToIdea="requestsTeamsToIdea"
         />
 
         <TeamModalActions
