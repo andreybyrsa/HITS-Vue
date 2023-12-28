@@ -13,17 +13,18 @@ import LeftSideBarPlaceholder from '@Components/LeftSideBar/LeftSideBarPlacehold
 import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
 
 import RolesTypes from '@Domain/Roles'
-
-import useUserStore from '@Store/user/userStore'
-
-import { getUserRolesInfo } from '@Utils/userRolesInfo'
-import MarketService from '@Services/MarketService'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import useMarketsStore from '@Store/markets/marketsStore'
 import { Market } from '@Domain/Market'
 
+import MarketService from '@Services/MarketService'
+
+import useUserStore from '@Store/user/userStore'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useMarketsStore from '@Store/markets/marketsStore'
+
+import { getUserRolesInfo } from '@Utils/userRolesInfo'
+
 const notificationsStore = useNotificationsStore()
-const { notifications } = storeToRefs(notificationsStore)
+const { getUnreadedNotifications } = storeToRefs(notificationsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -133,15 +134,6 @@ function handleOpenNotificationModal() {
 function handleCloseNotificationModal() {
   isOpenedNotificationsModal.value = false
 }
-
-function activeMarkNotification() {
-  const unreadedNotifications = notifications.value.filter(
-    ({ isReaded }) => isReaded === false,
-  )
-  return unreadedNotifications.length
-    ? 'left-side-bar__button-notification w-100'
-    : 'left-side-bar__button'
-}
 </script>
 
 <template>
@@ -179,11 +171,17 @@ function activeMarkNotification() {
 
       <Button
         variant="light"
-        :class-name="activeMarkNotification()"
+        class-name="left-side-bar__button btn-light w-100 position-relative"
         @click="handleOpenNotificationModal"
         prepend-icon-name="bi bi-bell"
       >
         {{ isHovered ? 'Уведомления' : '' }}
+        <span
+          v-if="getUnreadedNotifications.length"
+          class="position-absolute top-0 start-100 px-2 translate-middle badge rounded-pill bg-danger"
+        >
+          {{ getUnreadedNotifications.length }}
+        </span>
       </Button>
 
       <Button
@@ -235,22 +233,6 @@ function activeMarkNotification() {
 
   &__button {
     @include fixedHeight(40px);
-  }
-
-  &__button-notification {
-    position: relative;
-    @include fixedHeight(40px);
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background-color: rgb(255, 0, 0);
-      border-radius: 20px;
-      @include fixedWidth(12px);
-      @include fixedHeight(12px);
-    }
   }
 
   &--opened {
