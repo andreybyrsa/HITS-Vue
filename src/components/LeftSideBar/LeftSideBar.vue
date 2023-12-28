@@ -22,13 +22,14 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useMarketsStore from '@Store/markets/marketsStore'
 import { Market } from '@Domain/Market'
 
+const notificationsStore = useNotificationsStore()
+const { notifications } = storeToRefs(notificationsStore)
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const marketsStore = useMarketsStore()
 const { markets } = storeToRefs(marketsStore)
-
-const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
 
@@ -132,6 +133,15 @@ function handleOpenNotificationModal() {
 function handleCloseNotificationModal() {
   isOpenedNotificationsModal.value = false
 }
+
+function activeMarkNotification() {
+  const unreadedNotifications = notifications.value.filter(
+    ({ isReaded }) => isReaded === false,
+  )
+  return unreadedNotifications.length
+    ? 'left-side-bar__button-notification w-100'
+    : 'left-side-bar__button'
+}
 </script>
 
 <template>
@@ -169,7 +179,7 @@ function handleCloseNotificationModal() {
 
       <Button
         variant="light"
-        class-name="left-side-bar__button"
+        :class-name="activeMarkNotification()"
         @click="handleOpenNotificationModal"
         prepend-icon-name="bi bi-bell"
       >
@@ -225,6 +235,22 @@ function handleCloseNotificationModal() {
 
   &__button {
     @include fixedHeight(40px);
+  }
+
+  &__button-notification {
+    position: relative;
+    @include fixedHeight(40px);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background-color: rgb(255, 0, 0);
+      border-radius: 20px;
+      @include fixedWidth(12px);
+      @include fixedHeight(12px);
+    }
   }
 
   &--opened {
