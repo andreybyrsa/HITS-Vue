@@ -79,6 +79,7 @@ const tabs: SwitchTab[] = [
     >
       <div class="w-100 d-flex justify-content-between">
         <Button
+          class-name="col-2"
           variant="primary"
           prepend-icon-name="bi bi-backspace-fill"
           @click="emit('close-modal')"

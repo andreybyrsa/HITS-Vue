@@ -90,14 +90,14 @@ async function removeFromFavorites(notification: Notification) {
             @click="readNotification(notification)"
           />
           <Button
-            v-if="notification.isFavourite"
+            v-if="notification.isFavourite && notification.isReaded"
             variant="outline-warning"
             class-name="p-2"
             prepend-icon-name="bi bi-bookmark-fill fs-6"
             @click="removeFromFavorites(notification)"
           />
           <Button
-            v-else
+            v-if="!notification.isFavourite && notification.isReaded"
             variant="outline-warning"
             class-name="px-2 py-2"
             prepend-icon-name="bi bi-bookmark fs-6"
