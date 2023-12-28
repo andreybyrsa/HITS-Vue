@@ -28,6 +28,5 @@ const { getReadedNotifications } = storeToRefs(notificationsStore)
     v-for="notification in getReadedNotifications"
     :key="notification.id"
     :notification="notification"
-    :is-favourite="notification.isFavourite"
   />
 </template>

@@ -51,6 +51,5 @@ const markAllAsRead = async () => {
     v-for="notification in getUnreadedNotifications"
     :key="notification.id"
     :notification="notification"
-    :is-favourite="notification.isFavourite"
   />
 </template>

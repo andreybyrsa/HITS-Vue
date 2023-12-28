@@ -6,7 +6,6 @@ interface NotificatonModalWindowProps {
 
 interface NotificationTabProps {
   notification: Notification
-  isFavourite: boolean
 }
 
 interface NotificatonModalWindowEmits {

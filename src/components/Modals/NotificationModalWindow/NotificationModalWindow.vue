@@ -27,7 +27,7 @@ const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
 
-const isAllTabs = ref(true)
+const isAllTab = ref(true)
 const isLoading = ref(false)
 
 onMounted(async () => await getNotification(true))
@@ -49,7 +49,7 @@ async function getNotification(isAllNotifications: boolean) {
 }
 
 async function switchTab(isAllNotifications: boolean) {
-  isAllTabs.value = isAllNotifications
+  isAllTab.value = isAllNotifications
 
   await getNotification(isAllNotifications)
 }
@@ -95,7 +95,7 @@ const tabs: SwitchTab[] = [
 
       <template v-if="!isLoading">
         <div
-          v-if="isAllTabs"
+          v-if="isAllTab"
           class="w-100 d-flex flex-column gap-3"
         >
           <UnreadedNotificationsModal />

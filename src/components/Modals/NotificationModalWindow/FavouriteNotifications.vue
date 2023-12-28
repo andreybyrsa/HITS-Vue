@@ -19,7 +19,6 @@ const { getFavouriteNotifications } = storeToRefs(notificationsStore)
       v-for="notification in getFavouriteNotifications"
       :key="notification.id"
       :notification="notification"
-      is-favourite
     />
   </div>
 
