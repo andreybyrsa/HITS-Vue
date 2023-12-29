@@ -1,16 +1,13 @@
 import { defineStore } from 'pinia'
 
 import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
+import { Team } from '@Domain/Team'
 
 import RequestToIdeaService from '@Services/RequestToIdeaService'
-import { Team } from '@Domain/Team'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/requestsToIdea/initialState'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-import { makeParallelRequests } from '@Utils/makeParallelRequests'
-import Success from '@Domain/ResponseMessage'
-import useTeamStore from '@Store/teams/teamsStore'
 
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({

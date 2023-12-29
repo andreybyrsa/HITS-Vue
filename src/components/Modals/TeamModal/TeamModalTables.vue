@@ -49,18 +49,26 @@ function getNavLinkStyle(isCurrentTable: boolean) {
   ]
 }
 
-function getTeamInvitations() {
+function getAccessToTeamInvitations() {
   const currentUser = user.value
   const { owner } = props.team
 
-  return currentUser?.id === owner.id
+  return (
+    (currentUser?.id === owner.id && currentUser.role === 'TEAM_OWNER') ||
+    currentUser?.role === 'ADMIN'
+  )
 }
 
-function getRequestsToTeam() {
+function getAccessToRequestsToTeam() {
   const currentUser = user.value
   const { owner } = props.team
 
-  return !props.team.closed && currentUser?.id === owner.id
+  return (
+    (!props.team.closed &&
+      currentUser?.id === owner.id &&
+      currentUser.role === 'TEAM_OWNER') ||
+    currentUser?.role === 'ADMIN'
+  )
 }
 </script>
 
@@ -75,14 +83,14 @@ function getRequestsToTeam() {
           Участники
         </div>
         <div
-          v-if="getTeamInvitations()"
+          v-if="getAccessToTeamInvitations()"
           :class="getNavLinkStyle(isTeamInvitationsTable)"
           @click="switchToTeamInvitationsTable"
         >
           Приглашения
         </div>
         <div
-          v-if="getRequestsToTeam()"
+          v-if="getAccessToRequestsToTeam()"
           :class="getNavLinkStyle(isRequestsToTeamTable)"
           @click="switchToRequestsToTeamTable"
         >

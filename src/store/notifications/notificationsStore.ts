@@ -57,11 +57,6 @@ const useNotificationsStore = defineStore('notification', {
           currentNotification.isShowed = true
         }
       }
-
-      const notification = this.notifications.find((n) => n.id === id)
-      if (notification) {
-        notification.isReaded = true
-      }
     },
 
     createSystemNotification(title: string, message: string) {

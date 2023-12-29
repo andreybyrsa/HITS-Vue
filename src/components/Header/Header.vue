@@ -126,6 +126,8 @@ function closeRoleModal() {
   }
 
   &__name {
+    width: fit-content;
+
     &:hover {
       text-decoration: underline;
       text-underline-offset: 5px;

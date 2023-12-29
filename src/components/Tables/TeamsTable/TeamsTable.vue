@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed, Ref, watch } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -44,7 +44,11 @@ import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -73,38 +77,25 @@ const isSortedByMembersCount = ref(false)
 const isSortedByCreatedAt = ref(false)
 const isOpenedTeamDeleteModal = ref(false)
 
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
-
 onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token, id } = currentUser
 
-    const teamsTableParallelRequests = [
-      () => SkillsService.getAllSkills(token),
-      () => ProfileService.getUserProfile(id, token),
+    const teamsTableParallelRequests: RequestConfig[] = [
+      {
+        request: () => SkillsService.getAllSkills(token),
+        refValue: skills,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => ProfileService.getUserProfile(id, token),
+        refValue: profile,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
-    await makeParallelRequests<Profile | Skill[] | Error>(
-      teamsTableParallelRequests,
-    ).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, skills)
-        } else if (response.id === 1) {
-          checkResponseStatus(response, profile)
-        }
-      })
-    })
+    await sendParallelRequests(teamsTableParallelRequests)
   }
 })
 

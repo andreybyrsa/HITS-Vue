@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, watch, Ref } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 
@@ -26,7 +26,11 @@ import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
-import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -60,17 +64,6 @@ watch(
   },
 )
 
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
-
 async function getIdeasMarket() {
   const currentUser = user.value
 
@@ -81,22 +74,20 @@ async function getIdeasMarket() {
     ideasMarket.value = null
     market.value = null
 
-    const ideasMarketParallelRequests = [
-      () => ideasMarketStore.getMarketIdeas(marketId, role, token),
-      () => MarketService.getMarket(marketId, token),
+    const ideasMarketParallelRequests: RequestConfig[] = [
+      {
+        request: () => ideasMarketStore.getMarketIdeas(marketId, role, token),
+        refValue: ideasMarket,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => MarketService.getMarket(marketId, token),
+        refValue: market,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
-    await makeParallelRequests<IdeaMarket[] | Market | Error>(
-      ideasMarketParallelRequests,
-    ).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, ideasMarket)
-        } else if (response.id === 1) {
-          checkResponseStatus(response, market)
-        }
-      })
-    })
+    await sendParallelRequests(ideasMarketParallelRequests)
   }
 }
 

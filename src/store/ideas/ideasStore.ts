@@ -23,6 +23,27 @@ const useIdeasStore = defineStore('ideas', {
         const response = await IdeasService[currentIdeaServiceKey](token)
 
         if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        }
+
+        this.ideas = response
+        return this.ideas
+      }
+    },
+
+    getExpertNotConfirmedIdeas() {
+      return async (token: string) => {
+        const response = await IdeasService.getExpertNotConfirmedIdeas(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
           return response
         }
 
@@ -39,7 +60,6 @@ const useIdeasStore = defineStore('ideas', {
         const idea = await IdeasService[currentIdeaServiceKey](id, token)
 
         if (idea instanceof Error) {
-          useNotificationsStore().createSystemNotification('Система', idea.message)
           return idea
         }
 
@@ -50,31 +70,10 @@ const useIdeasStore = defineStore('ideas', {
         const ideas = await this.getIdeas(role, token)
 
         if (ideas instanceof Error) {
-          useNotificationsStore().createSystemNotification('Система', ideas.message)
           return ideas
         }
 
         return findOneAndUpdate(this.ideas, idea, { key: 'id', value: id })
-      }
-    },
-
-    getIdeasExpertNotConfirmed() {
-      return async (token: string) => {
-        const response = await IdeasService.getExpertNotConfirmedIdeas(token)
-
-        if (response instanceof Error) {
-          useNotificationsStore().createSystemNotification(
-            'Система',
-            response.message,
-          )
-          return response
-        } else {
-          const currentExpertIdeas = this.ideas.filter((idea) =>
-            response.find((elem) => idea.id === elem.id),
-          )
-
-          return currentExpertIdeas
-        }
       }
     },
   },

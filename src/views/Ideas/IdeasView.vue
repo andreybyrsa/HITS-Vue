@@ -10,20 +10,15 @@ import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
-import { Idea } from '@Domain/Idea'
-
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const ideaStore = useIdeasStore()
 
-const notificationsStore = useNotificationsStore()
-
-const ideas = ref<Idea[]>()
+const isLoading = ref(false)
 
 watchImmediate(
   () => user.value?.role,
@@ -33,16 +28,9 @@ watchImmediate(
     if (currentUser?.token && currentRole) {
       const { token } = currentUser
 
-      const response = await ideaStore.getIdeas(currentRole, token)
-
-      if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-
-      ideas.value = response
+      isLoading.value = true
+      await ideaStore.getIdeas(currentRole, token)
+      isLoading.value = false
     }
   },
 )
@@ -62,10 +50,7 @@ watchImmediate(
     </template>
 
     <template #content>
-      <IdeasTable
-        v-if="ideas"
-        :ideas="ideas"
-      />
+      <IdeasTable v-if="!isLoading" />
       <TablePlaceholder v-else />
 
       <router-view />

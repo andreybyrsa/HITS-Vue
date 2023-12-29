@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, Ref, VueElement } from 'vue'
+import { ref, onMounted, VueElement } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
@@ -13,21 +13,24 @@ import IdeaMarketAdverts from '@Components/Modals/IdeaMarketModal/IdeaMarketAdve
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
+import { Market } from '@Domain/Market'
 import { Team } from '@Domain/Team'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 
+import MarketService from '@Services/MarketService'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 import useIdeaMarketAdvertisementsStore from '@Store/ideaMarketAdvertisements/ideaMarketAdvertisementsStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
-import { Market } from '@Domain/Market'
-import MarketService from '@Services/MarketService'
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
 
 defineProps<IdeaMarketModalProps>()
 
@@ -40,8 +43,6 @@ const ideasMarketStore = useIdeasMarketStore()
 const requestsToIdeaStore = useRequestsToIdeaStore()
 const ideaMarketAdvertisementsStore = useIdeaMarketAdvertisementsStore()
 
-const notificationsStore = useNotificationsStore()
-
 const route = useRoute()
 const router = useRouter()
 
@@ -49,22 +50,12 @@ const ideaMarket = ref<IdeaMarket>()
 const requestTeams = ref<RequestTeamToIdea[]>([])
 const ownerTeams = ref<Team[]>([])
 const market = ref<Market>()
+const ideaMarketAdvertisements = ref<IdeaMarketAdvertisement[]>()
 
 const skillsRequestTeam = ref<RequestTeamToIdea[]>([])
 const skillsAcceptedTeam = ref<Team>()
 
 const isOpenedMarketModal = ref(true)
-
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
 
 onMounted(async () => {
   const currentUser = user.value
@@ -74,38 +65,41 @@ onMounted(async () => {
     const ideaMarketId = route.params.ideaMarketId.toString()
     const marketId = route.params.marketId.toString()
 
-    const marketParallelRequests = [
-      () => ideasMarketStore.getMarketIdea(ideaMarketId, role, token),
-      () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId, token),
-      () => TeamService.getOwnerTeams(userId, token),
-      () => MarketService.getMarket(marketId, token),
-      () =>
-        ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(
-          ideaMarketId,
-          token,
-        ),
+    const ideaMarketParallelRequests: RequestConfig[] = [
+      {
+        request: () => ideasMarketStore.getMarketIdea(ideaMarketId, role, token),
+        refValue: ideaMarket,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId, token),
+        refValue: requestTeams,
+        statement: role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => TeamService.getOwnerTeams(userId, token),
+        refValue: ownerTeams,
+        statement: role === 'TEAM_OWNER' || role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => MarketService.getMarket(marketId, token),
+        refValue: market,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () =>
+          ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(
+            ideaMarketId,
+            token,
+          ),
+        refValue: ideaMarketAdvertisements,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
-    await makeParallelRequests<
-      | RequestTeamToIdea[]
-      | Team[]
-      | IdeaMarket
-      | Market
-      | IdeaMarketAdvertisement[]
-      | Error
-    >(marketParallelRequests).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, ideaMarket)
-        } else if (response.id === 1) {
-          checkResponseStatus(response, requestTeams)
-        } else if (response.id === 2) {
-          checkResponseStatus(response, ownerTeams)
-        } else if (response.id === 3) {
-          checkResponseStatus(response, market)
-        }
-      })
-    })
+    await sendParallelRequests(ideaMarketParallelRequests)
   }
 })
 

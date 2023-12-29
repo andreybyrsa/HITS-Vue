@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, Ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import {
@@ -18,10 +18,13 @@ import { Team } from '@Domain/Team'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
-import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
 
 const props = defineProps<RequestToIdeaModalProps>()
 const emit = defineEmits<RequestToIdeaModalEmits>()
@@ -32,20 +35,8 @@ const { user } = storeToRefs(userStore)
 const requestsToIdeaStore = useRequestsToIdeaStore()
 const { requests } = storeToRefs(requestsToIdeaStore)
 
-const notificationsStore = useNotificationsStore()
-
 const ownerTeams = ref<Team[]>()
-
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
+const requestTeams = ref<RequestTeamToIdea[]>()
 
 watch(
   () => props.isOpened,
@@ -53,23 +44,26 @@ watch(
     const currentUser = user.value
 
     if (isOpened && currentUser?.token && props.ideaMarket) {
-      const { token } = currentUser
+      const { token, role } = currentUser
       const { id } = props.ideaMarket
 
-      const parallelRequests = [
-        () => TeamService.getOwnerTeams(id, token),
-        () => requestsToIdeaStore.getRequestsToIdea(id, token),
+      const parallelRequests: RequestConfig[] = [
+        {
+          request: () => TeamService.getOwnerTeams(id, token),
+          refValue: ownerTeams,
+          statement: role === 'TEAM_OWNER' || role === 'ADMIN',
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => requestsToIdeaStore.getRequestsToIdea(id, token),
+          refValue: requestTeams,
+          statement:
+            role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',
+          onErrorFunc: openErrorNotification,
+        },
       ]
 
-      await makeParallelRequests<Team[] | RequestTeamToIdea[] | Error>(
-        parallelRequests,
-      ).then((responses) => {
-        responses.forEach((response) => {
-          if (response.id === 0) {
-            checkResponseStatus(response, ownerTeams)
-          }
-        })
-      })
+      await sendParallelRequests(parallelRequests)
     }
   },
 )
