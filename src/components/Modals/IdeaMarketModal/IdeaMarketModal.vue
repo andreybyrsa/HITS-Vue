@@ -32,7 +32,7 @@ import {
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
 
-defineProps<IdeaMarketModalProps>()
+const props = defineProps<IdeaMarketModalProps>()
 
 const IdeaMarketModalRef = ref<VueElement | null>(null)
 
@@ -105,6 +105,9 @@ onMounted(async () => {
 
 function closeMarketModal() {
   isOpenedMarketModal.value = false
+  if (props.canGoBack) {
+    return router.go(-1)
+  }
   router.push(`/market/${market.value?.id}`)
 }
 

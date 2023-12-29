@@ -1363,6 +1363,7 @@ function getMocks(): Mocks {
     {
       id: '2',
       ideaMarketId: '2',
+      marketId: '201',
       teamId: '0',
       status: 'NEW',
       name: 'Первые разрабы мира',
@@ -1384,6 +1385,7 @@ function getMocks(): Mocks {
     {
       id: '3',
       ideaMarketId: '3',
+      marketId: '201',
       teamId: '0',
       status: 'NEW',
 
@@ -1405,6 +1407,7 @@ function getMocks(): Mocks {
     {
       id: '2',
       ideaMarketId: '1',
+      marketId: '201',
       status: 'NEW',
       teamId: '2',
       name: 'Удальцы',
@@ -1426,6 +1429,7 @@ function getMocks(): Mocks {
     {
       id: '3',
       ideaMarketId: '1',
+      marketId: '201',
       status: 'NEW',
       teamId: '3',
       name: 'Молодцы',
@@ -1447,6 +1451,7 @@ function getMocks(): Mocks {
     {
       id: '4',
       ideaMarketId: '2',
+      marketId: '201',
       status: 'NEW',
       teamId: '4',
       name: 'Хорошая компания',
@@ -1468,6 +1473,7 @@ function getMocks(): Mocks {
     {
       id: '5',
       ideaMarketId: '2',
+      marketId: '201',
       status: 'NEW',
       teamId: '5',
       name: 'Негатив',
@@ -1489,6 +1495,7 @@ function getMocks(): Mocks {
     {
       id: '6',
       ideaMarketId: '2',
+      marketId: '201',
       status: 'NEW',
       teamId: '6',
       name: 'Позитив',
@@ -1510,6 +1517,7 @@ function getMocks(): Mocks {
     {
       id: '7',
       ideaMarketId: '2',
+      marketId: '201',
       status: 'NEW',
       teamId: '13',
       name: 'Смешарики',

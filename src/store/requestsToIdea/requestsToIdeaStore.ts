@@ -43,10 +43,17 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
     },
   },
   actions: {
-    async postRequest(team: Team, ideaId: string, letter: string, token: string) {
+    async postRequest(
+      team: Team,
+      ideaId: string,
+      marketId: string,
+      letter: string,
+      token: string,
+    ) {
       const requestTeam = {
         teamId: team.id,
         ideaMarketId: ideaId,
+        marketId: marketId,
 
         name: team.name,
         status: 'NEW',

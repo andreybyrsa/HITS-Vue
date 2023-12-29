@@ -7,6 +7,7 @@ interface RequestTeamToIdea {
   status: RequestToIdeaStatus
   letter: string
   teamId: string
+  marketId: string
 
   id: string
   name: string
