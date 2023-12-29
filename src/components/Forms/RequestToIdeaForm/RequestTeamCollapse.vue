@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { RouteRecordRaw, useRouter } from 'vue-router'
+import { RouteRecordRaw, useRoute, useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -35,6 +35,7 @@ const notificationsStore = useNotificationsStore()
 const requestToIdeaStore = useRequestsToIdeaStore()
 
 const router = useRouter()
+const route = useRoute()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -77,8 +78,15 @@ const sendRequestTeam = handleSubmit(async () => {
   if (currentUser?.token && currentTeam.value) {
     const { token } = currentUser
     const id = props.idea.id
+    const marketId = route.params.marketId.toString()
 
-    requestToIdeaStore.postRequest(currentTeam.value, id, letter.value, token)
+    requestToIdeaStore.postRequest(
+      currentTeam.value,
+      id,
+      marketId,
+      letter.value,
+      token,
+    )
   }
 })
 

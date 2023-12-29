@@ -43,6 +43,7 @@ const requestToTeamColumns: TableColumn<RequestTeamToIdea>[] = [
     key: 'name',
     label: 'Название',
     size: 'col-7',
+    rowCellClick: navigateToIdeaMarket,
   },
   {
     key: 'status',
@@ -55,15 +56,15 @@ const requestToTeamColumns: TableColumn<RequestTeamToIdea>[] = [
 ]
 
 const dropdownRequestToTeamActions: DropdownMenuAction<RequestTeamToIdea>[] = [
-  //   { label: 'Открыть идею', click: navigateToIdeaMarket },
+  { label: 'Открыть идею', click: navigateToIdeaMarket },
   { label: 'Просмотреть письмо', click: openLetterModal },
 ]
 
 function navigateToIdeaMarket(request: RequestTeamToIdea) {
   const ideaMarketRoute: RouteRecordRaw = {
-    name: 'market-idea',
-    path: 'market-idea/:ideaMarketId',
-    alias: '/market-idea/:ideaMarketId',
+    name: 'market-idea-modal',
+    path: 'market/:marketId/:ideaMarketId',
+    alias: '/market/:marketId/:ideaMarketId',
     component: IdeaMarketModal,
     props: {
       canGoBack: true,
@@ -72,7 +73,7 @@ function navigateToIdeaMarket(request: RequestTeamToIdea) {
 
   navigateToAliasRoute(
     'teams-list',
-    `/market-idea/${request.ideaMarketId}`,
+    `/market/${request.marketId}/${request.ideaMarketId}`,
     ideaMarketRoute,
   )
 }

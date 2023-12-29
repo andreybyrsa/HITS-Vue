@@ -7,6 +7,7 @@ import { Market } from '@Domain/Market'
 
 interface IdeaMarketModalProps {
   isOpened: boolean
+  canGoBack?: boolean
 }
 
 interface IdeaMarketDescriptionProps {
