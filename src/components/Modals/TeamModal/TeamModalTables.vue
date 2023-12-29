@@ -62,36 +62,18 @@ function getNavLinkStyle(isCurrentTable: boolean) {
   ]
 }
 
-function getAccessToTeamInvitations() {
+function getAccessToViewTable() {
   const currentUser = user.value
   const { owner } = props.team
 
-<<<<<<< HEAD
   return (
     (currentUser?.id === owner.id && currentUser.role === 'TEAM_OWNER') ||
     currentUser?.role === 'ADMIN'
   )
-=======
-  return currentUser?.id === owner.id && currentUser.role === 'TEAM_OWNER'
->>>>>>> 572788618806a23b33e8861342cae400fb020cea
 }
 
 function getAccessToRequestsToTeam() {
-  const currentUser = user.value
-  const { owner } = props.team
-
-  return (
-<<<<<<< HEAD
-    (!props.team.closed &&
-      currentUser?.id === owner.id &&
-      currentUser.role === 'TEAM_OWNER') ||
-    currentUser?.role === 'ADMIN'
-=======
-    !props.team.closed &&
-    currentUser?.id === owner.id &&
-    currentUser.role === 'TEAM_OWNER'
->>>>>>> 572788618806a23b33e8861342cae400fb020cea
-  )
+  return !props.team.closed && getAccessToViewTable()
 }
 </script>
 
@@ -106,7 +88,7 @@ function getAccessToRequestsToTeam() {
           Участники
         </div>
         <div
-          v-if="getAccessToTeamInvitations()"
+          v-if="getAccessToViewTable()"
           :class="getNavLinkStyle(isTeamInvitationsTable)"
           @click="switchToTeamInvitationsTable"
         >
@@ -120,7 +102,7 @@ function getAccessToRequestsToTeam() {
           Заявки в команду
         </div>
         <div
-          v-if="getRequestsToTeam()"
+          v-if="getAccessToViewTable()"
           :class="getNavLinkStyle(isRequestTeamToIdeaTable)"
           @click="switchToRequestTeamToIdeaTable"
         >
