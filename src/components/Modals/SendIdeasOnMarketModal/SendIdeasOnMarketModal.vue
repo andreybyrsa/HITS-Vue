@@ -45,7 +45,7 @@ const selectedMarketActive = ref<Market>()
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser?.token && currentUser.role !== 'EXPERT') {
     const { token } = currentUser
 
     const response = await MarketsService.getAllActiveMarkets(token)
