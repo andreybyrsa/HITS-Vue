@@ -115,7 +115,7 @@ const readAllNotifications = async (token: string): Promise<void | Error> => {
   }
 
   return axios
-    .put(`/notification/read/all`, null, {
+    .put(`${API_URL}/notification/read/all`, null, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -129,7 +129,7 @@ const closeNotification = async (
 ): Promise<void | Error> => {
   return notificationsAxios
     .putNoRequestBody<void>(
-      `${API_URL}/notification/show/${id}`,
+      `/notification/show/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
