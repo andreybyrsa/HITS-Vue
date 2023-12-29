@@ -180,10 +180,11 @@ function checkManageMemberDropdownAction(teamMember: TeamMember) {
   const { owner, leader } = props.team
 
   return (
-    currentUser?.id === owner.id &&
-    currentUser.role === 'TEAM_OWNER' &&
-    teamMember.id !== owner.id &&
-    teamMember.id !== leader?.id
+    (currentUser?.id === owner.id &&
+      currentUser.role === 'TEAM_OWNER' &&
+      teamMember.id !== owner.id &&
+      teamMember.id !== leader?.id) ||
+    currentUser?.role === 'ADMIN'
   )
 }
 
@@ -192,10 +193,11 @@ function checkRemoveLeaderRole(teamMember: TeamMember) {
   const { owner, leader } = props.team
 
   return (
-    currentUser?.id === owner.id &&
-    currentUser.role === 'TEAM_OWNER' &&
-    teamMember.id !== owner.id &&
-    teamMember.id === leader?.id
+    (currentUser?.id === owner.id &&
+      currentUser.role === 'TEAM_OWNER' &&
+      teamMember.id !== owner.id &&
+      teamMember.id === leader?.id) ||
+    currentUser?.role === 'ADMIN'
   )
 }
 </script>

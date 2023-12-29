@@ -45,7 +45,7 @@ interface Mocks {
 function getMocks(): Mocks {
   const users: User[] = [
     {
-      id: '277922d4-e08a-430b-9b94-949dc32681b4',
+      id: '0',
       token: '10296538',
       email: 'kirill.vlasov.05@inbox.ru',
       firstName: 'Кирилл',
@@ -240,9 +240,9 @@ function getMocks(): Mocks {
       skills: [],
     },
     {
-      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+      id: '0',
       teamId: '1',
-      userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+      userId: '0',
       email: 'kirill.vlasov.05@inbox.ru',
       firstName: 'Кирилл',
       lastName: 'Власов',
@@ -276,7 +276,7 @@ function getMocks(): Mocks {
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 4,
-      owner: teamMembers[0],
+      owner: teamMembers[1],
       leader: teamMembers[1],
       members: [...teamMembers],
       skills: [skills[0], skills[4], skills[6], skills[9]],

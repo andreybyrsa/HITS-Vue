@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, onMounted, ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
@@ -33,17 +33,18 @@ import SkillsService from '@Services/SkillsService'
 import ProfileService from '@Services/ProfileService'
 
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import { RequestResult, makeParallelRequests } from '@Utils/makeParallelRequests'
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
 
 const invitationUsers = defineModel<TeamMember[]>({ required: true })
 defineEmits<UsersInviteTableEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-
-const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
 
@@ -54,42 +55,31 @@ const profile = ref<Profile>()
 const filterBySkill = ref<Skill[]>([])
 const searchBySkills = ref('')
 
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
-
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token, id } = currentUser
 
-    const usersInviteParallelRequests = [
-      () => SkillsService.getAllSkills(token),
-      () => ProfileService.getUserProfile(id, token),
-      () => SkillsService.getAllUsersSkills(token),
+    const usersInviteParallelRequests: RequestConfig[] = [
+      {
+        request: () => SkillsService.getAllSkills(token),
+        refValue: skills,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => ProfileService.getUserProfile(id, token),
+        refValue: profile,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => SkillsService.getAllUsersSkills(token),
+        refValue: users,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
-    await makeParallelRequests<TeamMember[] | Skill[] | Profile | Error>(
-      usersInviteParallelRequests,
-    ).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, skills)
-        } else if (response.id === 1) {
-          checkResponseStatus(response, profile)
-        } else if (response.id === 2) {
-          checkResponseStatus(response, users)
-        }
-      })
-    })
+    await sendParallelRequests(usersInviteParallelRequests)
   }
 })
 

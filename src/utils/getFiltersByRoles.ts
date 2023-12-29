@@ -14,7 +14,7 @@ function GetFiltersByRoles(): GetFiltersByRolesType {
   return {
     filter: {
       INITIATOR: [],
-      MEMBER: [],
+      MEMBER: ['CONFIRMED', 'ON_MARKET'],
       PROJECT_OFFICE: ['ON_APPROVAL', 'CONFIRMED'],
       EXPERT: [],
       ADMIN: [],

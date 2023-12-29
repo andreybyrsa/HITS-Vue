@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -11,17 +11,19 @@ import TeamModalTables from '@Components/Modals/TeamModal/TeamModalTables.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { Team, TeamInvitation, RequestToTeam, TeamSkills } from '@Domain/Team'
+import { Team, TeamInvitation, RequestToTeam } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
-
-import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
 
 const requestsToIdea = useRequestsToIdeaStore()
 const { requestsTeamsToIdea } = storeToRefs(requestsToIdea)
@@ -31,8 +33,6 @@ const { user } = storeToRefs(userStore)
 
 const teamsStore = useTeamStore()
 const requestsToTeamStore = useRequestsToTeamStore()
-
-const notificationsStore = useNotificationsStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -45,50 +45,45 @@ const invitatinUsers = useInvitationUsersStore()
 
 const isOpened = ref<boolean>(true)
 
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
-
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const id = route.params.teamId.toString()
-    const { token } = currentUser
+    const { token, role } = currentUser
 
-    const ideaParallelRequests = [
-      () => teamsStore.getTeam(id, token),
-      () => requestsToTeamStore.getRequestsToTeam(id, token),
-      () => invitatinUsers.getInvitationUsers(id, token),
-      () => requestsToIdea.getTeamRequestsToIdeas(id, token),
+    const teamParallelRequests: RequestConfig[] = [
+      {
+        request: () => teamsStore.getTeam(id, token),
+        refValue: team,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => requestsToTeamStore.getRequestsToTeam(id, token),
+        refValue: requestsToTeam,
+        statement: role === 'TEAM_OWNER' || role === 'MEMBER' || role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => invitatinUsers.getInvitationUsers(id, token),
+        refValue: teamInvitations,
+        statement: role === 'TEAM_OWNER' || role === 'MEMBER' || role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => requestsToIdea.getTeamRequestsToIdeas(id, token),
+        refValue: requestsTeamsToIdea,
+        statement:
+          role === 'TEAM_OWNER' ||
+          role === 'MEMBER' ||
+          role === 'PROJECT_OFFICE' ||
+          role === 'INITIATOR' ||
+          role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
-    await makeParallelRequests<
-      | Team
-      | TeamSkills
-      | TeamInvitation[]
-      | undefined
-      | RequestToTeam[]
-      | RequestTeamToIdea[]
-      | Error
-    >(ideaParallelRequests).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, team)
-        } else if (response.id === 1) {
-          checkResponseStatus(response, requestsToTeam)
-        } else if (response.id === 2) {
-          checkResponseStatus(response, teamInvitations)
-        }
-      })
-    })
+    await sendParallelRequests(teamParallelRequests)
   }
 })
 

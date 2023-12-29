@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, Ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -18,9 +18,12 @@ import { Profile } from '@Domain/Profile'
 
 import useUserStore from '@Store/user/userStore'
 import useProfilesStore from '@Store/profiles/profilesStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
 
 const props = defineProps<ProfileModalProps>()
 
@@ -34,23 +37,10 @@ const profileId = route.params.id.toString()
 const profilesStore = useProfilesStore()
 const profile = computed(() => profilesStore.getProfileByUserId(profileId))
 
-const notificationsStore = useNotificationsStore()
-
 const DBProfile = ref<Profile>()
 const DBProfileAvatar = ref<string>()
 
 const isOpenedProfileModal = ref(true)
-
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
 
 onMounted(async () => {
   const currentUser = user.value
@@ -58,23 +48,20 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const profileParallelRequests = [
-      () => profilesStore.fetchUserProfile(profileId, token),
-      () => profilesStore.fetchProfileAvatar(profileId, token),
+    const profileParallelRequests: RequestConfig[] = [
+      {
+        request: () => profilesStore.fetchUserProfile(profileId, token),
+        refValue: DBProfile,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => profilesStore.fetchProfileAvatar(profileId, token),
+        refValue: DBProfileAvatar,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
-    await makeParallelRequests<Profile | string | Error>(
-      profileParallelRequests,
-    ).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, DBProfile)
-        }
-        if (response.id === 1) {
-          checkResponseStatus(response, DBProfileAvatar)
-        }
-      })
-    })
+    await sendParallelRequests(profileParallelRequests)
   }
 })
 

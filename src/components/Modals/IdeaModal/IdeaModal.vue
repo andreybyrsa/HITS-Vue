@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, Ref, ref, VueElement } from 'vue'
+import { ref, onMounted, VueElement } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -22,13 +22,14 @@ import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
 import useRatingsStore from '@Store/ratings/ratingsStore'
 import useCommentsStore from '@Store/comments/commentsStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import { makeParallelRequests, RequestResult } from '@Utils/makeParallelRequests'
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
 
 const props = defineProps<IdeaModalProps>()
-
-const notificationsStore = useNotificationsStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -38,8 +39,8 @@ const route = useRoute()
 
 const idea = ref<Idea>()
 const ideaSkills = ref<IdeaSkills>()
-
 const ratings = ref<Rating[]>()
+const comments = ref<Comment[]>()
 
 const isOpenedIdeaModal = ref(true)
 
@@ -49,17 +50,6 @@ const commentsStore = useCommentsStore()
 
 const ideaModalRef = ref<VueElement | null>(null)
 
-function checkResponseStatus<T>(
-  data: RequestResult<T>,
-  refValue: Ref<T | undefined>,
-) {
-  if (data.status === 'fulfilled') {
-    refValue.value = data.value
-  } else {
-    notificationsStore.createSystemNotification('Система', `${data.value}`)
-  }
-}
-
 onMounted(async () => {
   const currentUser = user.value
 
@@ -67,26 +57,33 @@ onMounted(async () => {
     const { token, role } = currentUser
     const id = route.params.id.toString()
 
-    const ideaParallelRequests = [
-      () => ideasStore.getIdea(id, role, token),
-      () => IdeasService.getIdeaSkills(id, token),
-      () => ratingsStore.getIdeaRatings(id, token),
-      () => commentsStore.getComments(id, token),
+    const ideaParallelRequests: RequestConfig[] = [
+      {
+        request: () => ideasStore.getIdea(id, role, token),
+        refValue: idea,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => IdeasService.getIdeaSkills(id, token),
+        refValue: ideaSkills,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => ratingsStore.getIdeaRatings(id, token),
+        refValue: ratings,
+        statement:
+          role === 'EXPERT' || role === 'PROJECT_OFFICE' || role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => commentsStore.getComments(id, token),
+        refValue: comments,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
-    await makeParallelRequests<
-      Idea | IdeaSkills | Rating[] | Comment[] | Error | void
-    >(ideaParallelRequests).then((responses) => {
-      responses.forEach((response) => {
-        if (response.id === 0) {
-          checkResponseStatus(response, idea)
-        } else if (response.id === 1) {
-          checkResponseStatus(response, ideaSkills)
-        } else if (response.id === 2) {
-          checkResponseStatus(response, ratings)
-        }
-      })
-    })
+    await sendParallelRequests(ideaParallelRequests)
+
     ideasStore.checkIdea(id)
   }
 })

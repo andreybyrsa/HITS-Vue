@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia'
 
 import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
-
-import RequestToIdeaService from '@Services/RequestToIdeaService'
 import { Team } from '@Domain/Team'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
+import TeamService from '@Services/TeamService'
+import RequestToIdeaService from '@Services/RequestToIdeaService'
+
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/requestsToIdea/initialState'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-import TeamService from '@Services/TeamService'
 
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({

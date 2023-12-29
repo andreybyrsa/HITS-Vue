@@ -3,7 +3,7 @@
     class-name="p-3"
     :header="ideasTableHeader"
     :columns="ideaTableColumns"
-    :data="ideasData"
+    :data="ideas"
     :search-by="['name', 'description']"
     :filters="ideasFilters"
     :checked-data-actions="checkedIdeasActions"
@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -38,7 +38,6 @@ import {
   DropdownMenuAction,
   TableHeader,
 } from '@Components/Table/Table.types'
-import IdeasTableProps from '@Components/Tables/IdeasTable/IdeasTable.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
@@ -47,22 +46,23 @@ import { Idea, IdeaStatusType } from '@Domain/Idea'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasStore from '@Store/ideas/ideasStore'
+import useRatingsStore from '@Store/ratings/ratingsStore'
 
 import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 import mutableSort from '@Utils/mutableSort'
 import getFiltersByRoles from '@Utils/getFiltersByRoles'
-import useRatingsStore from '@Store/ratings/ratingsStore'
-
-const props = defineProps<IdeasTableProps>()
 
 const router = useRouter()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const ideaStore = useIdeasStore()
+const ratingsStore = useRatingsStore()
+const { ratings } = storeToRefs(ratingsStore)
 
-const ideasData = ref<Idea[]>([])
+const ideaStore = useIdeasStore()
+const { ideas } = storeToRefs(ideaStore)
+
 const checkedIdeas = ref<Idea[]>([])
 const sendingIdeasOnMarket = ref<Idea[]>([])
 const filtersByRoles = getFiltersByRoles()
@@ -80,10 +80,51 @@ const isOpenSendIdeasModal = ref<boolean>(false)
 const filterByConfirmedExpert = ref<boolean>(true)
 
 watchImmediate(
-  () => props.ideas,
-  () => {
-    ideasData.value = props.ideas
+  () => user.value?.role,
+  (role) => {
+    if (role) {
+      filterByIdeaStatus.value = filtersByRoles.filter[role]
+      filterByConfirmedExpert.value = filtersByRoles.filterByExpert[role]
+    }
   },
+)
+
+watchImmediate(filterByConfirmedExpert, async (value) => {
+  const currentUser = user.value
+
+  if (currentUser?.token && currentUser.role) {
+    const { token, role } = currentUser
+
+    if (value) {
+      return await ideaStore.getExpertNotConfirmedIdeas(token)
+    }
+
+    return await ideaStore.getIdeas(role, token)
+  }
+})
+
+watch(
+  ratings,
+  async () => {
+    if (user.value) {
+      const { id } = user.value
+
+      const confirmedIdeaIdsByExpert = ratings.value.map(
+        ({ ideaId, ideaRatings }) => {
+          const isConfirmedIdea = ideaRatings.find(
+            ({ expertId, isConfirmed }) => expertId === id && isConfirmed,
+          )
+
+          if (isConfirmedIdea) return ideaId
+        },
+      )
+
+      ideas.value = ideas.value.filter(
+        (idea) => !confirmedIdeaIdsByExpert.includes(idea.id),
+      )
+    }
+  },
+  { deep: true },
 )
 
 const ideasTableHeader = computed<TableHeader>(() => ({
@@ -100,15 +141,6 @@ const ideasTableHeader = computed<TableHeader>(() => ({
   ],
 }))
 
-watchImmediate(
-  () => user.value?.role,
-  (role) => {
-    if (role) {
-      filterByIdeaStatus.value = filtersByRoles.filter[role]
-      filterByConfirmedExpert.value = filtersByRoles.filterByExpert[role]
-    }
-  },
-)
 const ideaTableColumns: TableColumn<Idea>[] = [
   {
     key: 'isChecked',
@@ -218,46 +250,6 @@ const ideasFilters: Filter<Idea>[] = [
   },
 ]
 
-const ratingsStore = useRatingsStore()
-const { ratings } = storeToRefs(ratingsStore)
-
-function checkError(ideas: Idea[] | Error) {
-  return ideas instanceof Error ? [] : ideas
-}
-
-watchImmediate(
-  ratings,
-  async () => {
-    const currentUser = user.value
-
-    if (currentUser?.token) {
-      const { token } = currentUser
-
-      const response = await ideaStore.getIdeasExpertNotConfirmed(token)
-
-      if (user.value?.role === 'EXPERT') ideasData.value = checkError(response)
-    }
-  },
-  { deep: true },
-)
-
-watchImmediate(
-  () => filterByConfirmedExpert.value,
-  async (value) => {
-    if (value) {
-      const currentUser = user.value
-
-      if (currentUser?.token) {
-        const { token } = currentUser
-
-        const response = await ideaStore.getIdeasExpertNotConfirmed(token)
-
-        ideasData.value = checkError(response)
-      }
-    } else ideasData.value = props.ideas
-  },
-)
-
 function getCkeckedIdeaStyle(checkedBy: boolean) {
   const initialClass = ['bi bi-circle-fill', 'fs-6', 'mt-1', 'text-secondary']
 
@@ -268,23 +260,23 @@ function getCkeckedIdeaStyle(checkedBy: boolean) {
 }
 
 function sortByCreatedAt() {
-  mutableSort(ideasData.value, (ideaData: Idea) =>
+  mutableSort(ideas.value, (ideaData: Idea) =>
     new Date(ideaData.createdAt).getTime(),
   )
 }
 
 function sortByModifiedAt() {
-  mutableSort(ideasData.value, (ideaData: Idea) =>
+  mutableSort(ideas.value, (ideaData: Idea) =>
     new Date(ideaData.modifiedAt).getTime(),
   )
 }
 
 function sortByPreAssessment() {
-  mutableSort(ideasData.value, (ideaData: Idea) => ideaData.preAssessment)
+  mutableSort(ideas.value, (ideaData: Idea) => ideaData.preAssessment)
 }
 
 function sortByRating() {
-  mutableSort(ideasData.value, (ideaData: Idea) => ideaData.rating)
+  mutableSort(ideas.value, (ideaData: Idea) => ideaData.rating)
 }
 
 function getTranslatedStatus(status: IdeaStatusType) {

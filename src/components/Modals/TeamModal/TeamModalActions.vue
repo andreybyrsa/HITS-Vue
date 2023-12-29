@@ -72,7 +72,7 @@ function getAccessToInvite() {
 
 function getAccessRequestToTeam() {
   if (user.value) {
-    const { id } = user.value
+    const { id, role } = user.value
     const { isRefused, owner, leader, members, closed } = props.team
 
     const isExistInMembers =
@@ -94,7 +94,8 @@ function getAccessRequestToTeam() {
       !isExistInMembers &&
       !isExistNewRequest &&
       !isExistCanceledRequest &&
-      !isExistNewInvitation
+      !isExistNewInvitation &&
+      (role === 'ADMIN' || role === 'MEMBER')
     )
   }
 }

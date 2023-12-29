@@ -70,24 +70,30 @@ function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
     iconName: 'bi bi-basket3',
     to: `/market/${id}`,
   }))
+
   tabs.value[index].routes = [...initialMarketRoutes, ...marketRoutes]
 }
 
 async function getActiveMarkets() {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token, role } = currentUser
+  if (currentUser?.token && currentUser.role !== 'EXPERT') {
+    const { token } = currentUser
     const index = tabs.value.findIndex(({ name }) => name === 'markets')
+
+    const spliceMarketsTab = () => {
+      if (index !== -1) tabs.value.splice(index, 1)
+    }
 
     const response = await MarketService.getAllActiveMarkets(token)
 
     if (response instanceof Error) {
+      spliceMarketsTab()
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (role?.length === 0 && response.length === 0 && index !== -1) {
-      tabs.value.splice(index, 1)
+    if (response.length === 0) {
+      spliceMarketsTab()
     } else if (index !== -1) {
       updateActiveMarketRoute(response, index)
     }
