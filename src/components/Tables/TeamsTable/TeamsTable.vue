@@ -371,7 +371,7 @@ async function handleDeleteTeam() {
   if (currentUser?.token && deletingTeamId.value !== null) {
     const { token } = currentUser
 
-    await teamsStore.deleteTeam('deletingTeamId.value', token)
+    await teamsStore.deleteTeam(deletingTeamId.value, token)
   }
 }
 
