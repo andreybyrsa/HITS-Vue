@@ -1,3 +1,4 @@
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team, TeamInvitation, RequestToTeam } from '@Domain/Team'
 
 interface TeamDescriptionProps {
@@ -8,6 +9,7 @@ interface TeamModalTables {
   team: Team
   invitations?: TeamInvitation[]
   requests?: RequestToTeam[]
+  requestsTeamsToIdea?: RequestTeamToIdea[]
 }
 
 interface TeamMembersProps {
@@ -22,6 +24,11 @@ interface TeamInvitationsProps {
 interface RequestsToTeamProps {
   requests: RequestToTeam[]
   team: Team
+}
+
+interface RequestsTeamToIdeasProps {
+  requests: RequestTeamToIdea[]
+  team?: Team
 }
 
 interface TeamModalActionsProps {
@@ -46,6 +53,7 @@ export {
   TeamMembersProps,
   TeamInvitationsProps,
   RequestsToTeamProps,
+  RequestsTeamToIdeasProps,
   TeamModalActionsProps,
   TeamModalInfoProps,
   TeamDescriptionEmits,

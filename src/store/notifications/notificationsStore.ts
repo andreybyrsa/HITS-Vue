@@ -11,6 +11,54 @@ const useNotificationsStore = defineStore('notification', {
     notifications: [],
     systemNotifications: [],
   }),
+  getters: {
+    fetchNotifications() {
+      return async (token: string) => {
+        const response = await NotificatonsService.getNotifications(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        } else {
+          this.notifications = response
+          return this.notifications
+        }
+      }
+    },
+
+    fetchFavouriteNotifications() {
+      return async (token: string) => {
+        const response = await NotificatonsService.getFavoriteNotifications(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        } else {
+          this.notifications = response
+          return this.notifications
+        }
+      }
+    },
+
+    getReadedNotifications({ notifications }) {
+      return notifications.filter(({ isReaded }) => isReaded)
+    },
+
+    getUnreadedNotifications({ notifications }) {
+      return notifications.filter(({ isReaded }) => !isReaded)
+    },
+
+    getFavouriteNotifications({ notifications }) {
+      return notifications.filter(({ isFavourite }) => isFavourite)
+    },
+  },
+
   actions: {
     async createNotification(title: string, message: string, token: string) {
       const notification = {
@@ -29,8 +77,9 @@ const useNotificationsStore = defineStore('notification', {
         this.notifications.push(notification)
       }
     },
-    async readNotificationNotification(id: string, token: string) {
-      const response = await NotificatonsService.checkNotification(id, token)
+
+    async readNotification(id: string, token: string) {
+      const response = await NotificatonsService.readNotification(id, token)
 
       if (response instanceof Error) {
         this.createSystemNotification('Система', response.message)
@@ -44,6 +93,58 @@ const useNotificationsStore = defineStore('notification', {
         }
       }
     },
+
+    async readAllNotifications(token: string) {
+      const response = await NotificatonsService.readAllNotifications(token)
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        this.notifications.forEach(
+          (notification) =>
+            notification.isReaded === false && (notification.isReaded = true),
+        )
+      }
+    },
+
+    async markAsFavoriteNotification(id: string, token: string) {
+      const response = await NotificatonsService.markAsFavoriteNotification(
+        id,
+        token,
+      )
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        const currentNotification = this.notifications.find(
+          (notification) => notification.id === id,
+        )
+
+        if (currentNotification) {
+          currentNotification.isFavourite = true
+        }
+      }
+    },
+
+    async unMarkAsFavoriteNotification(id: string, token: string) {
+      const response = await NotificatonsService.unMarkAsFavoriteNotification(
+        id,
+        token,
+      )
+
+      if (response instanceof Error) {
+        this.createSystemNotification('Система', response.message)
+      } else {
+        const currentNotification = this.notifications.find(
+          (notification) => notification.id === id,
+        )
+
+        if (currentNotification) {
+          currentNotification.isFavourite = false
+        }
+      }
+    },
+
     async closeNotification(id: string, token: string) {
       const response = await NotificatonsService.closeNotification(id, token)
 
@@ -66,12 +167,10 @@ const useNotificationsStore = defineStore('notification', {
         title,
         message,
         isShowed: false,
-        isFavourite: false,
-        isReaded: false,
-        createdAt: new Date().toDateString(),
       } as Notification
       this.systemNotifications.push(systemNotification)
     },
+
     closeSystemNotification(id: string) {
       const currentNotification = this.systemNotifications.find(
         (notification) => notification.id === id,

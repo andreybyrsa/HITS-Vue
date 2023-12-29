@@ -19,6 +19,7 @@ import defineAxios from '@Utils/defineAxios'
 import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 function formatTeamInvitationsByTeamId(
   invitations: TeamInvitation[],
@@ -66,6 +67,7 @@ const teamsAxios = defineAxios(getMocks().teams)
 const teamMemberAxios = defineAxios(getMocks().teamMembers)
 const teamInvitationsAxios = defineAxios(getMocks().teamInvitations)
 const requestsToTeamAxios = defineAxios(getMocks().requestsToTeam)
+const requestTeamsAxios = defineAxios(getMocks().RequestTeams)
 
 // --- GET --- //
 const getTeams = async (token: string): Promise<Team[] | Error> => {
@@ -139,6 +141,25 @@ const getRequestsToTeam = async (
       {
         formatter: (requests) => formatRequestsToTeamByTeamId(requests, teamId),
       },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения заявок'))
+}
+
+const getTeamRequestsToIdeas = async (
+  teamId: string,
+  token: string,
+): Promise<RequestTeamToIdea[] | Error> => {
+  return requestTeamsAxios
+    .get(
+      `/team/idea/requests/${teamId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      // {
+      //   formatter: (applications) =>
+      //     filterRequestsToIdeaByIdeaId(teamId, applications),
+      // },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка получения заявок'))
@@ -432,6 +453,7 @@ const TeamService = {
   getTeam,
   getTeamInvitations,
   getRequestsToTeam,
+  getTeamRequestsToIdeas,
 
   createTeam,
   addTeamMember,

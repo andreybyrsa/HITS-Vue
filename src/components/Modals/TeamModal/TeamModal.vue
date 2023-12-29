@@ -17,12 +17,16 @@ import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
 import {
   sendParallelRequests,
   RequestConfig,
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
+
+const requestsToIdea = useRequestsToIdeaStore()
+const { requestsTeamsToIdea } = storeToRefs(requestsToIdea)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -66,6 +70,17 @@ onMounted(async () => {
         statement: role === 'TEAM_OWNER' || role === 'MEMBER' || role === 'ADMIN',
         onErrorFunc: openErrorNotification,
       },
+      {
+        request: () => requestsToIdea.getTeamRequestsToIdeas(id, token),
+        refValue: requestsTeamsToIdea,
+        statement:
+          role === 'TEAM_OWNER' ||
+          role === 'MEMBER' ||
+          role === 'PROJECT_OFFICE' ||
+          role === 'INITIATOR' ||
+          role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
     await sendParallelRequests(teamParallelRequests)
@@ -98,6 +113,7 @@ function closeTeamModal() {
           :team="team"
           :invitations="teamInvitations"
           :requests="requestsToTeam"
+          :requestsTeamsToIdea="requestsTeamsToIdea"
         />
 
         <TeamModalActions

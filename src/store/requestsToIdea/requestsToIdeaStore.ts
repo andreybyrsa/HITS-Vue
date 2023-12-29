@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
 
+import TeamService from '@Services/TeamService'
 import RequestToIdeaService from '@Services/RequestToIdeaService'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -12,6 +13,7 @@ import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({
     requests: [],
+    requestsTeamsToIdea: [],
   }),
 
   getters: {
@@ -25,6 +27,18 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
 
         this.requests = response
         return this.requests
+      }
+    },
+    getTeamRequestsToIdeas() {
+      return async (teamId: string, token: string) => {
+        const response = await TeamService.getTeamRequestsToIdeas(teamId, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        this.requestsTeamsToIdea = response
+        return this.requestsTeamsToIdea
       }
     },
   },

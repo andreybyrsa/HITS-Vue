@@ -3,6 +3,7 @@ interface Notification {
   userId: string
   title: string
   message: string
+  link: string | null
   isShowed: boolean
   isReaded: boolean
   isFavourite: boolean
