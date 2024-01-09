@@ -15,6 +15,7 @@
       <UsersTable
         v-if="users"
         v-model="users"
+        :users-in-teams="userInTeams"
       />
       <TablePlaceholder v-else />
 
@@ -27,6 +28,12 @@
 import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
+
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import UsersTable from '@Components/Tables/UsersTable/UsersTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
@@ -37,28 +44,36 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import { User } from '@Domain/User'
 
 import ManageUsersService from '@Services/ManageUsersService'
+import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { TeamMember } from '@Domain/Team'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const notificationsStore = useNotificationsStore()
 
 const users = ref<User[]>()
+const userInTeams = ref<TeamMember[]>([])
 
 onMounted(async () => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await ManageUsersService.getUsers(token)
+    const ideaMarketParallelRequests: RequestConfig[] = [
+      {
+        request: () => ManageUsersService.getUsers(token),
+        refValue: users,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => TeamService.getAllUsersInTeams(token),
+        refValue: userInTeams,
+        onErrorFunc: openErrorNotification,
+      },
+    ]
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    users.value = response
+    await sendParallelRequests(ideaMarketParallelRequests)
   }
 })
 </script>

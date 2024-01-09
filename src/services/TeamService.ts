@@ -165,6 +165,17 @@ const getTeamRequestsToIdeas = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения заявок'))
 }
 
+const getAllUsersInTeams = async (token: string): Promise<TeamMember[] | Error> => {
+  return teamMemberAxios
+    .get(`/team/users/consist`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка получения пользователей в команде'),
+    )
+}
+
 // --- POST --- //
 const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
   return teamsAxios
@@ -454,6 +465,7 @@ const TeamService = {
   getTeamInvitations,
   getRequestsToTeam,
   getTeamRequestsToIdeas,
+  getAllUsersInTeams,
 
   createTeam,
   addTeamMember,

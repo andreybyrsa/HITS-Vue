@@ -8,7 +8,6 @@ interface IdeaMarket {
   id: string
   marketId: string
   initiator: User
-  createdAt: string
   name: string
   problem: string
   description: string
