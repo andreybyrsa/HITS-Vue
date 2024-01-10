@@ -1241,6 +1241,7 @@ function getMocks(): Mocks {
       skills: [...skills],
     },
   ]
+
   const profiles: Profile[] = [
     {
       ...users[0],
@@ -1255,60 +1256,11 @@ function getMocks(): Mocks {
         skills[9],
       ],
       ideas: [ideas[0], ideas[1]],
-      projects: [
-        {
-          id: '0',
-          name: 'Деление на 0',
-          description: 'Очень важно',
-        },
-        {
-          id: '1',
-          name: 'Спасение экосистемы',
-          description: 'Технология эффективного спасения',
-        },
-        {
-          id: '2',
-          name: 'Важный проект',
-          description: 'Очень важный проект',
-        },
-      ],
-    },
-    {
-      ...users[1],
-      skills: [
-        skills[0],
-        skills[2],
-        skills[6],
-        skills[5],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[10],
-        skills[11],
-        skills[12],
-        skills[13],
-        skills[14],
-      ],
-      ideas: [ideas[2], ideas[1]],
-      projects: [
-        {
-          id: '0',
-          name: 'Поднятие уровня моря',
-          description: 'Надо бы поднять уровень моря',
-        },
-        {
-          id: '1',
-          name: 'Еда экспресс',
-          description: 'Технология эффективного питания',
-        },
-        {
-          id: '2',
-          name: 'Создание квантового компьютера',
-          description: 'Очень важный проект',
-        },
-      ],
+      teamsExperience: [],
+      projectsExperience: [],
     },
   ]
+
   const notifications: Notification[] = [
     {
       id: '0',
