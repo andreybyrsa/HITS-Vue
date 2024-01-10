@@ -41,12 +41,13 @@ interface TeamExperience {
   firstName: string
   lastName: string
   startDate: string
-  finishDate: string
+  finishDate?: string
   hasActiveProject: boolean
 }
 
 interface TeamProject {
   teamId: string
+  teamName: string
   project: Project
 }
 

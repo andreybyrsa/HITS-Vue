@@ -17,6 +17,7 @@ import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { Project } from '@Domain/Project'
 
 interface Mocks {
   users: User[]
@@ -31,6 +32,7 @@ interface Mocks {
   ideasSkills: IdeaSkills[]
   ideasMarket: IdeaMarket[]
   ideaMarketAdvertisements: IdeaMarketAdvertisement[]
+  project: Project[]
 
   ratings: Rating[]
   comments: Comment[]
@@ -45,7 +47,7 @@ interface Mocks {
 function getMocks(): Mocks {
   const users: User[] = [
     {
-      id: '0',
+      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
       token: '10296538',
       email: 'kirill.vlasov.05@inbox.ru',
       firstName: 'Кирилл',
@@ -240,7 +242,7 @@ function getMocks(): Mocks {
       skills: [],
     },
     {
-      id: '0',
+      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
       teamId: '1',
       userId: '0',
       email: 'kirill.vlasov.05@inbox.ru',
@@ -267,258 +269,56 @@ function getMocks(): Mocks {
       skills: [],
     },
   ]
+
   const teams: Team[] = [
     {
       id: '0',
-      name: 'Чемпионы',
+      name: 'Визитка',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
       membersCount: 4,
-      owner: teamMembers[1],
-      leader: teamMembers[1],
-      members: [...teamMembers],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
-      wantedSkills: [skills[0], skills[11], skills[16]],
-      isRefused: false,
-    },
-    {
-      id: '4',
-      name: 'Приглашения',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 2,
       owner: teamMembers[0],
-      leader: teamMembers[2],
-      members: [teamMembers[0], teamMembers[2]],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
-      wantedSkills: [skills[0], skills[11], skills[16]],
-      isRefused: false,
-    },
-    {
-      id: '5',
-      name: 'Заявки',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 2,
-      owner: teamMembers[0],
-      leader: teamMembers[2],
-      members: [teamMembers[0], teamMembers[2]],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
-      wantedSkills: [skills[0], skills[11], skills[16]],
-      isRefused: false,
-    },
-    {
-      id: '6',
-      name: 'Пользователь(Открытая)',
-      closed: false,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 2,
-      owner: teamMembers[0],
-      leader: teamMembers[2],
-      members: [teamMembers[0], teamMembers[2]],
-      skills: [skills[0], skills[4], skills[6], skills[9]],
-      wantedSkills: [skills[0], skills[11], skills[16]],
-      isRefused: false,
-    },
-    {
-      id: '7',
-      name: 'Пользователь(Закрытая)',
-      closed: true,
-      createdAt: '2023-10-20T11:02:17Z',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 2,
-      owner: teamMembers[0],
-      leader: teamMembers[2],
-      members: [teamMembers[0], teamMembers[2]],
+      leader: teamMembers[0],
+      members: [teamMembers[0], teamMembers[2], teamMembers[3]],
       skills: [skills[0], skills[4], skills[6], skills[9]],
       wantedSkills: [skills[0], skills[11], skills[16]],
       isRefused: false,
     },
     {
       id: '1',
-      name: 'Участник',
+      name: 'Кактус',
       closed: false,
       createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 3,
+      membersCount: 4,
       owner: teamMembers[0],
-      leader: teamMembers[2],
-      members: [teamMembers[0], teamMembers[1], teamMembers[2]],
-      skills: [
-        skills[0],
-        skills[1],
-        skills[7],
-        skills[8],
-        skills[9],
-        skills[11],
-        skills[12],
-        skills[13],
-        skills[16],
-        skills[17],
-        skills[18],
-        skills[19],
-      ],
-      wantedSkills: [
-        skills[0],
-        skills[1],
-        skills[5],
-        skills[8],
-        skills[9],
-        skills[10],
-        skills[18],
-        skills[17],
-        skills[16],
-        skills[15],
-        skills[11],
-        skills[12],
-        skills[13],
-      ],
+      leader: teamMembers[0],
+      members: [teamMembers[0], teamMembers[2], teamMembers[3]],
+      skills: [skills[0], skills[4], skills[6], skills[9]],
+      wantedSkills: [skills[0], skills[11], skills[16]],
       isRefused: false,
     },
     {
       id: '2',
-      name: 'Владелец',
+      name: 'Карасики',
       closed: false,
-      createdAt: '2023-10-30T11:02:17Z',
+      createdAt: '2023-10-20T11:02:17Z',
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-      membersCount: 1,
-      owner: teamMembers[1],
-      leader: teamMembers[2],
-      members: [teamMembers[1], teamMembers[2]],
-      skills: [skills[0], skills[1], skills[11], skills[13], skills[16]],
-      wantedSkills: [skills[2], skills[3], skills[8], skills[12]],
+      membersCount: 4,
+      owner: teamMembers[0],
+      leader: teamMembers[0],
+      members: [teamMembers[0], teamMembers[1], teamMembers[2], teamMembers[3]],
+      skills: [skills[0], skills[4], skills[6], skills[9]],
+      wantedSkills: [skills[0], skills[11], skills[16]],
       isRefused: false,
     },
   ]
+
   const ideasMarket: IdeaMarket[] = [
-    // {
-    //   id: '2',
-    //   marketId: '201',
-    //   position: 2,
-    //   name: 'Создать машину времени',
-    //   initiator: users[0],
-    //   problem:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    //   solution:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    //   result:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    //   description:
-    //     'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
-    //   team: null,
-    //   stack: [
-    //     skills[0],
-    //     skills[2],
-    //     skills[3],
-    //     skills[6],
-    //     skills[7],
-    //     skills[8],
-    //     skills[9],
-    //     skills[11],
-    //     skills[12],
-    //     skills[14],
-    //     skills[15],
-    //     skills[16],
-    //     skills[17],
-    //     skills[18],
-    //   ],
-    //   customer: 'ВШЦТ',
-    //   createdAt: '2023-10-21T11:02:17Z',
-    //   maxTeamSize: 10,
-    //   status: 'RECRUITMENT_IS_OPEN',
-    //   requests: 222,
-    //   acceptedRequests: 5,
-    //   isFavorite: false,
-    // },
-    // {
-    //   id: '3',
-    //   marketId: '201',
-    //   position: 3,
-    //   name: 'Реактор',
-    //   initiator: users[0],
-    //   problem:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    //   solution:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    //   result:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    //   description:
-    //     'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
-    //   team: null,
-    //   stack: [
-    //     skills[0],
-    //     skills[2],
-    //     skills[3],
-    //     skills[6],
-    //     skills[7],
-    //     skills[8],
-    //     skills[9],
-    //     skills[11],
-    //     skills[12],
-    //     skills[14],
-    //     skills[15],
-    //     skills[16],
-    //     skills[17],
-    //     skills[18],
-    //   ],
-    //   customer: 'ВШЦТ',
-    //   createdAt: '2023-10-21T11:02:17Z',
-    //   maxTeamSize: 10,
-    //   status: 'RECRUITMENT_IS_OPEN',
-    //   requests: 222,
-    //   acceptedRequests: 5,
-    //   isFavorite: false,
-    // },
-    // {
-    //   id: '3',
-    //   marketId: '201',
-    //   position: 3,
-    //   name: 'Карандаш',
-    //   initiator: users[1],
-    //   problem:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    //   solution:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    //   result:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    //   description:
-    //     'Проект для казино, созданный при помощи искусственого интеллекта и предварительно считывающий выдаваемые карты при помощи математической статистики................',
-    //   team: null,
-    //   stack: [
-    //     skills[0],
-    //     skills[2],
-    //     skills[3],
-    //     skills[6],
-    //     skills[7],
-    //     skills[8],
-    //     skills[9],
-    //     skills[11],
-    //     skills[12],
-    //     skills[14],
-    //     skills[15],
-    //     skills[16],
-    //     skills[17],
-    //     skills[18],
-    //   ],
-    //   customer: 'ВШЦТ',
-    //   createdAt: '2023-10-21T11:02:17Z',
-    //   maxTeamSize: 10,
-    //   status: 'RECRUITMENT_IS_OPEN',
-    //   requests: 222,
-    //   acceptedRequests: 5,
-    //   isFavorite: false,
-    // },
     {
       id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
       initiator: {
@@ -1242,6 +1042,59 @@ function getMocks(): Mocks {
     },
   ]
 
+  const project: Project[] = [
+    {
+      id: '0',
+
+      idea: ideas[1],
+      initiator: users[1],
+      team: teams[5],
+      members: [
+        {
+          projectId: '0',
+          projectName: 'Моя новая идея',
+          teamId: '0',
+          teamName: 'Визитка',
+          userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+          email: 'kirill.vlasov.05@inbox.ru',
+          firstName: 'Кирилл',
+          lastName: 'Власов',
+          startDate: '2023-10-25T11:02:17Z',
+          finishDate: '2023-10-25T11:02:17Z',
+          role: 'DEVELOPER',
+        },
+      ],
+      startDate: '2023-10-25T11:02:17Z',
+      finisDate: '2023-10-25T11:02:17Z',
+      status: 'DONE',
+    },
+    {
+      id: '1',
+
+      idea: ideas[1],
+      initiator: users[1],
+      team: teams[5],
+      members: [
+        {
+          projectId: '1',
+          projectName: 'Табуретка',
+          teamId: '0',
+          teamName: 'Визитка',
+          userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+          email: 'kirill.vlasov.05@inbox.ru',
+          firstName: 'Кирилл',
+          lastName: 'Власов',
+          startDate: '2023-10-25T11:02:17Z',
+          finishDate: '2023-10-25T11:02:17Z',
+          role: 'DEVELOPER',
+        },
+      ],
+      startDate: '2023-10-25T11:02:17Z',
+      finisDate: '2023-10-25T11:02:17Z',
+      status: 'DONE',
+    },
+  ]
+
   const profiles: Profile[] = [
     {
       ...users[0],
@@ -1256,8 +1109,79 @@ function getMocks(): Mocks {
         skills[9],
       ],
       ideas: [ideas[0], ideas[1]],
-      teamsExperience: [],
-      projectsExperience: [],
+      teamsExperience: [
+        {
+          teamId: '0',
+          teamName: 'Визитка',
+          userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+          firstName: 'Кирилл',
+          lastName: 'Власов',
+          startDate: '2023-10-25T11:02:17Z',
+          finishDate: '2023-11-25T11:02:17Z',
+          hasActiveProject: false,
+        },
+        {
+          teamId: '2',
+          teamName: 'Карасики',
+          userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+          firstName: 'Кирилл',
+          lastName: 'Власов',
+          startDate: '2023-11-25T11:02:17Z',
+          finishDate: undefined,
+          hasActiveProject: true,
+        },
+        {
+          teamId: '1',
+          teamName: 'Кактус',
+          userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+          firstName: 'Кирилл',
+          lastName: 'Власов',
+          startDate: '2023-09-25T11:02:17Z',
+          finishDate: '2023-10-25T11:02:17Z',
+          hasActiveProject: false,
+        },
+      ],
+      teamsProjects: [
+        {
+          projectId: '0',
+          projectName: 'Моя новая идея',
+          teamId: '0',
+          teamName: 'Визитка',
+          userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+          email: 'kirill.vlasov.05@inbox.ru',
+          firstName: 'Кирилл',
+          lastName: 'Власов',
+          startDate: '2023-09-25T11:02:17Z',
+          finishDate: '2023-09-25T11:02:17Z',
+          role: 'DEVELOPER',
+        },
+        {
+          projectId: '0',
+          projectName: 'Табуретка',
+          teamId: '0',
+          teamName: 'Визитка',
+          userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+          email: 'kirill.vlasov.05@inbox.ru',
+          firstName: 'Кирилл',
+          lastName: 'Власов',
+          startDate: '2023-09-25T11:02:17Z',
+          finishDate: '2023-09-25T11:02:17Z',
+          role: 'DEVELOPER',
+        },
+        {
+          projectId: '0',
+          projectName: 'Катер',
+          teamId: '2',
+          teamName: 'Карасики',
+          userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+          email: 'kirill.vlasov.05@inbox.ru',
+          firstName: 'Кирилл',
+          lastName: 'Власов',
+          startDate: '2023-09-25T11:02:17Z',
+          finishDate: undefined,
+          role: 'DEVELOPER',
+        },
+      ],
     },
   ]
 
@@ -1521,6 +1445,7 @@ function getMocks(): Mocks {
     ideasMarket,
     ratings,
     comments,
+    project,
 
     teams,
     teamMembers,
