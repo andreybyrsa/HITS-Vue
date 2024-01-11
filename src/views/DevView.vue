@@ -17,7 +17,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
-
+import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 const router = useRouter()
 
 onMounted(async () => {
@@ -66,6 +66,10 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
   <PageLayout content-class-name="dev-page__content p-3">
     <template #leftSideBar>
       <LeftSideBar />
+      <MarketModal
+        :isOpened="true"
+        :market="null"
+      ></MarketModal>
     </template>
 
     <template #content>
