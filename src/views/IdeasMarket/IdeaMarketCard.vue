@@ -90,6 +90,13 @@ function checkIdeaOwned() {
   )
 }
 
+function checkIdeaDone() {
+  return (
+    user.value?.role === ('ADMIN' || 'PROJECT_OFFICE') &&
+    props.ideaMarket.status === 'RECRUITMENT_IS_CLOSED'
+  )
+}
+
 function navigateToIdeaMarketModal(ideaMarketId: string) {
   const marketId = route.params.marketId.toString()
 
@@ -187,6 +194,16 @@ function getIdeaMarketStatusStyle() {
         >
           Подать заявку
         </Button>
+
+        <Button
+          v-if="checkIdeaDone()"
+          class-name="idea-market__send-idea-button blink btn-sm"
+          variant="success"
+          prepend-icon-name="bi bi-plus-lg fs-6"
+          @click="console.log(1)"
+        >
+          Перевести в проект
+        </Button>
       </div>
     </div>
   </div>
@@ -204,6 +221,22 @@ function getIdeaMarketStatusStyle() {
 
   &__send-request-button {
     @include fixedWidth(135px);
+  }
+
+  &__send-idea-button {
+    @include fixedWidth(170px);
+  }
+
+  .blink {
+    animation: blink 0.5s infinite;
+  }
+  @keyframes blink {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0.8;
+    }
   }
 }
 </style>
