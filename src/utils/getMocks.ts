@@ -17,6 +17,7 @@ import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { Project, ProjectMember } from '@Domain/Project'
 
 interface Mocks {
   users: User[]
@@ -41,6 +42,7 @@ interface Mocks {
   RequestTeams: RequestTeamToIdea[]
   teamSkills: TeamSkills[]
   notifications: Notification[]
+  projects: Project[]
 }
 function getMocks(): Mocks {
   const users: User[] = [
@@ -1505,6 +1507,38 @@ function getMocks(): Mocks {
       users: [users[1]],
     },
   ]
+  const projects: Project[] = [
+    {
+      id: '1',
+      idea: ideas[0],
+      initiator: users[0],
+      team: teams[0],
+      members: [],
+      startDate: '2024-1-7T11:02:17Z',
+      finisDate: '2024-2-25T11:02:17Z',
+      status: 'ACTIVE',
+    },
+    {
+      id: '2',
+      idea: ideas[2],
+      initiator: users[0],
+      team: teams[1],
+      members: [],
+      startDate: '2024-1-7T11:02:17Z',
+      finisDate: '2024-2-25T11:02:17Z',
+      status: 'ACTIVE',
+    },
+    {
+      id: '3',
+      idea: ideas[3],
+      initiator: users[3],
+      team: teams[2],
+      members: [],
+      startDate: '2024-1-7T11:02:17Z',
+      finisDate: '2024-1-9T11:02:17Z',
+      status: 'DONE',
+    },
+  ]
   return {
     users,
     usersEmails,
@@ -1528,6 +1562,7 @@ function getMocks(): Mocks {
     RequestTeams,
     teamInvitations,
     notifications,
+    projects,
   }
 }
 export default getMocks
