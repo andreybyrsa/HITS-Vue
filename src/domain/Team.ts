@@ -41,7 +41,7 @@ interface TeamExperience {
   firstName: string
   lastName: string
   startDate: string
-  finishDate?: string
+  finishDate: string | null
   hasActiveProject: boolean
 }
 

@@ -4,12 +4,12 @@ import Success from '@Domain/ResponseMessage'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import { ideasMocks, ideasSkillsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
-const ideasAxios = defineAxios(getMocks().ideas)
-const ideaSkillsAxios = defineAxios(getMocks().ideasSkills)
+const ideasAxios = defineAxios(ideasMocks)
+const ideaSkillsAxios = defineAxios(ideasSkillsMocks)
 
 const getIdeas = async (token: string): Promise<Idea[] | Error> => {
   return ideasAxios

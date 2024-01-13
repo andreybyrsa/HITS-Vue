@@ -4,11 +4,11 @@ import Success from '@Domain/ResponseMessage'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import { commentsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
-const commentAxios = defineAxios(getMocks().comments)
+const commentAxios = defineAxios(commentsMocks)
 
 function filterCommentsById(ideaId: string, comments: Comment[]) {
   return comments.filter((comment) => comment.ideaId === ideaId)

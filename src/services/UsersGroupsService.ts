@@ -4,11 +4,11 @@ import UserGroup from '@Domain/UsersGroup'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import { usersGroupsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
-const usersGroupsAxios = defineAxios(getMocks().usersGroups)
+const usersGroupsAxios = defineAxios(usersGroupsMocks)
 
 const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
   return usersGroupsAxios

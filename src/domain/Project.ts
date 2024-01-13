@@ -28,7 +28,7 @@ interface ProjectMember {
   firstName: string
   lastName: string
   startDate: string
-  finishDate?: string
+  finishDate: string | null
   role: ProjectMemberRole
 }
 

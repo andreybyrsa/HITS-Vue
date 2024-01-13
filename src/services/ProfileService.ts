@@ -9,11 +9,11 @@ import Success from '@Domain/ResponseMessage'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
+import { profilesMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 
-const profileUserAxios = defineAxios(getMocks().profiles)
+const profileUserAxios = defineAxios(profilesMocks)
 
 const getUserProfile = async (
   id: string,
