@@ -60,7 +60,7 @@ function navigateToIdeaModal(ideaId: string) {
               class="w-100 d-flex gap-2 align-items-center justify-content-between"
             >
               <div
-                class="fs-5 profile-ideas__idea-link"
+                class="fs-6 profile-ideas__idea-link"
                 @click="navigateToIdeaModal(idea.id)"
               >
                 {{ idea.name }}
@@ -93,7 +93,7 @@ function navigateToIdeaModal(ideaId: string) {
         v-else
         class="d-flex w-100 justify-content-center"
       >
-        <Typography class-name="fs-5">Идей пока нет</Typography>
+        <Typography class-name="fs-6 text-secondary">Идей пока нет</Typography>
       </div>
     </div>
 

@@ -49,6 +49,15 @@ watchImmediate(
   },
 )
 
+watchImmediate(
+  () => teamsExperience.value,
+  () => {
+    teamsExperience.value.sort(() => {
+      return 1
+    })
+  },
+)
+
 const usersTableColumns: TableColumn<TeamExperience>[] = [
   {
     key: 'teamName',
