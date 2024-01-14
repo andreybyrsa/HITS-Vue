@@ -9,11 +9,11 @@ import Success from '@Domain/ResponseMessage'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import { skillsMocks } from '@Utils/getMocks'
 
-const skillsAxios = defineAxios(getMocks().skills)
+const skillsAxios = defineAxios(skillsMocks)
 
 function mockSkillsFormatter(skills: Skill[]) {
   const LANGUAGE = skills.filter((skill) => skill.type === 'LANGUAGE')

@@ -8,6 +8,7 @@ import {
   TeamInvitation,
   TeamMember,
   JoinStatus,
+  TeamExperience,
 } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 import RolesTypes from '@Domain/Roles'
@@ -16,10 +17,69 @@ import Success from '@Domain/ResponseMessage'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
+import {
+  RequestTeamsMocks,
+  profilesMocks,
+  requestsToTeamMocks,
+  teamInvitationsMocks,
+  teamMembersMocks,
+  teamsMocks,
+} from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+
+const teamsAxios = defineAxios(teamsMocks)
+const teamMemberAxios = defineAxios(teamMembersMocks)
+const teamInvitationsAxios = defineAxios(teamInvitationsMocks)
+const requestsToTeamAxios = defineAxios(requestsToTeamMocks)
+const requestTeamsAxios = defineAxios(RequestTeamsMocks)
+
+function leaveFromTeamTeamMember(teamId: string, teamMemberId: string) {
+  teamsMocks.forEach((team) => {
+    if (team.id === teamId) {
+      team.members = team.members.filter(
+        (teamMember) => teamMember.id !== teamMemberId,
+      )
+    }
+  })
+}
+
+function finishTeamExperience(teamId: string, teamMemberId: string) {
+  const currentProfile = profilesMocks.find(({ id }) => id === teamMemberId)
+  const currentTeamExperience = currentProfile?.teamsExperience.find(
+    (experience) => experience.teamId === teamId && experience.finishDate === null,
+  )
+  const currentTeamProject = currentProfile?.teamsProjects.find(
+    (project) => project.teamId === teamId && project.finishDate === null,
+  )
+
+  if (currentTeamExperience) {
+    const currentDate = new Date().toJSON().toString()
+    currentTeamExperience.finishDate = currentDate
+    if (currentTeamProject) currentTeamProject.finishDate = currentDate
+  }
+}
+
+function addTeamExperince(userId: string, teamId: string) {
+  const currentProfile = profilesMocks.find(({ id }) => id === userId)
+  const currentTeam = teamsMocks.find((team) => team.id === teamId)
+
+  if (currentTeam && currentProfile) {
+    const newTeamExperience: TeamExperience = {
+      teamId: currentTeam.id,
+      teamName: currentTeam.name,
+      userId: userId,
+      firstName: '',
+      lastName: '',
+      startDate: new Date().toJSON().toString(),
+      finishDate: null,
+      hasActiveProject: false,
+    }
+
+    currentProfile.teamsExperience.push(newTeamExperience)
+  }
+}
 
 function formatTeamInvitationsByTeamId(
   invitations: TeamInvitation[],
@@ -62,12 +122,6 @@ function setRequestsAndInvitationsAnnulled(
     }
   })
 }
-
-const teamsAxios = defineAxios(getMocks().teams)
-const teamMemberAxios = defineAxios(getMocks().teamMembers)
-const teamInvitationsAxios = defineAxios(getMocks().teamInvitations)
-const requestsToTeamAxios = defineAxios(getMocks().requestsToTeam)
-const requestTeamsAxios = defineAxios(getMocks().RequestTeams)
 
 // --- GET --- //
 const getTeams = async (token: string): Promise<Team[] | Error> => {
@@ -151,16 +205,9 @@ const getTeamRequestsToIdeas = async (
   token: string,
 ): Promise<RequestTeamToIdea[] | Error> => {
   return requestTeamsAxios
-    .get(
-      `/team/idea/requests/${teamId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-      // {
-      //   formatter: (applications) =>
-      //     filterRequestsToIdeaByIdeaId(teamId, applications),
-      // },
-    )
+    .get(`/team/idea/requests/${teamId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка получения заявок'))
 }
@@ -336,24 +383,27 @@ const appointLeaderTeam = async (
 }
 
 const updateRequestToTeamStatus = async (
-  id: string,
+  requestId: string,
+  teamId: string,
   userId: string,
   status: JoinStatus,
   token: string,
 ): Promise<RequestToTeam | Error> => {
   if (MODE === 'DEVELOPMENT') {
-    setRequestsAndInvitationsAnnulled(userId, id, null)
+    setRequestsAndInvitationsAnnulled(userId, requestId, null)
+
+    if (status === 'ACCEPTED') addTeamExperince(userId, teamId)
   }
 
   return requestsToTeamAxios
     .put<RequestToTeam>(
-      `/team/request/${id}/update/${status}`,
+      `/team/request/${requestId}/update/${status}`,
       { status: status },
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { id } },
+      { params: { id: requestId } },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса заявки'))
@@ -435,14 +485,8 @@ const leaveFromTeam = async (
   token: string,
 ): Promise<Success | Error> => {
   if (MODE === 'DEVELOPMENT') {
-    const teams = teamsAxios.getReactiveMocks()
-    teams.value.forEach((team) => {
-      if (team.id === teamId) {
-        team.members = team.members.filter(
-          (teamMember) => teamMember.id !== teamMemberId,
-        )
-      }
-    })
+    leaveFromTeamTeamMember(teamId, teamMemberId)
+    finishTeamExperience(teamId, teamMemberId)
   }
 
   return teamMemberAxios

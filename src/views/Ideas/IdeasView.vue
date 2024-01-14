@@ -46,7 +46,7 @@ watchImmediate(
     </template>
 
     <template #header>
-      <Header></Header>
+      <Header />
     </template>
 
     <template #content>

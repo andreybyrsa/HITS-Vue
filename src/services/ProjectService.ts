@@ -1,20 +1,18 @@
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
+import { projectMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { Project } from '@Domain/Project'
 
-const projectsAxios = defineAxios(getMocks().projects)
+const projectsAxios = defineAxios(projectMocks)
 
 function formatGetMyProjects(projects: Project[], userId: string) {
-  console.log(projects)
-  console.log(userId)
   return projects.filter(
     (item) =>
       (item.initiator.id === userId ||
-        item.team.members.find((member) => member.id === userId) ||
+        item.team.members.find((member) => member.userId === userId) ||
         item.members.find((member) => member.userId === userId)) &&
       item.status === 'ACTIVE',
   )

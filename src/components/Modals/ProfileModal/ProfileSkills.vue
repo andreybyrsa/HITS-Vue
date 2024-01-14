@@ -62,13 +62,13 @@ const handleSaveSkills = async () => {
 <template>
   <div class="w-100 bg-white border p-3 rounded-3">
     <div class="header border-bottom pb-1">
-      <Typography class-name="fs-4 text-primary">Компетенции</Typography>
+      <Typography class-name="fs-5 text-primary">Компетенции</Typography>
       <Button
         v-if="!isUpdatingSkills && isOwnProfile"
         variant="light"
         @click="toogleUpdatingSkills(true)"
       >
-        Изменить стек
+        {{ profileSkills[0].skills.length ? 'Изменить стек' : 'Выбрать стек' }}
       </Button>
 
       <div
@@ -90,7 +90,10 @@ const handleSaveSkills = async () => {
       </div>
     </div>
 
-    <div class="content p-2">
+    <div
+      v-if="profileSkills[0].skills.length"
+      class="content p-2"
+    >
       <StackCategories
         v-if="isUpdatingSkills"
         :skills="profileSkills[0].skills"
@@ -101,6 +104,15 @@ const handleSaveSkills = async () => {
         v-else
         :skills="profileSkills"
       />
+    </div>
+
+    <div
+      v-else
+      class="d-flex w-100 justify-content-center mt-3"
+    >
+      <Typography class-name="fs-6 text-secondary">
+        Компетенции не выбраны
+      </Typography>
     </div>
   </div>
 </template>

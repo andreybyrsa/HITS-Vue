@@ -9,7 +9,7 @@ interface Profile extends User {
   ideas: Idea[]
 
   teamsExperience: TeamExperience[]
-  projectsExperience: ProjectMember[]
+  teamsProjects: ProjectMember[]
 }
 
 interface ProfileFullName {

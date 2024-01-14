@@ -21,13 +21,14 @@ interface Project {
 interface ProjectMember {
   projectId: string
   projectName: string
+  teamId: string
   teamName: string
   userId: string
   email: string
   firstName: string
   lastName: string
   startDate: string
-  finishDate: string
+  finishDate: string | null
   role: ProjectMemberRole
 }
 

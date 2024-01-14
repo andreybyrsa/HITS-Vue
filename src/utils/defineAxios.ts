@@ -18,10 +18,15 @@ interface AxiosMockConfig<RequestMocksType, ResponseMocksType = unknown> {
 }
 
 function getMockConfigParams<MocksType>(mockConfig: AxiosMockConfig<MocksType>) {
-  const key = Object.keys(mockConfig.params ?? {})[0] as keyof MocksType
-  const value = mockConfig.params?.[key] as MocksType[keyof MocksType]
+  const keys = Object.keys(mockConfig.params ?? {}) as (keyof MocksType)[]
+  const value = ref<MocksType[keyof MocksType]>()
+  for (const k of keys) {
+    if ((mockConfig.params?.[k] as MocksType[keyof MocksType]) !== undefined) {
+      value.value = mockConfig.params?.[k] as MocksType[keyof MocksType]
+    }
+  }
 
-  return { key, value }
+  return { keys, value }
 }
 
 function createMockResponse<MockResponseType>(
@@ -63,8 +68,16 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     return new Promise((resolve, reject) =>
       setTimeout(() => {
         if (mockConfig?.params) {
-          const { key, value } = getMockConfigParams(mockConfig)
-          const currentMockData = mockArray.value.find((mock) => mock[key] === value)
+          const { keys, value } = getMockConfigParams(mockConfig)
+          const currentMockData = mockArray.value.find((mock) => {
+            const obj = ref<MocksType[keyof MocksType]>()
+            for (const k of keys) {
+              if ((mock[k] as MocksType[keyof MocksType]) !== undefined) {
+                obj.value = mock[k] as MocksType[keyof MocksType]
+              } else return null
+            }
+            return obj.value === value.value
+          })
 
           if (currentMockData) {
             resolve(createMockResponse(structuredClone(currentMockData)))
@@ -251,10 +264,16 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
           }
         } else {
           if (mockConfig.params) {
-            const { key, value } = getMockConfigParams(mockConfig)
-            const currentMockDataIndex = mockArray.value.findIndex(
-              (mock) => mock[key] === value,
-            )
+            const { keys, value } = getMockConfigParams(mockConfig)
+            const currentMockDataIndex = mockArray.value.findIndex((mock) => {
+              const obj = ref<MocksType[keyof MocksType]>()
+              for (const k of keys) {
+                if ((mock[k] as MocksType[keyof MocksType]) !== undefined) {
+                  obj.value = mock[k] as MocksType[keyof MocksType]
+                } else return null
+              }
+              return obj.value === value.value
+            })
 
             if (currentMockDataIndex !== -1) {
               const currentMockData = mockArray.value[currentMockDataIndex]
@@ -304,11 +323,17 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (mockConfig.params) {
-          const { key, value } = getMockConfigParams(mockConfig)
+          const { keys, value } = getMockConfigParams(mockConfig)
           const { requestData } = mockConfig
-          const currentMockDataIndex = mockArray.value.findIndex(
-            (mock) => mock[key] === value,
-          )
+          const currentMockDataIndex = mockArray.value.findIndex((mock) => {
+            const obj = ref<MocksType[keyof MocksType]>()
+            for (const k of keys) {
+              if ((mock[k] as MocksType[keyof MocksType]) !== undefined) {
+                obj.value = mock[k] as MocksType[keyof MocksType]
+              } else return null
+            }
+            return obj.value === value.value
+          })
 
           if (currentMockDataIndex !== -1 && requestData) {
             const currentMockData = mockArray.value[currentMockDataIndex]
@@ -341,10 +366,16 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (mockConfig.params) {
-          const { key, value } = getMockConfigParams(mockConfig)
-          const currentMockIndex = mockArray.value.findIndex(
-            (mock) => mock[key] === value,
-          )
+          const { keys, value } = getMockConfigParams(mockConfig)
+          const currentMockIndex = mockArray.value.findIndex((mock) => {
+            const obj = ref<MocksType[keyof MocksType]>()
+            for (const k of keys) {
+              if ((mock[k] as MocksType[keyof MocksType]) !== undefined) {
+                obj.value = mock[k] as MocksType[keyof MocksType]
+              } else return null
+            }
+            return obj.value === value.value
+          })
 
           if (currentMockIndex !== -1) {
             mockArray.value.splice(currentMockIndex, 1)
