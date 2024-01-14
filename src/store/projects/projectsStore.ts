@@ -7,6 +7,7 @@ import InitialState from '@Store/projects/initialState'
 const useProjectsStore = defineStore('projects', {
   state: (): InitialState => ({
     projects: [],
+    myProjects: [],
   }),
 
   getters: {
@@ -31,8 +32,8 @@ const useProjectsStore = defineStore('projects', {
           return response
         }
 
-        this.projects = response
-        return this.projects
+        this.myProjects = response
+        return this.myProjects
       }
     },
   },

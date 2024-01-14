@@ -119,23 +119,9 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         iconName: 'bi bi-list',
         roles: ['PROJECT_OFFICE', 'ADMIN'],
       },
-      {
-        name: 'active-projects-list',
-        text: 'Список активных проектов',
-        to: '/projects/active', // FIX ROUTE
-        iconName: 'bi bi-list',
-        roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'EXPERT'],
-      },
     ],
-    iconName: 'bi bi-kanban',
-    roles: [
-      'INITIATOR',
-      'MEMBER',
-      'PROJECT_OFFICE',
-      'EXPERT',
-      'ADMIN',
-      'TEAM_OWNER',
-    ],
+    iconName: 'bi bi-briefcase',
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
   },
 ]
 

@@ -123,7 +123,7 @@ function updateActiveProjectRoute(activeProjects: Project[], index: number) {
     name: `project-${id}`,
     text: idea.name,
     roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
-    iconName: 'bi bi-basket3',
+    iconName: 'bi bi-kanban',
     to: `/project/${id}`, // FIX ROUTE
   }))
 
@@ -134,14 +134,14 @@ async function getActiveProjects() {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser.role !== 'EXPERT') {
-    const { token } = currentUser
+    const { token, id } = currentUser
     const projectsIndex = tabs.value.findIndex(({ name }) => name === 'projects')
 
     const spliceMarketsTab = () => {
       if (projectsIndex !== -1) tabs.value.splice(projectsIndex, 1)
     }
 
-    const response = await projectStore.getMyProjects(currentUser.id, token)
+    const response = await projectStore.getMyProjects(id, token)
 
     if (response instanceof Error) {
       spliceMarketsTab()

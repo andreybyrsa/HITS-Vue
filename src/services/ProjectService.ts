@@ -8,8 +8,16 @@ import { Project } from '@Domain/Project'
 
 const projectsAxios = defineAxios(getMocks().projects)
 
-function formatProjects(markets: Project[]): Project[] {
-  return markets.filter((item) => item.id !== '1')
+function formatGetMyProjects(projects: Project[], userId: string) {
+  console.log(projects)
+  console.log(userId)
+  return projects.filter(
+    (item) =>
+      (item.initiator.id === userId ||
+        item.team.members.find((member) => member.id === userId) ||
+        item.members.find((member) => member.userId === userId)) &&
+      item.status === 'ACTIVE',
+  )
 }
 
 const getAllProjects = async (token: string): Promise<Project[] | Error> => {
@@ -36,7 +44,7 @@ const getMyProjects = async (
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       {
-        formatter: formatProjects,
+        formatter: (projects) => formatGetMyProjects(projects, userId),
       },
     )
     .then((response) => response.data)

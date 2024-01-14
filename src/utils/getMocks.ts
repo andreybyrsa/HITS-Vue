@@ -17,7 +17,7 @@ import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Project, ProjectMember } from '@Domain/Project'
+import { Project } from '@Domain/Project'
 
 interface Mocks {
   users: User[]
@@ -47,8 +47,8 @@ interface Mocks {
 function getMocks(): Mocks {
   const users: User[] = [
     {
-      id: '0',
-      token: '10296538',
+      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+      token: '0',
       email: 'kirill.vlasov.05@inbox.ru',
       firstName: 'Кирилл',
       lastName: 'Власов',
@@ -242,7 +242,7 @@ function getMocks(): Mocks {
       skills: [],
     },
     {
-      id: '0',
+      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
       teamId: '1',
       userId: '0',
       email: 'kirill.vlasov.05@inbox.ru',
