@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { RequestToTeam, JoinStatus } from '@Domain/Team'
+import { RequestToTeam, JoinStatus, TeamExperience } from '@Domain/Team'
 
 import InitialState from '@Store/requestsToTeam/initialState'
 import TeamService from '@Services/TeamService'
@@ -44,7 +44,6 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
       status: JoinStatus,
       token: string,
     ) {
-      const profileStore = profilesStore()
       const { id, userId, teamId } = requestToTeam
 
       const response = await TeamService.updateRequestToTeamStatus(
@@ -68,9 +67,30 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
 
         if (status === 'ACCEPTED') {
           const teamsStore = useTeamStore()
+          const profileStore = profilesStore()
 
-          await teamsStore.addTeamMember({ ...requestToTeam, skills: [] }, token)
-          profileStore.addTeamExperience(userId, teamId)
+          const currentTeam = teamsStore.teams.find(({ id }) => id === teamId)
+          const currentProfile = profileStore.profiles.find(
+            (profile) => profile.id === userId,
+          )
+
+          if (currentTeam && currentProfile) {
+            const { name, id } = currentTeam
+
+            const newTeamExperience: TeamExperience = {
+              teamId: id,
+              teamName: name,
+              userId: userId,
+              firstName: '',
+              lastName: '',
+              startDate: new Date().toJSON().toString(),
+              finishDate: null,
+              hasActiveProject: false,
+            }
+
+            await teamsStore.addTeamMember({ ...requestToTeam, skills: [] }, token)
+            await profileStore.addTeamExperince(newTeamExperience, token)
+          }
         }
       }
     },

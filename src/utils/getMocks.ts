@@ -1411,7 +1411,7 @@ export const teamsProjectsMocks: ProjectMember[] = [
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
     lastName: 'Власов',
-    startDate: '2023-09-25T11:02:17Z',
+    startDate: '2023-11-25T11:02:17Z',
     finishDate: null,
     role: 'DEVELOPER',
   },

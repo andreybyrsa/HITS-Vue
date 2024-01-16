@@ -19,11 +19,12 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import {
   RequestTeamsMocks,
-  profilesMocks,
   requestsToTeamMocks,
   teamInvitationsMocks,
   teamMembersMocks,
+  teamsExperienceMocks,
   teamsMocks,
+  teamsProjectsMocks,
 } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
@@ -31,6 +32,8 @@ import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 const teamsAxios = defineAxios(teamsMocks)
 const teamMemberAxios = defineAxios(teamMembersMocks)
+const teamExperienceAxios = defineAxios(teamsExperienceMocks)
+const teamProjectAxios = defineAxios(teamsProjectsMocks)
 const teamInvitationsAxios = defineAxios(teamInvitationsMocks)
 const requestsToTeamAxios = defineAxios(requestsToTeamMocks)
 const requestTeamsAxios = defineAxios(RequestTeamsMocks)
@@ -43,42 +46,6 @@ function leaveFromTeamTeamMember(teamId: string, teamMemberId: string) {
       )
     }
   })
-}
-
-function finishTeamExperience(teamId: string, teamMemberId: string) {
-  const currentProfile = profilesMocks.find(({ id }) => id === teamMemberId)
-  const currentTeamExperience = currentProfile?.teamsExperience.find(
-    (experience) => experience.teamId === teamId && experience.finishDate === null,
-  )
-  const currentTeamProject = currentProfile?.teamsProjects.find(
-    (project) => project.teamId === teamId && project.finishDate === null,
-  )
-
-  if (currentTeamExperience) {
-    const currentDate = new Date().toJSON().toString()
-    currentTeamExperience.finishDate = currentDate
-    if (currentTeamProject) currentTeamProject.finishDate = currentDate
-  }
-}
-
-function addTeamExperince(userId: string, teamId: string) {
-  const currentProfile = profilesMocks.find(({ id }) => id === userId)
-  const currentTeam = teamsMocks.find((team) => team.id === teamId)
-
-  if (currentTeam && currentProfile) {
-    const newTeamExperience: TeamExperience = {
-      teamId: currentTeam.id,
-      teamName: currentTeam.name,
-      userId: userId,
-      firstName: '',
-      lastName: '',
-      startDate: new Date().toJSON().toString(),
-      finishDate: null,
-      hasActiveProject: false,
-    }
-
-    currentProfile.teamsExperience.push(newTeamExperience)
-  }
 }
 
 function formatTeamInvitationsByTeamId(
@@ -322,6 +289,19 @@ const filterByVacancies = async (
     .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
 }
 
+const addTeamExperince = async (
+  teamExperience: TeamExperience,
+  token: string,
+): Promise<TeamExperience | Error> => {
+  return teamExperienceAxios
+    .post(`${API_URL}/team/vacancy-filter`, teamExperience, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления стажа в команде'))
+}
+
 // --- PUT --- //
 const updateTeam = async (
   team: Team,
@@ -391,8 +371,6 @@ const updateRequestToTeamStatus = async (
 ): Promise<RequestToTeam | Error> => {
   if (MODE === 'DEVELOPMENT') {
     setRequestsAndInvitationsAnnulled(userId, requestId, null)
-
-    if (status === 'ACCEPTED') addTeamExperince(userId, teamId)
   }
 
   return requestsToTeamAxios
@@ -433,6 +411,48 @@ const updateInvitationToTeamStatus = async (
     .catch((error) =>
       handleAxiosError(error, 'Ошибка изменения статуса приглашения'),
     )
+}
+
+const finishTeamExperience = async (
+  teamId: string,
+  token: string,
+): Promise<Success | Error> => {
+  const currentDate = new Date().toJSON().toString()
+  return teamExperienceAxios
+    .putNoRequestBody<Success>(
+      `/team/finish/experience/${teamId}/`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { teamId, finishDate: null },
+        requestData: { finishDate: currentDate },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка назначения лидера'))
+}
+
+const finishTeamProject = async (
+  teamId: string,
+  token: string,
+): Promise<Success | Error> => {
+  const currentDate = new Date().toJSON().toString()
+  return teamProjectAxios
+    .putNoRequestBody<Success>(
+      `/team/finish/project/${teamId}/`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { teamId, finishDate: null },
+        requestData: { finishDate: currentDate },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка назначения лидера'))
 }
 
 // --- DELETE --- //
@@ -486,7 +506,6 @@ const leaveFromTeam = async (
 ): Promise<Success | Error> => {
   if (MODE === 'DEVELOPMENT') {
     leaveFromTeamTeamMember(teamId, teamMemberId)
-    finishTeamExperience(teamId, teamMemberId)
   }
 
   return teamMemberAxios
@@ -517,11 +536,14 @@ const TeamService = {
   createRequestToTeam,
   filterBySkillsAndRole,
   filterByVacancies,
+  addTeamExperince,
 
   updateTeam,
   updateRequestToTeamStatus,
   updateInvitationToTeamStatus,
   appointLeaderTeam,
+  finishTeamExperience,
+  finishTeamProject,
 
   deleteTeam,
   kickTeamMember,
