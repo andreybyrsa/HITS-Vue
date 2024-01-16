@@ -18,6 +18,7 @@ interface Team {
   name: string
   description: string
   closed: boolean
+  workStatus: boolean
   isRefused: boolean
   membersCount: number
   owner: TeamMember
