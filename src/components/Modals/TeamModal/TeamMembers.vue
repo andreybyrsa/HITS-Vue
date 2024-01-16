@@ -75,6 +75,11 @@ const teamMemberColumns: TableColumn<TeamMember>[] = [
     label: 'Фамилия',
     size: 'col-3',
   },
+  {
+    key: 'projectStatus',
+    label: 'Статус',
+    size: 'col-3',
+  },
 ]
 
 const dropdownTeamMemberActions: DropdownMenuAction<TeamMember>[] = [

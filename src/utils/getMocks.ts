@@ -237,6 +237,7 @@ function getMocks(): Mocks {
       email: 'timyr@mail.com',
       firstName: 'Тимур',
       lastName: 'Минязев',
+      projectStatus: 'ACTIVE',
       skills: [],
     },
     {
@@ -246,6 +247,7 @@ function getMocks(): Mocks {
       email: 'kirill.vlasov.05@inbox.ru',
       firstName: 'Кирилл',
       lastName: 'Власов',
+      projectStatus: 'ACTIVE',
       skills: [],
     },
     {
@@ -255,6 +257,7 @@ function getMocks(): Mocks {
       email: 'admin@mail.com',
       firstName: 'Админ',
       lastName: 'Иванов',
+      projectStatus: 'ACTIVE',
       skills: [],
     },
     {
@@ -264,6 +267,7 @@ function getMocks(): Mocks {
       email: 'deins@mail.com',
       firstName: 'Денис',
       lastName: 'Денисович',
+      projectStatus: 'NOTACTIVE',
       skills: [],
     },
   ]
@@ -522,10 +526,10 @@ function getMocks(): Mocks {
     {
       id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
       initiator: {
-        id: '1',
-        email: 'barbakovom@tyuiu.ru',
-        lastName: 'Барбаков',
-        firstName: 'Олег',
+        id: '0',
+        email: 'kirill.vlasov.05@inbox.ru',
+        lastName: 'Кирилл',
+        firstName: 'Власов',
       } as User,
       team: teams[0],
       marketId: '201',
@@ -576,6 +580,7 @@ function getMocks(): Mocks {
       acceptedRequests: 0,
       isFavorite: false,
     },
+
     {
       id: '279b3fbf-de63-426f-bf9f-0c01ea19706b',
       initiator: {

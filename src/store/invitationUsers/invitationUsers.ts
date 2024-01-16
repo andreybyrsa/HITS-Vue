@@ -71,7 +71,10 @@ const useInvitationUsersStore = defineStore('invitationUsers', {
 
         if (status === 'ACCEPTED') {
           const teamsStore = useTeamStore()
-          await teamsStore.addTeamMember({ ...invitationToTeam, skills: [] }, token)
+          await teamsStore.addTeamMember(
+            { ...invitationToTeam, skills: [], projectStatus: 'NOTACTIVE' },
+            token,
+          )
         }
       }
     },

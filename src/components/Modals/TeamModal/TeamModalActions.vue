@@ -70,6 +70,19 @@ function getAccessToInvite() {
   }
 }
 
+function getAccessToInviteProject() {
+  if (user.value) {
+    const { id, role } = user.value
+    const { owner, members } = props.team
+
+    const isNotActive = members.find((user) => user.projectStatus === 'NOTACTIVE')
+
+    return (
+      (role === 'ADMIN' || (id === owner.id && role === 'TEAM_OWNER')) && isNotActive
+    )
+  }
+}
+
 function getAccessRequestToTeam() {
   if (user.value) {
     const { id, role } = user.value
@@ -323,6 +336,14 @@ function closeConfirmModal() {
       @click="openInvitationModal"
     >
       Пригласить пользователя
+    </Button>
+
+    <Button
+      v-if="getAccessToInviteProject()"
+      variant="success"
+      @click="openInvitationModal"
+    >
+      Добавить пользователя в проект
     </Button>
 
     <Button

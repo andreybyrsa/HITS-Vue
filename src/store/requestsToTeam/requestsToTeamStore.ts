@@ -64,7 +64,10 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
 
         if (status === 'ACCEPTED') {
           const teamsStore = useTeamStore()
-          await teamsStore.addTeamMember({ ...requestToTeam, skills: [] }, token)
+          await teamsStore.addTeamMember(
+            { ...requestToTeam, skills: [], projectStatus: 'NOTACTIVE' },
+            token,
+          )
         }
       }
     },
