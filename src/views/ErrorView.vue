@@ -17,6 +17,7 @@ function navigateToHomePage() {
 
 <template>
   <PageLayout content-class-name="error-view__content">
+    <div>1</div>
     <template #content>
       <img
         :src="develop"
