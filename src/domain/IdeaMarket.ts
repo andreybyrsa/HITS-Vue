@@ -2,7 +2,10 @@ import { User } from '@Domain/User'
 import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 
-type IdeaMarketStatusType = 'RECRUITMENT_IS_OPEN' | 'RECRUITMENT_IS_CLOSED'
+type IdeaMarketStatusType =
+  | 'RECRUITMENT_IS_OPEN'
+  | 'RECRUITMENT_IS_CLOSED'
+  | 'PROJECT'
 
 interface IdeaMarket {
   id: string

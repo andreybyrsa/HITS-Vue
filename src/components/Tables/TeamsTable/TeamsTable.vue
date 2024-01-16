@@ -116,7 +116,7 @@ const teamsTableHeader = computed<TableHeader>(() => ({
 const teamTableColumns: TableColumn<Team>[] = [
   {
     key: 'closed',
-    label: 'Статус',
+    label: 'Приватность',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusStyle,
     getRowCellFormat: getTranslatedStatus,
@@ -126,6 +126,13 @@ const teamTableColumns: TableColumn<Team>[] = [
     label: 'Название',
     size: 'col-3',
     rowCellClick: navigateToTeamModal,
+  },
+  {
+    key: 'workStatus',
+    label: 'Статус',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    getRowCellStyle: getStatusWorkStyle,
+    getRowCellFormat: getTranslatedWorkStatus,
   },
   {
     key: 'membersCount',
@@ -332,8 +339,23 @@ function getStatusStyle(closed: boolean) {
   return initialClass
 }
 
+function getStatusWorkStyle(workStatus: boolean) {
+  const initialClass = ['px-2', 'py-1', 'rounded-4']
+  if (workStatus) {
+    initialClass.push('bg-warning-subtle', 'text-warning')
+    return initialClass
+  }
+
+  initialClass.push('bg-primary-subtle', 'text-primary')
+  return initialClass
+}
+
 function getTranslatedStatus(closed: boolean) {
   return closed ? 'Закрыта' : 'Открыта'
+}
+
+function getTranslatedWorkStatus(workStatus: boolean) {
+  return workStatus ? 'В работе' : 'В поисках'
 }
 
 function getFormattedDate(date: string) {
