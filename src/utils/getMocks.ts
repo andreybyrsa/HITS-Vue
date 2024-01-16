@@ -259,7 +259,7 @@ export const teamsMocks: Team[] = [
     id: '0',
     name: 'Визитка',
     closed: false,
-    workStatus: false,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -275,7 +275,7 @@ export const teamsMocks: Team[] = [
     id: '1',
     name: 'Кактус',
     closed: false,
-    workStatus: false,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -291,7 +291,7 @@ export const teamsMocks: Team[] = [
     id: '2',
     name: 'Карасики',
     closed: false,
-    workStatus: true,
+    hasActiveProject: true,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
