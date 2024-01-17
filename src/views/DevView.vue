@@ -11,13 +11,14 @@ import NavTab from '@Components/NavTab/NavTab.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
-import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
+// import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 const router = useRouter()
 
 onMounted(async () => {
@@ -66,13 +67,14 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
   <PageLayout content-class-name="dev-page__content p-3">
     <template #leftSideBar>
       <LeftSideBar />
-      <MarketModal
+      <!-- <MarketModal
         :isOpened="true"
         :market="null"
-      ></MarketModal>
+      ></MarketModal> -->
     </template>
 
     <template #content>
+      <FinishProjectModal :is-opened="true" />
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>
