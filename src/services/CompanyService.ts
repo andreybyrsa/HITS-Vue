@@ -5,12 +5,12 @@ import { User } from '@Domain/User'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import { companiesMocks, usersMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
-const companiesAxios = defineAxios(getMocks().companies)
-const usersAxios = defineAxios(getMocks().users)
+const companiesAxios = defineAxios(companiesMocks)
+const usersAxios = defineAxios(usersMocks)
 
 function formatOwnerCompanies(owenId: string, companies: Company[]) {
   return companies.filter((company) => company.owner.id === owenId)
