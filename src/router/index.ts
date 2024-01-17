@@ -26,6 +26,7 @@ import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import MarketsView from '@Views/Markets/MarketsView.vue'
 import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
+import Project from '@Views/Project/Project.vue'
 
 import HomeView from '@Views/HomeView.vue'
 
@@ -173,6 +174,14 @@ const routes: RouteRecordRaw[] = [
         component: MarketsView,
         meta: { roles: ['PROJECT_OFFICE', 'ADMIN'] },
       },
+      {
+        path: ':id',
+        name: 'project',
+        component: Project,
+        meta: {
+          roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+        },
+      },
     ],
   },
   {
@@ -240,15 +249,15 @@ const routes: RouteRecordRaw[] = [
     path: '/dev',
     component: DevView,
   },
-  // {
-  //   path: '/error',
-  //   name: 'error',
-  //   component: ErrorView,
-  // },
-  // {
-  //   path: '/:pathMatch(.*)*',
-  //   redirect: { name: 'error' },
-  // },
+  {
+    path: '/error',
+    name: 'error',
+    component: ErrorView,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: { name: 'error' },
+  },
 ]
 
 const router = createRouter({

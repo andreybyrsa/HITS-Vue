@@ -2,8 +2,8 @@ import { Idea } from '@Domain/Idea'
 import { User } from '@Domain/User'
 import { Team } from '@Domain/Team'
 
-type ProjectStatus = 'ACTIVE' | 'DONE' | 'PAUSED' | 'FAILED'
-type ProjectMemberRole = 'CUSTOMER' | 'TEAM_LEADER' | 'DEVELOPER'
+type ProjectStatus = 'ACTIVE' | 'DONE'
+type ProjectMemberRole = 'CUSTOMER' | 'TEAM_LEADER' | 'MEMBER'
 
 interface Project {
   id: string
@@ -32,4 +32,4 @@ interface ProjectMember {
   role: ProjectMemberRole
 }
 
-export { Project, ProjectMember }
+export { Project, ProjectMember, ProjectStatus, ProjectMemberRole }

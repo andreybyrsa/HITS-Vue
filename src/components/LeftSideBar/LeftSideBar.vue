@@ -124,7 +124,7 @@ function updateActiveProjectRoute(activeProjects: Project[], index: number) {
     text: idea.name,
     roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
     iconName: 'bi bi-kanban',
-    to: `/project/${id}`, // FIX ROUTE
+    to: `/projects/${id}`, // FIX ROUTE
   }))
 
   tabs.value[index].routes = [...initialProjectRoutes, ...projectRoutes]

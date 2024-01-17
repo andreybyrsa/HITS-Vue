@@ -29,6 +29,20 @@ const getAllProjects = async (token: string): Promise<Project[] | Error> => {
     .catch((error) => handleAxiosError(error, 'Ошибка получения проектов'))
 }
 
+const getProject = async (id: string, token: string): Promise<Project | Error> => {
+  return projectsAxios
+    .get(
+      '/ТУТ-БУДЕТ-ЧТО-ТО', // FIX ROUTE
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения проектов'))
+}
+
 const getMyProjects = async (
   userId: string,
   token: string,
@@ -52,6 +66,7 @@ const getMyProjects = async (
 const ProfileService = {
   getAllProjects,
   getMyProjects,
+  getProject,
 }
 
 export default ProfileService

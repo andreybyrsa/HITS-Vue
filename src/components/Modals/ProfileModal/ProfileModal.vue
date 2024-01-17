@@ -54,11 +54,11 @@ onMounted(async () => {
         refValue: DBProfile,
         onErrorFunc: openErrorNotification,
       },
-      // {
-      //   request: () => profilesStore.fetchProfileAvatar(profileId, token),
-      //   refValue: DBProfileAvatar,
-      //   onErrorFunc: openErrorNotification,
-      // },
+      {
+        request: () => profilesStore.fetchProfileAvatar(profileId, token),
+        refValue: DBProfileAvatar,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
     await sendParallelRequests(profileParallelRequests)
