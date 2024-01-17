@@ -113,9 +113,9 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     to: '/projects',
     routes: [
       {
-        name: 'all-projects-list',
+        name: 'list',
         text: 'Список проектов',
-        to: '/projects/list', // FIX ROUTE
+        to: '/projects/list',
         iconName: 'bi bi-list',
         roles: ['PROJECT_OFFICE', 'ADMIN'],
       },

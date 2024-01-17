@@ -160,6 +160,22 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/projects',
+    redirect: { name: 'projects-list' },
+    name: 'projects',
+    meta: {
+      roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'projects-list',
+        component: MarketsView,
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN'] },
+      },
+    ],
+  },
+  {
     path: '/admin',
     redirect: { path: '/admin/users' },
     meta: { roles: ['ADMIN'] },
@@ -224,15 +240,15 @@ const routes: RouteRecordRaw[] = [
     path: '/dev',
     component: DevView,
   },
-  {
-    path: '/error',
-    name: 'error',
-    component: ErrorView,
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: { name: 'error' },
-  },
+  // {
+  //   path: '/error',
+  //   name: 'error',
+  //   component: ErrorView,
+  // },
+  // {
+  //   path: '/:pathMatch(.*)*',
+  //   redirect: { name: 'error' },
+  // },
 ]
 
 const router = createRouter({
