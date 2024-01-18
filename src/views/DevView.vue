@@ -18,7 +18,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
-// import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
+import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 const router = useRouter()
 
 onMounted(async () => {
@@ -74,7 +74,7 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
     </template>
 
     <template #content>
-      <FinishProjectModal :is-opened="true" />
+      <FinishProjectModal :is-opened="false" />
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>

@@ -105,7 +105,8 @@ defineProps<FinishProjectModalProps>()
         <div class="text-primary">Отчет*</div>
         <Textarea
           name="report"
-          class-name="report-textarea rounded border w-100 text-secondary"
+          class-name="report-textarea rounded border w-100"
+          placeholder="Отчет"
           >Отчет</Textarea
         >
       </div>
