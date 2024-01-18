@@ -91,13 +91,17 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
-        meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
+        meta: {
+          roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+        },
         children: [
           {
             path: ':teamId',
             name: 'team',
             component: TeamModal,
-            meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
+            meta: {
+              roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+            },
           },
           {
             name: 'profile',

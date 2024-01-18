@@ -110,6 +110,12 @@ async function getFavoriteIdeasMarket() {
 }
 
 const searchedIdeas = computed(() => {
+  if (filterByIdeaMarketStatus.value) {
+    return ideasMarket.value?.filter(
+      (idea) => idea.status === filterByIdeaMarketStatus.value,
+    )
+  }
+
   if (searchedValue.value) {
     const lowercaseSearch = searchedValue.value.toLowerCase().trim()
 
