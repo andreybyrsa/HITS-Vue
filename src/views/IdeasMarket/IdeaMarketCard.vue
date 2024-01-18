@@ -126,6 +126,9 @@ function getIdeaMarketStatusStyle() {
   if (status === 'RECRUITMENT_IS_OPEN') {
     initialClass.push('text-success')
     return initialClass
+  } else if (status === 'PROJECT') {
+    initialClass.push('text-warning')
+    return initialClass
   }
 
   initialClass.push('text-danger')
