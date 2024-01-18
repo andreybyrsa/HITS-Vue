@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import ProjectProps from '@Views/Project/Project.types'
+import { ProjectProps } from '@Views/Project/Project.types'
 
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
@@ -30,7 +30,12 @@ defineProps<ProjectProps>()
       <ProjectMembersTable :projectMembers="project.members" />
     </div>
 
-    <ProjectInfo />
+    <ProjectInfo
+      :initiator="project.idea.initiator"
+      :customer="project.idea.customer"
+      :startDate="project.startDate"
+      :finishDate="project.finisDate"
+    />
   </div>
 </template>
 
