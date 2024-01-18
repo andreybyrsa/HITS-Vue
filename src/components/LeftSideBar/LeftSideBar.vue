@@ -15,8 +15,6 @@ import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/
 import RolesTypes from '@Domain/Roles'
 import { Market } from '@Domain/Market'
 
-import MarketService from '@Services/MarketService'
-
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useMarketsStore from '@Store/markets/marketsStore'
@@ -54,7 +52,7 @@ const isHovered = useElementHover(leftSideBarRef, {
 })
 
 watch(
-  markets,
+  markets || projects,
   () => {
     const currentMarkets = markets.value.filter(({ status }) => status === 'ACTIVE')
     const marketIndex = tabs.value.findIndex(({ name }) => name === 'markets')
@@ -66,15 +64,17 @@ watch(
 watch(
   projects,
   () => {
-    const currentProjects = projects.value.filter(() => true)
-    const marketIndex = tabs.value.findIndex(({ name }) => name === 'markets')
-    if (marketIndex !== -1) updateActiveProjectRoute(currentProjects, marketIndex)
+    const currentProjects = projects.value.filter(
+      ({ status }) => status === 'ACTIVE',
+    )
+    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
+    if (projectIndex !== -1) updateActiveProjectRoute(currentProjects, projectIndex)
   },
   { deep: true },
 )
 
-onMounted(getActiveMarkets)
 onMounted(getActiveProjects)
+onMounted(getActiveMarkets)
 
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const initialMarketRoutes: LeftSideBarTabType[] =
@@ -101,7 +101,7 @@ async function getActiveMarkets() {
       if (index !== -1) tabs.value.splice(index, 1)
     }
 
-    const response = await MarketService.getAllActiveMarkets(token)
+    const response = await marketsStore.getAllActiveMarkets(token)
 
     if (response instanceof Error) {
       spliceMarketsTab()
@@ -124,7 +124,7 @@ function updateActiveProjectRoute(activeProjects: Project[], index: number) {
     text: name,
     roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
     iconName: 'bi bi-kanban',
-    to: `/projects/${id}`, // FIX ROUTE
+    to: `/projects/${id}`,
   }))
 
   tabs.value[index].routes = [...initialProjectRoutes, ...projectRoutes]

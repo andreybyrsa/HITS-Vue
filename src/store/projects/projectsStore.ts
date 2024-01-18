@@ -3,6 +3,11 @@ import { defineStore } from 'pinia'
 import ProjectService from '@Services/ProjectService'
 
 import InitialState from '@Store/projects/initialState'
+import { IdeaMarket } from '@Domain/IdeaMarket'
+import { Project } from '@Domain/Project'
+import { Team, TeamMember } from '@Domain/Team'
+import IdeasMarketService from '@Services/IdeasMarketService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const useProjectsStore = defineStore('projects', {
   state: (): InitialState => ({
@@ -38,7 +43,59 @@ const useProjectsStore = defineStore('projects', {
     },
   },
 
-  actions: {},
+  actions: {
+    async postProject(
+      marketId: string,
+      ideaMarket: IdeaMarket,
+      token: string,
+      team: Team,
+      teamMember: TeamMember[],
+    ) {
+      if (ideaMarket.team !== null) {
+        const project: Project = {
+          id: '',
+          name: ideaMarket.name,
+          description: ideaMarket.description,
+          customer: ideaMarket.customer,
+          initiator: ideaMarket.initiator,
+          team: ideaMarket.team,
+          members: teamMember.map((member) => {
+            return {
+              projectId: '3456789087654345678',
+              projectName: ideaMarket.name,
+              teamId: member.teamId,
+              teamName: team.name,
+              userId: member.userId,
+              email: member.email,
+              firstName: member.firstName,
+              lastName: member.lastName,
+              startDate: new Date().toJSON().toString(),
+              finishDate: '',
+              role: 'MEMBER',
+            }
+          }),
+          startDate: new Date().toJSON().toString(),
+          finishDate: '',
+          status: 'ACTIVE',
+        }
+
+        const response = await IdeasMarketService.convertIdeaToProject(
+          project,
+          token,
+          marketId,
+        )
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          this.projects?.push(response)
+        }
+      }
+    },
+  },
 })
 
 export default useProjectsStore

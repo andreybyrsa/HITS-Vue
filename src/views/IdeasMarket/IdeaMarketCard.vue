@@ -20,6 +20,7 @@ import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useProjectsStore from '@Store/projects/projectsStore'
 
 const props = defineProps<IdeaMarketCardProps>()
 const emit = defineEmits<IdeaMarketCardEmits>()
@@ -29,6 +30,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
+
+const projectsStore = useProjectsStore()
 
 const availableStatus = getIdeaMarketStatus()
 
@@ -83,10 +86,30 @@ const handleRemoveIdeaFromFavorites = async () => {
   }
 }
 
+const handleConvertIdeaToProject = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token && props.ideaMarket && props.ideaMarket.team !== null) {
+    const { token } = currentUser
+    const { id, team } = props.ideaMarket
+    const { members } = team
+
+    await projectsStore.postProject(id, props.ideaMarket, token, team, members)
+    console.log(projectsStore.projects)
+  }
+}
+
 function checkIdeaOwned() {
   return (
     user.value?.role === 'TEAM_OWNER' &&
     props.ideaMarket.status === 'RECRUITMENT_IS_OPEN'
+  )
+}
+
+function checkIdeaDone() {
+  return (
+    user.value?.role === ('ADMIN' || 'PROJECT_OFFICE') &&
+    props.ideaMarket.status === 'RECRUITMENT_IS_CLOSED'
   )
 }
 
@@ -187,6 +210,16 @@ function getIdeaMarketStatusStyle() {
         >
           Подать заявку
         </Button>
+
+        <Button
+          v-if="checkIdeaDone()"
+          class-name="idea-market__send-idea-button blink btn-sm"
+          variant="success"
+          prepend-icon-name="bi bi-plus-lg fs-6"
+          @click="handleConvertIdeaToProject"
+        >
+          Перевести в проект
+        </Button>
       </div>
     </div>
   </div>
@@ -204,6 +237,22 @@ function getIdeaMarketStatusStyle() {
 
   &__send-request-button {
     @include fixedWidth(135px);
+  }
+
+  &__send-idea-button {
+    @include fixedWidth(170px);
+  }
+
+  .blink {
+    animation: blink 0.5s infinite;
+  }
+  @keyframes blink {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0.8;
+    }
   }
 }
 </style>

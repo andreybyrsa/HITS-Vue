@@ -1,7 +1,5 @@
-import { Idea } from '@Domain/Idea'
 import { User } from '@Domain/User'
 import { Team } from '@Domain/Team'
-import Company from '@Domain/Company'
 
 type ProjectStatus = 'ACTIVE' | 'DONE'
 type ProjectMemberRole = 'CUSTOMER' | 'TEAM_LEADER' | 'MEMBER'
