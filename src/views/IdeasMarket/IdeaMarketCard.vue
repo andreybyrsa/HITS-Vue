@@ -20,6 +20,7 @@ import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useProjectsStore from '@Store/projects/projectsStore'
 
 const props = defineProps<IdeaMarketCardProps>()
 const emit = defineEmits<IdeaMarketCardEmits>()
@@ -29,6 +30,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
+
+const projectsStore = useProjectsStore()
 
 const availableStatus = getIdeaMarketStatus()
 
@@ -80,6 +83,19 @@ const handleRemoveIdeaFromFavorites = async () => {
     } else if (!props.isAllIdeas && currentIdeaIndex !== -1) {
       ideas.value.splice(currentIdeaIndex, 1)
     }
+  }
+}
+
+const handleConvertIdeaToProject = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token && props.ideaMarket && props.ideaMarket.team !== null) {
+    const { token } = currentUser
+    const { id, team } = props.ideaMarket
+    const { members } = team
+
+    await projectsStore.postProject(id, props.ideaMarket, token, team, members)
+    console.log(projectsStore.projects)
   }
 }
 
@@ -200,7 +216,7 @@ function getIdeaMarketStatusStyle() {
           class-name="idea-market__send-idea-button blink btn-sm"
           variant="success"
           prepend-icon-name="bi bi-plus-lg fs-6"
-          @click="console.log(1)"
+          @click="handleConvertIdeaToProject"
         >
           Перевести в проект
         </Button>

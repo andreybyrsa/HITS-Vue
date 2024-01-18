@@ -549,6 +549,57 @@ export const ideasMarketMocks: IdeaMarket[] = [
     acceptedRequests: 0,
     isFavorite: false,
   },
+  {
+    id: 'dfaedabe-2b3b-44e7-851e-35c9c67654',
+    initiator: usersMocks[0],
+    team: teamsMocks[0],
+    marketId: '201',
+    name: 'Цифровой помощник сотрудника приемной комиссии университета',
+    problem: 'null',
+    description: 'null',
+    solution:
+      'Разработать web приложение для прогнозирования предпочтительного направления обучения поступающих , прогноза успеваемости и успешности с применением технологий машинного обучения и искусственного интеллекта ',
+    result: 'null',
+    maxTeamSize: 7,
+    customer: 'null',
+    position: 7,
+    stack: [
+      {
+        id: 'b629e3cb-c544-4b7c-8fa6-679df5fffc9c',
+        name: 'Python',
+        type: 'LANGUAGE',
+        confirmed: true,
+      },
+      {
+        id: '74d9f126-e188-4d1e-abb3-d494e5e5fa89',
+        name: 'Keras',
+        type: 'FRAMEWORK',
+        confirmed: true,
+      },
+      {
+        id: '2a03579d-9e40-4e85-a60e-6605a5a961dd',
+        name: 'Scikit Learn',
+        type: 'FRAMEWORK',
+        confirmed: true,
+      },
+      {
+        id: '5165bc7b-1495-4540-9517-2f1f4a54f273',
+        name: 'PostgreSQL',
+        type: 'DATABASE',
+        confirmed: true,
+      },
+      {
+        id: '0c0c65ee-aba3-4ba4-80ed-cf1ebe26da36',
+        name: 'Docker',
+        type: 'DEVOPS',
+        confirmed: true,
+      },
+    ],
+    status: 'RECRUITMENT_IS_CLOSED',
+    requests: 0,
+    acceptedRequests: 0,
+    isFavorite: false,
+  },
 ]
 
 export const marketMocks: Market[] = [
@@ -1036,7 +1087,9 @@ export const projectMocks: Project[] = [
   {
     id: '0',
 
-    idea: ideasMocks[1],
+    name: '1',
+    description: '1',
+    customer: 'ВШЦТ',
     initiator: usersMocks[1],
     team: teamsMocks[5],
     members: [
@@ -1055,13 +1108,15 @@ export const projectMocks: Project[] = [
       },
     ],
     startDate: '2023-10-25T11:02:17Z',
-    finisDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
     status: 'DONE',
   },
   {
     id: '1',
 
-    idea: ideasMocks[1],
+    name: '2',
+    description: '1',
+    customer: 'ВШЦТ',
     initiator: usersMocks[1],
     team: teamsMocks[5],
     members: [
@@ -1080,7 +1135,7 @@ export const projectMocks: Project[] = [
       },
     ],
     startDate: '2023-10-25T11:02:17Z',
-    finisDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
     status: 'DONE',
   },
 ]
