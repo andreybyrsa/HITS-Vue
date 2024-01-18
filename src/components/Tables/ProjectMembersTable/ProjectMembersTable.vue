@@ -21,6 +21,7 @@ import {
   getRoleProjectMember,
   getRoleProjectMemberStyle,
 } from '@Utils/getRoleProjectMember'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 defineProps<ProjectMembersTableProps>()
 
@@ -71,7 +72,6 @@ function navigateToUserProfile(member: ProjectMember) {
     },
   }
 
-  router.addRoute('project', profileRoute)
-  router.push({ path: `/profile/${member.userId}` })
+  navigateToAliasRoute('project', `/profile/${member.userId}`, profileRoute)
 }
 </script>

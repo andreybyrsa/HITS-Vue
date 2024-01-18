@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import ProjectProps from '@Views/Project/Project.types'
+import { ProjectProps } from '@Views/Project/Project.types'
 
 import { getProjectStatus, getProjectStatusStyle } from '@Utils/getProjectStatus'
 
