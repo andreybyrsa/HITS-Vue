@@ -29,9 +29,13 @@ defineProps<FinishProjectModalProps>()
 
       <div class="d-flex gap-3 w-100">
         <div class="number rounded border">9.3</div>
-        <div class="justify-content-between d-flex text-nowrap rounded border w-100">
+        <div
+          class="member justify-content-between d-flex text-nowrap rounded border w-100"
+        >
           Артем Иванов
-          <div class="bg-warning bg-opacity-75 rounded border text-secondary">
+          <div
+            class="bg-warning bg-opacity-75 rounded border text-secondary m-1 px-1"
+          >
             Тим-лидер
           </div>
         </div>
@@ -39,9 +43,11 @@ defineProps<FinishProjectModalProps>()
 
       <div class="d-flex gap-3 w-100">
         <div class="number rounded border">7.5</div>
-        <div class="justify-content-between d-flex text-nowrap rounded border w-100">
+        <div
+          class="member justify-content-between d-flex text-nowrap rounded border w-100"
+        >
           Артем Иванов
-          <div class="bg-primary bg-opacity-50 rounded border text-primary">
+          <div class="bg-primary bg-opacity-50 rounded border text-primary m-1 px-1">
             Участник
           </div>
         </div>
@@ -49,9 +55,11 @@ defineProps<FinishProjectModalProps>()
 
       <div class="d-flex gap-3 w-100">
         <div class="number rounded border">6.8</div>
-        <div class="justify-content-between d-flex text-nowrap rounded border w-100">
+        <div
+          class="member justify-content-between d-flex text-nowrap rounded border w-100"
+        >
           Артем Иванов
-          <div class="bg-primary bg-opacity-50 rounded border text-primary">
+          <div class="m-1 px-1 bg-primary bg-opacity-50 rounded border text-primary">
             Участник
           </div>
         </div>
@@ -59,9 +67,11 @@ defineProps<FinishProjectModalProps>()
 
       <div class="d-flex gap-3 w-100">
         <div class="number rounded border">8.1</div>
-        <div class="justify-content-between d-flex text-nowrap rounded border w-100">
+        <div
+          class="member justify-content-between d-flex text-nowrap rounded border w-100"
+        >
           Артем Иванов
-          <div class="bg-primary bg-opacity-50 rounded border text-primary">
+          <div class="m-1 px-1 bg-primary bg-opacity-50 rounded border text-primary">
             Участник
           </div>
         </div>
@@ -69,9 +79,11 @@ defineProps<FinishProjectModalProps>()
 
       <div class="d-flex gap-3 w-100">
         <div class="number rounded border">8.0</div>
-        <div class="justify-content-between d-flex text-nowrap rounded border w-100">
+        <div
+          class="member justify-content-between d-flex text-nowrap rounded border w-100"
+        >
           Артем Иванов
-          <div class="bg-primary bg-opacity-50 rounded border text-primary">
+          <div class="m-1 px-1 bg-primary bg-opacity-50 rounded border text-primary">
             Участник
           </div>
         </div>
@@ -79,9 +91,11 @@ defineProps<FinishProjectModalProps>()
 
       <div class="d-flex gap-3 w-100">
         <div class="number rounded border">7.9</div>
-        <div class="justify-content-between d-flex text-nowrap rounded border w-100">
+        <div
+          class="member justify-content-between d-flex text-nowrap rounded border w-100"
+        >
           Артем Иванов
-          <div class="bg-primary bg-opacity-50 rounded border text-primary">
+          <div class="m-1 px-1 bg-primary bg-opacity-50 rounded border text-primary">
             Участник
           </div>
         </div>
@@ -128,9 +142,15 @@ defineProps<FinishProjectModalProps>()
 
 .report-textarea {
   resize: none;
+  height: 200px;
 }
 
 .number {
   width: 150px;
+  @include flexible(center, start);
+}
+
+.member {
+  @include flexible(center, start);
 }
 </style>
