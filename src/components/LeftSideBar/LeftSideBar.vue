@@ -122,7 +122,7 @@ function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
     name: `project-${id}`,
     text: name,
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER'],
     iconName: 'bi bi-kanban',
     to: `/projects/${id}`,
   }))
