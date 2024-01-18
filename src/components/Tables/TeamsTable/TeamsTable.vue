@@ -128,7 +128,7 @@ const teamTableColumns: TableColumn<Team>[] = [
     rowCellClick: navigateToTeamModal,
   },
   {
-    key: 'workStatus',
+    key: 'hasActiveProject',
     label: 'Статус',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusWorkStyle,
