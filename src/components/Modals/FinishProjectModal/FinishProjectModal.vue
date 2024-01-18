@@ -6,103 +6,101 @@ import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 
 import Typography from '@Components/Typography/Typography.vue'
 
-defineProps<FinishProjectModalProps>()
+import { FinishProjectModalEmits } from '@Components/Modals/FinishProjectModal/FinishProjectModal.types'
+import { ref } from 'vue'
+const props = defineProps<FinishProjectModalProps>()
+
+const emit = defineEmits<FinishProjectModalEmits>()
+
+// function closeModal() {
+//   emit('close-modal')
+// }
+
+const members = [
+  {
+    score: 9.3,
+    name: 'Артем Иванов',
+    role: 'Тим-лидер',
+  },
+  {
+    score: 7.5,
+    name: 'Артем Иванов',
+    role: 'Участник',
+  },
+  {
+    score: 6.8,
+    name: 'Артем Иванов',
+    role: 'Участник',
+  },
+  {
+    score: 8.1,
+    name: 'Артем Иванов',
+    role: 'Участник',
+  },
+  {
+    score: 8.0,
+    name: 'Артем Иванов',
+    role: 'Участник',
+  },
+  {
+    score: 7.9,
+    name: 'Артем Иванов',
+    role: 'Участник',
+  },
+]
 </script>
 
 <template>
-  <ModalLayout :is-opened="isOpened">
+  <ModalLayout
+    :is-opened="isOpened"
+    @on-outside-close="emit('close-modal')"
+  >
     <div class="d-flex finish-project-modal bg-white rounded p-3">
       <div
         class="d-flex gap-5 fs-2 w-100 justify-content-between text-secondary border-bottom border-2"
       >
         <Typography class-name="text-primary fs-3">Завершение проекта</Typography>
         <Button
+          @click="emit('close-modal')"
           class-name="fs-4"
           variant="close"
         ></Button>
       </div>
 
-      <div class="d-flex gap-3 text-primary w-100">
-        <div>Средняя оценка</div>
-        <div>Участник</div>
-      </div>
-
-      <div class="d-flex gap-3 w-100">
-        <div class="number rounded border">9.3</div>
+      <div class="d-flex w-100 gap-2 flex-column">
+        <div class="d-flex gap-3 text-primary w-100">
+          <div>Средняя оценка</div>
+          <div>Участник</div>
+        </div>
         <div
-          class="member justify-content-between d-flex text-nowrap rounded border w-100"
+          class="d-flex gap-3 w-100"
+          v-for="(member, index) in members"
+          :key="index"
         >
-          Артем Иванов
+          <div class="ps-1 number rounded border">{{ member.score }}</div>
           <div
-            class="bg-warning bg-opacity-75 rounded border text-secondary m-1 px-1"
+            class="ps-1 member justify-content-between d-flex text-nowrap rounded border w-100"
           >
-            Тим-лидер
-          </div>
-        </div>
-      </div>
+            {{ member.name }}
+            <div
+              v-if="member.role === 'Тим-лидер'"
+              :class="`bg-warning bg-opacity-50 rounded border text-secondary m-1 px-1`"
+            >
+              {{ member.role }}
+            </div>
 
-      <div class="d-flex gap-3 w-100">
-        <div class="number rounded border">7.5</div>
-        <div
-          class="member justify-content-between d-flex text-nowrap rounded border w-100"
-        >
-          Артем Иванов
-          <div class="bg-primary bg-opacity-50 rounded border text-primary m-1 px-1">
-            Участник
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex gap-3 w-100">
-        <div class="number rounded border">6.8</div>
-        <div
-          class="member justify-content-between d-flex text-nowrap rounded border w-100"
-        >
-          Артем Иванов
-          <div class="m-1 px-1 bg-primary bg-opacity-50 rounded border text-primary">
-            Участник
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex gap-3 w-100">
-        <div class="number rounded border">8.1</div>
-        <div
-          class="member justify-content-between d-flex text-nowrap rounded border w-100"
-        >
-          Артем Иванов
-          <div class="m-1 px-1 bg-primary bg-opacity-50 rounded border text-primary">
-            Участник
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex gap-3 w-100">
-        <div class="number rounded border">8.0</div>
-        <div
-          class="member justify-content-between d-flex text-nowrap rounded border w-100"
-        >
-          Артем Иванов
-          <div class="m-1 px-1 bg-primary bg-opacity-50 rounded border text-primary">
-            Участник
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex gap-3 w-100">
-        <div class="number rounded border">7.9</div>
-        <div
-          class="member justify-content-between d-flex text-nowrap rounded border w-100"
-        >
-          Артем Иванов
-          <div class="m-1 px-1 bg-primary bg-opacity-50 rounded border text-primary">
-            Участник
+            <div
+              v-else
+              :class="`bg-primary bg-opacity-50 rounded border text-primary m-1 px-1`"
+            >
+              {{ member.role }}
+            </div>
           </div>
         </div>
       </div>
 
       <div class="w-100 h-50">
-        <div class="text-primary">Отчет*</div>
+        <div class="mb-2 text-primary">Отчет*</div>
         <Textarea
           name="report"
           class-name="report-textarea rounded border w-100"
@@ -112,6 +110,7 @@ defineProps<FinishProjectModalProps>()
       </div>
 
       <Button
+        @click="emit('close-modal')"
         class-name="mt-auto"
         variant="primary"
         >Закрыть проект
@@ -130,7 +129,7 @@ defineProps<FinishProjectModalProps>()
     column,
     $align-self: center,
     $justify-self: center,
-    $gap: 8px
+    $gap: 16px
   );
 
   transition: all $default-transition-settings;

@@ -2,6 +2,19 @@
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
+import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
+// import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
+import { ref } from 'vue'
+
+const isOpenedFinishProjectModal = ref(false)
+
+function closeFinishProjectModal() {
+  isOpenedFinishProjectModal.value = false
+}
+
+function openFinishProjectModal() {
+  isOpenedFinishProjectModal.value = true
+}
 </script>
 
 <template>
@@ -38,12 +51,17 @@ import Icon from '@Components/Icon/Icon.vue'
           >Перейти в идею</Button
         >
         <Button
+          @click="openFinishProjectModal"
           variant="danger"
           class-name="w-100"
           >Завершить проект</Button
         >
       </div>
     </div>
+    <FinishProjectModal
+      :is-opened="isOpenedFinishProjectModal"
+      @close-modal="closeFinishProjectModal"
+    />
   </div>
 </template>
 
