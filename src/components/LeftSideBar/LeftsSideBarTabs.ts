@@ -107,6 +107,22 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
   },
+  {
+    name: 'projects',
+    text: 'Реестр проектов',
+    to: '/projects',
+    routes: [
+      {
+        name: 'list',
+        text: 'Список проектов',
+        to: '/projects/list',
+        iconName: 'bi bi-list',
+        roles: ['PROJECT_OFFICE', 'ADMIN'],
+      },
+    ],
+    iconName: 'bi bi-briefcase',
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+  },
 ]
 
 export default leftSideBarTabs

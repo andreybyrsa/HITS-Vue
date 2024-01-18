@@ -26,6 +26,7 @@ import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import MarketsView from '@Views/Markets/MarketsView.vue'
 import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
+import Project from '@Views/Project/Project.vue'
 
 import HomeView from '@Views/HomeView.vue'
 
@@ -156,6 +157,30 @@ const routes: RouteRecordRaw[] = [
             },
           },
         ],
+      },
+    ],
+  },
+  {
+    path: '/projects',
+    redirect: { name: 'projects-list' },
+    name: 'projects',
+    meta: {
+      roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'projects-list',
+        component: MarketsView,
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN'] },
+      },
+      {
+        path: ':id',
+        name: 'project',
+        component: Project,
+        meta: {
+          roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+        },
       },
     ],
   },
