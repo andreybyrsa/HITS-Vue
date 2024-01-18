@@ -11,6 +11,7 @@ import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { tagsMocks } from '@Utils/getMocks'
+import { Project } from '@Domain/Project'
 
 const tagsAxios = defineAxios(tagsMocks)
 
@@ -21,11 +22,103 @@ const getAllTags = async (token: string): Promise<Tag[] | Error> => {
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения компетенций'))
+    .catch((error) => handleAxiosError(error, 'Ошибка получения тегов'))
+}
+
+// const getAllProjectTags = async (token: string): Promise<Project[] | Error> => {
+//   return axios
+//     .get(`tag/project`, {
+//       headers: { Authorization: `Bearer ${token}` },
+//       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//     })
+//     .then((response) => response.data)
+//     .catch((error) => handleAxiosError(error, 'Ошибка получения тегов проекта'))
+// }
+
+const createTag = async (tag: Tag, token: string): Promise<Tag | Error> => {
+  return tagsAxios
+    .post('/tag/add', tag, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления тега'))
+}
+
+const createNoConfirmedTag = async (
+  tag: Tag,
+  token: string,
+): Promise<Tag | Error> => {
+  return tagsAxios
+    .post('/tag/add/no-confirmed', tag, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления компетенции'))
+}
+
+const confirmTag = async (
+  tag: Tag,
+  id: string,
+  token: string,
+): Promise<Tag | Error> => {
+  return tagsAxios
+    .put(
+      `/tag/confirm/${id}`,
+      tag,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка утверждения тега'))
+}
+
+const updateTag = async (
+  tag: Tag,
+  id: string,
+  token: string,
+): Promise<Tag | Error> => {
+  return tagsAxios
+    .put(
+      `/tag/update/${id}`,
+      tag,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования тега'))
+}
+
+const deleteTag = async (id: string, token: string): Promise<Success | Error> => {
+  return tagsAxios
+    .delete(
+      `/tag/delete/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления тега'))
 }
 
 const TagsService = {
   getAllTags,
+
+  createTag,
+  createNoConfirmedTag,
+
+  confirmTag,
+  updateTag,
+  deleteTag,
 }
 
 export default TagsService
