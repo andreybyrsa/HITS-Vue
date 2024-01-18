@@ -32,10 +32,14 @@ import Icon from '@Components/Icon/Icon.vue'
         <Typography class-name="text-primary">30.05.2024</Typography>
       </div>
       <div class="mt-3">
-        <Button class="button__idea bg-primary rounded-1 text-white w-100"
+        <Button
+          variant="primary"
+          class-name="w-100"
           >Перейти в идею</Button
         >
-        <Button class="button__end bg-danger rounded-1 text-white mt-2 w-100"
+        <Button
+          variant="danger"
+          class-name="w-100"
           >Завершить проект</Button
         >
       </div>
