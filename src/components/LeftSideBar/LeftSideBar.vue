@@ -119,9 +119,9 @@ async function getActiveMarkets() {
 function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const initialProjectRoutes: LeftSideBarTabType[] =
     LeftSideBarTabs[index].routes ?? []
-  const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, idea }) => ({
+  const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
     name: `project-${id}`,
-    text: idea.name,
+    text: name,
     roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
     iconName: 'bi bi-kanban',
     to: `/projects/${id}`, // FIX ROUTE

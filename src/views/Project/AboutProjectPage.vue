@@ -19,7 +19,7 @@ defineProps<ProjectProps>()
         Описание
       </Button>
       <Collapse :id="project.id">
-        <div class="p-2">{{ project.idea.description }}</div>
+        <div class="p-2">{{ project.description }}</div>
       </Collapse>
     </li>
   </ul>

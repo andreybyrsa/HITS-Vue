@@ -1,6 +1,7 @@
 import { Idea } from '@Domain/Idea'
 import { User } from '@Domain/User'
 import { Team } from '@Domain/Team'
+import Company from '@Domain/Company'
 
 type ProjectStatus = 'ACTIVE' | 'DONE'
 type ProjectMemberRole = 'CUSTOMER' | 'TEAM_LEADER' | 'MEMBER'
@@ -8,13 +9,15 @@ type ProjectMemberRole = 'CUSTOMER' | 'TEAM_LEADER' | 'MEMBER'
 interface Project {
   id: string
 
-  idea: Idea
+  name: string
+  description: string
+  customer: string
   initiator: User
   team: Team
   members: ProjectMember[]
 
   startDate: string
-  finisDate: string
+  finishDate: string
   status: ProjectStatus
 }
 

@@ -23,6 +23,7 @@ import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
+import ProjectList from '@Views/ProjectList/ProjectList.vue'
 
 import MarketsView from '@Views/Markets/MarketsView.vue'
 import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
@@ -171,7 +172,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'list',
         name: 'projects-list',
-        component: MarketsView,
+        component: ProjectList,
         meta: { roles: ['PROJECT_OFFICE', 'ADMIN'] },
       },
       {

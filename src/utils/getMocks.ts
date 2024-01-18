@@ -1036,8 +1036,10 @@ export const projectMocks: Project[] = [
   {
     id: '0',
 
-    idea: ideasMocks[1],
-    initiator: usersMocks[1],
+    name: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    description: ideasMocks[1].description,
+    customer: ideasMocks[1].customer,
+    initiator: ideasMocks[1].initiator,
     team: teamsMocks[2],
     members: [
       {
@@ -1094,14 +1096,16 @@ export const projectMocks: Project[] = [
       },
     ],
     startDate: '2023-10-25T11:02:17Z',
-    finisDate: '2023-10-25T11:02:17Z',
+    finishDate: '',
     status: 'ACTIVE',
   },
   {
     id: '1',
 
-    idea: ideasMocks[1],
-    initiator: usersMocks[1],
+    name: 'Прогнозирование закупок арматуры на основе исторических данных и обогащением доп. критериями',
+    description: ideasMocks[1].description,
+    customer: ideasMocks[1].customer,
+    initiator: ideasMocks[1].initiator,
     team: teamsMocks[2],
     members: [
       {
@@ -1119,7 +1123,7 @@ export const projectMocks: Project[] = [
       },
     ],
     startDate: '2023-10-25T11:02:17Z',
-    finisDate: '2023-10-25T11:02:17Z',
+    finishDate: '2024-01-18T11:02:17Z',
     status: 'DONE',
   },
 ]

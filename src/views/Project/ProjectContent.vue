@@ -13,14 +13,12 @@ const { user } = storeToRefs(userStore)
 const currentRole = user.value?.role
 
 const isTabAboutProject = ref(
-  currentRole === 'ADMIN' || currentRole === 'PROJECT_OFFICE',
+  currentRole === 'ADMIN' ||
+    currentRole === 'PROJECT_OFFICE' ||
+    currentRole === 'INITIATOR',
 )
 const isTabBacklog = ref(false)
-const isTabSprints = ref(
-  currentRole === 'INITIATOR' ||
-    currentRole === 'MEMBER' ||
-    currentRole === 'TEAM_OWNER',
-)
+const isTabSprints = ref(currentRole === 'MEMBER' || currentRole === 'TEAM_OWNER')
 const isTabActiveSprint = ref(false)
 
 defineProps<ProjectProps>()
