@@ -11,8 +11,6 @@ import {
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Idea } from '@Domain/Idea'
 import { Project } from '@Domain/Project'
-import { Team } from '@Domain/Team'
-import { TeamMember } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -26,7 +24,6 @@ import {
   teamsMocks,
   usersMocks,
   projectMocks,
-  teamMembersMocks,
 } from '@Utils/getMocks'
 
 const ideasMarketAxios = defineAxios(ideasMarketMocks)

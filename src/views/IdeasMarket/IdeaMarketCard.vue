@@ -95,7 +95,6 @@ const handleConvertIdeaToProject = async () => {
     const { members } = team
 
     await projectsStore.postProject(id, props.ideaMarket, token, team, members)
-    console.log(projectsStore.projects)
   }
 }
 
@@ -125,6 +124,9 @@ function getIdeaMarketStatusStyle() {
 
   if (status === 'RECRUITMENT_IS_OPEN') {
     initialClass.push('text-success')
+    return initialClass
+  } else if (status === 'PROJECT') {
+    initialClass.push('text-warning')
     return initialClass
   }
 
@@ -252,6 +254,7 @@ function getIdeaMarketStatusStyle() {
     }
     to {
       opacity: 0.8;
+      box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
     }
   }
 }

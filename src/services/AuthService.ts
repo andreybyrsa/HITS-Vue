@@ -24,6 +24,7 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
           'INITIATOR',
           'MEMBER',
           'TEAM_OWNER',
+          'TEAM_LEADER',
           'PROJECT_OFFICE',
         ],
       }
