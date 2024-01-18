@@ -95,7 +95,6 @@ const handleConvertIdeaToProject = async () => {
     const { members } = team
 
     await projectsStore.postProject(id, props.ideaMarket, token, team, members)
-    console.log(projectsStore.projects)
   }
 }
 

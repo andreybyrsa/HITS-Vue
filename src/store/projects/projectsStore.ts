@@ -9,6 +9,8 @@ import IdeasMarketService from '@Services/IdeasMarketService'
 import InitialState from '@Store/projects/initialState'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
+
 import { Project } from '@Domain/Project'
 
 const useProjectsStore = defineStore('projects', {
@@ -95,6 +97,13 @@ const useProjectsStore = defineStore('projects', {
           )
         } else {
           this.projects?.push(response)
+          const ideaMarketsStore = useIdeasMarketStore()
+          const currentIdeaMarket = ideaMarketsStore.ideasMarket.find(
+            (ideaFromMarket) => ideaFromMarket.id === ideaMarket.id,
+          )
+          if (currentIdeaMarket) {
+            currentIdeaMarket.status = 'PROJECT'
+          }
         }
       }
     },

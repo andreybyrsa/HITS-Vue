@@ -560,11 +560,11 @@ export const ideasMarketMocks: IdeaMarket[] = [
     isFavorite: false,
   },
   {
-    id: 'dfaedabe-2b3b-44e7-851e-35c9c67654',
+    id: 'hfdnmkdfg-45678ejhdf-dhfc383-3456787654',
     initiator: usersMocks[0],
     team: teamsMocks[0],
     marketId: '201',
-    name: 'Цифровой помощник сотрудника приемной комиссии университета',
+    name: 'Идея для проверки',
     problem: 'null',
     description: 'null',
     solution:
