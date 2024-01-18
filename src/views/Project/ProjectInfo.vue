@@ -1,9 +1,12 @@
 <script lang="ts" setup>
+import { useDateFormat } from '@vueuse/core'
+import { ref } from 'vue'
+
+import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import { ProjectInfoProps } from '@Views/Project/Project.types'
-import { useDateFormat } from '@vueuse/core'
 
 defineProps<ProjectInfoProps>()
 function getFormattedDate(date: string) {
@@ -11,6 +14,16 @@ function getFormattedDate(date: string) {
     const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
     return formattedDate.value
   } else return 'Реализуется'
+}
+
+const isOpenedFinishProjectModal = ref(false)
+
+function closeFinishProjectModal() {
+  isOpenedFinishProjectModal.value = false
+}
+
+function openFinishProjectModal() {
+  isOpenedFinishProjectModal.value = true
 }
 </script>
 
@@ -56,12 +69,17 @@ function getFormattedDate(date: string) {
           >Перейти в идею</Button
         >
         <Button
+          @click="openFinishProjectModal"
           variant="danger"
           class-name="w-100 mt-2"
           >Завершить проект</Button
         >
       </div>
     </div>
+    <FinishProjectModal
+      :is-opened="isOpenedFinishProjectModal"
+      @close-modal="closeFinishProjectModal"
+    />
   </div>
 </template>
 

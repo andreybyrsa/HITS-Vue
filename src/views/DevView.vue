@@ -11,6 +11,7 @@ import NavTab from '@Components/NavTab/NavTab.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -18,7 +19,7 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
-import ProjectInfo from '@Views/Project/ProjectInfo.vue'
+import ProjectInfo from './Project/ProjectInfo.vue'
 const router = useRouter()
 
 onMounted(async () => {
@@ -74,7 +75,7 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
     </template>
 
     <template #content>
-      <ProjectInfo></ProjectInfo>
+      <ProjectInfo :is-opened="true"> </ProjectInfo>
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>
