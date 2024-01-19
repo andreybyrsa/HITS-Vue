@@ -100,17 +100,22 @@ const tagTableColumns: TableColumn<Tag>[] = [
   {
     key: 'color',
     label: 'Цвет',
-    // getRowCellStyle: getCkeckedTagStyle,
-    // getRowCellFormat: () => '',
+    size: 'col-1',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    getRowCellStyleCSS: getCkeckedTagStyleCSS,
+    getRowCellStyle: getCkeckedTagStyle,
+    getRowCellFormat: () => '',
   },
   {
     key: 'name',
     label: 'Название',
+    size: 'col-5',
     rowCellClick: openUpdatingTagModal,
   },
   {
     key: 'confirmed',
     label: 'Статус',
+    size: 'col-5',
     getRowCellFormat: getTagStatusFormat,
     getRowCellStyle: getTagStatusStyle,
   },
@@ -147,7 +152,11 @@ function getTagStatusFormat(isConfirmed: boolean) {
   return 'На рассмотрении'
 }
 
-function getCkeckedTagStyle(color: string) {
+function getCkeckedTagStyleCSS(color: Tag[keyof Tag]) {
+  return { color: `${color}` }
+}
+
+function getCkeckedTagStyle() {
   const initialClass = ['bi bi-circle-fill', 'fs-6', 'mt-1']
 
   return initialClass
