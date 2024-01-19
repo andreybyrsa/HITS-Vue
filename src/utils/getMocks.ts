@@ -1127,6 +1127,9 @@ export const projectMocks: Project[] = [
     team: teamsMocks[2],
     members: [
       {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: '2',
         email: 'alex@inbox.ru',
         firstName: 'Алексей',
@@ -1136,6 +1139,9 @@ export const projectMocks: Project[] = [
         projectRole: 'INITIATOR',
       },
       {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
         email: 'kirill.vlasov.05@inbox.ru',
         firstName: 'Артем',
@@ -1145,6 +1151,9 @@ export const projectMocks: Project[] = [
         projectRole: 'TEAM_LEADER',
       },
       {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: '0',
         email: 'timyr@mail.com',
         firstName: 'Иван',
@@ -1154,6 +1163,9 @@ export const projectMocks: Project[] = [
         projectRole: 'MEMBER',
       },
       {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: '1',
         email: 'admin@mail.com',
         firstName: 'Данил',
@@ -1180,6 +1192,9 @@ export const projectMocks: Project[] = [
     team: teamsMocks[2],
     members: [
       {
+        projectName: 'Табуретка',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
         email: 'kirill.vlasov.05@inbox.ru',
         firstName: 'Кирилл',
@@ -1490,6 +1505,9 @@ export const teamsExperienceMocks: TeamExperience[] = [
 
 export const teamsProjectsMocks: ProjectMember[] = [
   {
+    projectName: 'Моя новая идея',
+    teamId: '0',
+    teamName: 'Визитка',
     userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
@@ -1499,6 +1517,9 @@ export const teamsProjectsMocks: ProjectMember[] = [
     projectRole: 'MEMBER',
   },
   {
+    projectName: 'Табуретка',
+    teamId: '0',
+    teamName: 'Визитка',
     userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
@@ -1508,6 +1529,9 @@ export const teamsProjectsMocks: ProjectMember[] = [
     projectRole: 'MEMBER',
   },
   {
+    projectName: 'Катер',
+    teamId: '2',
+    teamName: 'Карасики',
     userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',

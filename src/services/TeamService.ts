@@ -8,6 +8,7 @@ import {
   TeamInvitation,
   TeamMember,
   JoinStatus,
+  TeamExperience,
 } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 import RolesTypes from '@Domain/Roles'
@@ -21,7 +22,9 @@ import {
   requestsToTeamMocks,
   teamInvitationsMocks,
   teamMembersMocks,
+  teamsExperienceMocks,
   teamsMocks,
+  teamsProjectsMocks,
 } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
@@ -29,6 +32,8 @@ import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
 const teamsAxios = defineAxios(teamsMocks)
 const teamMemberAxios = defineAxios(teamMembersMocks)
+const teamExperienceAxios = defineAxios(teamsExperienceMocks)
+const teamProjectAxios = defineAxios(teamsProjectsMocks)
 const teamInvitationsAxios = defineAxios(teamInvitationsMocks)
 const requestsToTeamAxios = defineAxios(requestsToTeamMocks)
 const requestTeamsAxios = defineAxios(RequestTeamsMocks)
@@ -284,6 +289,19 @@ const filterByVacancies = async (
     .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
 }
 
+const addTeamExperince = async (
+  teamExperience: TeamExperience,
+  token: string,
+): Promise<TeamExperience | Error> => {
+  return teamExperienceAxios
+    .post(`${API_URL}/team/vacancy-filter`, teamExperience, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления стажа в команде'))
+}
+
 // --- PUT --- //
 const updateTeam = async (
   team: Team,
@@ -395,6 +413,48 @@ const updateInvitationToTeamStatus = async (
     )
 }
 
+const finishTeamExperience = async (
+  teamId: string,
+  token: string,
+): Promise<Success | Error> => {
+  const currentDate = new Date().toJSON().toString()
+  return teamExperienceAxios
+    .putNoRequestBody<Success>(
+      `/team/finish/experience/${teamId}/`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { teamId, finishDate: null },
+        requestData: { finishDate: currentDate },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка назначения лидера'))
+}
+
+const finishTeamProject = async (
+  teamId: string,
+  token: string,
+): Promise<Success | Error> => {
+  const currentDate = new Date().toJSON().toString()
+  return teamProjectAxios
+    .putNoRequestBody<Success>(
+      `/team/finish/project/${teamId}/`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { teamId, finishDate: '' },
+        requestData: { finishDate: currentDate },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка назначения лидера'))
+}
+
 // --- DELETE --- //
 const deleteTeam = async (id: string, token: string): Promise<Success | Error> => {
   return teamsAxios
@@ -476,11 +536,14 @@ const TeamService = {
   createRequestToTeam,
   filterBySkillsAndRole,
   filterByVacancies,
+  addTeamExperince,
 
   updateTeam,
   updateRequestToTeamStatus,
   updateInvitationToTeamStatus,
   appointLeaderTeam,
+  finishTeamExperience,
+  finishTeamProject,
 
   deleteTeam,
   kickTeamMember,

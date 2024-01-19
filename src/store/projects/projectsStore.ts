@@ -61,7 +61,7 @@ const useProjectsStore = defineStore('projects', {
       const currentDate = new Date().toJSON().toString()
 
       if (team) {
-        const { members } = team
+        const { members, name: teamName, id: teamId } = team
 
         const project: Project = {
           id: '',
@@ -73,6 +73,9 @@ const useProjectsStore = defineStore('projects', {
           members: members.map(({ userId, email, firstName, lastName }) => {
             const currentDate = new Date().toJSON().toString()
             return {
+              projectName: name,
+              teamId: teamId,
+              teamName: teamName,
               userId: userId,
               email: email,
               firstName: firstName,

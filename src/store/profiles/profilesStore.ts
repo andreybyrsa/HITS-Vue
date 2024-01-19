@@ -11,8 +11,10 @@ import findOneAndUpdate from '@Utils/findOneAndUpdate'
 import { ProfileFullName } from '@Domain/Profile'
 import { User } from '@Domain/User'
 import useUserStore from '@Store/user/userStore'
+import { TeamExperience } from '@Domain/Team'
+import TeamService from '@Services/TeamService'
 
-const profilesStore = defineStore('profiles', {
+const useProfilesStore = defineStore('profiles', {
   state: (): InitialState => ({ avatars: [], profiles: [] }),
 
   getters: {
@@ -114,7 +116,67 @@ const profilesStore = defineStore('profiles', {
         }
       }
     },
+
+    async addTeamExperince(teamExperience: TeamExperience, token: string) {
+      const { userId } = teamExperience
+      const response = await TeamService.addTeamExperince(teamExperience, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentProfile = this.profiles.find(({ id }) => id === userId)
+
+        if (currentProfile) {
+          currentProfile.teamsExperience.push(teamExperience)
+        }
+      }
+    },
+
+    async finishTeamExperience(userId: string, teamId: string, token: string) {
+      const response = await TeamService.finishTeamExperience(teamId, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentProfile = this.profiles.find((profile) => profile.id === userId)
+
+        if (currentProfile) {
+          const currentTeamExperience = currentProfile.teamsExperience.find(
+            (team) =>
+              team.teamId === teamId && team.userId === userId && !team.finishDate,
+          )
+
+          if (currentTeamExperience) {
+            const currentDate = new Date().toJSON().toString()
+            currentTeamExperience.finishDate = currentDate
+            currentTeamExperience.hasActiveProject = false
+          }
+        }
+      }
+    },
+
+    async finishTeamProject(userId: string, teamId: string, token: string) {
+      const response = await TeamService.finishTeamProject(teamId, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentProfile = this.profiles.find((profile) => profile.id === userId)
+
+        if (currentProfile) {
+          const currentTeamProject = currentProfile.teamsProjects.find(
+            (team) =>
+              team.teamId === teamId && team.userId === userId && !team.finishDate,
+          )
+
+          if (currentTeamProject) {
+            const currentDate = new Date().toJSON().toString()
+            currentTeamProject.finishDate = currentDate
+          }
+        }
+      }
+    },
   },
 })
 
-export default profilesStore
+export default useProfilesStore
