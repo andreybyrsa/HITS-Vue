@@ -1,9 +1,16 @@
+import { ProjectMemberRole } from '@Domain/Project'
+
 interface FinishProjectModalProps {
   isOpened: boolean
 }
-export default FinishProjectModalProps
 
 interface FinishProjectModalEmits {
   (event: 'close-modal'): void
 }
-export { FinishProjectModalEmits }
+
+interface membersType {
+  score: string
+  name: string
+  role: ProjectMemberRole
+}
+export { FinishProjectModalEmits, FinishProjectModalProps, membersType }
