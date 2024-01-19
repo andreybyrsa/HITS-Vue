@@ -121,7 +121,14 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
     ],
     iconName: 'bi bi-briefcase',
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    roles: [
+      'INITIATOR',
+      'MEMBER',
+      'TEAM_OWNER',
+      'PROJECT_OFFICE',
+      'ADMIN',
+      'TEAM_LEADER',
+    ],
   },
 ]
 

@@ -2,7 +2,7 @@ import { Project } from '@Domain/Project'
 
 interface InitialState {
   projects: Project[]
-  myProjects: Project[]
+  myActiveProjects: Project[]
 }
 
 export default InitialState

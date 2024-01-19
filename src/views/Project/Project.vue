@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { watchImmediate } from '@vueuse/core'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Header from '@Components/Header/Header.vue'
@@ -25,7 +26,16 @@ const route = useRoute()
 const project = ref<Project>()
 const isLoading = ref(false)
 
-onMounted(async () => {
+watchImmediate(
+  () => route.params.id,
+  async () => {
+    return await getProject()
+  },
+)
+
+onMounted(getProject)
+
+async function getProject() {
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -46,7 +56,7 @@ onMounted(async () => {
     project.value = response
     isLoading.value = false
   }
-})
+}
 </script>
 
 <template>
@@ -76,7 +86,7 @@ onMounted(async () => {
   </PageLayout>
 </template>
 
-<style lasg="scss">
+<style lang="scss" scoped>
 .project-page {
   &__content {
     overflow-y: scroll;

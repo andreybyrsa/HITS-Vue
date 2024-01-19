@@ -9,9 +9,9 @@ interface GetRoleProjectMemberType {
 
 function getRoleProjectMember(): GetRoleProjectMemberType {
   return {
-    role: ['CUSTOMER', 'TEAM_LEADER', 'MEMBER'],
+    role: ['INITIATOR', 'TEAM_LEADER', 'MEMBER'],
     translatedRoles: {
-      CUSTOMER: 'Инициатор',
+      INITIATOR: 'Инициатор',
       TEAM_LEADER: 'Тим-лидер',
       MEMBER: 'Участник',
     },
@@ -21,7 +21,7 @@ function getRoleProjectMember(): GetRoleProjectMemberType {
 function getRoleProjectMemberStyle(role: ProjectMemberRole) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
 
-  if (role === 'CUSTOMER') {
+  if (role === 'INITIATOR') {
     initialClass.push('bg-success-subtle', 'text-success')
     return initialClass
   }

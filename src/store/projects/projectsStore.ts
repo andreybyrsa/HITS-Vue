@@ -8,14 +8,23 @@ import { IdeaMarket } from '@Domain/IdeaMarket'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 import { Project } from '@Domain/Project'
-import { Team, TeamMember } from '@Domain/Team'
-import IdeasMarketService from '@Services/IdeasMarketService'
+import { Team } from '@Domain/Team'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+function getMemberRole(userId: string, team: Team, ideaMarket: IdeaMarket) {
+  if (team.leader?.userId === userId) {
+    return 'TEAM_LEADER'
+  }
+  if (ideaMarket.initiator.id === userId) {
+    return 'MEMBER'
+  }
+  return 'INITIATOR'
+}
 
 const useProjectsStore = defineStore('projects', {
   state: (): InitialState => ({
     projects: [],
-    myProjects: [],
+    myActiveProjects: [],
   }),
 
   getters: {
@@ -40,53 +49,47 @@ const useProjectsStore = defineStore('projects', {
           return response
         }
 
-        this.myProjects = response
-        return this.myProjects
+        this.myActiveProjects = response
+        return this.myActiveProjects
       }
     },
   },
 
   actions: {
-    async postProject(
-      marketId: string,
-      ideaMarket: IdeaMarket,
-      token: string,
-      team: Team,
-      teamMember: TeamMember[],
-    ) {
-      if (ideaMarket.team !== null) {
+    async postProject(ideaMarket: IdeaMarket, token: string) {
+      const { team, name, description, customer, initiator } = ideaMarket
+      const currentDate = new Date().toJSON().toString()
+
+      if (team) {
+        const { members } = team
+
         const project: Project = {
           id: '',
-          name: ideaMarket.name,
-          description: ideaMarket.description,
-          customer: ideaMarket.customer,
-          initiator: ideaMarket.initiator,
-          team: ideaMarket.team,
-          members: teamMember.map((member) => {
+          name: name,
+          description: description,
+          customer: customer,
+          initiator: initiator,
+          team: team,
+          members: members.map(({ userId, email, firstName, lastName }) => {
+            const currentDate = new Date().toJSON().toString()
             return {
-              projectId: '3456789087654345678',
-              projectName: ideaMarket.name,
-              teamId: member.teamId,
-              teamName: team.name,
-              userId: member.userId,
-              email: member.email,
-              firstName: member.firstName,
-              lastName: member.lastName,
-              startDate: new Date().toJSON().toString(),
+              userId: userId,
+              email: email,
+              firstName: firstName,
+              lastName: lastName,
+              startDate: currentDate,
               finishDate: '',
-              role: 'MEMBER',
+              projectRole: getMemberRole(userId, team, ideaMarket),
             }
           }),
-          startDate: new Date().toJSON().toString(),
+          logs: [],
+          report: '',
+          startDate: currentDate,
           finishDate: '',
           status: 'ACTIVE',
         }
 
-        const response = await IdeasMarketService.convertIdeaToProject(
-          project,
-          token,
-          marketId,
-        )
+        const response = await ProjectService.convertIdeaToProject(project, token)
 
         if (response instanceof Error) {
           useNotificationsStore().createSystemNotification(
@@ -95,12 +98,15 @@ const useProjectsStore = defineStore('projects', {
           )
         } else {
           this.projects?.push(response)
+
           const ideaMarketsStore = useIdeasMarketStore()
           const currentIdeaMarket = ideaMarketsStore.ideasMarket.find(
             (ideaFromMarket) => ideaFromMarket.id === ideaMarket.id,
           )
+
           if (currentIdeaMarket) {
-            currentIdeaMarket.status = 'PROJECT'
+            const { id } = currentIdeaMarket
+            await ideaMarketsStore.updateIdeaMarketStatus(id, 'PROJECT', token)
           }
         }
       }

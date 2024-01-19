@@ -10,7 +10,6 @@ import {
 } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Idea } from '@Domain/Idea'
-import { Project } from '@Domain/Project'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -23,13 +22,10 @@ import {
   ideasSkillsMocks,
   teamsMocks,
   usersMocks,
-  projectMocks,
 } from '@Utils/getMocks'
 
 const ideasMarketAxios = defineAxios(ideasMarketMocks)
 const ideasMarketAdvertisementAxios = defineAxios(ideaMarketAdvertisementsMocks)
-
-const projectMocksAxios = defineAxios(projectMocks)
 
 function formatFavoriteIdea(ideasMarket: IdeaMarket[]) {
   return ideasMarket.filter((ideaMarket) => ideaMarket.isFavorite)
@@ -228,20 +224,6 @@ const postIdeaMarketAdvertisement = async (
     .catch((error) => handleAxiosError(error, 'Ошибка добавления объявления'))
 }
 
-const convertIdeaToProject = async (
-  project: Project,
-  token: string,
-  marketId: string,
-): Promise<Project | Error> => {
-  return projectMocksAxios
-    .post(`/market/idea/convert/${marketId}`, project, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка конвертации идеи в проект'))
-}
-
 // --- PUT --- //
 const addIdeaToFavorites = async (
   id: string,
@@ -346,7 +328,6 @@ const IdeasMarketService = {
   sendIdeaOnMarket,
   postIdeaMarketTeam,
   postIdeaMarketAdvertisement,
-  convertIdeaToProject,
 
   addIdeaToFavorites,
   updateIdeaMarketStatus,

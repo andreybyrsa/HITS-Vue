@@ -30,12 +30,7 @@ defineProps<ProjectProps>()
       <ProjectMembersTable :projectMembers="project.members" />
     </div>
 
-    <ProjectInfo
-      :initiator="project.initiator"
-      :customer="project.customer"
-      :startDate="project.startDate"
-      :finishDate="project.finishDate"
-    />
+    <ProjectInfo :project.="project" />
   </div>
 </template>
 

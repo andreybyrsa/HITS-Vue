@@ -33,7 +33,7 @@ const marketsStore = useMarketsStore()
 const { markets } = storeToRefs(marketsStore)
 
 const projectStore = useProjectStore()
-const { projects } = storeToRefs(projectStore)
+const { myActiveProjects } = storeToRefs(projectStore)
 
 const router = useRouter()
 
@@ -52,7 +52,7 @@ const isHovered = useElementHover(leftSideBarRef, {
 })
 
 watch(
-  markets || projects,
+  markets,
   () => {
     const currentMarkets = markets.value.filter(({ status }) => status === 'ACTIVE')
     const marketIndex = tabs.value.findIndex(({ name }) => name === 'markets')
@@ -62,9 +62,9 @@ watch(
 )
 
 watch(
-  projects,
+  myActiveProjects,
   () => {
-    const currentProjects = projects.value.filter(
+    const currentProjects = myActiveProjects.value.filter(
       ({ status }) => status === 'ACTIVE',
     )
     const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
@@ -122,7 +122,7 @@ function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
     name: `project-${id}`,
     text: name,
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER'],
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER'],
     iconName: 'bi bi-kanban',
     to: `/projects/${id}`,
   }))

@@ -6,9 +6,9 @@ import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProj
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import { ProjectInfoProps } from '@Views/Project/Project.types'
+import { ProjectProps } from '@Views/Project/Project.types'
 
-defineProps<ProjectInfoProps>()
+defineProps<ProjectProps>()
 function getFormattedDate(date: string) {
   if (date) {
     const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
@@ -40,26 +40,27 @@ function openFinishProjectModal() {
       <div class="content__main-person gap-1">
         <Icon class-name="bi bi-person-circle text-secondary fs-3 opacity-25"></Icon>
         <Typography class-name="text-primary"
-          >{{ initiator.firstName }} {{ initiator.lastName }}</Typography
+          >{{ project.initiator.firstName }}
+          {{ project.initiator.lastName }}</Typography
         >
       </div>
       <div class="text-secondary border-bottom pb-1 mb-2 mt-2">Заказчик</div>
       <div class="content__main-person gap-1">
         <Icon class-name="bi bi-person-circle text-secondary fs-3 opacity-25"></Icon>
-        <Typography class-name="text-primary">{{ customer }}</Typography>
+        <Typography class-name="text-primary">{{ project.customer }}</Typography>
       </div>
       <div class="text-secondary border-bottom pb-1 mb-2 mt-2">Дата старта</div>
       <div class="content__main-person gap-1">
         <Icon class-name="bi bi-person-circle text-secondary fs-3 opacity-25"></Icon>
         <Typography class-name="text-primary">{{
-          getFormattedDate(startDate)
+          getFormattedDate(project.startDate)
         }}</Typography>
       </div>
       <div class="text-secondary border-bottom pb-1 mb-2 mt-2">Дата окончания</div>
       <div class="content__main-person gap-1">
         <Icon class-name="bi bi-person-circle text-secondary fs-3 opacity-25"></Icon>
         <Typography class-name="text-primary">{{
-          getFormattedDate(finishDate)
+          getFormattedDate(project.finishDate)
         }}</Typography>
       </div>
       <div class="mt-3">

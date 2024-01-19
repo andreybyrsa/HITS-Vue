@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { watchImmediate } from '@vueuse/core'
 
 import { ProjectProps } from '@Views/Project/Project.types'
 
@@ -10,18 +11,22 @@ import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const currentRole = user.value?.role
-
-const isTabAboutProject = ref(
-  currentRole === 'ADMIN' ||
-    currentRole === 'PROJECT_OFFICE' ||
-    currentRole === 'INITIATOR',
-)
-const isTabBacklog = ref(false)
-const isTabSprints = ref(currentRole === 'MEMBER' || currentRole === 'TEAM_OWNER')
-const isTabActiveSprint = ref(false)
 
 defineProps<ProjectProps>()
+
+const isTabAboutProject = ref(false)
+const isTabBacklog = ref(false)
+const isTabSprints = ref(false)
+const isTabActiveSprint = ref(false)
+
+watchImmediate(
+  () => user.value?.role,
+  (role) => {
+    if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
+      return switchToTabAboutProject()
+    } else return switchToTabSprints()
+  },
+)
 
 function switchToTabAboutProject() {
   isTabAboutProject.value = true

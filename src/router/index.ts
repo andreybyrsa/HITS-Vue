@@ -170,7 +170,14 @@ const routes: RouteRecordRaw[] = [
     redirect: { name: 'projects-list' },
     name: 'projects',
     meta: {
-      roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+      roles: [
+        'INITIATOR',
+        'MEMBER',
+        'TEAM_OWNER',
+        'PROJECT_OFFICE',
+        'ADMIN',
+        'TEAM_LEADER',
+      ],
     },
     children: [
       {
@@ -184,7 +191,14 @@ const routes: RouteRecordRaw[] = [
         name: 'project',
         component: Project,
         meta: {
-          roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+          roles: [
+            'INITIATOR',
+            'MEMBER',
+            'TEAM_OWNER',
+            'TEAM_LEADER',
+            'ADMIN',
+            'PROJECT_OFFICE',
+          ],
         },
       },
     ],

@@ -89,12 +89,10 @@ const handleRemoveIdeaFromFavorites = async () => {
 const handleConvertIdeaToProject = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && props.ideaMarket && props.ideaMarket.team !== null) {
+  if (currentUser?.token && props.ideaMarket && props.ideaMarket.team) {
     const { token } = currentUser
-    const { id, team } = props.ideaMarket
-    const { members } = team
 
-    await projectsStore.postProject(id, props.ideaMarket, token, team, members)
+    await projectsStore.postProject(props.ideaMarket, token)
   }
 }
 
@@ -106,9 +104,11 @@ function checkIdeaOwned() {
 }
 
 function checkIdeaDone() {
+  const currentRole = user.value?.role
+  const { status } = props.ideaMarket
   return (
-    user.value?.role === ('ADMIN' || 'PROJECT_OFFICE') &&
-    props.ideaMarket.status === 'RECRUITMENT_IS_CLOSED'
+    (currentRole === 'ADMIN' || currentRole === 'PROJECT_OFFICE') &&
+    status === 'RECRUITMENT_IS_CLOSED'
   )
 }
 
@@ -246,15 +246,22 @@ function getIdeaMarketStatusStyle() {
   }
 
   .blink {
-    animation: blink 0.5s infinite;
+    animation: blink 0.8s infinite;
   }
+
   @keyframes blink {
-    from {
+    0% {
       opacity: 1;
+      transform: scale(1);
     }
-    to {
+    50% {
       opacity: 0.8;
-      box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+      box-shadow: 0px 0px 15px 5px rgba(146, 255, 155, 0.877);
+      transform: scale(1.02);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 }

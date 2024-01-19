@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import { RouteRecordRaw, useRouter } from 'vue-router'
+import { RouteRecordRaw } from 'vue-router'
 
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProjectMembersTableProps from '@Components/Tables/ProjectMembersTable/ProjectMembersTable.types'
@@ -24,8 +24,6 @@ import {
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 defineProps<ProjectMembersTableProps>()
-
-const router = useRouter()
 
 const usersTableColumns: TableColumn<ProjectMember>[] = [
   {
@@ -42,7 +40,7 @@ const usersTableColumns: TableColumn<ProjectMember>[] = [
     label: 'Фамилия',
   },
   {
-    key: 'role',
+    key: 'projectRole',
     label: 'Роль',
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getRoleProjectMemberStyle,

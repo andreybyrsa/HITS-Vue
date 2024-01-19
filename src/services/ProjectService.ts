@@ -6,7 +6,7 @@ import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { Project } from '@Domain/Project'
 
-const projectsAxios = defineAxios(projectMocks)
+const projectMocksAxios = defineAxios(projectMocks)
 
 function formatGetMyProjects(projects: Project[], userId: string) {
   return projects.filter(
@@ -18,8 +18,9 @@ function formatGetMyProjects(projects: Project[], userId: string) {
   )
 }
 
+// --- GET --- //
 const getAllProjects = async (token: string): Promise<Project[] | Error> => {
-  return projectsAxios
+  return projectMocksAxios
     .get('/ТУТ-БУДЕТ-ЧТО-ТО', {
       // FIX ROUTE
       headers: { Authorization: `Bearer ${token}` },
@@ -30,7 +31,7 @@ const getAllProjects = async (token: string): Promise<Project[] | Error> => {
 }
 
 const getProject = async (id: string, token: string): Promise<Project | Error> => {
-  return projectsAxios
+  return projectMocksAxios
     .get(
       '/ТУТ-БУДЕТ-ЧТО-ТО', // FIX ROUTE
       {
@@ -47,7 +48,7 @@ const getMyProjects = async (
   userId: string,
   token: string,
 ): Promise<Project[] | Error> => {
-  return projectsAxios
+  return projectMocksAxios
     .get<Project[]>(
       `/ТУТ-БУДЕТ-ЧТО-ТО/${userId}`,
       // FIX ROUTE
@@ -63,10 +64,26 @@ const getMyProjects = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения ваших проектов'))
 }
 
+// --- POST --- //
+const convertIdeaToProject = async (
+  project: Project,
+  token: string,
+): Promise<Project | Error> => {
+  return projectMocksAxios
+    .post(`/market/idea/convert`, project, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка конвертации идеи в проект'))
+}
+
 const ProfileService = {
   getAllProjects,
   getMyProjects,
   getProject,
+
+  convertIdeaToProject,
 }
 
 export default ProfileService
