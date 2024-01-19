@@ -19,6 +19,7 @@ import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember } from '@Domain/Project'
+import { Tag } from '@Domain/Tag'
 
 export const usersMocks: User[] = [
   {
@@ -90,6 +91,27 @@ export const usersMocks: User[] = [
   //   lastName: 'Амонов',
   //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
   // },
+]
+
+export const tagsMocks: Tag[] = [
+  {
+    id: '0',
+    name: 'Фронтенд',
+    color: '#cd1d1d',
+    confirmed: true,
+  },
+  {
+    id: '1',
+    name: 'Бекенд',
+    color: '#279b74',
+    confirmed: true,
+  },
+  {
+    id: '2',
+    name: 'Рефактор',
+    color: '#cc8c33',
+    confirmed: false,
+  },
 ]
 
 export const skillsMocks: Skill[] = [
@@ -258,8 +280,8 @@ export const teamsMocks: Team[] = [
   {
     id: '0',
     name: 'Визитка',
-    closed: false,
-    hasActiveProject: false,
+    closed: true,
+    hasActiveProject: true,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -291,7 +313,7 @@ export const teamsMocks: Team[] = [
     id: '2',
     name: 'Карасики',
     closed: false,
-    hasActiveProject: true,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
