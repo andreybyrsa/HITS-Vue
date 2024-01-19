@@ -7,8 +7,9 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import { ProjectProps } from '@Views/Project/Project.types'
+import ProjectInfoTabs from '@Views/Project/ProjectInfoTabs'
 
-defineProps<ProjectProps>()
+const props = defineProps<ProjectProps>()
 function getFormattedDate(date: string) {
   if (date) {
     const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
@@ -25,43 +26,40 @@ function closeFinishProjectModal() {
 function openFinishProjectModal() {
   isOpenedFinishProjectModal.value = true
 }
+
+function getContentTab(header: string) {
+  if (header === 'Инициатор')
+    return `${props.project.initiator.firstName} ${props.project.initiator.lastName}`
+  if (header === 'Заказчик') return `${props.project.customer}`
+  if (header === 'Дата старта') return getFormattedDate(props.project.startDate)
+  if (header === 'Дата окончания') return getFormattedDate(props.project.finishDate)
+}
 </script>
 
 <template>
   <div>
     <div
-      class="content__info bg-primary rounded-top text-white fs-3 border border-bottom-0"
+      class="content__info bg-primary rounded-top text-white fs-4 border border-bottom-0"
     >
       Информация
     </div>
 
     <div class="content__main bg-white rounded-bottom p-3 border border-top-0">
-      <div class="text-secondary border-bottom pb-1 mb-2">Инициатор</div>
-      <div class="content__main-person gap-1">
-        <Icon class-name="bi bi-person-circle text-secondary fs-3 opacity-25"></Icon>
-        <Typography class-name="text-primary"
-          >{{ project.initiator.firstName }}
-          {{ project.initiator.lastName }}</Typography
-        >
-      </div>
-      <div class="text-secondary border-bottom pb-1 mb-2 mt-2">Заказчик</div>
-      <div class="content__main-person gap-1">
-        <Icon class-name="bi bi-person-circle text-secondary fs-3 opacity-25"></Icon>
-        <Typography class-name="text-primary">{{ project.customer }}</Typography>
-      </div>
-      <div class="text-secondary border-bottom pb-1 mb-2 mt-2">Дата старта</div>
-      <div class="content__main-person gap-1">
-        <Icon class-name="bi bi-person-circle text-secondary fs-3 opacity-25"></Icon>
-        <Typography class-name="text-primary">{{
-          getFormattedDate(project.startDate)
-        }}</Typography>
-      </div>
-      <div class="text-secondary border-bottom pb-1 mb-2 mt-2">Дата окончания</div>
-      <div class="content__main-person gap-1">
-        <Icon class-name="bi bi-person-circle text-secondary fs-3 opacity-25"></Icon>
-        <Typography class-name="text-primary">{{
-          getFormattedDate(project.finishDate)
-        }}</Typography>
+      <div
+        v-for="(tab, index) in ProjectInfoTabs"
+        :key="index"
+        class="text-primary p-2"
+      >
+        <div class="text-secondary border-bottom pb-1 mb-2">{{ tab.header }}</div>
+        <div class="content__main-person gap-1">
+          <Icon
+            class-name="text-secondary fs-3 opacity-25"
+            :class="tab.icon"
+          ></Icon>
+          <Typography class-name="text-primary">{{
+            getContentTab(tab.header)
+          }}</Typography>
+        </div>
       </div>
       <div class="mt-3">
         <Button
@@ -93,7 +91,6 @@ function openFinishProjectModal() {
   }
   &__main {
     width: 325px;
-    height: 411px;
     &-person {
       @include flexible(center, start);
     }
