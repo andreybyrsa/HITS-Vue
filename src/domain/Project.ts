@@ -29,6 +29,9 @@ interface Project {
 }
 
 interface ProjectMember {
+  teamId: string
+  teamName: string
+  projectName: string
   userId: string
   email: string
   firstName: string

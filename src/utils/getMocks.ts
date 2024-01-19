@@ -19,6 +19,7 @@ import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember } from '@Domain/Project'
+import { Tag } from '@Domain/Tag'
 
 export const usersMocks: User[] = [
   {
@@ -90,6 +91,27 @@ export const usersMocks: User[] = [
   //   lastName: 'Амонов',
   //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
   // },
+]
+
+export const tagsMocks: Tag[] = [
+  {
+    id: '0',
+    name: 'Фронтенд',
+    color: '#cd1d1d',
+    confirmed: true,
+  },
+  {
+    id: '1',
+    name: 'Бекенд',
+    color: '#279b74',
+    confirmed: true,
+  },
+  {
+    id: '2',
+    name: 'Рефактор',
+    color: '#cc8c33',
+    confirmed: false,
+  },
 ]
 
 export const skillsMocks: Skill[] = [
@@ -258,8 +280,8 @@ export const teamsMocks: Team[] = [
   {
     id: '0',
     name: 'Визитка',
-    closed: false,
-    hasActiveProject: false,
+    closed: true,
+    hasActiveProject: true,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -291,7 +313,7 @@ export const teamsMocks: Team[] = [
     id: '2',
     name: 'Карасики',
     closed: false,
-    hasActiveProject: true,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -1105,6 +1127,9 @@ export const projectMocks: Project[] = [
     team: teamsMocks[2],
     members: [
       {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: '2',
         email: 'alex@inbox.ru',
         firstName: 'Алексей',
@@ -1114,6 +1139,9 @@ export const projectMocks: Project[] = [
         projectRole: 'INITIATOR',
       },
       {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
         email: 'kirill.vlasov.05@inbox.ru',
         firstName: 'Артем',
@@ -1123,6 +1151,9 @@ export const projectMocks: Project[] = [
         projectRole: 'TEAM_LEADER',
       },
       {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: '0',
         email: 'timyr@mail.com',
         firstName: 'Иван',
@@ -1132,6 +1163,9 @@ export const projectMocks: Project[] = [
         projectRole: 'MEMBER',
       },
       {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: '1',
         email: 'admin@mail.com',
         firstName: 'Данил',
@@ -1158,6 +1192,9 @@ export const projectMocks: Project[] = [
     team: teamsMocks[2],
     members: [
       {
+        projectName: 'Табуретка',
+        teamId: '0',
+        teamName: 'Визитка',
         userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
         email: 'kirill.vlasov.05@inbox.ru',
         firstName: 'Кирилл',
@@ -1468,6 +1505,9 @@ export const teamsExperienceMocks: TeamExperience[] = [
 
 export const teamsProjectsMocks: ProjectMember[] = [
   {
+    projectName: 'Моя новая идея',
+    teamId: '0',
+    teamName: 'Визитка',
     userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
@@ -1477,6 +1517,9 @@ export const teamsProjectsMocks: ProjectMember[] = [
     projectRole: 'MEMBER',
   },
   {
+    projectName: 'Табуретка',
+    teamId: '0',
+    teamName: 'Визитка',
     userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
@@ -1486,6 +1529,9 @@ export const teamsProjectsMocks: ProjectMember[] = [
     projectRole: 'MEMBER',
   },
   {
+    projectName: 'Катер',
+    teamId: '2',
+    teamName: 'Карасики',
     userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
