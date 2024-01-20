@@ -12,6 +12,7 @@ import AddUsersView from '@Views/Admin/AddUsersView.vue'
 import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
 import SkillsView from '@Views/Admin/SkillsView.vue'
 import CompaniesView from '@Views/Admin/CompaniesView.vue'
+import TagsView from '@Views/Admin/TagsView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
@@ -90,13 +91,17 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
-        meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
+        meta: {
+          roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+        },
         children: [
           {
             path: ':teamId',
             name: 'team',
             component: TeamModal,
-            meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
+            meta: {
+              roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+            },
           },
           {
             name: 'profile',
@@ -192,6 +197,12 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-companies',
         path: 'companies',
         component: CompaniesView,
+        meta: { roles: ['ADMIN'] },
+      },
+      {
+        name: 'admin-tags',
+        path: 'tags',
+        component: TagsView,
         meta: { roles: ['ADMIN'] },
       },
     ],

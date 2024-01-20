@@ -19,6 +19,7 @@ import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember } from '@Domain/Project'
+import { Tag } from '@Domain/Tag'
 
 export const usersMocks: User[] = [
   {
@@ -27,7 +28,14 @@ export const usersMocks: User[] = [
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
     lastName: 'Власов',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
+    roles: [
+      'INITIATOR',
+      'PROJECT_OFFICE',
+      'EXPERT',
+      'ADMIN',
+      'MEMBER',
+      'TEAM_LEADER',
+    ],
     createdAt: '2023-10-20T11:02:17Z',
   },
   {
@@ -83,6 +91,27 @@ export const usersMocks: User[] = [
   //   lastName: 'Амонов',
   //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
   // },
+]
+
+export const tagsMocks: Tag[] = [
+  {
+    id: '0',
+    name: 'Фронтенд',
+    color: '#cd1d1d',
+    isConfirmed: true,
+  },
+  {
+    id: '1',
+    name: 'Бекенд',
+    color: '#279b74',
+    isConfirmed: true,
+  },
+  {
+    id: '2',
+    name: 'Рефактор',
+    color: '#cc8c33',
+    isConfirmed: false,
+  },
 ]
 
 export const skillsMocks: Skill[] = [
@@ -251,7 +280,8 @@ export const teamsMocks: Team[] = [
   {
     id: '0',
     name: 'Визитка',
-    closed: false,
+    closed: true,
+    hasActiveProject: true,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -267,6 +297,7 @@ export const teamsMocks: Team[] = [
     id: '1',
     name: 'Кактус',
     closed: false,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -282,6 +313,7 @@ export const teamsMocks: Team[] = [
     id: '2',
     name: 'Карасики',
     closed: false,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -352,7 +384,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
         confirmed: true,
       },
     ],
-    status: 'RECRUITMENT_IS_OPEN',
+    status: 'PROJECT',
     requests: 0,
     acceptedRequests: 0,
     isFavorite: false,
