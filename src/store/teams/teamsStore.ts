@@ -1,17 +1,22 @@
 import { defineStore } from 'pinia'
 
-import { TeamMember } from '@Domain/Team'
+import { Team, TeamMember } from '@Domain/Team'
 
 import InitialState from '@Store/teams/initialState'
 import TeamService from '@Services/TeamService'
+import ProjectService from '@Services/ProjectService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
+import useProfilesStore from '@Store/profiles/profilesStore'
+import useProjectsStore from '@Store/projects/projectsStore'
+import { Project, ProjectMember } from '@Domain/Project'
 
 const useTeamStore = defineStore('teams', {
   state: (): InitialState => ({
     teams: [],
   }),
+
   getters: {
     getTeams() {
       return async (token: string) => {
@@ -96,6 +101,7 @@ const useTeamStore = defineStore('teams', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
+        const profileStore = useProfilesStore()
         const currentTeam = this.teams.find(({ id }) => id === teamId)
 
         if (currentTeam) {
@@ -108,6 +114,9 @@ const useTeamStore = defineStore('teams', {
             currentTeam.membersCount--
           }
         }
+
+        await profileStore.finishTeamExperience(teamMemberId, teamId, token)
+        await profileStore.finishTeamProject(teamMemberId, teamId, token)
       }
     },
 
@@ -117,6 +126,7 @@ const useTeamStore = defineStore('teams', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
+        const profileStore = useProfilesStore()
         const currentTeam = this.teams.find(({ id }) => id === teamId)
 
         if (currentTeam) {
@@ -129,6 +139,9 @@ const useTeamStore = defineStore('teams', {
             currentTeam.membersCount--
           }
         }
+
+        await profileStore.finishTeamExperience(teamMemberId, teamId, token)
+        await profileStore.finishTeamProject(teamMemberId, teamId, token)
       }
     },
 
@@ -142,6 +155,64 @@ const useTeamStore = defineStore('teams', {
 
         if (deletingIdeaIndex !== -1) {
           this.teams.splice(deletingIdeaIndex, 1)
+        }
+      }
+    },
+
+    async addProjectMember(
+      teamMember: TeamMember,
+      projectId: string,
+      token: string,
+    ) {
+      const project = await ProjectService.getProject(projectId, token)
+
+      if (project instanceof Error) {
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          project.message,
+        )
+      }
+
+      if (project) {
+        const projectMember: ProjectMember = {
+          projectName: project?.name,
+          teamId: teamMember.teamId,
+          teamName: project.team.name,
+          userId: teamMember.userId,
+          email: teamMember.email,
+          firstName: teamMember.firstName,
+          lastName: teamMember.lastName,
+          startDate: project.startDate,
+          finishDate: '',
+          projectRole: 'MEMBER',
+        }
+
+        const response = await ProjectService.addProjectMember(
+          projectMember,
+          projectId,
+          token,
+        )
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          if (project) {
+            project.members.push({ ...projectMember })
+          }
+        }
+        const team = this.teams.find(({ id }) => id === teamMember.teamId)
+
+        console.log(team)
+
+        if (team) {
+          const member = team.members.find(({ id }) => id === teamMember.id)
+
+          if (member) {
+            member.projectStatus = 'ACTIVE'
+          }
         }
       }
     },

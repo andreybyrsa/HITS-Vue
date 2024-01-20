@@ -1,6 +1,18 @@
 import { Skill } from '@Domain/Skill'
 import { Project } from '@Domain/Project'
 
+type ProjectStatus = 'ACTIVE' | 'NOTACTIVE'
+
+// function getMemberStatus(): ProjectStatus {
+//   return {
+//     projectStatus: ['ACTIVE', 'NOTACTIVE'],
+//     translatedStatus: {
+//       ACTIVE: 'В проекте',
+//       NOTACTIVE: 'Не в проекте',
+//     },
+//   }
+// }
+
 interface TeamMember {
   id: string
   teamId: string
@@ -8,16 +20,19 @@ interface TeamMember {
   email: string
   firstName: string
   lastName: string
+  projectStatus: ProjectStatus
   skills: Skill[]
 }
 
 interface Team {
   id: string
+  projectId?: string
   createdAt: string
 
   name: string
   description: string
   closed: boolean
+  hasActiveProject: boolean
   isRefused: boolean
   membersCount: number
   owner: TeamMember
