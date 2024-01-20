@@ -35,7 +35,7 @@ const usersTableColumns: TableColumn<ProjectMember>[] = [
   },
   {
     key: 'finishDate',
-    label: 'Дата окончания',
+    label: 'Дата выхода',
     getRowCellFormat: getFormattedDate,
     getRowCellStyle: getFinishDateStyle,
     contentClassName: 'justify-content-center align-items-center text-center',
