@@ -98,19 +98,19 @@ export const tagsMocks: Tag[] = [
     id: '0',
     name: 'Фронтенд',
     color: '#cd1d1d',
-    confirmed: true,
+    isConfirmed: true,
   },
   {
     id: '1',
     name: 'Бекенд',
     color: '#279b74',
-    confirmed: true,
+    isConfirmed: true,
   },
   {
     id: '2',
     name: 'Рефактор',
     color: '#cc8c33',
-    confirmed: false,
+    isConfirmed: false,
   },
 ]
 

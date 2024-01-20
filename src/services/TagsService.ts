@@ -55,7 +55,7 @@ const createNoConfirmedTag = async (
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка добавления компетенции'))
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления тега'))
 }
 
 const confirmTag = async (

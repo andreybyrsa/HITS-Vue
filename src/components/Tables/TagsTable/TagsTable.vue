@@ -80,7 +80,7 @@ const tagsFilters: Filter<Tag>[] = [
 ]
 
 function checkTagConfirmed(tag: Tag, value: FilterValue) {
-  return tag.confirmed === value
+  return tag.isConfirmed === value
 }
 
 const tagsTableHeader: TableHeader = {
@@ -109,7 +109,7 @@ const tagTableColumns: TableColumn<Tag>[] = [
     rowCellClick: openUpdatingTagModal,
   },
   {
-    key: 'confirmed',
+    key: 'isConfirmed',
     label: 'Статус',
     getRowCellFormat: getTagStatusFormat,
     getRowCellStyle: getTagStatusStyle,
@@ -160,7 +160,7 @@ async function handleConfirmTag(tag: Tag) {
     const { token } = currentUser
     const { id } = tag
     const response = await TagsService.confirmTag(
-      { ...tag, confirmed: true },
+      { ...tag, isConfirmed: true },
       id,
       token,
     )
@@ -172,7 +172,7 @@ async function handleConfirmTag(tag: Tag) {
     const currentTag = tags.value.find((tag) => tag.id === id)
 
     if (currentTag) {
-      currentTag.confirmed = true
+      currentTag.isConfirmed = true
     }
   }
 }

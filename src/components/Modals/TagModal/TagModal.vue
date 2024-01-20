@@ -103,7 +103,7 @@ const { handleSubmit, setValues } = useForm<Tag>({
       Validation.checkIsEmptyValue(value) || 'Неверно выбран цвет тега',
   },
   initialValues: {
-    confirmed: true,
+    isConfirmed: true,
   },
 })
 
