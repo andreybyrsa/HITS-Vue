@@ -7,7 +7,7 @@
     :search-by="['email', 'firstName', 'lastName']"
     :filters="usersFilters"
     :dropdown-actions-menu="dropdownUsersActions"
-  ></Table>
+  />
 
   <EditUserModal
     :is-opened="isOpenedUpdatingUserModal"
@@ -28,6 +28,7 @@ import {
   TableColumn,
   TableHeader,
 } from '@Components/Table/Table.types'
+import UsersTableProps from '@Components/Tables/UsersTable/UsersTable.types'
 import Table from '@Components/Table/Table.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
@@ -39,9 +40,12 @@ import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils/userRolesInfo'
 import mutableSort from '@Utils/mutableSort'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
+const props = defineProps<UsersTableProps>()
+
 const users = defineModel<User[]>({ required: true })
 
 const rolesFilter = ref<RolesTypes[]>([])
+const usersInTeamsFilter = ref<boolean>()
 
 const updatingUser = ref<User | null>(null)
 const isOpenedUpdatingUserModal = ref(false)
@@ -108,6 +112,16 @@ const usersFilters: Filter<User>[] = [
     isUniqueChoice: false,
     checkFilter: checkUserRoles,
   },
+  {
+    category: 'Студенты',
+    choices: [
+      { label: 'В команде', value: true },
+      { label: 'Не в команде', value: false },
+    ],
+    refValue: usersInTeamsFilter,
+    isUniqueChoice: true,
+    checkFilter: checkUsersInTeams,
+  },
 ]
 
 function navigateToUserProfile(user: User) {
@@ -150,6 +164,15 @@ function getUserRolesFormat(roles: RolesTypes[], index: number) {
 
 function checkUserRoles(user: User, role: FilterValue) {
   return user.roles.find((userRole) => userRole === role)
+}
+
+function checkUsersInTeams(user: User, value: FilterValue) {
+  const teamMemberId = props.usersInTeams.map((user) => {
+    return user.userId
+  })
+
+  if (user.roles.includes('MEMBER'))
+    return value ? teamMemberId.includes(user.id) : !teamMemberId.includes(user.id)
 }
 
 function handleOpenUpdatingModal(currentUser: User) {

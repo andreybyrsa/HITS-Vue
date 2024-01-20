@@ -46,6 +46,19 @@ class Validation {
     }
     return 'Дата не может быть раньше текущей'
   }
+
+  validateDates(startDateString: string, finishDateString: string) {
+    const startDate = new Date(startDateString)
+    const finishDate = new Date(finishDateString)
+    const currentDate = new Date()
+    if (finishDate < currentDate) {
+      return 'Дата не может быть раньше текущей'
+    }
+    if (startDate > finishDate) {
+      return 'Начальная дата должна быть раньше конечной'
+    }
+    return true
+  }
 }
 
 const ValidationController = new Validation()

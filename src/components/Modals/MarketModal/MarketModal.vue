@@ -32,14 +32,15 @@ const marketsStore = useMarketsStore()
 
 const isLoading = ref(false)
 
-const { handleSubmit, setValues } = useForm<Market>({
+const { handleSubmit, setValues, values } = useForm<Market>({
   validationSchema: {
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Неверно введено название',
     startDate: (value: string) =>
       Validation.checkDate(value) || 'Неверно введена дата',
-    finishDate: (value: string) =>
-      Validation.checkDate(value) || 'Неверно введена дата',
+    finishDate: () =>
+      Validation.validateDates(values.startDate, values.finishDate) ||
+      'Неверно введена дата',
   },
 })
 

@@ -1,4 +1,5 @@
 import { Skill } from '@Domain/Skill'
+import { Project } from '@Domain/Project'
 
 type ProjectStatus = 'ACTIVE' | 'NOTACTIVE'
 
@@ -30,6 +31,7 @@ interface Team {
   name: string
   description: string
   closed: boolean
+  hasActiveProject: boolean
   isRefused: boolean
   membersCount: number
   owner: TeamMember
@@ -44,6 +46,23 @@ interface TeamSkills {
   teamId: string
   skills: Skill[]
   wantedSkills: Skill[]
+}
+
+interface TeamExperience {
+  teamId: string
+  teamName: string
+  userId: string
+  firstName: string
+  lastName: string
+  startDate: string
+  finishDate: string | null
+  hasActiveProject: boolean
+}
+
+interface TeamProject {
+  teamId: string
+  teamName: string
+  project: Project
 }
 
 type JoinStatus = 'NEW' | 'ANNULLED' | 'ACCEPTED' | 'CANCELED' | 'WITHDRAWN'
@@ -68,4 +87,13 @@ interface TeamInvitation {
   lastName: string
 }
 
-export { Team, TeamMember, TeamSkills, TeamInvitation, RequestToTeam, JoinStatus }
+export {
+  Team,
+  TeamMember,
+  TeamSkills,
+  TeamInvitation,
+  RequestToTeam,
+  JoinStatus,
+  TeamExperience,
+  TeamProject,
+}

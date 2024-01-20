@@ -7,11 +7,11 @@ import Notification from '@Domain/Notification'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import { notificationsMocks } from '@Utils/getMocks'
 
-const notificationsAxios = defineAxios(getMocks().notifications)
+const notificationsAxios = defineAxios(notificationsMocks)
 
 const getNotifications = async (token: string): Promise<Notification[] | Error> => {
   return notificationsAxios
