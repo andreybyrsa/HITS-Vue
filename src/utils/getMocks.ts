@@ -18,7 +18,7 @@ import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Project, ProjectMember } from '@Domain/Project'
+import { Project, ProjectMember, Sprint } from '@Domain/Project'
 import { Tag } from '@Domain/Tag'
 
 export const usersMocks: User[] = [
@@ -1257,6 +1257,53 @@ export const notificationsMocks: Notification[] = [
     isReaded: true,
     isFavourite: true,
     createdAt: '2023-10-30T11:02:17Z',
+  },
+]
+
+export const sprintMocks: Sprint[] = [
+  {
+    id: '0',
+    projectId: projectMocks[0].id,
+    name: 'Спринт 1',
+    goal: 'Цель 1',
+    report: 'Отчет 1',
+    startDate: '2023-12-26T11:02:17Z',
+    finishDate: '2024-01-02T11:02:17Z',
+    workingHours: '15',
+    status: 'DONE',
+  },
+  {
+    id: '1',
+    projectId: projectMocks[0].id,
+    name: 'Спринт 2',
+    goal: 'Цель 2',
+    report: 'Отчет 2',
+    startDate: '2024-01-03T11:02:17Z',
+    finishDate: '2024-01-11T11:02:17Z',
+    workingHours: '15',
+    status: 'DONE',
+  },
+  {
+    id: '2',
+    projectId: projectMocks[0].id,
+    name: 'Спринт 3',
+    goal: 'Цель 3',
+    report: 'Отчет 3',
+    startDate: '2024-01-12T11:02:17Z',
+    finishDate: '2024-01-19T11:02:17Z',
+    workingHours: '15',
+    status: 'DONE',
+  },
+  {
+    id: '3',
+    projectId: projectMocks[0].id,
+    name: 'Спринт 4',
+    goal: 'Цель 4',
+    report: 'Отчет 4',
+    startDate: '2024-01-20T11:02:17Z',
+    finishDate: '2024-01-27T11:02:17Z',
+    workingHours: '20',
+    status: 'ACTIVE',
   },
 ]
 
