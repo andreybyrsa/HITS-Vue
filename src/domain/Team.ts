@@ -26,6 +26,7 @@ interface TeamMember {
 
 interface Team {
   id: string
+  projectId?: string
   createdAt: string
 
   name: string

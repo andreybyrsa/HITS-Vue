@@ -7,15 +7,15 @@ import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
-import { Project } from '@Domain/Project'
-import { Team } from '@Domain/Team'
+import { Project, ProjectMember } from '@Domain/Project'
+import { Team, TeamMember } from '@Domain/Team'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-function getMemberRole(userId: string, team: Team, ideaMarket: IdeaMarket) {
+function getMemberRole(userId: string, team: Team, ideaMarket?: IdeaMarket) {
   if (team.leader?.userId === userId) {
     return 'TEAM_LEADER'
   }
-  if (ideaMarket.initiator.id === userId) {
+  if (ideaMarket?.initiator.id === userId) {
     return 'MEMBER'
   }
   return 'INITIATOR'

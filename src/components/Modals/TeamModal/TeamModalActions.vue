@@ -338,13 +338,13 @@ function closeConfirmModal() {
       Пригласить пользователя
     </Button>
 
-    <Button
+    <!-- <Button
       v-if="getAccessToInviteProject()"
       variant="success"
       @click="openInvitationModal"
     >
       Добавить пользователя в проект
-    </Button>
+    </Button> -->
 
     <Button
       v-if="getAccessToLeave()"

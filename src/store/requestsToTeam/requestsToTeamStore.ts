@@ -88,7 +88,10 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
               hasActiveProject: false,
             }
 
-            await teamsStore.addTeamMember({ ...requestToTeam, skills: [] }, token)
+            await teamsStore.addTeamMember(
+              { ...requestToTeam, skills: [], projectStatus: 'NOTACTIVE' },
+              token,
+            )
             await profileStore.addTeamExperince(newTeamExperience, token)
           }
         }

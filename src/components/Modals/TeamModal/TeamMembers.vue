@@ -79,6 +79,8 @@ const teamMemberColumns: TableColumn<TeamMember>[] = [
     key: 'projectStatus',
     label: 'Статус',
     size: 'col-3',
+    getRowCellStyle: getMemberStatusStyle,
+    getRowCellFormat: getMemberStatusFormat,
   },
 ]
 
@@ -89,6 +91,12 @@ const dropdownTeamMemberActions: DropdownMenuAction<TeamMember>[] = [
     className: 'text-primary',
     statement: checkManageMemberDropdownAction,
     click: appointLeaderTeam,
+  },
+  {
+    label: 'Добавить в проект',
+    className: 'text-primary',
+    statement: checkAddUserToProject,
+    click: addUserToProject,
   },
   {
     label: 'Снять роль лидера',
@@ -132,6 +140,30 @@ function getMemberEmailFormat(email: string) {
   return email
 }
 
+function getMemberStatusStyle(projectStatus: string) {
+  if (projectStatus === 'ACTIVE') {
+    return 'text-success'
+  }
+
+  if (projectStatus === 'NOTACTIVE') {
+    return 'text-warning'
+  }
+
+  return 'text-dark'
+}
+
+function getMemberStatusFormat(projectStatus: string) {
+  if (projectStatus === 'ACTIVE') {
+    return `Проект`
+  }
+
+  if (projectStatus === 'NOTACTIVE') {
+    return `Свободен`
+  }
+
+  return projectStatus
+}
+
 function navigateToUserProfile(teamMember: TeamMember) {
   const profileRoute: RouteRecordRaw = {
     name: 'profile',
@@ -169,6 +201,19 @@ async function appointLeaderTeam(teamMember: TeamMember) {
   }
 }
 
+async function addUserToProject(teamMember: TeamMember) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { projectId } = props.team
+
+    if (projectId) {
+      await teamsStore.addProjectMember(teamMember, projectId, token)
+    }
+  }
+}
+
 async function switchLeaderToOwner() {
   const currentUser = user.value
 
@@ -203,6 +248,20 @@ function checkRemoveLeaderRole(teamMember: TeamMember) {
       teamMember.id !== owner.id &&
       teamMember.id === leader?.id) ||
     currentUser?.role === 'ADMIN'
+  )
+}
+
+function checkAddUserToProject(teamMember: TeamMember) {
+  const currentUser = user.value
+  const { owner, leader } = props.team
+
+  return (
+    (currentUser?.id === owner.id &&
+      currentUser.role === 'TEAM_OWNER' &&
+      teamMember.id !== owner.id &&
+      teamMember.id !== leader?.id &&
+      teamMember.projectStatus === 'NOTACTIVE') ||
+    (currentUser?.role === 'ADMIN' && teamMember.projectStatus === 'NOTACTIVE')
   )
 }
 </script>
