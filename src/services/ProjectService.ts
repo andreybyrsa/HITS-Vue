@@ -1,12 +1,14 @@
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import { projectMocks } from '@Utils/getMocks'
+import { averageMarkMocks, projectMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { Project } from '@Domain/Project'
+import { AverageMark } from '@Domain/ReportProjectMembers'
 
 const projectMocksAxios = defineAxios(projectMocks)
+const averageMarkMocksAxios = defineAxios(averageMarkMocks)
 
 function formatGetMyProjects(projects: Project[], userId: string) {
   return projects.filter(
@@ -16,6 +18,13 @@ function formatGetMyProjects(projects: Project[], userId: string) {
         item.members.find((member) => member.userId === userId)) &&
       item.status === 'ACTIVE',
   )
+}
+
+function formatGetAverageMarkProject(
+  averageMarkMocks: AverageMark[],
+  projectId: string,
+) {
+  return averageMarkMocks.filter((mark) => mark.projectId === projectId)
 }
 
 // --- GET --- //
@@ -64,6 +73,28 @@ const getMyProjects = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения ваших проектов'))
 }
 
+const getAverageMarkProject = async (
+  projectId: string,
+  token: string,
+): Promise<AverageMark[] | Error> => {
+  return averageMarkMocksAxios
+    .get<AverageMark[]>(
+      '/mark', // FIX ROUTE
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (averageMark) =>
+          formatGetAverageMarkProject(averageMark, projectId),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка получения средней оценки за проект'),
+    )
+}
+
 // --- POST --- //
 const convertIdeaToProject = async (
   project: Project,
@@ -82,6 +113,7 @@ const ProfileService = {
   getAllProjects,
   getMyProjects,
   getProject,
+  getAverageMarkProject,
 
   convertIdeaToProject,
 }

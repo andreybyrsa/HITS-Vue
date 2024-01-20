@@ -20,6 +20,7 @@ import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember } from '@Domain/Project'
 import { Tag } from '@Domain/Tag'
+import { AverageMark } from '@Domain/ReportProjectMembers'
 
 export const usersMocks: User[] = [
   {
@@ -1549,5 +1550,40 @@ export const profilesMocks: Profile[] = [
     ideas: [ideasMocks[0], ideasMocks[1]],
     teamsExperience: teamsExperienceMocks,
     teamsProjects: teamsProjectsMocks,
+  },
+]
+
+export const averageMarkMocks: AverageMark[] = [
+  {
+    projectId: '0',
+    userID: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    firstName: 'Кирилл',
+    lastName: 'Власов',
+    projectRole: 'TEAM_LEADER',
+    mark: '9.9',
+  },
+  {
+    projectId: '0',
+    userID: '1',
+    firstName: 'Петр',
+    lastName: 'Власов',
+    projectRole: 'MEMBER',
+    mark: '6.7',
+  },
+  {
+    projectId: '0',
+    userID: '2',
+    firstName: 'Иван',
+    lastName: 'Власов',
+    projectRole: 'MEMBER',
+    mark: '7.8',
+  },
+  {
+    projectId: '0',
+    userID: '3',
+    firstName: 'Олег',
+    lastName: 'Власов',
+    projectRole: 'MEMBER',
+    mark: '8.3',
   },
 ]

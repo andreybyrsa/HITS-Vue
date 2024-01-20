@@ -1,10 +1,19 @@
 <script lang="ts" setup>
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
+
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+
+import useUserStore from '@Store/user/userStore'
+import ProjectService from '@Services/ProjectService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { AverageMark } from '@Domain/ReportProjectMembers'
 
 import {
   getRoleProjectMember,
@@ -14,45 +23,38 @@ import {
 import {
   FinishProjectModalEmits,
   FinishProjectModalProps,
-  membersType,
 } from '@Components/Modals/FinishProjectModal/FinishProjectModal.types'
 
 defineProps<FinishProjectModalProps>()
 
 const emit = defineEmits<FinishProjectModalEmits>()
 
-const members: membersType[] = [
-  {
-    score: '9.3',
-    name: 'Артем Иванов',
-    role: 'TEAM_LEADER',
-  },
-  {
-    score: '7.5',
-    name: 'Артем Иванов',
-    role: 'MEMBER',
-  },
-  {
-    score: '6.8',
-    name: 'Артем Иванов',
-    role: 'MEMBER',
-  },
-  {
-    score: '8.1',
-    name: 'Артем Иванов',
-    role: 'MEMBER',
-  },
-  {
-    score: '8.0',
-    name: 'Артем Иванов',
-    role: 'MEMBER',
-  },
-  {
-    score: '7.9',
-    name: 'Артем Иванов',
-    role: 'MEMBER',
-  },
-]
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const route = useRoute()
+
+const averageMark = ref<AverageMark[]>([])
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const projectId = route.params.id.toString()
+
+    const response = await ProjectService.getAverageMarkProject(projectId, token)
+
+    if (response instanceof Error) {
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        response.message,
+      )
+    }
+
+    averageMark.value = response
+  }
+})
 </script>
 
 <template>
@@ -71,7 +73,6 @@ const members: membersType[] = [
           variant="close"
         />
       </div>
-
       <div class="d-flex w-100 gap-2 flex-column">
         <div class="d-flex gap-3 text-primary w-100">
           <Typography class-name="w-25">Средняя оценка</Typography>
@@ -79,22 +80,22 @@ const members: membersType[] = [
         </div>
         <div
           class="d-flex gap-3 w-100"
-          v-for="(member, index) in members"
+          v-for="(member, index) in averageMark"
           :key="index"
         >
           <div class="w-25">
             <Input
-              :name="member.name"
+              :name="member.projectId"
               class-name="rounded"
               placeholder="Оценка"
-              v-model="member.score"
+              v-model="member.mark"
             />
           </div>
 
           <div class="finish-project-modal__member rounded border px-2 w-75">
-            {{ member.name }}
-            <div :class="getRoleProjectMemberStyle(member.role)">
-              {{ getRoleProjectMember().translatedRoles[member.role] }}
+            {{ member.firstName }} {{ member.lastName }}
+            <div :class="getRoleProjectMemberStyle(member.projectRole)">
+              {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
             </div>
           </div>
         </div>
