@@ -6,6 +6,7 @@
     :search-by="['name']"
     :dropdown-actions-menu="dropdownRequestActions"
     v-model="selectedRequest"
+    is-checkbox
   />
 
   <LetterModal

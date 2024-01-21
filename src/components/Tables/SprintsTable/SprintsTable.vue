@@ -36,7 +36,7 @@ const sprintsTableHeader: TableHeader = {
       label: 'Создать спринт',
       variant: 'primary',
       prependIconName: 'bi bi-plus-lg',
-      click: console.log(1),
+      click: () => null,
     },
   ],
 }

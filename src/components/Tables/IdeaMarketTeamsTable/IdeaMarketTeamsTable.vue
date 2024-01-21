@@ -6,6 +6,7 @@
     :search-by="['name']"
     :dropdown-actions-menu="dropdownIdeaMarketTeamActions"
     v-model="selectedTeam"
+    is-checkbox
   />
 </template>
 
