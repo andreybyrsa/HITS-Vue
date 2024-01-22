@@ -6,6 +6,7 @@ import { watchImmediate } from '@vueuse/core'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Header from '@Components/Header/Header.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+import ProjectPlaceHolder from '@Views/Project/ProjectPlaceHolder.vue'
 
 import ProjectHeader from '@Views/Project/ProjectHeader.vue'
 import ProjectContent from '@Views/Project/ProjectContent.vue'
@@ -81,6 +82,7 @@ async function getProject() {
 
         <ProjectContent :project="project" />
       </div>
+      <div v-else><ProjectPlaceHolder /></div>
       <router-view />
     </template>
   </PageLayout>
