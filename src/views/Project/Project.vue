@@ -11,12 +11,19 @@ import ProjectHeader from '@Views/Project/ProjectHeader.vue'
 import ProjectContent from '@Views/Project/ProjectContent.vue'
 
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 import ProjectService from '@Services/ProjectService'
 
 import { useRoute } from 'vue-router'
 
-import { Project } from '@Domain/Project'
+import { Project, Sprint } from '@Domain/Project'
+import {
+  RequestConfig,
+  openErrorNotification,
+  sendParallelRequests,
+} from '@Utils/sendParallelRequests'
+import useSprintsStore from '@Store/sprints/sprintsStore'
+
+const sprintsStore = useSprintsStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -24,6 +31,7 @@ const { user } = storeToRefs(userStore)
 const route = useRoute()
 
 const project = ref<Project>()
+const sprints = ref<Sprint[]>()
 const isLoading = ref(false)
 
 watchImmediate(
@@ -44,16 +52,22 @@ async function getProject() {
     const projectId = route.params.id.toString()
 
     isLoading.value = true
-    const response = await ProjectService.getProject(projectId, token)
 
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
-    }
+    const ideasMarketParallelRequests: RequestConfig[] = [
+      {
+        request: () => ProjectService.getProject(projectId, token),
+        refValue: project,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => sprintsStore.getAllSprints(projectId, token),
+        refValue: sprints,
+        onErrorFunc: openErrorNotification,
+      },
+    ]
 
-    project.value = response
+    await sendParallelRequests(ideasMarketParallelRequests)
+
     isLoading.value = false
   }
 }

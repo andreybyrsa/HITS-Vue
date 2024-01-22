@@ -11,8 +11,8 @@ const useSprintsStore = defineStore('sprints', {
 
   getters: {
     getAllSprints() {
-      return async (token: string) => {
-        const response = await SprintService.getAllSprints(token)
+      return async (projectId: string, token: string) => {
+        const response = await SprintService.getAllSprintsProject(projectId, token)
 
         if (response instanceof Error) {
           return response

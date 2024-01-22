@@ -6,7 +6,7 @@ import { watchImmediate } from '@vueuse/core'
 import { ProjectProps } from '@Views/Project/Project.types'
 
 import AboutProjectPage from '@Views/Project/AboutProjectPage.vue'
-import SprintsListPage from './Sprints/SprintsListPage.vue'
+import SprintsListPage from '@Views/Project/SprintsListPage.vue'
 
 import useUserStore from '@Store/user/userStore'
 
