@@ -6,7 +6,7 @@
     :data="companies"
     :search-by="['name']"
     :dropdown-actions-menu="dropdownCompaniesActions"
-  ></Table>
+  />
 
   <CompanyModal
     :isOpened="isOpenedCreatingCompanyModal"
@@ -80,12 +80,14 @@ const companiesTableColumns: TableColumn<Company>[] = [
   {
     key: 'name',
     label: 'Название',
+    size: 'col-5',
     rowCellClick: openUpdatingCompanyModal,
     getRowCellStyle: getCompanyNameStyle,
   },
   {
     key: 'owner',
     label: 'Руководитель',
+    size: 'col-7',
     getRowCellFormat: getCompanyOwnerFormat,
   },
 ]

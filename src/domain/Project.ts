@@ -72,4 +72,25 @@ interface Task {
   status: TaskStatus
 }
 
-export { Project, ProjectMember, ProjectStatus, ProjectMemberRole }
+type SprintStatus = 'ACTIVE' | 'DONE'
+
+interface Sprint {
+  id: string
+  projectId: string
+  name: string
+  goal: string
+  report: string
+  startDate: string
+  finishDate: string
+  workingHours: string
+  status: SprintStatus
+}
+
+export {
+  Project,
+  ProjectMember,
+  ProjectStatus,
+  ProjectMemberRole,
+  SprintStatus,
+  Sprint,
+}
