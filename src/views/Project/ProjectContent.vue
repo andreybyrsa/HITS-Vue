@@ -6,8 +6,10 @@ import { watchImmediate } from '@vueuse/core'
 import { ProjectProps } from '@Views/Project/Project.types'
 
 import AboutProjectPage from '@Views/Project/AboutProjectPage.vue'
+import SprintsListPage from '@Views/Project/SprintsListPage.vue'
 
 import useUserStore from '@Store/user/userStore'
+import BacklogPage from './BacklogPage.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -104,15 +106,15 @@ function getNavLinkStyle(isCurrentTab: boolean) {
     </div>
     <div
       v-if="isTabBacklog"
-      class="content-dev"
+      class="mt-4"
     >
-      Бэклог
+      <BacklogPage :tasks="tasks" />
     </div>
     <div
       v-if="isTabSprints"
       class="content-dev"
     >
-      Спринты
+      <SprintsListPage :sprints="sprint" />
     </div>
     <div
       v-if="isTabActiveSprint"
@@ -128,6 +130,6 @@ function getNavLinkStyle(isCurrentTab: boolean) {
   width: 100%;
   height: 60vh;
 
-  @include flexible(center, center);
+  @include flexible(start, center);
 }
 </style>

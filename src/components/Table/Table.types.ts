@@ -68,6 +68,7 @@ interface TableProps<DataType> {
   filters?: Filter<DataType>[]
   checkedDataActions?: CheckedDataAction<DataType>[]
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]
+  isCheckbox?: boolean
 }
 
 export {

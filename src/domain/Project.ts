@@ -57,20 +57,42 @@ interface TaskMovementLog {
 
 interface Task {
   id: string
-  sprintId: string
+  sprintId?: string
   projectId: string
   name: string
   description: string
 
   initiator: User
-  executor: User
+  executor?: User
   workHour: string
   startDate: string
-  finishDate: string
+  finishDate?: string
 
-  tag: Tag[]
+  tag: Tag
   taskMovementLog: TaskStatus[]
   status: TaskStatus
 }
 
-export { Project, ProjectMember, ProjectStatus, ProjectMemberRole, Task }
+type SprintStatus = 'ACTIVE' | 'DONE'
+
+interface Sprint {
+  id: string
+  projectId: string
+  name: string
+  goal: string
+  report: string
+  startDate: string
+  finishDate: string
+  workingHours: string
+  status: SprintStatus
+}
+
+export {
+  Project,
+  ProjectMember,
+  ProjectStatus,
+  ProjectMemberRole,
+  SprintStatus,
+  Sprint,
+  Task,
+}

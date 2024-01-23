@@ -9,6 +9,7 @@
     :checked-data-actions="checkedIdeasActions"
     :dropdown-actions-menu="dropdownIdeasActions"
     v-model="checkedIdeas"
+    is-checkbox
   />
 
   <DeleteModal

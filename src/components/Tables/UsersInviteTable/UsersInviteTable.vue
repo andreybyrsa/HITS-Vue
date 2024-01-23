@@ -7,6 +7,7 @@
       :dropdown-actions-menu="dropdownInviteUserActions"
       :filters="usersFilters"
       v-model="invitationUsers"
+      is-checkbox
     />
   </div>
 
