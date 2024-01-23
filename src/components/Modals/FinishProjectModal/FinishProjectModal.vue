@@ -5,10 +5,13 @@ import { storeToRefs } from 'pinia'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import Icon from '@Components/Icon/Icon.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
 
 import useUserStore from '@Store/user/userStore'
 import ProjectService from '@Services/ProjectService'
@@ -25,7 +28,7 @@ import {
   FinishProjectModalProps,
 } from '@Components/Modals/FinishProjectModal/FinishProjectModal.types'
 
-defineProps<FinishProjectModalProps>()
+const props = defineProps<FinishProjectModalProps>()
 
 const emit = defineEmits<FinishProjectModalEmits>()
 
@@ -36,9 +39,12 @@ const route = useRoute()
 
 const averageMark = ref<AverageMark[]>([])
 
-onMounted(async () => {
-  const currentUser = user.value
+onMounted(() => {
+  if (props.isFinishProject) getAverageMark()
+})
 
+async function getAverageMark() {
+  const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
     const projectId = route.params.id.toString()
@@ -54,7 +60,7 @@ onMounted(async () => {
 
     averageMark.value = response
   }
-})
+}
 </script>
 
 <template>
@@ -64,8 +70,18 @@ onMounted(async () => {
   >
     <div class="finish-project-modal bg-white rounded p-3">
       <div class="finish-project-modal__header fs-2 w-100 border-2">
-        <Typography class-name="border-bottom text-primary fs-3 w-100">
+        <Typography
+          v-if="status === 'PROJECT'"
+          class-name="border-bottom text-primary fs-3 w-100"
+        >
           Завершение проекта
+        </Typography>
+
+        <Typography
+          v-else
+          class-name="border-bottom text-primary fs-3 w-100"
+        >
+          Завершение спринта
         </Typography>
         <Button
           @click="emit('close-modal')"
@@ -75,29 +91,103 @@ onMounted(async () => {
       </div>
       <div class="d-flex w-100 gap-2 flex-column">
         <div class="d-flex gap-3 text-primary w-100">
-          <Typography class-name="w-25">Средняя оценка</Typography>
-          <Typography class-name="w-75">Участник</Typography>
+          <Typography
+            class-name="w-25"
+            v-if="status === 'PROJECT'"
+            >Средняя оценка</Typography
+          >
+          <Typography
+            class-name="w-25"
+            v-else
+            >Оценка</Typography
+          >
+          <Typography
+            v-if="status === 'PROJECT'"
+            class-name="w-75"
+            >Участник</Typography
+          >
+          <Typography
+            v-else
+            class-name="w-75"
+            >Статистика участника</Typography
+          >
         </div>
         <div
-          class="d-flex gap-3 w-100"
+          class="d-flex gap-3 w-100 justify-content-between h-100"
           v-for="(member, index) in averageMark"
           :key="index"
         >
-          <div class="w-25">
+          <div class="w-25 h-100">
             <Input
               :name="member.projectId"
-              class-name="rounded"
+              class-name="rounded finish-project-modal__input"
               placeholder="Оценка"
               v-model="member.mark"
             />
           </div>
 
-          <div class="finish-project-modal__member rounded border px-2 w-75">
-            {{ member.firstName }} {{ member.lastName }}
-            <div :class="getRoleProjectMemberStyle(member.projectRole)">
-              {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
-            </div>
-          </div>
+          <ul class="list-group rounded-3 w-75">
+            <li
+              v-if="status === 'SPRINT'"
+              class="list-group-item p-0 overflow-hidden w-100"
+            >
+              <Button
+                variant="light"
+                class-name="collapse-controller w-100 justify-content-between"
+                v-collapse="member.id"
+              >
+                {{ member.firstName }} {{ member.lastName }}
+                <div :class="getRoleProjectMemberStyle(member.projectRole)">
+                  {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
+                </div>
+              </Button>
+              <Collapse :id="member.id">
+                <div class="fp-2 m-2">
+                  <div class="text-primary">Выполненные задачи*</div>
+
+                  <div
+                    class="justify-content-between d-flex rounded-3 border p-2 mb-1"
+                  >
+                    <div>Cделать перевод идей</div>
+                    <div class="d-flex gap-1">
+                      <Icon class="bi bi-circle-fill text-warning"> </Icon>Бэкенд
+                    </div>
+                  </div>
+                  <div
+                    class="justify-content-between d-flex rounded-3 border p-2 mb-1"
+                  >
+                    <div>Cделать перевод идей</div>
+                    <div class="d-flex gap-1">
+                      <Icon class="bi bi-circle-fill text-info"> </Icon>Проектировка
+                    </div>
+                  </div>
+                  <div
+                    class="justify-content-between d-flex rounded-3 border p-2 mb-1"
+                  >
+                    <div>Cделать перевод идей</div>
+                    <div class="d-flex gap-1">
+                      <Icon class="bi bi-circle-fill text-success"> </Icon>Рефактор
+                    </div>
+                  </div>
+                </div>
+              </Collapse>
+            </li>
+
+            <li
+              v-else
+              class="list-group-item p-0 overflow-hidden w-100"
+            >
+              <div
+                variant="light"
+                class="d-flex w-100 justify-content-between finish-project-modal__member p-2"
+              >
+                {{ member.firstName }} {{ member.lastName }}
+                <div :class="getRoleProjectMemberStyle(member.projectRole)">
+                  {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -112,11 +202,27 @@ onMounted(async () => {
         </Textarea>
       </div>
 
+      <Checkbox
+        class-name="text-primary"
+        name="newSprint"
+        v-if="status === 'SPRINT'"
+        label="Перенести в новый спринт*"
+      >
+      </Checkbox>
       <Button
+        v-if="status === 'PROJECT'"
         @click="emit('close-modal')"
         variant="primary"
       >
         Закрыть проект
+      </Button>
+
+      <Button
+        v-else
+        @click="emit('close-modal')"
+        variant="primary"
+      >
+        Завершить спринт
       </Button>
     </div>
   </ModalLayout>
@@ -143,12 +249,24 @@ onMounted(async () => {
 
   &__member {
     @include flexible(center, space-between);
+    height: 5vh;
   }
 
   &__report {
     resize: none;
     height: 200px;
   }
+
+  &__input {
+    height: 5vh;
+  }
+}
+
+.collapse-controller {
+  border-radius: 0;
+  background-color: $white-color;
+
+  @include flexible(center, flex-start);
 }
 
 .modal-layout-enter-from .finish-project-modal,

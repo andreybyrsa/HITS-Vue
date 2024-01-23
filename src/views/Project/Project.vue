@@ -37,7 +37,6 @@ onMounted(getProject)
 
 async function getProject() {
   const currentUser = user.value
-
   if (currentUser?.token) {
     const { token } = currentUser
 

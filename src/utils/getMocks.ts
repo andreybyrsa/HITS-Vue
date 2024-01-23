@@ -1555,6 +1555,7 @@ export const profilesMocks: Profile[] = [
 
 export const averageMarkMocks: AverageMark[] = [
   {
+    id: '0101',
     projectId: '0',
     userID: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     firstName: 'Кирилл',
@@ -1563,6 +1564,7 @@ export const averageMarkMocks: AverageMark[] = [
     mark: '9.9',
   },
   {
+    id: '1010',
     projectId: '0',
     userID: '1',
     firstName: 'Петр',
@@ -1571,6 +1573,7 @@ export const averageMarkMocks: AverageMark[] = [
     mark: '6.7',
   },
   {
+    id: '2211',
     projectId: '0',
     userID: '2',
     firstName: 'Иван',
@@ -1579,6 +1582,7 @@ export const averageMarkMocks: AverageMark[] = [
     mark: '7.8',
   },
   {
+    id: '3322',
     projectId: '0',
     userID: '3',
     firstName: 'Олег',

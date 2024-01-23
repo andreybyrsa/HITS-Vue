@@ -18,6 +18,7 @@ function getFormattedDate(date: string) {
 }
 
 const isOpenedFinishProjectModal = ref(false)
+const isOpenedFinishSprintModal = ref(false)
 
 function closeFinishProjectModal() {
   isOpenedFinishProjectModal.value = false
@@ -25,6 +26,14 @@ function closeFinishProjectModal() {
 
 function openFinishProjectModal() {
   isOpenedFinishProjectModal.value = true
+}
+
+function closeFinishSprintModal() {
+  isOpenedFinishSprintModal.value = false
+}
+
+function openFinishSprintModal() {
+  isOpenedFinishSprintModal.value = true
 }
 
 function getContentTab(header: string) {
@@ -73,11 +82,25 @@ function getContentTab(header: string) {
           class-name="w-100 mt-2"
           >Завершить проект</Button
         >
+        <Button
+          @click="openFinishSprintModal"
+          variant="danger"
+          class-name="w-100 mt-2"
+          >Завершить спринт</Button
+        >
       </div>
     </div>
     <FinishProjectModal
+      isFinishProject
       :is-opened="isOpenedFinishProjectModal"
+      status="PROJECT"
       @close-modal="closeFinishProjectModal"
+    />
+    <FinishProjectModal
+      isFinishProject
+      :is-opened="isOpenedFinishSprintModal"
+      status="SPRINT"
+      @close-modal="closeFinishSprintModal"
     />
   </div>
 </template>

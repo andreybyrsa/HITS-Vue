@@ -1,4 +1,4 @@
-import { ProjectMemberRole } from '@Domain/Project'
+import { ProjectMemberRole, Task } from '@Domain/Project'
 
 interface ReportProject {
   projectId: string
@@ -7,6 +7,7 @@ interface ReportProject {
 }
 
 interface AverageMark {
+  id: string
   projectId: string
   userID: string
   firstName: string

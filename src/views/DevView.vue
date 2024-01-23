@@ -11,15 +11,13 @@ import NavTab from '@Components/NavTab/NavTab.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
-import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
-import ProjectInfo from './Project/ProjectInfo.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
 const router = useRouter()
 
 onMounted(async () => {
@@ -75,7 +73,24 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
     </template>
 
     <template #content>
-      <ProjectInfo :is-opened="true"> </ProjectInfo>
+      <ul class="list-group rounded-3">
+        <li class="list-group-item p-0 overflow-hidden">
+          <Button
+            variant="light"
+            class-name="collapse-controller w-100 justify-content-between"
+            v-collapse:openOnMount="123"
+          >
+            <div>Описание</div>
+            <div>Участник</div>
+          </Button>
+          <Collapse id="123">
+            <div class="d-flex justify-content-between fp-2 m-2">
+              <div>Сделать что-то</div>
+              <div>Бекэнд</div>
+            </div>
+          </Collapse>
+        </li>
+      </ul>
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>
@@ -173,5 +188,14 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
   &__content {
     @include flexible(flex-start, flex-start, column, $gap: 16px);
   }
+}
+
+.collapse-controller {
+  border-radius: 0;
+  background-color: $white-color;
+
+  color: $primary-color;
+
+  @include flexible(center, flex-start);
 }
 </style>
