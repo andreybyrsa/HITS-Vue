@@ -3,18 +3,21 @@ import axios from 'axios'
 import { API_URL } from '@Main'
 
 import { Profile, ProfileFullName } from '@Domain/Profile'
+import { UserTelegram } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
 
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import { profilesMocks } from '@Utils/getMocks'
+import { profilesMocks, usersTelegramMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 
 const profileUserAxios = defineAxios(profilesMocks)
+const usersTelegramAxios = defineAxios(usersTelegramMocks)
 
+// --- GET --- //
 const getUserProfile = async (
   id: string,
   token: string,
@@ -45,6 +48,7 @@ const getProfileAvatar = async (
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
 }
 
+// --- POST --- //
 const saveProfileSkills = async (
   skills: Skill[],
   token: string,
@@ -87,6 +91,90 @@ const updateUserFullName = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения данных'))
 }
 
+const createUserTelegram = async (
+  userTelegram: UserTelegram,
+  token: string,
+): Promise<UserTelegram | Error> => {
+  return usersTelegramAxios
+    .postNoRequestBody<UserTelegram>(
+      `${API_URL}/profile/telegram/add-tag`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        requestData: userTelegram,
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка создания пользователя Телеграм'),
+    )
+}
+
+// --- PUT --- //
+const updateTelegramTag = async (
+  userTag: string,
+  token: string,
+): Promise<Success | Error> => {
+  return usersTelegramAxios
+    .putNoRequestBody<Success>(
+      `${API_URL}/profile/telegram/update/${userTag}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { userTag } },
+    )
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка обновления Телеграм-тега пользователя'),
+    )
+}
+
+const updateVisibilityOfTag = async (
+  userTag: string,
+  isVisible: boolean,
+  token: string,
+): Promise<Success | Error> => {
+  return usersTelegramAxios
+    .putNoRequestBody<Success>(
+      `${API_URL}/profile/telegram/visibility/${userTag}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { isVisible } },
+    )
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(
+        error,
+        'Ошибка обновления видимости Телеграм-тега пользователя',
+      ),
+    )
+}
+
+// --- DELETE --- //
+const deleteUserTelegram = async (
+  userTag: string,
+  token: string,
+): Promise<Success | Error> => {
+  return usersTelegramAxios
+    .delete(
+      `${API_URL}/profile/telegram/delete/${userTag}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { userTag } },
+    )
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка удаления пользователя Телеграм'),
+    )
+}
+
 const ProfileService = {
   getUserProfile,
   getProfileAvatar,
@@ -94,6 +182,12 @@ const ProfileService = {
   saveProfileSkills,
   uploadProfileAvatar,
   updateUserFullName,
+  createUserTelegram,
+
+  updateTelegramTag,
+  updateVisibilityOfTag,
+
+  deleteUserTelegram,
 }
 
 export default ProfileService

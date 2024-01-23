@@ -1,4 +1,4 @@
-import { User } from '@Domain/User'
+import { User, UserTelegram } from '@Domain/User'
 import { Profile } from '@Domain/Profile'
 import UsersGroup from '@Domain/UsersGroup'
 import Company from '@Domain/Company'
@@ -91,6 +91,27 @@ export const usersMocks: User[] = [
   //   lastName: 'Амонов',
   //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
   // },
+]
+
+export const usersTelegramMocks: UserTelegram[] = [
+  {
+    userId: usersMocks[0].id,
+    userTag: '@baobao',
+    chatId: '0',
+    isVisible: true,
+  },
+  {
+    userId: usersMocks[1].id,
+    userTag: '@chipichipi',
+    chatId: '5',
+    isVisible: false,
+  },
+  {
+    userId: usersMocks[1].id,
+    userTag: '@chapachapa',
+    chatId: null,
+    isVisible: true,
+  },
 ]
 
 export const tagsMocks: Tag[] = [
@@ -1549,5 +1570,7 @@ export const profilesMocks: Profile[] = [
     ideas: [ideasMocks[0], ideasMocks[1]],
     teamsExperience: teamsExperienceMocks,
     teamsProjects: teamsProjectsMocks,
+    userTag: '@pupupu',
+    isUserTagVisible: true,
   },
 ]
