@@ -20,6 +20,7 @@ import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember, Sprint } from '@Domain/Project'
 import { Tag } from '@Domain/Tag'
+import { Task } from '../domain/Project'
 
 export const usersMocks: User[] = [
   {
@@ -1113,6 +1114,45 @@ export const ideasSkillsMocks: IdeaSkills[] = [
   {
     ideaId: '4',
     skills: [...skillsMocks],
+  },
+]
+
+export const tasksMocks: Task[] = [
+  {
+    id: '16463254',
+    projectId: '0',
+    name: 'Сделать беклог',
+    description: 'Сверстать и написать логику для страници беклога',
+    initiator: usersMocks[0],
+    workHour: '3ч',
+    startDate: '01.01.24',
+    tag: tagsMocks[0],
+    taskMovementLog: ['InBackLog'],
+    status: 'InBackLog',
+  },
+  {
+    id: '8635474',
+    projectId: '0',
+    name: 'Мерж веток',
+    description: 'Смержить все старые ветки и удалить ненужные',
+    initiator: usersMocks[1],
+    workHour: '1ч',
+    startDate: '02.04.24',
+    tag: tagsMocks[2],
+    taskMovementLog: ['InBackLog'],
+    status: 'InBackLog',
+  },
+  {
+    id: '0746576',
+    projectId: '0',
+    name: 'Микросервис авторизации',
+    description: 'Создать отдельный сервис для авторизации пользователей',
+    initiator: usersMocks[0],
+    workHour: '3ч',
+    startDate: '01.01.24',
+    tag: tagsMocks[1],
+    taskMovementLog: ['InBackLog'],
+    status: 'InBackLog',
   },
 ]
 

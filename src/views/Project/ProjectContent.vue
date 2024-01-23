@@ -9,6 +9,7 @@ import AboutProjectPage from '@Views/Project/AboutProjectPage.vue'
 import SprintsListPage from '@Views/Project/SprintsListPage.vue'
 
 import useUserStore from '@Store/user/userStore'
+import BacklogPage from './BacklogPage.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -105,9 +106,9 @@ function getNavLinkStyle(isCurrentTab: boolean) {
     </div>
     <div
       v-if="isTabBacklog"
-      class="content-dev"
+      class="mt-4"
     >
-      Бэклог
+      <BacklogPage :tasks="tasks" />
     </div>
     <div
       v-if="isTabSprints"

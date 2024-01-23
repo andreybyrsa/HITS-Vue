@@ -1,5 +1,6 @@
 import { User } from '@Domain/User'
 import { Team } from '@Domain/Team'
+import { Tag } from './Tag'
 
 type ProjectStatus = 'ACTIVE' | 'DONE'
 type ProjectMemberRole = 'INITIATOR' | 'TEAM_LEADER' | 'MEMBER'
@@ -56,18 +57,18 @@ interface TaskMovementLog {
 
 interface Task {
   id: string
-  sprintId: string
+  sprintId?: string
   projectId: string
   name: string
   description: string
 
   initiator: User
-  executor: User
+  executor?: User
   workHour: string
   startDate: string
-  finishDate: string
+  finishDate?: string
 
-  tag: string
+  tag: Tag
   taskMovementLog: TaskStatus[]
   status: TaskStatus
 }
@@ -93,4 +94,5 @@ export {
   ProjectMemberRole,
   SprintStatus,
   Sprint,
+  Task,
 }
