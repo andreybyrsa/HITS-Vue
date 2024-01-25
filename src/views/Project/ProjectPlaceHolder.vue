@@ -87,29 +87,3 @@ import Placeholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
   }
 }
 </style>
-<!-- <div class="border rounded ms-3">
-            <div
-              class="content__info bg-primary rounded-top border border-bottom-0"
-            ></div>
-            <div class="bg-white rounded-bottom p-3 border border-top-0">
-              <div class="w-50">
-                <Placeholder></Placeholder>
-              </div>
-              <div class="w-75"><Placeholder></Placeholder></div>
-              <div class="w-50 pt-3">
-                <Placeholder></Placeholder>
-              </div>
-              <div class="w-75"><Placeholder></Placeholder></div>
-              <div class="w-50 pt-3">
-                <Placeholder></Placeholder>
-              </div>
-              <div class="w-75"><Placeholder></Placeholder></div>
-              <div class="w-50 pt-3">
-                <Placeholder></Placeholder>
-              </div>
-              <div class="w-75"><Placeholder></Placeholder></div>
-              <div class="w-100 p-3">
-                <Placeholder></Placeholder><Placeholder></Placeholder>
-              </div>
-            </div>
-          </div> -->
