@@ -16,15 +16,17 @@ import ProjectService from '@Services/ProjectService'
 
 import { useRoute } from 'vue-router'
 
-import { Project, Sprint } from '@Domain/Project'
+import { Project, Sprint, Task } from '@Domain/Project'
 import {
   RequestConfig,
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
 import useSprintsStore from '@Store/sprints/sprintsStore'
+import useTasksStore from '@Store/tasks/tasksStore'
 
 const sprintsStore = useSprintsStore()
+const tasksStore = useTasksStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -33,6 +35,7 @@ const route = useRoute()
 
 const project = ref<Project>()
 const sprints = ref<Sprint[]>()
+const tasks = ref<Task[]>()
 const isLoading = ref(false)
 
 watchImmediate(
@@ -63,6 +66,11 @@ async function getProject() {
       {
         request: () => sprintsStore.getAllSprints(projectId, token),
         refValue: sprints,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => tasksStore.getAllTasks(projectId, token),
+        refValue: tasks,
         onErrorFunc: openErrorNotification,
       },
     ]
