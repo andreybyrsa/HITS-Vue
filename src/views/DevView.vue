@@ -20,6 +20,7 @@ import TeamService from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 import ProjectInfo from './Project/ProjectInfo.vue'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 const router = useRouter()
 
 onMounted(async () => {
@@ -75,7 +76,9 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
     </template>
 
     <template #content>
-      <ProjectInfo :is-opened="true"> </ProjectInfo>
+      <!-- <ProjectInfo :is-opened="true"> </ProjectInfo>
+      <router-view></router-view> -->
+      <TaskModal :is-opened="true"></TaskModal>
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>
@@ -103,7 +106,7 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
       <div class="table-responsive"></div>
 
-      <Select
+      <!-- <Select
         name="component"
         :options="[
           { value: '123', label: '1' },
@@ -120,9 +123,9 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
         Submit
       </Button>
 
-      {{ values }}
+      {{ values }} -->
 
-      <Combobox
+      <!-- <Combobox
         name="1"
         :options="[
           { id: '0', lang: 'Java', name: 'Джава' },
@@ -161,7 +164,7 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
         @click="isOpenedModal = true"
       >
         Открыть окно
-      </Button>
+      </Button> -->
 
       <pre class="sss">Пользователь из userStore - {{ user }}</pre>
     </template>
