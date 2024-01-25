@@ -20,6 +20,12 @@ import TeamService from '@Services/TeamService'
 import useUserStore from '@Store/user/userStore'
 import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 import ProjectInfo from './Project/ProjectInfo.vue'
+
+import useTagsStore from '@Store/tags/tagsStore'
+
+const tagsStore = useTagsStore()
+const { tags } = storeToRefs(tagsStore)
+
 const router = useRouter()
 
 onMounted(async () => {
@@ -75,7 +81,7 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
     </template>
 
     <template #content>
-      <ProjectInfo :is-opened="true"> </ProjectInfo>
+      <!-- <ProjectInfo :is-opened="true"> </ProjectInfo> -->
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>
