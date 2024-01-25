@@ -5,4 +5,8 @@ interface ProjectProps {
   sprint?: Sprint[]
 }
 
+// interface elemKanbanProps {
+
+// }
+
 export { ProjectProps }
