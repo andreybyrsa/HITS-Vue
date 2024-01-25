@@ -104,7 +104,6 @@ const tagTableColumns: TableColumn<Tag>[] = [
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyleCSS: getCkeckedTagStyleCSS,
     getRowCellStyle: getCkeckedTagStyle,
-    getRowCellFormat: () => '',
   },
   {
     key: 'name',
