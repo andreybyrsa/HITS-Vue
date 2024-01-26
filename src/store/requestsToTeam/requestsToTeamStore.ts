@@ -6,6 +6,7 @@ import InitialState from '@Store/requestsToTeam/initialState'
 import TeamService from '@Services/TeamService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useTeamStore from '@Store/teams/teamsStore'
+import profilesStore from '@Store/profiles/profilesStore'
 
 const useRequestsToTeamStore = defineStore('requestsToTeam', {
   state: (): InitialState => ({
@@ -43,6 +44,7 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
       status: JoinStatus,
       token: string,
     ) {
+      const profileStore = profilesStore()
       const { id, userId, teamId } = requestToTeam
 
       const response = await TeamService.updateRequestToTeamStatus(
@@ -68,6 +70,7 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
           const teamsStore = useTeamStore()
 
           await teamsStore.addTeamMember({ ...requestToTeam, skills: [] }, token)
+          profileStore.addTeamExperience(userId, teamId)
         }
       }
     },

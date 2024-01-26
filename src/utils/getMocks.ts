@@ -19,6 +19,7 @@ import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember } from '@Domain/Project'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 export const usersMocks: User[] = [
   {
@@ -256,8 +257,8 @@ export const teamsMocks: Team[] = [
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
     membersCount: 4,
-    owner: teamMembersMocks[0],
-    leader: teamMembersMocks[0],
+    owner: teamMembersMocks[1],
+    leader: teamMembersMocks[1],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
@@ -304,10 +305,10 @@ export const ideasMarketMocks: IdeaMarket[] = [
   {
     id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
     initiator: {
-      id: '1',
-      email: 'barbakovom@tyuiu.ru',
-      lastName: 'Барбаков',
-      firstName: 'Олег',
+      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+      email: 'kirill.vlasov.05@inbox.ru',
+      lastName: 'Кирилл',
+      firstName: 'Власов',
     } as User,
     team: teamsMocks[0],
     marketId: '201',
@@ -1424,5 +1425,28 @@ export const profilesMocks: Profile[] = [
     ideas: [ideasMocks[0], ideasMocks[1]],
     teamsExperience: teamsExperienceMocks,
     teamsProjects: teamsProjectsMocks,
+  },
+]
+
+export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
+  {
+    ideaMarketId: ideasMarketMocks[0].id,
+    status: 'NEW',
+    teamId: teamsMocks[0].id,
+    // marketId: marketMocks[0].id,
+    id: '245vs-d52ff-d4sd-2s',
+    name: teamsMocks[0].name,
+    membersCount: teamsMocks[0].membersCount,
+    skills: teamsMocks[0].skills,
+  },
+  {
+    ideaMarketId: ideasMarketMocks[1].id,
+    status: 'NEW',
+    teamId: teamsMocks[1].id,
+    // marketId: marketMocks[1].id,
+    id: '245vs-d52ff-d4sd-2s1',
+    name: teamsMocks[1].name,
+    membersCount: teamsMocks[1].membersCount,
+    skills: teamsMocks[1].skills,
   },
 ]

@@ -39,6 +39,10 @@ function formatIdeaInitiatorMarket(ideasMarket: IdeaMarket[]) {
   return ideasMarket.filter((idea) => idea.initiator.id === useUserStore().user?.id)
 }
 
+function formatIdeaByInitiator(ideasMarket: IdeaMarket[]) {
+  return ideasMarket
+}
+
 function formatAdvertisementsByIdeaId(
   ideaMarketAdvertisements: IdeaMarketAdvertisement[],
   ideaMarketId: string,
@@ -54,7 +58,7 @@ const fetchIdeasMarket = async (
   token: string,
 ): Promise<IdeaMarket[] | Error> => {
   return ideasMarketAxios
-    .get<IdeaMarket[]>(
+    .get<IdeaMarket[] | Error>(
       `/market/idea/market/${marketId}/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -116,6 +120,24 @@ const getAllInitiatorMarketIdeas = async (
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей на бирже'))
+}
+
+const getAllInitiatorIdeasFromActiveMarkets = async (
+  userId: string,
+  token: string,
+): Promise<IdeaMarket[] | Error> => {
+  return ideasMarketAxios
+    .get<IdeaMarket[]>(
+      `/user/${userId}/ideas`, // FIX ROUTE
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      {
+        formatter: (markets) => formatIdeaByInitiator(markets),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей инициатора'))
 }
 
 const getIdeaMarketAdvertisements = async (
@@ -324,6 +346,7 @@ const IdeasMarketService = {
   getAllInitiatorMarketIdeas,
   getIdeaMarket,
   getIdeaMarketAdvertisements,
+  getAllInitiatorIdeasFromActiveMarkets,
 
   sendIdeaOnMarket,
   postIdeaMarketTeam,

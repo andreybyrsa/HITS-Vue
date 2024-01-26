@@ -8,6 +8,7 @@ import {
   TeamInvitation,
   TeamMember,
   JoinStatus,
+  TeamExperience,
 } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 import RolesTypes from '@Domain/Roles'
@@ -18,6 +19,7 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import {
   RequestTeamsMocks,
+  profilesMocks,
   requestsToTeamMocks,
   teamInvitationsMocks,
   teamMembersMocks,
@@ -33,6 +35,19 @@ const teamInvitationsAxios = defineAxios(teamInvitationsMocks)
 const requestsToTeamAxios = defineAxios(requestsToTeamMocks)
 const requestTeamsAxios = defineAxios(RequestTeamsMocks)
 
+function filterInvitationsByMarketId(skills: Skill[], teams: Team[]) {
+  return teams.filter((team) => {
+    const coincidences = skills.filter((skill) =>
+      team.skills.reduce(
+        (res, current) => current.name === skill.name || res,
+        false,
+      ),
+    ).length
+
+    return coincidences === skills.length
+  })
+}
+
 function leaveFromTeamTeamMember(teamId: string, teamMemberId: string) {
   teamsMocks.forEach((team) => {
     if (team.id === teamId) {
@@ -41,6 +56,42 @@ function leaveFromTeamTeamMember(teamId: string, teamMemberId: string) {
       )
     }
   })
+}
+
+function finishTeamExperience(teamId: string, teamMemberId: string) {
+  const currentProfile = profilesMocks.find(({ id }) => id === teamMemberId)
+  const currentTeamExperience = currentProfile?.teamsExperience.find(
+    (experience) => experience.teamId === teamId && experience.finishDate === null,
+  )
+  const currentTeamProject = currentProfile?.teamsProjects.find(
+    (project) => project.teamId === teamId && project.finishDate === null,
+  )
+
+  if (currentTeamExperience) {
+    const currentDate = new Date().toJSON().toString()
+    currentTeamExperience.finishDate = currentDate
+    if (currentTeamProject) currentTeamProject.finishDate = currentDate
+  }
+}
+
+function addTeamExperince(userId: string, teamId: string) {
+  const currentProfile = profilesMocks.find(({ id }) => id === userId)
+  const currentTeam = teamsMocks.find((team) => team.id === teamId)
+
+  if (currentTeam && currentProfile) {
+    const newTeamExperience: TeamExperience = {
+      teamId: currentTeam.id,
+      teamName: currentTeam.name,
+      userId: userId,
+      firstName: '',
+      lastName: '',
+      startDate: new Date().toJSON().toString(),
+      finishDate: null,
+      hasActiveProject: false,
+    }
+
+    currentProfile.teamsExperience.push(newTeamExperience)
+  }
 }
 
 function formatTeamInvitationsByTeamId(
@@ -185,6 +236,28 @@ const getAllUsersInTeams = async (token: string): Promise<TeamMember[] | Error> 
     )
 }
 
+const filterBySkillsAndRole = async (
+  skills: Skill[],
+  role: RolesTypes,
+  token: string,
+): Promise<Team[] | Error> => {
+  return teamsAxios
+    .get<Team[] | Error>(
+      `${API_URL}/team/skill-filter/${role}`,
+      // skills,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (applications) =>
+          filterInvitationsByMarketId(skills, applications),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
+}
+
 // --- POST --- //
 const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
   return teamsAxios
@@ -257,19 +330,27 @@ const addTeamMember = async (
     .catch((error) => handleAxiosError(error, 'Ошибка добавления участника'))
 }
 
-const filterBySkillsAndRole = async (
-  skills: Skill[],
-  role: RolesTypes,
-  token: string,
-): Promise<Team[] | Error> => {
-  return axios
-    .post(`${API_URL}/team/skill-filter/${role}`, skills, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
-}
+// const filterBySkillsAndRole = async (
+//   skills: Skill[],
+//   role: RolesTypes,
+//   token: string,
+// ): Promise<Team[] | Error> => {
+//   return teamsAxios
+//     .get<Team[] | Error>(
+//       `${API_URL}/team/skill-filter/${role}`,
+//       // skills,
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//       },
+//       {
+//         formatter: (applications) =>
+//           filterInvitationsByMarketId(skills, applications),
+//       },
+//     )
+//     .then((response) => response.data)
+//     .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
+// }
 
 const filterByVacancies = async (
   skills: Skill[],
@@ -353,6 +434,8 @@ const updateRequestToTeamStatus = async (
 ): Promise<RequestToTeam | Error> => {
   if (MODE === 'DEVELOPMENT') {
     setRequestsAndInvitationsAnnulled(userId, requestId, null)
+
+    if (status === 'ACCEPTED') addTeamExperince(userId, teamId)
   }
 
   return requestsToTeamAxios
@@ -446,6 +529,7 @@ const leaveFromTeam = async (
 ): Promise<Success | Error> => {
   if (MODE === 'DEVELOPMENT') {
     leaveFromTeamTeamMember(teamId, teamMemberId)
+    finishTeamExperience(teamId, teamMemberId)
   }
 
   return teamMemberAxios
