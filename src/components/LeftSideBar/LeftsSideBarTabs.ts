@@ -34,7 +34,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Список команд',
         to: '/teams/list',
         iconName: 'bi bi-list',
-        roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'],
+        roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
       },
       {
         name: 'create-team',
@@ -45,7 +45,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
     ],
     iconName: 'bi bi-people',
-    roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'],
+    roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
   },
   {
     name: 'markets',
@@ -103,6 +103,13 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         iconName: 'bi bi-person-badge',
         roles: ['ADMIN'],
       },
+      {
+        name: 'admin-tags',
+        to: '/admin/tags',
+        text: 'Справочник тегов',
+        iconName: 'bi bi-tags',
+        roles: ['ADMIN'],
+      },
     ],
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
@@ -113,15 +120,22 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     to: '/projects',
     routes: [
       {
-        name: 'all-projects-list',
+        name: 'list',
         text: 'Список проектов',
-        to: '/projects/list', // FIX ROUTE
+        to: '/projects/list',
         iconName: 'bi bi-list',
         roles: ['PROJECT_OFFICE', 'ADMIN'],
       },
     ],
     iconName: 'bi bi-briefcase',
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    roles: [
+      'INITIATOR',
+      'MEMBER',
+      'TEAM_OWNER',
+      'PROJECT_OFFICE',
+      'ADMIN',
+      'TEAM_LEADER',
+    ],
   },
 ]
 

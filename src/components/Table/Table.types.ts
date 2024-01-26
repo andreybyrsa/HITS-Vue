@@ -1,5 +1,6 @@
 import { ButtonProps } from '@Components/Button/Button.types'
 import { Filter } from '@Components/FilterBar/FilterBar.types'
+import { StyleValue } from 'vue'
 
 type KeyValueFunction<T, K extends keyof T> = (
   value: T[K],
@@ -51,6 +52,7 @@ interface TableColumn<DataType> {
   label: string
   size?: ColumnSize
   contentClassName?: string
+  getRowCellStyleCSS?: (value: DataType[keyof DataType]) => StyleValue
   getRowCellStyle?: TypedStyleFunction<DataType>
   getRowCellFormat?: TypedFormatFunction<DataType>
   headerCellClick?: () => void

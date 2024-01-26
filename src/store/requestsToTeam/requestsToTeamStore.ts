@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
 
-import { RequestToTeam, JoinStatus } from '@Domain/Team'
+import { RequestToTeam, JoinStatus, TeamExperience } from '@Domain/Team'
 
 import InitialState from '@Store/requestsToTeam/initialState'
 import TeamService from '@Services/TeamService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useTeamStore from '@Store/teams/teamsStore'
-import profilesStore from '@Store/profiles/profilesStore'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 const useRequestsToTeamStore = defineStore('requestsToTeam', {
   state: (): InitialState => ({
@@ -44,7 +44,7 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
       status: JoinStatus,
       token: string,
     ) {
-      const profileStore = profilesStore()
+      const profileStore = useProfilesStore()
       const { id, userId, teamId } = requestToTeam
 
       const response = await TeamService.updateRequestToTeamStatus(
@@ -68,9 +68,30 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
 
         if (status === 'ACCEPTED') {
           const teamsStore = useTeamStore()
+          const profileStore = useProfilesStore()
 
-          await teamsStore.addTeamMember({ ...requestToTeam, skills: [] }, token)
-          profileStore.addTeamExperience(userId, teamId)
+          const currentTeam = teamsStore.teams.find(({ id }) => id === teamId)
+          const currentProfile = profileStore.profiles.find(
+            (profile) => profile.id === userId,
+          )
+
+          if (currentTeam && currentProfile) {
+            const { name, id } = currentTeam
+
+            const newTeamExperience: TeamExperience = {
+              teamId: id,
+              teamName: name,
+              userId: userId,
+              firstName: '',
+              lastName: '',
+              startDate: new Date().toJSON().toString(),
+              finishDate: null,
+              hasActiveProject: false,
+            }
+
+            await teamsStore.addTeamMember({ ...requestToTeam, skills: [] }, token)
+            await profileStore.addTeamExperince(newTeamExperience, token)
+          }
         }
       }
     },

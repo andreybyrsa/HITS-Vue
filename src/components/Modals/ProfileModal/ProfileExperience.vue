@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
-import TeamsExperienceTable from '@Components/Tables/ProfileExperienceTable/TeamsExperienceTable.vue'
+import TeamsExperienceTable from '@Components/Tables/ProfileExperienceTable/TeamsExperinceTable.vue'
 
 import useProfilesStore from '@Store/profiles/profilesStore'
 

@@ -12,6 +12,7 @@ import findOneAndUpdate from '@Utils/findOneAndUpdate'
 const useMarketsStore = defineStore('markets', {
   state: (): InitialState => ({
     markets: [],
+    activeMarkets: [],
   }),
 
   getters: {
@@ -25,6 +26,19 @@ const useMarketsStore = defineStore('markets', {
 
         this.markets = response
         return this.markets
+      }
+    },
+
+    getAllActiveMarkets() {
+      return async (token: string) => {
+        const response = await MarketService.getAllActiveMarkets(token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        this.activeMarkets = response
+        return this.activeMarkets
       }
     },
 

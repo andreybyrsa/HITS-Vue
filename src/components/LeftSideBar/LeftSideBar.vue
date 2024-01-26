@@ -15,8 +15,6 @@ import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/
 import RolesTypes from '@Domain/Roles'
 import { Market } from '@Domain/Market'
 
-import MarketService from '@Services/MarketService'
-
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useMarketsStore from '@Store/markets/marketsStore'
@@ -35,7 +33,7 @@ const marketsStore = useMarketsStore()
 const { markets } = storeToRefs(marketsStore)
 
 const projectStore = useProjectStore()
-const { projects } = storeToRefs(projectStore)
+const { myActiveProjects } = storeToRefs(projectStore)
 
 const router = useRouter()
 
@@ -64,17 +62,19 @@ watch(
 )
 
 watch(
-  projects,
+  myActiveProjects,
   () => {
-    const currentProjects = projects.value.filter(() => true)
-    const marketIndex = tabs.value.findIndex(({ name }) => name === 'markets')
-    if (marketIndex !== -1) updateActiveProjectRoute(currentProjects, marketIndex)
+    const currentProjects = myActiveProjects.value.filter(
+      ({ status }) => status === 'ACTIVE',
+    )
+    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
+    if (projectIndex !== -1) updateActiveProjectRoute(currentProjects, projectIndex)
   },
   { deep: true },
 )
 
-onMounted(getActiveMarkets)
 onMounted(getActiveProjects)
+onMounted(getActiveMarkets)
 
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const initialMarketRoutes: LeftSideBarTabType[] =
@@ -101,7 +101,7 @@ async function getActiveMarkets() {
       if (index !== -1) tabs.value.splice(index, 1)
     }
 
-    const response = await MarketService.getAllActiveMarkets(token)
+    const response = await marketsStore.getAllActiveMarkets(token)
 
     if (response instanceof Error) {
       spliceMarketsTab()
@@ -119,12 +119,12 @@ async function getActiveMarkets() {
 function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const initialProjectRoutes: LeftSideBarTabType[] =
     LeftSideBarTabs[index].routes ?? []
-  const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, idea }) => ({
+  const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
     name: `project-${id}`,
-    text: idea.name,
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    text: name,
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER'],
     iconName: 'bi bi-kanban',
-    to: `/project/${id}`, // FIX ROUTE
+    to: `/projects/${id}`,
   }))
 
   tabs.value[index].routes = [...initialProjectRoutes, ...projectRoutes]
