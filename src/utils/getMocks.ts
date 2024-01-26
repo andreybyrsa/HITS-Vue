@@ -19,6 +19,8 @@ import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember } from '@Domain/Project'
+import { Tag } from '@Domain/Tag'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 export const usersMocks: User[] = [
   {
@@ -27,7 +29,14 @@ export const usersMocks: User[] = [
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
     lastName: 'Власов',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
+    roles: [
+      'INITIATOR',
+      'PROJECT_OFFICE',
+      'EXPERT',
+      'ADMIN',
+      'MEMBER',
+      'TEAM_LEADER',
+    ],
     createdAt: '2023-10-20T11:02:17Z',
   },
   {
@@ -83,6 +92,27 @@ export const usersMocks: User[] = [
   //   lastName: 'Амонов',
   //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
   // },
+]
+
+export const tagsMocks: Tag[] = [
+  {
+    id: '0',
+    name: 'Фронтенд',
+    color: '#cd1d1d',
+    confirmed: true,
+  },
+  {
+    id: '1',
+    name: 'Бекенд',
+    color: '#279b74',
+    confirmed: true,
+  },
+  {
+    id: '2',
+    name: 'Рефактор',
+    color: '#cc8c33',
+    confirmed: false,
+  },
 ]
 
 export const skillsMocks: Skill[] = [
@@ -251,13 +281,14 @@ export const teamsMocks: Team[] = [
   {
     id: '0',
     name: 'Визитка',
-    closed: false,
+    closed: true,
+    hasActiveProject: true,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
     membersCount: 4,
-    owner: teamMembersMocks[0],
-    leader: teamMembersMocks[0],
+    owner: teamMembersMocks[1],
+    leader: teamMembersMocks[1],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
@@ -267,6 +298,7 @@ export const teamsMocks: Team[] = [
     id: '1',
     name: 'Кактус',
     closed: false,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -282,6 +314,7 @@ export const teamsMocks: Team[] = [
     id: '2',
     name: 'Карасики',
     closed: false,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -304,10 +337,10 @@ export const ideasMarketMocks: IdeaMarket[] = [
   {
     id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
     initiator: {
-      id: '1',
-      email: 'barbakovom@tyuiu.ru',
-      lastName: 'Барбаков',
-      firstName: 'Олег',
+      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+      email: 'kirill.vlasov.05@inbox.ru',
+      lastName: 'Кирилл',
+      firstName: 'Власов',
     } as User,
     team: teamsMocks[0],
     marketId: '201',
@@ -352,7 +385,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
         confirmed: true,
       },
     ],
-    status: 'RECRUITMENT_IS_OPEN',
+    status: 'PROJECT',
     requests: 0,
     acceptedRequests: 0,
     isFavorite: false,
@@ -545,6 +578,58 @@ export const ideasMarketMocks: IdeaMarket[] = [
       },
     ],
     status: 'RECRUITMENT_IS_OPEN',
+    requests: 0,
+    acceptedRequests: 0,
+    isFavorite: false,
+  },
+  {
+    id: 'hfdnmkdfg-45678ejhdf-dhfc383-3456787654',
+    initiator: usersMocks[0],
+    team: teamsMocks[0],
+    marketId: '201',
+    name: 'Идея для проверки',
+    problem: 'null',
+    description:
+      'Разработать web приложение для прогнозирования предпочтительного направления обучения поступающих , прогноза успеваемости и успешности с применением технологий машинного обучения и искусственного интеллекта',
+    solution:
+      'Разработать web приложение для прогнозирования предпочтительного направления обучения поступающих , прогноза успеваемости и успешности с применением технологий машинного обучения и искусственного интеллекта',
+    result: 'null',
+    maxTeamSize: 7,
+    customer: 'ВШЦТ',
+    position: 7,
+    stack: [
+      {
+        id: 'b629e3cb-c544-4b7c-8fa6-679df5fffc9c',
+        name: 'Python',
+        type: 'LANGUAGE',
+        confirmed: true,
+      },
+      {
+        id: '74d9f126-e188-4d1e-abb3-d494e5e5fa89',
+        name: 'Keras',
+        type: 'FRAMEWORK',
+        confirmed: true,
+      },
+      {
+        id: '2a03579d-9e40-4e85-a60e-6605a5a961dd',
+        name: 'Scikit Learn',
+        type: 'FRAMEWORK',
+        confirmed: true,
+      },
+      {
+        id: '5165bc7b-1495-4540-9517-2f1f4a54f273',
+        name: 'PostgreSQL',
+        type: 'DATABASE',
+        confirmed: true,
+      },
+      {
+        id: '0c0c65ee-aba3-4ba4-80ed-cf1ebe26da36',
+        name: 'Docker',
+        type: 'DEVOPS',
+        confirmed: true,
+      },
+    ],
+    status: 'RECRUITMENT_IS_CLOSED',
     requests: 0,
     acceptedRequests: 0,
     isFavorite: false,
@@ -1036,37 +1121,78 @@ export const projectMocks: Project[] = [
   {
     id: '0',
 
-    idea: ideasMocks[1],
-    initiator: usersMocks[1],
-    team: teamsMocks[5],
+    name: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    description: ideasMocks[1].description,
+    customer: ideasMocks[1].customer,
+    initiator: ideasMocks[1].initiator,
+    team: teamsMocks[2],
     members: [
       {
-        projectId: '0',
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
+        userId: '2',
+        email: 'alex@inbox.ru',
+        firstName: 'Алексей',
+        lastName: 'Князев',
+        startDate: '2023-10-25T11:02:17Z',
+        finishDate: '2023-10-25T11:02:17Z',
+        projectRole: 'INITIATOR',
+      },
+      {
         projectName: 'Моя новая идея',
         teamId: '0',
         teamName: 'Визитка',
         userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
         email: 'kirill.vlasov.05@inbox.ru',
-        firstName: 'Кирилл',
-        lastName: 'Власов',
+        firstName: 'Артем',
+        lastName: 'Иванов',
         startDate: '2023-10-25T11:02:17Z',
         finishDate: '2023-10-25T11:02:17Z',
-        role: 'DEVELOPER',
+        projectRole: 'TEAM_LEADER',
+      },
+      {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
+        userId: '0',
+        email: 'timyr@mail.com',
+        firstName: 'Иван',
+        lastName: 'Кузнецов',
+        startDate: '2023-10-25T11:02:17Z',
+        finishDate: '2023-10-25T11:02:17Z',
+        projectRole: 'MEMBER',
+      },
+      {
+        projectName: 'Моя новая идея',
+        teamId: '0',
+        teamName: 'Визитка',
+        userId: '1',
+        email: 'admin@mail.com',
+        firstName: 'Данил',
+        lastName: 'Сафонов',
+        startDate: '2023-10-25T11:02:17Z',
+        finishDate: '2023-10-25T11:02:17Z',
+        projectRole: 'MEMBER',
       },
     ],
+
+    logs: [],
+    report: '',
     startDate: '2023-10-25T11:02:17Z',
-    finisDate: '2023-10-25T11:02:17Z',
-    status: 'DONE',
+    finishDate: '',
+    status: 'ACTIVE',
   },
   {
     id: '1',
 
-    idea: ideasMocks[1],
-    initiator: usersMocks[1],
-    team: teamsMocks[5],
+    name: 'Прогнозирование закупок арматуры на основе исторических данных и обогащением доп. критериями',
+    description: ideasMocks[1].description,
+    customer: ideasMocks[1].customer,
+    initiator: ideasMocks[1].initiator,
+    team: teamsMocks[2],
     members: [
       {
-        projectId: '1',
         projectName: 'Табуретка',
         teamId: '0',
         teamName: 'Визитка',
@@ -1076,11 +1202,14 @@ export const projectMocks: Project[] = [
         lastName: 'Власов',
         startDate: '2023-10-25T11:02:17Z',
         finishDate: '2023-10-25T11:02:17Z',
-        role: 'DEVELOPER',
+        projectRole: 'MEMBER',
       },
     ],
+
+    logs: [],
+    report: '',
     startDate: '2023-10-25T11:02:17Z',
-    finisDate: '2023-10-25T11:02:17Z',
+    finishDate: '2024-01-18T11:02:17Z',
     status: 'DONE',
   },
 ]
@@ -1377,7 +1506,6 @@ export const teamsExperienceMocks: TeamExperience[] = [
 
 export const teamsProjectsMocks: ProjectMember[] = [
   {
-    projectId: '0',
     projectName: 'Моя новая идея',
     teamId: '0',
     teamName: 'Визитка',
@@ -1387,10 +1515,9 @@ export const teamsProjectsMocks: ProjectMember[] = [
     lastName: 'Власов',
     startDate: '2023-09-25T11:02:17Z',
     finishDate: '2023-09-25T11:02:17Z',
-    role: 'DEVELOPER',
+    projectRole: 'MEMBER',
   },
   {
-    projectId: '0',
     projectName: 'Табуретка',
     teamId: '0',
     teamName: 'Визитка',
@@ -1400,10 +1527,9 @@ export const teamsProjectsMocks: ProjectMember[] = [
     lastName: 'Власов',
     startDate: '2023-09-25T11:02:17Z',
     finishDate: '2023-09-25T11:02:17Z',
-    role: 'DEVELOPER',
+    projectRole: 'MEMBER',
   },
   {
-    projectId: '0',
     projectName: 'Катер',
     teamId: '2',
     teamName: 'Карасики',
@@ -1412,8 +1538,8 @@ export const teamsProjectsMocks: ProjectMember[] = [
     firstName: 'Кирилл',
     lastName: 'Власов',
     startDate: '2023-09-25T11:02:17Z',
-    finishDate: null,
-    role: 'DEVELOPER',
+    finishDate: '',
+    projectRole: 'MEMBER',
   },
 ]
 
@@ -1424,5 +1550,28 @@ export const profilesMocks: Profile[] = [
     ideas: [ideasMocks[0], ideasMocks[1]],
     teamsExperience: teamsExperienceMocks,
     teamsProjects: teamsProjectsMocks,
+  },
+]
+
+export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
+  {
+    ideaMarketId: ideasMarketMocks[0].id,
+    status: 'NEW',
+    teamId: teamsMocks[0].id,
+    // marketId: marketMocks[0].id,
+    id: '245vs-d52ff-d4sd-2s',
+    name: teamsMocks[0].name,
+    membersCount: teamsMocks[0].membersCount,
+    skills: teamsMocks[0].skills,
+  },
+  {
+    ideaMarketId: ideasMarketMocks[1].id,
+    status: 'NEW',
+    teamId: teamsMocks[1].id,
+    // marketId: marketMocks[1].id,
+    id: '245vs-d52ff-d4sd-2s1',
+    name: teamsMocks[1].name,
+    membersCount: teamsMocks[1].membersCount,
+    skills: teamsMocks[1].skills,
   },
 ]

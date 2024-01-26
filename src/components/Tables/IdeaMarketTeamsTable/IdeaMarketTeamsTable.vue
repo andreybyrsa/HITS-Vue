@@ -69,7 +69,7 @@ const ideaMarketTeamColumns: TableColumn<Team>[] = [
   },
   {
     key: 'skills',
-    label: 'Кометенции',
+    label: 'Компетенции',
     size: 'col-4',
     contentClassName: 'justify-content-center align-items-center',
     getRowCellStyle: getSkillsStyle,

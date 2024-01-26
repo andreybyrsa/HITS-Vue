@@ -12,6 +12,7 @@ import AddUsersView from '@Views/Admin/AddUsersView.vue'
 import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
 import SkillsView from '@Views/Admin/SkillsView.vue'
 import CompaniesView from '@Views/Admin/CompaniesView.vue'
+import TagsView from '@Views/Admin/TagsView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
@@ -23,9 +24,11 @@ import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
+import ProjectList from '@Views/ProjectList/ProjectList.vue'
 
 import MarketsView from '@Views/Markets/MarketsView.vue'
 import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
+import Project from '@Views/Project/Project.vue'
 
 import HomeView from '@Views/HomeView.vue'
 
@@ -90,13 +93,17 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
-        meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
+        meta: {
+          roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+        },
         children: [
           {
             path: ':teamId',
             name: 'team',
             component: TeamModal,
-            meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
+            meta: {
+              roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+            },
           },
           {
             name: 'profile',
@@ -160,6 +167,44 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/projects',
+    redirect: { name: 'projects-list' },
+    name: 'projects',
+    meta: {
+      roles: [
+        'INITIATOR',
+        'MEMBER',
+        'TEAM_OWNER',
+        'PROJECT_OFFICE',
+        'ADMIN',
+        'TEAM_LEADER',
+      ],
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'projects-list',
+        component: ProjectList,
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN'] },
+      },
+      {
+        path: ':id',
+        name: 'project',
+        component: Project,
+        meta: {
+          roles: [
+            'INITIATOR',
+            'MEMBER',
+            'TEAM_OWNER',
+            'TEAM_LEADER',
+            'ADMIN',
+            'PROJECT_OFFICE',
+          ],
+        },
+      },
+    ],
+  },
+  {
     path: '/admin',
     redirect: { path: '/admin/users' },
     meta: { roles: ['ADMIN'] },
@@ -192,6 +237,12 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-companies',
         path: 'companies',
         component: CompaniesView,
+        meta: { roles: ['ADMIN'] },
+      },
+      {
+        name: 'admin-tags',
+        path: 'tags',
+        component: TagsView,
         meta: { roles: ['ADMIN'] },
       },
     ],

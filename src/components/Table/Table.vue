@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="DataType">
-import { ref, Ref, onMounted, computed } from 'vue'
+import { ref, Ref, onMounted, computed, StyleValue } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 
 import {
@@ -167,6 +167,15 @@ function getRowCellFormat(
 }
 
 function rowCellClick(data: DataType, functionClick?: (value: DataType) => void) {
+  if (functionClick) {
+    return functionClick(data)
+  }
+}
+
+function rowCellStyleCSS(
+  data: DataType[keyof DataType],
+  functionClick?: (value: DataType[keyof DataType]) => StyleValue,
+) {
   if (functionClick) {
     return functionClick(data)
   }
@@ -356,6 +365,9 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   </template>
                   <div
                     v-else
+                    :style="
+                      rowCellStyleCSS(row[column.key], column.getRowCellStyleCSS)
+                    "
                     :class="[
                       getRowCellStyle(row[column.key], column.getRowCellStyle),
                       column.rowCellClick ? 'table__link' : '',

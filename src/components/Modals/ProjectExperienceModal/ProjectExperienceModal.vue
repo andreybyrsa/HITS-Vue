@@ -39,7 +39,7 @@ const emit = defineEmits<RequestToIdeaModalEmits>()
 
       <Typography
         v-else
-        class-name="fs-6"
+        class-name="text-secondary fs-6 w-100 text-center"
       >
         С этой командой у вас не было проектов
       </Typography>
