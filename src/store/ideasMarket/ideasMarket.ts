@@ -68,6 +68,20 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
         })
       }
     },
+    getAllInitiatorIdeasFromActiveMarkets() {
+      return async (userId: string, token: string) => {
+        const ideas = await IdeasMarketService.getAllInitiatorIdeasFromActiveMarkets(
+          userId,
+          token,
+        )
+
+        if (ideas instanceof Error) {
+          useNotificationsStore().createSystemNotification('Система', ideas.message)
+          return ideas
+        }
+        return ideas
+      }
+    },
   },
 
   actions: {

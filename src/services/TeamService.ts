@@ -21,6 +21,74 @@ import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 
+<<<<<<< Updated upstream
+=======
+const teamsAxios = defineAxios(teamsMocks)
+const teamMemberAxios = defineAxios(teamMembersMocks)
+const teamInvitationsAxios = defineAxios(teamInvitationsMocks)
+const requestsToTeamAxios = defineAxios(requestsToTeamMocks)
+const requestTeamsAxios = defineAxios(RequestTeamsMocks)
+
+function filterInvitationsByMarketId(skills: Skill[], teams: Team[]) {
+  return teams.filter((team) => {
+    const coincidences = skills.filter((skill) =>
+      team.skills.reduce(
+        (res, current) => current.name === skill.name || res,
+        false,
+      ),
+    ).length
+
+    return coincidences === skills.length
+  })
+}
+
+function leaveFromTeamTeamMember(teamId: string, teamMemberId: string) {
+  teamsMocks.forEach((team) => {
+    if (team.id === teamId) {
+      team.members = team.members.filter(
+        (teamMember) => teamMember.id !== teamMemberId,
+      )
+    }
+  })
+}
+
+function finishTeamExperience(teamId: string, teamMemberId: string) {
+  const currentProfile = profilesMocks.find(({ id }) => id === teamMemberId)
+  const currentTeamExperience = currentProfile?.teamsExperience.find(
+    (experience) => experience.teamId === teamId && experience.finishDate === null,
+  )
+  const currentTeamProject = currentProfile?.teamsProjects.find(
+    (project) => project.teamId === teamId && project.finishDate === null,
+  )
+
+  if (currentTeamExperience) {
+    const currentDate = new Date().toJSON().toString()
+    currentTeamExperience.finishDate = currentDate
+    if (currentTeamProject) currentTeamProject.finishDate = currentDate
+  }
+}
+
+function addTeamExperince(userId: string, teamId: string) {
+  const currentProfile = profilesMocks.find(({ id }) => id === userId)
+  const currentTeam = teamsMocks.find((team) => team.id === teamId)
+
+  if (currentTeam && currentProfile) {
+    const newTeamExperience: TeamExperience = {
+      teamId: currentTeam.id,
+      teamName: currentTeam.name,
+      userId: userId,
+      firstName: '',
+      lastName: '',
+      startDate: new Date().toJSON().toString(),
+      finishDate: null,
+      hasActiveProject: false,
+    }
+
+    currentProfile.teamsExperience.push(newTeamExperience)
+  }
+}
+
+>>>>>>> Stashed changes
 function formatTeamInvitationsByTeamId(
   invitations: TeamInvitation[],
   teamId: string,
@@ -176,6 +244,28 @@ const getAllUsersInTeams = async (token: string): Promise<TeamMember[] | Error> 
     )
 }
 
+const filterBySkillsAndRole = async (
+  skills: Skill[],
+  role: RolesTypes,
+  token: string,
+): Promise<Team[] | Error> => {
+  return teamsAxios
+    .get<Team[] | Error>(
+      `${API_URL}/team/skill-filter/${role}`,
+      // skills,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (applications) =>
+          filterInvitationsByMarketId(skills, applications),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
+}
+
 // --- POST --- //
 const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
   return teamsAxios
@@ -248,19 +338,27 @@ const addTeamMember = async (
     .catch((error) => handleAxiosError(error, 'Ошибка добавления участника'))
 }
 
-const filterBySkillsAndRole = async (
-  skills: Skill[],
-  role: RolesTypes,
-  token: string,
-): Promise<Team[] | Error> => {
-  return axios
-    .post(`${API_URL}/team/skill-filter/${role}`, skills, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
-}
+// const filterBySkillsAndRole = async (
+//   skills: Skill[],
+//   role: RolesTypes,
+//   token: string,
+// ): Promise<Team[] | Error> => {
+//   return teamsAxios
+//     .get<Team[] | Error>(
+//       `${API_URL}/team/skill-filter/${role}`,
+//       // skills,
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//       },
+//       {
+//         formatter: (applications) =>
+//           filterInvitationsByMarketId(skills, applications),
+//       },
+//     )
+//     .then((response) => response.data)
+//     .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
+// }
 
 const filterByVacancies = async (
   skills: Skill[],
