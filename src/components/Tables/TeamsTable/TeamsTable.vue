@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import { useDateFormat, watchImmediate } from '@vueuse/core'
+import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
@@ -312,6 +312,7 @@ function updateDropdownTeamsActions() {
       isOpenedTeamInviteModal.value = true
     }
     const handleInviteStatement = (team: Team): boolean => {
+      if (team.closed) return false
       if (sentInvitationsToIdea.value.length !== 0) {
         const coincidence = sentInvitationsToIdea.value.find(
           (invitation) =>
@@ -322,6 +323,7 @@ function updateDropdownTeamsActions() {
       return true
     }
     const handleRevokeStatement = (team: Team): boolean => {
+      if (team.closed) return false
       if (sentInvitationsToIdea.value.length !== 0) {
         const coincidence = sentInvitationsToIdea.value.find(
           (invitation) =>
@@ -631,7 +633,7 @@ function checkIsTeamSent(team: Team, status: FilterValue) {
   const result = sentInvitationsToIdea.value.find(
     (invitation) => invitation.teamId == team.id,
   )
-  return Boolean(result) === status
+  return Boolean(result) === status && !team.closed
 }
 
 function checkOwnerTeams(team: Team, userId: FilterValue) {

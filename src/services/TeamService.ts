@@ -62,23 +62,23 @@ function leaveFromTeamTeamMember(teamId: string, teamMemberId: string) {
   })
 }
 
-function finishTeamExperience(teamId: string, teamMemberId: string) {
-  const currentProfile = profilesMocks.find(({ id }) => id === teamMemberId)
-  const currentTeamExperience = currentProfile?.teamsExperience.find(
-    (experience) => experience.teamId === teamId && experience.finishDate === null,
-  )
-  const currentTeamProject = currentProfile?.teamsProjects.find(
-    (project) => project.teamId === teamId && project.finishDate === null,
-  )
+// function finishTeamExperience(teamId: string, teamMemberId: string) {
+//   const currentProfile = profilesMocks.find(({ id }) => id === teamMemberId)
+//   const currentTeamExperience = currentProfile?.teamsExperience.find(
+//     (experience) => experience.teamId === teamId && experience.finishDate === null,
+//   )
+//   const currentTeamProject = currentProfile?.teamsProjects.find(
+//     (project) => project.teamId === teamId && project.finishDate === null,
+//   )
 
-  if (currentTeamExperience) {
-    const currentDate = new Date().toJSON().toString()
-    currentTeamExperience.finishDate = currentDate
-    if (currentTeamProject) currentTeamProject.finishDate = currentDate
-  }
-}
+//   if (currentTeamExperience) {
+//     const currentDate = new Date().toJSON().toString()
+//     currentTeamExperience.finishDate = currentDate
+//     if (currentTeamProject) currentTeamProject.finishDate = currentDate
+//   }
+// }
 
-function addTeamExperince(userId: string, teamId: string) {
+function createTeamExperince(userId: string, teamId: string) {
   const currentProfile = profilesMocks.find(({ id }) => id === userId)
   const currentTeam = teamsMocks.find((team) => team.id === teamId)
 
@@ -452,7 +452,7 @@ const updateRequestToTeamStatus = async (
   if (MODE === 'DEVELOPMENT') {
     setRequestsAndInvitationsAnnulled(userId, requestId, null)
 
-    if (status === 'ACCEPTED') addTeamExperince(userId, teamId)
+    if (status === 'ACCEPTED') createTeamExperince(userId, teamId)
   }
 
   return requestsToTeamAxios
