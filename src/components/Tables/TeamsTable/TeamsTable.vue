@@ -312,7 +312,7 @@ function updateDropdownTeamsActions() {
       isOpenedTeamInviteModal.value = true
     }
     const handleInviteStatement = (team: Team): boolean => {
-      if (team.closed) return false
+      if (team.hasActiveProject) return false
       if (sentInvitationsToIdea.value.length !== 0) {
         const coincidence = sentInvitationsToIdea.value.find(
           (invitation) =>
@@ -323,14 +323,13 @@ function updateDropdownTeamsActions() {
       return true
     }
     const handleRevokeStatement = (team: Team): boolean => {
-      if (team.closed) return false
+      if (team.hasActiveProject) return false
       if (sentInvitationsToIdea.value.length !== 0) {
         const coincidence = sentInvitationsToIdea.value.find(
           (invitation) =>
             invitation.teamId === team.id && invitation.ideaMarketId === idea.id,
         )
         if (coincidence !== undefined && coincidence.status === 'NEW') {
-          // invitationForRevoke.value = coincidence
           return true
         }
       }
@@ -633,7 +632,7 @@ function checkIsTeamSent(team: Team, status: FilterValue) {
   const result = sentInvitationsToIdea.value.find(
     (invitation) => invitation.teamId == team.id,
   )
-  return Boolean(result) === status && !team.closed
+  return Boolean(result) === status && !team.hasActiveProject
 }
 
 function checkOwnerTeams(team: Team, userId: FilterValue) {
