@@ -4,6 +4,7 @@
       <draggable
         class="list-group rounded-3"
         :list="filteredAndSortedTasks"
+        :animation="200"
         @change="checkMove"
         group="tasks"
       >
@@ -16,7 +17,12 @@
             >
               <div class="header">
                 <div class="header__block w-75 fw-semibold px-3">
-                  <div class="fs-5 fw-bold">#{{ element.position }}</div>
+                  <div
+                    class="fs-5 fw-bold"
+                    v-if="filterByTags.length <= 0"
+                  >
+                    #{{ element.position }}
+                  </div>
                   <div class="fs-5">{{ element.name }}</div>
                 </div>
 
@@ -83,6 +89,7 @@ import { Task } from '@Domain/Project'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import useTagsStore from '@Store/tags/tagsStore'
+import { watchImmediate } from '@vueuse/core'
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
@@ -97,7 +104,11 @@ const inBackLogTasks = ref<Task[]>(
   tasks.value.filter((task) => task.status === 'InBackLog'),
 )
 
-const filterByTags = ref<string[]>(['Фронтенд'])
+const sortedInBackLogTasks = ref<Task[]>(
+  inBackLogTasks.value.sort((a, b) => a.position - b.position),
+)
+
+const filterByTags = ref<string[]>([])
 const searchByTags = ref('')
 
 const filters: Filter<Task>[] = [
@@ -114,23 +125,23 @@ const filters: Filter<Task>[] = [
   },
 ]
 
-// const filteredAndSortedTasks = ref<Task[]>(
-//   filtertTasks(sortTasksByPosition(inBackLogTasks.value), filterByTags.value),
-// )
+const filteredAndSortedTasks = ref<Task[]>([...sortedInBackLogTasks.value])
 
-const filteredAndSortedTasks = computed(() => {
-  const tasks = filtertTasks(
-    sortTasksByPosition(inBackLogTasks.value),
-    filterByTags.value,
-  )
+const compfilteredAndSortedTasks = computed(() => {
+  const tasks = filtertTasks(sortedInBackLogTasks.value, filterByTags.value)
 
   return tasks
 })
 
+watchImmediate(
+  compfilteredAndSortedTasks,
+  () => (filteredAndSortedTasks.value = compfilteredAndSortedTasks.value),
+)
+
 function checkMove(evt: any) {
   const currentUser = user.value
 
-  if (currentUser) {
+  if (currentUser && filterByTags.value.length <= 0) {
     const { token } = currentUser
     const { newIndex, oldIndex } = evt.moved
 
@@ -146,15 +157,11 @@ function checkMove(evt: any) {
 }
 
 function filtertTasks(tasks: Task[], filters: string[]): Task[] {
-  if (filterByTags.value) {
+  if (filterByTags.value.length > 0) {
     return tasks.filter((task) => filters.some((filter) => task.tag.name === filter))
   } else {
-    return sortTasksByPosition(inBackLogTasks.value)
+    return sortedInBackLogTasks.value
   }
-}
-
-function sortTasksByPosition(tasks: Task[]) {
-  return tasks.sort((a, b) => a.position - b.position)
 }
 </script>
 
