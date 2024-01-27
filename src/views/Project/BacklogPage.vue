@@ -3,7 +3,7 @@
     <div class="w-100">
       <draggable
         class="list-group rounded-3"
-        :list="sortedInBackLogTasks"
+        :list="filteredAndSortedTasks"
         @change="checkMove"
         group="tasks"
       >
@@ -69,20 +69,23 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import draggable from 'vuedraggable'
 
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
+import FilterBar from '@Components/FilterBar/FilterBar.vue'
+
+import { Filter } from '@Components/FilterBar/FilterBar.types'
+import { Task } from '@Domain/Project'
 
 import useTasksStore from '@Store/tasks/tasksStore'
-import FilterBar from '@Components/FilterBar/FilterBar.vue'
-import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
-import { Task } from '@Domain/Project'
-import { Tag } from '@Domain/Tag'
-
-import draggable from 'vuedraggable'
 import useUserStore from '@Store/user/userStore'
+import useTagsStore from '@Store/tags/tagsStore'
+
+const tagsStore = useTagsStore()
+const { tags } = storeToRefs(tagsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -94,50 +97,35 @@ const inBackLogTasks = ref<Task[]>(
   tasks.value.filter((task) => task.status === 'InBackLog'),
 )
 
-const sortedInBackLogTasks = ref<Task[]>(
-  inBackLogTasks.value.sort((a, b) => a.position - b.position),
-)
-
-const filterByTags = ref<Tag[]>([])
-
-const dragTask = ref<Task | null>(null)
+const filterByTags = ref<string[]>(['Фронтенд'])
+const searchByTags = ref('')
 
 const filters: Filter<Task>[] = [
   {
     category: 'Теги',
-    choices: [
-      { label: 'Фронтенд', value: 'Фронтенд' },
-      { label: 'Бекенд', value: 'Бекенд' },
-      { label: 'Рефактор', value: 'Рефактор' },
-    ],
+    choices: tags.value.map(({ name }) => ({
+      label: name,
+      value: name,
+    })),
     refValue: filterByTags,
     isUniqueChoice: false,
-    checkFilter: checkTagConfirmed,
+    searchValue: searchByTags,
+    checkFilter: () => true,
   },
 ]
 
-function checkTagConfirmed(task: Task, tag: FilterValue) {
-  return task.tag === tag
-}
+// const filteredAndSortedTasks = ref<Task[]>(
+//   filtertTasks(sortTasksByPosition(inBackLogTasks.value), filterByTags.value),
+// )
 
-function handleDragStart(task: Task) {
-  dragTask.value = task
-}
+const filteredAndSortedTasks = computed(() => {
+  const tasks = filtertTasks(
+    sortTasksByPosition(inBackLogTasks.value),
+    filterByTags.value,
+  )
 
-function handleDragOver(event: DragEvent) {
-  event.preventDefault()
-}
-
-function handleDrop(event: DragEvent) {
-  event.preventDefault()
-  const taskToDrop = dragTask.value
-  if (taskToDrop) {
-    // Здесь реализуете логику обновления полей position у задач
-    // Например, можно обновить поле position у всех задач в колонке, учитывая новый порядок
-    // И отправить обновленные данные на сервер
-  }
-  dragTask.value = null
-}
+  return tasks
+})
 
 function checkMove(evt: any) {
   const currentUser = user.value
@@ -148,13 +136,25 @@ function checkMove(evt: any) {
 
     if (token) {
       tasksStore.changePosition(
-        sortedInBackLogTasks.value,
+        filteredAndSortedTasks.value,
         newIndex,
         oldIndex,
         token,
       )
     }
   }
+}
+
+function filtertTasks(tasks: Task[], filters: string[]): Task[] {
+  if (filterByTags.value) {
+    return tasks.filter((task) => filters.some((filter) => task.tag.name === filter))
+  } else {
+    return sortTasksByPosition(inBackLogTasks.value)
+  }
+}
+
+function sortTasksByPosition(tasks: Task[]) {
+  return tasks.sort((a, b) => a.position - b.position)
 }
 </script>
 
