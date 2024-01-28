@@ -11,6 +11,7 @@ import NavTab from '@Components/NavTab/NavTab.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import Radio from '@Components/Inputs/Radio/Radio.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -60,6 +61,8 @@ function handleLogin() {
 }
 
 const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
+
+const b = ref()
 </script>
 
 <template>
@@ -73,24 +76,6 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
     </template>
 
     <template #content>
-      <ul class="list-group rounded-3">
-        <li class="list-group-item p-0 overflow-hidden">
-          <Button
-            variant="light"
-            class-name="collapse-controller w-100 justify-content-between"
-            v-collapse:openOnMount="123"
-          >
-            <div>Описание</div>
-            <div>Участник</div>
-          </Button>
-          <Collapse id="123">
-            <div class="d-flex justify-content-between fp-2 m-2">
-              <div>Сделать что-то</div>
-              <div>Бекэнд</div>
-            </div>
-          </Collapse>
-        </li>
-      </ul>
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>

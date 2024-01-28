@@ -18,6 +18,7 @@ const ButtonClassName = computed(() => [
   <button
     type="button"
     :class="ButtonClassName"
+    :disabled="disabled"
   >
     <Icon
       v-if="prependIconName"

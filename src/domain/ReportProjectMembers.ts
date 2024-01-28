@@ -14,6 +14,7 @@ interface AverageMark {
   lastName: string
   projectRole: ProjectMemberRole
   mark: string
+  tasks?: Task[]
 }
 
 export { ReportProject, AverageMark }

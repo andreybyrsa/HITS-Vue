@@ -7,9 +7,10 @@ import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
-import { Project } from '@Domain/Project'
+import { Project, ProjectStatus } from '@Domain/Project'
 import { Team } from '@Domain/Team'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import findOneAndUpdate from '@Utils/findOneAndUpdate'
 
 function getMemberRole(userId: string, team: Team, ideaMarket: IdeaMarket) {
   if (team.leader?.userId === userId) {
@@ -51,6 +52,21 @@ const useProjectsStore = defineStore('projects', {
 
         this.myActiveProjects = response
         return this.myActiveProjects
+      }
+    },
+
+    getProject() {
+      return async (projectID: string, token: string) => {
+        const response = await ProjectService.getProject(projectID, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        return findOneAndUpdate(this.projects, response, {
+          key: 'id',
+          value: projectID,
+        })
       }
     },
   },
@@ -111,6 +127,59 @@ const useProjectsStore = defineStore('projects', {
             const { id } = currentIdeaMarket
             await ideaMarketsStore.updateIdeaMarketStatus(id, 'PROJECT', token)
           }
+        }
+      }
+    },
+
+    async changeProjectStatus(
+      projectId: string,
+      status: ProjectStatus,
+      token: string,
+    ) {
+      const response = await ProjectService.changeProjectStatus(
+        projectId,
+        status,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentProject = this.projects.find(({ id }) => id === projectId)
+        if (currentProject) {
+          currentProject.status = status
+        }
+      }
+    },
+
+    async reportProject(projectId: string, report: string, token: string) {
+      const response = await ProjectService.reportProject(projectId, report, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentProject = this.projects.find(({ id }) => id === projectId)
+
+        if (currentProject) {
+          currentProject.report = report
+        }
+      }
+    },
+
+    async finishProject(projectId: string, finishDate: string, token: string) {
+      const response = await ProjectService.finishProject(
+        projectId,
+        finishDate,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentProject = this.projects.find(({ id }) => id === projectId)
+
+        if (currentProject) {
+          currentProject.finishDate = finishDate
         }
       }
     },

@@ -23,6 +23,7 @@ import {
 } from '@Utils/sendParallelRequests'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
+import useProjectsStore from '@Store/projects/projectsStore'
 
 const sprintsStore = useSprintsStore()
 const tasksStore = useTasksStore()
@@ -36,6 +37,8 @@ const project = ref<Project>()
 const sprints = ref<Sprint[]>()
 const tasks = ref<Task[]>()
 const isLoading = ref(false)
+
+const ProjectStore = useProjectsStore()
 
 watchImmediate(
   () => route.params.id,
@@ -57,7 +60,7 @@ async function getProject() {
 
     const ideasMarketParallelRequests: RequestConfig[] = [
       {
-        request: () => ProjectService.getProject(projectId, token),
+        request: () => ProjectStore.getProject(projectId, token),
         refValue: project,
         onErrorFunc: openErrorNotification,
       },
