@@ -11,8 +11,8 @@ interface Profile extends User {
   teamsExperience: TeamExperience[]
   teamsProjects: ProjectMember[]
 
-  userTag: string
-  isUserTagVisible: boolean
+  userTag?: string
+  isUserTagVisible?: boolean
 }
 
 interface ProfileFullName {

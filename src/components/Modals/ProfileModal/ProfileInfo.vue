@@ -25,10 +25,13 @@ const profileId = route.params.id.toString()
 
 const profilesStore = useProfilesStore()
 const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+const userTelegramTag = computed(() => profilesStore.getUserTagByUserId(profileId))
 
 const isOwnProfile = computed(() => profile.value?.email === user.value?.email)
 const isUpdatingUserName = ref(false)
 const isUpdatingUserLastname = ref(false)
+const isUpdatingUserTag = ref(false)
+// computed(() => profile.value?.userTag === userTag.value)
 const isOpenedChangeEmailModal = ref(false)
 
 const { setValues, handleSubmit } = useForm<User>({
@@ -37,6 +40,8 @@ const { setValues, handleSubmit } = useForm<User>({
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
+    userTag: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Неверно введен Телеграм-тег',
   },
 })
 
@@ -51,6 +56,9 @@ const handleEditUser = handleSubmit(async (values) => {
     await profilesStore.updateUserFullName(values, token)
     isUpdatingUserName.value = false
     isUpdatingUserLastname.value = false
+
+    await profilesStore.updateUserTelegramTag(values, userTelegramTag.value, token)
+    isUpdatingUserTag.value = false
   }
 })
 
@@ -58,8 +66,8 @@ function setUserValues() {
   if (profile.value?.email === user.value?.email) {
     setValues({ ...user.value })
   } else if (profile.value) {
-    const { email, firstName, lastName } = profile.value
-    setValues({ email, firstName, lastName })
+    const { email, firstName, lastName, userTag } = profile.value
+    setValues({ email, firstName, lastName, userTag })
   }
 }
 
@@ -72,6 +80,13 @@ function toogleUpdateUserName(value: boolean) {
 
 function toogleUpdateUserLastname(value: boolean) {
   isUpdatingUserLastname.value = value
+  if (!value) {
+    setUserValues()
+  }
+}
+
+function toogleUpdateUserTag(value: boolean) {
+  isUpdatingUserTag.value = value
   if (!value) {
     setUserValues()
   }
@@ -99,7 +114,7 @@ function getFormattedDate(date: string) {
       <Typography class-name="fs-5 text-primary">Информация</Typography>
       <div class="d-flex justify-content-end gap-2">
         <Button
-          v-if="isUpdatingUserName || isUpdatingUserLastname"
+          v-if="isUpdatingUserName || isUpdatingUserLastname || isUpdatingUserTag"
           variant="success"
           @click="handleEditUser"
         >
@@ -116,6 +131,13 @@ function getFormattedDate(date: string) {
           v-if="isUpdatingUserLastname"
           variant="danger"
           @click="toogleUpdateUserLastname(false)"
+        >
+          Отменить
+        </Button>
+        <Button
+          v-if="isUpdatingUserTag"
+          variant="danger"
+          @click="toogleUpdateUserTag(false)"
         >
           Отменить
         </Button>
@@ -146,7 +168,12 @@ function getFormattedDate(date: string) {
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Имя:</Typography>
           <div
-            v-if="isOwnProfile && !isUpdatingUserName && !isUpdatingUserLastname"
+            v-if="
+              isOwnProfile &&
+              !isUpdatingUserName &&
+              !isUpdatingUserLastname &&
+              !isUpdatingUserTag
+            "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdateUserName(true)"
           >
@@ -157,7 +184,7 @@ function getFormattedDate(date: string) {
         <Input
           name="firstName"
           class-name="rounded-end w-100"
-          placeholder="Введите ваше имя"
+          placeholder="Введите Ваше имя"
           :disabled="!isUpdatingUserName"
           validate-on-update
         />
@@ -167,7 +194,12 @@ function getFormattedDate(date: string) {
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Фамилия:</Typography>
           <div
-            v-if="isOwnProfile && !isUpdatingUserLastname && !isUpdatingUserName"
+            v-if="
+              isOwnProfile &&
+              !isUpdatingUserLastname &&
+              !isUpdatingUserName &&
+              !isUpdatingUserTag
+            "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdateUserLastname(true)"
           >
@@ -178,8 +210,33 @@ function getFormattedDate(date: string) {
         <Input
           name="lastName"
           class-name="rounded-end w-100"
-          placeholder="Введите вашу фамилия"
+          placeholder="Введите Вашу фамилию"
           :disabled="!isUpdatingUserLastname"
+          validate-on-update
+        />
+      </div>
+      <div class="w-100 d-flex flex-column gap-2">
+        <div class="d-flex gap-1">
+          <Typography class-name="text-primary">Тег Телеграм:</Typography>
+          <div
+            v-if="
+              isOwnProfile &&
+              !isUpdatingUserLastname &&
+              !isUpdatingUserName &&
+              !isUpdatingUserTag
+            "
+            class="link text-secondary cursor-pointer"
+            @click="toogleUpdateUserTag(true)"
+          >
+            изменить
+          </div>
+        </div>
+
+        <Input
+          name="userTag"
+          class-name="rounded-end w-100"
+          placeholder="Введите Ваш тег в Телеграм"
+          :disabled="!isUpdatingUserTag"
           validate-on-update
         />
       </div>
