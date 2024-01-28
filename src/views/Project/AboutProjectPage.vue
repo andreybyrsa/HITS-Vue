@@ -10,7 +10,7 @@ defineProps<ProjectProps>()
 </script>
 
 <template>
-  <div class="d-flex gap-3">
+  <div class="d-flex gap-3 mt-4">
     <div class="w-100">
       <ul class="list-group rounded-3">
         <li class="list-group-item p-0 overflow-hidden">

@@ -15,15 +15,17 @@ import ProjectService from '@Services/ProjectService'
 
 import { useRoute } from 'vue-router'
 
-import { Project, Sprint } from '@Domain/Project'
+import { Project, Sprint, Task } from '@Domain/Project'
 import {
   RequestConfig,
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
 import useSprintsStore from '@Store/sprints/sprintsStore'
+import useTasksStore from '@Store/tasks/tasksStore'
 
 const sprintsStore = useSprintsStore()
+const tasksStore = useTasksStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -32,6 +34,8 @@ const route = useRoute()
 
 const project = ref<Project>()
 const sprints = ref<Sprint[]>()
+const activeSprint = ref<Sprint>()
+const tasks = ref<Task[]>()
 const isLoading = ref(false)
 
 watchImmediate(
@@ -64,6 +68,16 @@ async function getProject() {
         refValue: sprints,
         onErrorFunc: openErrorNotification,
       },
+      {
+        request: () => tasksStore.getAllTasks(projectId, token),
+        refValue: tasks,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => sprintsStore.getActiveSprint(projectId, token),
+        refValue: activeSprint,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
     await sendParallelRequests(ideasMarketParallelRequests)
@@ -88,7 +102,7 @@ async function getProject() {
 
     <template #content>
       <div
-        class="p-4"
+        class="p-4 h-100"
         v-if="!isLoading && project"
       >
         <ProjectHeader :project="project" />
