@@ -96,8 +96,8 @@ const { handleSubmit: b } = useForm<Sprint>({
   validationSchema: {
     report: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-    // radio: (value: string) =>
-    //   Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+    radio: (value: boolean) =>
+      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
   },
 })
 
@@ -329,24 +329,25 @@ const FinishSprint = b(async () => {
       <div class="w-100">
         <div class="mb-2 text-primary">Отчет*</div>
         <Textarea
-          v-if="status === 'PROJECT'"
           name="report"
           class-name="finish-project-modal__report rounded w-100"
           placeholder="Отчет"
           v-model="reportProject"
+          validate-on-update
         >
           Отчет
         </Textarea>
 
-        <Textarea
+        <!-- <Textarea
           v-else
           name="report"
           class-name="finish-project-modal__report rounded w-100"
           placeholder="Отчет"
           v-model="reportSprint"
+          validate-on-update
         >
           Отчет
-        </Textarea>
+        </Textarea> -->
       </div>
 
       <div v-if="status === 'SPRINT'">
