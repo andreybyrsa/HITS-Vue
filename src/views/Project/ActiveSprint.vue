@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
+import { Sprint } from '@Domain/Project'
 import draggable from 'vuedraggable'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
 
+import sprintsStore from '@Store/projects/projectsStore'
 import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
@@ -59,6 +61,11 @@ function checkMove(evt: any) {
 </script>
 
 <template>
+  <div class="d-flex align-items-center justify-content-between border-bottoms">
+    <Typography class-name="fs-3 text-primary text-center ">
+      {{ sprint?.name }}
+    </Typography>
+  </div>
   <div class="active-sprint w-100 mt-4">
     <div class="border rounded p-3 w-100">
       <Typography class-name="fs-5 text-primary">На доработке</Typography>

@@ -8,10 +8,15 @@
     :dropdown-actions-menu="dropdownUsersActions"
     :filters="sprintsFilters"
   />
+  <SprintModal
+    :is-opened="isOpenedSprinttModal"
+    :sprint="currentSprint"
+    @close-modal="closeSprintModal"
+  />
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import {
   DropdownMenuAction,
   TableColumn,
@@ -25,6 +30,7 @@ import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import { Sprint, SprintStatus } from '@Domain/Project'
 
 import { getSprintStatus, getSprintStatusStyle } from '@Utils/getSprintStatus'
+import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 
 defineProps<SprintsTableProps>()
 
@@ -66,18 +72,29 @@ const usersTableColumns: TableColumn<Sprint>[] = [
   },
 ]
 
+const currentSprint = ref<Sprint | null>(null)
+const isOpenedSprinttModal = ref(false)
+
 function getSprintStatusFormat(status: SprintStatus) {
   return getSprintStatus().translatedStatus[status]
 }
 
-function navigateToSprint(sprint: Sprint) {
-  return console.log(1)
+function openModalSprint(refValue: Ref<boolean>, sprint: Sprint | null) {
+  refValue.value = true
+  if (sprint) {
+    currentSprint.value = sprint
+  }
+}
+
+function closeSprintModal() {
+  isOpenedSprinttModal.value = false
+  currentSprint.value = null
 }
 
 const dropdownUsersActions: DropdownMenuAction<Sprint>[] = [
   {
     label: 'Перейти в спринт',
-    click: navigateToSprint,
+    click: (sprint) => openModalSprint(isOpenedSprinttModal, sprint),
   },
 ]
 
