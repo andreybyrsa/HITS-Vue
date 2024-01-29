@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -24,12 +24,16 @@ import {
   RequestConfig,
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
+import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
 
 const requestsToIdea = useRequestsToIdeaStore()
 const { requestsTeamsToIdea } = storeToRefs(requestsToIdea)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const invitationsTeamToIdeaStore = useInvitationsTeamToIdeaStore()
+const { ideaInvitations } = storeToRefs(invitationsTeamToIdeaStore)
 
 const teamsStore = useTeamStore()
 const requestsToTeamStore = useRequestsToTeamStore()
@@ -87,6 +91,18 @@ onMounted(async () => {
   }
 })
 
+watch(
+  team,
+  async () => {
+    if (user.value?.token && team.value?.id) {
+      const { token } = user.value
+      const { id: teamId } = team.value
+      await invitationsTeamToIdeaStore.getTeamInvitations(teamId, token)
+    }
+  },
+  { deep: true },
+)
+
 function closeTeamModal() {
   isOpened.value = false
   router.go(-1)
@@ -114,6 +130,7 @@ function closeTeamModal() {
           :invitations="teamInvitations"
           :requests="requestsToTeam"
           :requestsTeamsToIdea="requestsTeamsToIdea"
+          :invitationsForTeam="ideaInvitations"
         />
 
         <TeamModalActions

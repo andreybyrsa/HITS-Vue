@@ -81,7 +81,9 @@ const teams = defineModel<Team[]>({ required: true })
 const ideas = ref<IdeaMarket[]>([])
 const skills = ref<Skill[]>([])
 const profile = ref<Profile>()
-const sentInvitationsToIdea = ref<InvitationTeamToIdea[]>([])
+const { ideaInvitations: sentInvitationsToIdea } = storeToRefs(
+  invitationsTeamToIdeaStore,
+)
 
 const deletingTeamId = ref<string | null>(null)
 const deletingTeamName = ref<string>()
@@ -135,7 +137,9 @@ async function handleInviteOrRevokeTeam() {
         {
           id: `${inviteTeam.value.name}+${inviteTeamIdeaMarket.value.name}`,
           ideaMarketId: inviteTeamIdeaMarket.value.id,
+          ideaMarketName: inviteTeamIdeaMarket.value.name,
           status: 'NEW',
+          marketId: inviteTeamIdeaMarket.value.marketId,
           teamId: inviteTeam.value.id,
           name: inviteTeam.value.name,
           membersCount: inviteTeam.value.membersCount,
@@ -152,6 +156,7 @@ async function handleInviteOrRevokeTeam() {
     }
 
     if (!invitationForRevoke.value?.id) return
+    console.log('CANCELED', invitationForRevoke.value.id, token)
 
     await invitationsTeamToIdeaStore.putInvitationForTeamToIdea(
       'CANCELED',
@@ -178,12 +183,6 @@ onMounted(async () => {
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => invitationsTeamToIdeaStore.getSentInvitations(id, token),
-        refValue: sentInvitationsToIdea,
-        onErrorFunc: openErrorNotification,
-        statement: user.value?.role === 'INITIATOR',
-      },
-      {
         request: () =>
           ideasMarketStore.getAllInitiatorIdeasFromActiveMarkets(id, token),
         refValue: ideas,
@@ -203,35 +202,20 @@ watch(
       const { token, id } = user.value
       if (!(token && id)) return
 
-      if (sentInvitationsToIdea.value.length === 0 && ideas.value.length === 0) {
-        const invitationsResponse =
-          await invitationsTeamToIdeaStore.getSentInvitations(id, token)
-        if (
-          !(invitationsResponse instanceof Error) &&
-          !(invitationsResponse === undefined)
-        ) {
-          sentInvitationsToIdea.value = invitationsResponse
-        }
+      await invitationsTeamToIdeaStore.getSentInvitations(id, token)
 
-        const ideasResponse =
-          await ideasMarketStore.getAllInitiatorIdeasFromActiveMarkets(id, token)
+      const ideasResponse =
+        await ideasMarketStore.getAllInitiatorIdeasFromActiveMarkets(id, token)
 
-        if (!(ideasResponse instanceof Error) && !(ideasResponse === undefined)) {
-          ideas.value = ideasResponse
-        }
+      if (!(ideasResponse instanceof Error) && !(ideasResponse === undefined)) {
+        ideas.value = ideasResponse
       }
     }
   },
   { deep: true },
 )
 
-watch(
-  ideas,
-  () => {
-    if (ideas.value.length !== 0) updateDropdownTeamsActions()
-  },
-  { deep: true },
-)
+watch(ideas, () => updateDropdownTeamsActions(), { deep: true })
 
 const teamsTableHeader = computed<TableHeader>(() => ({
   label: 'Список команд',
@@ -284,6 +268,7 @@ const teamTableColumns: TableColumn<Team>[] = [
 ]
 
 function updateDropdownTeamsActions() {
+  dropdownTeamsActions.value.splice(3)
   ideas.value.map((idea) => {
     const handleOpenInviteModal = (team: Team) => {
       teamInviteModalType.value = 'INVITE'

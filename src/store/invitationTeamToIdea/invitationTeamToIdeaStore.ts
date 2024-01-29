@@ -9,8 +9,6 @@ import {
   InvitationTeamToIdeaStatus,
 } from '@Domain/InvitationTeamToIdea'
 
-import { invitationTeamToIdeaMocks } from '@Utils/getMocks'
-
 const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', {
   state: (): InitialState => ({
     ideaInvitations: [],
@@ -35,6 +33,7 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
           )
         } else {
           this.ideaInvitations = response
+
           return this.ideaInvitations
         }
       }
@@ -43,6 +42,28 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
       return async (userId: string, token: string) => {
         const response = await invitationTeamToIdeaService.getSentInvitations(
           userId,
+          token,
+        )
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          this.ideaInvitations = response
+          return this.ideaInvitations
+        }
+      }
+    },
+    getTeamInvitations() {
+      return async (teamId: string, token: string) => {
+        const response = await invitationTeamToIdeaService.getTeamInvitations(
+          teamId,
           token,
         )
 
@@ -100,15 +121,9 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
         const invitationIndex = this.ideaInvitations.findIndex(
           (invitation) => invitation.id == invitationId,
         )
+
         if (invitationIndex !== -1) {
           this.ideaInvitations[invitationIndex].status = status
-        }
-
-        const mockIndex = invitationTeamToIdeaMocks.findIndex(
-          (invitation) => invitation.id == invitationId,
-        )
-        if (invitationIndex !== -1) {
-          invitationTeamToIdeaMocks[mockIndex].status = status
         }
       }
     },

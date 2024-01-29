@@ -15,11 +15,15 @@ function filterInvitationsByMarketId(
   ideaMarketId: string,
   invitations: InvitationTeamToIdea[],
 ) {
-  return invitations.filter((invitation) => invitation.ideaMarketId === ideaMarketId)
+  return invitations.filter((invitation) => invitation.ideaMarketId == ideaMarketId)
 }
 
 function filterInvitations(invitations: InvitationTeamToIdea[]) {
   return invitations
+}
+
+function filterTeamInvitations(invitations: InvitationTeamToIdea[], teamId: string) {
+  return invitations.filter((invitation) => invitation.teamId === teamId)
 }
 
 // --- GET --- //
@@ -63,6 +67,27 @@ const getSentInvitations = async (
     .then((response) => response.data)
     .catch((error) =>
       handleAxiosError(error, 'Ошибка получения отправленных приглашений'),
+    )
+}
+
+const getTeamInvitations = async (
+  teamId: string,
+  token: string,
+): Promise<InvitationTeamToIdea[] | Error> => {
+  return invitationTeamToIdeaAxios
+    .get<InvitationTeamToIdea[]>(
+      `/team/${teamId}/invitations-to-idea`, // FIX ROUTE
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (applications) => filterTeamInvitations(applications, teamId),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка получения приглашений команды'),
     )
 }
 
@@ -113,6 +138,7 @@ const InvitationTeamToIdeaService = {
   postTeamInvitationsToIdea,
   putInvitationForTeamToIdea,
   getSentInvitations,
+  getTeamInvitations,
 }
 
 export default InvitationTeamToIdeaService

@@ -35,7 +35,9 @@ function clickAction() {
   >
     <div class="confirm-modal p-3 rounded bg-white">
       <div class="confirm-modal__header">
-        <Typography class-name="text-center text-danger">
+        <Typography
+          :class-name="`text-center ${!textNotDanger ? 'text-danger' : ''}`"
+        >
           {{ textQuestion + '*' }}
         </Typography>
         <Button

@@ -9,9 +9,11 @@ type InvitationTeamToIdeaStatus =
 
 interface InvitationTeamToIdea {
   ideaMarketId: string
+  ideaMarketName: string
+
   status: InvitationTeamToIdeaStatus
   teamId: string
-  // marketId: string
+  marketId: string
 
   id?: string
   name: string // название команды

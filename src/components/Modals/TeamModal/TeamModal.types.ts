@@ -1,3 +1,4 @@
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team, TeamInvitation, RequestToTeam } from '@Domain/Team'
 
@@ -10,6 +11,7 @@ interface TeamModalTables {
   invitations?: TeamInvitation[]
   requests?: RequestToTeam[]
   requestsTeamsToIdea?: RequestTeamToIdea[]
+  invitationsForTeam?: InvitationTeamToIdea[]
 }
 
 interface TeamMembersProps {
@@ -47,6 +49,10 @@ interface TeamModalActionsEmits {
   (event: 'close-modal'): void
 }
 
+interface InvitationsToIdeaForTeamTableProps {
+  invitations: InvitationTeamToIdea[]
+}
+
 export {
   TeamDescriptionProps,
   TeamModalTables,
@@ -58,4 +64,5 @@ export {
   TeamModalInfoProps,
   TeamDescriptionEmits,
   TeamModalActionsEmits,
+  InvitationsToIdeaForTeamTableProps,
 }
