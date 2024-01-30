@@ -1,58 +1,24 @@
 <template>
-  <div class="d-flex gap-3">
+  <div class="d-flex gap-3 mt-4">
     <div class="w-100">
-      <draggable
-        class="list-group rounded-3"
-        :list="sortedInBackLogTasks"
-        @change="checkMove"
-        group="tasks"
-      >
-        <template #item="{ element }">
-          <div class="p-0 overflow-hidden mb-3 border rounded-3">
-            <Button
-              variant="light"
-              class-name="collapse-controller px-0 py-2 w-100"
-              v-collapse="element.id"
-            >
-              <div class="header">
-                <div class="header__block w-75 fw-semibold px-3">
-                  <div class="fs-5 fw-bold">#{{ element.position }}</div>
-                  <div class="fs-5">{{ element.name }}</div>
-                </div>
-
-                <div class="header__block w-25 gap-5 px-3">
-                  <div class="header__block gap-1 w-50">
-                    <Icon
-                      class-name="bi bi-circle-fill "
-                      class="fs-3 text-secondary"
-                    />
-                    {{ element.initiator.firstName }}
-                    {{ element.initiator.lastName }}
-                  </div>
-
-                  <div class="header__block w-50 gap-1">
-                    <Icon
-                      class-name="bi bi-circle-fill "
-                      :style="{ color: element.tag.color }"
-                    />
-                    <div>{{ element.tag.name }}</div>
-                  </div>
-                </div>
-              </div>
-            </Button>
-            <Collapse :id="element.id">
-              <div class="collapce py-2 mx-3 border-top text-secondary fw-lighter">
-                <div class="collapce__block w-75">{{ element.description }}</div>
-
-                <div class="collapce__block-right">
-                  <div class="mb-3">Дата: {{ element.startDate }}</div>
-                  <div>Трудоемкость: {{ element.workHour }}</div>
-                </div>
-              </div>
-            </Collapse>
-          </div>
-        </template>
-      </draggable>
+      <ul class="list-group rounded-3">
+        <li
+          v-for="task in tasks"
+          :key="task.id"
+          class="list-group-item p-0 overflow-hidden"
+        >
+          <Button
+            variant="light"
+            class-name="collapse-controller w-100"
+            v-collapse:openOnMount="task.id"
+          >
+            {{ task.name }}
+          </Button>
+          <Collapse :id="task.id">
+            <div class="p-2">{{ task.description }}</div>
+          </Collapse>
+        </li>
+      </ul>
     </div>
 
     <div class="d-flex flex-column gap-3">

@@ -7,6 +7,7 @@ import InitialState from '@Store/sprints/initialState'
 const useSprintsStore = defineStore('sprints', {
   state: (): InitialState => ({
     sprints: [],
+    activeSprint: undefined,
   }),
 
   getters: {
@@ -20,6 +21,22 @@ const useSprintsStore = defineStore('sprints', {
 
         this.sprints = response
         return this.sprints
+      }
+    },
+
+    getActiveSprint() {
+      return async (projectId: string, token: string) => {
+        const response = await SprintService.getActiveSprintsProject(
+          projectId,
+          token,
+        )
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        this.activeSprint = response
+        return this.activeSprint
       }
     },
   },

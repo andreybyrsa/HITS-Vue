@@ -14,7 +14,7 @@ import useUserStore from '@Store/user/userStore'
 import BacklogPage from './BacklogPage.vue'
 
 const sprintsStore = useSprintsStore()
-const { sprints } = storeToRefs(sprintsStore)
+const { sprints, activeSprint } = storeToRefs(sprintsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -75,68 +75,60 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 </script>
 
 <template>
-  <div class="border-bottom px-3">
-    <ul class="nav nav-underline">
-      <div
-        :class="getNavLinkStyle(isTabAboutProject)"
-        @click="switchToTabAboutProject"
-      >
-        О проекте
-      </div>
-      <div
-        :class="getNavLinkStyle(isTabBacklog)"
-        @click="switchToTabBacklog"
-      >
-        Бэклог
-      </div>
-      <div
-        :class="getNavLinkStyle(isTabSprints)"
-        @click="switchToTabSprints"
-      >
-        Спринты
-      </div>
-      <div
-        :class="getNavLinkStyle(isTabActiveSprint)"
-        @click="switchToTabSprint"
-      >
-        Активный спринт
-      </div>
-    </ul>
-  </div>
+  <div class="content">
+    <div class="border-bottom px-3">
+      <ul class="nav nav-underline">
+        <div
+          :class="getNavLinkStyle(isTabAboutProject)"
+          @click="switchToTabAboutProject"
+        >
+          О проекте
+        </div>
+        <div
+          :class="getNavLinkStyle(isTabBacklog)"
+          @click="switchToTabBacklog"
+        >
+          Бэклог
+        </div>
+        <div
+          :class="getNavLinkStyle(isTabSprints)"
+          @click="switchToTabSprints"
+        >
+          Спринты
+        </div>
+        <div
+          :class="getNavLinkStyle(isTabActiveSprint)"
+          @click="switchToTabSprint"
+        >
+          Активный спринт
+        </div>
+      </ul>
+    </div>
 
-  <div>
-    <div
+    <AboutProjectPage
       v-if="isTabAboutProject"
-      class="mt-4"
-    >
-      <AboutProjectPage :project="project" />
-    </div>
-    <div
+      :project="project"
+    />
+
+    <BacklogPage
       v-if="isTabBacklog"
-      class="mt-4"
-    >
-      <BacklogPage :tasks="tasks" />
-    </div>
-    <div
+      :tasks="tasks"
+    />
+
+    <SprintsListPage
       v-if="isTabSprints"
-      class="content-dev"
-    >
-      <SprintsListPage :sprints="sprint" />
-    </div>
-    <div
-      v-if="isTabActiveSprint"
-      class="content-dev"
-    >
-      <ActiveSprint />
-    </div>
+      :sprints="sprint"
+    />
+
+    <ActiveSprint
+      v-if="activeSprint && isTabActiveSprint"
+      :sprint="activeSprint"
+    />
   </div>
 </template>
 
 <style lang="scss">
-.content-dev {
-  width: 100%;
-  height: 60vh;
-
-  @include flexible(start, center);
-}
+// .content {
+//   height: 90%;
+// }
 </style>

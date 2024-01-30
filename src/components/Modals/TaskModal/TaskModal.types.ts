@@ -1,5 +1,6 @@
 interface CreateNewTaskProps {
   isOpened: boolean
+  isActiveSprint?: boolean
 }
 
 interface CreateTaskModalEmits {

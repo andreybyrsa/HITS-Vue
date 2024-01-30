@@ -33,8 +33,29 @@ const getAllSprintsProject = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения спринтов'))
 }
 
+const getActiveSprintsProject = async (
+  projectId: string,
+  token: string,
+): Promise<Sprint | Error> => {
+  return sprintMocksAxios
+    .get(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        // FIX ROUTE
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { projectId, status: 'ACTIVE' },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения спринтов'))
+}
+
 const ProfileService = {
   getAllSprintsProject,
+  getActiveSprintsProject,
 }
 
 export default ProfileService
