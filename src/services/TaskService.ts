@@ -4,6 +4,9 @@ import defineAxios from '@Utils/defineAxios'
 import { tasksMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import axios from 'axios'
+import { develop } from '@Assets/images'
+import { MODE } from '@Main'
 import { Task, TaskStatus } from '@Domain/Project'
 import { User } from '@Domain/User'
 
@@ -34,7 +37,6 @@ const getAllTasksProject = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения задач'))
 }
 
-// --- POST --- //
 const createTask = async (task: Task, token: string): Promise<Task | Error> => {
   return tasksMocksAxios
     .post('/task/add', task, {
@@ -42,7 +44,33 @@ const createTask = async (task: Task, token: string): Promise<Task | Error> => {
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка добавления задачи'))
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления тега'))
+}
+
+const updateTasks = async (
+  tasks: Task[],
+  token: string,
+): Promise<Task[] | Error> => {
+  if (MODE == 'DEVELOPMENT') {
+    const mockTasks = tasksMocksAxios.getReactiveMocks()
+    console.log(mockTasks)
+
+    mockTasks.value.forEach((task) =>
+      tasks.find((newTask) => {
+        if (newTask.id === task.id) {
+          task.position = newTask.position
+        }
+      }),
+    )
+    console.log(mockTasks)
+  }
+  return axios
+    .put(`/task/update/}`, tasks, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования задач'))
 }
 
 // --- PUT --- //
@@ -91,6 +119,7 @@ const changeTaskStatus = async (
 const ProfileService = {
   getAllTasksProject,
   createTask,
+  updateTasks,
 
   changeExecutorTask,
   changeTaskStatus,

@@ -97,7 +97,6 @@ async function createTask() {
         <Typography class-name="text-primary">Название задачи*</Typography>
       </div>
       <div class="w-100">
-        {{ nameTask }}
         <Input
           v-model="nameTask"
           name="name"
@@ -138,7 +137,6 @@ async function createTask() {
       </div>
       <div class="d-flex gap-2 w-100">
         <Typography class-name="text-primary pt-1">Трудоёмкость*</Typography>
-        {{ workHourTask }}
         <Input
           v-model="workHourTask"
           name="workHour"

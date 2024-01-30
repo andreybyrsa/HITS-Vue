@@ -24,8 +24,8 @@ import {
 } from '@Utils/sendParallelRequests'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
-import { Tag } from '@Domain/Tag'
 import useTagsStore from '@Store/tags/tagsStore'
+import { Tag } from '@Domain/Tag'
 
 const sprintsStore = useSprintsStore()
 const tasksStore = useTasksStore()
@@ -76,6 +76,11 @@ async function getProject() {
       {
         request: () => tasksStore.getAllTasks(projectId, token),
         refValue: tasks,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => tagsStore.getAllTags(token),
+        refValue: tags,
         onErrorFunc: openErrorNotification,
       },
       {
