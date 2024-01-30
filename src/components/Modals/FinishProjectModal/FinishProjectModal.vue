@@ -29,14 +29,21 @@ import {
   FinishProjectModalProps,
 } from '@Components/Modals/FinishProjectModal/FinishProjectModal.types'
 import useTasksStore from '@Store/tasks/tasksStore'
-import { Project, Sprint, Task } from '@Domain/Project'
+import { Task } from '@Domain/Project'
 import useProjectsStore from '@Store/projects/projectsStore'
 import Validation from '@Utils/Validation'
 import useSprintsStore from '@Store/sprints/sprintsStore'
+import {
+  RequestConfig,
+  openErrorNotification,
+  sendParallelRequests,
+} from '@Utils/sendParallelRequests'
 
 const isLoading = ref(false)
 const radio1 = ref()
 const radio2 = ref()
+const refValue = ref()
+const report = ref('')
 
 const props = defineProps<FinishProjectModalProps>()
 
@@ -54,9 +61,6 @@ const averageMark = ref<AverageMark[]>([])
 
 const projectStore = useProjectsStore()
 const sprintStore = useSprintsStore()
-
-const reportProject = ref('')
-const reportSprint = ref('')
 
 onMounted(() => {
   if (props.isFinishProject) getAverageMark()
@@ -111,13 +115,28 @@ const FinishProject = handleSubmit(async () => {
     const { token } = currentUser
 
     const projectId = route.params.id.toString()
-    await projectStore.changeProjectStatus(projectId, 'DONE', token)
-
     const finishDate = new Date().toJSON().toString()
-    await projectStore.finishProject(projectId, finishDate, token)
 
-    await projectStore.reportProject(projectId, reportProject.value, token)
+    const finishProjectParallelRequests: RequestConfig[] = [
+      {
+        request: () => projectStore.changeProjectStatus(projectId, 'DONE', token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => projectStore.finishProject(projectId, finishDate, token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => projectStore.reportProject(projectId, report.value, token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
+    ]
 
+    await sendParallelRequests(finishProjectParallelRequests)
+    report.value = ''
     isLoading.value = false
     emit('close-modal')
   }
@@ -132,17 +151,39 @@ const FinishSprint = handleSubmit(async () => {
     const { token } = currentUser
 
     const sprintID = route.params.id.toString()
-    await sprintStore.changeSprintStatus(sprintID, 'DONE', token)
-
     const finishDate = new Date().toJSON().toString()
-    await sprintStore.finishSprint(sprintID, finishDate, token)
 
-    await sprintStore.reportSprint(sprintID, reportSprint.value, token)
+    const fiinishSprintParallelRequests: RequestConfig[] = [
+      {
+        request: () => sprintStore.changeSprintStatus(sprintID, 'DONE', token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => sprintStore.finishSprint(sprintID, finishDate, token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => sprintStore.reportSprint(sprintID, report.value, token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
+    ]
 
+    await sendParallelRequests(fiinishSprintParallelRequests)
+    report.value = ''
     isLoading.value = false
     emit('close-modal')
   }
 })
+
+function clickFunctionByStatus() {
+  if (props.status === 'PROJECT') {
+    return FinishProject()
+  }
+  FinishSprint()
+}
 </script>
 
 <template>
@@ -152,19 +193,10 @@ const FinishSprint = handleSubmit(async () => {
   >
     <div class="finish-project-modal bg-white rounded p-3 w-1">
       <div class="finish-project-modal__header fs-2 w-100 border-2">
-        <Typography
-          v-if="status === 'PROJECT'"
-          class-name="border-bottom text-primary fs-3 w-100"
-        >
-          Завершение проекта
+        <Typography class-name="border-bottom text-primary fs-3 w-100">
+          {{ status === 'PROJECT' ? 'Завершение проекта' : 'Завершение спринта' }}
         </Typography>
 
-        <Typography
-          v-else
-          class-name="border-bottom text-primary fs-3 w-100"
-        >
-          Завершение спринта
-        </Typography>
         <Button
           @click="emit('close-modal')"
           class-name="fs-5"
@@ -173,26 +205,13 @@ const FinishSprint = handleSubmit(async () => {
       </div>
       <div class="d-flex w-100 gap-2 flex-column overflow-scroll">
         <div class="d-flex gap-3 text-primary w-100">
-          <Typography
-            class-name="w-25"
-            v-if="status === 'PROJECT'"
-            >Средняя оценка</Typography
-          >
-          <Typography
-            class-name="w-25"
-            v-else
-            >Оценка</Typography
-          >
-          <Typography
-            v-if="status === 'PROJECT'"
-            class-name="w-75"
-            >Участник</Typography
-          >
-          <Typography
-            v-else
-            class-name="w-75"
-            >Статистика участника</Typography
-          >
+          <Typography class-name="w-25">{{
+            status === 'PROJECT' ? 'Средняя оценка' : 'Оценка'
+          }}</Typography>
+
+          <Typography class-name="w-75">{{
+            status === 'PROJECT' ? 'Участник' : 'Статистика участника'
+          }}</Typography>
         </div>
         <div
           class="d-flex gap-3 w-100 justify-content-between h-100"
@@ -204,6 +223,7 @@ const FinishSprint = handleSubmit(async () => {
             class="w-25 h-100"
           >
             <Input
+              v-if="status === 'PROJECT'"
               :name="member.id"
               class-name="rounded finish-project-modal__input"
               placeholder="Оценка"
@@ -225,7 +245,7 @@ const FinishSprint = handleSubmit(async () => {
           <ul class="list-group rounded-3 w-75">
             <li
               v-if="status === 'SPRINT'"
-              class="list-group-item p-0 overflow-hidden w-100"
+              class="list-group-item p-0 overflow-hidden w-100 finish-project-modal__input"
             >
               <Button
                 variant="light"
@@ -273,7 +293,7 @@ const FinishSprint = handleSubmit(async () => {
 
             <li
               v-else
-              class="list-group-item p-0 overflow-hidden w-100"
+              class="list-group-item p-0 overflow-hidden w-100 w-100 finish-project-modal__input"
             >
               <div
                 variant="light"
@@ -333,22 +353,11 @@ const FinishSprint = handleSubmit(async () => {
           name="report"
           class-name="finish-project-modal__report rounded w-100"
           placeholder="Отчет"
-          v-model="reportProject"
+          v-model="report"
           validate-on-update
         >
           Отчет
         </Textarea>
-
-        <!-- <Textarea
-          v-else
-          name="report"
-          class-name="finish-project-modal__report rounded w-100"
-          placeholder="Отчет"
-          v-model="reportSprint"
-          validate-on-update
-        >
-          Отчет
-        </Textarea> -->
       </div>
 
       <div v-if="status === 'SPRINT'">
@@ -374,23 +383,12 @@ const FinishSprint = handleSubmit(async () => {
       </div>
 
       <Button
-        v-if="status === 'PROJECT'"
-        @click="FinishProject"
+        @click="clickFunctionByStatus"
         :is-loading="isLoading"
         :disabled="isLoading"
         variant="primary"
       >
-        Завершить проект
-      </Button>
-
-      <Button
-        v-else
-        @click="FinishSprint"
-        :is-loading="isLoading"
-        :disabled="isLoading"
-        variant="primary"
-      >
-        Завершить спринт
+        {{ status === 'PROJECT' ? 'Завершить проект' : 'Завершить спринт' }}
       </Button>
     </div>
   </ModalLayout>
