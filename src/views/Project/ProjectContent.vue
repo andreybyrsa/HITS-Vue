@@ -97,6 +97,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
           Спринты
         </div>
         <div
+          v-if="activeSprint"
           :class="getNavLinkStyle(isTabActiveSprint)"
           @click="switchToTabSprint"
         >

@@ -26,7 +26,7 @@
                   <div class="fs-5">{{ element.name }}</div>
                 </div>
 
-                <div class="header__block w-25 gap-5 px-3">
+                <div class="header__block w-50 gap-5 px-3">
                   <div class="header__block gap-1 w-50">
                     <Icon
                       class-name="bi bi-circle-fill "
@@ -36,12 +36,22 @@
                     {{ element.initiator.lastName }}
                   </div>
 
-                  <div class="header__block w-50 gap-1">
-                    <Icon
-                      class-name="bi bi-circle-fill "
-                      :style="{ color: element.tag.color }"
-                    />
-                    <div>{{ element.tag.name }}</div>
+                  <div class="header__block w-50 gap-2 overflow-x-auto">
+                    <div
+                      v-for="tag in element.tag"
+                      :key="tag.id"
+                      class="d-flex gap-1 px-2 py-1 rounded-2 text-center align-self-start"
+                      :style="{
+                        backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+                        color: tag.color,
+                      }"
+                    >
+                      <Icon
+                        class-name="bi bi-circle-fill "
+                        :style="{ color: tag.color }"
+                      />
+                      <div>{{ tag.name }}</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -59,6 +69,80 @@
           </div>
         </template>
       </draggable>
+
+      <div>
+        <Button
+          class-name="collapse-controller px-0 py-2 fs-4 fw-bold border-0"
+          v-collapse="'taskCollapse'"
+          >Другие задачи</Button
+        >
+
+        <Collapse id="taskCollapse">
+          <div
+            v-for="(task, index) in otherTasks"
+            :key="index"
+          >
+            <div class="p-0 overflow-hidden mb-3 border rounded-3 bg-light">
+              <Button
+                variant="light"
+                class-name="collapse-controller px-0 py-2 w-100 bg-light"
+                v-collapse="task.id"
+              >
+                <div class="header">
+                  <div class="header__block w-75 fw-semibold px-3">
+                    <div
+                      class="fs-5 fw-bold"
+                      v-if="filterByTags.length <= 0"
+                    >
+                      {{ getTaskStatusTranslate(task.status) }}
+                    </div>
+                    <div class="fs-5">{{ task.name }}</div>
+                  </div>
+
+                  <div class="header__block w-50 gap-5 px-3">
+                    <div class="header__block gap-1 w-50">
+                      <Icon
+                        class-name="bi bi-circle-fill "
+                        class="fs-3 text-secondary"
+                      />
+                      {{ task.initiator.firstName }}
+                      {{ task.initiator.lastName }}
+                    </div>
+
+                    <div class="header__block w-50 gap-2 overflow-x-auto">
+                      <div
+                        v-for="tag in task.tag"
+                        :key="tag.id"
+                        class="d-flex gap-1 px-2 py-1 rounded-2 text-center align-self-start"
+                        :style="{
+                          backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+                          color: tag.color,
+                        }"
+                      >
+                        <Icon
+                          class-name="bi bi-circle-fill "
+                          :style="{ color: tag.color }"
+                        />
+                        <div>{{ tag.name }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Button>
+              <Collapse :id="task.id">
+                <div class="collapce py-2 mx-3 border-top text-secondary fw-lighter">
+                  <div class="collapce__block w-75">{{ task.description }}</div>
+
+                  <div class="collapce__block-right">
+                    <div class="mb-3">Дата: {{ task.startDate }}</div>
+                    <div>Трудоемкость: {{ task.workHour }}</div>
+                  </div>
+                </div>
+              </Collapse>
+            </div>
+          </div>
+        </Collapse>
+      </div>
     </div>
 
     <div class="d-flex flex-column gap-3">
@@ -90,9 +174,13 @@ import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import useTagsStore from '@Store/tags/tagsStore'
 import { watchImmediate } from '@vueuse/core'
+import { Tag } from '@Domain/Tag'
+import Typography from '@Components/Typography/Typography.vue'
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
+
+const confirmedTags = ref<Tag[]>(tags.value.filter((tag) => tag.confirmed === true))
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -104,6 +192,8 @@ const inBackLogTasks = ref<Task[]>(
   tasks.value.filter((task) => task.status === 'InBackLog'),
 )
 
+const otherTasks = ref<Task[]>(sortOtherTasks(tasks.value))
+
 const sortedInBackLogTasks = ref<Task[]>(
   inBackLogTasks.value.sort((a, b) => a.position - b.position),
 )
@@ -114,7 +204,7 @@ const searchByTags = ref('')
 const filters: Filter<Task>[] = [
   {
     category: 'Теги',
-    choices: tags.value.map(({ name }) => ({
+    choices: confirmedTags.value.map(({ name }) => ({
       label: name,
       value: name,
     })),
@@ -162,6 +252,54 @@ function filtertTasks(tasks: Task[], filters: string[]): Task[] {
   } else {
     return sortedInBackLogTasks.value
   }
+}
+
+function hexToRgb(hex: string) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return (
+    result &&
+    `${parseInt(result[1], 16)},
+        ${parseInt(result[2], 16)},
+        ${parseInt(result[3], 16)}`
+  )
+}
+
+function getTaskStatusTranslate(status: string) {
+  if (
+    status === 'OnModification' ||
+    status === 'NewTask' ||
+    status === 'inProgress' ||
+    status === 'OnVerification'
+  ) {
+    return 'Спринт'
+  } else if (status === 'Done') {
+    return 'Завершено'
+  }
+}
+
+function sortOtherTasks(tasks: Task[]): Task[] {
+  const excludedStatuses = ['InBackLog']
+  const firstStatuses = ['OnModification', 'NewTask', 'inProgress', 'OnVerification']
+
+  const filteredTasks = tasks.filter(
+    (task) => !excludedStatuses.includes(task.status),
+  )
+
+  return filteredTasks.sort((a, b) => {
+    if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {
+      return -1
+    }
+    if (!firstStatuses.includes(a.status) && firstStatuses.includes(b.status)) {
+      return 1
+    }
+    if (a.status === 'Done' && b.status !== 'Done') {
+      return 1
+    }
+    if (a.status !== 'Done' && b.status === 'Done') {
+      return -1
+    }
+    return 0
+  })
 }
 </script>
 
