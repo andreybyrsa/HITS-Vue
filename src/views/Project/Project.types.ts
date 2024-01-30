@@ -6,4 +6,8 @@ interface ProjectProps {
   tasks?: Task[]
 }
 
-export { ProjectProps }
+interface ActiveSprintProps {
+  sprint: Sprint
+}
+
+export { ProjectProps, ActiveSprintProps }

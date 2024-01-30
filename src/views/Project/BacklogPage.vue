@@ -1,10 +1,10 @@
 <template>
-  <div class="d-flex gap-3">
+  <div class="d-flex gap-3 mt-4">
     <div class="w-100">
       <ul class="list-group rounded-3">
         <li
           v-for="task in tasks"
-          :key="task"
+          :key="task.id"
           class="list-group-item p-0 overflow-hidden"
         >
           <Button
