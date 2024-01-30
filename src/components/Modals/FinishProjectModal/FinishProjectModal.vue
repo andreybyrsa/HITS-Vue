@@ -85,23 +85,24 @@ function filterTasksByStatus(tasksAll: Task[]) {
   return tasksAll.filter((value: Task) => value.status !== 'Done')
 }
 
-const { handleSubmit: a } = useForm<Project>({
-  validationSchema: {
-    report: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-  },
+const validationSchemaSprint = {
+  report: (value: string) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+  radio: (value: boolean) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+}
+
+const validationSchemaProject = {
+  report: (value: string) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+}
+
+const { handleSubmit } = useForm({
+  validationSchema:
+    props.status === 'PROJECT' ? validationSchemaProject : validationSchemaSprint,
 })
 
-const { handleSubmit: b } = useForm<Sprint>({
-  validationSchema: {
-    report: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-    radio: (value: boolean) =>
-      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-  },
-})
-
-const FinishProject = a(async () => {
+const FinishProject = handleSubmit(async () => {
   isLoading.value = true
 
   const currentUser = user.value
@@ -122,7 +123,7 @@ const FinishProject = a(async () => {
   }
 })
 
-const FinishSprint = b(async () => {
+const FinishSprint = handleSubmit(async () => {
   isLoading.value = true
 
   const currentUser = user.value
@@ -359,8 +360,7 @@ const FinishSprint = b(async () => {
           class-name=""
           name="radio"
           label="Перенести в новый спринт"
-          v-model="radio1"
-          value=""
+          :value="true"
           validate-on-update
         />
 
@@ -368,8 +368,7 @@ const FinishSprint = b(async () => {
           class-name=""
           name="radio"
           label="Перенести в Бэклог"
-          v-model="radio2"
-          value=""
+          :value="false"
           validate-on-update
         />
       </div>
@@ -381,7 +380,7 @@ const FinishSprint = b(async () => {
         :disabled="isLoading"
         variant="primary"
       >
-        Закрыть проект
+        Завершить проект
       </Button>
 
       <Button
