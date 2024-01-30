@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
-import { Sprint } from '@Domain/Project'
+import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
+
+import { ActiveSprintProps } from '@Views/Project/Project.types'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
@@ -11,202 +12,547 @@ import Button from '@Components/Button/Button.vue'
 import sprintsStore from '@Store/projects/projectsStore'
 import useUserStore from '@Store/user/userStore'
 
+import { Task } from '@Domain/Project'
+import { reactiveComputed, useDateFormat, watchImmediate } from '@vueuse/core'
+import useTasksStore from '@Store/tasks/tasksStore'
+import {
+  RequestConfig,
+  openErrorNotification,
+  sendParallelRequests,
+} from '@Utils/sendParallelRequests'
+
+defineProps<ActiveSprintProps>()
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const list1 = ref([
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Фронтенд', color: '#cd1d1d' },
-    id: 1,
-  },
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Бэкенд', color: '#279b74' },
-    id: 2,
-  },
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Фронтенд', color: '#cd1d1d' },
-    id: 3,
-  },
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Бэкенд', color: '#279b74' },
-    id: 4,
-  },
-])
+const taskStore = useTasksStore()
+const { tasks } = storeToRefs(taskStore)
 
-const list2 = ref([
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Рефактор', color: '#cc8c33' },
-    id: 5,
-  },
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Фронтенд', color: '#cd1d1d' },
-    id: 6,
-  },
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Проектировка', color: '#2222fb' },
-    id: 7,
-  },
-])
+const checkMyInProgressTask = ref(false)
+const isLoadingTaskData = ref(false)
+const refValue = ref()
 
-function checkMove(evt: any) {
-  if (user.value?.role === 'ADMIN') return false
+const onModificationTask = reactiveComputed<Task[]>(() =>
+  tasks.value.filter(({ status }) => status === 'OnModification'),
+)
+const newTask = reactiveComputed<Task[]>(() =>
+  tasks.value.filter(({ status }) => status === 'NewTask'),
+)
+const inProgressTask = reactiveComputed<Task[]>(() =>
+  tasks.value.filter(({ status }) => status === 'inProgress'),
+)
+const onVerificationTask = reactiveComputed<Task[]>(() =>
+  tasks.value.filter(({ status }) => status === 'OnVerification'),
+)
+const doneTask = reactiveComputed<Task[]>(() =>
+  tasks.value.filter(({ status }) => status === 'Done'),
+)
+
+const tasksArray = computed<Task[][]>(() => {
+  return [onModificationTask, newTask, inProgressTask, onVerificationTask, doneTask]
+})
+
+async function moveTask(evt: any) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    if (evt.added) {
+      const task: Task = evt.added.element
+      const { id: taskId } = task
+      console.log(task.status, 1)
+      const currentArrayTask = tasksArray.value.find((arrayTasks) =>
+        arrayTasks.includes(task),
+      )
+
+      if (currentArrayTask === onModificationTask) {
+        await taskStore.changeTaskStatus(taskId, 'OnModification', token)
+      }
+
+      if (currentArrayTask === inProgressTask) {
+        const inProgressTaskParallelRequests: RequestConfig[] = [
+          {
+            request: () => taskStore.changeExecutorTask(taskId, user.value, token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () => taskStore.changeTaskStatus(taskId, 'inProgress', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+        ]
+
+        await sendParallelRequests(inProgressTaskParallelRequests)
+      }
+
+      if (currentArrayTask === newTask) {
+        const newTaskParallelRequests: RequestConfig[] = [
+          {
+            request: () => taskStore.changeExecutorTask(taskId, null, token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () => taskStore.changeTaskStatus(taskId, 'NewTask', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+        ]
+
+        await sendParallelRequests(newTaskParallelRequests)
+      }
+
+      if (currentArrayTask === onVerificationTask) {
+        await taskStore.changeTaskStatus(taskId, 'OnVerification', token)
+      }
+
+      if (currentArrayTask === doneTask) {
+        await taskStore.changeTaskStatus(taskId, 'Done', token)
+      }
+
+      isLoadingTaskData.value = false
+    }
+  }
+}
+
+watchImmediate(inProgressTask, () => {
+  const currentMyInProgressTask = inProgressTask.find(
+    ({ executor }) => executor?.id == user.value?.id,
+  )
+  checkMyInProgressTask.value = currentMyInProgressTask ? true : false
+})
+
+function checkUserTask(evt: any) {
+  return evt.draggedContext.element.executor.id === user.value?.id
+}
+
+function getExecutorTask(taskId: string) {
+  const currentTask = tasks.value.find(({ id }) => id === taskId)
+  if (currentTask?.executor)
+    return `${currentTask.executor.firstName} ${currentTask.executor.lastName}`
+}
+
+function checkOnModificationTask(evt: any) {
+  const isCheckMyTask: boolean =
+    evt.draggedContext.element.executor.id === user.value?.id
+  const inProgressTask = tasks.value.find(
+    ({ status, executor }) =>
+      status === 'inProgress' && executor?.id === user.value?.id,
+  )
+
+  return inProgressTask ? false : isCheckMyTask
+}
+
+function hexToRgb(hex: string) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return (
+    result &&
+    `${parseInt(result[1], 16)},
+        ${parseInt(result[2], 16)},
+        ${parseInt(result[3], 16)}`
+  )
+}
+
+function getColorBand(task: Task) {
+  return task.executor?.id === user.value?.id ? '#0D6EFD' : '#9E9E9E'
+}
+
+function getFormattedDate(date: string) {
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
+  }
 }
 </script>
 
 <template>
-  <div class="d-flex align-items-center justify-content-between border-bottoms">
-    <Typography class-name="fs-3 text-primary text-center ">
-      {{ sprint?.name }}
-    </Typography>
-  </div>
-  <div class="active-sprint w-100 mt-4">
-    <div class="border rounded p-3 w-100">
-      <Typography class-name="fs-5 text-primary">На доработке</Typography>
-      <draggable
-        class="h-100 list-group"
-        :list="list1"
-        group="people"
-      >
-        <template #item="{ element }">
-          <div class="my-2 p-2 border rounded">
-            <div class="active-sprint__task">
-              <Typography>{{ element.name }}</Typography>
-            </div>
-            <div class="d-flex gap-2">
-              <Icon
-                :style="{ color: element.tag.color }"
-                class-name="bi bi-circle-fill fs-6"
-              />
-              <Typography>{{ element.tag.name }}</Typography>
-            </div>
-          </div>
-        </template>
-      </draggable>
-    </div>
-
-    <div class="border rounded p-3 w-100">
-      <div class="active-sprint__header w-100">
-        <Typography class-name="fs-5 text-primary">Новые</Typography>
-        <Button variant="outline-primary">
-          <Icon class-name="bi bi-plus fs-6" />
-        </Button>
+  <div class="active-sprint">
+    <div class="active-sprint__header my-4 p-2 border rounded w-100">
+      <div class="d-flex gap-2 align-items-center">
+        <div class="bs-link mb-1 fw-semibold text-primary">
+          <Typography class-name="fs-5 fw-semibold cursor-pointer">
+            {{ sprint.name }}
+          </Typography>
+        </div>
+        <Typography>( до {{ getFormattedDate(sprint.finishDate) }} )</Typography>
       </div>
-      <draggable
-        class="h-100 list-group"
-        :list="list2"
-        group="people"
-      >
-        <template #item="{ element }">
-          <div class="my-2 p-2 border rounded">
-            <div class="active-sprint__task">
-              <Typography>{{ element.name }}</Typography>
-            </div>
-            <div class="d-flex gap-2">
-              <Icon
-                :style="{ color: element.tag.color }"
-                class-name="bi bi-circle-fill fs-6"
-              />
-              <Typography>{{ element.tag.name }}</Typography>
-            </div>
-          </div>
-        </template>
-      </draggable>
+      <div class="d-flex gap-2">
+        <Button variant="primary">Новая задача</Button>
+        <Button variant="danger">Завершить спринт</Button>
+      </div>
     </div>
 
-    <div class="border rounded p-3 w-100">
-      <Typography class-name="fs-5 text-primary">Выполняются</Typography>
-      <draggable
-        class="h-100 list-group"
-        :list="list1"
-        group="people"
-      >
-        <template #item="{ element }">
-          <div class="my-2 p-2 border rounded">
-            <div class="active-sprint__task">
-              <Typography>{{ element.name }}</Typography>
-            </div>
+    <div class="active-sprint__columns w-100">
+      <div class="w-100">
+        <div class="mb-1">
+          <div
+            style="height: 6px; background-color: blueviolet"
+            class="rounded-top"
+          />
+          <div
+            class="active-sprint__header p-2 border-start border-end border-bottom rounded-bottom"
+          >
             <div class="d-flex gap-2">
               <Icon
-                :style="{ color: element.tag.color }"
-                class-name="bi bi-circle-fill fs-6"
+                style="color: blueviolet"
+                class-name="bi bi-flag-fill fs-6"
               />
-              <Typography>{{ element.tag.name }}</Typography>
+              <Typography>На доработке</Typography>
             </div>
+            <Icon
+              class-name="bi bi-patch-question"
+              v-tooltip="'Описание столбца'"
+            />
           </div>
-        </template>
-      </draggable>
-    </div>
+        </div>
 
-    <div class="border rounded p-3 w-100">
-      <Typography class-name="fs-5 text-primary">На проверке</Typography>
-      <draggable
-        class="h-100 list-group"
-        :list="list1"
-        group="people"
-      >
-        <template #item="{ element }">
-          <div class="my-2 p-2 border rounded">
-            <div class="active-sprint__task">
-              <Typography>{{ element.name }}</Typography>
-            </div>
-            <div class="d-flex gap-2">
-              <Icon
-                :style="{ color: element.tag.color }"
-                class-name="bi bi-circle-fill fs-6"
+        <draggable
+          class="list-group active-sprint"
+          :list="onModificationTask"
+          group="people"
+          :move="checkOnModificationTask"
+          @change="moveTask"
+          :disabled="isLoadingTaskData"
+          :animation="200"
+        >
+          <template #item="{ element }">
+            <div class="d-flex my-1">
+              <div
+                :style="{ width: '6px', backgroundColor: getColorBand(element) }"
+                class="rounded-start"
               />
-              <Typography>{{ element.tag.name }}</Typography>
+              <div
+                class="bg-white p-2 border-top border-end border-bottom w-100 rounded-end"
+              >
+                <div class="d-flex flex-column border-bottom pb-2">
+                  <div class="active-sprint__task">
+                    <Typography>{{ element.name }}</Typography>
+                  </div>
+                  <div class="d-flex gap-1 text-secondary">
+                    {{ getExecutorTask(element.id) ?? 'нет испольнителя' }}
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 w-100 mt-2">
+                  <div
+                    v-for="(tag, index) in element.tag"
+                    :key="index"
+                    :style="{
+                      backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+                      color: tag.color,
+                    }"
+                    class="px-2 py-1 rounded-2 text-center align-self-start"
+                  >
+                    {{ tag.name }}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </template>
-      </draggable>
-    </div>
+          </template>
+        </draggable>
+      </div>
 
-    <div class="border rounded p-3 w-100">
-      <Typography class-name="fs-5 text-primary">Выполнены</Typography>
-      <draggable
-        class="h-100 list-group"
-        :list="list1"
-        group="people"
-      >
-        <template #item="{ element }">
-          <div class="my-2 p-2 border rounded">
-            <div class="active-sprint__task">
-              <Typography>{{ element.name }}</Typography>
-            </div>
+      <div class="w-100">
+        <div class="mb-1">
+          <div
+            style="height: 6px; background-color: #0d6efd"
+            class="rounded-top"
+          />
+          <div
+            class="active-sprint__header p-2 border-start border-end border-bottom rounded-bottom"
+          >
             <div class="d-flex gap-2">
               <Icon
-                :style="{ color: element.tag.color }"
-                class-name="bi bi-circle-fill fs-6"
+                style="color: #0d6efd"
+                class-name="bi bi-flag-fill fs-6"
               />
-              <Typography>{{ element.tag.name }}</Typography>
+              <Typography>Новые</Typography>
+            </div>
+            <div class="d-flex gap-2">
+              <Icon class-name="bi bi-plus active-sprint__add-task p-1 rounded" />
+              <Icon
+                class-name="bi bi-patch-question"
+                v-tooltip="'Описание столбца'"
+              />
             </div>
           </div>
-        </template>
-      </draggable>
+        </div>
+
+        <draggable
+          class="list-group active-sprint"
+          :list="newTask"
+          group="people"
+          @change="moveTask"
+          :handle="checkMyInProgressTask"
+          :disabled="isLoadingTaskData"
+          :animation="200"
+        >
+          <template #item="{ element }">
+            <div class="d-flex my-1">
+              <div
+                :style="{ width: '6px', backgroundColor: getColorBand(element) }"
+                class="rounded-start"
+              />
+              <div
+                class="bg-white p-2 border-top border-end border-bottom w-100 rounded-end"
+              >
+                <div class="d-flex flex-column border-bottom pb-2">
+                  <div class="active-sprint__task">
+                    <Typography>{{ element.name }}</Typography>
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 w-100 mt-2">
+                  <div
+                    v-for="(tag, index) in element.tag"
+                    :key="index"
+                    :style="{
+                      backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+                      color: tag.color,
+                    }"
+                    class="px-2 py-1 rounded-2 text-center align-self-start"
+                  >
+                    {{ tag.name }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </draggable>
+      </div>
+
+      <div class="w-100">
+        <div class="mb-1">
+          <div
+            style="height: 6px; background-color: #f5ec0a"
+            class="rounded-top"
+          />
+          <div
+            class="active-sprint__header p-2 border-start border-end border-bottom rounded-bottom"
+          >
+            <div class="d-flex gap-2">
+              <Icon
+                style="color: #f5ec0a"
+                class-name="bi bi-flag-fill fs-6"
+              />
+              <Typography>На выполнении</Typography>
+            </div>
+            <Icon
+              class-name="bi bi-patch-question"
+              v-tooltip="'Описание столбца'"
+            />
+          </div>
+        </div>
+
+        <draggable
+          class="list-group active-sprint"
+          :list="inProgressTask"
+          group="people"
+          :move="checkUserTask"
+          @change="moveTask"
+          :disabled="isLoadingTaskData"
+          :animation="200"
+        >
+          <template #item="{ element }">
+            <div class="d-flex my-1">
+              <div
+                :style="{ width: '6px', backgroundColor: getColorBand(element) }"
+                class="rounded-start"
+              />
+              <div
+                class="bg-white p-2 border-top border-end border-bottom w-100 rounded-end"
+              >
+                <div class="d-flex flex-column border-bottom pb-2">
+                  <div class="active-sprint__task">
+                    <Typography>{{ element.name }}</Typography>
+                  </div>
+                  <div class="d-flex gap-1 text-secondary">
+                    {{ getExecutorTask(element.id) ?? 'нет испольнителя' }}
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 w-100 mt-2">
+                  <div
+                    v-for="(tag, index) in element.tag"
+                    :key="index"
+                    :style="{
+                      backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+                      color: tag.color,
+                    }"
+                    class="px-2 py-1 rounded-2 text-center align-self-start"
+                  >
+                    {{ tag.name }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </draggable>
+      </div>
+
+      <div class="w-100">
+        <div class="mb-1">
+          <div
+            style="height: 6px; background-color: #ffa800"
+            class="rounded-top"
+          />
+          <div
+            class="active-sprint__header p-2 border-start border-end border-bottom rounded-bottom"
+          >
+            <div class="d-flex gap-2">
+              <Icon
+                style="color: #ffa800"
+                class-name="bi bi-flag-fill fs-6"
+              />
+              <Typography>На проверке</Typography>
+            </div>
+            <Icon
+              class-name="bi bi-patch-question"
+              v-tooltip="'Описание столбца'"
+            />
+          </div>
+        </div>
+
+        <draggable
+          class="list-group active-sprint"
+          :list="onVerificationTask"
+          group="people"
+          @change="moveTask"
+          :animation="200"
+          :disabled="isLoadingTaskData"
+          :handle="user?.role !== 'TEAM_LEADER'"
+        >
+          <template #item="{ element }">
+            <div class="d-flex my-1">
+              <div
+                :style="{ width: '6px', backgroundColor: getColorBand(element) }"
+                class="rounded-start"
+              />
+              <div
+                class="bg-white p-2 border-top border-end border-bottom w-100 rounded-end"
+              >
+                <div class="d-flex flex-column border-bottom pb-2">
+                  <div class="active-sprint__task">
+                    <Typography>{{ element.name }}</Typography>
+                  </div>
+                  <div class="d-flex gap-1 text-secondary">
+                    {{ getExecutorTask(element.id) ?? 'нет испольнителя' }}
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 w-100 mt-2">
+                  <div
+                    v-for="(tag, index) in element.tag"
+                    :key="index"
+                    :style="{
+                      backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+                      color: tag.color,
+                    }"
+                    class="px-2 py-1 rounded-2 text-center align-self-start"
+                  >
+                    {{ tag.name }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </draggable>
+      </div>
+
+      <div class="w-100">
+        <div class="mb-1">
+          <div
+            style="height: 6px; background-color: #13c63a"
+            class="rounded-top"
+          />
+          <div
+            class="active-sprint__header p-2 border-start border-end border-bottom rounded-bottom"
+          >
+            <div class="d-flex gap-2">
+              <Icon
+                style="color: #13c63a"
+                class-name="bi bi-flag-fill fs-6"
+              />
+              <Typography>Выполненные</Typography>
+            </div>
+            <Icon
+              class-name="bi bi-patch-question"
+              v-tooltip="'Описание столбца'"
+            />
+          </div>
+        </div>
+
+        <draggable
+          class="list-group active-sprint"
+          :list="doneTask"
+          @change="moveTask"
+          group="people"
+          :animation="200"
+          :disabled="isLoadingTaskData || user?.role !== 'TEAM_LEADER'"
+        >
+          <template #item="{ element }">
+            <div class="d-flex my-1">
+              <div
+                :style="{ width: '6px', backgroundColor: getColorBand(element) }"
+                class="rounded-start"
+              />
+              <div
+                class="bg-white p-2 border-top border-end border-bottom w-100 rounded-end"
+              >
+                <div class="d-flex flex-column border-bottom pb-2">
+                  <div class="active-sprint__task">
+                    <Typography>{{ element.name }}</Typography>
+                  </div>
+                  <div class="d-flex gap-1 text-secondary">
+                    {{ getExecutorTask(element.id) ?? 'нет испольнителя' }}
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 w-100 mt-2">
+                  <div
+                    v-for="(tag, index) in element.tag"
+                    :key="index"
+                    :style="{
+                      backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+                      color: tag.color,
+                    }"
+                    class="px-2 py-1 rounded-2 text-center align-self-start"
+                  >
+                    {{ tag.name }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </draggable>
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .active-sprint {
-  @include flexible(flex-start, space-between, $gap: 16px);
+  min-height: 70vh;
+
+  &__header {
+    @include flexible(center, space-between);
+  }
+
+  &__columns {
+    @include flexible(flex-start, space-between, $gap: 16px);
+  }
 
   &__task {
     @include textEllipsis(2);
   }
 
-  &__header {
-    @include flexible(flex-start, space-between);
+  &__add-task {
+    transition: all linear 0.15s;
+    -webkit-transition: all linear 0.15s;
+
+    &:hover {
+      cursor: pointer;
+      color: white;
+      background-color: rgb(13, 110, 253);
+    }
   }
-}
-.draggable {
-  height: 100%;
 }
 </style>

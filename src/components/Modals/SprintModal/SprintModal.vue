@@ -70,10 +70,7 @@ const taskList = ref([
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div
-      v-if="isOpened"
-      class="sprint-modal bg-white rounded p-3"
-    >
+    <div class="sprint-modal bg-white rounded p-3">
       <div class="d-flex align-items-center justify-content-between border-bottom">
         <Typography class-name="fs-3 text-primary text-center ">
           Спринт: "{{ sprint?.name }}"
@@ -82,7 +79,7 @@ const taskList = ref([
         <Button
           variant="close"
           @click="emit('close-modal')"
-        ></Button>
+        />
       </div>
       <div class="d-flex gap-2 align-items-center">
         <div :class="getProjectStatusStyle(sprint.status)">
@@ -151,27 +148,6 @@ const taskList = ref([
                 </div>
               </div>
             </template>
-
-            <!-- <draggable
-              class="h-100 list-group"
-              :list="sprintList"
-              group="people"
-            >
-              <template #item="{ element }">
-                <div class="my-2 mx-2 p-2 border rounded">
-                  <div class="active-sprint__task">
-                    <Typography>{{ element.name }}</Typography>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <Icon
-                      :style="{ color: element.tag.color }"
-                      class-name="bi bi-circle-fill fs-6"
-                    />
-                    <Typography>{{ element.tag.name }}</Typography>
-                  </div>
-                </div>
-              </template>
-            </draggable> -->
           </Collapse>
         </li>
       </ul>

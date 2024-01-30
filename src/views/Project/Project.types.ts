@@ -1,12 +1,13 @@
-import { Project, Sprint } from '@Domain/Project'
+import { Project, Sprint, Task } from '@Domain/Project'
 
 interface ProjectProps {
   project: Project
   sprint?: Sprint[]
+  tasks?: Task[]
 }
 
-// interface elemKanbanProps {
+interface ActiveSprintProps {
+  sprint: Sprint
+}
 
-// }
-
-export { ProjectProps }
+export { ProjectProps, ActiveSprintProps }
