@@ -30,7 +30,7 @@ defineProps<ProjectProps>()
       <ProjectMembersTable :projectMembers="project.members" />
     </div>
 
-    <ProjectInfo :project.="project" />
+    <ProjectInfo :project="project" />
   </div>
 </template>
 

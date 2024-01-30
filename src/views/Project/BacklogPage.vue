@@ -146,7 +146,9 @@
     </div>
 
     <div class="d-flex flex-column gap-3">
-      <Button class-name="btn btn-primary text-nowrap p-2 px-5"
+      <Button
+        @click="openCreateNewTask"
+        class-name="btn btn-primary text-nowrap p-2 px-5"
         >Создать задачу</Button
       >
       <FilterBar
@@ -154,6 +156,11 @@
         :filters="filters"
       />
     </div>
+
+    <TaskModal
+      :is-opened="isOpenedCreateNewTask"
+      @close-modal="closeCreateNewTask"
+    />
   </div>
 </template>
 
@@ -176,6 +183,7 @@ import useTagsStore from '@Store/tags/tagsStore'
 import { watchImmediate } from '@vueuse/core'
 import { Tag } from '@Domain/Tag'
 import Typography from '@Components/Typography/Typography.vue'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
@@ -214,6 +222,15 @@ const filters: Filter<Task>[] = [
     checkFilter: () => true,
   },
 ]
+const isOpenedCreateNewTask = ref(false)
+
+function openCreateNewTask() {
+  isOpenedCreateNewTask.value = true
+}
+
+function closeCreateNewTask() {
+  isOpenedCreateNewTask.value = false
+}
 
 const filteredAndSortedTasks = ref<Task[]>([...sortedInBackLogTasks.value])
 
@@ -248,7 +265,9 @@ function checkMove(evt: any) {
 
 function filtertTasks(tasks: Task[], filters: string[]): Task[] {
   if (filterByTags.value.length > 0) {
-    return tasks.filter((task) => filters.some((filter) => task.tag.name === filter))
+    return tasks.filter((task) =>
+      filters.some((filter) => task.tag.find(({ name }) => name === filter)),
+    )
   } else {
     return sortedInBackLogTasks.value
   }

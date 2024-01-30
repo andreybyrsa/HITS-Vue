@@ -98,7 +98,7 @@ export const tagsMocks: Tag[] = [
     id: '0',
     name: 'Фронтенд',
     color: '#0D6EFD',
-    confirmed: true,
+    confirmed: false,
   },
   {
     id: '1',
@@ -1142,7 +1142,7 @@ export const tasksMocks: Task[] = [
     startDate: '01.01.24',
     tag: [tagsMocks[0]],
     taskMovementLog: ['InBackLog'],
-    status: 'NewTask',
+    status: 'InBackLog',
   },
   {
     id: '1',
@@ -1157,7 +1157,7 @@ export const tasksMocks: Task[] = [
     startDate: '02.04.24',
     tag: [tagsMocks[1], tagsMocks[3]],
     taskMovementLog: ['InBackLog'],
-    status: 'NewTask',
+    status: 'InBackLog',
   },
   {
     id: '2',
@@ -1172,7 +1172,7 @@ export const tasksMocks: Task[] = [
     startDate: '01.01.24',
     tag: [tagsMocks[1], tagsMocks[2]],
     taskMovementLog: ['InBackLog'],
-    status: 'NewTask',
+    status: 'InBackLog',
   },
   {
     id: '3',
@@ -1187,7 +1187,7 @@ export const tasksMocks: Task[] = [
     startDate: '01.01.24',
     tag: [tagsMocks[0], tagsMocks[2]],
     taskMovementLog: ['InBackLog'],
-    status: 'NewTask',
+    status: 'InBackLog',
   },
   {
     id: '4',
@@ -1202,7 +1202,7 @@ export const tasksMocks: Task[] = [
     startDate: '02.04.24',
     tag: [tagsMocks[1], tagsMocks[3]],
     taskMovementLog: ['InBackLog'],
-    status: 'OnModification',
+    status: 'InBackLog',
   },
   {
     id: '5',
@@ -1217,7 +1217,7 @@ export const tasksMocks: Task[] = [
     startDate: '01.01.24',
     tag: [tagsMocks[1], tagsMocks[2]],
     taskMovementLog: ['InBackLog'],
-    status: 'OnModification',
+    status: 'InBackLog',
   },
   {
     id: '6',
@@ -1232,7 +1232,7 @@ export const tasksMocks: Task[] = [
     startDate: '01.01.24',
     tag: [tagsMocks[0]],
     taskMovementLog: ['InBackLog'],
-    status: 'inProgress',
+    status: 'InBackLog',
   },
   {
     id: '7',
@@ -1247,7 +1247,7 @@ export const tasksMocks: Task[] = [
     startDate: '01.01.24',
     tag: [tagsMocks[1], tagsMocks[2]],
     taskMovementLog: ['InBackLog'],
-    status: 'inProgress',
+    status: 'InBackLog',
   },
   {
     id: '8',
@@ -1262,7 +1262,7 @@ export const tasksMocks: Task[] = [
     startDate: '02.04.24',
     tag: [tagsMocks[1], tagsMocks[3]],
     taskMovementLog: ['InBackLog'],
-    status: 'OnVerification',
+    status: 'InBackLog',
   },
   {
     id: '9',
@@ -1277,7 +1277,7 @@ export const tasksMocks: Task[] = [
     startDate: '01.01.24',
     tag: [tagsMocks[0]],
     taskMovementLog: ['InBackLog'],
-    status: 'Done',
+    status: 'InBackLog',
   },
   {
     id: '10',
@@ -1292,7 +1292,7 @@ export const tasksMocks: Task[] = [
     startDate: '02.04.24',
     tag: [tagsMocks[1], tagsMocks[3]],
     taskMovementLog: ['InBackLog'],
-    status: 'Done',
+    status: 'InBackLog',
   },
   {
     id: '11',
@@ -1307,7 +1307,7 @@ export const tasksMocks: Task[] = [
     startDate: '01.01.24',
     tag: [tagsMocks[1], tagsMocks[2]],
     taskMovementLog: ['InBackLog'],
-    status: 'Done',
+    status: 'InBackLog',
   },
   {
     id: '12',
@@ -1322,21 +1322,7 @@ export const tasksMocks: Task[] = [
     startDate: '01.01.24',
     tag: [tagsMocks[0], tagsMocks[2]],
     taskMovementLog: ['InBackLog'],
-    status: 'Done',
-  },
-  {
-    id: '54554655',
-    projectId: '0',
-    position: 4,
-    name: 'Важная штука',
-    description: 'Ну очень важная штука',
-    initiator: usersMocks[0],
-    executor: usersMocks[0],
-    workHour: '2ч',
-    startDate: '06.01.22',
-    tag: [tagsMocks[1]],
-    taskMovementLog: ['InBackLog', 'NewTask'],
-    status: 'NewTask',
+    status: 'InBackLog',
   },
   {
     id: '965345',
