@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex gap-3">
+  <div class="d-flex gap-3 mt-4">
     <div class="w-100">
       <draggable
         class="list-group rounded-3"

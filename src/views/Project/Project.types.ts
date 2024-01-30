@@ -6,8 +6,8 @@ interface ProjectProps {
   tasks?: Task[]
 }
 
-// interface elemKanbanProps {
+interface ActiveSprintProps {
+  sprint: Sprint
+}
 
-// }
-
-export { ProjectProps }
+export { ProjectProps, ActiveSprintProps }

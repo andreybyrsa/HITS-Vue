@@ -37,6 +37,7 @@ const route = useRoute()
 
 const project = ref<Project>()
 const sprints = ref<Sprint[]>()
+const activeSprint = ref<Sprint>()
 const tasks = ref<Task[]>()
 const tags = ref<Tag[]>()
 const isLoading = ref(false)
@@ -81,6 +82,11 @@ async function getProject() {
         refValue: tags,
         onErrorFunc: openErrorNotification,
       },
+      {
+        request: () => sprintsStore.getActiveSprint(projectId, token),
+        refValue: activeSprint,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
     await sendParallelRequests(ideasMarketParallelRequests)
@@ -105,7 +111,7 @@ async function getProject() {
 
     <template #content>
       <div
-        class="p-4"
+        class="p-4 h-100"
         v-if="!isLoading && project"
       >
         <ProjectHeader :project="project" />
