@@ -24,9 +24,12 @@ import {
 } from '@Utils/sendParallelRequests'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
+import { Tag } from '@Domain/Tag'
+import useTagsStore from '@Store/tags/tagsStore'
 
 const sprintsStore = useSprintsStore()
 const tasksStore = useTasksStore()
+const tagsStore = useTagsStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -36,6 +39,7 @@ const route = useRoute()
 const project = ref<Project>()
 const sprints = ref<Sprint[]>()
 const tasks = ref<Task[]>()
+const tags = ref<Tag[]>()
 const isLoading = ref(false)
 
 watchImmediate(
@@ -71,6 +75,11 @@ async function getProject() {
       {
         request: () => tasksStore.getAllTasks(projectId, token),
         refValue: tasks,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => tagsStore.getAllTags(token),
+        refValue: tags,
         onErrorFunc: openErrorNotification,
       },
     ]

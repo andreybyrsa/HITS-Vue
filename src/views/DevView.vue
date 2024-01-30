@@ -21,6 +21,13 @@ import useUserStore from '@Store/user/userStore'
 import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
 import ProjectInfo from './Project/ProjectInfo.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+
+import useTagsStore from '@Store/tags/tagsStore'
+import TagsService from '@Services/TagsService'
+
+const tagsStore = useTagsStore()
+const { tags } = storeToRefs(tagsStore)
+
 const router = useRouter()
 
 onMounted(async () => {
@@ -30,6 +37,7 @@ onMounted(async () => {
     const { token } = currentUser
 
     await TeamService.getTeams(token)
+    const currentTags = await TagsService.getAllTags(token)
   }
 })
 
@@ -79,6 +87,7 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
       <!-- <ProjectInfo :is-opened="true"> </ProjectInfo>
       <router-view></router-view> -->
       <TaskModal :is-opened="true"></TaskModal>
+      <!-- <ProjectInfo :is-opened="true"> </ProjectInfo> -->
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>

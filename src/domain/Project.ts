@@ -59,6 +59,7 @@ interface Task {
   id: string
   sprintId?: string
   projectId: string
+  position: number
   name: string
   description: string
 

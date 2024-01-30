@@ -7,9 +7,14 @@ import { ProjectProps } from '@Views/Project/Project.types'
 
 import AboutProjectPage from '@Views/Project/AboutProjectPage.vue'
 import SprintsListPage from '@Views/Project/SprintsListPage.vue'
+import ActiveSprint from '@Views/Project/ActiveSprint.vue'
 
+import useSprintsStore from '@Store/sprints/sprintsStore'
 import useUserStore from '@Store/user/userStore'
 import BacklogPage from './BacklogPage.vue'
+
+const sprintsStore = useSprintsStore()
+const { sprints } = storeToRefs(sprintsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -26,6 +31,8 @@ watchImmediate(
   (role) => {
     if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
       return switchToTabAboutProject()
+    } else if (sprints.value.find(({ status }) => status === 'ACTIVE')) {
+      return switchToTabSprint()
     } else return switchToTabSprints()
   },
 )
@@ -120,7 +127,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
       v-if="isTabActiveSprint"
       class="content-dev"
     >
-      Активный спринт
+      <ActiveSprint />
     </div>
   </div>
 </template>

@@ -5,6 +5,9 @@ import { tasksMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { Task } from '@Domain/Project'
+import axios from 'axios'
+import { develop } from '@Assets/images'
+import { MODE } from '@Main'
 
 const tasksMocksAxios = defineAxios(tasksMocks)
 
@@ -33,8 +36,35 @@ const getAllTasksProject = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения задач'))
 }
 
+const updateTasks = async (
+  tasks: Task[],
+  token: string,
+): Promise<Task[] | Error> => {
+  if (MODE == 'DEVELOPMENT') {
+    const mockTasks = tasksMocksAxios.getReactiveMocks()
+    console.log(mockTasks)
+
+    mockTasks.value.forEach((task) =>
+      tasks.find((newTask) => {
+        if (newTask.id === task.id) {
+          task.position = newTask.position
+        }
+      }),
+    )
+    console.log(mockTasks)
+  }
+  return axios
+    .put(`/task/update/}`, tasks, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования задач'))
+}
+
 const ProfileService = {
   getAllTasksProject,
+  updateTasks,
 }
 
 export default ProfileService

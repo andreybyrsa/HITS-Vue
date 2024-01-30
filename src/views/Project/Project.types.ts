@@ -6,4 +6,8 @@ interface ProjectProps {
   tasks?: Task[]
 }
 
+// interface elemKanbanProps {
+
+// }
+
 export { ProjectProps }

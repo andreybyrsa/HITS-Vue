@@ -1121,6 +1121,7 @@ export const tasksMocks: Task[] = [
   {
     id: '16463254',
     projectId: '0',
+    position: 1,
     name: 'Сделать беклог',
     description: 'Сверстать и написать логику для страници беклога',
     initiator: usersMocks[0],
@@ -1133,6 +1134,7 @@ export const tasksMocks: Task[] = [
   {
     id: '8635474',
     projectId: '0',
+    position: 2,
     name: 'Мерж веток',
     description: 'Смержить все старые ветки и удалить ненужные',
     initiator: usersMocks[1],
@@ -1145,6 +1147,7 @@ export const tasksMocks: Task[] = [
   {
     id: '0746576',
     projectId: '0',
+    position: 3,
     name: 'Микросервис авторизации',
     description: 'Создать отдельный сервис для авторизации пользователей',
     initiator: usersMocks[0],
@@ -1153,6 +1156,19 @@ export const tasksMocks: Task[] = [
     tag: tagsMocks[1],
     taskMovementLog: ['InBackLog'],
     status: 'InBackLog',
+  },
+  {
+    id: '54554655',
+    projectId: '0',
+    position: 4,
+    name: 'Важная штука',
+    description: 'Ну очень важная штука',
+    initiator: usersMocks[0],
+    workHour: '2ч',
+    startDate: '06.01.22',
+    tag: tagsMocks[1],
+    taskMovementLog: ['InBackLog', 'NewTask'],
+    status: 'NewTask',
   },
 ]
 

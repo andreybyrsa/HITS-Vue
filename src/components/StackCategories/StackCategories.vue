@@ -144,10 +144,6 @@ const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
           :multiselect-placeholder="category.multiselectPlaceholder"
           @add-new-option="(name) => handleAddNoConfirmedStack(name, category.key)"
         />
-        {{ category }}
-        <div>///</div>
-        {{ skills[category.key] }}
-
         <div
           v-if="checkIsChoosenSkills()"
           class="mt-2"
