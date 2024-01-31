@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import { Skill } from '@Domain/Skill'
@@ -142,6 +143,60 @@ const useProfilesStore = defineStore('profiles', {
           currentProfile.userTag = userTag
 
           userStore.setUser({ ...currentUser })
+        }
+      }
+    },
+
+    async updateVisibilityOfTag(
+      user: User,
+      userTelegram: UserTelegram,
+      token: string,
+    ) {
+      const userStore = useUserStore()
+      const { id: userId } = user
+      const { userTag, isVisible } = userTelegram
+
+      if (isVisible === true) {
+        const response = await ProfileService.updateVisibilityOfTag(
+          userTag,
+          true,
+          token,
+        )
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentProfile = this.profiles.find(({ id }) => id === userId)
+          const currentUser = userStore.user
+
+          if (currentProfile && currentUser) {
+            currentProfile.isUserTagVisible = isVisible
+
+            userStore.setUser({ ...currentUser })
+          }
+        }
+      } else {
+        const response = await ProfileService.updateVisibilityOfTag(
+          userTag,
+          false,
+          token,
+        )
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentProfile = this.profiles.find(({ id }) => id === userId)
+          const currentUser = userStore.user
+
+          if (currentProfile && currentUser) {
+            currentProfile.isUserTagVisible = isVisible
+
+            userStore.setUser({ ...currentUser })
+          }
         }
       }
     },

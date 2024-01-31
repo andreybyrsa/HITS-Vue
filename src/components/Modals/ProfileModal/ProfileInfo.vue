@@ -16,6 +16,7 @@ import useUserStore from '@Store/user/userStore'
 import useProfilesStore from '@Store/profiles/profilesStore'
 
 import Validation from '@Utils/Validation'
+import ProfileService from '@Services/ProfileService'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -40,8 +41,6 @@ const { setValues, handleSubmit } = useForm<User>({
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
-    userTag: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Неверно введен Телеграм-тег',
   },
 })
 
@@ -52,12 +51,13 @@ const handleEditUser = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+    const { userTag } = profile.value
 
     await profilesStore.updateUserFullName(values, token)
     isUpdatingUserName.value = false
     isUpdatingUserLastname.value = false
 
-    await profilesStore.updateUserTelegramTag(values, userTelegramTag.value, token)
+    await profilesStore.updateUserTelegramTag(values, userTag, token)
     isUpdatingUserTag.value = false
   }
 })
@@ -106,6 +106,19 @@ function getFormattedDate(date: string) {
     return formattedDate.value
   }
 }
+
+const changeTagVisible = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { userTag } = profile.value
+
+    await profilesStore.updateVisibilityOfTag(currentUser, userTag, token)
+  }
+}
+console.log(profile)
+console.log(changeTagVisible)
 </script>
 
 <template>
@@ -239,6 +252,25 @@ function getFormattedDate(date: string) {
           :disabled="!isUpdatingUserTag"
           validate-on-update
         />
+
+        <div v-if="profile?.isUserTagVisible === false && isUpdatingUserTag">
+          <Button
+            name="userTag"
+            class-name="rounded-end w-50 py-2"
+            variant="success"
+            @click="changeTagVisible"
+            >Отображать для других пользователей></Button
+          >
+        </div>
+        <div v-else-if="isUpdatingUserTag">
+          <Button
+            name="userTag"
+            class-name="rounded-end w-50 py-2"
+            variant="danger"
+            @click="changeTagVisible"
+            >Не отображать для других пользователей</Button
+          >
+        </div>
       </div>
 
       <div class="d-flex gap-1">
