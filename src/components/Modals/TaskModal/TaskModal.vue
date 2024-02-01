@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onUpdated, ref } from 'vue'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
@@ -23,6 +23,9 @@ import useUserStore from '@Store/user/userStore'
 import { useRoute } from 'vue-router'
 import useTasksStore from '@Store/tasks/tasksStore'
 import { Task } from '@Domain/Project'
+import Validation from '@Utils/Validation'
+import { useForm } from 'vee-validate'
+import notificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<CreateNewTaskProps>()
 
@@ -40,6 +43,10 @@ const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
 const route = useRoute()
+
+const taskModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
+const isCreating = ref(false)
+const isUpdating = ref(false)
 
 const nameTask = ref('')
 const descriptionTask = ref('')
@@ -75,6 +82,44 @@ async function createTask() {
     emit('close-modal')
   }
 }
+
+onUpdated(async () => {
+  if (props.isOpened && props.task) {
+    taskModalMode.value = 'UPDATE'
+    setValues({ ...props.task })
+  } else if (props.isOpened && !props.task) {
+    taskModalMode.value = 'CREATE'
+  }
+})
+
+const { handleSubmit, setValues } = useForm<Task>({
+  validationSchema: {
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Введите название задачи',
+    description: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Введите описисание задачи',
+    workHour: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Введите число',
+  },
+})
+const handleCreateTask = handleSubmit(async (values) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    isCreating.value = true
+    const response = await TasksService.createTask(values, token)
+    isCreating.value = false
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    tasks.value.push(response)
+    emit('close-modal')
+  }
+})
 </script>
 
 <template>
