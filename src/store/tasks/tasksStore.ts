@@ -76,13 +76,11 @@ const useTasksStore = defineStore('tasks', {
     },
     async createTask(task: Task, token: string) {
       const response = await TaskService.createTask(task, token)
-      console.log(task)
-      console.log(response)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        this.tasks.push(task)
+        this.tasks.push(response)
       }
     },
   },

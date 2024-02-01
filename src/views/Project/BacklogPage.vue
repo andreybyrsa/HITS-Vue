@@ -70,12 +70,16 @@
         </template>
       </draggable>
 
+      {{ filteredAndSortedTasks }}
+
       <div>
         <Button
-          class-name="collapse-controller px-0 py-2 fs-4 fw-bold border-0"
+          class-name="collapse-controller px-0 py-2 fw-bold border-0"
           v-collapse="'taskCollapse'"
-          >Другие задачи</Button
         >
+          <Typography class-name="fs-4">Другие задачи </Typography>
+          <Icon class-name="bi bi-chevron-down fs-3 fw-bold mt-2" />
+        </Button>
 
         <Collapse id="taskCollapse">
           <div
@@ -196,15 +200,21 @@ const { user } = storeToRefs(userStore)
 const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
-const inBackLogTasks = ref<Task[]>(
-  tasks.value.filter((task) => task.status === 'InBackLog'),
-)
+const inBackLogTasks = computed<Task[]>(() => {
+  return tasks.value.filter((task) => task.status === 'InBackLog')
+})
 
-const otherTasks = ref<Task[]>(sortOtherTasks(tasks.value))
+const otherTasks = computed<Task[]>(() => {
+  return sortOtherTasks(tasks.value)
+})
 
-const sortedInBackLogTasks = ref<Task[]>(
-  inBackLogTasks.value.sort((a, b) => a.position - b.position),
-)
+const sortedInBackLogTasks = computed<Task[]>(() => {
+  const currentSortedTasks = [...inBackLogTasks.value].sort(
+    (a, b) => a.position - b.position,
+  )
+
+  return currentSortedTasks
+})
 
 const filterByTags = ref<string[]>([])
 const searchByTags = ref('')
@@ -232,7 +242,9 @@ function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
 }
 
-const filteredAndSortedTasks = ref<Task[]>([...sortedInBackLogTasks.value])
+const filteredAndSortedTasks = computed<Task[]>(() => {
+  return [...sortedInBackLogTasks.value]
+})
 
 const compfilteredAndSortedTasks = computed(() => {
   const tasks = filtertTasks(sortedInBackLogTasks.value, filterByTags.value)
@@ -328,7 +340,7 @@ function sortOtherTasks(tasks: Task[]): Task[] {
   border-bottom: 0;
   background-color: $white-color;
 
-  @include flexible(center, flex-start);
+  @include flexible(center, flex-start, $gap: 24px);
 }
 
 .header {
