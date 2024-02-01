@@ -1,9 +1,7 @@
-<!-- eslint-disable vue/no-parsing-error -->
 <script lang="ts" setup>
-import { onUpdated, ref } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDateFormat } from '@vueuse/core'
-import { useForm } from 'vee-validate'
 
 import {
   SprintModalProps,
@@ -14,15 +12,17 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
+import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { Sprint } from '@Domain/Project'
-import draggable from 'vuedraggable'
 import { getProjectStatus, getProjectStatusStyle } from '@Utils/getProjectStatus'
 
 import useUserStore from '@Store/user/userStore'
-import sprintsStore from '@Store/projects/projectsStore'
+import useTasksStore from '@Store/tasks/tasksStore'
+import SprintsListPage from '@Views/Project/SprintsListPage.vue'
+
+import BurndownChart from './BurndownChart.vue'
 
 function getFormattedDate(date: string) {
   if (date) {
@@ -33,6 +33,13 @@ function getFormattedDate(date: string) {
   }
 }
 
+// onMounted(async () => {
+//   await passTasks.value = props.sprint.tasks.filter(
+//     (task) => task.status === 'Done',
+//   ).length
+//   allTasks.value = props.sprint.tasks.length
+// })
+
 const props = defineProps<SprintModalProps>()
 const emit = defineEmits<SprintModalEmits>()
 
@@ -41,28 +48,7 @@ const { user } = storeToRefs(userStore)
 
 const isLoading = ref(false)
 
-const taskList = ref([
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Фронтенд', color: '#cd1d1d' },
-    id: 1,
-  },
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Бэкенд', color: '#279b74' },
-    id: 2,
-  },
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Фронтенд', color: '#cd1d1d' },
-    id: 3,
-  },
-  {
-    name: 'Сделать перевод идей с командами в список проектов ',
-    tag: { name: 'Бэкенд', color: '#279b74' },
-    id: 4,
-  },
-])
+const tasks = storeToRefs(useTasksStore())
 </script>
 
 <template>
@@ -86,7 +72,7 @@ const taskList = ref([
           {{ getProjectStatus().translatedStatus[sprint.status] }}
         </div>
         <Typography class-name="text-primary">Общие часы работы:</Typography>
-        {{ sprint?.workingHours }}ч
+        {{ sprint?.workingHours }} ч.
       </div>
       <ul class="list-group rounded-3">
         <li class="list-group-item p-0 overflow-hidden">
@@ -106,55 +92,26 @@ const taskList = ref([
       <div class="my-2 d-flex gap-2 w-100">
         <div class="w-100">
           <Typography class-name="text-primary">Начало спринта:</Typography>
-          <Button
-            variant="light"
-            class-name="border w-100"
-            >{{ getFormattedDate(sprint?.startDate) }}</Button
-          >
+          <Button class-name="border w-100">{{
+            getFormattedDate(sprint?.startDate)
+          }}</Button>
         </div>
         <div class="w-100">
           <Typography class-name="text-primary">Конец спринта:</Typography>
-          <Button
-            variant="light"
-            class-name="border w-100"
-            >{{ getFormattedDate(sprint?.finishDate) }}</Button
-          >
+          <Button class-name="border w-100">{{
+            getFormattedDate(sprint?.finishDate)
+          }}</Button>
         </div>
       </div>
-      <ul class="list-group rounded-3">
-        <li class="list-group-item p-0 overflow-hidden">
-          <Button
-            variant="light"
-            class-name="collapse-controller w-100"
-            v-collapse:openOnMount="`${sprint?.id}--task-list`"
-          >
-            Список задач:
-          </Button>
-          <Collapse :id="`${sprint?.id}--task-list`">
-            <template
-              v-for="(task, index) in taskList"
-              :key="index"
-            >
-              <div class="my-2 mx-2 p-2 border rounded">
-                <div class="active-sprint__task">
-                  <Typography>{{ task.name }}</Typography>
-                </div>
-                <div class="d-flex gap-2">
-                  <Icon
-                    :style="{ color: task.tag.color }"
-                    class-name="bi bi-circle-fill fs-6"
-                  />
-                  <Typography>{{ task.tag.name }}</Typography>
-                </div>
-              </div>
-            </template>
-          </Collapse>
-        </li>
-      </ul>
+      <div>
+        <Typography class-name="text-primary">Сгорающая диаграмма:</Typography>
+      </div>
+      <div>
+        <BurndownChart :sprint="sprint" />
+      </div>
     </div>
   </ModalLayout>
 </template>
-
 <style lang="scss" scoped>
 .sprint-modal {
   width: 75ex;
