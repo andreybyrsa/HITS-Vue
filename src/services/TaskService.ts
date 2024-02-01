@@ -59,6 +59,7 @@ const changeExecutorTask = async (
 const changeTaskStatus = async (
   taskId: string,
   status: TaskStatus,
+  newStatusLog: TaskStatus[],
   token: string,
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
@@ -70,7 +71,7 @@ const changeTaskStatus = async (
       },
       {
         params: { id: taskId },
-        requestData: { status: status },
+        requestData: { status: status, taskMovementLog: newStatusLog },
       },
     )
     .then((response) => response.data)
