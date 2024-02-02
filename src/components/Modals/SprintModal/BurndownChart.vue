@@ -141,6 +141,22 @@ const tasksProp = computed(() => {
 })
 
 const completedTasks = tasksProp.value.filter((task) => task.status.includes('Done'))
+const comlitedTasksByDate = computed(() => {
+  const datesArray = SimpleArrayOfDates.value
+  const tasks = prop1.sprint.tasks
+  let sortTasks = []
+
+  for (let i = 0; i < datesArray.length; i++) {
+    let counter = 0
+    for (let j = 0; j < tasks.length; j++) {
+      if (tasks[j].finishDate === datesArray[i]) {
+        counter++
+      }
+    }
+    sortTasks.push(counter)
+  }
+  return sortTasks
+})
 
 const factLineColor = computed(() => {
   const completedTasksArray = getArrayCompleteTasksByDate(
@@ -151,7 +167,7 @@ const factLineColor = computed(() => {
     (value, index) => value > PlanLine.value[index],
   ).length
 
-  return abovePlanCount > completedTasksArray.length / 2 ? '#FF0000' : '#00FF00'
+  return abovePlanCount > completedTasksArray.length / 2 ? '#DC3545' : '#13A63A'
 })
 
 const data: ApexOptions = {
@@ -163,7 +179,6 @@ const data: ApexOptions = {
     zoom: {
       enabled: false,
     },
-    offsetX: 20,
   },
   grid: {
     show: true,
@@ -184,6 +199,9 @@ const data: ApexOptions = {
   xaxis: {
     categories: ArrayOfDates.value,
     offsetX: 5,
+    tooltip: {
+      enabled: false,
+    },
   },
   yaxis: {
     show: false,
@@ -193,28 +211,78 @@ const data: ApexOptions = {
   },
   series: [
     {
+      name: 'Количество выполненных задач за день',
+      type: 'column',
+      data: comlitedTasksByDate.value,
+      color: '#ffa800',
+      zIndex: 0,
+    },
+    {
       name: 'План',
+      type: 'line',
       data: PlanLine.value,
+      color: '#0D6DFD',
+      zIndex: 1,
     },
     {
       name: 'Факт',
+      type: 'line',
       data: getArrayCompleteTasksByDate(completedTasks, SimpleArrayOfDates.value),
       color: factLineColor.value,
+      zIndex: 2,
     },
   ],
   markers: {
-    size: [4, 7],
+    size: [7, 4],
+    radius: 14,
   },
   tooltip: {
     enabled: true,
+    intersect: true,
+    shared: false,
+
     custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+      // Получаем значения для каждого ряда данных
+      // const dateValue = w.globals.categories[seriesIndex][dataPointIndex]
+
+      // Создаем HTML-разметку для всплывающей подсказки
       return (
-        '<div class="apexcharts-tooltip apexcharts-theme-light">' +
+        '<div class="arrow_box">' +
         '<span>' +
-        series[seriesIndex][dataPointIndex] +
+        Math.round(series[seriesIndex][dataPointIndex]) +
         '</span>' +
         '</div>'
       )
+      // return (
+      // '<div class="apexcharts-tooltip apexcharts-theme-light">' +
+      // '<div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">' +
+      // // dateValue +
+      // '</div>' +
+      // '<div class="apexcharts-tooltip-series-group apexcharts-active" style="order: 1; display: flex;">' +
+      // '<span class="apexcharts-tooltip-marker" style="background-color: rgb(220, 53, 69);"></span>' +
+      // '<div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">' +
+      // '<div class="apexcharts-tooltip-y-group">' +
+      // '<span class="apexcharts-tooltip-text-y-label">Факт: </span>' +
+      // '<span class="apexcharts-tooltip-text-y-value">' +
+      // series[seriesIndex][dataPointIndex] +
+      // '</span>' +
+      // '</div>' +
+      // '<div class="apexcharts-tooltip-goals-group">' +
+      // '<span class="apexcharts-tooltip-text-goals-label">План: </span>' +
+      // '<span class="apexcharts-tooltip-text-goals-value">' +
+      // series[seriesIndex][dataPointIndex] +
+      // '</span>' +
+      // '</div>' +
+      // '<div class="apexcharts-tooltip-z-group">' +
+      // '<span class="apexcharts-tooltip-text-z-label">Колонка: </span>' +
+      // '<span class="apexcharts-tooltip-text-z-value">' +
+      // series[seriesIndex][dataPointIndex] +
+      // '</span>' +
+      // '</div>' +
+      // '</div>' +
+      // '</div>' +
+      // '</div>'
+      // )
     },
   },
 }
@@ -223,7 +291,7 @@ const data: ApexOptions = {
 <template>
   <div class="example">
     <VueApexCharts
-      width="500"
+      width="570"
       type="line"
       :options="data"
       :series="data.series"
