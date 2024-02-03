@@ -31,6 +31,8 @@ import {
   RequestConfig,
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
+import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
 
 const props = defineProps<IdeaMarketModalProps>()
 
@@ -42,12 +44,14 @@ const { user } = storeToRefs(userStore)
 const ideasMarketStore = useIdeasMarketStore()
 const requestsToIdeaStore = useRequestsToIdeaStore()
 const ideaMarketAdvertisementsStore = useIdeaMarketAdvertisementsStore()
+const invitationTeamsToIdeaStore = useInvitationsTeamToIdeaStore()
 
 const route = useRoute()
 const router = useRouter()
 
 const ideaMarket = ref<IdeaMarket>()
 const requestTeams = ref<RequestTeamToIdea[]>([])
+const invitationTeamToIdea = ref<InvitationTeamToIdea[]>([])
 const ownerTeams = ref<Team[]>([])
 const market = ref<Market>()
 const ideaMarketAdvertisements = ref<IdeaMarketAdvertisement[]>()
@@ -75,6 +79,13 @@ onMounted(async () => {
         request: () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId, token),
         refValue: requestTeams,
         statement: role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () =>
+          invitationTeamsToIdeaStore.getIdeaInvitations(ideaMarketId, token),
+        refValue: invitationTeamToIdea,
+        statement: role === 'INITIATOR',
         onErrorFunc: openErrorNotification,
       },
       {
@@ -155,6 +166,7 @@ function getAccessToTables() {
           v-if="getAccessToTables()"
           :idea-market="ideaMarket"
           :request-teams="requestTeams"
+          :invitationsToTeams="invitationTeamToIdea"
           v-model:skillsRequestTeam="skillsRequestTeam"
           v-model:skillsAcceptedTeam="skillsAcceptedTeam"
         />

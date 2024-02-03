@@ -20,6 +20,7 @@ import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember, Sprint, Task } from '@Domain/Project'
 import { Tag } from '@Domain/Tag'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 export const usersMocks: User[] = [
   {
@@ -83,14 +84,6 @@ export const usersMocks: User[] = [
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
   },
-  // {
-  //   id: '6',
-  //   token: '6745354',
-  //   email: '6@mail.com',
-  //   firstName: 'Дмитрий',
-  //   lastName: 'Амонов',
-  //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-  // },
 ]
 
 export const tagsMocks: Tag[] = [
@@ -293,13 +286,13 @@ export const teamsMocks: Team[] = [
     id: '0',
     name: 'Визитка',
     closed: true,
-    hasActiveProject: true,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
     membersCount: 4,
-    owner: teamMembersMocks[0],
-    leader: teamMembersMocks[0],
+    owner: teamMembersMocks[1],
+    leader: teamMembersMocks[1],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
@@ -348,12 +341,12 @@ export const ideasMarketMocks: IdeaMarket[] = [
   {
     id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
     initiator: {
-      id: '1',
-      email: 'barbakovom@tyuiu.ru',
-      lastName: 'Барбаков',
-      firstName: 'Олег',
+      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+      email: 'kirill.vlasov.05@inbox.ru',
+      lastName: 'Кирилл',
+      firstName: 'Власов',
     } as User,
-    team: teamsMocks[0],
+    team: null,
     marketId: '201',
     name: 'Цифровой помощник сотрудника приемной комиссии университета',
     problem: 'null',
@@ -396,7 +389,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
         confirmed: true,
       },
     ],
-    status: 'PROJECT',
+    status: 'RECRUITMENT_IS_OPEN',
     requests: 0,
     acceptedRequests: 0,
     isFavorite: false,
@@ -596,7 +589,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   {
     id: 'hfdnmkdfg-45678ejhdf-dhfc383-3456787654',
     initiator: usersMocks[0],
-    team: teamsMocks[0],
+    team: null,
     marketId: '201',
     name: 'Идея для проверки',
     problem: 'null',
@@ -640,7 +633,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
         confirmed: true,
       },
     ],
-    status: 'RECRUITMENT_IS_CLOSED',
+    status: 'RECRUITMENT_IS_OPEN',
     requests: 0,
     acceptedRequests: 0,
     isFavorite: false,
@@ -1855,5 +1848,32 @@ export const profilesMocks: Profile[] = [
     ideas: [ideasMocks[0], ideasMocks[1]],
     teamsExperience: teamsExperienceMocks,
     teamsProjects: teamsProjectsMocks,
+  },
+]
+
+export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
+  {
+    ideaMarketId: ideasMarketMocks[0].id,
+    ideaMarketName: ideasMarketMocks[0].name,
+    status: 'NEW',
+    teamId: teamsMocks[0].id,
+    initiatorId: ideasMarketMocks[0].initiator.id,
+    marketId: marketMocks[1].id,
+    id: '245vs-d52ff-d4sd-2s',
+    name: teamsMocks[0].name,
+    membersCount: teamsMocks[0].membersCount,
+    skills: ideasMarketMocks[0].stack,
+  },
+  {
+    ideaMarketId: ideasMarketMocks[1].id,
+    ideaMarketName: ideasMarketMocks[1].name,
+    status: 'NEW',
+    teamId: teamsMocks[1].id,
+    initiatorId: ideasMarketMocks[1].initiator.id,
+    marketId: marketMocks[1].id,
+    id: '245vs-d52ff-d4sd-2s1',
+    name: teamsMocks[1].name,
+    membersCount: teamsMocks[1].membersCount,
+    skills: ideasMarketMocks[1].stack,
   },
 ]

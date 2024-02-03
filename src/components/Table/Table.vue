@@ -403,7 +403,14 @@ function checkHeaderButtonStatement(statement?: boolean) {
                           :class="getDropdownActionStyle(button.className)"
                           @click="button.click(row)"
                         >
-                          {{ button.label }}
+                          {{
+                            checkDropdownActionStatement(
+                              row,
+                              button.statementLabel,
+                            ) && button.statementLabel
+                              ? button.beforeLabel
+                              : button.label
+                          }}
                         </li>
                       </template>
                     </ul>
