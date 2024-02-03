@@ -3,6 +3,7 @@ import {
   InvitationTeamToIdeaStatus,
 } from '@Domain/InvitationTeamToIdea'
 import Success from '@Domain/ResponseMessage'
+import { MODE } from '@Main'
 import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
@@ -146,6 +147,17 @@ const putInvitationForTeamToIdea = async (
   status: InvitationTeamToIdeaStatus,
   token: string,
 ): Promise<Success | Error> => {
+  if (MODE === 'DEVELOPMENT') {
+    if (status === 'ACCEPTED') {
+      invitationTeamToIdeaMocks.forEach((invitation) => {
+        if (invitation.id === invitationId) {
+          invitation.status = status
+        }
+        invitation.status = 'ANNULLED'
+      })
+    }
+  }
+
   return invitationTeamToIdeaAxios
     .putNoRequestBody<Success | Error>(
       `/invitation/${invitationId}`, // FIX ROUTE

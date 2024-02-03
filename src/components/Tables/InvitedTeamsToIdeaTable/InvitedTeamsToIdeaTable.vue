@@ -21,15 +21,14 @@ import { getSkillInfoStyle } from '@Utils/skillsInfo'
 import { Skill } from '@Domain/Skill'
 import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
 
-const props = defineProps<InvitedTeamsToIdeaTableProps>()
+defineProps<InvitedTeamsToIdeaTableProps>()
 const selectedTeam = defineModel<InvitationTeamToIdea[]>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const invitationTeamsToIdeaStore = useInvitationsTeamToIdeaStore()
-
-const invitationTeamToIdea = ref<InvitationTeamToIdea[]>([])
+const { ideaInvitations } = storeToRefs(invitationTeamsToIdeaStore)
 const currentInvitationToIdea = ref<InvitationTeamToIdea | null>(null)
 
 const selectedInvitation = ref<InvitationTeamToIdea[]>([])
@@ -39,13 +38,6 @@ const router = useRouter()
 const requestsToTeamStatus = getJoinStatus()
 
 const isOpenedCancelModal = ref(false)
-
-watchImmediate(
-  () => props.invitations,
-  (invitations) => {
-    invitationTeamToIdea.value = invitations
-  },
-)
 
 watchImmediate(
   () => selectedInvitation.value,
@@ -152,7 +144,7 @@ async function cancelRequestToIdea(invitationToIdea: InvitationTeamToIdea | null
 <template>
   <Table
     class-name="px-3 pb-3 pt-1"
-    :data="invitationTeamToIdea"
+    :data="ideaInvitations"
     :columns="requestToInvitationColumns"
     :dropdown-actions-menu="dropdownRequestActions"
     :search-by="['name']"

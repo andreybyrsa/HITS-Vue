@@ -33,8 +33,8 @@ const { user } = storeToRefs(userStore)
 const ideasMarketStore = useIdeasMarketStore()
 
 const invitationTeamsToIdeaStore = useInvitationsTeamToIdeaStore()
+const { ideaInvitations } = storeToRefs(invitationTeamsToIdeaStore)
 
-const invitationTeamToIdea = ref<InvitationTeamToIdea[]>([])
 const currentInvitationToIdea = ref<InvitationTeamToIdea | null>(null)
 
 const selectedInvitation = ref<InvitationTeamToIdea[]>([])
@@ -43,13 +43,6 @@ const requestsToTeamStatus = getJoinStatus()
 
 const isOpenedConfirmModal = ref(false)
 const isOpenedRevokeModal = ref(false)
-
-watchImmediate(
-  () => props.invitations,
-  (invitations) => {
-    invitationTeamToIdea.value = invitations
-  },
-)
 
 watchImmediate(
   () => selectedInvitation.value,
@@ -187,7 +180,7 @@ async function handleRevokeInvitationToIdea(
 <template>
   <Table
     class-name="px-3 pb-3 pt-1"
-    :data="invitationTeamToIdea"
+    :data="ideaInvitations"
     :columns="requestToInvitationColumns"
     :dropdown-actions-menu="dropdownRequestActions"
     :search-by="['name']"

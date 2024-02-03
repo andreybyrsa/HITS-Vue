@@ -157,6 +157,7 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
         if (status === 'ACCEPTED') {
           this.ideaInvitations.forEach((invite) => {
             if (invite.status === 'NEW') {
+              console.log(invite.name, invite.id)
               invite.status = 'ANNULLED'
             }
           })
