@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
+import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
 
 import { ActiveSprintProps } from '@Views/Project/Project.types'
 
@@ -30,6 +31,15 @@ const { tasks } = storeToRefs(taskStore)
 
 const checkMyInProgressTask = ref(false)
 const isLoadingTaskData = ref(false)
+
+const isOpenedFinishSprintModal = ref(false)
+function closeFinishSprintModal() {
+  isOpenedFinishSprintModal.value = false
+}
+function openFinishSprintModal() {
+  isOpenedFinishSprintModal.value = true
+}
+
 const refValue = ref()
 
 const onModificationTask = reactiveComputed<Task[]>(() =>
@@ -180,7 +190,11 @@ function getFormattedDate(date: string) {
       </div>
       <div class="d-flex gap-2">
         <Button variant="primary">Новая задача</Button>
-        <Button variant="danger">Завершить спринт</Button>
+        <Button
+          @click="openFinishSprintModal"
+          variant="danger"
+          >Завершить спринт</Button
+        >
       </div>
     </div>
 
@@ -524,6 +538,12 @@ function getFormattedDate(date: string) {
         </draggable>
       </div>
     </div>
+    <FinishProjectModal
+      isFinishProject
+      :is-opened="isOpenedFinishSprintModal"
+      status="SPRINT"
+      @close-modal="closeFinishSprintModal"
+    />
   </div>
 </template>
 

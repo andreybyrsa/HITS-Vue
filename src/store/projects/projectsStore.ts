@@ -102,7 +102,12 @@ const useProjectsStore = defineStore('projects', {
             }
           }),
           logs: [],
-          report: '',
+          report: {
+            projectId: '',
+            marks: [],
+            report: '',
+          },
+
           startDate: currentDate,
           finishDate: '',
           status: 'ACTIVE',
@@ -160,8 +165,8 @@ const useProjectsStore = defineStore('projects', {
       } else {
         const currentProject = this.projects.find(({ id }) => id === projectId)
 
-        if (currentProject) {
-          currentProject.report = report
+        if (currentProject && currentProject.report) {
+          currentProject.report.report = report
         }
       }
     },

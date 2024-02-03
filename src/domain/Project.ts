@@ -1,6 +1,7 @@
 import { User } from '@Domain/User'
 import { Team } from '@Domain/Team'
 import { Tag } from '@Domain/Tag'
+import { ReportProject } from './ReportProjectMembers'
 
 type ProjectStatus = 'ACTIVE' | 'DONE'
 type ProjectMemberRole = 'INITIATOR' | 'TEAM_LEADER' | 'MEMBER'
@@ -23,7 +24,7 @@ interface Project {
   members: ProjectMember[]
 
   logs: TaskMovementLog[]
-  report: string
+  report: ReportProject
   startDate: string
   finishDate: string
   status: ProjectStatus

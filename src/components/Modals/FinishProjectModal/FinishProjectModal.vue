@@ -17,7 +17,7 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import useUserStore from '@Store/user/userStore'
 import ProjectService from '@Services/ProjectService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { AverageMark } from '@Domain/ReportProjectMembers'
+import { AverageMark, ReportProject } from '@Domain/ReportProjectMembers'
 
 import {
   getRoleProjectMember,
@@ -29,7 +29,7 @@ import {
   FinishProjectModalProps,
 } from '@Components/Modals/FinishProjectModal/FinishProjectModal.types'
 import useTasksStore from '@Store/tasks/tasksStore'
-import { Task } from '@Domain/Project'
+import { Project, Task } from '@Domain/Project'
 import useProjectsStore from '@Store/projects/projectsStore'
 import Validation from '@Utils/Validation'
 import useSprintsStore from '@Store/sprints/sprintsStore'
@@ -58,12 +58,18 @@ const { user } = storeToRefs(userStore)
 const route = useRoute()
 
 const averageMark = ref<AverageMark[]>([])
+const reportProject = ref<ReportProject[]>([])
+const project = ref<Project>()
 
 const projectStore = useProjectsStore()
 const sprintStore = useSprintsStore()
 
 onMounted(() => {
   if (props.isFinishProject) getAverageMark()
+})
+
+onMounted(() => {
+  if (props.isFinishProject) getProject()
 })
 
 async function getAverageMark() {
@@ -82,6 +88,25 @@ async function getAverageMark() {
     }
 
     averageMark.value = response
+  }
+}
+
+async function getProject() {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const projectId = route.params.id.toString()
+
+    const response = await ProjectService.getProject(projectId, token)
+
+    if (response instanceof Error) {
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        response.message,
+      )
+    }
+
+    project.value = response
   }
 }
 
@@ -193,10 +218,26 @@ function clickFunctionByStatus() {
   >
     <div class="finish-project-modal bg-white rounded p-3 w-1">
       <div class="finish-project-modal__header fs-2 w-100 border-2">
-        <Typography class-name="border-bottom text-primary fs-3 w-100">
-          {{ status === 'PROJECT' ? 'Завершение проекта' : 'Завершение спринта' }}
+        <Typography
+          v-if="status === 'PROJECT'"
+          class-name="border-bottom text-primary fs-3 w-100"
+        >
+          {{ 'Завершение проекта' }}
         </Typography>
 
+        <Typography
+          v-if="status === 'SPRINT'"
+          class-name="border-bottom text-primary fs-3 w-100"
+        >
+          {{ 'Завершение спринта' }}
+        </Typography>
+
+        <Typography
+          v-if="status === 'PROJECTINFO'"
+          class-name="border-bottom text-primary fs-3 w-100"
+        >
+          {{ 'Информация о проекте' }}
+        </Typography>
         <Button
           @click="emit('close-modal')"
           class-name="fs-5"
@@ -206,11 +247,15 @@ function clickFunctionByStatus() {
       <div class="d-flex w-100 gap-2 flex-column overflow-scroll">
         <div class="d-flex gap-3 text-primary w-100">
           <Typography class-name="w-25">{{
-            status === 'PROJECT' ? 'Средняя оценка' : 'Оценка'
+            status === 'PROJECT' || status === 'PROJECTINFO'
+              ? 'Средняя оценка'
+              : 'Оценка'
           }}</Typography>
 
           <Typography class-name="w-75">{{
-            status === 'PROJECT' ? 'Участник' : 'Статистика участника'
+            status === 'PROJECT' || status === 'PROJECTINFO'
+              ? 'Участник'
+              : 'Статистика участника'
           }}</Typography>
         </div>
         <div
@@ -219,7 +264,7 @@ function clickFunctionByStatus() {
           :key="index"
         >
           <div
-            v-if="status === 'PROJECT'"
+            v-if="status === 'PROJECT' || status === 'PROJECTINFO'"
             class="w-25 h-100"
           >
             <Input
@@ -228,6 +273,14 @@ function clickFunctionByStatus() {
               class-name="rounded finish-project-modal__input"
               placeholder="Оценка"
               v-model="member.mark"
+            />
+            <Input
+              v-if="status === 'PROJECTINFO'"
+              :name="member.id"
+              class-name="rounded finish-project-modal__input bg-transparent"
+              placeholder="Оценка"
+              v-model="member.mark"
+              disabled
             />
           </div>
 
@@ -245,7 +298,7 @@ function clickFunctionByStatus() {
           <ul class="list-group rounded-3 w-75">
             <li
               v-if="status === 'SPRINT'"
-              class="list-group-item p-0 overflow-hidden w-100 finish-project-modal__input"
+              class="list-group-item p-0 overflow-hidden w-100"
             >
               <Button
                 variant="light"
@@ -274,15 +327,19 @@ function clickFunctionByStatus() {
                       class="d-flex rounded-3 border p-2 mb-1 gap-2 justify-content-between w-100"
                     >
                       <div>{{ task.name }}</div>
-                      <div class="d-flex gap-1">
+                      <div
+                        v-for="(tag, index) in task.tag"
+                        :key="index"
+                        class="d-flex gap-1"
+                      >
                         <Icon
-                          :style="{ color: task.tag.color }"
+                          :style="{ color: tag.color }"
                           class="bi bi-circle-fill"
                         >
                         </Icon>
 
                         <Typography class-name="finish-project-modal__tag"
-                          >{{ task.tag.name }}
+                          >{{ tag.name }}
                         </Typography>
                       </div>
                     </div>
@@ -329,14 +386,25 @@ function clickFunctionByStatus() {
                     <div
                       class="d-flex gap-1 justify-content-between border rounded-3 m-1 p-2"
                     >
-                      <div>{{ task.name }}</div>
-                      <div class="d-flex gap-1">
-                        <Icon
-                          :style="{ color: task.tag.color }"
-                          class="bi bi-circle-fill"
+                      <div class="w-50">{{ task.name }}</div>
+                      <div
+                        class="w-50 d-flex justify-content-start gap-2 overflow-y-auto p-1"
+                      >
+                        <div
+                          v-for="(tag, index) in task.tag"
+                          :key="index"
+                          class="d-flex gap-1"
                         >
-                        </Icon>
-                        {{ task.tag.name }}
+                          <Icon
+                            :style="{ color: tag.color }"
+                            class="bi bi-circle-fill"
+                          >
+                          </Icon>
+
+                          <Typography class-name="finish-project-modal__tag"
+                            >{{ tag.name }}
+                          </Typography>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -350,6 +418,7 @@ function clickFunctionByStatus() {
       <div class="w-100">
         <div class="mb-2 text-primary">Отчет*</div>
         <Textarea
+          v-if="status === 'PROJECT' || status === 'SPRINT'"
           name="report"
           class-name="finish-project-modal__report rounded w-100"
           placeholder="Отчет"
@@ -358,6 +427,18 @@ function clickFunctionByStatus() {
         >
           Отчет
         </Textarea>
+        <div>
+          <Textarea
+            v-if="status === 'PROJECTINFO' && project"
+            name="report"
+            class-name="finish-project-modal__report rounded w-100 bg-transparent"
+            v-model="project.report.report"
+            validate-on-update
+            disabled
+          >
+            Отчет
+          </Textarea>
+        </div>
       </div>
 
       <div v-if="status === 'SPRINT'">
@@ -383,12 +464,22 @@ function clickFunctionByStatus() {
       </div>
 
       <Button
+        v-if="status === 'PROJECT'"
         @click="clickFunctionByStatus"
         :is-loading="isLoading"
         :disabled="isLoading"
         variant="primary"
       >
-        {{ status === 'PROJECT' ? 'Завершить проект' : 'Завершить спринт' }}
+        {{ 'Завершить проект' }}
+      </Button>
+      <Button
+        v-if="status === 'SPRINT'"
+        @click="clickFunctionByStatus"
+        :is-loading="isLoading"
+        :disabled="isLoading"
+        variant="primary"
+      >
+        {{ 'Завершить спринт' }}
       </Button>
     </div>
   </ModalLayout>

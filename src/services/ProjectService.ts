@@ -5,7 +5,7 @@ import { averageMarkMocks, projectMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { Project, ProjectStatus } from '@Domain/Project'
-import { AverageMark } from '@Domain/ReportProjectMembers'
+import { AverageMark, ReportProject } from '@Domain/ReportProjectMembers'
 import Success from '@Domain/ResponseMessage'
 import axios from 'axios'
 import { MODE } from '@Main'
@@ -28,6 +28,13 @@ function formatGetAverageMarkProject(
   projectId: string,
 ) {
   return averageMarkMocks.filter((mark) => mark.projectId === projectId)
+}
+
+function formatGetReportProject(
+  reportProjectMocks: ReportProject[],
+  projectId: string,
+) {
+  return reportProjectMocks.filter((report) => report.projectId === projectId)
 }
 
 // --- GET --- //
@@ -97,6 +104,26 @@ const getAverageMarkProject = async (
       handleAxiosError(error, 'Ошибка получения средней оценки за проект'),
     )
 }
+
+// const getReportProject = async (
+//   projectId: string,
+//   token: string,
+// ): Promise<ReportProject[] | Error> => {
+//   return reportProjectMocksAxios
+//     .get<ReportProject[]>(
+//       '/reportProject', // FIX ROUTE
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//       },
+//       {
+//         formatter: (reportProject) =>
+//           formatGetReportProject(reportProject, projectId),
+//       },
+//     )
+//     .then((response) => response.data)
+//     .catch((error) => handleAxiosError(error, 'Ошибка получения отчета за проект'))
+// }
 
 // --- POST --- //
 const convertIdeaToProject = async (

@@ -1,7 +1,7 @@
 interface FinishProjectModalProps {
   isOpened: boolean
   isFinishProject?: boolean
-  status: 'SPRINT' | 'PROJECT'
+  status: 'SPRINT' | 'PROJECT' | 'PROJECTINFO'
 }
 
 interface FinishProjectModalEmits {

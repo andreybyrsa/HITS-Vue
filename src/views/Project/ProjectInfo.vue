@@ -18,22 +18,20 @@ function getFormattedDate(date: string) {
 }
 
 const isOpenedFinishProjectModal = ref(false)
-const isOpenedFinishSprintModal = ref(false)
+const isOpenedProjectInfoModal = ref(false)
 
 function closeFinishProjectModal() {
   isOpenedFinishProjectModal.value = false
 }
-
 function openFinishProjectModal() {
   isOpenedFinishProjectModal.value = true
 }
 
-function closeFinishSprintModal() {
-  isOpenedFinishSprintModal.value = false
+function closeProjectInfoModal() {
+  isOpenedProjectInfoModal.value = false
 }
-
-function openFinishSprintModal() {
-  isOpenedFinishSprintModal.value = true
+function openProjectInfoModal() {
+  isOpenedProjectInfoModal.value = true
 }
 
 function getContentTab(header: string) {
@@ -77,16 +75,18 @@ function getContentTab(header: string) {
           >Перейти в идею</Button
         >
         <Button
+          v-if="props.project.status === 'ACTIVE'"
           @click="openFinishProjectModal"
           variant="danger"
           class-name="w-100 mt-2"
           >Завершить проект</Button
         >
         <Button
-          @click="openFinishSprintModal"
-          variant="danger"
+          v-if="props.project.status === 'DONE'"
+          @click="openProjectInfoModal"
+          variant="primary"
           class-name="w-100 mt-2"
-          >Завершить спринт</Button
+          >Информация о проекте</Button
         >
       </div>
     </div>
@@ -98,9 +98,9 @@ function getContentTab(header: string) {
     />
     <FinishProjectModal
       isFinishProject
-      :is-opened="isOpenedFinishSprintModal"
-      status="SPRINT"
-      @close-modal="closeFinishSprintModal"
+      :is-opened="isOpenedProjectInfoModal"
+      status="PROJECTINFO"
+      @close-modal="closeProjectInfoModal"
     />
   </div>
 </template>
