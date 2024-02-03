@@ -22,6 +22,13 @@ function filterInvitations(invitations: InvitationTeamToIdea[]) {
   return invitations
 }
 
+function filterInvitationsByInitiator(
+  invitations: InvitationTeamToIdea[],
+  userId: string,
+) {
+  return invitations.filter(({ initiatorId }) => initiatorId === userId)
+}
+
 function filterTeamInvitations(invitations: InvitationTeamToIdea[], teamId: string) {
   return invitations.filter((invitation) => invitation.teamId === teamId)
 }
@@ -41,6 +48,28 @@ const getIdeaInvitations = async (
       {
         formatter: (applications) =>
           filterInvitationsByMarketId(ideaMarketId, applications),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка получения отправленных приглашений'),
+    )
+}
+
+const getIdeaInvitationsByInitiator = async (
+  userId: string,
+  token: string,
+): Promise<InvitationTeamToIdea[] | Error> => {
+  return invitationTeamToIdeaAxios
+    .get<InvitationTeamToIdea[]>(
+      `/user/${userId}/invitations`, // FIX ROUTE
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (applications) =>
+          filterInvitationsByInitiator(applications, userId),
       },
     )
     .then((response) => response.data)
@@ -94,20 +123,20 @@ const getTeamInvitations = async (
 // --- POST --- //
 
 const postTeamInvitationsToIdea = async (
-  id: string,
-  invitations: InvitationTeamToIdea[],
+  invitation: InvitationTeamToIdea,
   token: string,
-): Promise<InvitationTeamToIdea[] | Error> => {
+): Promise<InvitationTeamToIdea | Error> => {
   return invitationTeamToIdeaAxios
     .post(
-      `/idea-market/${id}/invitations`, // FIX ROUTE
-      invitations,
+      `/idea-market/invitations`, // FIX ROUTE
+      invitation,
       {
         headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
     )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка отправки приглашений'))
+    .catch((error) => handleAxiosError(error, 'Ошибка отправки приглашения'))
 }
 
 // --- PUT --- //
@@ -130,11 +159,14 @@ const putInvitationForTeamToIdea = async (
       },
     )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка отзыва приглашения'))
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка изменения статуса приглашения'),
+    )
 }
 
 const InvitationTeamToIdeaService = {
   getIdeaInvitations,
+  getIdeaInvitationsByInitiator,
   postTeamInvitationsToIdea,
   putInvitationForTeamToIdea,
   getSentInvitations,

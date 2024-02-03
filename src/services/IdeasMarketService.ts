@@ -23,6 +23,7 @@ import {
   teamsMocks,
   usersMocks,
 } from '@Utils/getMocks'
+import { Team } from '@Domain/Team'
 
 const ideasMarketAxios = defineAxios(ideasMarketMocks)
 const ideasMarketAdvertisementAxios = defineAxios(ideaMarketAdvertisementsMocks)
@@ -39,8 +40,8 @@ function formatIdeaInitiatorMarket(ideasMarket: IdeaMarket[]) {
   return ideasMarket.filter((idea) => idea.initiator.id === useUserStore().user?.id)
 }
 
-function formatIdeaByInitiator(ideasMarket: IdeaMarket[]) {
-  return ideasMarket
+function formatIdeaByInitiator(ideasMarket: IdeaMarket[], userId: string) {
+  return ideasMarket.filter(({ initiator }) => initiator.id === userId)
 }
 
 function formatAdvertisementsByIdeaId(
@@ -122,7 +123,7 @@ const getAllInitiatorMarketIdeas = async (
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей на бирже'))
 }
 
-const getAllInitiatorIdeasFromActiveMarkets = async (
+const getAllInitiatorMarketIdeasByUserId = async (
   userId: string,
   token: string,
 ): Promise<IdeaMarket[] | Error> => {
@@ -131,9 +132,10 @@ const getAllInitiatorIdeasFromActiveMarkets = async (
       `/user/${userId}/ideas`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       {
-        formatter: (markets) => formatIdeaByInitiator(markets),
+        formatter: (ideasMarket) => formatIdeaByInitiator(ideasMarket, userId),
       },
     )
     .then((response) => response.data)
@@ -220,6 +222,27 @@ const postIdeaMarketTeam = async (
   return ideasMarketAxios
     .put<IdeaMarket>(
       `${API_URL}/market/accept/request/${ideaMarketId}/${teamId}`,
+      { team: team },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления команды'))
+}
+
+const addIdeaMarketTeam = async (
+  id: string,
+  team: Team,
+  token: string,
+): Promise<IdeaMarket | Error> => {
+  return ideasMarketAxios
+    .put<IdeaMarket>(
+      `${API_URL}/market/accept`,
       { team: team },
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -346,7 +369,7 @@ const IdeasMarketService = {
   getAllInitiatorMarketIdeas,
   getIdeaMarket,
   getIdeaMarketAdvertisements,
-  getAllInitiatorIdeasFromActiveMarkets,
+  getAllInitiatorMarketIdeasByUserId,
 
   sendIdeaOnMarket,
   postIdeaMarketTeam,
@@ -356,6 +379,7 @@ const IdeasMarketService = {
   updateIdeaMarketStatus,
   kickTeamFromIdeaMarket,
   checkIdeaMarketAdvertisement,
+  addIdeaMarketTeam,
 
   removeIdeaFromFavorites,
   deleteIdeaMarketAdvertisement,

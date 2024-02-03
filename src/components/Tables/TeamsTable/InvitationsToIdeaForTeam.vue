@@ -22,12 +22,15 @@ import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 import IdeaMarketModal from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.vue'
 import { InvitationsToIdeaForTeamTableProps } from '@Components/Modals/TeamModal/TeamModal.types'
+import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 const props = defineProps<InvitationsToIdeaForTeamTableProps>()
 const selectedTeam = defineModel<InvitationTeamToIdea[]>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const ideasMarketStore = useIdeasMarketStore()
 
 const invitationTeamsToIdeaStore = useInvitationsTeamToIdeaStore()
 
@@ -59,17 +62,15 @@ const requestToInvitationColumns: TableColumn<InvitationTeamToIdea>[] = [
   {
     key: 'status',
     label: 'Статус',
-    size: 'col-2',
-    contentClassName: 'justify-content-start align-items-center',
+    contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getStatusFormat,
     getRowCellStyle: getJoinStatusStyle,
   },
   {
     key: 'ideaMarketName',
     label: 'Название',
-    size: 'col-3',
-    contentClassName: 'justify-content-start align-items-center text-center',
-    rowCellClick: navigateToIdeaMarket,
+    size: 'col-5',
+    rowCellClick: navigateToTeamModal,
   },
   {
     key: 'skills',
@@ -99,8 +100,8 @@ function getSkillsStyle(skills: Skill[], index: number) {
 
 const dropdownRequestActions: DropdownMenuAction<InvitationTeamToIdea>[] = [
   {
-    label: 'Просмотр идеи',
-    click: navigateToIdeaMarket,
+    label: 'Просмотр команды',
+    click: navigateToTeamModal,
   },
   {
     label: 'Принять приглашение',
@@ -115,7 +116,7 @@ const dropdownRequestActions: DropdownMenuAction<InvitationTeamToIdea>[] = [
   },
 ]
 
-function navigateToIdeaMarket(invitation: InvitationTeamToIdea) {
+function navigateToTeamModal(invitation: InvitationTeamToIdea) {
   const ideaMarketRoute: RouteRecordRaw = {
     name: 'market-idea-modal',
     path: 'market/:marketId/:ideaMarketId',
@@ -155,11 +156,16 @@ async function handleAcceptInvitationToIdea(
 
   if (currentUser?.token && invitationToIdea) {
     const { token } = currentUser
-    const { id } = invitationToIdea
+    const { id, ideaMarketId } = invitationToIdea
     const status = 'ACCEPTED'
 
-    if (id)
-      await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
+    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
+    await ideasMarketStore.updateIdeaMarketStatus(
+      ideaMarketId,
+      'RECRUITMENT_IS_CLOSED',
+      token,
+    )
+    await ideasMarketStore.addIdeaMarketTeam(ideaMarketId, props.team, token)
   }
 }
 

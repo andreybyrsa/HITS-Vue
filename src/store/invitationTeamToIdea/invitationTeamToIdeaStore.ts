@@ -8,6 +8,7 @@ import {
   InvitationTeamToIdea,
   InvitationTeamToIdeaStatus,
 } from '@Domain/InvitationTeamToIdea'
+import findOneAndUpdate from '@Utils/findOneAndUpdate'
 
 const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', {
   state: (): InitialState => ({
@@ -38,6 +39,38 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
         }
       }
     },
+
+    getIdeaInvitationsByInitiator() {
+      return async (userId: string, token: string) => {
+        const response =
+          await invitationTeamToIdeaService.getIdeaInvitationsByInitiator(
+            userId,
+            token,
+          )
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          return response.forEach((item) =>
+            findOneAndUpdate(this.ideaInvitations, item, {
+              key: 'id',
+              value: item.id,
+            }),
+          )
+
+          // this.ideaInvitationsByInitiator = response
+          // return this.ideaInvitationsByInitiator
+        }
+      }
+    },
+
     getSentInvitations() {
       return async (userId: string, token: string) => {
         const response = await invitationTeamToIdeaService.getSentInvitations(
@@ -60,6 +93,7 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
         }
       }
     },
+
     getTeamInvitations() {
       return async (teamId: string, token: string) => {
         const response = await invitationTeamToIdeaService.getTeamInvitations(
@@ -85,25 +119,19 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
   },
 
   actions: {
-    async postInvitationsToIdea(
-      ideaId: string,
-      invitations: InvitationTeamToIdea[],
-      token: string,
-    ) {
+    async postInvitationsToIdea(invitation: InvitationTeamToIdea, token: string) {
       const response = await invitationTeamToIdeaService.postTeamInvitationsToIdea(
-        ideaId,
-        invitations,
+        invitation,
         token,
       )
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        invitations.forEach((invitation) => {
-          this.ideaInvitations.push(invitation)
-        })
+        this.ideaInvitations.push(response)
       }
     },
+
     async putInvitationForTeamToIdea(
       status: InvitationTeamToIdeaStatus,
       invitationId: string,
@@ -118,12 +146,20 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const invitationIndex = this.ideaInvitations.findIndex(
-          (invitation) => invitation.id == invitationId,
+        const currentInvitation = this.ideaInvitations.find(
+          ({ id }) => id === invitationId,
         )
 
-        if (invitationIndex !== -1) {
-          this.ideaInvitations[invitationIndex].status = status
+        if (currentInvitation) {
+          currentInvitation.status = status
+        }
+
+        if (status === 'ACCEPTED') {
+          this.ideaInvitations.forEach((invite) => {
+            if (invite.status !== 'ACCEPTED') {
+              invite.status = 'ANNULLED'
+            }
+          })
         }
       }
     },

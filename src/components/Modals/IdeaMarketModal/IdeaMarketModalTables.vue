@@ -94,6 +94,7 @@ function getNavLinkStyle(isCurrentTable: boolean) {
         :requests="requestTeams"
         v-model="skillsRequestTeam"
       />
+
       <InvitedTeamsToIdeaTable
         v-if="isInvitedTeamsTable && invitationsToTeams"
         :invitations="invitationsToTeams"

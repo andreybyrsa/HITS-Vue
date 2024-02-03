@@ -15,19 +15,29 @@
     @close-modal="handleCloseDeleteModal"
     @delete="handleDeleteTeam"
   />
-  <InviteModal
-    :is-opened="isOpenedTeamInviteModal"
-    :type="teamInviteModalType"
-    :team-name="inviteTeam?.name.toString()"
-    :idea-name="inviteTeamIdeaMarket?.name.toString()"
-    @close-modal="handleCloseTeamInviteModal"
-    @on-click="handleInviteOrRevokeTeam"
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModalAccepted"
+    text-button="Пригласить команду"
+    text-question="Вы действительно хотите пригласить команду?"
+    @close-modal="closeConfirmModalAccepted"
+    @action="
+      currentTeam && currentIdea && handleInviteTeam(currentTeam, currentIdea)
+    "
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModalCanceled"
+    text-button="Отозвать команду"
+    text-question="Вы действительно хотите отозвать команду?"
+    @close-modal="closeConfirmModalCanceled"
+    @action="currentInvitation && handleRevokeTeam(currentInvitation)"
   />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import { useDateFormat } from '@vueuse/core'
+import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
@@ -39,7 +49,7 @@ import {
 } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import InviteModal from '@Components/Modals/InviteTeamToIdeaModal/InviteTeamToIdeaModal.vue'
+import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
 import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
@@ -48,11 +58,11 @@ import { Profile } from '@Domain/Profile'
 import SkillsService from '@Services/SkillsService'
 import ProfileService from '@Services/ProfileService'
 import TeamService from '@Services/TeamService'
-
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 import {
   sendParallelRequests,
@@ -61,19 +71,15 @@ import {
 } from '@Utils/sendParallelRequests'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import { IdeaMarket } from '@Domain/IdeaMarket'
-import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-import { InviteOrRevoke } from '@Components/Modals/InviteTeamToIdeaModal/InviteTeamToIdeaModal.types'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const ideasMarketStore = useIdeasMarketStore()
+
 const teamsStore = useTeamStore()
 
 const notificationsStore = useNotificationsStore()
-
-const invitationsTeamToIdeaStore = useInvitationsTeamToIdeaStore()
-
-const ideasMarketStore = useIdeasMarketStore()
 
 const router = useRouter()
 
@@ -81,9 +87,9 @@ const teams = defineModel<Team[]>({ required: true })
 const ideas = ref<IdeaMarket[]>([])
 const skills = ref<Skill[]>([])
 const profile = ref<Profile>()
-const { ideaInvitations: sentInvitationsToIdea } = storeToRefs(
-  invitationsTeamToIdeaStore,
-)
+
+const invitationsTeamToIdeaStore = useInvitationsTeamToIdeaStore()
+const { ideaInvitations } = storeToRefs(invitationsTeamToIdeaStore)
 
 const deletingTeamId = ref<string | null>(null)
 const deletingTeamName = ref<string>()
@@ -100,71 +106,14 @@ const isSortedByMembersCount = ref(false)
 const isSortedByCreatedAt = ref(false)
 const isOpenedTeamDeleteModal = ref(false)
 
-const isOpenedTeamInviteModal = ref(false)
-const inviteTeam = ref<Team | null>(null)
-const inviteTeamIdeaMarket = ref<IdeaMarket | null>(null)
-const teamInviteModalType = ref<InviteOrRevoke>('INVITE')
-const invitationForRevoke = ref<InvitationTeamToIdea | null>(null)
+const isOpenedConfirmModalAccepted = ref(false)
+const isOpenedConfirmModalCanceled = ref(false)
 
-const dropdownTeamsActions = ref<DropdownMenuAction<Team>[]>([
-  {
-    label: 'Просмотреть',
-    click: navigateToTeamModal,
-  },
-  {
-    label: 'Редактировать',
-    statement: checkUpdateTeamAction,
-    click: navigateToUpdateTeamForm,
-  },
-  {
-    label: 'Удалить',
-    className: 'text-danger',
-    statement: checkDeleteTeamAction,
-    click: handleOpenDeleteModal,
-  },
-])
+const currentTeam = ref<Team>()
+const currentIdea = ref<IdeaMarket>()
+const currentInvitation = ref<InvitationTeamToIdea>()
 
-async function handleInviteOrRevokeTeam() {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    if (!(inviteTeamIdeaMarket.value && inviteTeam.value)) return
-
-    if (teamInviteModalType.value === 'INVITE') {
-      const invitations: InvitationTeamToIdea[] = [
-        {
-          id: `${inviteTeam.value.name}+${inviteTeamIdeaMarket.value.name}`,
-          ideaMarketId: inviteTeamIdeaMarket.value.id,
-          ideaMarketName: inviteTeamIdeaMarket.value.name,
-          status: 'NEW',
-          marketId: inviteTeamIdeaMarket.value.marketId,
-          teamId: inviteTeam.value.id,
-          name: inviteTeam.value.name,
-          membersCount: inviteTeam.value.membersCount,
-          skills: inviteTeam.value.skills,
-        },
-      ]
-      await invitationsTeamToIdeaStore.postInvitationsToIdea(
-        inviteTeamIdeaMarket.value.id,
-        invitations,
-        token,
-      )
-
-      return
-    }
-
-    if (!invitationForRevoke.value?.id) return
-    console.log('CANCELED', invitationForRevoke.value.id, token)
-
-    await invitationsTeamToIdeaStore.putInvitationForTeamToIdea(
-      'CANCELED',
-      invitationForRevoke.value.id,
-      token,
-    )
-  }
-}
+const computedIsInitiator = computed<boolean>(() => user.value?.role == 'INITIATOR')
 
 onMounted(async () => {
   const currentUser = user.value
@@ -184,10 +133,9 @@ onMounted(async () => {
       },
       {
         request: () =>
-          ideasMarketStore.getAllInitiatorIdeasFromActiveMarkets(id, token),
+          ideasMarketStore.getAllInitiatorMarketIdeasByUserId(id, token),
         refValue: ideas,
         onErrorFunc: openErrorNotification,
-        statement: user.value?.role === 'INITIATOR',
       },
     ]
 
@@ -195,205 +143,20 @@ onMounted(async () => {
   }
 })
 
-watch(
-  user,
-  async () => {
-    if (user.value?.role === 'INITIATOR') {
-      const { token, id } = user.value
-      if (!(token && id)) return
+watchImmediate(
+  () => user.value?.role,
+  async (role) => {
+    if (role === 'INITIATOR') {
+      const currentUser = user.value
 
-      await invitationsTeamToIdeaStore.getSentInvitations(id, token)
+      if (currentUser?.token) {
+        const { token, id } = currentUser
 
-      const ideasResponse =
-        await ideasMarketStore.getAllInitiatorIdeasFromActiveMarkets(id, token)
-
-      if (!(ideasResponse instanceof Error) && !(ideasResponse === undefined)) {
-        ideas.value = ideasResponse
+        await invitationsTeamToIdeaStore.getIdeaInvitationsByInitiator(id, token)
       }
     }
   },
-  { deep: true },
 )
-
-watch(ideas, () => updateDropdownTeamsActions(), { deep: true })
-
-const teamsTableHeader = computed<TableHeader>(() => ({
-  label: 'Список команд',
-  countData: true,
-  buttons: [
-    {
-      label: 'Создать команду',
-      variant: 'primary',
-      prependIconName: 'bi bi-plus-lg',
-      click: navigateToCreateTeamForm,
-      statement: checkCreateTeamButton(),
-    },
-  ],
-}))
-
-const teamTableColumns: TableColumn<Team>[] = [
-  {
-    key: 'closed',
-    label: 'Приватность',
-    contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellStyle: getStatusStyle,
-    getRowCellFormat: getTranslatedStatus,
-  },
-  {
-    key: 'name',
-    label: 'Название',
-    size: 'col-3',
-    rowCellClick: navigateToTeamModal,
-  },
-  {
-    key: 'hasActiveProject',
-    label: 'Статус',
-    contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellStyle: getStatusWorkStyle,
-    getRowCellFormat: getTranslatedWorkStatus,
-  },
-  {
-    key: 'membersCount',
-    label: 'Участники',
-    contentClassName: 'justify-content-center align-items-center text-center',
-    headerCellClick: sortByMembersCount,
-  },
-  {
-    key: 'createdAt',
-    label: 'Дата создания',
-    contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellFormat: getFormattedDate,
-    headerCellClick: sortByCreatedAt,
-  },
-]
-
-function updateDropdownTeamsActions() {
-  dropdownTeamsActions.value.splice(3)
-  ideas.value.map((idea) => {
-    const handleOpenInviteModal = (team: Team) => {
-      teamInviteModalType.value = 'INVITE'
-
-      inviteTeam.value = team
-      inviteTeamIdeaMarket.value = idea
-
-      isOpenedTeamInviteModal.value = true
-    }
-    const handleOpenRevokeModal = (team: Team) => {
-      teamInviteModalType.value = 'REVOKE'
-
-      inviteTeam.value = team
-      inviteTeamIdeaMarket.value = idea
-
-      if (sentInvitationsToIdea.value.length !== 0) {
-        const coincidence = sentInvitationsToIdea.value.find(
-          (invitation) =>
-            invitation.teamId === team.id && invitation.ideaMarketId === idea.id,
-        )
-        if (coincidence !== undefined && coincidence.status === 'NEW') {
-          invitationForRevoke.value = coincidence
-        }
-      }
-
-      isOpenedTeamInviteModal.value = true
-    }
-    const handleInviteStatement = (team: Team): boolean => {
-      if (team.hasActiveProject) return false
-      if (sentInvitationsToIdea.value.length !== 0) {
-        const coincidence = sentInvitationsToIdea.value.find(
-          (invitation) =>
-            invitation.teamId === team.id && invitation.ideaMarketId === idea.id,
-        )
-        if (coincidence !== undefined) return false
-      }
-      return true
-    }
-    const handleRevokeStatement = (team: Team): boolean => {
-      if (team.hasActiveProject) return false
-      if (sentInvitationsToIdea.value.length !== 0) {
-        const coincidence = sentInvitationsToIdea.value.find(
-          (invitation) =>
-            invitation.teamId === team.id && invitation.ideaMarketId === idea.id,
-        )
-        if (coincidence !== undefined && coincidence.status === 'NEW') {
-          return true
-        }
-      }
-      return false
-    }
-    const newInviteAction: DropdownMenuAction<Team> = {
-      label: `Пригласить в ${idea.name}`,
-      statement: handleInviteStatement,
-      click: handleOpenInviteModal,
-    }
-    const newRevocateAction: DropdownMenuAction<Team> = {
-      label: `Отозвать приглашение в ${idea.name}`,
-      className: 'text-danger',
-      statement: handleRevokeStatement,
-      click: handleOpenRevokeModal,
-    }
-    dropdownTeamsActions.value.push(newInviteAction)
-    dropdownTeamsActions.value.push(newRevocateAction)
-  })
-}
-
-const computedIsInitiator = computed<boolean>(() => user.value?.role == 'INITIATOR')
-
-const teamsFilters = computed<Filter<Team>[]>(() => [
-  {
-    category: 'Владелец команды',
-    choices: [{ label: 'Мои команды', value: user.value?.id ?? '' }],
-    refValue: filterByOwnerTeams,
-    isUniqueChoice: true,
-    checkFilter: checkOwnerTeams,
-    statement: computed(() => user.value?.role === 'TEAM_OWNER'),
-  },
-  {
-    category: 'Приглашения в ваши идеи',
-    choices: [
-      { label: 'Не приглашены', value: false },
-      { label: 'Приглашены', value: true },
-    ],
-    refValue: filterByIsFree,
-    isUniqueChoice: true,
-    checkFilter: checkIsTeamSent,
-    statement: computedIsInitiator,
-  },
-  {
-    category: 'Статус',
-    choices: [
-      { label: 'Открытая команда', value: false },
-      { label: 'Закрытая команда', value: true },
-    ],
-    refValue: filterByIsClosed,
-    isUniqueChoice: true,
-    checkFilter: checkTeamStatus,
-  },
-  {
-    category: 'Компетенции',
-    choices: [
-      { label: 'Искать везде', value: false },
-      { label: 'Искать по вакансиям', value: true },
-    ],
-    refValue: filterByVacancies,
-    isUniqueChoice: true,
-    checkFilter: () => true,
-    statement: computed(() => user.value?.role !== 'INITIATOR'),
-  },
-  {
-    category: 'Стек технологий',
-    choices: skills.value
-      .map(({ name }) => ({
-        label: name,
-        value: name,
-        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
-      }))
-      .sort((a, b) => +b.isMarked - +a.isMarked),
-    refValue: filterBySkills,
-    isUniqueChoice: false,
-    searchValue: searchBySkills,
-    checkFilter: () => true,
-  },
-])
 
 watch(
   filterBySkills,
@@ -471,6 +234,205 @@ watch(filterByVacancies, async (isVacancies) => {
     }
   }
 })
+
+const dropdownTeamsActions = computed<DropdownMenuAction<Team>[]>(() => [
+  {
+    label: 'Просмотреть',
+    click: navigateToTeamModal,
+  },
+  {
+    label: 'Редактировать',
+    statement: checkUpdateTeamAction,
+    click: navigateToUpdateTeamForm,
+  },
+  {
+    label: 'Удалить',
+    className: 'text-danger',
+    statement: checkDeleteTeamAction,
+    click: handleOpenDeleteModal,
+  },
+  ...ideas.value.map((idea) => {
+    return {
+      label: `Пригласить в "${idea.name}"`,
+      beforeLabel: `Отозвать из "${idea.name}"`,
+      statementLabel: (team: Team) => getAccessInvitationsInIdeaMarket(team, idea),
+      statement: checkByUserRole,
+      click: async (team: Team) =>
+        getAccessInvitationsInIdeaMarket(team, idea)
+          ? openConfirmModalCanceled()
+          : openConfirmModalAccepted(),
+    }
+  }),
+])
+
+const teamsTableHeader = computed<TableHeader>(() => ({
+  label: 'Список команд',
+  countData: true,
+  buttons: [
+    {
+      label: 'Создать команду',
+      variant: 'primary',
+      prependIconName: 'bi bi-plus-lg',
+      click: navigateToCreateTeamForm,
+      statement: checkCreateTeamButton(),
+    },
+  ],
+}))
+
+const teamTableColumns: TableColumn<Team>[] = [
+  {
+    key: 'closed',
+    label: 'Приватность',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    getRowCellStyle: getStatusStyle,
+    getRowCellFormat: getTranslatedStatus,
+  },
+  {
+    key: 'name',
+    label: 'Название',
+    size: 'col-3',
+    rowCellClick: navigateToTeamModal,
+  },
+  {
+    key: 'hasActiveProject',
+    label: 'Статус',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    getRowCellStyle: getStatusWorkStyle,
+    getRowCellFormat: getTranslatedWorkStatus,
+  },
+  {
+    key: 'membersCount',
+    label: 'Участники',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    headerCellClick: sortByMembersCount,
+  },
+  {
+    key: 'createdAt',
+    label: 'Дата создания',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    getRowCellFormat: getFormattedDate,
+    headerCellClick: sortByCreatedAt,
+  },
+]
+
+const teamsFilters = computed<Filter<Team>[]>(() => [
+  {
+    category: 'Владелец команды',
+    choices: [{ label: 'Мои команды', value: user.value?.id ?? '' }],
+    refValue: filterByOwnerTeams,
+    isUniqueChoice: true,
+    checkFilter: checkOwnerTeams,
+    statement: computed(() => user.value?.role === 'TEAM_OWNER'),
+  },
+  {
+    category: 'Приглашения в ваши идеи',
+    choices: [
+      { label: 'Не приглашены', value: false },
+      { label: 'Приглашены', value: true },
+    ],
+    refValue: filterByIsFree,
+    isUniqueChoice: true,
+    checkFilter: checkIsTeamSent,
+    statement: computedIsInitiator,
+  },
+  {
+    category: 'Статус',
+    choices: [
+      { label: 'Открытая команда', value: false },
+      { label: 'Закрытая команда', value: true },
+    ],
+    refValue: filterByIsClosed,
+    isUniqueChoice: true,
+    checkFilter: checkTeamStatus,
+  },
+  {
+    category: 'Компетенции',
+    choices: [
+      { label: 'Искать везде', value: false },
+      { label: 'Искать по вакансиям', value: true },
+    ],
+    refValue: filterByVacancies,
+    isUniqueChoice: true,
+    checkFilter: () => true,
+    statement: computed(() => user.value?.role !== 'INITIATOR'),
+  },
+  {
+    category: 'Стек технологий',
+    choices: skills.value
+      .map(({ name }) => ({
+        label: name,
+        value: name,
+        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+      }))
+      .sort((a, b) => +b.isMarked - +a.isMarked),
+    refValue: filterBySkills,
+    isUniqueChoice: false,
+    searchValue: searchBySkills,
+    checkFilter: () => true,
+  },
+])
+
+function getAccessInvitationsInIdeaMarket(team: Team, idea: IdeaMarket) {
+  const { id: currentTeamId } = team
+  const { id: currentIdeaId } = idea
+
+  const currentsInvitesIdea = ideaInvitations.value.filter(
+    ({ ideaMarketId, status }) => ideaMarketId === currentIdeaId && status === 'NEW',
+  )
+  const isTeamInviteInIdea = currentsInvitesIdea.find(
+    ({ teamId }) => teamId === currentTeamId,
+  )
+
+  currentTeam.value = team
+  currentIdea.value = idea
+  currentInvitation.value = isTeamInviteInIdea
+
+  return Boolean(isTeamInviteInIdea)
+}
+
+function checkByUserRole() {
+  return user.value?.role === 'INITIATOR'
+}
+
+async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, id: userId } = currentUser
+    const { id, name: ideaName, marketId } = ideaMarket
+    const { id: teamId, name: teamName, membersCount, skills } = team
+
+    const invitation: InvitationTeamToIdea = {
+      id: '',
+      ideaMarketId: id,
+      ideaMarketName: ideaName,
+      status: 'NEW',
+      marketId: marketId,
+      initiatorId: userId,
+      teamId: teamId,
+      name: teamName,
+      membersCount: membersCount,
+      skills: skills,
+    }
+
+    await invitationsTeamToIdeaStore.postInvitationsToIdea(invitation, token)
+  }
+}
+
+async function handleRevokeTeam(invitation: InvitationTeamToIdea) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id } = invitation
+
+    await invitationsTeamToIdeaStore.putInvitationForTeamToIdea(
+      'WITHDRAWN',
+      id,
+      token,
+    )
+  }
+}
 
 function getCheckedSkills() {
   return filterBySkills.value.reduce<Skill[]>((prevSkills, skillName) => {
@@ -569,8 +531,22 @@ function handleCloseDeleteModal() {
   isOpenedTeamDeleteModal.value = false
 }
 
-function handleCloseTeamInviteModal() {
-  isOpenedTeamInviteModal.value = false
+function openConfirmModalAccepted() {
+  isOpenedConfirmModalAccepted.value = true
+}
+
+function closeConfirmModalAccepted() {
+  isOpenedConfirmModalAccepted.value = false
+}
+
+isOpenedConfirmModalCanceled
+
+function openConfirmModalCanceled() {
+  isOpenedConfirmModalCanceled.value = true
+}
+
+function closeConfirmModalCanceled() {
+  isOpenedConfirmModalCanceled.value = false
 }
 
 async function handleDeleteTeam() {
@@ -614,9 +590,10 @@ function checkTeamStatus(team: Team, status: FilterValue) {
 }
 
 function checkIsTeamSent(team: Team, status: FilterValue) {
-  const result = sentInvitationsToIdea.value.find(
-    (invitation) => invitation.teamId == team.id,
+  const result = ideaInvitations.value.find(
+    (invitation) => invitation.teamId == team.id && invitation.status === 'NEW',
   )
+
   return Boolean(result) === status && !team.hasActiveProject
 }
 

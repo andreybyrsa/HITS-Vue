@@ -12,6 +12,8 @@ const ButtonClassName = computed(() => [
   { [`btn-${props.variant}`]: props.variant },
   props.className,
 ])
+
+const ButtonSlotClassName = computed(() => [{ ['btn-maxWidth']: props.maxWidth }])
 </script>
 
 <template>
@@ -30,7 +32,12 @@ const ButtonClassName = computed(() => [
       size="sm"
     />
 
-    <slot></slot>
+    <div
+      :class="ButtonSlotClassName"
+      :style="props.maxWidth && { maxWidth: props.maxWidth }"
+    >
+      <slot></slot>
+    </div>
 
     <Icon
       v-if="appendIconName"
@@ -42,5 +49,10 @@ const ButtonClassName = computed(() => [
 <style lang="scss" scoped>
 .btn {
   @include flexible(center, center, $gap: 4px);
+
+  &-maxWidth {
+    @include textEllipsis(1);
+    overflow-wrap: unset;
+  }
 }
 </style>

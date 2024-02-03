@@ -85,7 +85,7 @@ onMounted(async () => {
         request: () =>
           invitationTeamsToIdeaStore.getIdeaInvitations(ideaMarketId, token),
         refValue: invitationTeamToIdea,
-        // statement: role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',
+        statement: role === 'INITIATOR',
         onErrorFunc: openErrorNotification,
       },
       {

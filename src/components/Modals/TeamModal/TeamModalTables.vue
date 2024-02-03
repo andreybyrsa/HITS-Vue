@@ -107,7 +107,7 @@ function getAccessToRequestsToTeam() {
           :class="getNavLinkStyle(isTeamInvitationsTable)"
           @click="switchToTeamInvitationsTable"
         >
-          Приглашения
+          Приглашения в команду
         </div>
         <div
           v-if="getAccessToRequestsToTeam()"
@@ -158,6 +158,7 @@ function getAccessToRequestsToTeam() {
       <InvitationsToIdeaForTeam
         v-if="isInvitationTeamToIdeaTable && invitationsForTeam"
         :invitations="invitationsForTeam"
+        :team="team"
       />
     </div>
   </div>

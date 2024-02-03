@@ -18,6 +18,7 @@ import useTeamStore from '@Store/teams/teamsStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+import IdeasMarketService from '@Services/IdeasMarketService'
 
 import {
   sendParallelRequests,
@@ -25,6 +26,8 @@ import {
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
 import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
+
+import { IdeaMarket } from '@Domain/IdeaMarket'
 
 const requestsToIdea = useRequestsToIdeaStore()
 const { requestsTeamsToIdea } = storeToRefs(requestsToIdea)
@@ -44,6 +47,7 @@ const router = useRouter()
 const team = ref<Team>()
 const teamInvitations = ref<TeamInvitation[]>()
 const requestsToTeam = ref<RequestToTeam[]>()
+const ideasMarketInitiator = ref<IdeaMarket[]>([])
 
 const invitatinUsers = useInvitationUsersStore()
 
@@ -54,7 +58,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const id = route.params.teamId.toString()
-    const { token, role } = currentUser
+    const { token, role, id: userId } = currentUser
 
     const teamParallelRequests: RequestConfig[] = [
       {
@@ -83,6 +87,12 @@ onMounted(async () => {
           role === 'PROJECT_OFFICE' ||
           role === 'INITIATOR' ||
           role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () =>
+          IdeasMarketService.getAllInitiatorMarketIdeasByUserId(userId, token),
+        refValue: ideasMarketInitiator,
         onErrorFunc: openErrorNotification,
       },
     ]
@@ -134,6 +144,7 @@ function closeTeamModal() {
         />
 
         <TeamModalActions
+          :ideasInitiator="ideasMarketInitiator"
           :team="team"
           @close-modal="closeTeamModal"
         />
