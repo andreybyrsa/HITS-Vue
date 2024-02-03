@@ -63,14 +63,32 @@ const useTasksStore = defineStore('tasks', {
     },
 
     async changeTaskStatus(taskId: string, status: TaskStatus, token: string) {
-      const response = await TaskService.changeTaskStatus(taskId, status, token)
+      const curTask = this.tasks.find(({ id }) => id === taskId)
 
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentTask = this.tasks.find(({ id }) => id === taskId)
-        if (currentTask) {
-          currentTask.status = status
+      if (curTask) {
+        const lastStatus = curTask.status
+        const newStatusLog = curTask.taskMovementLog.concat(lastStatus)
+
+        if (lastStatus && newStatusLog) {
+          curTask?.taskMovementLog.push(lastStatus)
+        }
+        const response = await TaskService.changeTaskStatus(
+          taskId,
+          status,
+          newStatusLog,
+          token,
+        )
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentTask = this.tasks.find(({ id }) => id === taskId)
+          if (currentTask) {
+            currentTask.status = status
+          }
         }
       }
     },
