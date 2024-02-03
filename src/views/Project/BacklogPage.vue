@@ -40,7 +40,7 @@
                     <div
                       v-for="tag in element.tag"
                       :key="tag.id"
-                      class="d-flex gap-1 px-2 py-1 rounded-2 text-center align-self-start"
+                      class="d-flex gap-1 px-2 py-2 rounded-2 text-center align-self-start"
                       :style="{
                         backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
                         color: tag.color,
@@ -50,7 +50,6 @@
                         class-name="bi bi-circle-fill "
                         :style="{ color: tag.color }"
                       />
-                      <div>{{ tag.name }}</div>
                     </div>
                   </div>
                 </div>
@@ -61,16 +60,16 @@
                 <div class="collapce__block w-75">{{ element.description }}</div>
 
                 <div class="collapce__block-right">
-                  <div class="mb-3">Дата: {{ element.startDate }}</div>
-                  <div>Трудоемкость: {{ element.workHour }}</div>
+                  <div class="mb-3">
+                    Дата: {{ getFormattedDate(element.startDate) }}
+                  </div>
+                  <div>Трудоемкость: {{ element.workHour }}ч</div>
                 </div>
               </div>
             </Collapse>
           </div>
         </template>
       </draggable>
-
-      {{ filteredAndSortedTasks }}
 
       <div>
         <Button
@@ -94,10 +93,7 @@
               >
                 <div class="header">
                   <div class="header__block w-75 fw-semibold px-3">
-                    <div
-                      class="fs-5 fw-bold"
-                      v-if="filterByTags.length <= 0"
-                    >
+                    <div class="fs-5 fw-bold">
                       {{ getTaskStatusTranslate(task.status) }}
                     </div>
                     <div class="fs-5">{{ task.name }}</div>
@@ -117,7 +113,7 @@
                       <div
                         v-for="tag in task.tag"
                         :key="tag.id"
-                        class="d-flex gap-1 px-2 py-1 rounded-2 text-center align-self-start"
+                        class="d-flex gap-1 px-2 py-2 rounded-2 text-center align-self-start"
                         :style="{
                           backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
                           color: tag.color,
@@ -127,7 +123,6 @@
                           class-name="bi bi-circle-fill "
                           :style="{ color: tag.color }"
                         />
-                        <div>{{ tag.name }}</div>
                       </div>
                     </div>
                   </div>
@@ -138,8 +133,10 @@
                   <div class="collapce__block w-75">{{ task.description }}</div>
 
                   <div class="collapce__block-right">
-                    <div class="mb-3">Дата: {{ task.startDate }}</div>
-                    <div>Трудоемкость: {{ task.workHour }}</div>
+                    <div class="mb-3">
+                      Дата: {{ getFormattedDate(task.startDate) }}
+                    </div>
+                    <div>Трудоемкость: {{ task.workHour }}ч</div>
                   </div>
                 </div>
               </Collapse>
@@ -184,7 +181,7 @@ import { Task } from '@Domain/Project'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import useTagsStore from '@Store/tags/tagsStore'
-import { watchImmediate } from '@vueuse/core'
+import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { Tag } from '@Domain/Tag'
 import Typography from '@Components/Typography/Typography.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
@@ -242,9 +239,7 @@ function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
 }
 
-const filteredAndSortedTasks = computed<Task[]>(() => {
-  return [...sortedInBackLogTasks.value]
-})
+const filteredAndSortedTasks = ref<Task[]>([...sortedInBackLogTasks.value])
 
 const compfilteredAndSortedTasks = computed(() => {
   const tasks = filtertTasks(sortedInBackLogTasks.value, filterByTags.value)
@@ -293,6 +288,13 @@ function hexToRgb(hex: string) {
         ${parseInt(result[2], 16)},
         ${parseInt(result[3], 16)}`
   )
+}
+
+function getFormattedDate(date: string) {
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
+  }
 }
 
 function getTaskStatusTranslate(status: string) {

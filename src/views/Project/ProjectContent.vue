@@ -76,6 +76,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 
 <template>
   <div class="content">
+    {{ project }}
     <div class="border-bottom px-3">
       <ul class="nav nav-underline">
         <div
