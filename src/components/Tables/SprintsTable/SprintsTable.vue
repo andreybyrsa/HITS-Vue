@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import {
   DropdownMenuAction,
   TableColumn,
@@ -66,18 +66,17 @@ const usersTableColumns: TableColumn<Sprint>[] = [
   },
 ]
 
+const currentSprint = ref<Sprint>()
+const isOpenedSprinttModal = ref(false)
+
 function getSprintStatusFormat(status: SprintStatus) {
   return getSprintStatus().translatedStatus[status]
-}
-
-function navigateToSprint(sprint: Sprint) {
-  return console.log(1)
 }
 
 const dropdownUsersActions: DropdownMenuAction<Sprint>[] = [
   {
     label: 'Перейти в спринт',
-    click: navigateToSprint,
+    click: () => console.log(1),
   },
 ]
 
