@@ -15,7 +15,7 @@ const ButtonClassName = computed(() => [
 
 const ButtonSlotClassName = computed(() => [
   { ['btn-maxWidth']: props.maxWidth },
-  ['w-100'],
+  ['w-100 d-flex '],
 ])
 </script>
 
@@ -23,6 +23,7 @@ const ButtonSlotClassName = computed(() => [
   <button
     type="button"
     :class="ButtonClassName"
+    :disabled="disabled"
   >
     <Icon
       v-if="prependIconName"
@@ -35,12 +36,7 @@ const ButtonSlotClassName = computed(() => [
       size="sm"
     />
 
-    <div
-      :class="ButtonSlotClassName"
-      :style="props.maxWidth && { maxWidth: props.maxWidth }"
-    >
-      <slot></slot>
-    </div>
+    <slot></slot>
 
     <Icon
       v-if="appendIconName"

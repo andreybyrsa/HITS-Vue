@@ -11,7 +11,7 @@ import NavTab from '@Components/NavTab/NavTab.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
+import Radio from '@Components/Inputs/Radio/Radio.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -28,6 +28,7 @@ import TagsService from '@Services/TagsService'
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
 
+import Collapse from '@Components/Collapse/Collapse.vue'
 const router = useRouter()
 
 onMounted(async () => {
@@ -71,6 +72,8 @@ function handleLogin() {
 }
 
 const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
+
+const b = ref()
 </script>
 
 <template>
@@ -84,10 +87,6 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
     </template>
 
     <template #content>
-      <!-- <ProjectInfo :is-opened="true"> </ProjectInfo>
-      <router-view></router-view> -->
-      <TaskModal :is-opened="true"></TaskModal>
-      <!-- <ProjectInfo :is-opened="true"> </ProjectInfo> -->
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>
@@ -185,5 +184,14 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
   &__content {
     @include flexible(flex-start, flex-start, column, $gap: 16px);
   }
+}
+
+.collapse-controller {
+  border-radius: 0;
+  background-color: $white-color;
+
+  color: $primary-color;
+
+  @include flexible(center, flex-start);
 }
 </style>

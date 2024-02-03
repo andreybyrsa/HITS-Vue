@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
+import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
 
 import { ActiveSprintProps } from '@Views/Project/Project.types'
 
@@ -21,6 +22,7 @@ import {
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
 import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 
 defineProps<ActiveSprintProps>()
 
@@ -32,6 +34,25 @@ const { tasks } = storeToRefs(taskStore)
 
 const checkMyInProgressTask = ref(false)
 const isLoadingTaskData = ref(false)
+
+const isOpenedCreateNewTask = ref(false)
+
+const isOpenedFinishSprintModal = ref(false)
+function closeFinishSprintModal() {
+  isOpenedFinishSprintModal.value = false
+}
+function openFinishSprintModal() {
+  isOpenedFinishSprintModal.value = true
+}
+
+function openCreateNewTask() {
+  isOpenedCreateNewTask.value = true
+}
+
+function closeCreateNewTask() {
+  isOpenedCreateNewTask.value = false
+}
+
 const refValue = ref()
 
 const onModificationTask = reactiveComputed<Task[]>(() =>
@@ -203,8 +224,16 @@ function closeSprintModal() {
         <Typography>( до {{ getFormattedDate(sprint.finishDate) }} )</Typography>
       </div>
       <div class="d-flex gap-2">
-        <Button variant="primary">Новая задача</Button>
-        <Button variant="danger">Завершить спринт</Button>
+        <Button
+          variant="primary"
+          @click="openCreateNewTask"
+          >Новая задача</Button
+        >
+        <Button
+          @click="openFinishSprintModal"
+          variant="danger"
+          >Завершить спринт</Button
+        >
       </div>
     </div>
 
@@ -294,7 +323,10 @@ function closeSprintModal() {
               <Typography>Новые</Typography>
             </div>
             <div class="d-flex gap-2">
-              <Icon class-name="bi bi-plus active-sprint__add-task p-1 rounded" />
+              <Icon
+                class-name="bi bi-plus active-sprint__add-task p-1 rounded"
+                @click="openCreateNewTask"
+              />
               <Icon
                 class-name="bi bi-patch-question"
                 v-tooltip="'Описание столбца'"
@@ -548,6 +580,17 @@ function closeSprintModal() {
         </draggable>
       </div>
     </div>
+    <FinishProjectModal
+      isFinishProject
+      :is-opened="isOpenedFinishSprintModal"
+      status="SPRINT"
+      @close-modal="closeFinishSprintModal"
+    />
+
+    <TaskModal
+      :is-opened="isOpenedCreateNewTask"
+      @close-modal="closeCreateNewTask"
+    />
   </div>
 </template>
 

@@ -34,13 +34,20 @@ function navigateToIdea(project: Project) {
 }
 
 const isOpenedFinishProjectModal = ref(false)
+const isOpenedProjectInfoModal = ref(false)
 
 function closeFinishProjectModal() {
   isOpenedFinishProjectModal.value = false
 }
-
 function openFinishProjectModal() {
   isOpenedFinishProjectModal.value = true
+}
+
+function closeProjectInfoModal() {
+  isOpenedProjectInfoModal.value = false
+}
+function openProjectInfoModal() {
+  isOpenedProjectInfoModal.value = true
 }
 
 function getContentTab(header: string) {
@@ -85,16 +92,32 @@ function getContentTab(header: string) {
           >Перейти в идею</Button
         >
         <Button
+          v-if="props.project.status === 'ACTIVE'"
           @click="openFinishProjectModal"
           variant="danger"
           class-name="w-100 mt-2"
           >Завершить проект</Button
         >
+        <Button
+          v-if="props.project.status === 'DONE'"
+          @click="openProjectInfoModal"
+          variant="primary"
+          class-name="w-100 mt-2"
+          >Информация о проекте</Button
+        >
       </div>
     </div>
     <FinishProjectModal
+      isFinishProject
       :is-opened="isOpenedFinishProjectModal"
+      status="PROJECT"
       @close-modal="closeFinishProjectModal"
+    />
+    <FinishProjectModal
+      isFinishProject
+      :is-opened="isOpenedProjectInfoModal"
+      status="PROJECTINFO"
+      @close-modal="closeProjectInfoModal"
     />
   </div>
 </template>

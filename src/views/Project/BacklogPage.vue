@@ -2,28 +2,33 @@
   <div class="d-flex gap-3 mt-4">
     <div class="w-100">
       <draggable
-        class="list-group rounded-3"
+        class="list-group"
         :list="filteredAndSortedTasks"
         :animation="200"
         @change="checkMove"
         group="tasks"
       >
         <template #item="{ element }">
-          <div class="p-0 overflow-hidden mb-3 border rounded-3">
+          <div class="mb-3 overflow-hidden border rounded-3">
             <Button
               variant="light"
               class-name="collapse-controller px-0 py-2 w-100"
               v-collapse="element.id"
             >
               <div class="header">
-                <div class="header__block w-75 fw-semibold px-3">
+                <div class="header__block w-50 fw-semibold px-3">
                   <div
                     class="fs-5 fw-bold"
                     v-if="filterByTags.length <= 0"
                   >
                     #{{ element.position }}
                   </div>
-                  <div class="fs-5">{{ element.name }}</div>
+                  <div
+                    class="w-100 fs-5 text-start text-truncate"
+                    v-tooltip="element.name"
+                  >
+                    {{ element.name }}
+                  </div>
                 </div>
 
                 <div class="header__block w-50 gap-5 px-3">
@@ -49,6 +54,7 @@
                       <Icon
                         class-name="bi bi-circle-fill "
                         :style="{ color: tag.color }"
+                        v-tooltip="tag.name"
                       />
                     </div>
                   </div>
@@ -57,7 +63,9 @@
             </Button>
             <Collapse :id="element.id">
               <div class="collapce py-2 mx-3 border-top text-secondary fw-lighter">
-                <div class="collapce__block w-75">{{ element.description }}</div>
+                <div class="collapce__block w-50 fw-normal">
+                  {{ element.description }}
+                </div>
 
                 <div class="collapce__block-right">
                   <div class="mb-3">
@@ -94,11 +102,16 @@
                 v-collapse="task.id"
               >
                 <div class="header">
-                  <div class="header__block w-75 fw-semibold px-3">
+                  <div class="header__block w-50 fw-semibold px-3">
                     <div class="fs-5 fw-bold">
                       {{ getTaskStatusTranslate(task.status) }}
                     </div>
-                    <div class="fs-5">{{ task.name }}</div>
+                    <div
+                      class="w-100 fs-5 text-start text-truncate"
+                      v-tooltip="task.name"
+                    >
+                      {{ task.name }}
+                    </div>
                   </div>
 
                   <div class="header__block w-50 gap-5 px-3">
@@ -124,6 +137,7 @@
                         <Icon
                           class-name="bi bi-circle-fill "
                           :style="{ color: tag.color }"
+                          v-tooltip="tag.name"
                         />
                       </div>
                     </div>
@@ -132,7 +146,9 @@
               </Button>
               <Collapse :id="task.id">
                 <div class="collapce py-2 mx-3 border-top text-secondary fw-lighter">
-                  <div class="collapce__block w-75">{{ task.description }}</div>
+                  <div class="collapce__block w-50 fw-normal">
+                    {{ task.description }}
+                  </div>
 
                   <div class="collapce__block-right">
                     <div class="mb-3">
@@ -363,7 +379,7 @@ function sortOtherTasks(tasks: Task[]): Task[] {
     @include flexible(start, start);
 
     &-right {
-      width: 10%;
+      width: 17%;
     }
   }
 }

@@ -10,6 +10,7 @@ interface ButtonProps {
   prependIconName?: string
   appendIconName?: string
   isLoading?: boolean
+  disabled?: boolean
 }
 
 export { ButtonProps, ButtonVariants }
