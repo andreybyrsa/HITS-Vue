@@ -17,4 +17,4 @@ defineProps<ProjectProps>()
   </div>
 </template>
 
-<style lasg="scss"></style>
+<style lasg="scss" scoped></style>

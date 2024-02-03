@@ -73,11 +73,13 @@
 
       <div>
         <Button
-          class-name="collapse-controller px-0 py-2 fw-bold border-0"
+          class-name="collapse-controller d-flex px-0 py-2 fw-bold border-0"
           v-collapse="'taskCollapse'"
         >
-          <Typography class-name="fs-4">Другие задачи </Typography>
-          <Icon class-name="bi bi-chevron-down fs-3 fw-bold mt-2" />
+          <div class="d-flex gap-3">
+            <Typography class-name="fs-4">Другие задачи </Typography>
+            <Icon class-name="bi bi-chevron-down fs-3 fw-bold mt-2" />
+          </div>
         </Button>
 
         <Collapse id="taskCollapse">

@@ -13,7 +13,10 @@ const ButtonClassName = computed(() => [
   props.className,
 ])
 
-const ButtonSlotClassName = computed(() => [{ ['btn-maxWidth']: props.maxWidth }])
+const ButtonSlotClassName = computed(() => [
+  { ['btn-maxWidth']: props.maxWidth },
+  ['w-100'],
+])
 </script>
 
 <template>

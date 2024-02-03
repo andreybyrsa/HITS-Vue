@@ -76,7 +76,6 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 
 <template>
   <div class="content">
-    {{ project }}
     <div class="border-bottom px-3">
       <ul class="nav nav-underline">
         <div
@@ -129,7 +128,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 // .content {
 //   height: 90%;
 // }

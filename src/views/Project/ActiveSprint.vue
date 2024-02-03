@@ -185,7 +185,6 @@ function closeSprintModal() {
 
 <template>
   <div class="active-sprint">
-    {{ tasks[1] }}
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div
