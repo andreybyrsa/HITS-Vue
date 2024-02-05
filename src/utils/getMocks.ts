@@ -1377,21 +1377,6 @@ export const tasksMocks: Task[] = [
     status: 'Done',
   },
   {
-    id: '13',
-    projectId: '0',
-    position: 4,
-    name: 'Интеграция с системой аналитики и мониторинга',
-    description:
-      'Настроить интеграцию с системой аналитики и мониторинга для отслеживания работы системы задач и производительности',
-    initiator: usersMocks[3],
-    executor: usersMocks[0],
-    workHour: '2ч',
-    startDate: '06.01.22',
-    tag: [tagsMocks[1], tagsMocks[7]],
-    taskMovementLog: ['InBackLog', 'NewTask'],
-    status: 'NewTask',
-  },
-  {
     id: '14',
     projectId: '0',
     position: 1,

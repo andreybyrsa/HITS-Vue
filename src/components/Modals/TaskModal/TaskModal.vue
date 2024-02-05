@@ -61,7 +61,8 @@ async function createTask() {
   if (currentUser?.token) {
     const { token } = currentUser
     const projectId = route.params.id.toString()
-    const position = tasks.value.length + 1
+    const position =
+      tasks.value.filter(({ status }) => status === 'InBackLog').length + 1
     const currentDate = new Date().toJSON().toString()
     const currentTask: Task = {
       id: '',
