@@ -10,12 +10,12 @@ import Success from '@Domain/ResponseMessage'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import { usersEmailsMocks, usersMocks } from '@Utils/getMocks'
 
-const usersAxios = defineAxios(getMocks().users)
-const usersEmailsAxios = defineAxios(getMocks().usersEmails)
+const usersAxios = defineAxios(usersMocks)
+const usersEmailsAxios = defineAxios(usersEmailsMocks)
 
 const getUsers = async (token: string): Promise<User[] | Error> => {
   return usersAxios

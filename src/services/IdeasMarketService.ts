@@ -14,14 +14,18 @@ import { Idea } from '@Domain/Idea'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import {
+  ideaMarketAdvertisementsMocks,
+  ideasMarketMocks,
+  ideasSkillsMocks,
+  teamsMocks,
+  usersMocks,
+} from '@Utils/getMocks'
 
-const { ideasMarket, ideaMarketAdvertisements } = getMocks()
-
-const ideasMarketAxios = defineAxios(ideasMarket)
-const ideasMarketAdvertisementAxios = defineAxios(ideaMarketAdvertisements)
+const ideasMarketAxios = defineAxios(ideasMarketMocks)
+const ideasMarketAdvertisementAxios = defineAxios(ideaMarketAdvertisementsMocks)
 
 function formatFavoriteIdea(ideasMarket: IdeaMarket[]) {
   return ideasMarket.filter((ideaMarket) => ideaMarket.isFavorite)
@@ -145,7 +149,7 @@ const sendIdeaOnMarket = async (
       return {
         id: '',
         marketId: marketId,
-        initiator: getMocks().users.find(({ id }) => id === idea.initiator.id),
+        initiator: usersMocks.find(({ id }) => id === idea.initiator.id),
         createdAt: idea.createdAt,
         name: idea.name,
         problem: idea.problem,
@@ -157,8 +161,7 @@ const sendIdeaOnMarket = async (
 
         position: 0,
         team: null,
-        stack: getMocks().ideasSkills.find(({ ideaId }) => ideaId === idea.id)
-          ?.skills,
+        stack: ideasSkillsMocks.find(({ ideaId }) => ideaId === idea.id)?.skills,
         status: 'RECRUITMENT_IS_OPEN',
         requests: 0,
         acceptedRequests: 0,
@@ -190,7 +193,7 @@ const postIdeaMarketTeam = async (
   token: string,
 ): Promise<IdeaMarket | Error> => {
   const { ideaMarketId, teamId } = requestToIdea
-  const team = getMocks().teams.find((team) => team.id === teamId)
+  const team = teamsMocks.find((team) => team.id === teamId)
 
   return ideasMarketAxios
     .put<IdeaMarket>(

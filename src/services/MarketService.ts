@@ -5,10 +5,10 @@ import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import getMocks from '@Utils/getMocks'
+import { marketMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
-const marketAxios = defineAxios(getMocks().market)
+const marketAxios = defineAxios(marketMocks)
 
 function formatMarketsByActiveStatus(markets: Market[]) {
   return markets.filter(({ status }) => status === 'ACTIVE')

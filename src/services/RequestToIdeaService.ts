@@ -6,10 +6,10 @@ import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import getMocks from '@Utils/getMocks'
+import { RequestTeamsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
-const requestTeamsAxios = defineAxios(getMocks().RequestTeams)
+const requestTeamsAxios = defineAxios(RequestTeamsMocks)
 
 function filterRequestsToIdeaByIdeaId(ideaId: string, request: RequestTeamToIdea[]) {
   return request.filter((request) => request.ideaMarketId === ideaId)

@@ -43,9 +43,11 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
       status: JoinStatus,
       token: string,
     ) {
-      const { id, userId } = requestToTeam
+      const { id, userId, teamId } = requestToTeam
+
       const response = await TeamService.updateRequestToTeamStatus(
         id,
+        teamId,
         userId,
         status,
         token,
@@ -64,6 +66,7 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
 
         if (status === 'ACCEPTED') {
           const teamsStore = useTeamStore()
+
           await teamsStore.addTeamMember({ ...requestToTeam, skills: [] }, token)
         }
       }

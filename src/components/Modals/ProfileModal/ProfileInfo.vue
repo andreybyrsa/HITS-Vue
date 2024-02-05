@@ -96,7 +96,7 @@ function getFormattedDate(date: string) {
 <template>
   <div class="w-100 bg-white border p-3 rounded-3">
     <div class="header border-bottom pb-1">
-      <Typography class-name="fs-4 text-primary">Информация</Typography>
+      <Typography class-name="fs-5 text-primary">Информация</Typography>
       <div class="d-flex justify-content-end gap-2">
         <Button
           v-if="isUpdatingUserName || isUpdatingUserLastname"

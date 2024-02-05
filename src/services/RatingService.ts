@@ -3,15 +3,15 @@ import { Rating } from '@Domain/Idea'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import getMocks from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import { ratingsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
 function filterRatingsById(ideaId: string, ratings: Rating[]) {
   return ratings.filter((rating) => rating.ideaId === ideaId)
 }
 
-const ratingsAxios = defineAxios(getMocks().ratings)
+const ratingsAxios = defineAxios(ratingsMocks)
 
 const getAllIdeaRatings = async (
   ideaId: string,

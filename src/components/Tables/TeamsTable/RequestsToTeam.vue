@@ -176,6 +176,9 @@ function checkDropdownAction(requestToTeam: RequestToTeam) {
   const currentUser = user.value
   const { owner } = props.team
 
-  return requestToTeam.status === 'NEW' && owner.id === currentUser?.id
+  return (
+    (requestToTeam.status === 'NEW' && owner.id === currentUser?.id) ||
+    currentUser?.role === 'ADMIN'
+  )
 }
 </script>
