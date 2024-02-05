@@ -183,7 +183,7 @@ async function handleRevokeInvitationToIdea(
     :data="ideaInvitations"
     :columns="requestToInvitationColumns"
     :dropdown-actions-menu="dropdownRequestActions"
-    :search-by="['name']"
+    :search-by="['ideaMarketName']"
     v-model="selectedInvitation"
   />
 

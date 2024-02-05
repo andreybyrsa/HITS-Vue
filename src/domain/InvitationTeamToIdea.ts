@@ -12,6 +12,7 @@ interface InvitationTeamToIdea {
   teamId: string
   ideaMarketId: string
   initiatorId: string
+  marketId: string
 
   ideaMarketName: string
   teamName: string

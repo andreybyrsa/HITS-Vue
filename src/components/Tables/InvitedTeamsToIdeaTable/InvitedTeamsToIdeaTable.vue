@@ -48,7 +48,7 @@ watchImmediate(
 
 const requestToInvitationColumns: TableColumn<InvitationTeamToIdea>[] = [
   {
-    key: 'name',
+    key: 'teamName',
     label: 'Название',
     size: 'col-3',
     contentClassName: 'justify-content-start align-items-center text-center',
@@ -147,7 +147,7 @@ async function cancelRequestToIdea(invitationToIdea: InvitationTeamToIdea | null
     :data="ideaInvitations"
     :columns="requestToInvitationColumns"
     :dropdown-actions-menu="dropdownRequestActions"
-    :search-by="['name']"
+    :search-by="['teamName']"
     v-model="selectedInvitation"
   />
 
