@@ -7,6 +7,7 @@ import TeamService from '@Services/TeamService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 const useTeamStore = defineStore('teams', {
   state: (): InitialState => ({
@@ -92,10 +93,12 @@ const useTeamStore = defineStore('teams', {
 
     async kickTeamMember(teamId: string, teamMemberId: string, token: string) {
       const response = await TeamService.kickTeamMember(teamId, teamMemberId, token)
+      const profileStore = useProfilesStore()
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
+        const profileStore = useProfilesStore()
         const currentTeam = this.teams.find(({ id }) => id === teamId)
 
         if (currentTeam) {
@@ -108,15 +111,20 @@ const useTeamStore = defineStore('teams', {
             currentTeam.membersCount--
           }
         }
+
+        await profileStore.finishTeamExperience(teamMemberId, teamId, token)
+        await profileStore.finishTeamProject(teamMemberId, teamId, token)
       }
     },
 
     async leaveFromTeam(teamId: string, teamMemberId: string, token: string) {
       const response = await TeamService.leaveFromTeam(teamId, teamMemberId, token)
+      const profileStore = useProfilesStore()
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
+        const profileStore = useProfilesStore()
         const currentTeam = this.teams.find(({ id }) => id === teamId)
 
         if (currentTeam) {
@@ -129,6 +137,9 @@ const useTeamStore = defineStore('teams', {
             currentTeam.membersCount--
           }
         }
+
+        await profileStore.finishTeamExperience(teamMemberId, teamId, token)
+        await profileStore.finishTeamProject(teamMemberId, teamId, token)
       }
     },
 

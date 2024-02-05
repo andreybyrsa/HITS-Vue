@@ -7,7 +7,7 @@
     :search-by="['name']"
     :filters="skillsFilters"
     :dropdown-actions-menu="dropdownSkillsActions"
-  ></Table>
+  />
 
   <SkillModal
     :is-opened="isOpenCreatingSkillModal"
@@ -88,17 +88,20 @@ const skillTableColumns: TableColumn<Skill>[] = [
   {
     key: 'name',
     label: 'Название',
+    size: 'col-4',
     rowCellClick: openUpdatingSkillModal,
   },
   {
     key: 'type',
     label: 'Категория',
+    size: 'col-4',
     getRowCellFormat: getSkillTypeFormat,
     getRowCellStyle: getSkillTypeStyle,
   },
   {
     key: 'confirmed',
     label: 'Статус',
+    size: 'col-4',
     getRowCellFormat: getSkillStatusFormat,
     getRowCellStyle: getSkillStatusStyle,
   },

@@ -12,12 +12,15 @@ import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
-import { RequestToTeam, TeamMember } from '@Domain/Team'
+import { RequestToTeam, Team, TeamMember } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
 import useTeamStore from '@Store/teams/teamsStore'
 import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
+import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
+import { IdeaMarket } from '@Domain/IdeaMarket'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 const props = defineProps<TeamModalActionsProps>()
 const emit = defineEmits<TeamModalActionsEmits>()
@@ -34,11 +37,21 @@ const invitatinUsers = useInvitationUsersStore()
 const { requests } = storeToRefs(requestsToTeamStore)
 const { invitationUsers } = storeToRefs(invitatinUsers)
 
+const invitationsTeamToIdeaStore = useInvitationsTeamToIdeaStore()
+const { ideaInvitations } = storeToRefs(invitationsTeamToIdeaStore)
+
 const isOpenedDeletingModal = ref(false)
 const isOpenedLeavingModal = ref(false)
 const isOpenedInvitationModal = ref(false)
 
 const invitationUsersInTeam = ref<TeamMember[]>([])
+
+const isOpenedConfirmModalCanceled = ref(false)
+const isOpenedConfirmModalTeamNew = ref(false)
+
+const currentTeam = ref<Team>()
+const currentIdea = ref<IdeaMarket>()
+const currentInvitation = ref<InvitationTeamToIdea>()
 
 function getAccessToEdit() {
   if (user.value) {
@@ -140,6 +153,10 @@ function getAccessToLeave() {
   }
 }
 
+function getAccessToInviteInIdea() {
+  return user.value?.role === 'INITIATOR'
+}
+
 function getAccess() {
   return (
     getAccessToEdit() ||
@@ -148,7 +165,8 @@ function getAccess() {
     getAccessRequestToTeam() ||
     getAccessWithdrawRequestToTeam() ||
     getAccessToLeave() ||
-    getAccessCancelOrAcceptInvitationToTeam()
+    getAccessCancelOrAcceptInvitationToTeam() ||
+    getAccessToInviteInIdea()
   )
 }
 
@@ -294,6 +312,72 @@ function closeConfirmModal() {
   isOpenedConfirmModalCancel.value = false
   isOpenedConfirmModalCancelRequest.value = false
 }
+
+function getVariantButton(ideaId: string) {
+  return ideaInvitations.value.find(
+    ({ teamId, ideaMarketId, status }) =>
+      teamId === props.team.id && ideaMarketId === ideaId && status === 'NEW',
+  )
+}
+
+async function handleInviteTeam() {
+  const currentUser = user.value
+
+  if (currentUser?.token && currentTeam.value && currentIdea.value) {
+    const { token, id: userId } = currentUser
+    const { id, name: ideaName, marketId } = currentIdea.value
+    const { id: teamId, name: teamName, membersCount, skills } = currentTeam.value
+
+    const invitation: InvitationTeamToIdea = {
+      id: '',
+      ideaMarketId: id,
+      ideaMarketName: ideaName,
+      status: 'NEW',
+      marketId: marketId,
+      initiatorId: userId,
+      teamId: teamId,
+      name: teamName,
+      membersCount: membersCount,
+      skills: skills,
+    }
+
+    await invitationsTeamToIdeaStore.postInvitationsToIdea(invitation, token)
+  }
+}
+
+function openConfirmModalTeamNew(team: Team, idea: IdeaMarket) {
+  currentTeam.value = team
+  currentIdea.value = idea
+  isOpenedConfirmModalTeamNew.value = true
+}
+
+function closeConfirmModalTeamNew() {
+  isOpenedConfirmModalTeamNew.value = false
+}
+
+async function handleRevokeTeam() {
+  const currentUser = user.value
+
+  if (currentUser?.token && currentInvitation.value) {
+    const { token } = currentUser
+    const { id } = currentInvitation.value
+
+    await invitationsTeamToIdeaStore.putInvitationForTeamToIdea(
+      'CANCELED',
+      id,
+      token,
+    )
+  }
+}
+
+function openConfirmModalTeamCanceled(invitation?: InvitationTeamToIdea) {
+  currentInvitation.value = invitation
+  isOpenedConfirmModalCanceled.value = true
+}
+
+function closeConfirmModalTeamCanceled() {
+  isOpenedConfirmModalCanceled.value = false
+}
 </script>
 
 <template>
@@ -365,6 +449,46 @@ function closeConfirmModal() {
       Отклонить приглашение
     </Button>
 
+    <div
+      v-if="getAccessToInviteInIdea()"
+      class="d-flex flex-wrap gap-3"
+    >
+      <div
+        v-for="(invite, index) in props.ideasInitiator"
+        :key="index"
+      >
+        <Button
+          :variant="getVariantButton(invite.id) ? 'danger' : 'success'"
+          @click="
+            getVariantButton(invite.id)
+              ? openConfirmModalTeamCanceled(getVariantButton(invite.id))
+              : openConfirmModalTeamNew(props.team, invite)
+          "
+          max-width="300px"
+        >
+          {{ getVariantButton(invite.id) ? 'Отозвать из' : 'Пригласить в' }} "{{
+            invite.name
+          }}"
+        </Button>
+      </div>
+    </div>
+
+    <ConfirmModal
+      :is-opened="isOpenedConfirmModalTeamNew"
+      text-button="Пригласить команду"
+      text-question="Вы действительно хотите пригласить команду?"
+      @close-modal="closeConfirmModalTeamNew"
+      @action="handleInviteTeam"
+    />
+
+    <ConfirmModal
+      :is-opened="isOpenedConfirmModalCanceled"
+      text-button="Отозвать команду"
+      text-question="Вы действительно хотите отозвать команду?"
+      @close-modal="closeConfirmModalTeamCanceled"
+      @action="handleRevokeTeam"
+    />
+
     <DeleteModal
       :is-opened="isOpenedDeletingModal"
       :item-name="team.name"
@@ -411,3 +535,11 @@ function closeConfirmModal() {
     />
   </div>
 </template>
+
+<style lang="scss" scoped>
+.invites-in-idea {
+  @include textEllipsis(1);
+  max-width: 250px;
+  overflow-wrap: unset;
+}
+</style>

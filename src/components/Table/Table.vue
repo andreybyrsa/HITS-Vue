@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="DataType">
-import { ref, Ref, onMounted, computed } from 'vue'
+import { ref, Ref, onMounted, computed, StyleValue } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 
 import {
@@ -172,6 +172,15 @@ function rowCellClick(data: DataType, functionClick?: (value: DataType) => void)
   }
 }
 
+function rowCellStyleCSS(
+  data: DataType[keyof DataType],
+  functionClick?: (value: DataType[keyof DataType]) => StyleValue,
+) {
+  if (functionClick) {
+    return functionClick(data)
+  }
+}
+
 function getDropdownActionStyle(className?: string) {
   const actionButtonClass = [
     'list-group-item',
@@ -280,7 +289,10 @@ function checkHeaderButtonStatement(statement?: boolean) {
         <table class="table table-hover mb-0">
           <thead>
             <tr class="table__lables">
-              <th class="py-3 col">
+              <th
+                v-if="isCheckbox"
+                class="py-3 col"
+              >
                 <div @click="checkAllRows">
                   <Checkbox
                     name="checkAll"
@@ -315,7 +327,10 @@ function checkHeaderButtonStatement(statement?: boolean) {
               v-for="(row, index) in searchedData"
               :key="index"
             >
-              <td class="py-3 col">
+              <td
+                v-if="isCheckbox"
+                class="py-3 col"
+              >
                 <Checkbox
                   :name="`checkAll-${index}`"
                   class-name="mb-1"
@@ -356,6 +371,9 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   </template>
                   <div
                     v-else
+                    :style="
+                      rowCellStyleCSS(row[column.key], column.getRowCellStyleCSS)
+                    "
                     :class="[
                       getRowCellStyle(row[column.key], column.getRowCellStyle),
                       column.rowCellClick ? 'table__link' : '',
@@ -385,7 +403,14 @@ function checkHeaderButtonStatement(statement?: boolean) {
                           :class="getDropdownActionStyle(button.className)"
                           @click="button.click(row)"
                         >
-                          {{ button.label }}
+                          {{
+                            checkDropdownActionStatement(
+                              row,
+                              button.statementLabel,
+                            ) && button.statementLabel
+                              ? button.beforeLabel
+                              : button.label
+                          }}
                         </li>
                       </template>
                     </ul>

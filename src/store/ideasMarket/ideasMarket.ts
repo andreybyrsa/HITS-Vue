@@ -10,6 +10,7 @@ import InitialState from '@Store/ideasMarket/initialState'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
+import { Team } from '@Domain/Team'
 
 const useIdeasMarketStore = defineStore('ideasMarket', {
   state: (): InitialState => ({
@@ -68,6 +69,26 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
         })
       }
     },
+
+    getAllInitiatorMarketIdeasByUserId() {
+      return async (userId: string, token: string) => {
+        const response = await IdeasMarketService.getAllInitiatorMarketIdeasByUserId(
+          userId,
+          token,
+        )
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        }
+
+        this.ideasMarket = response
+        return this.ideasMarket
+      }
+    },
   },
 
   actions: {
@@ -107,6 +128,24 @@ const useIdeasMarketStore = defineStore('ideasMarket', {
         this.ideasMarket.map((idea) => {
           if (idea.id === ideaMarketId) {
             idea.team = response.team
+          }
+        })
+      }
+    },
+
+    async addIdeaMarketTeam(ideaMarketId: string, team: Team, token: string) {
+      const response = await IdeasMarketService.addIdeaMarketTeam(
+        ideaMarketId,
+        team,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        this.ideasMarket.map((idea) => {
+          if (idea.id === ideaMarketId) {
+            idea.team = team
           }
         })
       }

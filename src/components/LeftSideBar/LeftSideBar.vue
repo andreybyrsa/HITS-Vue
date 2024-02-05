@@ -15,13 +15,13 @@ import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/
 import RolesTypes from '@Domain/Roles'
 import { Market } from '@Domain/Market'
 
-import MarketService from '@Services/MarketService'
-
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useMarketsStore from '@Store/markets/marketsStore'
+import useProjectStore from '@Store/projects/projectsStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
+import { Project } from '@Domain/Project'
 
 const notificationsStore = useNotificationsStore()
 const { getUnreadedNotifications } = storeToRefs(notificationsStore)
@@ -31,6 +31,9 @@ const { user } = storeToRefs(userStore)
 
 const marketsStore = useMarketsStore()
 const { markets } = storeToRefs(marketsStore)
+
+const projectStore = useProjectStore()
+const { myActiveProjects } = storeToRefs(projectStore)
 
 const router = useRouter()
 
@@ -52,12 +55,25 @@ watch(
   markets,
   () => {
     const currentMarkets = markets.value.filter(({ status }) => status === 'ACTIVE')
-    const index = tabs.value.findIndex(({ name }) => name === 'markets')
-    if (index !== -1) updateActiveMarketRoute(currentMarkets, index)
+    const marketIndex = tabs.value.findIndex(({ name }) => name === 'markets')
+    if (marketIndex !== -1) updateActiveMarketRoute(currentMarkets, marketIndex)
   },
   { deep: true },
 )
 
+watch(
+  myActiveProjects,
+  () => {
+    const currentProjects = myActiveProjects.value.filter(
+      ({ status }) => status === 'ACTIVE',
+    )
+    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
+    if (projectIndex !== -1) updateActiveProjectRoute(currentProjects, projectIndex)
+  },
+  { deep: true },
+)
+
+onMounted(getActiveProjects)
 onMounted(getActiveMarkets)
 
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
@@ -85,7 +101,7 @@ async function getActiveMarkets() {
       if (index !== -1) tabs.value.splice(index, 1)
     }
 
-    const response = await MarketService.getAllActiveMarkets(token)
+    const response = await marketsStore.getAllActiveMarkets(token)
 
     if (response instanceof Error) {
       spliceMarketsTab()
@@ -96,6 +112,48 @@ async function getActiveMarkets() {
       spliceMarketsTab()
     } else if (index !== -1) {
       updateActiveMarketRoute(response, index)
+    }
+  }
+}
+
+function updateActiveProjectRoute(activeProjects: Project[], index: number) {
+  const initialProjectRoutes: LeftSideBarTabType[] =
+    LeftSideBarTabs[index].routes ?? []
+  const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
+    name: `project-${id}`,
+    text: name,
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER'],
+    iconName: 'bi bi-kanban',
+    to: `/projects/${id}`,
+  }))
+
+  tabs.value[index].routes = [...initialProjectRoutes, ...projectRoutes]
+}
+
+async function getActiveProjects() {
+  const currentUser = user.value
+
+  if (currentUser?.token && currentUser.role !== 'EXPERT') {
+    const { token, id } = currentUser
+    const projectsIndex = tabs.value.findIndex(({ name }) => name === 'projects')
+
+    const spliceMarketsTab = () => {
+      if (projectsIndex !== -1) tabs.value.splice(projectsIndex, 1)
+    }
+
+    const response = await projectStore.getMyProjects(id, token)
+
+    if (response instanceof Error) {
+      spliceMarketsTab()
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    if (response.length === 0) {
+      updateActiveProjectRoute(response, projectsIndex)
+
+      spliceMarketsTab()
+    } else if (projectsIndex !== -1) {
+      updateActiveProjectRoute(response, projectsIndex)
     }
   }
 }

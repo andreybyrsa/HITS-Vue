@@ -9,10 +9,11 @@ interface GetIdeaMarketStatusType {
 
 function getIdeaMarketStatus(): GetIdeaMarketStatusType {
   return {
-    status: ['RECRUITMENT_IS_OPEN', 'RECRUITMENT_IS_CLOSED'],
+    status: ['RECRUITMENT_IS_OPEN', 'RECRUITMENT_IS_CLOSED', 'PROJECT'],
     translatedStatus: {
       RECRUITMENT_IS_OPEN: 'Набор открыт',
       RECRUITMENT_IS_CLOSED: 'Набор закрыт',
+      PROJECT: 'Проект',
     },
   }
 }
