@@ -21,7 +21,7 @@ import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember, Sprint, Task } from '@Domain/Project'
 import { Tag } from '@Domain/Tag'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
-import { AverageMark, ReportProject } from '@Domain/ReportProjectMembers'
+import { AverageMark } from '@Domain/ReportProjectMembers'
 
 export const usersMocks: User[] = [
   {
@@ -1958,9 +1958,8 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
     status: 'NEW',
     teamId: teamsMocks[0].id,
     initiatorId: ideasMarketMocks[0].initiator.id,
-    marketId: marketMocks[1].id,
     id: '245vs-d52ff-d4sd-2s',
-    name: teamsMocks[0].name,
+    teamName: teamsMocks[0].name,
     membersCount: teamsMocks[0].membersCount,
     skills: ideasMarketMocks[0].stack,
   },
@@ -1970,9 +1969,8 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
     status: 'NEW',
     teamId: teamsMocks[1].id,
     initiatorId: ideasMarketMocks[1].initiator.id,
-    marketId: marketMocks[1].id,
     id: '245vs-d52ff-d4sd-2s1',
-    name: teamsMocks[1].name,
+    teamName: teamsMocks[1].name,
     membersCount: teamsMocks[1].membersCount,
     skills: ideasMarketMocks[1].stack,
   },

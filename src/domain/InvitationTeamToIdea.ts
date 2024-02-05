@@ -8,16 +8,16 @@ type InvitationTeamToIdeaStatus =
   | 'WITHDRAWN'
 
 interface InvitationTeamToIdea {
+  id: string
+  teamId: string
   ideaMarketId: string
-  ideaMarketName: string
   initiatorId: string
 
-  status: InvitationTeamToIdeaStatus
-  teamId: string
-  marketId: string
+  ideaMarketName: string
+  teamName: string
 
-  id: string
-  name: string
+  status: InvitationTeamToIdeaStatus
+
   membersCount: number
   skills: Skill[]
 }
