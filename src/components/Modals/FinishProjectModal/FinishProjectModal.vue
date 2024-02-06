@@ -59,10 +59,12 @@ const route = useRoute()
 
 const averageMark = ref<AverageMark[]>([])
 const reportProject = ref<ReportProject[]>([])
-const project = ref<Project>()
 
 const projectStore = useProjectsStore()
+const { projects } = storeToRefs(projectStore)
+
 const sprintStore = useSprintsStore()
+const { sprints } = storeToRefs(sprintStore)
 
 onMounted(() => {
   if (props.isFinishProject) getAverageMark()
@@ -105,8 +107,6 @@ async function getProject() {
         response.message,
       )
     }
-
-    project.value = response
   }
 }
 
@@ -426,7 +426,10 @@ function clickFunctionByStatus() {
         >
           Отчет
         </Textarea>
-        <div>
+        <div
+          v-for="project in projects"
+          :key="project.id"
+        >
           <Textarea
             v-if="status === 'PROJECTINFO' && project"
             name="report"
