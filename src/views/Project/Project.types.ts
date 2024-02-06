@@ -10,4 +10,8 @@ interface ActiveSprintProps {
   sprint: Sprint
 }
 
-export { ProjectProps, ActiveSprintProps }
+interface TaskProps {
+  task: Task
+}
+
+export { ProjectProps, ActiveSprintProps, TaskProps }

@@ -9,158 +9,17 @@
         group="tasks"
       >
         <template #item="{ element }">
-          <div class="mb-3 overflow-hidden border rounded-3">
-            <Button
-              variant="light"
-              class-name="collapse-controller px-0 py-2 w-100"
-              v-collapse="element.id"
-            >
-              <div class="header">
-                <div class="header__block w-50 fw-semibold px-3">
-                  <div
-                    class="fs-5 fw-bold"
-                    v-if="filterByTags.length <= 0"
-                  >
-                    #{{ element.position }}
-                  </div>
-                  <div
-                    class="w-100 fs-5 text-start text-truncate"
-                    v-tooltip="element.name"
-                  >
-                    {{ element.name }}
-                  </div>
-                </div>
-
-                <div class="header__block w-50 gap-5 px-3">
-                  <div class="header__block gap-1 w-50">
-                    <Icon
-                      class-name="bi bi-circle-fill "
-                      class="fs-3 text-secondary"
-                    />
-                    {{ element.initiator.firstName }}
-                    {{ element.initiator.lastName }}
-                  </div>
-
-                  <div class="header__block w-50 gap-2 overflow-x-auto">
-                    <div
-                      v-for="tag in element.tag"
-                      :key="tag.id"
-                      class="d-flex gap-1 px-2 py-2 rounded-2 text-center align-self-start"
-                      :style="{
-                        backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
-                        color: tag.color,
-                      }"
-                    >
-                      <Icon
-                        class-name="bi bi-circle-fill "
-                        :style="{ color: tag.color }"
-                        v-tooltip="tag.name"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Button>
-            <Collapse :id="element.id">
-              <div class="collapce py-2 mx-3 border-top text-secondary fw-lighter">
-                <div class="collapce__block w-50 fw-normal">
-                  {{ element.description }}
-                </div>
-
-                <div class="collapce__block-right">
-                  <div class="mb-3">
-                    Дата: {{ getFormattedDate(element.startDate) }}
-                  </div>
-                  <div>Трудоемкость: {{ element.workHour }}ч</div>
-                </div>
-              </div>
-            </Collapse>
-          </div>
+          <ProjectTask :task="element" />
         </template>
       </draggable>
 
       <div>
-        <Button
-          class-name="collapse-controller d-flex px-0 py-2 fw-bold border-0"
-          v-collapse="'taskCollapse'"
+        <div
+          v-for="(task, index) in otherTasks"
+          :key="index"
         >
-          <div class="d-flex gap-3">
-            <Typography class-name="fs-4">Другие задачи </Typography>
-            <Icon class-name="bi bi-chevron-down fs-3 fw-bold mt-2" />
-          </div>
-        </Button>
-
-        <Collapse id="taskCollapse">
-          <div
-            v-for="(task, index) in otherTasks"
-            :key="index"
-          >
-            <div class="p-0 overflow-hidden mb-3 border rounded-3 bg-light">
-              <Button
-                variant="light"
-                class-name="collapse-controller px-0 py-2 w-100 bg-light"
-                v-collapse="task.id"
-              >
-                <div class="header">
-                  <div class="header__block w-50 fw-semibold px-3">
-                    <div class="fs-5 fw-bold">
-                      {{ getTaskStatusTranslate(task.status) }}
-                    </div>
-                    <div
-                      class="w-100 fs-5 text-start text-truncate"
-                      v-tooltip="task.name"
-                    >
-                      {{ task.name }}
-                    </div>
-                  </div>
-
-                  <div class="header__block w-50 gap-5 px-3">
-                    <div class="header__block gap-1 w-50">
-                      <Icon
-                        class-name="bi bi-circle-fill "
-                        class="fs-3 text-secondary"
-                      />
-                      {{ task.initiator.firstName }}
-                      {{ task.initiator.lastName }}
-                    </div>
-
-                    <div class="header__block w-50 gap-2 overflow-x-auto">
-                      <div
-                        v-for="tag in task.tag"
-                        :key="tag.id"
-                        class="d-flex gap-1 px-2 py-2 rounded-2 text-center align-self-start"
-                        :style="{
-                          backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
-                          color: tag.color,
-                        }"
-                      >
-                        <Icon
-                          class-name="bi bi-circle-fill "
-                          :style="{ color: tag.color }"
-                          v-tooltip="tag.name"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Button>
-              <Collapse :id="task.id">
-                <div class="collapce py-2 mx-3 border-top text-secondary fw-lighter">
-                  <div class="collapce__block w-50 fw-normal">
-                    {{ task.description }}
-                  </div>
-
-                  <div class="collapce__block-right">
-                    <div class="mb-3">
-                      Дата: {{ getFormattedDate(task.startDate) }}
-                    </div>
-                    <div>Трудоемкость: {{ task.workHour }}ч</div>
-                  </div>
-                </div>
-              </Collapse>
-            </div>
-          </div>
-        </Collapse>
+          <ProjectTask :task="task" />
+        </div>
       </div>
     </div>
 
@@ -192,6 +51,7 @@ import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
+import ProjectTask from '@Views/Project/ProjectTask.vue'
 
 import { Filter } from '@Components/FilterBar/FilterBar.types'
 import { Task } from '@Domain/Project'
