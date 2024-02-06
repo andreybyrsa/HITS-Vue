@@ -161,7 +161,6 @@ const FinishProject = handleSubmit(async () => {
     ]
 
     await sendParallelRequests(finishProjectParallelRequests)
-    report.value = ''
     isLoading.value = false
     emit('close-modal')
   }
