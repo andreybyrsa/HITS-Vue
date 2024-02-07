@@ -172,6 +172,7 @@ const factLineColor = computed(() => {
 
 const data: ApexOptions = {
   chart: {
+    offsetY: 5,
     type: 'line',
     toolbar: {
       show: false,
