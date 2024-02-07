@@ -48,21 +48,18 @@ import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
 
 import Button from '@Components/Button/Button.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
-import Icon from '@Components/Icon/Icon.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import ProjectTask from '@Views/Project/ProjectTask.vue'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 
 import { Filter } from '@Components/FilterBar/FilterBar.types'
 import { Task } from '@Domain/Project'
+import { Tag } from '@Domain/Tag'
 
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import useTagsStore from '@Store/tags/tagsStore'
-import { useDateFormat, watchImmediate } from '@vueuse/core'
-import { Tag } from '@Domain/Tag'
-import Typography from '@Components/Typography/Typography.vue'
-import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+import { watchImmediate } from '@vueuse/core'
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
@@ -80,7 +77,7 @@ const inBackLogTasks = computed<Task[]>(() => {
 })
 
 const otherTasks = computed<Task[]>(() => {
-  return sortOtherTasks(tasks.value)
+  return sortOtherTasks(tasks.value, filterByTags.value)
 })
 
 const sortedInBackLogTasks = computed<Task[]>(() => {
@@ -158,37 +155,7 @@ function filtertTasks(tasks: Task[], filters: string[]): Task[] {
   }
 }
 
-function hexToRgb(hex: string) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  return (
-    result &&
-    `${parseInt(result[1], 16)},
-        ${parseInt(result[2], 16)},
-        ${parseInt(result[3], 16)}`
-  )
-}
-
-function getFormattedDate(date: string) {
-  if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
-    return formattedDate.value
-  }
-}
-
-function getTaskStatusTranslate(status: string) {
-  if (
-    status === 'OnModification' ||
-    status === 'NewTask' ||
-    status === 'inProgress' ||
-    status === 'OnVerification'
-  ) {
-    return 'Спринт'
-  } else if (status === 'Done') {
-    return 'Завершено'
-  }
-}
-
-function sortOtherTasks(tasks: Task[]): Task[] {
+function sortOtherTasks(tasks: Task[], filters: string[]): Task[] {
   const excludedStatuses = ['InBackLog']
   const firstStatuses = ['OnModification', 'NewTask', 'inProgress', 'OnVerification']
 
@@ -196,21 +163,42 @@ function sortOtherTasks(tasks: Task[]): Task[] {
     (task) => !excludedStatuses.includes(task.status),
   )
 
-  return filteredTasks.sort((a, b) => {
-    if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {
-      return -1
-    }
-    if (!firstStatuses.includes(a.status) && firstStatuses.includes(b.status)) {
-      return 1
-    }
-    if (a.status === 'Done' && b.status !== 'Done') {
-      return 1
-    }
-    if (a.status !== 'Done' && b.status === 'Done') {
-      return -1
-    }
-    return 0
-  })
+  if (filterByTags.value.length > 0) {
+    const filteredByTags = filteredTasks.filter((task) =>
+      filters.some((filter) => task.tag.find(({ name }) => name === filter)),
+    )
+    return filteredByTags.sort((a, b) => {
+      if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {
+        return -1
+      }
+      if (!firstStatuses.includes(a.status) && firstStatuses.includes(b.status)) {
+        return 1
+      }
+      if (a.status === 'Done' && b.status !== 'Done') {
+        return 1
+      }
+      if (a.status !== 'Done' && b.status === 'Done') {
+        return -1
+      }
+      return 0
+    })
+  } else {
+    return filteredTasks.sort((a, b) => {
+      if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {
+        return -1
+      }
+      if (!firstStatuses.includes(a.status) && firstStatuses.includes(b.status)) {
+        return 1
+      }
+      if (a.status === 'Done' && b.status !== 'Done') {
+        return 1
+      }
+      if (a.status !== 'Done' && b.status === 'Done') {
+        return -1
+      }
+      return 0
+    })
+  }
 }
 </script>
 
