@@ -23,7 +23,12 @@
                   >
                     #{{ element.position }}
                   </div>
-                  <div class="fs-5">{{ element.name }}</div>
+                  <div
+                    class="fs-5"
+                    @click="openUpdateNewTask"
+                  >
+                    {{ element.name }}
+                  </div>
                 </div>
 
                 <div class="header__block w-25 gap-5 px-3">
@@ -75,7 +80,14 @@
 
     <TaskModal
       :is-opened="isOpenedCreateNewTask"
+      v-model="tasks"
       @close-modal="closeCreateNewTask"
+    />
+    <TaskModal
+      :is-opened="isOpenedUpdateNewTask"
+      v-model="tasks"
+      :task="updatingTask"
+      @close-modal="closeUpdateNewTask"
     />
   </div>
 </template>
@@ -134,12 +146,23 @@ const filters: Filter<Task>[] = [
   },
 ]
 const isOpenedCreateNewTask = ref(false)
+const isOpenedUpdateNewTask = ref(false)
+const updatingTask = ref<Task | null>(null)
 
 function openCreateNewTask() {
   isOpenedCreateNewTask.value = true
 }
 
 function closeCreateNewTask() {
+  isOpenedCreateNewTask.value = false
+}
+
+function openUpdateNewTask(task: Task) {
+  updatingTask.value = task
+  isOpenedCreateNewTask.value = true
+}
+
+function closeUpdateNewTask() {
   isOpenedCreateNewTask.value = false
 }
 

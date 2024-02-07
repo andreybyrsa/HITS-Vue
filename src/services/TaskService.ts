@@ -11,6 +11,7 @@ import { Task, TaskStatus } from '@Domain/Project'
 import { User } from '@Domain/User'
 
 const tasksMocksAxios = defineAxios(tasksMocks)
+const tasksAxios = defineAxios(tasksMocks)
 
 function formatterAllTasksProject(tasks: Task[], currentProjectId: string) {
   return tasks.filter(({ projectId }) => projectId === currentProjectId)
@@ -72,7 +73,24 @@ const updateTasks = async (
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка редактирования задач'))
 }
-
+const updateTask = async (
+  task: Task,
+  id: string,
+  token: string,
+): Promise<Task | Error> => {
+  return tasksAxios
+    .put(
+      `/task/update/${id}`,
+      task,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования задачи'))
+}
 // --- PUT --- //
 const changeExecutorTask = async (
   taskId: string,
@@ -121,6 +139,7 @@ const ProfileService = {
   getAllTasksProject,
   createTask,
   updateTasks,
+  updateTask,
 
   changeExecutorTask,
   changeTaskStatus,

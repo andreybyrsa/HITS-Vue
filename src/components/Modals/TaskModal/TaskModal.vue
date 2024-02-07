@@ -47,10 +47,6 @@ const route = useRoute()
 
 const notificationsStore = useNotificationsStore()
 
-const taskModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
-const isCreating = ref(false)
-const isUpdating = ref(false)
-
 const nameTask = ref('')
 const descriptionTask = ref('')
 const workHourTask = ref('')
@@ -59,31 +55,36 @@ const choosenTags = ref<Tag[]>([])
 function confirmedTags(tagsValue: Tag[]) {
   return tagsValue.filter(({ confirmed }) => confirmed)
 }
-async function createTask() {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const projectId = route.params.id.toString()
-    const position = tasks.value.length + 1
-    const currentDate = new Date().toJSON().toString()
-    const currentTask: Task = {
-      id: '',
-      projectId: projectId,
-      name: nameTask.value,
-      description: descriptionTask.value,
-      initiator: currentUser,
-      executor: null,
-      workHour: workHourTask.value,
-      position: position,
-      startDate: currentDate,
-      tag: choosenTags.value,
-      taskMovementLog: props.isActiveSprint ? ['NewTask'] : ['InBackLog'],
-      status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
-    }
-    await tasksStore.createTask(currentTask, token)
-    emit('close-modal')
-  }
-}
+// async function createTask() {
+//   const currentUser = user.value
+//   if (currentUser?.token) {
+//     const { token } = currentUser
+//     const projectId = route.params.id.toString()
+//     const position = tasks.value.length + 1
+//     const currentDate = new Date().toJSON().toString()
+//     console.log(descriptionTask.value, choosenTags.value)
+//     const currentTask: Task = {
+//       id: '',
+//       projectId: projectId,
+//       name: nameTask.value,
+//       description: descriptionTask.value,
+//       initiator: currentUser,
+//       executor: null,
+//       workHour: workHourTask.value,
+//       position: position,
+//       startDate: currentDate,
+//       tag: choosenTags.value,
+//       taskMovementLog: props.isActiveSprint ? ['NewTask'] : ['InBackLog'],
+//       status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
+//     }
+//     await tasksStore.createTask(currentTask, token)
+//     emit('close-modal')
+//   }
+// }
+
+const taskModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
+const isCreating = ref(false)
+const isUpdating = ref(false)
 
 const { handleSubmit, setValues } = useForm<Task>({
   validationSchema: {
@@ -107,21 +108,31 @@ onUpdated(async () => {
   }
 })
 
-const handleCreateTask = handleSubmit(async (values) => {
+const handleCreateTask = handleSubmit(async () => {
   const currentUser = user.value
-
+  isCreating.value = true
   if (currentUser?.token) {
     const { token } = currentUser
-
-    isCreating.value = true
-    const response = await TaskService.createTask(values, token)
-    isCreating.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
+    const projectId = route.params.id.toString()
+    const position = tasks.value.length + 1
+    const currentDate = new Date().toJSON().toString()
+    console.log(descriptionTask.value, choosenTags.value)
+    const currentTask: Task = {
+      id: '',
+      projectId: projectId,
+      name: nameTask.value,
+      description: descriptionTask.value,
+      initiator: currentUser,
+      executor: null,
+      workHour: workHourTask.value,
+      position: position,
+      startDate: currentDate,
+      tag: choosenTags.value,
+      taskMovementLog: props.isActiveSprint ? ['NewTask'] : ['InBackLog'],
+      status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
     }
-
-    tasks.value.push(response)
+    await tasksStore.createTask(currentTask, token)
+    isCreating.value = false
     emit('close-modal')
   }
 })
@@ -133,7 +144,7 @@ const handleUpdateTask = handleSubmit(async (values) => {
     const { token } = currentUser
 
     isUpdating.value = true
-    const response = await TaskService.updateTasks(values, values.id, token)
+    const response = await TaskService.updateTask(values, values.id, token)
     isUpdating.value = false
 
     if (response instanceof Error) {
@@ -156,9 +167,9 @@ const handleUpdateTask = handleSubmit(async (values) => {
     @on-outside-close="emit('close-modal')"
   >
     <div
-      class="task-modal border rounded-4 bg-white ps-4 pe-4 d-flex flex-column gap-2"
+      class="add-task-modal border rounded-4 bg-white ps-4 pe-4 d-flex flex-column gap-2"
     >
-      <div class="task-modal__header pt-2 w-100">
+      <div class="add-task-modal__header pt-2 w-100">
         <Typography class-name="fs-4 text-primary w-100">{{
           taskModalMode === 'CREATE' ? 'Создание задачи' : 'Редактирование задачи'
         }}</Typography>
@@ -225,6 +236,7 @@ const handleUpdateTask = handleSubmit(async (values) => {
       <div class="py-3 w-100">
         <Button
           v-if="taskModalMode === 'CREATE'"
+          type="submit"
           variant="primary"
           class-name="w-100"
           :is-loading="isCreating"
@@ -234,6 +246,7 @@ const handleUpdateTask = handleSubmit(async (values) => {
         </Button>
         <Button
           v-if="taskModalMode === 'UPDATE'"
+          type="submit"
           variant="primary"
           class-name="w-100"
           :is-loading="isUpdating"
@@ -247,7 +260,7 @@ const handleUpdateTask = handleSubmit(async (values) => {
 </template>
 
 <style lang="scss" scoped>
-.task-modal {
+.add-task-modal {
   width: 450px;
   height: fit-content;
   @include flexible(
@@ -260,5 +273,9 @@ const handleUpdateTask = handleSubmit(async (values) => {
   &__header {
     @include flexible(center, space-between);
   }
+}
+.modal-layout-enter-from .add-tag-modal,
+.modal-layout-leave-to .add-tag-modal {
+  transform: scale(0.9);
 }
 </style>
