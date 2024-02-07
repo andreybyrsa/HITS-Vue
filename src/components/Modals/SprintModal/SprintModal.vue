@@ -22,7 +22,7 @@ import useUserStore from '@Store/user/userStore'
 import useTasksStore from '@Store/tasks/tasksStore'
 import SprintsListPage from '@Views/Project/SprintsListPage.vue'
 
-import BurndownChart from './BurndownChart.vue'
+import BurndownChart from '../../Charts/BurndownChart/BurndownChart.vue'
 
 function getFormattedDate(date: string) {
   if (date) {

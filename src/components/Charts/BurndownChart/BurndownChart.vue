@@ -5,7 +5,7 @@ import ApexChart, { ApexOptions } from 'apexcharts'
 import { Sprint, Task } from '@Domain/Project'
 import { sprintMocks } from '@Utils/getMocks'
 import { useDateFormat } from '@vueuse/core'
-import { SprintChartProps } from '@Components/Modals/SprintModal/BurndownChart.types'
+import { SprintChartProps } from '@Components/Charts/BurndownChart/BurndownChart.types'
 import { date, number } from 'yup'
 
 const prop1 = defineProps<SprintChartProps>()
@@ -125,8 +125,10 @@ const PlanLine = computed(() => {
   }
   for (let i = totalTasks; i >= 0; i -= step) {
     planLine.push(i)
+    if (i - step < 0) {
+      planLine.push(0)
+    }
   }
-  planLine.push(0)
   return planLine
 })
 
@@ -172,7 +174,6 @@ const factLineColor = computed(() => {
 
 const data: ApexOptions = {
   chart: {
-    offsetY: 5,
     type: 'line',
     toolbar: {
       show: false,
