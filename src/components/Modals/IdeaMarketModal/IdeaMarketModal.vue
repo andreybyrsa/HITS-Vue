@@ -129,7 +129,7 @@ function getAccessToTables() {
     const { id, role } = currentUser
     const { id: initiatorId } = ideaMarket.value?.initiator
 
-    return id === initiatorId && role === 'INITIATOR'
+    return (id === initiatorId && role === 'INITIATOR') || role == 'ADMIN'
   }
 }
 </script>

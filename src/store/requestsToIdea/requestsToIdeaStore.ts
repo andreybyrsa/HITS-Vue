@@ -82,6 +82,7 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
           teamId,
           token,
         )
+
       if (responseAcceptRequest instanceof Error) {
         useNotificationsStore().createSystemNotification(
           'Система',

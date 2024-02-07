@@ -7,6 +7,11 @@ import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 defineProps<LetterModalProps>()
 const emit = defineEmits<LetterModalEmits>()
@@ -42,7 +47,7 @@ function acceptRequest() {
       </Typography>
 
       <Button
-        v-if="$route.name === 'market-idea-modal'"
+        v-if="$route.name === 'market-idea-modal' && user?.role !== 'ADMIN'"
         class-name="btn-success"
         @click="acceptRequest"
       >

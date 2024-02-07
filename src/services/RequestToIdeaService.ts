@@ -83,7 +83,7 @@ const acceptRequestToIdeaStatus = async (
       },
     )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса заявки'))
+    .catch((error) => handleAxiosError(error, 'Ошибка принятия заявки'))
 }
 
 // --- DELETE --- //
