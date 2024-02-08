@@ -95,6 +95,7 @@ const deletingTeamId = ref<string | null>(null)
 const deletingTeamName = ref<string>()
 
 const filterByIsClosed = ref<boolean>()
+const filterByIsHasActiveProject = ref<boolean>()
 const filterByIsFree = ref<boolean>()
 const filterByOwnerTeams = ref<string>()
 const filterByVacancies = ref<boolean>(false)
@@ -294,6 +295,13 @@ const teamTableColumns: TableColumn<Team>[] = [
     rowCellClick: navigateToTeamModal,
   },
   {
+    key: 'hasActiveProject',
+    label: 'Статус',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    getRowCellStyle: getStatusWorkStyle,
+    getRowCellFormat: getTranslatedWorkStatus,
+  },
+  {
     key: 'membersCount',
     label: 'Участники',
     contentClassName: 'justify-content-center align-items-center text-center',
@@ -329,7 +337,7 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     statement: computedIsInitiator,
   },
   {
-    category: 'Статус',
+    category: 'Приватность',
     choices: [
       { label: 'Открытая команда', value: false },
       { label: 'Закрытая команда', value: true },
@@ -337,6 +345,16 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     refValue: filterByIsClosed,
     isUniqueChoice: true,
     checkFilter: checkTeamStatus,
+  },
+  {
+    category: 'Статус',
+    choices: [
+      { label: 'В поисках', value: false },
+      { label: 'В работе', value: true },
+    ],
+    refValue: filterByIsHasActiveProject,
+    isUniqueChoice: true,
+    checkFilter: checkTeamHasActiveProject,
   },
   {
     category: 'Компетенции',
@@ -580,6 +598,10 @@ function checkDeleteTeamAction(team: Team) {
 
 function checkTeamStatus(team: Team, status: FilterValue) {
   return team.closed === status
+}
+
+function checkTeamHasActiveProject(team: Team, status: FilterValue) {
+  return team.hasActiveProject === status
 }
 
 function checkIsTeamSent(team: Team, status: FilterValue) {

@@ -99,13 +99,13 @@ const dropdownRequestActions: DropdownMenuAction<InvitationTeamToIdea>[] = [
   {
     label: 'Принять приглашение',
     click: (requestToIdea) => openModal(isOpenedConfirmModal, requestToIdea),
-    statement: (item) => item.status == 'NEW',
+    statement: (item) => item.status == 'NEW' && user.value?.role !== 'ADMIN',
   },
   {
     label: 'Отклонить приглашение',
     className: 'text-danger',
     click: (requestToIdea) => openModal(isOpenedRevokeModal, requestToIdea),
-    statement: (item) => item.status == 'NEW',
+    statement: (item) => item.status == 'NEW' && user.value?.role !== 'ADMIN',
   },
 ]
 
