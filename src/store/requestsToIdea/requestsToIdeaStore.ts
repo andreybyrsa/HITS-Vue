@@ -9,6 +9,7 @@ import RequestToIdeaService from '@Services/RequestToIdeaService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/requestsToIdea/initialState'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
+import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
 
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({
@@ -75,44 +76,43 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
     async acceptRequestToIdea(requestToIdea: RequestTeamToIdea, token: string) {
       const { id, ideaMarketId, teamId } = requestToIdea
       const ideasMarketStore = useIdeasMarketStore()
+      const invitationsTeamToIdeaStore = useInvitationsTeamToIdeaStore()
 
-      const responseAcceptRequest =
-        await RequestToIdeaService.acceptRequestToIdeaStatus(
-          ideaMarketId,
-          teamId,
-          token,
-        )
-
-      if (responseAcceptRequest instanceof Error) {
-        useNotificationsStore().createSystemNotification(
-          'Система',
-          responseAcceptRequest.message,
-        )
-      } else {
-        const currentRequestToIdea = this.requests.find(
-          (request) => request.id === id,
-        )
-        if (currentRequestToIdea) {
-          currentRequestToIdea.status = 'ACCEPTED'
-        }
-
-        const ideaMarket = ideasMarketStore.ideasMarket.find(
-          (idea) => idea.id === ideaMarketId,
-        )
-        if (ideaMarket) {
-          ideaMarket.status = 'RECRUITMENT_IS_CLOSED'
-          ideaMarket.team = responseAcceptRequest
-        }
-      }
-
-      const response = RequestToIdeaService.updateRequestToIdeaStatus(
+      const response = await RequestToIdeaService.acceptRequestToIdea(
         id,
-        'ACCEPTED',
+        ideaMarketId,
+        teamId,
         token,
       )
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        this.requests.forEach(
+          (request) =>
+            (request.id === id && (request.status = 'ACCEPTED')) ||
+            ((request.teamId === teamId ||
+              (request.ideaMarketId === ideaMarketId && request.status === 'NEW')) &&
+              (request.status = 'ANNULLED')),
+        )
+
+        const currentIdeaMarket = ideasMarketStore.ideasMarket.find(
+          (idea) => idea.id === ideaMarketId,
+        )
+        const currentsInvitationNew =
+          invitationsTeamToIdeaStore.ideaInvitations.filter(
+            ({ status, ideaMarketId: checkIdeaMarketId }) =>
+              status === 'NEW' && checkIdeaMarketId === ideaMarketId,
+          )
+
+        if (currentIdeaMarket && currentsInvitationNew) {
+          currentIdeaMarket.status = 'RECRUITMENT_IS_CLOSED'
+          currentIdeaMarket.team = response
+
+          currentsInvitationNew.forEach(
+            (invitation) => (invitation.status = 'ANNULLED'),
+          )
+        }
       }
     },
 

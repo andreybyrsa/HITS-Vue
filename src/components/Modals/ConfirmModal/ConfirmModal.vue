@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
@@ -14,18 +14,11 @@ defineProps<ConfirmModalProps>()
 
 const emit = defineEmits<ConfirmModalEmits>()
 
-const isLoading = ref(false)
-
 const { enter } = useMagicKeys()
 
 watch(enter, () => {
   emit('close-modal')
 })
-
-function clickAction() {
-  emit('action')
-  emit('close-modal')
-}
 </script>
 
 <template>
@@ -47,7 +40,7 @@ function clickAction() {
       <Button
         variant="light"
         :isLoading="isLoading"
-        @click="clickAction"
+        @click="emit('action')"
       >
         {{ textButton }}
       </Button>

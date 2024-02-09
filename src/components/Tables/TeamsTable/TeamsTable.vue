@@ -20,6 +20,7 @@
     :is-opened="isOpenedConfirmModalAccepted"
     text-button="Пригласить команду"
     text-question="Вы действительно хотите пригласить команду?"
+    :is-loading="isLoading"
     @close-modal="closeConfirmModalAccepted"
     @action="
       currentTeam && currentIdea && handleInviteTeam(currentTeam, currentIdea)
@@ -87,6 +88,8 @@ const teams = defineModel<Team[]>({ required: true })
 const ideas = ref<IdeaMarket[]>([])
 const skills = ref<Skill[]>([])
 const profile = ref<Profile>()
+
+const isLoading = ref(false)
 
 const invitationsTeamToIdeaStore = useInvitationsTeamToIdeaStore()
 const { ideaInvitations } = storeToRefs(invitationsTeamToIdeaStore)
@@ -407,6 +410,7 @@ function checkByUserRole() {
 
 async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
   const currentUser = user.value
+  isLoading.value = true
 
   if (currentUser?.token) {
     const { token, id: userId } = currentUser
@@ -427,11 +431,14 @@ async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
     }
 
     await invitationsTeamToIdeaStore.postInvitationsToIdea(invitation, token)
+    isLoading.value = false
+    closeConfirmModalAccepted()
   }
 }
 
 async function handleRevokeTeam(invitation: InvitationTeamToIdea) {
   const currentUser = user.value
+  isLoading.value = true
 
   if (currentUser?.token) {
     const { token } = currentUser
@@ -442,6 +449,8 @@ async function handleRevokeTeam(invitation: InvitationTeamToIdea) {
       id,
       token,
     )
+    isLoading.value = false
+    closeConfirmModalCanceled()
   }
 }
 

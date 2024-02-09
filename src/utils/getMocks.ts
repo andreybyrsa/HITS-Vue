@@ -1190,6 +1190,18 @@ export const notificationsMocks: Notification[] = [
 
 export const RequestTeamsMocks: RequestTeamToIdea[] = [
   {
+    id: '1',
+    ideaMarketId: ideasMarketMocks[0].id,
+    marketId: ideasMarketMocks[0].marketId,
+    teamId: teamsMocks[0].id,
+    status: 'NEW',
+    name: teamsMocks[0].name,
+    membersCount: teamsMocks[0].membersCount,
+    skills: teamsMocks[0].skills,
+    letter:
+      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorbeatae ipsum dicta omnis adipisci magni autem eos quisquam doloresmaxime. Dignissimos cum nulla consequatur accusantium distinctioaut. Velit, assumenda porro!',
+  },
+  {
     id: '2',
     ideaMarketId: '2',
     marketId: '201',
@@ -1497,15 +1509,15 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
     skills: ideasMarketMocks[0].stack,
   },
   {
-    ideaMarketId: ideasMarketMocks[1].id,
-    ideaMarketName: ideasMarketMocks[1].name,
+    ideaMarketId: ideasMarketMocks[4].id,
+    ideaMarketName: ideasMarketMocks[4].name,
     status: 'NEW',
-    marketId: ideasMarketMocks[1].marketId,
+    marketId: ideasMarketMocks[4].marketId,
     teamId: teamsMocks[1].id,
-    initiatorId: ideasMarketMocks[1].initiator.id,
+    initiatorId: ideasMarketMocks[4].initiator.id,
     id: '245vs-d52ff-d4sd-2s1',
     teamName: teamsMocks[1].name,
     membersCount: teamsMocks[1].membersCount,
-    skills: ideasMarketMocks[1].stack,
+    skills: ideasMarketMocks[4].stack,
   },
 ]

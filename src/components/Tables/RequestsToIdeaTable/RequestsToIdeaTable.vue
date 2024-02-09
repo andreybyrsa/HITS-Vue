@@ -19,6 +19,7 @@
     :is-opened="isOpenedAcceptModal"
     text-button="Принять заявку"
     text-question="Команду можно выбрать только один раз"
+    :is-loading="isLoading"
     @close-modal="closeAcceptModal"
     @action="acceptRequestToIdea(currentRequestToIdea)"
   />
@@ -27,6 +28,7 @@
     :is-opened="isOpenedCancelModal"
     text-button="Отклонить заявку"
     text-question="Эта команда больше не сможет подать заявку"
+    :is-loading="isLoading"
     @close-modal="closeCancelModal"
     @action="cancelRequestToIdea(currentRequestToIdea)"
   />
@@ -205,24 +207,31 @@ function closeCancelModal() {
   isOpenedCancelModal.value = false
 }
 
+const isLoading = ref(false)
 async function acceptRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
   const currentUser = user.value
+  isLoading.value = true
 
   if (currentUser?.token && requestToIdea) {
     const { token } = currentUser
 
     await requestsToIdeaStore.acceptRequestToIdea(requestToIdea, token)
+    isLoading.value = false
+    closeAcceptModal()
   }
 }
 
 async function cancelRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
   const currentUser = user.value
+  isLoading.value = true
 
   if (currentUser?.token && requestToIdea) {
     const { token } = currentUser
     const { id } = requestToIdea
 
     await requestsToIdeaStore.updateRequestToIdea(id, 'CANCELED', token)
+    isLoading.value = false
+    closeCancelModal()
   }
 }
 

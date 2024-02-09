@@ -25,6 +25,7 @@ import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 import useIdeaMarketAdvertisementsStore from '@Store/ideaMarketAdvertisements/ideaMarketAdvertisementsStore'
+import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
 
 import {
   sendParallelRequests,
@@ -35,6 +36,8 @@ import {
 const props = defineProps<IdeaMarketModalProps>()
 
 const IdeaMarketModalRef = ref<VueElement | null>(null)
+
+const invitationsTeamToIdeaStore = useInvitationsTeamToIdeaStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -95,6 +98,13 @@ onMounted(async () => {
             token,
           ),
         refValue: ideaMarketAdvertisements,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () =>
+          invitationsTeamToIdeaStore.getIdeaInvitations(ideaMarketId, token),
+        refValue: ref(),
+        statement: role === 'INITIATOR' || role === 'ADMIN' || role === 'TEAM_OWNER',
         onErrorFunc: openErrorNotification,
       },
     ]

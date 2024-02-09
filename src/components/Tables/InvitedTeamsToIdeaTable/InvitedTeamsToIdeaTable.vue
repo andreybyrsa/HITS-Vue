@@ -103,7 +103,7 @@ const dropdownRequestActions: DropdownMenuAction<InvitationTeamToIdea>[] = [
     label: 'Отозвать приглашение',
     className: 'text-danger',
     click: (requestToIdea) => openModal(isOpenedCancelModal, requestToIdea),
-    statement: (item) => item.status == 'NEW',
+    statement: (item) => item.status == 'NEW' && user.value?.role !== 'ADMIN',
   },
 ]
 
