@@ -92,7 +92,11 @@ async function getActiveMarkets() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (response.length === 0) {
+    if (
+      response.length === 0 &&
+      user.value?.role !== 'ADMIN' &&
+      user.value?.role !== 'PROJECT_OFFICE'
+    ) {
       spliceMarketsTab()
     } else if (index !== -1) {
       updateActiveMarketRoute(response, index)

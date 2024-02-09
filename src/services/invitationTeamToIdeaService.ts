@@ -37,7 +37,7 @@ const getInvitationsByIdea = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/idea-market/${ideaMarketId}/invitations`, // FIX ROUTE
+      `/idea/invitation/all/${ideaMarketId}`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -59,7 +59,7 @@ const getAllInvitationsByInitiator = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/user/${userId}/invitations`, // FIX ROUTE
+      `/idea/invitation//${userId}/invitations`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -81,7 +81,7 @@ const getTeamInvitations = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/team/${teamId}/invitations-to-idea`, // FIX ROUTE
+      `/idea/invitation/team/all/${teamId}`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -104,7 +104,7 @@ const inviteTeamToIdea = async (
 ): Promise<InvitationTeamToIdea | Error> => {
   return invitationTeamToIdeaAxios
     .post(
-      `/idea-market/invitations`, // FIX ROUTE
+      `/idea/invitation/${invitation.teamId}/${invitation.ideaMarketId}`, // FIX ROUTE
       invitation,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -134,15 +134,15 @@ const changeInvitationStatus = async (
   }
 
   return invitationTeamToIdeaAxios
-    .putNoRequestBody<Success | Error>(
-      `/invitation/${invitationId}`, // FIX ROUTE
+    .put<Success | Error>(
+      `/idea/invitation/status`,
+      { status: status }, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       {
         params: { id: invitationId },
-        requestData: { status: status },
       },
     )
     .then((response) => response.data)
