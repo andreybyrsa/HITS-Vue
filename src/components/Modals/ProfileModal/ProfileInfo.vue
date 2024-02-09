@@ -16,22 +16,24 @@ import useUserStore from '@Store/user/userStore'
 import useProfilesStore from '@Store/profiles/profilesStore'
 
 import Validation from '@Utils/Validation'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
+import { Profile } from '@Domain/Profile'
 
 const route = useRoute()
 const profileId = route.params.id.toString()
 
 const profilesStore = useProfilesStore()
-const profile = computed(() => profilesStore.getProfileByUserId(profileId))
+const profile = ref(profilesStore.getProfileByUserId(profileId))
+const computedProfile = computed(() => profile.value)
 
-const isOwnProfile = computed(() => profile.value?.email === user.value?.email)
+const isOwnProfile = computed(
+  () => computedProfile.value?.email === profile.value?.email,
+)
 const isUpdatingUserName = ref(false)
 const isUpdatingUserLastname = ref(false)
 const isOpenedChangeEmailModal = ref(false)
+const isUpdatingTelegram = ref(false)
 
-const { setValues, handleSubmit } = useForm<User>({
+const { setValues, handleSubmit } = useForm<Profile>({
   validationSchema: {
     firstName: (value: string) =>
       Validation.checkName(value) || 'Неверно введено имя',
@@ -40,10 +42,10 @@ const { setValues, handleSubmit } = useForm<User>({
   },
 })
 
-watchImmediate(profile, () => setUserValues())
+watchImmediate(computedProfile, () => setUserValues())
 
 const handleEditUser = handleSubmit(async (values) => {
-  const currentUser = user.value
+  const currentUser = profile.value
 
   if (currentUser?.token) {
     const { token } = currentUser
@@ -51,15 +53,16 @@ const handleEditUser = handleSubmit(async (values) => {
     await profilesStore.updateUserFullName(values, token)
     isUpdatingUserName.value = false
     isUpdatingUserLastname.value = false
+    isUpdatingTelegram.value = false
   }
 })
 
 function setUserValues() {
-  if (profile.value?.email === user.value?.email) {
-    setValues({ ...user.value })
-  } else if (profile.value) {
-    const { email, firstName, lastName } = profile.value
-    setValues({ email, firstName, lastName })
+  if (computedProfile.value?.email === profile.value?.email) {
+    setValues({ ...profile.value })
+  } else if (computedProfile.value) {
+    const { email, firstName, lastName, userTag } = computedProfile.value
+    setValues({ email, firstName, lastName, userTag })
   }
 }
 
@@ -77,6 +80,12 @@ function toogleUpdateUserLastname(value: boolean) {
   }
 }
 
+function toogleUpdateTelegram(value: boolean) {
+  isUpdatingTelegram.value = value
+  if (!value) {
+    setUserValues()
+  }
+}
 function openChangeEmailModal() {
   isOpenedChangeEmailModal.value = true
 }
@@ -144,6 +153,27 @@ function getFormattedDate(date: string) {
 
       <div class="w-100 d-flex flex-column gap-2">
         <div class="d-flex gap-1">
+          <Typography class-name="text-primary">Telegram-тег:</Typography>
+          <div
+            v-if="isOwnProfile && !isUpdatingTelegram"
+            class="link text-secondary cursor-pointer"
+            @click="toogleUpdateTelegram(true)"
+          >
+            изменить
+          </div>
+        </div>
+
+        <Input
+          name="userTag"
+          class-name="rounded-end w-100"
+          placeholder="Введите ваш Telegram-тег"
+          :disabled="!isUpdatingTelegram"
+          validate-on-update
+        />
+      </div>
+
+      <div class="w-100 d-flex flex-column gap-2">
+        <div class="d-flex gap-1">
           <Typography class-name="text-primary">Имя:</Typography>
           <div
             v-if="isOwnProfile && !isUpdatingUserName && !isUpdatingUserLastname"
@@ -187,7 +217,7 @@ function getFormattedDate(date: string) {
       <div class="d-flex gap-1">
         <Typography class-name="text-primary">Дата регистрации:</Typography>
         <Typography class-name="text-secondary">
-          {{ getFormattedDate(profile?.createdAt ?? '') }}
+          {{ getFormattedDate(computedProfile?.createdAt ?? '') }}
         </Typography>
       </div>
     </div>
