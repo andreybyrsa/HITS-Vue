@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import { Skill } from '@Domain/Skill'
@@ -9,7 +10,7 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
 import { ProfileFullName } from '@Domain/Profile'
-import { User } from '@Domain/User'
+import { User, UserTelegram } from '@Domain/User'
 import useUserStore from '@Store/user/userStore'
 import { TeamExperience } from '@Domain/Team'
 import TeamService from '@Services/TeamService'
@@ -57,6 +58,10 @@ const useProfilesStore = defineStore('profiles', {
     getProfileAvatarByUserId(state) {
       return (userId: string) =>
         state.avatars.find(({ id }) => id === userId)?.avatar
+    },
+    getUserTagByUserId(state) {
+      return (userId: string) =>
+        state.profiles.find(({ id }) => id === userId)?.userTag
     },
   },
 
@@ -113,6 +118,85 @@ const useProfilesStore = defineStore('profiles', {
           currentProfile.lastName = lastName
 
           userStore.setUser({ ...currentUser, firstName, lastName })
+        }
+      }
+    },
+
+    async updateUserTelegramTag(
+      user: User,
+      userTelegram: UserTelegram,
+      token: string,
+    ) {
+      const userStore = useUserStore()
+      const { id: userId } = user
+      const { userTag } = userTelegram
+
+      const response = await ProfileService.updateTelegramTag(userTag, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentProfile = this.profiles.find(({ id }) => id === userId)
+        const currentUser = userStore.user
+
+        if (currentProfile && currentUser) {
+          currentProfile.userTag = userTag
+
+          userStore.setUser({ ...currentUser })
+        }
+      }
+    },
+
+    async updateVisibilityOfTag(
+      user: User,
+      userTelegram: UserTelegram,
+      token: string,
+    ) {
+      const userStore = useUserStore()
+      const { id: userId } = user
+      const { userTag, isVisible } = userTelegram
+
+      if (isVisible === true) {
+        const response = await ProfileService.updateVisibilityOfTag(
+          userTag,
+          true,
+          token,
+        )
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentProfile = this.profiles.find(({ id }) => id === userId)
+          const currentUser = userStore.user
+
+          if (currentProfile && currentUser) {
+            currentProfile.isUserTagVisible = isVisible
+
+            userStore.setUser({ ...currentUser })
+          }
+        }
+      } else {
+        const response = await ProfileService.updateVisibilityOfTag(
+          userTag,
+          false,
+          token,
+        )
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentProfile = this.profiles.find(({ id }) => id === userId)
+          const currentUser = userStore.user
+
+          if (currentProfile && currentUser) {
+            currentProfile.isUserTagVisible = isVisible
+
+            userStore.setUser({ ...currentUser })
+          }
         }
       }
     },

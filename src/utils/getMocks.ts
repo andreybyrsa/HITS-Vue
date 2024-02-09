@@ -1570,7 +1570,7 @@ export const profilesMocks: Profile[] = [
     ideas: [ideasMocks[0], ideasMocks[1]],
     teamsExperience: teamsExperienceMocks,
     teamsProjects: teamsProjectsMocks,
-    userTag: '@pupupu',
+    userTag: usersTelegramMocks[0].userTag,
     isUserTagVisible: true,
   },
 ]
