@@ -7,7 +7,7 @@ import { MODE } from '@Main'
 import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import { invitationTeamToIdeaMocks } from '@Utils/getMocks'
+import { RequestTeamsMocks, invitationTeamToIdeaMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
 const invitationTeamToIdeaAxios = defineAxios(invitationTeamToIdeaMocks)
@@ -118,30 +118,33 @@ const inviteTeamToIdea = async (
 // --- PUT --- //
 
 const changeInvitationStatus = async (
-  invitationId: string,
+  invitation: InvitationTeamToIdea,
   status: InvitationTeamToIdeaStatus,
   token: string,
 ): Promise<Success | Error> => {
+  const { id, ideaMarketId } = invitation
   if (MODE === 'DEVELOPMENT') {
     if (status === 'ACCEPTED') {
-      invitationTeamToIdeaMocks.forEach((invitation) => {
-        if (invitation.id === invitationId) {
-          invitation.status = status
-        }
-        invitation.status = 'ANNULLED'
+      RequestTeamsMocks.forEach((request) => {
+        if (request.status === 'NEW' && request.ideaMarketId === ideaMarketId)
+          request.status = 'ANNULLED'
+      })
+      invitationTeamToIdeaMocks.forEach((invitat) => {
+        if (invitat.id !== id && invitat.ideaMarketId === ideaMarketId)
+          invitation.status = 'ANNULLED'
       })
     }
   }
 
   return invitationTeamToIdeaAxios
     .putNoRequestBody<Success | Error>(
-      `/invitation/${invitationId}`, // FIX ROUTE
+      `/invitation/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       {
-        params: { id: invitationId },
+        params: { id: id },
         requestData: { status: status },
       },
     )

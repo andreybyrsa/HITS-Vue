@@ -188,6 +188,7 @@ const sendIdeaOnMarket = async (
         stack: ideasSkillsMocks.find(({ ideaId }) => ideaId === idea.id)?.skills,
         status: 'RECRUITMENT_IS_OPEN',
         requests: 0,
+        activeRequests: 0,
         acceptedRequests: 0,
         isFavorite: false,
       }

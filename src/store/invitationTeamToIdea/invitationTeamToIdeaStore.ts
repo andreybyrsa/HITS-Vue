@@ -9,6 +9,7 @@ import {
   InvitationTeamToIdeaStatus,
 } from '@Domain/InvitationTeamToIdea'
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 
 const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', {
   state: (): InitialState => ({
@@ -108,11 +109,14 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
 
     async putInvitationForTeamToIdea(
       status: InvitationTeamToIdeaStatus,
-      invitationId: string,
+      invitation: InvitationTeamToIdea,
       token: string,
     ) {
+      const { id: invitationId } = invitation
+      const requestTeamToIdea = useRequestsToIdeaStore()
+
       const response = await invitationTeamToIdeaService.changeInvitationStatus(
-        invitationId,
+        invitation,
         status,
         token,
       )
@@ -131,9 +135,16 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
         if (status === 'ACCEPTED') {
           this.ideaInvitations.forEach((invite) => {
             if (invite.status === 'NEW') {
-              console.log(invite.teamName, invite.id)
               invite.status = 'ANNULLED'
             }
+          })
+
+          requestTeamToIdea.requestsTeamsToIdea.forEach((request) => {
+            if (
+              request.status === 'NEW' &&
+              request.ideaMarketId === invitation.ideaMarketId
+            )
+              request.status = 'ANNULLED'
           })
         }
       }

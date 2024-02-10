@@ -21,6 +21,7 @@ interface IdeaMarket {
   stack: Skill[]
   status: IdeaMarketStatusType
   requests: number
+  activeRequests: number
   acceptedRequests: number
   isFavorite: boolean
 }

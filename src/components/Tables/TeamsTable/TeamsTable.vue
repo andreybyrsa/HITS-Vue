@@ -414,7 +414,7 @@ async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
 
   if (currentUser?.token) {
     const { token, id: userId } = currentUser
-    const { id, name: ideaName, marketId } = ideaMarket
+    const { id, name: ideaName } = ideaMarket
     const { id: teamId, name: teamName, membersCount, skills } = team
 
     const invitation: InvitationTeamToIdea = {
@@ -422,7 +422,6 @@ async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
       ideaMarketId: id,
       ideaMarketName: ideaName,
       status: 'NEW',
-      marketId: marketId,
       initiatorId: userId,
       teamId: teamId,
       teamName: teamName,
@@ -442,11 +441,10 @@ async function handleRevokeTeam(invitation: InvitationTeamToIdea) {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const { id } = invitation
 
     await invitationsTeamToIdeaStore.putInvitationForTeamToIdea(
       'WITHDRAWN',
-      id,
+      invitation,
       token,
     )
     isLoading.value = false

@@ -169,12 +169,17 @@ function getIdeaMarketStatusStyle() {
 
           <div class="text-secondary d-flex align-items-center gap-1">
             <Icon class-name="bi bi-people-fill opacity-75" />
-            <Typography>Команда из {{ ideaMarket.maxTeamSize }} человек</Typography>
+            <Typography>Команда до {{ ideaMarket.maxTeamSize }} человек</Typography>
           </div>
 
           <div class="text-secondary d-flex align-items-center gap-1">
             <Icon class-name="bi bi-envelope-fill opacity-75" />
             <Typography>Подано заявок {{ ideaMarket.requests }}</Typography>
+          </div>
+
+          <div class="text-secondary d-flex align-items-center gap-1">
+            <Icon class-name="bi bi-envelope-fill opacity-75" />
+            <Typography>Активных заявок {{ ideaMarket.activeRequests }}</Typography>
           </div>
         </div>
 

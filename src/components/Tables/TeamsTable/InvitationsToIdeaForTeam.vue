@@ -44,6 +44,8 @@ const requestsToTeamStatus = getJoinStatus()
 const isOpenedConfirmModal = ref(false)
 const isOpenedRevokeModal = ref(false)
 
+const isLoading = ref(false)
+
 watchImmediate(
   () => selectedInvitation.value,
   () => {
@@ -112,8 +114,8 @@ const dropdownRequestActions: DropdownMenuAction<InvitationTeamToIdea>[] = [
 function navigateToTeamModal(invitation: InvitationTeamToIdea) {
   const ideaMarketRoute: RouteRecordRaw = {
     name: 'market-idea-modal',
-    path: 'market/:marketId/:ideaMarketId',
-    alias: '/market/:marketId/:ideaMarketId',
+    path: 'market:ideaMarketId',
+    alias: '/market:ideaMarketId',
     component: IdeaMarketModal,
     props: {
       canGoBack: true,
@@ -122,7 +124,7 @@ function navigateToTeamModal(invitation: InvitationTeamToIdea) {
 
   navigateToAliasRoute(
     'teams-list',
-    `/market/${invitation.marketId}/${invitation.ideaMarketId}`,
+    `/market/${invitation.ideaMarketId}`,
     ideaMarketRoute,
   )
 }
@@ -146,19 +148,26 @@ async function handleAcceptInvitationToIdea(
   invitationToIdea: InvitationTeamToIdea | null,
 ) {
   const currentUser = user.value
+  isLoading.value = true
 
   if (currentUser?.token && invitationToIdea) {
     const { token } = currentUser
-    const { id, ideaMarketId } = invitationToIdea
-    const status = 'ACCEPTED'
+    const { ideaMarketId } = invitationToIdea
 
-    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
     await ideasMarketStore.updateIdeaMarketStatus(
       ideaMarketId,
       'RECRUITMENT_IS_CLOSED',
       token,
     )
     await ideasMarketStore.addIdeaMarketTeam(ideaMarketId, props.team, token)
+    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(
+      'ACCEPTED',
+      invitationToIdea,
+      token,
+    )
+
+    isLoading.value = false
+    closeConfirmModal()
   }
 }
 
@@ -166,14 +175,20 @@ async function handleRevokeInvitationToIdea(
   invitationToIdea: InvitationTeamToIdea | null,
 ) {
   const currentUser = user.value
+  isLoading.value = true
 
   if (currentUser?.token && invitationToIdea) {
     const { token } = currentUser
-    const { id } = invitationToIdea
     const status = 'CANCELED'
 
-    if (id)
-      await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
+    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(
+      status,
+      invitationToIdea,
+      token,
+    )
+
+    isLoading.value = false
+    closeRevokeModal()
   }
 }
 </script>
@@ -190,7 +205,8 @@ async function handleRevokeInvitationToIdea(
   <ConfirmModal
     :is-opened="isOpenedRevokeModal"
     text-button="Отклонить приглашение"
-    text-question="Ваша команда отклонит приглашение в идею."
+    text-question="Ваша команда отклонит приглашение в идею"
+    :is-loading="isLoading"
     @close-modal="closeRevokeModal"
     @action="handleRevokeInvitationToIdea(currentInvitationToIdea)"
   />
@@ -198,6 +214,7 @@ async function handleRevokeInvitationToIdea(
     :is-opened="isOpenedConfirmModal"
     text-button="Принять приглашение"
     text-question="Ваша команда приступит к выполнению идеи"
+    :is-loading="isLoading"
     :textNotDanger="true"
     @close-modal="closeConfirmModal"
     @action="handleAcceptInvitationToIdea(currentInvitationToIdea)"
