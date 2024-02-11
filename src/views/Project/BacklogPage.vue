@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <div class="d-flex flex-column gap-3">
+    <div class="d-flex flex-column gap-3 w-25">
       <Button
         @click="openCreateNewTask"
         class-name="btn btn-primary text-nowrap p-2 px-5"
