@@ -29,7 +29,7 @@ import {
   FinishProjectModalProps,
 } from '@Components/Modals/FinishProjectModal/FinishProjectModal.types'
 import useTasksStore from '@Store/tasks/tasksStore'
-import { Project, Task } from '@Domain/Project'
+import { Task } from '@Domain/Project'
 import useProjectsStore from '@Store/projects/projectsStore'
 import Validation from '@Utils/Validation'
 import useSprintsStore from '@Store/sprints/sprintsStore'
@@ -40,8 +40,6 @@ import {
 } from '@Utils/sendParallelRequests'
 
 const isLoading = ref(false)
-const radio1 = ref()
-const radio2 = ref()
 const refValue = ref()
 const report = ref('')
 
@@ -58,7 +56,6 @@ const { user } = storeToRefs(userStore)
 const route = useRoute()
 
 const averageMark = ref<AverageMark[]>([])
-const reportProject = ref<ReportProject[]>([])
 
 const projectStore = useProjectsStore()
 const { projects } = storeToRefs(projectStore)
@@ -114,21 +111,13 @@ function filterTasksByStatus(tasksAll: Task[]) {
   return tasksAll.filter((value: Task) => value.status !== 'Done')
 }
 
-const validationSchemaSprint = {
-  report: (value: string) =>
-    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-  radio: (value: boolean) =>
-    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-}
-
 const validationSchemaProject = {
   report: (value: string) =>
     Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
 }
 
 const { handleSubmit } = useForm({
-  validationSchema:
-    props.status === 'PROJECT' ? validationSchemaProject : validationSchemaSprint,
+  validationSchema: validationSchemaProject,
 })
 
 const FinishProject = handleSubmit(async () => {
@@ -165,49 +154,6 @@ const FinishProject = handleSubmit(async () => {
     emit('close-modal')
   }
 })
-
-const FinishSprint = handleSubmit(async () => {
-  isLoading.value = true
-
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const sprintID = route.params.id.toString()
-    const finishDate = new Date().toJSON().toString()
-
-    const fiinishSprintParallelRequests: RequestConfig[] = [
-      {
-        request: () => sprintStore.changeSprintStatus(sprintID, 'DONE', token),
-        refValue: refValue,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => sprintStore.finishSprint(sprintID, finishDate, token),
-        refValue: refValue,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => sprintStore.reportSprint(sprintID, report.value, token),
-        refValue: refValue,
-        onErrorFunc: openErrorNotification,
-      },
-    ]
-
-    await sendParallelRequests(fiinishSprintParallelRequests)
-    report.value = ''
-    isLoading.value = false
-    emit('close-modal')
-  }
-})
-
-function clickFunctionByStatus() {
-  if (props.status === 'PROJECT') {
-    return FinishProject()
-  }
-  FinishSprint()
-}
 </script>
 
 <template>
@@ -225,13 +171,6 @@ function clickFunctionByStatus() {
         </Typography>
 
         <Typography
-          v-if="status === 'SPRINT'"
-          class-name="border-bottom text-primary fs-3 w-100"
-        >
-          {{ 'Завершение спринта' }}
-        </Typography>
-
-        <Typography
           v-if="status === 'PROJECTINFO'"
           class-name="border-bottom text-primary fs-3 w-100"
         >
@@ -245,33 +184,23 @@ function clickFunctionByStatus() {
       </div>
       <div class="d-flex w-100 gap-2 flex-column overflow-scroll">
         <div class="d-flex gap-3 text-primary w-100">
-          <Typography class-name="w-25">{{
-            status === 'PROJECT' || status === 'PROJECTINFO'
-              ? 'Средняя оценка'
-              : 'Оценка'
-          }}</Typography>
+          <Typography class-name="w-25">{{ 'Средняя оценка' }}</Typography>
 
-          <Typography class-name="w-75">{{
-            status === 'PROJECT' || status === 'PROJECTINFO'
-              ? 'Участник'
-              : 'Статистика участника'
-          }}</Typography>
+          <Typography class-name="w-75">{{ 'Участник' }}</Typography>
         </div>
         <div
           class="d-flex gap-3 w-100 justify-content-between h-100"
           v-for="(member, index) in averageMark"
           :key="index"
         >
-          <div
-            v-if="status === 'PROJECT' || status === 'PROJECTINFO'"
-            class="w-25 h-100"
-          >
+          <div class="w-25 h-100">
             <Input
               v-if="status === 'PROJECT'"
               :name="member.id"
-              class-name="rounded finish-project-modal__input"
+              class-name="rounded finish-project-modal__input bg-transparent"
               placeholder="Оценка"
               v-model="member.mark"
+              disabled
             />
             <Input
               v-if="status === 'PROJECTINFO'"
@@ -283,72 +212,8 @@ function clickFunctionByStatus() {
             />
           </div>
 
-          <div
-            v-else
-            class="w-25 h-100"
-          >
-            <Input
-              :name="member.id"
-              class-name="rounded finish-project-modal__input"
-              placeholder="Оценка"
-            />
-          </div>
-
           <ul class="list-group rounded-3 w-75">
             <li
-              v-if="status === 'SPRINT'"
-              class="list-group-item p-0 overflow-hidden w-100"
-            >
-              <Button
-                variant="light"
-                class-name="collapse-controller w-100 justify-content-between"
-                v-collapse="member.id"
-              >
-                {{ member.firstName }} {{ member.lastName }}
-                <div :class="getRoleProjectMemberStyle(member.projectRole)">
-                  {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
-                </div>
-              </Button>
-
-              <Collapse :id="member.id">
-                <div
-                  v-if="member.tasks"
-                  class="fp-2 m-2"
-                >
-                  <div class="text-primary">Выполненные задачи*</div>
-
-                  <div
-                    v-for="(task, index) in member.tasks"
-                    :key="index"
-                  >
-                    <div
-                      v-if="task.status === 'Done'"
-                      class="d-flex rounded-3 border p-2 mb-1 gap-2 justify-content-between w-100"
-                    >
-                      <div>{{ task.name }}</div>
-                      <div
-                        v-for="(tag, index) in task.tag"
-                        :key="index"
-                        class="d-flex gap-1"
-                      >
-                        <Icon
-                          :style="{ color: tag.color }"
-                          class="bi bi-circle-fill"
-                        >
-                        </Icon>
-
-                        <Typography class-name="finish-project-modal__tag"
-                          >{{ tag.name }}
-                        </Typography>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Collapse>
-            </li>
-
-            <li
-              v-else
               class="list-group-item p-0 overflow-hidden w-100 w-100 finish-project-modal__input"
             >
               <div
@@ -417,7 +282,7 @@ function clickFunctionByStatus() {
       <div class="w-100">
         <div class="mb-2 text-primary">Отчет*</div>
         <Textarea
-          v-if="status === 'PROJECT' || status === 'SPRINT'"
+          v-if="status === 'PROJECT'"
           name="report"
           class-name="finish-project-modal__report rounded w-100"
           placeholder="Отчет"
@@ -431,7 +296,7 @@ function clickFunctionByStatus() {
           :key="project.id"
         >
           <Textarea
-            v-if="status === 'PROJECTINFO' && project"
+            v-if="status === 'PROJECTINFO'"
             name="report"
             class-name="finish-project-modal__report rounded w-100 bg-transparent"
             v-model="project.report.report"
@@ -443,45 +308,14 @@ function clickFunctionByStatus() {
         </div>
       </div>
 
-      <div v-if="status === 'SPRINT'">
-        <div class="text-primary">Перенос незавершенных задач*</div>
-
-        {{ radio1 }}
-        {{ radio2 }}
-        <Radio
-          class-name=""
-          name="radio"
-          label="Перенести в новый спринт"
-          :value="true"
-          validate-on-update
-        />
-
-        <Radio
-          class-name=""
-          name="radio"
-          label="Перенести в Бэклог"
-          :value="false"
-          validate-on-update
-        />
-      </div>
-
       <Button
         v-if="status === 'PROJECT'"
-        @click="clickFunctionByStatus"
+        @click="FinishProject"
         :is-loading="isLoading"
         :disabled="isLoading"
         variant="primary"
       >
         {{ 'Завершить проект' }}
-      </Button>
-      <Button
-        v-if="status === 'SPRINT'"
-        @click="clickFunctionByStatus"
-        :is-loading="isLoading"
-        :disabled="isLoading"
-        variant="primary"
-      >
-        {{ 'Завершить спринт' }}
       </Button>
     </div>
   </ModalLayout>

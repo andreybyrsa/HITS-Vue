@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
-import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
+import FinishSprintModal from '@Components/Modals/FinishSprintModal/FinishSprintModal.vue'
 
 import { ActiveSprintProps } from '@Views/Project/Project.types'
 
@@ -538,10 +538,9 @@ function getFormattedDate(date: string) {
         </draggable>
       </div>
     </div>
-    <FinishProjectModal
-      isFinishProject
+    <FinishSprintModal
+      isFinishSprint
       :is-opened="isOpenedFinishSprintModal"
-      status="SPRINT"
       @close-modal="closeFinishSprintModal"
     />
   </div>
