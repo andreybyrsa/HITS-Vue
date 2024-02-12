@@ -93,6 +93,7 @@ const useTeamStore = defineStore('teams', {
 
     async kickTeamMember(teamId: string, teamMemberId: string, token: string) {
       const response = await TeamService.kickTeamMember(teamId, teamMemberId, token)
+      const profileStore = useProfilesStore()
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -118,6 +119,7 @@ const useTeamStore = defineStore('teams', {
 
     async leaveFromTeam(teamId: string, teamMemberId: string, token: string) {
       const response = await TeamService.leaveFromTeam(teamId, teamMemberId, token)
+      const profileStore = useProfilesStore()
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)

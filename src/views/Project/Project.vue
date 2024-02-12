@@ -26,6 +26,7 @@ import useSprintsStore from '@Store/sprints/sprintsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useTagsStore from '@Store/tags/tagsStore'
 import { Tag } from '@Domain/Tag'
+import useProjectsStore from '@Store/projects/projectsStore'
 
 const sprintsStore = useSprintsStore()
 const tasksStore = useTasksStore()
@@ -43,6 +44,8 @@ const tasks = ref<Task[]>()
 const tags = ref<Tag[]>()
 const isLoading = ref(false)
 
+const ProjectStore = useProjectsStore()
+
 watchImmediate(
   () => route.params.id,
   async () => {
@@ -54,7 +57,6 @@ onMounted(getProject)
 
 async function getProject() {
   const currentUser = user.value
-
   if (currentUser?.token) {
     const { token } = currentUser
 
@@ -64,7 +66,7 @@ async function getProject() {
 
     const ideasMarketParallelRequests: RequestConfig[] = [
       {
-        request: () => ProjectService.getProject(projectId, token),
+        request: () => ProjectStore.getProject(projectId, token),
         refValue: project,
         onErrorFunc: openErrorNotification,
       },

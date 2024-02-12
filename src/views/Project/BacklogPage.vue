@@ -2,71 +2,28 @@
   <div class="d-flex gap-3 mt-4">
     <div class="w-100">
       <draggable
-        class="list-group rounded-3"
+        class="list-group"
         :list="filteredAndSortedTasks"
         :animation="200"
         @change="checkMove"
         group="tasks"
       >
         <template #item="{ element }">
-          <div class="p-0 overflow-hidden mb-3 border rounded-3">
-            <Button
-              variant="light"
-              class-name="collapse-controller px-0 py-2 w-100"
-              v-collapse="element.id"
-            >
-              <div class="header">
-                <div class="header__block w-75 fw-semibold px-3">
-                  <div
-                    class="fs-5 fw-bold"
-                    v-if="filterByTags.length <= 0"
-                  >
-                    #{{ element.position }}
-                  </div>
-                  <div
-                    class="fs-5"
-                    @click="openUpdateNewTask"
-                  >
-                    {{ element.name }}
-                  </div>
-                </div>
-
-                <div class="header__block w-25 gap-5 px-3">
-                  <div class="header__block gap-1 w-50">
-                    <Icon
-                      class-name="bi bi-circle-fill "
-                      class="fs-3 text-secondary"
-                    />
-                    {{ element.initiator.firstName }}
-                    {{ element.initiator.lastName }}
-                  </div>
-
-                  <div class="header__block w-50 gap-1">
-                    <Icon
-                      class-name="bi bi-circle-fill "
-                      :style="{ color: element.tag.color }"
-                    />
-                    <div>{{ element.tag.name }}</div>
-                  </div>
-                </div>
-              </div>
-            </Button>
-            <Collapse :id="element.id">
-              <div class="collapce py-2 mx-3 border-top text-secondary fw-lighter">
-                <div class="collapce__block w-75">{{ element.description }}</div>
-
-                <div class="collapce__block-right">
-                  <div class="mb-3">Дата: {{ element.startDate }}</div>
-                  <div>Трудоемкость: {{ element.workHour }}</div>
-                </div>
-              </div>
-            </Collapse>
-          </div>
+          <ProjectTask :task="element" />
         </template>
       </draggable>
+
+      <div>
+        <div
+          v-for="(task, index) in otherTasks"
+          :key="index"
+        >
+          <ProjectTask :task="task" />
+        </div>
+      </div>
     </div>
 
-    <div class="d-flex flex-column gap-3">
+    <div class="d-flex flex-column gap-3 w-25">
       <Button
         @click="openCreateNewTask"
         class-name="btn btn-primary text-nowrap p-2 px-5"
@@ -98,12 +55,13 @@ import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
 
 import Button from '@Components/Button/Button.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
-import Icon from '@Components/Icon/Icon.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
+import ProjectTask from '@Views/Project/ProjectTask.vue'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 
 import { Filter } from '@Components/FilterBar/FilterBar.types'
 import { Task } from '@Domain/Project'
+import { Tag } from '@Domain/Tag'
 
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
@@ -113,7 +71,7 @@ import { watchImmediate } from '@vueuse/core'
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
 
-import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+const confirmedTags = ref<Tag[]>(tags.value.filter((tag) => tag.confirmed === true))
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -121,13 +79,21 @@ const { user } = storeToRefs(userStore)
 const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
-const inBackLogTasks = ref<Task[]>(
-  tasks.value.filter((task) => task.status === 'InBackLog'),
-)
+const inBackLogTasks = computed<Task[]>(() => {
+  return tasks.value.filter((task) => task.status === 'InBackLog')
+})
 
-const sortedInBackLogTasks = ref<Task[]>(
-  inBackLogTasks.value.sort((a, b) => a.position - b.position),
-)
+const otherTasks = computed<Task[]>(() => {
+  return sortOtherTasks(tasks.value, filterByTags.value)
+})
+
+const sortedInBackLogTasks = computed<Task[]>(() => {
+  const currentSortedTasks = [...inBackLogTasks.value].sort(
+    (a, b) => a.position - b.position,
+  )
+
+  return currentSortedTasks
+})
 
 const filterByTags = ref<string[]>([])
 const searchByTags = ref('')
@@ -135,7 +101,7 @@ const searchByTags = ref('')
 const filters: Filter<Task>[] = [
   {
     category: 'Теги',
-    choices: tags.value.map(({ name }) => ({
+    choices: confirmedTags.value.map(({ name }) => ({
       label: name,
       value: name,
     })),
@@ -206,6 +172,52 @@ function filtertTasks(tasks: Task[], filters: string[]): Task[] {
     return sortedInBackLogTasks.value
   }
 }
+
+function sortOtherTasks(tasks: Task[], filters: string[]): Task[] {
+  const excludedStatuses = ['InBackLog']
+  const firstStatuses = ['OnModification', 'NewTask', 'inProgress', 'OnVerification']
+
+  const filteredTasks = tasks.filter(
+    (task) => !excludedStatuses.includes(task.status),
+  )
+
+  if (filterByTags.value.length > 0) {
+    const filteredByTags = filteredTasks.filter((task) =>
+      filters.some((filter) => task.tag.find(({ name }) => name === filter)),
+    )
+    return filteredByTags.sort((a, b) => {
+      if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {
+        return -1
+      }
+      if (!firstStatuses.includes(a.status) && firstStatuses.includes(b.status)) {
+        return 1
+      }
+      if (a.status === 'Done' && b.status !== 'Done') {
+        return 1
+      }
+      if (a.status !== 'Done' && b.status === 'Done') {
+        return -1
+      }
+      return 0
+    })
+  } else {
+    return filteredTasks.sort((a, b) => {
+      if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {
+        return -1
+      }
+      if (!firstStatuses.includes(a.status) && firstStatuses.includes(b.status)) {
+        return 1
+      }
+      if (a.status === 'Done' && b.status !== 'Done') {
+        return 1
+      }
+      if (a.status !== 'Done' && b.status === 'Done') {
+        return -1
+      }
+      return 0
+    })
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -214,7 +226,7 @@ function filtertTasks(tasks: Task[], filters: string[]): Task[] {
   border-bottom: 0;
   background-color: $white-color;
 
-  @include flexible(center, flex-start);
+  @include flexible(center, flex-start, $gap: 24px);
 }
 
 .header {
@@ -233,7 +245,7 @@ function filtertTasks(tasks: Task[], filters: string[]): Task[] {
     @include flexible(start, start);
 
     &-right {
-      width: 10%;
+      width: 17%;
     }
   }
 }
