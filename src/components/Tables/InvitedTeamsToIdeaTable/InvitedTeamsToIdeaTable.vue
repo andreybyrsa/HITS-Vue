@@ -63,7 +63,7 @@ const requestToInvitationColumns: TableColumn<InvitationTeamToIdea>[] = [
     getRowCellStyle: getJoinStatusStyle,
   },
   {
-    key: 'membersCount',
+    key: 'teamMembersCount',
     label: 'Участники',
     contentClassName: 'justify-content-center align-items-center text-center',
     rowCellClick: navigateToTeamModal,
@@ -134,10 +134,12 @@ async function cancelRequestToIdea(invitationToIdea: InvitationTeamToIdea | null
   if (currentUser?.token && invitationToIdea) {
     const { token } = currentUser
     const { id } = invitationToIdea
-    const status = 'CANCELED'
 
-    if (id)
-      await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
+    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(
+      'WITHDRAWN',
+      id,
+      token,
+    )
   }
 }
 </script>

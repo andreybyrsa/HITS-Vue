@@ -74,9 +74,8 @@ const acceptRequestToIdeaStatus = async (
   token: string,
 ): Promise<Team | Error> => {
   return requestTeamsAxios
-    .put<Team>(
+    .putNoRequestBody<Team>(
       `/market/idea/accept/request/${id}/${teamId}`,
-      { status: status },
       { headers: { Authorization: `Bearer ${token}` } },
       {
         params: { id },

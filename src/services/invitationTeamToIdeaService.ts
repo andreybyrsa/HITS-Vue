@@ -16,7 +16,7 @@ function filterInvitationsByMarketId(
   ideaMarketId: string,
   invitations: InvitationTeamToIdea[],
 ) {
-  return invitations.filter((invitation) => invitation.ideaMarketId == ideaMarketId)
+  return invitations.filter((invitation) => invitation.ideaId == ideaMarketId)
 }
 
 function filterInvitationsByInitiator(
@@ -37,7 +37,7 @@ const getInvitationsByIdea = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/idea/invitation/all/${ideaMarketId}`, // FIX ROUTE
+      `/idea/invitation/all/${ideaMarketId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -59,7 +59,7 @@ const getAllInvitationsByInitiator = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/idea/invitation//${userId}/invitations`, // FIX ROUTE
+      `/idea/invitation/all/initiator`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -103,14 +103,10 @@ const inviteTeamToIdea = async (
   token: string,
 ): Promise<InvitationTeamToIdea | Error> => {
   return invitationTeamToIdeaAxios
-    .post(
-      `/idea/invitation/${invitation.teamId}/${invitation.ideaMarketId}`, // FIX ROUTE
-      invitation,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-    )
+    .post(`/idea/invitation/${invitation.teamId}/${invitation.ideaId}`, invitation, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка отправки приглашения'))
 }
@@ -121,6 +117,8 @@ const changeInvitationStatus = async (
   invitationId: string,
   status: InvitationTeamToIdeaStatus,
   token: string,
+  ideaId?: string,
+  teamId?: string,
 ): Promise<Success | Error> => {
   if (MODE === 'DEVELOPMENT') {
     if (status === 'ACCEPTED') {
@@ -136,7 +134,7 @@ const changeInvitationStatus = async (
   return invitationTeamToIdeaAxios
     .put<Success | Error>(
       `/idea/invitation/status`,
-      { status: status }, // FIX ROUTE
+      { id: invitationId, teamId: teamId, ideaId: ideaId, status: status },
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

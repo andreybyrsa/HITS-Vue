@@ -11,6 +11,7 @@
   <LetterModal
     :letter="currentRequestToIdea?.letter"
     :is-opened="isOpenedLetterModal"
+    :idea-market="ideaMarket"
     @close-modal="closeLetterModal"
     @accept-request="acceptRequestToIdea(currentRequestToIdea)"
   />
@@ -212,6 +213,14 @@ async function acceptRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
     const { token } = currentUser
 
     await requestsToIdeaStore.acceptRequestToIdea(requestToIdea, token)
+    await requestsToIdeaStore.updateRequestToIdea(
+      requestToIdea.id,
+      'ACCEPTED',
+      token,
+      props.ideaMarket.ideaId,
+      requestToIdea.teamId,
+      props.ideaMarket.id,
+    )
   }
 }
 

@@ -9,6 +9,7 @@ import RequestToIdeaService from '@Services/RequestToIdeaService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/requestsToIdea/initialState'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
+import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
 
 const useRequestsToIdeaStore = defineStore('requestsToIdea', {
   state: (): InitialState => ({
@@ -104,23 +105,17 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
           ideaMarket.team = responseAcceptRequest
         }
       }
-
-      const response = RequestToIdeaService.updateRequestToIdeaStatus(
-        id,
-        'ACCEPTED',
-        token,
-      )
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      }
     },
 
     async updateRequestToIdea(
       requestId: string,
       status: RequestToIdeaStatus,
       token: string,
+      ideaId?: string,
+      teamId?: string,
+      ideaMarketId?: string,
     ) {
+      const invitationStoreToIdea = useInvitationsTeamToIdeaStore()
       const response = await RequestToIdeaService.updateRequestToIdeaStatus(
         requestId,
         status,
@@ -136,6 +131,23 @@ const useRequestsToIdeaStore = defineStore('requestsToIdea', {
 
         if (currentRequestToIdea) {
           currentRequestToIdea.status = status
+        }
+
+        if (status === 'ACCEPTED') {
+          this.requests.forEach((request) => {
+            if (
+              (request.ideaMarketId === ideaMarketId || request.teamId === teamId) &&
+              request.status === 'NEW'
+            )
+              request.status = 'ANNULLED'
+          })
+          invitationStoreToIdea.ideaInvitations.forEach((invitation) => {
+            if (
+              (invitation.ideaId === ideaId || invitation.teamId === teamId) &&
+              invitation.status === 'NEW'
+            )
+              invitation.status = 'ANNULLED'
+          })
         }
       }
     },

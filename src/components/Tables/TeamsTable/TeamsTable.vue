@@ -252,18 +252,18 @@ const dropdownTeamsActions = computed<DropdownMenuAction<Team>[]>(() => [
     statement: checkDeleteTeamAction,
     click: handleOpenDeleteModal,
   },
-  ...ideas.value.map((idea) => {
-    return {
-      label: `Пригласить в "${idea.name}"`,
-      beforeLabel: `Отозвать из "${idea.name}"`,
-      statementLabel: (team: Team) => getAccessInvitationsInIdeaMarket(team, idea),
-      statement: checkByUserRole,
-      click: async (team: Team) =>
-        getAccessInvitationsInIdeaMarket(team, idea)
-          ? openConfirmModalCanceled()
-          : openConfirmModalAccepted(),
-    }
-  }),
+  // ...ideas.value.map((idea) => {
+  //   return {
+  //     label: `Пригласить в "${idea.name}"`,
+  //     beforeLabel: `Отозвать из "${idea.name}"`,
+  //     statementLabel: (team: Team) => getAccessInvitationsInIdeaMarket(team, idea),
+  //     statement: checkByUserRole,
+  //     click: async (team: Team) =>
+  //       getAccessInvitationsInIdeaMarket(team, idea)
+  //         ? openConfirmModalCanceled()
+  //         : openConfirmModalAccepted(),
+  //   }
+  // }),
 ])
 
 const teamsTableHeader = computed<TableHeader>(() => ({
@@ -385,10 +385,10 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
 
 function getAccessInvitationsInIdeaMarket(team: Team, idea: IdeaMarket) {
   const { id: currentTeamId } = team
-  const { id: currentIdeaId } = idea
+  const { ideaId: currentIdeaId } = idea
 
   const currentsInvitesIdea = ideaInvitations.value.filter(
-    ({ ideaMarketId, status }) => ideaMarketId === currentIdeaId && status === 'NEW',
+    ({ ideaId, status }) => ideaId === currentIdeaId && status === 'NEW',
   )
   const isTeamInviteInIdea = currentsInvitesIdea.find(
     ({ teamId }) => teamId === currentTeamId,
@@ -410,20 +410,19 @@ async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
 
   if (currentUser?.token) {
     const { token, id: userId } = currentUser
-    const { id, name: ideaName, marketId } = ideaMarket
-    const { id: teamId, name: teamName, membersCount, skills } = team
+    const { ideaId, name: ideaName } = ideaMarket
+    const { id: teamId, name: teamName, membersCount, wantedSkills } = team
 
     const invitation: InvitationTeamToIdea = {
       id: '',
-      ideaMarketId: id,
-      ideaMarketName: ideaName,
+      ideaId: ideaId,
+      ideaName: ideaName,
       status: 'NEW',
-      marketId: marketId,
       initiatorId: userId,
       teamId: teamId,
       teamName: teamName,
-      membersCount: membersCount,
-      skills: skills,
+      teamMembersCount: membersCount,
+      skills: wantedSkills,
     }
 
     await invitationsTeamToIdeaStore.postInvitationsToIdea(invitation, token)

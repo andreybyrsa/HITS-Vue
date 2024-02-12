@@ -13,7 +13,7 @@ import { storeToRefs } from 'pinia'
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-defineProps<LetterModalProps>()
+const props = defineProps<LetterModalProps>()
 const emit = defineEmits<LetterModalEmits>()
 
 function closeModal() {
@@ -47,7 +47,11 @@ function acceptRequest() {
       </Typography>
 
       <Button
-        v-if="$route.name === 'market-idea-modal' && user?.role !== 'ADMIN'"
+        v-if="
+          $route.name === 'market-idea-modal' &&
+          user?.role !== 'ADMIN' &&
+          props.ideaMarket?.status !== 'RECRUITMENT_IS_CLOSED'
+        "
         class-name="btn-success"
         @click="acceptRequest"
       >

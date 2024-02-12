@@ -129,7 +129,7 @@ const getAllInitiatorMarketIdeasByUserId = async (
 ): Promise<IdeaMarket[] | Error> => {
   return ideasMarketAxios
     .get<IdeaMarket[]>(
-      `/user/${userId}/ideas`, // FIX ROUTE
+      `/idea/invitation/idea-market`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -172,6 +172,7 @@ const sendIdeaOnMarket = async (
     const ideasMarket = ideas.map((idea) => {
       return {
         id: '',
+        ideaId: idea.id,
         marketId: marketId,
         initiator: usersMocks.find(({ id }) => id === idea.initiator.id),
         createdAt: idea.createdAt,

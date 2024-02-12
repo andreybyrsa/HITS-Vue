@@ -146,7 +146,7 @@ function getTextStatusRequest(team: Team) {
   const currentRequestIsAnnulated = requestTeams.value.find(
     (request) => request.teamId === team.id && request.status === 'ANNULLED',
   )
-  if (currentRequestIsAnnulated) return 'Команда занята'
+  if (currentRequestIsAnnulated && !team.hasActiveProject) return 'Команда занята'
 }
 
 function getStyleRequest(team: Team) {
@@ -185,7 +185,11 @@ function checkRequestStatusNew(team: Team) {
   const currentRequest = requestTeams.value.find(
     (request) => request.teamId === team.id && request.status !== 'WITHDRAWN',
   )
-  return currentRequest && props.idea.id === currentRequest.ideaMarketId
+
+  return (
+    (currentRequest && props.idea.id === currentRequest.ideaMarketId) ||
+    team.hasActiveProject
+  )
 }
 
 const checkboxTeam = ref(false)

@@ -307,6 +307,7 @@ export const teamsMocks: Team[] = [
 export const ideasMarketMocks: IdeaMarket[] = [
   {
     id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
+    ideaId: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
     initiator: {
       id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
       email: 'kirill.vlasov.05@inbox.ru',
@@ -363,6 +364,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: '279b3fbf-de63-426f-bf9f-0c01ea19706b',
+    ideaId: '279b3fbf-de63-426f-bf9f-0c01ea19706b',
     initiator: {
       id: '2bafebe0-9514-43e0-badf-548388dfa2d4',
       email: 'warkingzar@gmail.com',
@@ -407,6 +409,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: 'c2d8b869-2731-4c37-b0de-17c1950a770f',
+    ideaId: 'c2d8b869-2731-4c37-b0de-17c1950a770f',
     initiator: {
       id: '09e6884f-65c5-4cd5-98f1-2f4ebb5823c0',
       email: 'l.a.nikiforova@tmn3.etagi.com',
@@ -481,6 +484,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: 'a51c17fd-c089-448c-be7b-714bceee8109',
+    ideaId: 'a51c17fd-c089-448c-be7b-714bceee8109',
     initiator: {
       id: '12c1534d-c6d1-4515-b531-ea380d75b772',
       email: 'd.shirokov@unlim.group',
@@ -555,6 +559,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: 'hfdnmkdfg-45678ejhdf-dhfc383-3456787654',
+    ideaId: 'a51c17fd-c089-448c-be7b-714bceee8109',
     initiator: usersMocks[0],
     team: null,
     marketId: '201',
@@ -1485,27 +1490,25 @@ export const profilesMocks: Profile[] = [
 
 export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
   {
-    ideaMarketId: ideasMarketMocks[0].id,
-    ideaMarketName: ideasMarketMocks[0].name,
+    ideaId: ideasMarketMocks[0].id,
+    ideaName: ideasMarketMocks[0].name,
     status: 'NEW',
-    marketId: ideasMarketMocks[0].marketId,
     teamId: teamsMocks[0].id,
     initiatorId: ideasMarketMocks[0].initiator.id,
     id: '245vs-d52ff-d4sd-2s',
     teamName: teamsMocks[0].name,
-    membersCount: teamsMocks[0].membersCount,
+    teamMembersCount: teamsMocks[0].membersCount,
     skills: ideasMarketMocks[0].stack,
   },
   {
-    ideaMarketId: ideasMarketMocks[1].id,
-    ideaMarketName: ideasMarketMocks[1].name,
+    ideaId: ideasMarketMocks[1].id,
+    ideaName: ideasMarketMocks[1].name,
     status: 'NEW',
-    marketId: ideasMarketMocks[1].marketId,
     teamId: teamsMocks[1].id,
     initiatorId: ideasMarketMocks[1].initiator.id,
     id: '245vs-d52ff-d4sd-2s1',
     teamName: teamsMocks[1].name,
-    membersCount: teamsMocks[1].membersCount,
+    teamMembersCount: teamsMocks[1].membersCount,
     skills: ideasMarketMocks[1].stack,
   },
 ]
