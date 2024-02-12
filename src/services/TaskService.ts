@@ -38,16 +38,6 @@ const getAllTasksProject = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения задач'))
 }
 
-const createTask = async (task: Task, token: string): Promise<Task | Error> => {
-  return tasksMocksAxios
-    .post('/task/add', task, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка добавления тега'))
-}
-
 const updateTasks = async (
   tasks: Task[],
   token: string,
@@ -133,6 +123,17 @@ const changeTaskStatus = async (
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
+// --- POST --- //
+const createTask = async (task: Task, token: string): Promise<Task | Error> => {
+  return tasksMocksAxios
+    .post('/task/add', task, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления тега'))
 }
 
 const ProfileService = {

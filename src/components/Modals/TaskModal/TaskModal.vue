@@ -9,8 +9,8 @@ import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 
-import defineAxios from '@Utils/defineAxios'
-import { tagsMocks } from '@Utils/getMocks'
+// import defineAxios from '@Utils/defineAxios'
+// import { tagsMocks } from '@Utils/getMocks'
 import useTagsStore from '@Store/tags/tagsStore'
 import { storeToRefs } from 'pinia'
 import { Tag } from '@Domain/Tag'
@@ -32,7 +32,7 @@ const props = defineProps<CreateNewTaskProps>()
 
 const emit = defineEmits<CreateTaskModalEmits>()
 
-const tagsAxios = defineAxios(tagsMocks)
+// const tagsAxios = defineAxios(tagsMocks)
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
@@ -110,13 +110,15 @@ onUpdated(async () => {
 
 const handleCreateTask = handleSubmit(async () => {
   const currentUser = user.value
-  isCreating.value = true
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isCreating.value = true
+
     const projectId = route.params.id.toString()
     const position = tasks.value.length + 1
     const currentDate = new Date().toJSON().toString()
-    console.log(descriptionTask.value, choosenTags.value)
+
     const currentTask: Task = {
       id: '',
       projectId: projectId,
