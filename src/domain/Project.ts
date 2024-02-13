@@ -82,7 +82,7 @@ interface Sprint {
   projectId: string
   name: string
   goal: string
-  marks: SprintMarks
+  marks: SprintMarks[]
   report: string
   startDate: string
   finishDate: string
@@ -107,6 +107,7 @@ export {
   ProjectMemberRole,
   SprintStatus,
   Sprint,
+  SprintMarks,
   Task,
   TaskStatus,
 }

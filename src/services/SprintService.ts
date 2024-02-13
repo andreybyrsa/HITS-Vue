@@ -4,7 +4,7 @@ import defineAxios from '@Utils/defineAxios'
 import { sprintMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
-import { Sprint, SprintStatus } from '@Domain/Project'
+import { Sprint, SprintStatus, SprintMarks } from '@Domain/Project'
 import Success from '@Domain/ResponseMessage'
 import { MODE } from '@Main'
 import axios from 'axios'
@@ -141,11 +141,11 @@ const finishSprintDate = async (
 
 const saveMarkSprint = async (
   sprintId: string,
-  mark: number,
+  marks: SprintMarks[],
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .post<Success>(`/sprint/marks/${sprintId}`, mark, {
+    .post<Success>(`/sprint/marks/${sprintId}`, marks, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

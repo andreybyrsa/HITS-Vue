@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import SprintService from '@Services/SprintService'
 
 import InitialState from '@Store/sprints/initialState'
-import { SprintStatus } from '@Domain/Project'
+import { SprintStatus, SprintMarks } from '@Domain/Project'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const useSprintsStore = defineStore('sprints', {
@@ -93,8 +93,8 @@ const useSprintsStore = defineStore('sprints', {
       }
     },
 
-    async saveMarkSprint(sprintId: string, mark: number, token: string) {
-      const response = await SprintService.saveMarkSprint(sprintId, mark, token)
+    async saveMarkSprint(sprintId: string, marks: SprintMarks[], token: string) {
+      const response = await SprintService.saveMarkSprint(sprintId, marks, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -102,7 +102,7 @@ const useSprintsStore = defineStore('sprints', {
         const currentSprint = this.sprints.find(({ id }) => id === sprintId)
 
         if (currentSprint && currentSprint.marks) {
-          currentSprint.marks.mark = mark
+          currentSprint.marks = marks
         }
       }
     },
