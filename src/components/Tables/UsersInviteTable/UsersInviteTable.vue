@@ -173,11 +173,11 @@ function navigateToUserProfile(user: TeamMember) {
 }
 
 function checkIsNotExistUser(user: TeamMember) {
-  return !invitationUsers.value.find(({ id }) => id === user.id)
+  return !invitationUsers.value.find(({ userId }) => userId === user.userId)
 }
 
 function checkIsExistUser(user: TeamMember) {
-  return !!invitationUsers.value.find(({ id }) => id === user.id)
+  return !!invitationUsers.value.find(({ userId }) => userId === user.userId)
 }
 </script>
 

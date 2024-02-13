@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
@@ -18,9 +18,10 @@ import { TeamMember, TeamInvitation } from '@Domain/Team'
 
 import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 import useUserStore from '@Store/user/userStore'
+import { watchImmediate } from '@vueuse/core'
 
 const invitationUsers = defineModel<TeamMember[]>({ required: true })
-const selectedUsers = ref<TeamMember[]>([])
+const selectedUsers = ref<TeamMember[]>(invitationUsers.value)
 
 const invitatinUsers = useInvitationUsersStore()
 const route = useRoute()
@@ -40,7 +41,7 @@ function inviteUsers() {
 
 function cancelSelectedUsers(user: TeamMember) {
   selectedUsers.value = selectedUsers.value.filter(
-    (selectedUser) => selectedUser.id !== user.id,
+    (selectedUser) => selectedUser.userId !== user.userId,
   )
 }
 
@@ -71,7 +72,6 @@ async function inviteUsersInTeam() {
 }
 
 function closeInvitationModal() {
-  selectedUsers.value = invitationUsers.value
   emit('close-modal')
 }
 </script>
