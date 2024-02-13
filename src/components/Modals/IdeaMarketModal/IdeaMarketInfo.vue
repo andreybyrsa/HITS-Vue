@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
+import { RouteRecordRaw, useRoute } from 'vue-router'
 
 import { MODE } from '@Main'
 
@@ -11,12 +11,14 @@ import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
 import IdeaMarketInfoTabs from '@Components/Modals/IdeaMarketModal/IdeaMarketInfoTabs'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
+import Profile from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import useUserStore from '@Store/user/userStore'
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 import { useDateFormat } from '@vueuse/core'
 import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const props = defineProps<IdeaMarketInfoProps>()
 
@@ -36,6 +38,14 @@ function getFormattedDate(date: string) {
   if (date) {
     const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
     return formattedDate.value
+  }
+}
+
+function clickTab(key: string) {
+  const { initiator } = props.ideaMarket
+
+  if (key === 'initiator') {
+    navigateToProfileModal(initiator.id)
   }
 }
 
@@ -99,6 +109,20 @@ function openConfirmModal() {
 function closeConfirmModal() {
   isOpenedConfirmModal.value = false
 }
+
+function navigateToProfileModal(id: string) {
+  const profileModalRoute: RouteRecordRaw = {
+    name: 'profile',
+    path: 'profile/:id',
+    alias: '/profile/:id',
+    component: Profile,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  navigateToAliasRoute('market-ideas', `/profile/${id}`, profileModalRoute)
+}
 </script>
 
 <template>
@@ -118,9 +142,13 @@ function closeConfirmModal() {
         <div class="exchange-info__user pt-2">
           <Icon :class-name="`${tab.icon} text-secondary fs-2 opacity-25`" />
 
-          <Typography class-name="text-primary">
+          <div
+            @click="clickTab(tab.key)"
+            :class="tab.key === 'initiator' && 'exchange-info__link'"
+            class="text-primary"
+          >
             {{ valueTab(tab.key) }}
-          </Typography>
+          </div>
         </div>
       </div>
 
@@ -163,6 +191,16 @@ function closeConfirmModal() {
 
   &__users {
     @include flexible(stretch, flex-start, column, $gap: 8px);
+  }
+
+  &__link {
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
+    }
   }
 }
 </style>

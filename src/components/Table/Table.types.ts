@@ -1,5 +1,6 @@
 import { ButtonProps } from '@Components/Button/Button.types'
 import { Filter } from '@Components/FilterBar/FilterBar.types'
+import { StyleValue } from 'vue'
 
 type KeyValueFunction<T, K extends keyof T> = (
   value: T[K],
@@ -29,6 +30,8 @@ interface CheckedDataAction<DataType> {
 
 interface DropdownMenuAction<DataType> {
   label: string
+  beforeLabel?: string
+  statementLabel?: (data: DataType) => boolean
   className?: string
   statement?: (data: DataType) => boolean
   click: (value: DataType) => void
@@ -51,6 +54,7 @@ interface TableColumn<DataType> {
   label: string
   size?: ColumnSize
   contentClassName?: string
+  getRowCellStyleCSS?: (value: DataType[keyof DataType]) => StyleValue
   getRowCellStyle?: TypedStyleFunction<DataType>
   getRowCellFormat?: TypedFormatFunction<DataType>
   headerCellClick?: () => void
@@ -66,6 +70,7 @@ interface TableProps<DataType> {
   filters?: Filter<DataType>[]
   checkedDataActions?: CheckedDataAction<DataType>[]
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]
+  isCheckbox?: boolean
 }
 
 export {

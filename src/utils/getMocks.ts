@@ -19,6 +19,7 @@ import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember } from '@Domain/Project'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 export const usersMocks: User[] = [
   {
@@ -251,17 +252,18 @@ export const teamsMocks: Team[] = [
   {
     id: '0',
     name: 'Визитка',
-    closed: false,
+    closed: true,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
     membersCount: 4,
-    owner: teamMembersMocks[0],
-    leader: teamMembersMocks[0],
+    owner: teamMembersMocks[1],
+    leader: teamMembersMocks[1],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
+    hasActiveProject: true,
   },
   {
     id: '1',
@@ -277,6 +279,7 @@ export const teamsMocks: Team[] = [
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
+    hasActiveProject: false,
   },
   {
     id: '2',
@@ -297,19 +300,21 @@ export const teamsMocks: Team[] = [
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
+    hasActiveProject: false,
   },
 ]
 
 export const ideasMarketMocks: IdeaMarket[] = [
   {
     id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
+    ideaId: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
     initiator: {
-      id: '1',
-      email: 'barbakovom@tyuiu.ru',
-      lastName: 'Барбаков',
-      firstName: 'Олег',
+      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+      email: 'kirill.vlasov.05@inbox.ru',
+      lastName: 'Кирилл',
+      firstName: 'Власов',
     } as User,
-    team: teamsMocks[0],
+    team: null,
     marketId: '201',
     name: 'Цифровой помощник сотрудника приемной комиссии университета',
     problem: 'null',
@@ -359,6 +364,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: '279b3fbf-de63-426f-bf9f-0c01ea19706b',
+    ideaId: '279b3fbf-de63-426f-bf9f-0c01ea19706b',
     initiator: {
       id: '2bafebe0-9514-43e0-badf-548388dfa2d4',
       email: 'warkingzar@gmail.com',
@@ -403,6 +409,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: 'c2d8b869-2731-4c37-b0de-17c1950a770f',
+    ideaId: 'c2d8b869-2731-4c37-b0de-17c1950a770f',
     initiator: {
       id: '09e6884f-65c5-4cd5-98f1-2f4ebb5823c0',
       email: 'l.a.nikiforova@tmn3.etagi.com',
@@ -477,6 +484,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: 'a51c17fd-c089-448c-be7b-714bceee8109',
+    ideaId: 'a51c17fd-c089-448c-be7b-714bceee8109',
     initiator: {
       id: '12c1534d-c6d1-4515-b531-ea380d75b772',
       email: 'd.shirokov@unlim.group',
@@ -541,6 +549,59 @@ export const ideasMarketMocks: IdeaMarket[] = [
         id: '5165bc7b-1495-4540-9517-2f1f4a54f273',
         name: 'PostgreSQL',
         type: 'DATABASE',
+        confirmed: true,
+      },
+    ],
+    status: 'RECRUITMENT_IS_OPEN',
+    requests: 0,
+    acceptedRequests: 0,
+    isFavorite: false,
+  },
+  {
+    id: 'hfdnmkdfg-45678ejhdf-dhfc383-3456787654',
+    ideaId: 'a51c17fd-c089-448c-be7b-714bceee8109',
+    initiator: usersMocks[0],
+    team: null,
+    marketId: '201',
+    name: 'Идея для проверки',
+    problem: 'null',
+    description:
+      'Разработать web приложение для прогнозирования предпочтительного направления обучения поступающих , прогноза успеваемости и успешности с применением технологий машинного обучения и искусственного интеллекта',
+    solution:
+      'Разработать web приложение для прогнозирования предпочтительного направления обучения поступающих , прогноза успеваемости и успешности с применением технологий машинного обучения и искусственного интеллекта',
+    result: 'null',
+    maxTeamSize: 7,
+    customer: 'ВШЦТ',
+    position: 7,
+    stack: [
+      {
+        id: 'b629e3cb-c544-4b7c-8fa6-679df5fffc9c',
+        name: 'Python',
+        type: 'LANGUAGE',
+        confirmed: true,
+      },
+      {
+        id: '74d9f126-e188-4d1e-abb3-d494e5e5fa89',
+        name: 'Keras',
+        type: 'FRAMEWORK',
+        confirmed: true,
+      },
+      {
+        id: '2a03579d-9e40-4e85-a60e-6605a5a961dd',
+        name: 'Scikit Learn',
+        type: 'FRAMEWORK',
+        confirmed: true,
+      },
+      {
+        id: '5165bc7b-1495-4540-9517-2f1f4a54f273',
+        name: 'PostgreSQL',
+        type: 'DATABASE',
+        confirmed: true,
+      },
+      {
+        id: '0c0c65ee-aba3-4ba4-80ed-cf1ebe26da36',
+        name: 'Docker',
+        type: 'DEVOPS',
         confirmed: true,
       },
     ],
@@ -1424,5 +1485,30 @@ export const profilesMocks: Profile[] = [
     ideas: [ideasMocks[0], ideasMocks[1]],
     teamsExperience: teamsExperienceMocks,
     teamsProjects: teamsProjectsMocks,
+  },
+]
+
+export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
+  {
+    ideaId: ideasMarketMocks[0].id,
+    ideaName: ideasMarketMocks[0].name,
+    status: 'NEW',
+    teamId: teamsMocks[0].id,
+    initiatorId: ideasMarketMocks[0].initiator.id,
+    id: '245vs-d52ff-d4sd-2s',
+    teamName: teamsMocks[0].name,
+    teamMembersCount: teamsMocks[0].membersCount,
+    skills: ideasMarketMocks[0].stack,
+  },
+  {
+    ideaId: ideasMarketMocks[1].id,
+    ideaName: ideasMarketMocks[1].name,
+    status: 'NEW',
+    teamId: teamsMocks[1].id,
+    initiatorId: ideasMarketMocks[1].initiator.id,
+    id: '245vs-d52ff-d4sd-2s1',
+    teamName: teamsMocks[1].name,
+    teamMembersCount: teamsMocks[1].membersCount,
+    skills: ideasMarketMocks[1].stack,
   },
 ]

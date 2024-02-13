@@ -1,5 +1,8 @@
+import { IdeaMarket } from '@Domain/IdeaMarket'
+
 interface LetterModalProps {
   isOpened: boolean
+  ideaMarket?: IdeaMarket
   letter?: string
 }
 

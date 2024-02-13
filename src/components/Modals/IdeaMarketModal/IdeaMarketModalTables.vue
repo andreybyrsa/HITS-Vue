@@ -1,29 +1,50 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { IdeaMarketTablesProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 import RequestsToIdeaTable from '@Components/Tables/RequestsToIdeaTable/RequestsToIdeaTable.vue'
 import IdeaMarketTeamsTable from '@Components/Tables/IdeaMarketTeamsTable/IdeaMarketTeamsTable.vue'
+import InvitedTeamsToIdeaTable from '@Components/Tables/InvitedTeamsToIdeaTable/InvitedTeamsToIdeaTable.vue'
 
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team } from '@Domain/Team'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
+
+import Button from '@Components/Button/Button.vue'
 
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
+const invitedTeamsToIdea = defineModel<InvitationTeamToIdea[]>('InvitedTeamsToIdea')
+
+const router = useRouter()
 
 defineProps<IdeaMarketTablesProps>()
 
 const isAcceptedTeamsTable = ref(true)
 const isRequestsToIdeaTable = ref(false)
+const isInvitedTeamsTable = ref(false)
 
 function switchToAcceptedTeamsTable() {
   isAcceptedTeamsTable.value = true
   isRequestsToIdeaTable.value = false
+  isInvitedTeamsTable.value = false
 }
 
 function switchToRequestsToIdeaTable() {
   isRequestsToIdeaTable.value = true
   isAcceptedTeamsTable.value = false
+  isInvitedTeamsTable.value = false
+}
+
+function switchToInvitedTeamsTable() {
+  isRequestsToIdeaTable.value = false
+  isAcceptedTeamsTable.value = false
+  isInvitedTeamsTable.value = true
+}
+
+function redirectToInviteTeamsToIdea() {
+  router.push(`/teams/list`)
 }
 
 function getNavLinkStyle(isCurrentTable: boolean) {
@@ -52,6 +73,12 @@ function getNavLinkStyle(isCurrentTable: boolean) {
       >
         Заявки
       </div>
+      <div
+        :class="getNavLinkStyle(isInvitedTeamsTable)"
+        @click="switchToInvitedTeamsTable"
+      >
+        Приглашенные команды
+      </div>
     </ul>
 
     <div class="idea-market-tables">
@@ -62,12 +89,28 @@ function getNavLinkStyle(isCurrentTable: boolean) {
       />
 
       <RequestsToIdeaTable
-        v-if="isRequestsToIdeaTable && requestTeams"
+        v-if="isRequestsToIdeaTable"
         :idea-market="ideaMarket"
-        :requests="requestTeams"
+        :requests="requestTeams ?? []"
         v-model="skillsRequestTeam"
       />
+
+      <InvitedTeamsToIdeaTable
+        v-if="isInvitedTeamsTable"
+        :invitations="invitationsToTeams ?? []"
+        :idea-market-id="ideaMarket.id"
+        v-model="invitedTeamsToIdea"
+      />
     </div>
+
+    <Button
+      @click="redirectToInviteTeamsToIdea"
+      class-name="btn-invite-teams"
+      variant="primary"
+      v-if="isInvitedTeamsTable && invitationsToTeams"
+    >
+      Отправить приглашения
+    </Button>
   </div>
 </template>
 
@@ -78,5 +121,14 @@ function getNavLinkStyle(isCurrentTable: boolean) {
 }
 .nav-link {
   cursor: pointer;
+}
+.my-btn {
+  margin: 15px;
+  margin-left: auto;
+}
+
+.btn-invite-teams {
+  margin: 15px;
+  margin-left: auto;
 }
 </style>

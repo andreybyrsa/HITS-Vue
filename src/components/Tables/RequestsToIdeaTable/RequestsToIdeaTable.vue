@@ -11,6 +11,7 @@
   <LetterModal
     :letter="currentRequestToIdea?.letter"
     :is-opened="isOpenedLetterModal"
+    :idea-market="ideaMarket"
     @close-modal="closeLetterModal"
     @accept-request="acceptRequestToIdea(currentRequestToIdea)"
   />
@@ -212,6 +213,14 @@ async function acceptRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
     const { token } = currentUser
 
     await requestsToIdeaStore.acceptRequestToIdea(requestToIdea, token)
+    await requestsToIdeaStore.updateRequestToIdea(
+      requestToIdea.id,
+      'ACCEPTED',
+      token,
+      props.ideaMarket.ideaId,
+      requestToIdea.teamId,
+      props.ideaMarket.id,
+    )
   }
 }
 
@@ -227,6 +236,10 @@ async function cancelRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
 }
 
 function checkRecruitmentIdeaStatus(team: RequestTeamToIdea) {
-  return props.ideaMarket.status === 'RECRUITMENT_IS_OPEN' && team.status === 'NEW'
+  return (
+    props.ideaMarket.status === 'RECRUITMENT_IS_OPEN' &&
+    team.status === 'NEW' &&
+    user.value?.role !== 'ADMIN'
+  )
 }
 </script>
