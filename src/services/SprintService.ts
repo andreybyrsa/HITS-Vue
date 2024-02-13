@@ -109,7 +109,7 @@ const reportSprint = async (
     .catch((error) => handleAxiosError(error, 'Ошибка заполнения отчета проекта'))
 }
 
-const finishSprint = async (
+const finishSprintDate = async (
   sprintId: string,
   finishDate: string,
   token: string,
@@ -139,12 +139,27 @@ const finishSprint = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
 }
 
+const saveMarkSprint = async (
+  sprintId: string,
+  mark: number,
+  token: string,
+): Promise<Success | Error> => {
+  return axios
+    .post<Success>(`/sprint/marks/${sprintId}`, mark, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления оценки'))
+}
+
 const ProfileService = {
   getAllSprintsProject,
   changeSprintStatus,
   reportSprint,
-  finishSprint,
+  finishSprintDate,
   getActiveSprintsProject,
+  saveMarkSprint,
 }
 
 export default ProfileService

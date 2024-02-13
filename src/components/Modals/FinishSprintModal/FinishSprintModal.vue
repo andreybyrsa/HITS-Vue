@@ -87,16 +87,16 @@ async function getAverageMark() {
   }
 }
 
-const validationSchemaSprint = {
-  report: (value: string) =>
-    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-  radio: (value: boolean) =>
-    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-  mark: (value: boolean) =>
-    Validation.checkIsEmptyValue(value) || 'Обязательное поле',
-}
-
-const { handleSubmit } = useForm({ validationSchema: validationSchemaSprint })
+const { handleSubmit } = useForm({
+  validationSchema: {
+    report: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+    radio: (value: boolean) =>
+      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+    mark: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Обязательное поле',
+  },
+})
 
 const FinishSprint = handleSubmit(async () => {
   isLoading.value = true
@@ -159,8 +159,8 @@ const FinishSprint = handleSubmit(async () => {
           <Typography class-name="w-75">{{ 'Статистика участника' }}</Typography>
         </div>
         <div
-          v-for="member in averageMark"
-          :key="member.id"
+          v-for="(member, index) in averageMark"
+          :key="index"
           class="d-flex w-100 gap-2 flex-column"
         >
           <div class="d-flex gap-3 w-100 justify-content-between h-100">
@@ -179,7 +179,7 @@ const FinishSprint = handleSubmit(async () => {
                 <Button
                   variant="light"
                   class-name="collapse-controller w-100 justify-content-between"
-                  v-collapse="member.id"
+                  v-collapse="member.userId"
                 >
                   {{ member.firstName }} {{ member.lastName }}
                   <div :class="getRoleProjectMemberStyle(member.projectRole)">
@@ -187,7 +187,7 @@ const FinishSprint = handleSubmit(async () => {
                   </div>
                 </Button>
 
-                <Collapse :id="member.id">
+                <Collapse :id="member.userId">
                   <div
                     v-if="member.tasks"
                     class="fp-2 m-2"

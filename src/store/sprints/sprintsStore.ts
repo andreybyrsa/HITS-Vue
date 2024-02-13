@@ -76,7 +76,11 @@ const useSprintsStore = defineStore('sprints', {
     },
 
     async finishSprint(sprintId: string, finishDate: string, token: string) {
-      const response = await SprintService.finishSprint(sprintId, finishDate, token)
+      const response = await SprintService.finishSprintDate(
+        sprintId,
+        finishDate,
+        token,
+      )
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -85,6 +89,20 @@ const useSprintsStore = defineStore('sprints', {
 
         if (currentSprint) {
           currentSprint.finishDate = finishDate
+        }
+      }
+    },
+
+    async saveMarkSprint(sprintId: string, mark: number, token: string) {
+      const response = await SprintService.saveMarkSprint(sprintId, mark, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentSprint = this.sprints.find(({ id }) => id === sprintId)
+
+        if (currentSprint && currentSprint.marks) {
+          currentSprint.marks.mark = mark
         }
       }
     },

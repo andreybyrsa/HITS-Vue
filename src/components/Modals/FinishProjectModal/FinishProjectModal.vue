@@ -196,7 +196,7 @@ const FinishProject = handleSubmit(async () => {
           <div class="w-25 h-100">
             <Input
               v-if="status === 'PROJECT'"
-              :name="member.id"
+              :name="member.userId"
               class-name="rounded finish-project-modal__input bg-transparent"
               placeholder="Оценка"
               v-model="member.mark"
@@ -204,7 +204,7 @@ const FinishProject = handleSubmit(async () => {
             />
             <Input
               v-if="status === 'PROJECTINFO'"
-              :name="member.id"
+              :name="member.userId"
               class-name="rounded finish-project-modal__input bg-transparent"
               placeholder="Оценка"
               v-model="member.mark"
@@ -292,8 +292,8 @@ const FinishProject = handleSubmit(async () => {
           Отчет
         </Textarea>
         <div
-          v-for="project in projects"
-          :key="project.id"
+          v-for="(project, index) in projects"
+          :key="index"
         >
           <Textarea
             v-if="status === 'PROJECTINFO'"
