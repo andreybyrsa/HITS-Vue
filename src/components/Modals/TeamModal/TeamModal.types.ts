@@ -1,3 +1,5 @@
+import { IdeaMarket } from '@Domain/IdeaMarket'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Team, TeamInvitation, RequestToTeam } from '@Domain/Team'
 
@@ -10,6 +12,7 @@ interface TeamModalTables {
   invitations?: TeamInvitation[]
   requests?: RequestToTeam[]
   requestsTeamsToIdea?: RequestTeamToIdea[]
+  invitationsForTeam?: InvitationTeamToIdea[]
 }
 
 interface TeamMembersProps {
@@ -32,6 +35,7 @@ interface RequestsTeamToIdeasProps {
 }
 
 interface TeamModalActionsProps {
+  ideasInitiator: IdeaMarket[]
   team: Team
 }
 
@@ -47,6 +51,11 @@ interface TeamModalActionsEmits {
   (event: 'close-modal'): void
 }
 
+interface InvitationsToIdeaForTeamTableProps {
+  invitations: InvitationTeamToIdea[]
+  team: Team
+}
+
 export {
   TeamDescriptionProps,
   TeamModalTables,
@@ -58,4 +67,5 @@ export {
   TeamModalInfoProps,
   TeamDescriptionEmits,
   TeamModalActionsEmits,
+  InvitationsToIdeaForTeamTableProps,
 }

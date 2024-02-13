@@ -8,6 +8,15 @@ import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import { ProjectProps } from '@Views/Project/Project.types'
 import ProjectInfoTabs from '@Views/Project/ProjectInfoTabs'
+import { Project } from '@Domain/Project'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import { RouteRecordRaw } from 'vue-router'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const props = defineProps<ProjectProps>()
 function getFormattedDate(date: string) {
@@ -15,6 +24,18 @@ function getFormattedDate(date: string) {
     const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
     return formattedDate.value
   } else return 'Реализуется'
+}
+function navigateToIdea(project: Project) {
+  const ideaRoute: RouteRecordRaw = {
+    name: 'idea-project',
+    path: 'idea-project/:id',
+    alias: '/idea-project/:id',
+    component: IdeaModal,
+    props: {
+      canGoBack: true,
+    },
+  }
+  navigateToAliasRoute('project', `/idea-project/${project.id}`, ideaRoute)
 }
 
 const isOpenedFinishProjectModal = ref(false)
@@ -70,12 +91,13 @@ function getContentTab(header: string) {
       </div>
       <div class="mt-3">
         <Button
+          @click="navigateToIdea(project)"
           variant="primary"
           class-name="w-100"
           >Перейти в идею</Button
         >
         <Button
-          v-if="props.project.status === 'ACTIVE'"
+          v-if="props.project.status === 'ACTIVE' && user?.role === 'TEAM_LEADER'"
           @click="openFinishProjectModal"
           variant="danger"
           class-name="w-100 mt-2"

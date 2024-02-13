@@ -97,6 +97,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
           Спринты
         </div>
         <div
+          v-if="activeSprint"
           :class="getNavLinkStyle(isTabActiveSprint)"
           @click="switchToTabSprint"
         >
@@ -127,7 +128,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 // .content {
 //   height: 90%;
 // }

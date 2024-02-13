@@ -6,6 +6,7 @@ import { watchImmediate } from '@vueuse/core'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Header from '@Components/Header/Header.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+import ProjectPlaceHolder from '@Views/Project/ProjectPlaceHolder.vue'
 
 import ProjectHeader from '@Views/Project/ProjectHeader.vue'
 import ProjectContent from '@Views/Project/ProjectContent.vue'
@@ -23,10 +24,13 @@ import {
 } from '@Utils/sendParallelRequests'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
+import useTagsStore from '@Store/tags/tagsStore'
+import { Tag } from '@Domain/Tag'
 import useProjectsStore from '@Store/projects/projectsStore'
 
 const sprintsStore = useSprintsStore()
 const tasksStore = useTasksStore()
+const tagsStore = useTagsStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -37,6 +41,7 @@ const project = ref<Project>()
 const sprints = ref<Sprint[]>()
 const activeSprint = ref<Sprint>()
 const tasks = ref<Task[]>()
+const tags = ref<Tag[]>()
 const isLoading = ref(false)
 
 const ProjectStore = useProjectsStore()
@@ -76,8 +81,18 @@ async function getProject() {
         onErrorFunc: openErrorNotification,
       },
       {
+        request: () => tagsStore.getAllTags(token),
+        refValue: tags,
+        onErrorFunc: openErrorNotification,
+      },
+      {
         request: () => sprintsStore.getActiveSprint(projectId, token),
         refValue: activeSprint,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => tagsStore.getAllTags(token),
+        refValue: tags,
         onErrorFunc: openErrorNotification,
       },
     ]
@@ -111,6 +126,7 @@ async function getProject() {
 
         <ProjectContent :project="project" />
       </div>
+      <div v-else><ProjectPlaceHolder /></div>
       <router-view />
     </template>
   </PageLayout>

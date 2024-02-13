@@ -12,6 +12,11 @@ const ButtonClassName = computed(() => [
   { [`btn-${props.variant}`]: props.variant },
   props.className,
 ])
+
+const ButtonSlotClassName = computed(() => [
+  { ['btn-maxWidth']: props.maxWidth },
+  ['w-100 d-flex '],
+])
 </script>
 
 <template>
@@ -43,5 +48,10 @@ const ButtonClassName = computed(() => [
 <style lang="scss" scoped>
 .btn {
   @include flexible(center, center, $gap: 4px);
+
+  &-maxWidth {
+    @include textEllipsis(1);
+    overflow-wrap: unset;
+  }
 }
 </style>

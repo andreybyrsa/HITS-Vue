@@ -10,9 +10,10 @@ import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
 
+import sprintsStore from '@Store/projects/projectsStore'
 import useUserStore from '@Store/user/userStore'
 
-import { Task } from '@Domain/Project'
+import { Task, Sprint } from '@Domain/Project'
 import { reactiveComputed, useDateFormat, watchImmediate } from '@vueuse/core'
 import useTasksStore from '@Store/tasks/tasksStore'
 import {
@@ -20,6 +21,8 @@ import {
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
+import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 
 defineProps<ActiveSprintProps>()
 
@@ -32,12 +35,22 @@ const { tasks } = storeToRefs(taskStore)
 const checkMyInProgressTask = ref(false)
 const isLoadingTaskData = ref(false)
 
+const isOpenedCreateNewTask = ref(false)
+
 const isOpenedFinishSprintModal = ref(false)
 function closeFinishSprintModal() {
   isOpenedFinishSprintModal.value = false
 }
 function openFinishSprintModal() {
   isOpenedFinishSprintModal.value = true
+}
+
+function openCreateNewTask() {
+  isOpenedCreateNewTask.value = true
+}
+
+function closeCreateNewTask() {
+  isOpenedCreateNewTask.value = false
 }
 
 const refValue = ref()
@@ -61,6 +74,9 @@ const doneTask = reactiveComputed<Task[]>(() =>
 const tasksArray = computed<Task[][]>(() => {
   return [onModificationTask, newTask, inProgressTask, onVerificationTask, doneTask]
 })
+
+const currentSprint = ref<Sprint>()
+const isOpenedSprinttModal = ref(false)
 
 async function moveTask(evt: any) {
   const currentUser = user.value
@@ -175,22 +191,46 @@ function getFormattedDate(date: string) {
     return formattedDate.value
   }
 }
+
+function openModalSprint(sprint: Sprint) {
+  isOpenedSprinttModal.value = true
+  if (sprint) {
+    currentSprint.value = sprint
+  }
+}
+
+function closeSprintModal() {
+  isOpenedSprinttModal.value = false
+}
 </script>
 
 <template>
   <div class="active-sprint">
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
-        <div class="bs-link mb-1 fw-semibold text-primary">
+        <div
+          class="bs-link mb-1 fw-semibold text-primary"
+          @click="openModalSprint(sprint)"
+        >
           <Typography class-name="fs-5 fw-semibold cursor-pointer">
             {{ sprint.name }}
           </Typography>
         </div>
+        <SprintModal
+          :is-opened="isOpenedSprinttModal"
+          :sprint="currentSprint"
+          @close-modal="closeSprintModal"
+        />
         <Typography>( до {{ getFormattedDate(sprint.finishDate) }} )</Typography>
       </div>
       <div class="d-flex gap-2">
-        <Button variant="primary">Новая задача</Button>
         <Button
+          variant="primary"
+          @click="openCreateNewTask"
+          >Новая задача</Button
+        >
+        <Button
+          v-if="user?.role === 'TEAM_LEADER'"
           @click="openFinishSprintModal"
           variant="danger"
           >Завершить спринт</Button
@@ -284,7 +324,10 @@ function getFormattedDate(date: string) {
               <Typography>Новые</Typography>
             </div>
             <div class="d-flex gap-2">
-              <Icon class-name="bi bi-plus active-sprint__add-task p-1 rounded" />
+              <Icon
+                class-name="bi bi-plus active-sprint__add-task p-1 rounded"
+                @click="openCreateNewTask"
+              />
               <Icon
                 class-name="bi bi-patch-question"
                 v-tooltip="'Описание столбца'"
@@ -542,6 +585,11 @@ function getFormattedDate(date: string) {
       isFinishSprint
       :is-opened="isOpenedFinishSprintModal"
       @close-modal="closeFinishSprintModal"
+    />
+
+    <TaskModal
+      :is-opened="isOpenedCreateNewTask"
+      @close-modal="closeCreateNewTask"
     />
   </div>
 </template>

@@ -18,6 +18,16 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
+import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
+import ProjectInfo from './Project/ProjectInfo.vue'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+
+import useTagsStore from '@Store/tags/tagsStore'
+import TagsService from '@Services/TagsService'
+
+const tagsStore = useTagsStore()
+const { tags } = storeToRefs(tagsStore)
+
 import Collapse from '@Components/Collapse/Collapse.vue'
 const router = useRouter()
 
@@ -28,6 +38,7 @@ onMounted(async () => {
     const { token } = currentUser
 
     await TeamService.getTeams(token)
+    const currentTags = await TagsService.getAllTags(token)
   }
 })
 
@@ -103,7 +114,7 @@ const b = ref()
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
       <div class="table-responsive"></div>
 
-      <Select
+      <!-- <Select
         name="component"
         :options="[
           { value: '123', label: '1' },
@@ -120,9 +131,9 @@ const b = ref()
         Submit
       </Button>
 
-      {{ values }}
+      {{ values }} -->
 
-      <Combobox
+      <!-- <Combobox
         name="1"
         :options="[
           { id: '0', lang: 'Java', name: 'Джава' },
@@ -161,7 +172,7 @@ const b = ref()
         @click="isOpenedModal = true"
       >
         Открыть окно
-      </Button>
+      </Button> -->
 
       <pre class="sss">Пользователь из userStore - {{ user }}</pre>
     </template>
