@@ -13,7 +13,8 @@ import Button from '@Components/Button/Button.vue'
 import sprintsStore from '@Store/projects/projectsStore'
 import useUserStore from '@Store/user/userStore'
 
-import { Task, Sprint } from '@Domain/Project'
+import { Task, Sprint, TaskMovementLog } from '@Domain/Project'
+import TaskService from '@Services/TaskService'
 import { reactiveComputed, useDateFormat, watchImmediate } from '@vueuse/core'
 import useTasksStore from '@Store/tasks/tasksStore'
 import {
@@ -23,6 +24,7 @@ import {
 } from '@Utils/sendParallelRequests'
 import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 defineProps<ActiveSprintProps>()
 
@@ -78,6 +80,28 @@ const tasksArray = computed<Task[][]>(() => {
 const currentSprint = ref<Sprint>()
 const isOpenedSprinttModal = ref(false)
 
+const logs = ref<TaskMovementLog[]>()
+
+async function getLogs(taskId: string) {
+  const currentUser = user.value
+
+  if (currentUser) {
+    const { token } = currentUser
+
+    if (token) {
+      const taskLogs = await TaskService.getTaskMovementLog(taskId, token)
+
+      if (taskLogs instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', taskLogs.message)
+      } else {
+        logs.value = taskLogs
+        console.log(logs)
+      }
+    }
+  }
+  return logs
+}
+
 async function moveTask(evt: any) {
   const currentUser = user.value
 
@@ -93,7 +117,22 @@ async function moveTask(evt: any) {
       )
 
       if (currentArrayTask === onModificationTask) {
-        await taskStore.changeTaskStatus(taskId, 'OnModification', token)
+        const onModificationTaskParallelRequests: RequestConfig[] = [
+          {
+            request: () =>
+              taskStore.changeTaskStatus(taskId, 'OnModification', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'OnModification', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+        ]
+
+        await sendParallelRequests(onModificationTaskParallelRequests)
       }
 
       if (currentArrayTask === inProgressTask) {
@@ -105,6 +144,12 @@ async function moveTask(evt: any) {
           },
           {
             request: () => taskStore.changeTaskStatus(taskId, 'inProgress', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'inProgress', token),
             refValue: refValue,
             onErrorFunc: openErrorNotification,
           },
@@ -125,17 +170,52 @@ async function moveTask(evt: any) {
             refValue: refValue,
             onErrorFunc: openErrorNotification,
           },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'NewTask', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
         ]
 
         await sendParallelRequests(newTaskParallelRequests)
       }
 
       if (currentArrayTask === onVerificationTask) {
-        await taskStore.changeTaskStatus(taskId, 'OnVerification', token)
+        const onVerificationTaskParallelRequests: RequestConfig[] = [
+          {
+            request: () =>
+              taskStore.changeTaskStatus(taskId, 'OnVerification', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'OnVerification', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+        ]
+
+        await sendParallelRequests(onVerificationTaskParallelRequests)
       }
 
       if (currentArrayTask === doneTask) {
-        await taskStore.changeTaskStatus(taskId, 'Done', token)
+        const doneTaskParallelRequests: RequestConfig[] = [
+          {
+            request: () => taskStore.changeTaskStatus(taskId, 'Done', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'Done', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+        ]
+
+        await sendParallelRequests(doneTaskParallelRequests)
       }
 
       isLoadingTaskData.value = false
@@ -206,6 +286,7 @@ function closeSprintModal() {
 
 <template>
   <div class="active-sprint">
+    <button @click="getLogs('0')">get logs</button>
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div
