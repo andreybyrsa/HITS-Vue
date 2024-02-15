@@ -89,6 +89,7 @@ async function getAverageMark() {
     averageMark.value = response
   }
 }
+console.log(averageMark)
 
 async function getProject() {
   const currentUser = user.value

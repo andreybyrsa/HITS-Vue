@@ -96,6 +96,7 @@ interface SprintMarks {
   userId: string
   firstName: string
   lastName: string
+  projectRole: ProjectMemberRole
   mark: number
   tasks?: Task[]
 }

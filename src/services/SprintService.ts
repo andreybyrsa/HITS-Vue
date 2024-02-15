@@ -1,7 +1,7 @@
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import { sprintMocks } from '@Utils/getMocks'
+import { sprintMarksMocks, sprintMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { Sprint, SprintStatus, SprintMarks } from '@Domain/Project'
@@ -10,9 +10,14 @@ import { MODE } from '@Main'
 import axios from 'axios'
 
 const sprintMocksAxios = defineAxios(sprintMocks)
+const sprintMarksMocksAxios = defineAxios(sprintMarksMocks)
 
 function formatterAllSprintsProject(sprints: Sprint[], currentProjectId: string) {
   return sprints.filter(({ projectId }) => projectId === currentProjectId)
+}
+
+function formatGetMarksSprint(sprintMarksMocks: SprintMarks[], sprintId: string) {
+  return sprintMarksMocks.filter((mark) => mark.sprintId === sprintId)
 }
 
 // --- GET --- //
@@ -54,6 +59,25 @@ const getActiveSprintsProject = async (
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка получения спринтов'))
+}
+
+const getMarkSprint = async (
+  sprintId: string,
+  token: string,
+): Promise<SprintMarks[] | Error> => {
+  return sprintMarksMocksAxios
+    .get<SprintMarks[]>(
+      '/sprint/mark', // FIX ROUTE
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (sprintMarks) => formatGetMarksSprint(sprintMarks, sprintId),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения оценки за спринт'))
 }
 
 // --- PUT --- //
@@ -160,6 +184,7 @@ const ProfileService = {
   finishSprintDate,
   getActiveSprintsProject,
   saveMarkSprint,
+  getMarkSprint,
 }
 
 export default ProfileService

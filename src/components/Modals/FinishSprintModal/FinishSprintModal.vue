@@ -14,7 +14,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 
-import { Task } from '@Domain/Project'
+import { SprintMarks, Task } from '@Domain/Project'
 import useProjectsStore from '@Store/projects/projectsStore'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
@@ -38,6 +38,7 @@ import { useRoute } from 'vue-router'
 import { AverageMark } from '@Domain/ReportProjectMembers'
 import ProjectService from '@Services/ProjectService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import SprintService from '@Services/SprintService'
 
 const props = defineProps<FinishSprintModalProps>()
 const emit = defineEmits<FinishSprintModalEmits>()
@@ -63,9 +64,14 @@ const radio1 = ref()
 const radio2 = ref()
 
 const averageMark = ref<AverageMark[]>([])
+const sprintMarks = ref<SprintMarks[]>([])
 
 onMounted(() => {
   if (props.isFinishSprint) getAverageMark()
+})
+
+onMounted(() => {
+  if (props.isFinishSprint) getSprintMarks()
 })
 
 async function getAverageMark() {
@@ -84,6 +90,25 @@ async function getAverageMark() {
     }
 
     averageMark.value = response
+  }
+}
+
+async function getSprintMarks() {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const sprintId = route.params.id.toString()
+
+    const response = await SprintService.getMarkSprint(sprintId, token)
+
+    if (response instanceof Error) {
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        response.message,
+      )
+    }
+
+    sprintMarks.value = response
   }
 }
 
@@ -140,6 +165,7 @@ const FinishSprint = handleSubmit(async () => {
     @on-outside-close="emit('close-modal')"
   >
     <div class="finish-project-modal bg-white rounded p-3 w-1">
+      {{ sprintMarks }}
       <div class="finish-project-modal__header fs-2 w-100 border-2">
         <Typography class-name="border-bottom text-primary fs-3 w-100">
           {{ 'Завершение спринта' }}
@@ -159,7 +185,7 @@ const FinishSprint = handleSubmit(async () => {
           <Typography class-name="w-75">{{ 'Статистика участника' }}</Typography>
         </div>
         <div
-          v-for="(member, index) in averageMark"
+          v-for="(sprint, index) in sprintMarks"
           :key="index"
           class="d-flex w-100 gap-2 flex-column"
         >
@@ -179,23 +205,23 @@ const FinishSprint = handleSubmit(async () => {
                 <Button
                   variant="light"
                   class-name="collapse-controller w-100 justify-content-between"
-                  v-collapse="member.userId"
+                  v-collapse="sprint.userId"
                 >
-                  {{ member.firstName }} {{ member.lastName }}
-                  <div :class="getRoleProjectMemberStyle(member.projectRole)">
-                    {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
+                  {{ sprint.firstName }} {{ sprint.lastName }}
+                  <div :class="getRoleProjectMemberStyle(sprint.projectRole)">
+                    {{ getRoleProjectMember().translatedRoles[sprint.projectRole] }}
                   </div>
                 </Button>
 
-                <Collapse :id="member.userId">
+                <Collapse :id="sprint.userId">
                   <div
-                    v-if="member.tasks"
+                    v-if="sprint.tasks"
                     class="fp-2 m-2"
                   >
                     <div class="text-primary">Выполненные задачи*</div>
 
                     <div
-                      v-for="(task, index) in member.tasks"
+                      v-for="(task, index) in sprint.tasks"
                       :key="index"
                     >
                       <div
