@@ -308,12 +308,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   {
     id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
     ideaId: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
-    initiator: {
-      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-      email: 'kirill.vlasov.05@inbox.ru',
-      lastName: 'Кирилл',
-      firstName: 'Власов',
-    } as User,
+    initiator: usersMocks[0],
     team: null,
     marketId: '201',
     name: 'Цифровой помощник сотрудника приемной комиссии университета',
