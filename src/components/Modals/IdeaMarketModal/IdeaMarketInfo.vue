@@ -152,13 +152,13 @@ function navigateToProfileModal(id: string) {
         </div>
       </div>
 
-      <Button
+      <!-- <Button
         v-if="getAccessToCloseRecruitment()"
         variant="danger"
         @click="openConfirmModal"
       >
         Закрыть набор
-      </Button>
+      </Button> -->
 
       <Button
         variant="primary"
