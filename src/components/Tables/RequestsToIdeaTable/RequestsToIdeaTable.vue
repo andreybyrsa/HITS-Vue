@@ -236,10 +236,6 @@ async function cancelRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
 }
 
 function checkRecruitmentIdeaStatus(team: RequestTeamToIdea) {
-  return (
-    props.ideaMarket.status === 'RECRUITMENT_IS_OPEN' &&
-    team.status === 'NEW' &&
-    user.value?.role !== 'ADMIN'
-  )
+  return props.ideaMarket.status === 'RECRUITMENT_IS_OPEN' && team.status === 'NEW'
 }
 </script>
