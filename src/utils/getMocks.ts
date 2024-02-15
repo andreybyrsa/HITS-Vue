@@ -1430,7 +1430,7 @@ export const averageMarkMocks: AverageMark[] = [
     firstName: 'Кирилл',
     lastName: 'Власов',
     projectRole: 'TEAM_LEADER',
-    mark: '9.9',
+    mark: 9.9,
     tasks: [tasksMocks[9], tasksMocks[12]],
   },
   {
@@ -1439,7 +1439,7 @@ export const averageMarkMocks: AverageMark[] = [
     firstName: 'Иван',
     lastName: 'Иванович',
     projectRole: 'MEMBER',
-    mark: '6.7',
+    mark: 6.7,
     tasks: [tasksMocks[10]],
   },
   {
@@ -1448,7 +1448,7 @@ export const averageMarkMocks: AverageMark[] = [
     firstName: 'Менеджер',
     lastName: 'Менеджер',
     projectRole: 'MEMBER',
-    mark: '7.8',
+    mark: 7.8,
     tasks: [tasksMocks[11]],
   },
 ]
@@ -1679,7 +1679,7 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Проектировка скрама',
     goal: 'Цель 4',
-    marks: [sprintMarksMocks[3]],
+    marks: [sprintMarksMocks[1]],
     report: 'Отчет 4',
     startDate: '2024-01-20T11:02:17Z',
     finishDate: '2024-01-27T11:02:17Z',

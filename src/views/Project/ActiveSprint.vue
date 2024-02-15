@@ -584,6 +584,7 @@ function closeSprintModal() {
     <FinishSprintModal
       isFinishSprint
       :is-opened="isOpenedFinishSprintModal"
+      :active-sprint="sprint"
       @close-modal="closeFinishSprintModal"
     />
 

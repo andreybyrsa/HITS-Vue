@@ -66,51 +66,33 @@ const radio2 = ref()
 const averageMark = ref<AverageMark[]>([])
 const sprintMarks = ref<SprintMarks[]>([])
 
-onMounted(() => {
-  if (props.isFinishSprint) getAverageMark()
-})
+onMounted(async () => {
+  if (props.isFinishSprint) {
+    const currentUser = user.value
 
-onMounted(() => {
-  if (props.isFinishSprint) getSprintMarks()
-})
+    if (currentUser?.token) {
+      const { token } = currentUser
+      const projectId = route.params.id.toString()
+      const sprintId = props.activeSprint.id
 
-async function getAverageMark() {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const projectId = route.params.id.toString()
-
-    const response = await ProjectService.getAverageMarkProject(projectId, token)
-
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
+      const sprintParallelRequests: RequestConfig[] = [
+        {
+          request: () => ProjectService.getAverageMarkProject(projectId, token),
+          refValue: averageMark,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => SprintService.getMarkSprint(sprintId, token),
+          refValue: sprintMarks,
+          onErrorFunc: openErrorNotification,
+        },
+      ]
+      await sendParallelRequests(sprintParallelRequests)
     }
-
-    averageMark.value = response
   }
-}
-
-async function getSprintMarks() {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const sprintId = route.params.id.toString()
-
-    const response = await SprintService.getMarkSprint(sprintId, token)
-
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
-    }
-
-    sprintMarks.value = response
-  }
-}
+})
+console.log(averageMark)
+console.log(sprintMarks)
 
 const { handleSubmit } = useForm({
   validationSchema: {

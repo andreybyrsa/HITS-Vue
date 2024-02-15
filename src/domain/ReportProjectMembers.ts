@@ -12,7 +12,7 @@ interface AverageMark {
   firstName: string
   lastName: string
   projectRole: ProjectMemberRole
-  mark: string
+  mark: number
   tasks?: Task[]
 }
 

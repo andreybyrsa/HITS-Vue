@@ -11,7 +11,7 @@ const props = defineProps<InputProps>()
 
 const emit = defineEmits<InputEmits>()
 
-defineModel<string>({
+defineModel<string | number>({
   required: false,
 })
 
