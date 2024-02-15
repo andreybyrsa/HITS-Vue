@@ -6,7 +6,6 @@
       :search-by="['email', 'firstName', 'lastName']"
       :dropdown-actions-menu="dropdownInviteUserActions"
       :filters="usersFilters"
-      v-model="invitationUsers"
     />
   </div>
 
@@ -18,7 +17,10 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
-import type { UsersInviteTableEmits } from '@Components/Tables/UsersInviteTable/UsersInviteTable.types'
+import type {
+  UsersInviteTableEmits,
+  UsersInviteTableProps,
+} from '@Components/Tables/UsersInviteTable/UsersInviteTable.types'
 import Table from '@Components/Table/Table.vue'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
@@ -40,8 +42,9 @@ import {
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
 
-const invitationUsers = defineModel<TeamMember[]>({ required: true })
+const invitationUsers = defineModel<TeamMember[]>()
 defineEmits<UsersInviteTableEmits>()
+const props = defineProps<UsersInviteTableProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -146,15 +149,13 @@ function getFilterSkills() {
 }
 
 function chooseUser(user: TeamMember) {
-  invitationUsers.value.push(user)
+  invitationUsers.value?.push(user)
 }
 
 function unselectUser(user: TeamMember) {
-  const currentUserIndex = invitationUsers.value.findIndex(
-    ({ id }) => id === user.id,
+  invitationUsers.value = invitationUsers.value?.filter(
+    ({ userId }) => userId !== user.userId,
   )
-
-  invitationUsers.value.splice(currentUserIndex, 1)
 }
 
 function navigateToUserProfile(user: TeamMember) {
@@ -173,11 +174,11 @@ function navigateToUserProfile(user: TeamMember) {
 }
 
 function checkIsNotExistUser(user: TeamMember) {
-  return !invitationUsers.value.find(({ userId }) => userId === user.userId)
+  return !props.selectedUsers.find(({ userId }) => userId === user.userId)
 }
 
 function checkIsExistUser(user: TeamMember) {
-  return !!invitationUsers.value.find(({ userId }) => userId === user.userId)
+  return !!props.selectedUsers.find(({ userId }) => userId === user.userId)
 }
 </script>
 

@@ -109,14 +109,14 @@ const dropdownRequestActions: DropdownMenuAction<InvitationTeamToIdea>[] = [
 
 function navigateToTeamModal(requestTeam: InvitationTeamToIdea) {
   const teamModalRoute: RouteRecordRaw = {
-    name: 'teams',
-    path: 'teams/list/:id',
-    alias: '/teams/list/:id',
+    name: 'team-modal',
+    path: 'team/:teamId',
+    alias: '/team/:teamId',
     component: TeamModal,
   }
 
-  router.addRoute('market', teamModalRoute)
-  router.push({ path: `/teams/list/${requestTeam.teamId}` })
+  router.addRoute('market-ideas', teamModalRoute)
+  router.push({ path: `/team/${requestTeam.teamId}` })
 }
 
 function openModal(refValue: Ref<boolean>, requestToIdea: InvitationTeamToIdea) {
