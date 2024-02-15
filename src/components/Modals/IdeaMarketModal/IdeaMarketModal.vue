@@ -105,7 +105,10 @@ onMounted(async () => {
 
     await sendParallelRequests(ideaMarketParallelRequests)
 
-    if (ideaMarket.value && user.value?.role === 'INITIATOR') {
+    if (
+      ideaMarket.value &&
+      (user.value?.role === 'INITIATOR' || user.value?.role === 'ADMIN')
+    ) {
       const response = await invitationTeamsToIdeaStore.getIdeaInvitations(
         ideaMarket.value.ideaId,
         token,
