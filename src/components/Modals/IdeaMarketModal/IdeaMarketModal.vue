@@ -185,6 +185,7 @@ function getAccessToTables() {
           :idea-market="ideaMarket"
           :requests="requestTeams"
           :owner-teams="ownerTeams"
+          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
         />
 
         <IdeaMarketAdverts

@@ -90,27 +90,21 @@ const handleSaveSkills = async () => {
       </div>
     </div>
 
-    <div
-      v-if="profileSkills[0].skills.length"
-      class="content p-2"
-    >
-      <StackCategories
-        v-if="isUpdatingSkills"
-        :skills="profileSkills[0].skills"
-        v-model:stack="selectedSkills"
-      />
+    <StackCategories
+      v-if="isUpdatingSkills"
+      :skills="profileSkills[0].skills"
+      v-model:stack="selectedSkills"
+    />
 
+    <div v-else>
       <SkillsRadarCharts
-        v-else
+        v-if="profileSkills[0].skills.length"
         :skills="profileSkills"
       />
-    </div>
-
-    <div
-      v-else
-      class="d-flex w-100 justify-content-center mt-3"
-    >
-      <Typography class-name="fs-6 text-secondary">
+      <Typography
+        v-else
+        class-name="d-flex w-100 justify-content-center mt-3 fs-6 text-secondary"
+      >
         Компетенции не выбраны
       </Typography>
     </div>
