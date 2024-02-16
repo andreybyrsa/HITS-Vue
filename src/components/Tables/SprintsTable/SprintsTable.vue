@@ -8,15 +8,23 @@
     :dropdown-actions-menu="dropdownUsersActions"
     :filters="sprintsFilters"
   />
+  <SprintModal
+    :projectId="projectId"
+    :is-opened="isOpenedSprintModal"
+    :tasks="tasks"
+    @close-modal="closeSprintModal"
+  />
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref } from 'vue'
+import { ref } from 'vue'
 import {
   DropdownMenuAction,
   TableColumn,
   TableHeader,
 } from '@Components/Table/Table.types'
+
+import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import SprintsTableProps from '@Components/Tables/SprintsTable/StprintsTable.types'
 import Table from '@Components/Table/Table.vue'
 import { useDateFormat } from '@vueuse/core'
@@ -36,7 +44,7 @@ const sprintsTableHeader: TableHeader = {
       label: 'Создать спринт',
       variant: 'primary',
       prependIconName: 'bi bi-plus-lg',
-      click: () => null,
+      click: openSprintModal,
     },
   ],
 }
@@ -67,7 +75,7 @@ const usersTableColumns: TableColumn<Sprint>[] = [
 ]
 
 const currentSprint = ref<Sprint>()
-const isOpenedSprinttModal = ref(false)
+const isOpenedSprintModal = ref(false)
 
 function getSprintStatusFormat(status: SprintStatus) {
   return getSprintStatus().translatedStatus[status]
@@ -118,5 +126,13 @@ const sprintsFilters: Filter<Sprint>[] = [
 
 function checkSprintStatus(sprint: Sprint, status: FilterValue) {
   return sprint.status === status
+}
+
+function openSprintModal() {
+  isOpenedSprintModal.value = true
+}
+
+function closeSprintModal() {
+  isOpenedSprintModal.value = false
 }
 </script>

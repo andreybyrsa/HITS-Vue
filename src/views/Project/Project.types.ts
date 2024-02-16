@@ -10,4 +10,8 @@ interface ActiveSprintProps {
   sprint: Sprint
 }
 
-export { ProjectProps, ActiveSprintProps }
+interface SprintListProps {
+  projectId: string
+}
+
+export { ProjectProps, ActiveSprintProps, SprintListProps }

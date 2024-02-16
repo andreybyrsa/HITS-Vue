@@ -23,6 +23,7 @@ import useTasksStore from '@Store/tasks/tasksStore'
 import SprintsListPage from '@Views/Project/SprintsListPage.vue'
 
 import BurndownChart from './BurndownChart.vue'
+import SprintForm from '@Components/Forms/SprintForm/SprintForm.vue'
 
 function getFormattedDate(date: string) {
   if (date) {
@@ -32,13 +33,6 @@ function getFormattedDate(date: string) {
     return 'Реализуется'
   }
 }
-
-// onMounted(async () => {
-//   await passTasks.value = props.sprint.tasks.filter(
-//     (task) => task.status === 'Done',
-//   ).length
-//   allTasks.value = props.sprint.tasks.length
-// })
 
 const props = defineProps<SprintModalProps>()
 const emit = defineEmits<SprintModalEmits>()
@@ -55,70 +49,21 @@ const tasks = storeToRefs(useTasksStore())
   <ModalLayout
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
+    class="sprint-modal"
   >
     <div class="sprint-modal bg-white rounded p-3">
-      <div class="d-flex align-items-center justify-content-between border-bottom">
-        <Typography class-name="fs-3 text-primary text-center ">
-          Спринт: "{{ sprint?.name }}"
-        </Typography>
-
-        <Button
-          variant="close"
-          @click="emit('close-modal')"
-        />
-      </div>
-      <div class="d-flex gap-2 align-items-center">
-        <div :class="getProjectStatusStyle(sprint.status)">
-          {{ getProjectStatus().translatedStatus[sprint.status] }}
-        </div>
-        <Typography class-name="text-primary">Общие часы работы:</Typography>
-        {{ sprint?.workingHours }} ч.
-      </div>
-      <ul class="list-group rounded-3">
-        <li class="list-group-item p-0 overflow-hidden">
-          <Button
-            variant="light"
-            class-name="collapse-controller w-100"
-            v-collapse:openOnMount="sprint?.id"
-          >
-            Цель спринта:
-          </Button>
-          <Collapse :id="sprint?.id">
-            <div class="p-2">{{ sprint?.goal }}</div>
-          </Collapse>
-        </li>
-      </ul>
-
-      <div class="my-2 d-flex gap-2 w-100">
-        <div class="w-100">
-          <Typography class-name="text-primary">Начало спринта:</Typography>
-          <Button class-name="border w-100">{{
-            getFormattedDate(sprint?.startDate)
-          }}</Button>
-        </div>
-        <div class="w-100">
-          <Typography class-name="text-primary">Конец спринта:</Typography>
-          <Button class-name="border w-100">{{
-            getFormattedDate(sprint?.finishDate)
-          }}</Button>
-        </div>
-      </div>
-      <div>
-        <Typography class-name="text-primary">Сгорающая диаграмма:</Typography>
-      </div>
-      <div>
-        <BurndownChart :sprint="sprint" />
-      </div>
+      <SprintForm />
     </div>
   </ModalLayout>
 </template>
+
 <style lang="scss" scoped>
 .sprint-modal {
-  width: 75ex;
+  width: 90%;
+  height: 900px;
   @include flexible(
     stretch,
     flex-start,
-    column,
     $align-self: center,
     $justify-self: center,
     $gap: 16px
@@ -129,6 +74,15 @@ const tasks = storeToRefs(useTasksStore())
   &__header {
     @include flexible(center, space-between);
   }
+}
+.left-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.tasks {
+  display: flex;
+  justify-content: space-between;
 }
 
 .modal-layout-enter-from .sprint-modal,

@@ -1,8 +1,9 @@
-import { Sprint } from '@Domain/Project'
+import { Task } from '@Domain/Project'
 
 interface SprintModalProps {
   isOpened: boolean
-  sprint: Sprint
+  projectId: string
+  tasks?: Task[]
 }
 
 interface SprintModalEmits {
