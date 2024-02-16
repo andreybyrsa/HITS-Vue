@@ -14,4 +14,8 @@ interface SprintListProps {
   projectId: string
 }
 
-export { ProjectProps, ActiveSprintProps, SprintListProps }
+interface TaskProps {
+  task: Task
+}
+
+export { ProjectProps, ActiveSprintProps, SprintListProps, TaskProps }
