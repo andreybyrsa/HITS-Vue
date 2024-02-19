@@ -18,7 +18,7 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
   getters: {
     getIdeaInvitations() {
       return async (ideaId: string, token: string) => {
-        const response = await invitationTeamToIdeaService.getIdeaInvitations(
+        const response = await invitationTeamToIdeaService.getInvitationsByIdea(
           token,
           ideaId,
         )
@@ -43,7 +43,7 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
     getIdeaInvitationsByInitiator() {
       return async (userId: string, token: string) => {
         const response =
-          await invitationTeamToIdeaService.getIdeaInvitationsByInitiator(
+          await invitationTeamToIdeaService.getAllInvitationsByInitiator(
             userId,
             token,
           )
@@ -64,32 +64,6 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
               value: item.id,
             }),
           )
-
-          // this.ideaInvitationsByInitiator = response
-          // return this.ideaInvitationsByInitiator
-        }
-      }
-    },
-
-    getSentInvitations() {
-      return async (userId: string, token: string) => {
-        const response = await invitationTeamToIdeaService.getSentInvitations(
-          userId,
-          token,
-        )
-
-        if (response instanceof Error) {
-          return response
-        }
-
-        if (response instanceof Error) {
-          useNotificationsStore().createSystemNotification(
-            'Система',
-            response.message,
-          )
-        } else {
-          this.ideaInvitations = response
-          return this.ideaInvitations
         }
       }
     },
@@ -120,7 +94,7 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
 
   actions: {
     async postInvitationsToIdea(invitation: InvitationTeamToIdea, token: string) {
-      const response = await invitationTeamToIdeaService.postTeamInvitationsToIdea(
+      const response = await invitationTeamToIdeaService.inviteTeamToIdea(
         invitation,
         token,
       )
@@ -137,7 +111,7 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
       invitationId: string,
       token: string,
     ) {
-      const response = await invitationTeamToIdeaService.putInvitationForTeamToIdea(
+      const response = await invitationTeamToIdeaService.changeInvitationStatus(
         invitationId,
         status,
         token,
@@ -157,7 +131,7 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
         if (status === 'ACCEPTED') {
           this.ideaInvitations.forEach((invite) => {
             if (invite.status === 'NEW') {
-              console.log(invite.name, invite.id)
+              console.log(invite.teamName, invite.id)
               invite.status = 'ANNULLED'
             }
           })

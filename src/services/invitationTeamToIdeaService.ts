@@ -19,10 +19,6 @@ function filterInvitationsByMarketId(
   return invitations.filter((invitation) => invitation.ideaMarketId == ideaMarketId)
 }
 
-function filterInvitations(invitations: InvitationTeamToIdea[]) {
-  return invitations
-}
-
 function filterInvitationsByInitiator(
   invitations: InvitationTeamToIdea[],
   userId: string,
@@ -35,7 +31,7 @@ function filterTeamInvitations(invitations: InvitationTeamToIdea[], teamId: stri
 }
 
 // --- GET --- //
-const getIdeaInvitations = async (
+const getInvitationsByIdea = async (
   token: string,
   ideaMarketId: string,
 ): Promise<InvitationTeamToIdea[] | Error> => {
@@ -57,7 +53,7 @@ const getIdeaInvitations = async (
     )
 }
 
-const getIdeaInvitationsByInitiator = async (
+const getAllInvitationsByInitiator = async (
   userId: string,
   token: string,
 ): Promise<InvitationTeamToIdea[] | Error> => {
@@ -71,27 +67,6 @@ const getIdeaInvitationsByInitiator = async (
       {
         formatter: (applications) =>
           filterInvitationsByInitiator(applications, userId),
-      },
-    )
-    .then((response) => response.data)
-    .catch((error) =>
-      handleAxiosError(error, 'Ошибка получения отправленных приглашений'),
-    )
-}
-
-const getSentInvitations = async (
-  userId: string,
-  token: string,
-): Promise<InvitationTeamToIdea[] | Error> => {
-  return invitationTeamToIdeaAxios
-    .get<InvitationTeamToIdea[]>(
-      `/user/${userId}/invitations`, // FIX ROUTE
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      {
-        formatter: (applications) => filterInvitations(applications),
       },
     )
     .then((response) => response.data)
@@ -123,7 +98,7 @@ const getTeamInvitations = async (
 
 // --- POST --- //
 
-const postTeamInvitationsToIdea = async (
+const inviteTeamToIdea = async (
   invitation: InvitationTeamToIdea,
   token: string,
 ): Promise<InvitationTeamToIdea | Error> => {
@@ -142,7 +117,7 @@ const postTeamInvitationsToIdea = async (
 
 // --- PUT --- //
 
-const putInvitationForTeamToIdea = async (
+const changeInvitationStatus = async (
   invitationId: string,
   status: InvitationTeamToIdeaStatus,
   token: string,
@@ -177,12 +152,13 @@ const putInvitationForTeamToIdea = async (
 }
 
 const InvitationTeamToIdeaService = {
-  getIdeaInvitations,
-  getIdeaInvitationsByInitiator,
-  postTeamInvitationsToIdea,
-  putInvitationForTeamToIdea,
-  getSentInvitations,
+  getInvitationsByIdea,
+  getAllInvitationsByInitiator,
   getTeamInvitations,
+
+  inviteTeamToIdea,
+
+  changeInvitationStatus,
 }
 
 export default InvitationTeamToIdeaService

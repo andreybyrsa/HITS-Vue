@@ -12,6 +12,11 @@ import { Project } from '@Domain/Project'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 import { RouteRecordRaw } from 'vue-router'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const props = defineProps<ProjectProps>()
 function getFormattedDate(date: string) {
@@ -92,7 +97,7 @@ function getContentTab(header: string) {
           >Перейти в идею</Button
         >
         <Button
-          v-if="props.project.status === 'ACTIVE'"
+          v-if="props.project.status === 'ACTIVE' && user?.role === 'TEAM_LEADER'"
           @click="openFinishProjectModal"
           variant="danger"
           class-name="w-100 mt-2"

@@ -267,6 +267,7 @@ function openWildcardTaskModal() {
           >Новая задача</Button
         >
         <Button
+          v-if="user?.role === 'TEAM_LEADER'"
           @click="openFinishSprintModal"
           variant="danger"
           >Завершить спринт</Button

@@ -325,7 +325,7 @@ async function handleInviteTeam() {
 
   if (currentUser?.token && currentTeam.value && currentIdea.value) {
     const { token, id: userId } = currentUser
-    const { id, name: ideaName, marketId } = currentIdea.value
+    const { id, name: ideaName } = currentIdea.value
     const { id: teamId, name: teamName, membersCount, skills } = currentTeam.value
 
     const invitation: InvitationTeamToIdea = {
@@ -333,10 +333,9 @@ async function handleInviteTeam() {
       ideaMarketId: id,
       ideaMarketName: ideaName,
       status: 'NEW',
-      marketId: marketId,
       initiatorId: userId,
       teamId: teamId,
-      name: teamName,
+      teamName: teamName,
       membersCount: membersCount,
       skills: skills,
     }
@@ -363,7 +362,7 @@ async function handleRevokeTeam() {
     const { id } = currentInvitation.value
 
     await invitationsTeamToIdeaStore.putInvitationForTeamToIdea(
-      'CANCELED',
+      'WITHDRAWN',
       id,
       token,
     )
@@ -464,7 +463,6 @@ function closeConfirmModalTeamCanceled() {
               ? openConfirmModalTeamCanceled(getVariantButton(invite.id))
               : openConfirmModalTeamNew(props.team, invite)
           "
-          max-width="300px"
         >
           {{ getVariantButton(invite.id) ? 'Отозвать из' : 'Пригласить в' }} "{{
             invite.name
@@ -521,7 +519,7 @@ function closeConfirmModalTeamCanceled() {
     <ConfirmModal
       :is-opened="isOpenedConfirmModalCancel"
       text-button="Отклонить заявку"
-      text-question="Вы действительно хотите отклонить приглашение?"
+      text-question="Вы действительно хотите отозвать приглашение?"
       @close-modal="closeConfirmModal"
       @action="cancelInvitationToTeam"
     />
