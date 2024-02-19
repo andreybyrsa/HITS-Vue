@@ -24,6 +24,8 @@ import {
 import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 
+import TaskDescriptionModal from '@Components/Modals/SprintModal/TaskDescriptionModal.vue'
+
 defineProps<ActiveSprintProps>()
 
 const userStore = useUserStore()
@@ -202,6 +204,41 @@ function openModalSprint(sprint: Sprint) {
 function closeSprintModal() {
   isOpenedSprinttModal.value = false
 }
+
+const isOpenedTaskModal = ref(false)
+let currentTask = ref()
+
+function openTaskModal(task: Task) {
+  currentTask.value = task
+  isOpenedTaskModal.value = true
+}
+
+function closeTaskModal() {
+  isOpenedTaskModal.value = false
+}
+
+const wildcardTask = ref({
+  id: '1',
+  sprintId: '1',
+  projectId: '1',
+  position: 1,
+  name: 'Scram проекты',
+  description:
+    'Сделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проекты',
+  initiator: { lastName: 'Кирилл', firstName: 'Власов' },
+  executor: { lastName: 'Кирилл', firstName: 'Власов' },
+  workHour: '3 часа',
+  startDate: '2022-01-01',
+  finishDate: '2022-01-02',
+  tag: 'Фронтенд',
+  taskMovementLog: ['Выполняется', 'В бэклоге', 'На доработке', 'Выполнена'],
+  status: 'Выполняется',
+})
+
+function openWildcardTaskModal() {
+  currentTask.value = wildcardTask.value
+  isOpenedTaskModal.value = true
+}
 </script>
 
 <template>
@@ -221,7 +258,7 @@ function closeSprintModal() {
           :sprint="currentSprint"
           @close-modal="closeSprintModal"
         />
-        <Typography>( до {{ getFormattedDate(sprint.finishDate) }} )</Typography>
+        <Typography>(до {{ getFormattedDate(sprint.finishDate) }})</Typography>
       </div>
       <div class="d-flex gap-2">
         <Button
@@ -256,7 +293,9 @@ function closeSprintModal() {
             </div>
             <Icon
               class-name="bi bi-patch-question"
-              v-tooltip="'Описание столбца'"
+              v-tooltip="
+                'Здесь находятся задачи, которые были отправлены на доработку для исправления ошибок или улучшения качества. Эти задачи нужно выполнить в первую очередь, чтобы не затягивать сроки проекта.'
+              "
             />
           </div>
         </div>
@@ -329,7 +368,9 @@ function closeSprintModal() {
               />
               <Icon
                 class-name="bi bi-patch-question"
-                v-tooltip="'Описание столбца'"
+                v-tooltip="
+                  'Здесь находятся задачи, которые еще не были назначены команде или отдельному разработчику. Эти задачи можно выбирать по своему усмотрению, учитывая приоритеты и сложность.'
+                "
               />
             </div>
           </div>
@@ -355,7 +396,9 @@ function closeSprintModal() {
               >
                 <div class="d-flex flex-column border-bottom pb-2">
                   <div class="active-sprint__task">
-                    <Typography>{{ element.name }}</Typography>
+                    <Typography @click="openTaskModal(element)">{{
+                      element.name
+                    }}</Typography>
                   </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 w-100 mt-2">
@@ -395,7 +438,9 @@ function closeSprintModal() {
             </div>
             <Icon
               class-name="bi bi-patch-question"
-              v-tooltip="'Описание столбца'"
+              v-tooltip="
+                'Здесь находятся задачи, которые в данный момент выполняются командой или отдельным разработчиком. Эти задачи нужно довести до конца и не переключаться на другие, пока они не будут готовы к проверке.'
+              "
             />
           </div>
         </div>
@@ -463,7 +508,9 @@ function closeSprintModal() {
             </div>
             <Icon
               class-name="bi bi-patch-question"
-              v-tooltip="'Описание столбца'"
+              v-tooltip="
+                'Здесь находятся задачи, которые были выполнены и отправлены на проверку качества, функциональности и соответствия требованиям. Эти задачи должны проверяться тимлидом команды.'
+              "
             />
           </div>
         </div>
@@ -531,7 +578,9 @@ function closeSprintModal() {
             </div>
             <Icon
               class-name="bi bi-patch-question"
-              v-tooltip="'Описание столбца'"
+              v-tooltip="
+                'Здесь находятся задачи, которые были успешно проверены и одобрены. Эти задачи можно считать завершенными и не требующими дальнейшего внимания.'
+              "
             />
           </div>
         </div>
@@ -591,7 +640,17 @@ function closeSprintModal() {
       :is-opened="isOpenedCreateNewTask"
       @close-modal="closeCreateNewTask"
     />
+    <Button
+      variant="primary"
+      @click="openWildcardTaskModal"
+      >Баттон французский</Button
+    >
   </div>
+  <TaskDescriptionModal
+    :is-opened="isOpenedTaskModal"
+    :task="currentTask"
+    @close-modal="closeTaskModal"
+  />
 </template>
 
 <style lang="scss" scoped>

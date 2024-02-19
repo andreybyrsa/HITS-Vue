@@ -52,7 +52,7 @@ interface TaskMovementLog {
   executor: User
   initiator: User
   editDate: string
-  tag: Task
+  tag: Tag[]
   currentPosition: Task
 }
 
