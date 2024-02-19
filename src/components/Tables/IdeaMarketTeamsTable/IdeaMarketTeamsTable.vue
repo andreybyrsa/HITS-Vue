@@ -117,14 +117,14 @@ function sortByMembersCount() {
 
 function navigateToTeamModal(team: Team) {
   const teamModalRoute: RouteRecordRaw = {
-    name: 'teams',
-    path: 'teams/:id',
-    alias: '/teams/:id',
+    name: 'team-modal',
+    path: 'team/:teamId',
+    alias: '/team/:teamId',
     component: TeamModal,
   }
 
-  router.addRoute('market', teamModalRoute)
-  router.push({ path: `/market/${team.id}` })
+  router.addRoute('market-ideas', teamModalRoute)
+  router.push({ path: `/team/${team.id}` })
 }
 
 function navigateToLeaderProfile(team: Team) {

@@ -24,7 +24,7 @@ function getAccessToViewDescription() {
   if (currentUser) {
     const { role } = currentUser
 
-    return role !== 'INITIATOR'
+    return role !== 'INITIATOR' && role !== 'ADMIN'
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
@@ -20,7 +20,24 @@ import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 import useUserStore from '@Store/user/userStore'
 
 const invitationUsers = defineModel<TeamMember[]>({ required: true })
+const newArrayUsers = ref<TeamMember[]>([])
 const selectedUsers = ref<TeamMember[]>([])
+
+watch(
+  () => props.isOpened,
+  () => {
+    if (props.isOpened) {
+      selectedUsers.value = structuredClone(invitationUsers.value)
+    }
+  },
+)
+
+watch(
+  () => newArrayUsers.value.length,
+  () => {
+    selectedUsers.value = newArrayUsers.value
+  },
+)
 
 const invitatinUsers = useInvitationUsersStore()
 const route = useRoute()
@@ -30,7 +47,7 @@ const { user } = storeToRefs(userStore)
 
 const isLoading = ref(false)
 
-defineProps<InvitationTeamMemberModalProps>()
+const props = defineProps<InvitationTeamMemberModalProps>()
 const emit = defineEmits<InvitationTeamMemberModalEmits>()
 
 function inviteUsers() {
@@ -39,8 +56,8 @@ function inviteUsers() {
 }
 
 function cancelSelectedUsers(user: TeamMember) {
-  selectedUsers.value = selectedUsers.value.filter(
-    (selectedUser) => selectedUser.id !== user.id,
+  newArrayUsers.value = newArrayUsers.value.filter(
+    (selectedUser) => selectedUser.userId !== user.userId,
   )
 }
 
@@ -71,7 +88,6 @@ async function inviteUsersInTeam() {
 }
 
 function closeInvitationModal() {
-  selectedUsers.value = invitationUsers.value
   emit('close-modal')
 }
 </script>
@@ -95,7 +111,8 @@ function closeInvitationModal() {
 
       <div class="invitation-modal__table">
         <UsersInviteTable
-          v-model="selectedUsers"
+          v-model="newArrayUsers"
+          :selectedUsers="selectedUsers"
           @close-modal="closeInvitationModal"
         />
       </div>

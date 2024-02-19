@@ -6,6 +6,7 @@ import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
 import TeamInvitations from '@Components/Tables/TeamsTable/TeamInvitations.vue'
 import RequestsToTeam from '@Components/Tables/TeamsTable/RequestsToTeam.vue'
 import RequestTeamToIdea from '@Components/Tables/TeamsTable/RequestsTeamToIdea.vue'
+import InvitationsToIdeaForTeam from '@Components/Tables/TeamsTable/InvitationsToIdeaForTeam.vue'
 import { TeamModalTables } from '@Components/Modals/TeamModal/TeamModal.types'
 
 import useUserStore from '@Store/user/userStore'
@@ -19,6 +20,7 @@ const isTeamMembersTable = ref(true)
 const isTeamInvitationsTable = ref(false)
 const isRequestsToTeamTable = ref(false)
 const isRequestTeamToIdeaTable = ref(false)
+const isInvitationTeamToIdeaTable = ref(false)
 
 function switchToTeamMembersTable() {
   isTeamMembersTable.value = true
@@ -26,6 +28,7 @@ function switchToTeamMembersTable() {
   isTeamInvitationsTable.value = false
   isRequestsToTeamTable.value = false
   isRequestTeamToIdeaTable.value = false
+  isInvitationTeamToIdeaTable.value = false
 }
 
 function switchToTeamInvitationsTable() {
@@ -34,6 +37,7 @@ function switchToTeamInvitationsTable() {
   isTeamMembersTable.value = false
   isRequestsToTeamTable.value = false
   isRequestTeamToIdeaTable.value = false
+  isInvitationTeamToIdeaTable.value = false
 }
 
 function switchToRequestsToTeamTable() {
@@ -42,11 +46,22 @@ function switchToRequestsToTeamTable() {
   isTeamMembersTable.value = false
   isTeamInvitationsTable.value = false
   isRequestTeamToIdeaTable.value = false
+  isInvitationTeamToIdeaTable.value = false
 }
 
 function switchToRequestTeamToIdeaTable() {
   isRequestTeamToIdeaTable.value = true
 
+  isTeamMembersTable.value = false
+  isTeamInvitationsTable.value = false
+  isRequestsToTeamTable.value = false
+  isInvitationTeamToIdeaTable.value = false
+}
+
+function switchToInvitationTeamToIdeaTable() {
+  isInvitationTeamToIdeaTable.value = true
+
+  isRequestTeamToIdeaTable.value = false
   isTeamMembersTable.value = false
   isTeamInvitationsTable.value = false
   isRequestsToTeamTable.value = false
@@ -92,7 +107,7 @@ function getAccessToRequestsToTeam() {
           :class="getNavLinkStyle(isTeamInvitationsTable)"
           @click="switchToTeamInvitationsTable"
         >
-          Приглашения
+          Приглашения в команду
         </div>
         <div
           v-if="getAccessToRequestsToTeam()"
@@ -107,6 +122,13 @@ function getAccessToRequestsToTeam() {
           @click="switchToRequestTeamToIdeaTable"
         >
           Заявки в идеи
+        </div>
+        <div
+          v-if="getAccessToViewTable()"
+          :class="getNavLinkStyle(isInvitationTeamToIdeaTable)"
+          @click="switchToInvitationTeamToIdeaTable"
+        >
+          Приглашения в идеи
         </div>
       </ul>
     </div>
@@ -132,6 +154,12 @@ function getAccessToRequestsToTeam() {
       <RequestTeamToIdea
         v-if="isRequestTeamToIdeaTable && requestsTeamsToIdea"
         :requests="requestsTeamsToIdea"
+      />
+
+      <InvitationsToIdeaForTeam
+        v-if="isInvitationTeamToIdeaTable && invitationsForTeam"
+        :invitations="invitationsForTeam"
+        :team="team"
       />
     </div>
   </div>

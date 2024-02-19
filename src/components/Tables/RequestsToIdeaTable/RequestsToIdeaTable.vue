@@ -11,6 +11,7 @@
   <LetterModal
     :letter="currentRequestToIdea?.letter"
     :is-opened="isOpenedLetterModal"
+    :idea-market="ideaMarket"
     @close-modal="closeLetterModal"
     @accept-request="acceptRequestToIdea(currentRequestToIdea)"
   />
@@ -177,14 +178,14 @@ function sortByMembersCount() {
 
 function navigateToTeamModal(requestTeam: RequestTeamToIdea) {
   const teamModalRoute: RouteRecordRaw = {
-    name: 'teams',
-    path: 'teams/list/:id',
-    alias: '/teams/list/:id',
+    name: 'team-modal',
+    path: 'team/:teamId',
+    alias: '/team/:teamId',
     component: TeamModal,
   }
 
-  router.addRoute('market', teamModalRoute)
-  router.push({ path: `/teams/list/${requestTeam.teamId}` })
+  router.addRoute('market-ideas', teamModalRoute)
+  router.push({ path: `/team/${requestTeam.teamId}` })
 }
 
 function openModal(refValue: Ref<boolean>, requestToIdea: RequestTeamToIdea) {
@@ -212,6 +213,14 @@ async function acceptRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
     const { token } = currentUser
 
     await requestsToIdeaStore.acceptRequestToIdea(requestToIdea, token)
+    await requestsToIdeaStore.updateRequestToIdea(
+      requestToIdea.id,
+      'ACCEPTED',
+      token,
+      props.ideaMarket.ideaId,
+      requestToIdea.teamId,
+      props.ideaMarket.id,
+    )
   }
 }
 
