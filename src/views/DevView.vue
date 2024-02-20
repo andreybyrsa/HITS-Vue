@@ -66,10 +66,6 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
   <PageLayout content-class-name="dev-page__content p-3">
     <template #leftSideBar>
       <LeftSideBar />
-      <MarketModal
-        :isOpened="true"
-        :market="null"
-      ></MarketModal>
     </template>
 
     <template #content>

@@ -50,7 +50,10 @@ function navigateToUserProfile(id: string) {
     },
   }
 
-  router.addRoute('teams-list', profileRoute)
+  router.addRoute(
+    route.name === 'team' ? 'teams-list' : 'market-ideas',
+    profileRoute,
+  )
   router.push({ path: `/profile/${id}` })
 }
 

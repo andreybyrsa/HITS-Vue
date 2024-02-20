@@ -120,6 +120,7 @@ function navigateToTeamModal(team: Team) {
     name: 'team-modal',
     path: 'team/:teamId',
     alias: '/team/:teamId',
+    meta: { from: 'market-ideas' },
     component: TeamModal,
   }
 
@@ -132,17 +133,17 @@ function navigateToLeaderProfile(team: Team) {
 
   if (teamLeader) {
     const leaderModalRoute: RouteRecordRaw = {
-      name: 'teams',
-      path: 'teams/:id',
-      alias: '/teams/:id',
+      name: 'profile',
+      path: 'profile/:id',
+      alias: '/profile/:id',
       component: ProfileModal,
       props: {
         canGoBack: true,
       },
     }
 
-    router.addRoute('market', leaderModalRoute)
-    router.push({ path: `/market/${teamLeader.id}` })
+    router.addRoute('market-ideas', leaderModalRoute)
+    router.push({ path: `/profile/${teamLeader.id}` })
   }
 }
 </script>

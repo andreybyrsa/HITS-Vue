@@ -8,6 +8,7 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import Button from '@Components/Button/Button.vue'
+import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
 
 import useUserStore from '@Store/user/userStore'
 import useProfilesStore from '@Store/profiles/profilesStore'
@@ -65,10 +66,25 @@ function openRoleModal() {
 function closeRoleModal() {
   isOpenedRoleModal.value = false
 }
+
+function openTelegramAdmin() {
+  const link = process.env.LINK_TELEGRAM
+  console.log(process.env.LINK_TELEGRAM)
+
+  // window.open('https://web.telegram.org/k/#937605934')
+}
+
+const isOpenedNotificationsModal = ref(false)
+function handleOpenNotificationModal() {
+  isOpenedNotificationsModal.value = true
+}
+function handleCloseNotificationModal() {
+  isOpenedNotificationsModal.value = false
+}
 </script>
 
 <template>
-  <div class="p-3 bg-white d-flex">
+  <div class="py-2 px-3 bg-white header w-100">
     <div class="user-info d-flex gap-2 align-items-center">
       <div class="user-info__image rounded-circle overflow-hidden">
         <img
@@ -106,15 +122,48 @@ function closeRoleModal() {
         </Button>
       </div>
     </div>
+
+    <div class="header__buttons d-flex gap-2 flex-wrap">
+      <Button
+        @click="openTelegramAdmin"
+        variant="primary"
+        append-icon-name="bi bi-telegram"
+      />
+      <Button
+        variant="primary"
+        append-icon-name="bi bi-moon-fill"
+      />
+      <Button
+        variant="primary"
+        append-icon-name="bi bi-question-circle-fill"
+      />
+      <Button
+        variant="primary"
+        append-icon-name="bi bi-bell-fill"
+        @click="handleOpenNotificationModal"
+      />
+    </div>
   </div>
 
   <RoleModal
     :is-opened="isOpenedRoleModal"
     @close-modal="closeRoleModal"
   />
+  <NotificationModalWindow
+    :is-opened="isOpenedNotificationsModal"
+    @close-modal="handleCloseNotificationModal"
+  />
 </template>
 
 <style lang="scss">
+.header {
+  @include flexible(center, space-between);
+
+  &__buttons {
+    width: 100px;
+  }
+}
+
 .user-info {
   &__image {
     @include fixedHeight(58px);
