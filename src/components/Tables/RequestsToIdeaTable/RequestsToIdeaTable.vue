@@ -181,7 +181,11 @@ function navigateToTeamModal(requestTeam: RequestTeamToIdea) {
     name: 'team-modal',
     path: 'team/:teamId',
     alias: '/team/:teamId',
+    meta: { from: 'market-ideas' },
     component: TeamModal,
+    props: {
+      canGoBack: true,
+    },
   }
 
   router.addRoute('market-ideas', teamModalRoute)

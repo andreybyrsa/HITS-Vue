@@ -8,15 +8,20 @@ import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholde
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import Button from '@Components/Button/Button.vue'
+import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
 
 import useUserStore from '@Store/user/userStore'
 import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const notificationsStore = useNotificationsStore()
+const { getUnreadedNotifications } = storeToRefs(notificationsStore)
 
 const profilesStore = useProfilesStore()
 const avatar = computed(() =>
@@ -65,10 +70,23 @@ function openRoleModal() {
 function closeRoleModal() {
   isOpenedRoleModal.value = false
 }
+
+function openTelegramAdmin() {
+  const link = 'https://web.telegram.org/k/#937605934'
+  window.open(link)
+}
+
+const isOpenedNotificationsModal = ref(false)
+function handleOpenNotificationModal() {
+  isOpenedNotificationsModal.value = true
+}
+function handleCloseNotificationModal() {
+  isOpenedNotificationsModal.value = false
+}
 </script>
 
 <template>
-  <div class="p-3 bg-white d-flex">
+  <div class="py-2 px-3 bg-white header w-100">
     <div class="user-info d-flex gap-2 align-items-center">
       <div class="user-info__image rounded-circle overflow-hidden">
         <img
@@ -106,15 +124,44 @@ function closeRoleModal() {
         </Button>
       </div>
     </div>
+
+    <div class="d-flex gap-2">
+      <Button
+        @click="openTelegramAdmin"
+        variant="primary"
+        append-icon-name="bi bi-telegram"
+      />
+      <Button
+        class-name="position-relative"
+        variant="primary"
+        append-icon-name="bi bi-bell-fill"
+        @click="handleOpenNotificationModal"
+      >
+        <span
+          v-if="getUnreadedNotifications.length"
+          class="position-absolute top-0 start-100 px-2 translate-middle badge rounded-pill bg-danger"
+        >
+          {{ getUnreadedNotifications.length }}
+        </span>
+      </Button>
+    </div>
   </div>
 
   <RoleModal
     :is-opened="isOpenedRoleModal"
     @close-modal="closeRoleModal"
   />
+  <NotificationModalWindow
+    :is-opened="isOpenedNotificationsModal"
+    @close-modal="handleCloseNotificationModal"
+  />
 </template>
 
 <style lang="scss">
+.header {
+  @include flexible(center, space-between);
+}
+
 .user-info {
   &__image {
     @include fixedHeight(58px);
