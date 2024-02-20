@@ -94,14 +94,20 @@ onMounted(async () => {
 console.log(averageMark)
 console.log(sprintMarks)
 
+const fieldName = []
+
+for (let i = 0; i < sprintMarks.value.length; i++) {
+  fieldName.push('marks_' + i)
+}
+
 const { handleSubmit } = useForm({
   validationSchema: {
     report: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
     radio: (value: boolean) =>
       Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-    mark: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Обязательное поле',
+    fieldName: (value: number[]) =>
+      Validation.checkMarks(value) || 'Значение должно быть от 0 до 10',
   },
 })
 
@@ -147,7 +153,6 @@ const FinishSprint = handleSubmit(async () => {
     @on-outside-close="emit('close-modal')"
   >
     <div class="finish-project-modal bg-white rounded p-3 w-1">
-      {{ sprintMarks }}
       <div class="finish-project-modal__header fs-2 w-100 border-2">
         <Typography class-name="border-bottom text-primary fs-3 w-100">
           {{ 'Завершение спринта' }}
@@ -166,72 +171,83 @@ const FinishSprint = handleSubmit(async () => {
 
           <Typography class-name="w-75">{{ 'Статистика участника' }}</Typography>
         </div>
-        <div
-          v-for="(sprint, index) in sprintMarks"
-          :key="index"
-          class="d-flex w-100 gap-2 flex-column"
-        >
+        <div class="d-flex w-100 gap-2 flex-column">
           <div class="d-flex gap-3 w-100 justify-content-between h-100">
             <div class="w-25 h-100">
-              <div class="w-100 h-100">
+              <div
+                v-for="(marks, index) in sprintMarks"
+                :key="index"
+                class="w-100 h-100"
+              >
+                <div v-if="'marks_' + index in fieldName"></div>
                 <Input
-                  name="mark"
+                  :name="'marks_' + index"
                   class-name="rounded finish-project-modal__input"
                   placeholder="Оценка"
+                  v-model="marks.mark"
+                  :value="marks.mark"
                 />
               </div>
             </div>
 
-            <ul class="list-group rounded-3 w-75">
-              <li class="list-group-item p-0 overflow-hidden w-100">
-                <Button
-                  variant="light"
-                  class-name="collapse-controller w-100 justify-content-between"
-                  v-collapse="sprint.userId"
-                >
-                  {{ sprint.firstName }} {{ sprint.lastName }}
-                  <div :class="getRoleProjectMemberStyle(sprint.projectRole)">
-                    {{ getRoleProjectMember().translatedRoles[sprint.projectRole] }}
-                  </div>
-                </Button>
-
-                <Collapse :id="sprint.userId">
-                  <div
-                    v-if="sprint.tasks"
-                    class="fp-2 m-2"
+            <div
+              class="flex-column"
+              v-for="(sprint, index) in sprintMarks"
+              :key="index"
+            >
+              <!-- <ul class="list-group rounded-3 w-75 flex-column">
+                <li class="list-group-item p-0 overflow-hidden w-100">
+                  <Button
+                    variant="light"
+                    class-name="collapse-controller w-100 justify-content-between"
+                    v-collapse="sprint.userId"
                   >
-                    <div class="text-primary">Выполненные задачи*</div>
+                    {{ sprint.firstName }} {{ sprint.lastName }}
+                    <div :class="getRoleProjectMemberStyle(sprint.projectRole)">
+                      {{
+                        getRoleProjectMember().translatedRoles[sprint.projectRole]
+                      }}
+                    </div>
+                  </Button>
 
+                  <Collapse :id="sprint.userId">
                     <div
-                      v-for="(task, index) in sprint.tasks"
-                      :key="index"
+                      v-if="sprint.tasks"
+                      class="fp-2 m-2"
                     >
-                      <div
-                        v-if="task.status === 'Done'"
-                        class="d-flex rounded-3 border p-2 mb-1 gap-2 justify-content-between w-100"
-                      >
-                        <div>{{ task.name }}</div>
-                        <div
-                          v-for="(tag, index) in task.tag"
-                          :key="index"
-                          class="d-flex gap-1"
-                        >
-                          <Icon
-                            :style="{ color: tag.color }"
-                            class="bi bi-circle-fill"
-                          >
-                          </Icon>
+                      <div class="text-primary">Выполненные задачи*</div>
 
-                          <Typography class-name="finish-project-modal__tag"
-                            >{{ tag.name }}
-                          </Typography>
+                      <div
+                        v-for="(task, index) in tasks"
+                        :key="index"
+                      >
+                        <div
+                          v-if="task.status === 'Done'"
+                          class="d-flex rounded-3 border p-2 mb-1 gap-2 justify-content-between w-100"
+                        >
+                          <div>{{ task.name }}</div>
+                          <div
+                            v-for="(tag, index) in task.tag"
+                            :key="index"
+                            class="d-flex gap-1"
+                          >
+                            <Icon
+                              :style="{ color: tag.color }"
+                              class="bi bi-circle-fill"
+                            >
+                            </Icon>
+
+                            <Typography class-name="finish-project-modal__tag"
+                              >{{ tag.name }}
+                            </Typography>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Collapse>
-              </li>
-            </ul>
+                  </Collapse>
+                </li>
+              </ul> -->
+            </div>
           </div>
         </div>
       </div>

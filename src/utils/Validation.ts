@@ -59,6 +59,13 @@ class Validation {
     }
     return true
   }
+
+  checkMarks(marks: number[]) {
+    if (marks instanceof Array) {
+      return marks.every((mark) => mark >= 0 && mark <= 10)
+    }
+    return 'Оценка должна быть от 0 до 10'
+  }
 }
 
 const ValidationController = new Validation()
