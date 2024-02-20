@@ -15,9 +15,13 @@ import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const notificationsStore = useNotificationsStore()
+const { getUnreadedNotifications } = storeToRefs(notificationsStore)
 
 const profilesStore = useProfilesStore()
 const avatar = computed(() =>
@@ -68,10 +72,8 @@ function closeRoleModal() {
 }
 
 function openTelegramAdmin() {
-  const link = process.env.LINK_TELEGRAM
-  console.log(process.env.LINK_TELEGRAM)
-
-  // window.open('https://web.telegram.org/k/#937605934')
+  const link = 'https://web.telegram.org/k/#937605934'
+  window.open(link)
 }
 
 const isOpenedNotificationsModal = ref(false)
@@ -123,25 +125,25 @@ function handleCloseNotificationModal() {
       </div>
     </div>
 
-    <div class="header__buttons d-flex gap-2 flex-wrap">
+    <div class="d-flex gap-2">
       <Button
         @click="openTelegramAdmin"
         variant="primary"
         append-icon-name="bi bi-telegram"
       />
       <Button
-        variant="primary"
-        append-icon-name="bi bi-moon-fill"
-      />
-      <Button
-        variant="primary"
-        append-icon-name="bi bi-question-circle-fill"
-      />
-      <Button
+        class-name="position-relative"
         variant="primary"
         append-icon-name="bi bi-bell-fill"
         @click="handleOpenNotificationModal"
-      />
+      >
+        <span
+          v-if="getUnreadedNotifications.length"
+          class="position-absolute top-0 start-100 px-2 translate-middle badge rounded-pill bg-danger"
+        >
+          {{ getUnreadedNotifications.length }}
+        </span>
+      </Button>
     </div>
   </div>
 
@@ -158,10 +160,6 @@ function handleCloseNotificationModal() {
 <style lang="scss">
 .header {
   @include flexible(center, space-between);
-
-  &__buttons {
-    width: 100px;
-  }
 }
 
 .user-info {
