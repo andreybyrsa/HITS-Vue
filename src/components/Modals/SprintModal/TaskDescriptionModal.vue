@@ -75,6 +75,16 @@ function navigateToProfileModal(id: string) {
     profileModalRoute,
   )
 }
+
+function hexToRgb(hex: string) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return (
+    result &&
+    `${parseInt(result[1], 16)},
+        ${parseInt(result[2], 16)},
+        ${parseInt(result[3], 16)}`
+  )
+}
 </script>
 
 <template>
@@ -88,7 +98,7 @@ function navigateToProfileModal(id: string) {
           class="d-flex justify-content-between align-items-start border-bottom align-items-center"
         >
           <Typography class-name="fs-3 text-primary">
-            {{ task?.name }}
+            {{ props.task.name }}
           </Typography>
           <Button
             variant="close"
@@ -97,17 +107,20 @@ function navigateToProfileModal(id: string) {
         </div>
         <div class="d-flex">
           <div class="task-modal__left-side flex-grow-1">
-            <div class="description-container mb-5 my-">
-              <!-- <Typography class-name="text-primary">Описание:</Typography>
-              <div class="description-box my-2">
-                {{ task?.description }}
-              </div> -->
-            </div>
-            <Collapse>
-              <div class="p-2">
-                {{ task?.description }}
-              </div>
-            </Collapse>
+            <ul class="list-group rounded-3 me-3 mb-3">
+              <li class="list-group-item p-0 overflow-hidden">
+                <Button
+                  variant="light"
+                  class-name="collapse-controller w-100 "
+                  v-collapse:openOnMount="props.task.id"
+                >
+                  Описание
+                </Button>
+                <Collapse :id="props.task.id">
+                  <div class="p-2">{{ props.task.description }}</div>
+                </Collapse>
+              </li>
+            </ul>
 
             <div class="task-history">
               <Typography class-name="text-primary"
@@ -133,9 +146,12 @@ function navigateToProfileModal(id: string) {
               <Typography
                 class-name="p-2 bg-primary rounded-top fs-4 text-center text-white"
               >
-                {{ getTaskStatus().translatedStatus[task.status] }}
-                Выполнена 14.02.2024 18:39
+                {{ getTaskStatus().translatedStatus[props.task.status] }}
               </Typography>
+
+              <div>
+                <Typography class-name="text-light">14.02.2024 18:39</Typography>
+              </div>
             </div>
             <div class="idea-modal__mid-side">
               <div class="d-flex align-items-center gap-1">
@@ -147,11 +163,11 @@ function navigateToProfileModal(id: string) {
               </div>
               <div
                 class="task-info__link text-primary"
-                @click="navigateToProfileModal(task.initiator.id)"
+                @click="navigateToProfileModal(props.task.initiator.id)"
               >
                 <Typography class-name="text-primary d-block mb-1 my-1"
-                  >{{ task?.executor?.firstName }}
-                  {{ task?.executor?.lastName }}</Typography
+                  >{{ props.task.initiator?.firstName }}
+                  {{ props.task.initiator?.lastName }}</Typography
                 >
               </div>
               <div class="d-flex align-items-center gap-1">
@@ -162,14 +178,16 @@ function navigateToProfileModal(id: string) {
                 >
               </div>
               <div
+                v-if="props.task.executor"
                 class="task-info__link text-primary"
-                @click="navigateToProfileModal(task.initiator.id)"
+                @click="navigateToProfileModal(props.task.initiator.id)"
               >
                 <Typography class-name="text-primary d-block mb-1 my-1"
-                  >{{ task?.executor?.firstName }}
-                  {{ task?.executor?.lastName }}</Typography
+                  >{{ props.task.executor?.firstName }}
+                  {{ props.task.executor?.lastName }}</Typography
                 >
               </div>
+              <div v-else>Исполнитель не назначен</div>
 
               <div>
                 <div class="d-flex align-items-center gap-1">
@@ -180,9 +198,9 @@ function navigateToProfileModal(id: string) {
                   >
                 </div>
                 <div>
-                  <Typography class-name="text-primary d-block mb-1 my-1">{{
-                    task?.workHour
-                  }}</Typography>
+                  <Typography class-name="d-block mb-1 my-1"
+                    >{{ props.task.workHour }}ч</Typography
+                  >
                 </div>
                 <div class="d-flex align-items-center gap-1">
                   <Icon class-name="bi bi-tag opacity-75" />
@@ -191,10 +209,19 @@ function navigateToProfileModal(id: string) {
                     >Теги:</Typography
                   >
                 </div>
-                <div class="tag-button mb-2 my-2">
-                  <Typography class-name="tag-text text-primary">
-                    {{ task?.tag }}
-                  </Typography>
+
+                <div class="d-flex flex-wrap gap-2 w-100 my-2">
+                  <div
+                    v-for="(tag, index) in props.task.tag"
+                    :key="index"
+                    :style="{
+                      backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+                      color: tag.color,
+                    }"
+                    class="px-2 py-1 rounded-2 text-center align-self-start"
+                  >
+                    {{ tag.name }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -222,7 +249,16 @@ function navigateToProfileModal(id: string) {
   background-color: white;
   border-radius: 10px;
   width: 1000px;
-  height: 450px;
+  max-height: fit-content;
+}
+
+.collapse-controller {
+  border-radius: 0;
+  background-color: $white-color;
+
+  color: $primary-color;
+
+  @include flexible(center, flex-start);
 }
 
 .status-header {

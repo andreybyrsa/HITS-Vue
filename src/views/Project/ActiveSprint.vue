@@ -206,39 +206,36 @@ function closeSprintModal() {
 }
 
 const isOpenedTaskModal = ref(false)
-let currentTask = ref()
+const currentTask = ref<Task>()
 
 function openTaskModal(task: Task) {
-  currentTask.value = task
-  isOpenedTaskModal.value = true
+  if (task) {
+    currentTask.value = task
+    isOpenedTaskModal.value = true
+  }
 }
 
 function closeTaskModal() {
   isOpenedTaskModal.value = false
 }
 
-const wildcardTask = ref({
-  id: '1',
-  sprintId: '1',
-  projectId: '1',
-  position: 1,
-  name: 'Scram проекты',
-  description:
-    'Сделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проекты',
-  initiator: { lastName: 'Кирилл', firstName: 'Власов' },
-  executor: { lastName: 'Кирилл', firstName: 'Власов' },
-  workHour: '3 часа',
-  startDate: '2022-01-01',
-  finishDate: '2022-01-02',
-  tag: 'Фронтенд',
-  taskMovementLog: ['Выполняется', 'В бэклоге', 'На доработке', 'Выполнена'],
-  status: 'Выполняется',
-})
-
-function openWildcardTaskModal() {
-  currentTask.value = wildcardTask.value
-  isOpenedTaskModal.value = true
-}
+// const wildcardTask = ref({
+//   id: '1',
+//   sprintId: '1',
+//   projectId: '1',
+//   position: 1,
+//   name: 'Scram проекты',
+//   description:
+//     'Сделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проекты',
+//   initiator: { lastName: 'Кирилл', firstName: 'Власов' },
+//   executor: { lastName: 'Кирилл', firstName: 'Власов' },
+//   workHour: '3 часа',
+//   startDate: '2022-01-01',
+//   finishDate: '2022-01-02',
+//   tag: 'Фронтенд',
+//   taskMovementLog: ['Выполняется', 'В бэклоге', 'На доработке', 'Выполнена'],
+//   status: 'Выполняется',
+// })
 </script>
 
 <template>
@@ -311,7 +308,10 @@ function openWildcardTaskModal() {
           :animation="200"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -387,7 +387,10 @@ function openWildcardTaskModal() {
           :animation="200"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -397,9 +400,7 @@ function openWildcardTaskModal() {
               >
                 <div class="d-flex flex-column border-bottom pb-2">
                   <div class="active-sprint__task">
-                    <Typography @click="openTaskModal(element)">{{
-                      element.name
-                    }}</Typography>
+                    <Typography>{{ element.name }}</Typography>
                   </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 w-100 mt-2">
@@ -456,7 +457,10 @@ function openWildcardTaskModal() {
           :animation="200"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -526,7 +530,10 @@ function openWildcardTaskModal() {
           :handle="user?.role !== 'TEAM_LEADER'"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -595,7 +602,10 @@ function openWildcardTaskModal() {
           :disabled="isLoadingTaskData || user?.role !== 'TEAM_LEADER'"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -641,11 +651,6 @@ function openWildcardTaskModal() {
       :is-opened="isOpenedCreateNewTask"
       @close-modal="closeCreateNewTask"
     />
-    <Button
-      variant="primary"
-      @click="openWildcardTaskModal"
-      >Баттон французский</Button
-    >
   </div>
   <TaskDescriptionModal
     :is-opened="isOpenedTaskModal"
