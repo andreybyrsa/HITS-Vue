@@ -3,8 +3,9 @@ import { defineStore } from 'pinia'
 import SprintService from '@Services/SprintService'
 
 import InitialState from '@Store/sprints/initialState'
-import { SprintStatus } from '@Domain/Project'
+import { Sprint, SprintStatus } from '@Domain/Project'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useTasksStore from '@Store/tasks/tasksStore'
 
 const useSprintsStore = defineStore('sprints', {
   state: (): InitialState => ({
@@ -44,6 +45,23 @@ const useSprintsStore = defineStore('sprints', {
   },
 
   actions: {
+    async postSprint(sprint: Sprint, token: string) {
+      const response = await SprintService.postSprint(sprint, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        this.sprints.push(sprint)
+        const tasksStore = useTasksStore()
+        tasksStore.tasks.forEach((task) => {
+          sprint.tasks.forEach((sprintTask) => {
+            if (task.status == 'InBackLog' && sprintTask.id == task.id)
+              task.status = 'inProgress'
+          })
+        })
+      }
+    },
+
     async changeSprintStatus(sprintId: string, status: SprintStatus, token: string) {
       const response = await SprintService.changeSprintStatus(
         sprintId,

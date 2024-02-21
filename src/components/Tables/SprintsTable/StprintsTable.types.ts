@@ -1,9 +1,7 @@
-import { Sprint, Task } from '@Domain/Project'
+import { Sprint } from '@Domain/Project'
 
 interface SprintsTableProps {
-  sprint: Sprint[]
-  projectId: string
-  tasks?: Task[]
+  sprints: Sprint[]
 }
 
 export default SprintsTableProps

@@ -39,18 +39,30 @@ class Validation {
   }
 
   checkDate(date: string) {
+    if (!date) return 'Введите дату'
     const currentDate = new Date()
+    currentDate.setHours(0)
+    currentDate.setSeconds(0)
+    currentDate.setMinutes(0)
+    currentDate.setMilliseconds(0)
+
     const checkedDate = new Date(date)
-    if (currentDate <= checkedDate) {
-      return true
-    }
+
+    if (currentDate <= checkedDate) return true
     return 'Дата не может быть раньше текущей'
   }
 
   validateDates(startDateString: string, finishDateString: string) {
+    if (!startDateString || !finishDateString) return 'Введите даты'
     const startDate = new Date(startDateString)
     const finishDate = new Date(finishDateString)
+
     const currentDate = new Date()
+    currentDate.setHours(0)
+    currentDate.setSeconds(0)
+    currentDate.setMinutes(0)
+    currentDate.setMilliseconds(0)
+
     if (finishDate < currentDate) {
       return 'Дата не может быть раньше текущей'
     }

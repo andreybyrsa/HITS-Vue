@@ -18,11 +18,7 @@ const { sprints } = storeToRefs(sprintsStore)
     class="w-100 mt-4"
     class-name="sprints-page__content"
   >
-    <SprintsTable
-      :sprint="sprints"
-      :project-id="projectId"
-      :tasks="tasks"
-    />
+    <SprintsTable :sprints="sprints" />
   </div>
 </template>
 

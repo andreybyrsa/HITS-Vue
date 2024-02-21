@@ -1,155 +1,123 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, ComputedRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { watchImmediate } from '@vueuse/core'
-import { useRouter } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
-import TeamType from '@Components/Forms/TeamForm/TeamType.vue'
-import TeamVue from '@Components/Forms/TeamForm/Team.vue'
 import Button from '@Components/Button/Button.vue'
-import StackCategories from '@Components/StackCategories/StackCategories.vue'
-import { SprintFormProps } from '@Components/Forms/SprintForm/SprintForm.types'
-
-import { User } from '@Domain/User'
-import { Team, TeamMember, TeamInvitation } from '@Domain/Team'
-import { Skill } from '@Domain/Skill'
-
-import TeamService from '@Services/TeamService'
-
-import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
-import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+import {
+  SprintFormProps,
+  SprintFormEmits,
+} from '@Components/Forms/SprintForm/SprintForm.types'
 
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+import useSprintsStore from '@Store/sprints/sprintsStore'
 
 import Validation from '@Utils/Validation'
 import { Sprint, Task } from '@Domain/Project'
-import TaskForSprintForm from './TaskForSprintForm.vue'
 
-import { tasksMocks } from '@Utils/getMocks'
+import ProjectTask from '@Views/Project/ProjectTask.vue'
+import useTasksStore from '@Store/tasks/tasksStore'
 
 const props = defineProps<SprintFormProps>()
+const emit = defineEmits<SprintFormEmits>()
+
+const sprintsStore = useSprintsStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-// const notificationsStore = useNotificationsStore()
+const tasksStore = useTasksStore()
+const { tasks } = storeToRefs(tasksStore)
 
-// const router = useRouter()
+const initialBackLogTasks: ComputedRef<Task[]> = computed<Task[]>(() =>
+  tasks.value.filter((task) => task.status === 'InBackLog'),
+)
 
-const wantedSkills = ref<Skill[]>([])
-const totalSkills = ref<Skill[]>([])
-const stackTechnologies = ref<Skill[]>([])
+const backlogTasks = ref<Task[]>(initialBackLogTasks.value)
 
-const invitationUsers = ref<TeamMember[]>([])
+const newSprintTasks = ref<Task[]>([])
 
 const isLoading = ref<boolean>(false)
 
-const { handleSubmit, setFieldValue, setValues } = useForm<Sprint>({
+const { handleSubmit, setValues, values } = useForm<Sprint>({
   validationSchema: {
+    // tasks: (value: Task[]) =>
+    //   Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     goal: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    startDate: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    startDate: (value: string) => Validation.checkDate(value) || 'Поле не заполнено',
     finishDate: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      Validation.validateDates(values.startDate, value) || 'Поле не заполнено',
     workingHours: (value: number) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
   },
 })
+
+function moveTaskToNewTasks(id: string) {
+  const choosenTask = backlogTasks.value.find((task) => task.id == id)
+  backlogTasks.value = backlogTasks.value.filter((task) => task.id !== id)
+  if (choosenTask) newSprintTasks.value.push(choosenTask)
+  clearTooltips()
+}
+
+function clearTooltips() {
+  const elementsToRemove = document.querySelectorAll('.tooltip')
+  elementsToRemove.forEach((element) => {
+    if (element.parentNode) element.parentNode.removeChild(element)
+  })
+}
+
+function moveTaskToBacklog(id: string) {
+  const choosenTask = newSprintTasks.value.find((task) => task.id == id)
+  newSprintTasks.value = newSprintTasks.value.filter((task) => task.id !== id)
+  if (choosenTask) backlogTasks.value.push(choosenTask)
+  clearTooltips()
+}
+
+const CreateSprint = handleSubmit(async (sprint) => {
+  sprint.tasks = newSprintTasks.value
+  sprint.projectId = newSprintTasks.value[0].projectId
+
+  if (user.value?.token && sprint) {
+    const { token } = user.value
+    await sprintsStore.postSprint(sprint, token)
+    emit('close-modal')
+  }
+})
+
+async function emitCreateSprint() {
+  CreateSprint()
+}
 
 watchImmediate(
   () => props.sprint,
   async (sprint) => {
     if (sprint) {
       setValues({ ...sprint })
-
-      // wantedSkills.value = team.wantedSkills
-      // totalSkills.value = team.skills
     }
   },
 )
 
-// watchImmediate(stackTechnologies, (skills) => setFieldValue('wantedSkills', skills))
-
-const handleCreateTeam = handleSubmit(async (values) => {
-  // const currentUser = user.value
-  // if (currentUser?.token) {
-  //   const { token } = currentUser
-  //   isLoading.value = true
-  //   const response = await TeamService.createTeam(values, token)
-  //   if (response instanceof Error) {
-  //     return notificationsStore.createSystemNotification('Система', response.message)
-  //   }
-  //   if (invitationUsers.value.length) {
-  //     const invitationsToTeam = invitationUsers.value.map(
-  //       ({ userId, email, firstName, lastName }) => ({
-  //         teamId: response.id,
-  //         userId,
-  //         email,
-  //         firstName,
-  //         lastName,
-  //       }),
-  //     ) as TeamInvitation[]
-  //     const responseInvitation = await TeamService.createInvitationsToTeam(
-  //       invitationsToTeam,
-  //       token,
-  //     )
-  //     if (responseInvitation instanceof Error) {
-  //       notificationsStore.createSystemNotification(
-  //         'Система',
-  //         responseInvitation.message,
-  //       )
-  //     }
-  //   }
-  //   isLoading.value = false
-  //   router.push({ name: 'teams-list' })
-  // }
-})
-
-const handleUpdateTeam = handleSubmit(async (values) => {
-  // const currentUser = user.value
-  // if (currentUser?.token && props.team) {
-  //   const { token } = currentUser
-  //   const { id } = props.team
-  //   isLoading.value = true
-  //   const response = await TeamService.updateTeam(values, id, token)
-  //   if (response instanceof Error) {
-  //     return notificationsStore.createSystemNotification('Система', response.message)
-  //   }
-  //   isLoading.value = false
-  //   router.push({ name: 'teams-list' })
-  // }
-})
-
-const radarChartsSkills = computed<SkillsArea[]>(() => [
-  {
-    label: 'Желаемые компетенции',
-    skills: stackTechnologies.value,
-    alphaOpacity: 100,
-  },
-  {
-    label: 'Фактические компетенции',
-    skills: totalSkills.value,
-    alphaOpacity: 50,
-  },
-])
-
 watchImmediate(
-  () => invitationUsers.value.length,
-  () => {
-    const skills: Skill[] = []
-    invitationUsers.value.forEach((user) => {
-      skills.push(...user.skills)
-    })
-    totalSkills.value = skills
+  () => newSprintTasks,
+  async (newSprintTasks) => {
+    if (newSprintTasks) {
+      const workingHours = newSprintTasks.value.reduce(
+        (sum, item) => sum + Number(item.workHour),
+        0,
+      )
+
+      setValues({ workingHours: workingHours.toString() })
+    }
   },
+  { deep: true },
 )
 </script>
 
@@ -166,66 +134,39 @@ watchImmediate(
             <Typography class-name="fs-4 text-secondary">Бэклог</Typography>
           </div>
           <div class="tasks-list d-flex flex-column gap-2">
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
-            <TaskForSprintForm :task="tasksMocks[0]" />
+            <ProjectTask
+              @click="moveTaskToNewTasks(task.id)"
+              v-for="task in backlogTasks"
+              :key="task.id"
+              :size="'SMALL'"
+              :task="task"
+            />
           </div>
         </div>
         <div class="new-sprint">
           <div class="new-sprint-name border-bottom border-4">
             <Typography class-name="fs-4 text-secondary">Новый спринт</Typography>
           </div>
+          <div class="tasks-list d-flex flex-column gap-2">
+            <ProjectTask
+              name="tasks"
+              @click="moveTaskToBacklog(task.id)"
+              v-for="task in newSprintTasks"
+              :key="task.id"
+              :size="'SMALL'"
+              :task="task"
+            />
+          </div>
         </div>
       </div>
     </div>
     <div class="right-block">
       <div class="form">
+        <Button
+          variant="close"
+          class="close"
+          @click="emit('close-modal')"
+        ></Button>
         <Input
           name="name"
           class-name="rounded-end"
@@ -258,6 +199,7 @@ watchImmediate(
           placeholder=".. | .. | .."
         />
         <Input
+          disabled
           name="workingHours"
           class-name="rounded-end"
           label="Общие часы работы"
@@ -272,25 +214,26 @@ watchImmediate(
         variant="primary"
         class-name="w-75"
         :isLoading="isLoading"
-        @click="handleUpdateTeam"
       >
         Сохранить изменения
       </Button>
       <Button
         v-else
+        @click="emitCreateSprint()"
         variant="primary"
         class-name="w-75"
         :isLoading="isLoading"
-        @click="handleCreateTeam"
       >
         Создать спринт
       </Button>
     </div>
-    <!-- <div class="team-form__content w-75"></div> -->
   </div>
 </template>
 
 <style lang="scss" scoped>
+.close {
+  justify-self: end;
+}
 .tasks-list {
   display: flex;
   padding: 7px 0;

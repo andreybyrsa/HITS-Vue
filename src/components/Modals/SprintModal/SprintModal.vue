@@ -1,48 +1,19 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useDateFormat } from '@vueuse/core'
-
 import {
   SprintModalProps,
   SprintModalEmits,
 } from '@Components/Modals/SprintModal/SprintModal.types'
-import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
-import Icon from '@Components/Icon/Icon.vue'
-import Typography from '@Components/Typography/Typography.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
-import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
-import { getProjectStatus, getProjectStatusStyle } from '@Utils/getProjectStatus'
-
-import useUserStore from '@Store/user/userStore'
-import useTasksStore from '@Store/tasks/tasksStore'
-import SprintsListPage from '@Views/Project/SprintsListPage.vue'
-
-import BurndownChart from './BurndownChart.vue'
 import SprintForm from '@Components/Forms/SprintForm/SprintForm.vue'
-
-function getFormattedDate(date: string) {
-  if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
-    return formattedDate.value
-  } else {
-    return 'Реализуется'
-  }
-}
 
 const props = defineProps<SprintModalProps>()
 const emit = defineEmits<SprintModalEmits>()
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
-const isLoading = ref(false)
-
-const tasks = storeToRefs(useTasksStore())
+function close() {
+  emit('close-modal')
+}
 </script>
 
 <template>
@@ -52,7 +23,7 @@ const tasks = storeToRefs(useTasksStore())
     class="sprint-modal"
   >
     <div class="sprint-modal bg-white rounded p-3">
-      <SprintForm />
+      <SprintForm @close-modal="close" />
     </div>
   </ModalLayout>
 </template>

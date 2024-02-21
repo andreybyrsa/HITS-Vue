@@ -3,15 +3,13 @@
     class-name="p-3"
     :header="sprintsTableHeader"
     :columns="usersTableColumns"
-    :data="sprint"
+    :data="sprints"
     :search-by="['name']"
     :dropdown-actions-menu="dropdownUsersActions"
     :filters="sprintsFilters"
   />
   <SprintModal
-    :projectId="projectId"
     :is-opened="isOpenedSprintModal"
-    :tasks="tasks"
     @close-modal="closeSprintModal"
   />
 </template>
@@ -35,6 +33,8 @@ import { Sprint, SprintStatus } from '@Domain/Project'
 import { getSprintStatus, getSprintStatusStyle } from '@Utils/getSprintStatus'
 
 defineProps<SprintsTableProps>()
+
+const isOpenedSprintModal = ref(false)
 
 const sprintsTableHeader: TableHeader = {
   label: 'Список спринтов',
@@ -73,9 +73,6 @@ const usersTableColumns: TableColumn<Sprint>[] = [
     getRowCellStyle: getFinishDate,
   },
 ]
-
-const currentSprint = ref<Sprint>()
-const isOpenedSprintModal = ref(false)
 
 function getSprintStatusFormat(status: SprintStatus) {
   return getSprintStatus().translatedStatus[status]
