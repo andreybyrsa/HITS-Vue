@@ -210,6 +210,7 @@ function closeTeamInviteModal() {
 
     <InvitationTeamMemberModal
       :is-opened="isOpenedTeamInviteModal"
+      isCreateTeam
       v-model="invitationUsers"
       @close-modal="closeTeamInviteModal"
     />

@@ -72,8 +72,8 @@ function closeRoleModal() {
 }
 
 function openTelegramAdmin() {
-  const link = 'https://web.telegram.org/k/#937605934'
-  window.open(link)
+  const link = 'tg://resolve?domain=EKATERINA270119882024'
+  window.location.href = link
 }
 
 const isOpenedNotificationsModal = ref(false)
