@@ -1611,7 +1611,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     firstName: 'Кирилл',
     lastName: 'Власов',
-    mark: 7,
+    mark: undefined,
     projectRole: 'TEAM_LEADER',
     tasks: [tasksMocks[9], tasksMocks[12]],
   },
@@ -1620,7 +1620,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     userId: '123714',
     firstName: 'Иван',
     lastName: 'Иванович',
-    mark: 8,
+    mark: undefined,
     projectRole: 'MEMBER',
     tasks: [tasksMocks[10]],
   },
@@ -1630,10 +1630,11 @@ export const sprintMarksMocks: SprintMarks[] = [
     firstName: 'Менеджер',
     lastName: 'Менеджер',
     projectRole: 'MEMBER',
-    mark: 9,
+    mark: undefined,
     tasks: [tasksMocks[11]],
   },
 ]
+
 export const sprintMocks: Sprint[] = [
   {
     id: '0',

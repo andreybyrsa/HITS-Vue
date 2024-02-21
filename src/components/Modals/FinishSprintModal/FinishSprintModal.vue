@@ -32,8 +32,8 @@ import {
 } from '@Utils/getRoleProjectMember'
 
 import { storeToRefs } from 'pinia'
-import { useForm } from 'vee-validate'
-import { onMounted, ref } from 'vue'
+import { FormOptions, TypedSchema, useForm } from 'vee-validate'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { AverageMark } from '@Domain/ReportProjectMembers'
 import ProjectService from '@Services/ProjectService'
@@ -66,6 +66,13 @@ const radio2 = ref()
 const averageMark = ref<AverageMark[]>([])
 const sprintMarks = ref<SprintMarks[]>([])
 
+const getValidations = ref<any>({
+  report: (value: string) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+  radio: (value: boolean) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+})
+
 onMounted(async () => {
   if (props.isFinishSprint) {
     const currentUser = user.value
@@ -88,21 +95,18 @@ onMounted(async () => {
         },
       ]
       await sendParallelRequests(sprintParallelRequests)
+
+      const arrayUserId = sprintMarks.value.map(({ userId }) => userId)
+      arrayUserId.forEach((userId) => {
+        getValidations.value[userId] = (value: boolean) =>
+          Validation.checkIsEmptyValue(value) || 'Это обязательное поле'
+      })
     }
   }
 })
-console.log(averageMark)
-console.log(sprintMarks)
 
 const { handleSubmit } = useForm({
-  validationSchema: {
-    report: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-    radio: (value: boolean) =>
-      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-    mark: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Обязательное поле',
-  },
+  validationSchema: getValidations,
 })
 
 const FinishSprint = handleSubmit(async () => {
@@ -147,7 +151,6 @@ const FinishSprint = handleSubmit(async () => {
     @on-outside-close="emit('close-modal')"
   >
     <div class="finish-project-modal bg-white rounded p-3 w-1">
-      {{ sprintMarks }}
       <div class="finish-project-modal__header fs-2 w-100 border-2">
         <Typography class-name="border-bottom text-primary fs-3 w-100">
           {{ 'Завершение спринта' }}
@@ -175,9 +178,10 @@ const FinishSprint = handleSubmit(async () => {
             <div class="w-25 h-100">
               <div class="w-100 h-100">
                 <Input
-                  name="mark"
+                  :name="sprint.userId"
                   class-name="rounded finish-project-modal__input"
                   placeholder="Оценка"
+                  validate-on-update
                 />
               </div>
             </div>

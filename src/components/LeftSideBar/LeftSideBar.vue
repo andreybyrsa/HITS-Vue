@@ -73,8 +73,10 @@ watch(
   { deep: true },
 )
 
-onMounted(getActiveProjects)
-onMounted(getActiveMarkets)
+onMounted(() => {
+  getActiveProjects()
+  getActiveMarkets()
+})
 
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const initialMarketRoutes: LeftSideBarTabType[] =
