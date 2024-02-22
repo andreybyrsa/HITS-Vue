@@ -7,7 +7,7 @@ import ProfileAvatar from '@Components/Modals/ProfileModal/ProfileAvatar.vue'
 import ProfileInfo from '@Components/Modals/ProfileModal/ProfileInfo.vue'
 import ProfileSkills from '@Components/Modals/ProfileModal/ProfileSkills.vue'
 import ProfileIdeas from '@Components/Modals/ProfileModal/ProfileIdeas.vue'
-import ProfileTeam from '@Components/Modals/ProfileModal/ProfileTeam.vue'
+import ProfilePortfolio from '@Components/Modals/ProfileModal/ProfilePortfolio.vue'
 import ProfileModalPlaceholder from '@Components/Modals/ProfileModal/ProfileModalPlaceholder.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -108,14 +108,14 @@ function handleCloseProfileModal() {
         <div class="profile-modal__content">
           <ProfileAvatar />
 
-          <div class="profile-modal__info">
+          <div class="profile-modal__info mb-3">
             <ProfileInfo />
 
             <ProfileSkills />
 
             <ProfileIdeas />
 
-            <ProfileTeam />
+            <ProfilePortfolio />
           </div>
         </div>
       </div>
@@ -163,14 +163,13 @@ function handleCloseProfileModal() {
 
   &__content {
     width: 100%;
-    height: 100%;
     @include flexible(stretch, flex-start, $gap: 16px);
   }
 
   &__info {
     width: 66%;
     height: 100%;
-    display: block;
+
     @include flexible(center, flex-start, column, $gap: 16px);
   }
 }
