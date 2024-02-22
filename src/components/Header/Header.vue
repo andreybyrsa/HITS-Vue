@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia'
 import { useRoute, RouteRecordRaw } from 'vue-router'
 
 import Typography from '@Components/Typography/Typography.vue'
-import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import Button from '@Components/Button/Button.vue'
@@ -16,6 +15,8 @@ import useProfilesStore from '@Store/profiles/profilesStore'
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+import { defProfile } from '@Assets/images'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -97,9 +98,12 @@ function handleCloseNotificationModal() {
           height="58"
           @click="navigateToProfile"
         />
-        <LoadingPlaceholder
+        <img
           v-else
-          class-name="user-info__image-placeholder"
+          class="text-secondary"
+          :src="defProfile"
+          width="58"
+          height="58"
         />
       </div>
 
@@ -167,8 +171,8 @@ function handleCloseNotificationModal() {
     @include fixedHeight(58px);
     @include fixedWidth(58px);
 
-    &-placeholder {
-      @include fixedHeight(58px);
+    &-icon {
+      font-size: 58px;
     }
   }
 

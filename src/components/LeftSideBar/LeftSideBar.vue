@@ -24,7 +24,6 @@ import useMarketsStore from '@Store/markets/marketsStore'
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 const notificationsStore = useNotificationsStore()
-const { getUnreadedNotifications } = storeToRefs(notificationsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -137,10 +136,6 @@ function handleCloseRoleModal() {
   isOpenedRoleModal.value = false
 }
 
-function handleOpenNotificationModal() {
-  isOpenedNotificationsModal.value = true
-}
-
 function handleCloseNotificationModal() {
   isOpenedNotificationsModal.value = false
 }
@@ -177,21 +172,6 @@ function handleCloseNotificationModal() {
         :disabled="user?.roles.length === 1"
       >
         {{ isHovered ? getTranslatedRole(user.role) : '' }}
-      </Button>
-
-      <Button
-        variant="light"
-        class-name="left-side-bar__button btn-light w-100 position-relative"
-        @click="handleOpenNotificationModal"
-        prepend-icon-name="bi bi-bell"
-      >
-        {{ isHovered ? 'Уведомления' : '' }}
-        <span
-          v-if="getUnreadedNotifications.length"
-          class="position-absolute top-0 start-100 px-2 translate-middle badge rounded-pill bg-danger"
-        >
-          {{ getUnreadedNotifications.length }}
-        </span>
       </Button>
 
       <Button

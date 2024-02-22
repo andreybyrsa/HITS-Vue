@@ -23,7 +23,7 @@ import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 export const usersMocks: User[] = [
   {
-    id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    id: '126288eb-9d4d-4074-9c87-6e4a566ef8f9',
     token: '10296538',
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
@@ -250,7 +250,7 @@ export const teamMembersMocks: TeamMember[] = [
 
 export const teamsMocks: Team[] = [
   {
-    id: '0',
+    id: '01',
     name: 'Визитка',
     closed: true,
     createdAt: '2023-10-20T11:02:17Z',
@@ -1478,6 +1478,7 @@ export const profilesMocks: Profile[] = [
     ...usersMocks[0],
     skills: [...skillsMocks],
     ideas: [ideasMocks[0], ideasMocks[1]],
+    team: teamsMocks[0],
     teamsExperience: teamsExperienceMocks,
     teamsProjects: teamsProjectsMocks,
   },

@@ -7,6 +7,7 @@ import ProfileAvatar from '@Components/Modals/ProfileModal/ProfileAvatar.vue'
 import ProfileInfo from '@Components/Modals/ProfileModal/ProfileInfo.vue'
 import ProfileSkills from '@Components/Modals/ProfileModal/ProfileSkills.vue'
 import ProfileIdeas from '@Components/Modals/ProfileModal/ProfileIdeas.vue'
+import ProfileTeam from '@Components/Modals/ProfileModal/ProfileTeam.vue'
 import ProfileModalPlaceholder from '@Components/Modals/ProfileModal/ProfileModalPlaceholder.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -113,6 +114,8 @@ function handleCloseProfileModal() {
             <ProfileSkills />
 
             <ProfileIdeas />
+
+            <ProfileTeam />
           </div>
         </div>
       </div>
