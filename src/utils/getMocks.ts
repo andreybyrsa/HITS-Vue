@@ -23,7 +23,7 @@ import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 export const usersMocks: User[] = [
   {
-    id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    id: '126288eb-9d4d-4074-9c87-6e4a566ef8f9',
     token: '10296538',
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
@@ -250,7 +250,7 @@ export const teamMembersMocks: TeamMember[] = [
 
 export const teamsMocks: Team[] = [
   {
-    id: '0',
+    id: '01',
     name: 'Визитка',
     closed: true,
     createdAt: '2023-10-20T11:02:17Z',
@@ -259,7 +259,12 @@ export const teamsMocks: Team[] = [
     membersCount: 4,
     owner: teamMembersMocks[1],
     leader: teamMembersMocks[1],
-    members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
+    members: [
+      teamMembersMocks[0],
+      teamMembersMocks[1],
+      teamMembersMocks[2],
+      teamMembersMocks[3],
+    ],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
@@ -291,12 +296,7 @@ export const teamsMocks: Team[] = [
     membersCount: 4,
     owner: teamMembersMocks[0],
     leader: teamMembersMocks[0],
-    members: [
-      teamMembersMocks[0],
-      teamMembersMocks[1],
-      teamMembersMocks[2],
-      teamMembersMocks[3],
-    ],
+    members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
@@ -1390,44 +1390,14 @@ export const companiesMocks: Company[] = [
 
 export const teamsExperienceMocks: TeamExperience[] = [
   {
-    teamId: '0',
-    teamName: 'Визитка',
-    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-    firstName: 'Кирилл',
-    lastName: 'Власов',
+    teamId: teamsMocks[0].id,
+    teamName: teamsMocks[0].name,
+    userId: usersMocks[0].id,
+    firstName: usersMocks[0].firstName,
+    lastName: usersMocks[0].lastName,
     startDate: '2023-01-01T11:02:17Z',
-    finishDate: '2023-03-14T11:02:17Z',
-    hasActiveProject: false,
-  },
-  {
-    teamId: '2',
-    teamName: 'Карасики',
-    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-    firstName: 'Кирилл',
-    lastName: 'Власов',
-    startDate: '2023-03-14T11:02:17Z',
-    finishDate: '2023-09-20T11:02:17Z',
-    hasActiveProject: false,
-  },
-  {
-    teamId: '1',
-    teamName: 'Кактус',
-    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-    firstName: 'Кирилл',
-    lastName: 'Власов',
-    startDate: '2023-09-20T11:02:17Z',
-    finishDate: '2023-11-25T11:02:17Z',
-    hasActiveProject: false,
-  },
-  {
-    teamId: '2',
-    teamName: 'Карасики',
-    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-    firstName: 'Кирилл',
-    lastName: 'Власов',
-    startDate: '2023-11-25T11:02:17Z',
     finishDate: null,
-    hasActiveProject: true,
+    hasActiveProject: teamsMocks[0].hasActiveProject,
   },
 ]
 
@@ -1478,8 +1448,7 @@ export const profilesMocks: Profile[] = [
     ...usersMocks[0],
     skills: [...skillsMocks],
     ideas: [ideasMocks[0], ideasMocks[1]],
-    teamsExperience: teamsExperienceMocks,
-    teamsProjects: teamsProjectsMocks,
+    teams: teamsExperienceMocks,
   },
 ]
 

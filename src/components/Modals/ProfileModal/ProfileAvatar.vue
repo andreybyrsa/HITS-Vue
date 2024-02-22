@@ -13,6 +13,8 @@ import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
+import { defProfile } from '@Assets/images'
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -76,9 +78,12 @@ async function handleFileUpload(event: HTMLTargetEvent) {
           width="150"
           height="150"
         />
-        <Icon
+        <img
           v-else
-          class-name="profile-avatar__placeholder-icon bi bi-person-circle"
+          class="text-secondary"
+          :src="defProfile"
+          width="150"
+          height="150"
         />
 
         <LoadingWrapper
