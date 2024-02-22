@@ -23,7 +23,6 @@ interface Project {
   team: Team
   members: ProjectMember[]
 
-  logs: TaskMovementLog[]
   report: ReportProject
   startDate: string
   finishDate: string
@@ -45,15 +44,12 @@ interface ProjectMember {
 
 interface TaskMovementLog {
   id: string
-  projectId: string
-  taskId: string
-  taskName: Task
-  taskDescription: Task
-  executor: User
-  initiator: User
-  editDate: string
-  tag: Tag[]
-  currentPosition: Task
+  task: Task
+  executor: User | null
+  user: User
+  startDate: string
+  endDate: string
+  taskStatus: TaskStatus
 }
 
 interface Task {
@@ -99,4 +95,5 @@ export {
   Sprint,
   Task,
   TaskStatus,
+  TaskMovementLog,
 }

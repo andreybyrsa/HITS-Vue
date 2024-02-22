@@ -410,7 +410,7 @@ async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
       marketId: marketId,
       initiatorId: userId,
       teamId: teamId,
-      name: teamName,
+      teamName: teamName,
       membersCount: membersCount,
       skills: skills,
     }

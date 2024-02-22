@@ -1,4 +1,4 @@
-import { Task } from '@Domain/Project'
+import { Task, TaskMovementLog } from '@Domain/Project'
 
 interface InitialState {
   tasks: Task[]

@@ -18,7 +18,13 @@ import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Project, ProjectMember, Sprint, Task } from '@Domain/Project'
+import {
+  Project,
+  ProjectMember,
+  Sprint,
+  Task,
+  TaskMovementLog,
+} from '@Domain/Project'
 import { Tag } from '@Domain/Tag'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import { AverageMark } from '@Domain/ReportProjectMembers'
@@ -1516,7 +1522,6 @@ export const projectMocks: Project[] = [
       },
     ],
 
-    logs: [],
     report: {
       projectId: '0',
       marks: [averageMarkMocks[0], averageMarkMocks[1], averageMarkMocks[2]],
@@ -1549,7 +1554,6 @@ export const projectMocks: Project[] = [
       },
     ],
 
-    logs: [],
     report: {
       projectId: '1',
       marks: [],
@@ -1956,6 +1960,7 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
     ideaMarketId: ideasMarketMocks[0].id,
     ideaMarketName: ideasMarketMocks[0].name,
     status: 'NEW',
+    marketId: ideasMarketMocks[0].marketId,
     teamId: teamsMocks[0].id,
     initiatorId: ideasMarketMocks[0].initiator.id,
     id: '245vs-d52ff-d4sd-2s',
@@ -1967,11 +1972,51 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
     ideaMarketId: ideasMarketMocks[1].id,
     ideaMarketName: ideasMarketMocks[1].name,
     status: 'NEW',
+    marketId: ideasMarketMocks[1].marketId,
     teamId: teamsMocks[1].id,
     initiatorId: ideasMarketMocks[1].initiator.id,
     id: '245vs-d52ff-d4sd-2s1',
     teamName: teamsMocks[1].name,
     membersCount: teamsMocks[1].membersCount,
     skills: ideasMarketMocks[1].stack,
+  },
+]
+
+export const taskMovementLogMocks: TaskMovementLog[] = [
+  {
+    id: '0',
+    task: tasksMocks[0],
+    executor: null,
+    user: usersMocks[0],
+    startDate: '2023-09-24T11:02:17Z',
+    endDate: '2023-09-25T11:02:17Z',
+    taskStatus: 'NewTask',
+  },
+  {
+    id: '1',
+    task: tasksMocks[0],
+    executor: usersMocks[1],
+    user: usersMocks[1],
+    startDate: '2023-09-25T11:02:17Z',
+    endDate: '2023-09-30T10:11:17Z',
+    taskStatus: 'inProgress',
+  },
+  {
+    id: '2',
+    task: tasksMocks[0],
+    executor: usersMocks[1],
+    user: usersMocks[1],
+    startDate: '2023-09-30T10:11:17Z',
+    endDate: '2023-10-02T18:00:17Z',
+    taskStatus: 'OnVerification',
+  },
+  {
+    id: '3',
+    task: tasksMocks[0],
+    executor: usersMocks[1],
+    user: usersMocks[0],
+    startDate: '2023-10-02T18:00:17Z',
+    endDate: '',
+    taskStatus: 'Done',
   },
 ]
