@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
-import { RouteRecordRaw, useRoute } from 'vue-router'
+
+import { RouteRecordRaw } from 'vue-router'
 import { useDateFormat } from '@vueuse/core'
 
 import {
@@ -9,54 +9,28 @@ import {
   TaskDescriptionModalEmits,
 } from '@Components/Modals/SprintModal/TaskDescriptionModal.types'
 
-import { SprintModalProps } from '@Components/Modals/SprintModal/SprintModal.types'
-
 import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
-import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
-
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
 import Profile from '@Components/Modals/ProfileModal/ProfileModal.vue'
+import TaskHistoryTable from '@Components/Tables/TaskHistoryTable/TaskHistoryTable.vue'
 
-import { getTaskStatus, getTaskStatusStyle } from '@Utils/getTaskStatus'
-
-import useUserStore from '@Store/user/userStore'
-import useTasksStore from '@Store/tasks/tasksStore'
-import SprintsListPage from '@Views/Project/SprintsListPage.vue'
-
-import BurndownChart from './BurndownChart.vue'
-
+import { getTaskStatus } from '@Utils/getTaskStatus'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 function getFormattedDate(date: string) {
   if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY HH:mm')
     return formattedDate.value
   } else {
     return 'Реализуется'
   }
 }
 
-// onMounted(async () => {
-//   await passTasks.value = props.sprint.tasks.filter(
-//     (task) => task.status === 'Done',
-//   ).length
-//   allTasks.value = props.sprint.tasks.length
-// })
-
 const props = defineProps<TaskDescriptionModalProps>()
 const emit = defineEmits<TaskDescriptionModalEmits>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
-const isLoading = ref(false)
-
-const tasks = storeToRefs(useTasksStore())
 
 function navigateToProfileModal(id: string) {
   const profileModalRoute: RouteRecordRaw = {
@@ -122,21 +96,14 @@ function hexToRgb(hex: string) {
               </li>
             </ul>
 
-            <div class="task-history">
+            <div>
               <Typography class-name="text-primary"
                 >История перемещений*:</Typography
               >
-              <div class="status-history my-2">
-                <div class="status new">Новая</div>
-                <Icon class-name="bi bi-arrow-right fs-4" />
-                <div class="status in-progress">Выполняется</div>
-                <Icon class-name="bi bi-arrow-right fs-4" />
-                <div class="status under-review">На проверке</div>
-                <Icon class-name="bi bi-arrow-right fs-4" />
-                <div class="status being-revised">На доработке</div>
-                <Icon class-name="bi bi-arrow-right fs-4" />
-                <div class="status completed">Выполненa</div>
-              </div>
+              <TaskHistoryTable
+                class="task-history"
+                :task-id="props.task.id"
+              />
             </div>
           </div>
           <div class="idea-modal__right-side bg-white rounded">
@@ -150,7 +117,9 @@ function hexToRgb(hex: string) {
               </Typography>
 
               <div>
-                <Typography class-name="text-light">14.02.2024 18:39</Typography>
+                <Typography class-name="text-light">{{
+                  getFormattedDate(props.task.startDate)
+                }}</Typography>
               </div>
             </div>
             <div class="idea-modal__mid-side">
@@ -268,6 +237,7 @@ function hexToRgb(hex: string) {
   border: 1px solid rgba(121, 120, 120, 0.5);
   flex-shrink: 0;
   width: 230px;
+  height: fit-content;
 }
 .idea-modal__mid-side {
   padding-left: 10px;
@@ -292,31 +262,6 @@ function hexToRgb(hex: string) {
   margin-right: 2px;
 }
 
-.new {
-  background-color: rgb(122, 204, 241);
-  color: blue;
-}
-
-.in-progress {
-  background-color: rgb(250, 221, 167);
-  color: orange;
-}
-
-.under-review {
-  background-color: rgb(243, 157, 243);
-  color: purple;
-}
-
-.being-revised {
-  background-color: rgb(241, 167, 167);
-  color: red;
-}
-
-.completed {
-  background-color: rgb(174, 250, 174);
-  color: green;
-}
-
 .description-box {
   width: 90%;
   height: 120px;
@@ -329,6 +274,11 @@ function hexToRgb(hex: string) {
   border-radius: 10px;
   overflow-y: auto;
   line-height: 1.5;
+}
+
+.task-history {
+  max-height: 350px;
+  overflow-y: auto;
 }
 
 .task-info {
