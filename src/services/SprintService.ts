@@ -98,6 +98,26 @@ const changeSprintStatus = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
 }
 
+const updateSprint = async (
+  sprint: Sprint,
+  token: string,
+): Promise<Success | Error> => {
+  return sprintMocksAxios
+    .put<Success>(
+      `/sprint`, //  FIX
+      sprint,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: sprint.id },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения спринта'))
+}
+
 const reportSprint = async (
   sprintId: string,
   report: string,
@@ -165,6 +185,7 @@ const ProfileService = {
   finishSprint,
   getActiveSprintsProject,
   postSprint,
+  updateSprint,
 }
 
 export default ProfileService

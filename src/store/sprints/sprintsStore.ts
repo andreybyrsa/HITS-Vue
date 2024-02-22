@@ -106,6 +106,17 @@ const useSprintsStore = defineStore('sprints', {
         }
       }
     },
+    async updateSprint(sprint: Sprint, token: string) {
+      const response = await SprintService.updateSprint(sprint, token)
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+      this.sprints.forEach((sprintInStore) => {
+        if (sprintInStore.id != sprint.id) return
+        sprintInStore = sprint
+      })
+    },
   },
 })
 

@@ -46,8 +46,6 @@ const isLoading = ref<boolean>(false)
 
 const { handleSubmit, setValues, values } = useForm<Sprint>({
   validationSchema: {
-    // tasks: (value: Task[]) =>
-    //   Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     goal: (value: string) =>
@@ -82,18 +80,31 @@ function moveTaskToBacklog(id: string) {
 }
 
 const CreateSprint = handleSubmit(async (sprint) => {
-  sprint.tasks = newSprintTasks.value
-  sprint.projectId = newSprintTasks.value[0].projectId
-
-  if (user.value?.token && sprint) {
+  if (user.value?.token && sprint && newSprintTasks.value.length !== 0) {
+    sprint.tasks = newSprintTasks.value
+    sprint.projectId = newSprintTasks.value[0].projectId
     const { token } = user.value
     await sprintsStore.postSprint(sprint, token)
     emit('close-modal')
   }
 })
 
+const UpdateSprint = handleSubmit(async (sprint) => {
+  if (user.value?.token && sprint && newSprintTasks.value.length !== 0) {
+    sprint.tasks = newSprintTasks.value
+    sprint.projectId = newSprintTasks.value[0].projectId
+    const { token } = user.value
+    await sprintsStore.updateSprint(sprint, token)
+    emit('close-modal')
+  }
+})
+
 async function emitCreateSprint() {
   CreateSprint()
+}
+
+async function emitUpdateSprint() {
+  UpdateSprint()
 }
 
 watchImmediate(
@@ -125,7 +136,9 @@ watchImmediate(
   <div class="team-form w-100 bg-white p-3 overflow-auto">
     <div class="left-block width-auto">
       <div class="form-name">
-        <Typography class-name="fs-3 text-primary">Создание спринта</Typography>
+        <Typography class-name="fs-3 text-primary">{{
+          props.sprint ? 'Редактирование спринта' : 'Создание спринта'
+        }}</Typography>
       </div>
 
       <div class="tasks">
@@ -149,7 +162,6 @@ watchImmediate(
           </div>
           <div class="tasks-list d-flex flex-column gap-2">
             <ProjectTask
-              name="tasks"
               @click="moveTaskToBacklog(task.id)"
               v-for="task in newSprintTasks"
               :key="task.id"
@@ -209,23 +221,51 @@ watchImmediate(
         />
       </div>
 
-      <Button
-        v-if="props.sprint"
-        variant="primary"
-        class-name="w-75"
-        :isLoading="isLoading"
+      <div
+        v-tooltip="newSprintTasks.length == 0 && 'в спринте должны быть задачи'"
+        v-if="newSprintTasks.length == 0"
       >
-        Сохранить изменения
-      </Button>
-      <Button
-        v-else
-        @click="emitCreateSprint()"
-        variant="primary"
-        class-name="w-75"
-        :isLoading="isLoading"
-      >
-        Создать спринт
-      </Button>
+        <Button
+          @click="emitUpdateSprint()"
+          v-if="props.sprint"
+          variant="primary"
+          class-name="w-75"
+          :isLoading="isLoading"
+        >
+          Сохранить изменения
+        </Button>
+        <Button
+          v-else
+          @click="emitCreateSprint()"
+          variant="primary"
+          class-name="w-75"
+          :isLoading="isLoading"
+          :disabled="newSprintTasks.length == 0"
+        >
+          Создать спринт
+        </Button>
+      </div>
+      <div v-if="newSprintTasks.length != 0">
+        <Button
+          @click="emitUpdateSprint()"
+          v-if="props.sprint"
+          variant="primary"
+          class-name="w-75"
+          :isLoading="isLoading"
+        >
+          Сохранить изменения
+        </Button>
+        <Button
+          v-else
+          @click="emitCreateSprint()"
+          variant="primary"
+          class-name="w-75"
+          :isLoading="isLoading"
+          :disabled="newSprintTasks.length == 0"
+        >
+          Создать спринт
+        </Button>
+      </div>
     </div>
   </div>
 </template>
@@ -289,11 +329,6 @@ watchImmediate(
   justify-content: space-between;
   border-color: gray;
   height: 100%;
-  // @include flexible(flex-start, center);
-
-  // &__content {
-  //   @include flexible(center, flex-start, column, $gap: 16px);
-  // }
 }
 .team-invite-form {
   width: 100%;
