@@ -264,7 +264,6 @@ router.beforeEach((to) => {
   ) {
     const { role } = user.value
 
-    // ! FIXME CRITICAL: котятки, не забываем обновлять getRouteByUserRole, чтобы нормально редиректило, иначе будет критический баг, спасибо))
     return getRouteByUserRole(role)
   }
 

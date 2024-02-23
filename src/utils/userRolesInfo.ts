@@ -70,7 +70,7 @@ function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
   }
 }
 
-// котята, есть смысл в перегрузках, если это можно через юнион сделать??
+// !котятки, не забываем следить за этой функцией, при добовлении новых ролей, чтобы нормально редиректило, иначе будет критический баг, спасибо))
 function getRouteByUserRole(
   currentRole: RolesTypes | RolesTypes[],
 ): RouteLocationRaw {
