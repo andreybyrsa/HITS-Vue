@@ -157,7 +157,28 @@ const changeTaskStatus = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
 }
 
-const ProfileService = {
+const changeLeaderComment = async (
+  taskId: string,
+  leaderComment: string,
+  token: string,
+): Promise<Task[] | Error> => {
+  return tasksMocksAxios
+    .putNoRequestBody<Task[]>(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+        requestData: { leaderComment },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
+const TaskService = {
   getAllTasksProject,
   getTaskMovementLog,
 
@@ -167,6 +188,8 @@ const ProfileService = {
 
   changeExecutorTask,
   changeTaskStatus,
+
+  changeLeaderComment,
 }
 
-export default ProfileService
+export default TaskService

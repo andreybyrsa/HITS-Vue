@@ -154,10 +154,21 @@ const useTasksStore = defineStore('tasks', {
       }
     },
 
-    async changeLeaderComment(taskId: string, leaderComment: string) {
+    async changeLeaderComment(taskId: string, leaderComment: string, token: string) {
       const currentTask = this.tasks.find(({ id }) => id === taskId)
 
       if (!currentTask) {
+        return
+      }
+
+      const response = await TaskService.changeLeaderComment(
+        taskId,
+        leaderComment,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
         return
       }
 
