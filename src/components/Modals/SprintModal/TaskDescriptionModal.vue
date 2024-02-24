@@ -100,11 +100,12 @@ function hexToRgb(hex: string) {
               </li>
               <li
                 class="list-group-item p-0 overflow-hidden"
-                v-if="props.task.leaderComment"
+                v-if="props.task.status === 'OnModification'"
               >
                 <Button
                   variant="light"
                   class-name="collapse-controller w-100"
+                  v-if="isLeader || props.task.leaderComment"
                 >
                   Комментарий лидера
                 </Button>
@@ -116,7 +117,7 @@ function hexToRgb(hex: string) {
                     @input="(event: HTMLTargetEvent)=>emit('update-leader-comment', event.target.value)"
                   />
                 </div>
-                <div v-if="!isLeader">
+                <div v-if="!isLeader && props.task.leaderComment">
                   <div class="p-2">
                     {{ props.task.leaderComment }}
                   </div>
