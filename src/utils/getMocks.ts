@@ -1250,6 +1250,7 @@ export const tasksMocks: Task[] = [
     tag: [tagsMocks[0], tagsMocks[1], tagsMocks[5]],
     taskMovementLog: ['InBackLog'],
     status: 'OnModification',
+    leaderComment: 'Котята, нужно прибраться!',
   },
   {
     id: '5',
