@@ -161,6 +161,8 @@ const useTasksStore = defineStore('tasks', {
         return
       }
 
+      currentTask.leaderComment = leaderComment
+
       const response = await TaskService.changeLeaderComment(
         taskId,
         leaderComment,
@@ -171,8 +173,6 @@ const useTasksStore = defineStore('tasks', {
         useNotificationsStore().createSystemNotification('Система', response.message)
         return
       }
-
-      currentTask.leaderComment = leaderComment
     },
   },
 })
