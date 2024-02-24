@@ -15,7 +15,12 @@ import useUserStore from '@Store/user/userStore'
 
 import { Task, Sprint, TaskMovementLog } from '@Domain/Project'
 import TaskService from '@Services/TaskService'
-import { reactiveComputed, useDateFormat, watchImmediate } from '@vueuse/core'
+import {
+  reactiveComputed,
+  useDateFormat,
+  useDebounceFn,
+  watchImmediate,
+} from '@vueuse/core'
 import useTasksStore from '@Store/tasks/tasksStore'
 import {
   RequestConfig,
@@ -27,6 +32,7 @@ import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import TaskDescriptionModal from '@Components/Modals/SprintModal/TaskDescriptionModal.vue'
+import { User } from '@Domain/User'
 
 defineProps<ActiveSprintProps>()
 
@@ -299,6 +305,13 @@ function closeTaskModal() {
   isOpenedTaskModal.value = false
 }
 
+const changeLeaderComment = useDebounceFn((input: string) => {
+  if (!currentTask.value?.id) {
+    return
+  }
+  taskStore.changeLeaderComment(currentTask.value.id, input)
+}, 300)
+
 // const wildcardTask = ref({
 //   id: '1',
 //   sprintId: '1',
@@ -320,7 +333,12 @@ function closeTaskModal() {
 
 <template>
   <div class="active-sprint">
-    <button @click="getLogs('0')">get logs</button>
+    <button
+      class="text-danger"
+      @click="getLogs('0')"
+    >
+      get logs (REMOVE ME ON PRODUCTION)
+    </button>
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div
@@ -333,7 +351,7 @@ function closeTaskModal() {
         </div>
         <SprintModal
           :is-opened="isOpenedSprinttModal"
-          :sprint="currentSprint"
+          :sprint="(currentSprint as Sprint)"
           @close-modal="closeSprintModal"
         />
         <Typography>(до {{ getFormattedDate(sprint.finishDate) }})</Typography>
@@ -406,6 +424,14 @@ function closeTaskModal() {
                   </div>
                   <div class="d-flex gap-1 text-secondary">
                     {{ getExecutorTask(element.id) ?? 'нет испольнителя' }}
+                  </div>
+                  <div
+                    class="d-flex gap-1 text-secondary text-info"
+                    v-if="element.leaderComment"
+                  >
+                    <Typography>
+                      {{ element.leaderComment }}
+                    </Typography>
                   </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 w-100 mt-2">
@@ -735,8 +761,10 @@ function closeTaskModal() {
   </div>
   <TaskDescriptionModal
     :is-opened="isOpenedTaskModal"
-    :task="currentTask"
+    :task="(currentTask as Task)"
+    :user="(user as User)"
     @close-modal="closeTaskModal"
+    @update-leader-comment="changeLeaderComment"
   />
 </template>
 
