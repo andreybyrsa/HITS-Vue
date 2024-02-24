@@ -309,7 +309,12 @@ const changeLeaderComment = useDebounceFn((input: string) => {
   if (!currentTask.value?.id) {
     return
   }
-  taskStore.changeLeaderComment(currentTask.value.id, input)
+
+  if (!user.value?.token) {
+    return
+  }
+
+  taskStore.changeLeaderComment(currentTask.value.id, input, user.value.token)
 }, 450)
 
 // const wildcardTask = ref({
