@@ -104,6 +104,7 @@ const useTasksStore = defineStore('tasks', {
         }
       }
     },
+
     async createTask(task: Task, token: string) {
       const response = await TaskService.createTask(task, token)
 
@@ -113,6 +114,7 @@ const useTasksStore = defineStore('tasks', {
         this.tasks.push(response)
       }
     },
+
     async createTaskLog(
       taskId: string,
       user: User | null,
@@ -150,6 +152,16 @@ const useTasksStore = defineStore('tasks', {
           }
         }
       }
+    },
+
+    async changeLeaderComment(taskId: string, leaderComment: string) {
+      const currentTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (!currentTask) {
+        return
+      }
+
+      currentTask.leaderComment = leaderComment
     },
   },
 })
