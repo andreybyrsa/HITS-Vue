@@ -92,6 +92,41 @@ const useTasksStore = defineStore('tasks', {
         }
       }
     },
+
+    async changeTaskStatusInBackLog(
+      taskId: string,
+      status: 'InBackLog',
+      token: string,
+    ) {
+      const curTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (curTask) {
+        const lastStatus = curTask.status
+        const newStatusLog = curTask.taskMovementLog.concat(lastStatus)
+
+        if (lastStatus && newStatusLog) {
+          curTask?.taskMovementLog.push(lastStatus)
+        }
+        const response = await TaskService.changeTaskStatusInBackLog(
+          taskId,
+          status,
+          newStatusLog,
+          token,
+        )
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentTask = this.tasks.find(({ id }) => id === taskId)
+          if (currentTask) {
+            currentTask.status = status
+          }
+        }
+      }
+    },
     async createTask(task: Task, token: string) {
       const response = await TaskService.createTask(task, token)
 

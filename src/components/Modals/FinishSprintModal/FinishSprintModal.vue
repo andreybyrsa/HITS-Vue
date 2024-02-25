@@ -2,6 +2,7 @@
 import {
   FinishSprintModalEmits,
   FinishSprintModalProps,
+  sprintValidationProps,
 } from '@Components/Modals/FinishSprintModal/FinishSprintModal.types'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
@@ -33,12 +34,12 @@ import {
 
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { AverageMark } from '@Domain/ReportProjectMembers'
 import ProjectService from '@Services/ProjectService'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 import SprintService from '@Services/SprintService'
+import { reactiveComputed } from '@vueuse/core'
 
 const props = defineProps<FinishSprintModalProps>()
 const emit = defineEmits<FinishSprintModalEmits>()
@@ -66,6 +67,13 @@ const radio2 = ref()
 const averageMark = ref<AverageMark[]>([])
 const sprintMarks = ref<SprintMarks[]>([])
 
+const getValidations = ref<any>({
+  report: (value: string) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+  radio: (value: boolean) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+})
+
 onMounted(async () => {
   if (props.isFinishSprint) {
     const currentUser = user.value
@@ -88,27 +96,18 @@ onMounted(async () => {
         },
       ]
       await sendParallelRequests(sprintParallelRequests)
+
+      const arrayUserId = sprintMarks.value.map(({ userId }) => userId)
+      arrayUserId.forEach((userId) => {
+        getValidations.value[userId] = (value: boolean) =>
+          Validation.checkIsEmptyValue(value) || 'Обязательное поле'
+      })
     }
   }
 })
-console.log(averageMark)
-console.log(sprintMarks)
-
-const fieldName = []
-
-for (let i = 0; i < sprintMarks.value.length; i++) {
-  fieldName.push('marks_' + i)
-}
 
 const { handleSubmit } = useForm({
-  validationSchema: {
-    report: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-    radio: (value: boolean) =>
-      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
-    fieldName: (value: number[]) =>
-      Validation.checkMarks(value) || 'Значение должно быть от 0 до 10',
-  },
+  validationSchema: getValidations,
 })
 
 const FinishSprint = handleSubmit(async () => {
@@ -119,31 +118,31 @@ const FinishSprint = handleSubmit(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const sprintID = route.params.id.toString()
+    const sprintId = props.activeSprint.id
     const finishDate = new Date().toJSON().toString()
 
     const fiinishSprintParallelRequests: RequestConfig[] = [
       {
-        request: () => sprintStore.changeSprintStatus(sprintID, 'DONE', token),
+        request: () => sprintStore.changeSprintStatus(sprintId, 'DONE', token),
         refValue: refValue,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => sprintStore.finishSprint(sprintID, finishDate, token),
+        request: () => sprintStore.finishSprint(sprintId, finishDate, token),
         refValue: refValue,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => sprintStore.reportSprint(sprintID, report.value, token),
+        request: () => sprintStore.reportSprint(sprintId, report.value, token),
         refValue: refValue,
         onErrorFunc: openErrorNotification,
       },
     ]
 
     await sendParallelRequests(fiinishSprintParallelRequests)
-    isLoading.value = false
-    emit('close-modal')
   }
+  isLoading.value = false
+  emit('close-modal')
 })
 </script>
 
@@ -171,83 +170,76 @@ const FinishSprint = handleSubmit(async () => {
 
           <Typography class-name="w-75">{{ 'Статистика участника' }}</Typography>
         </div>
-        <div class="d-flex w-100 gap-2 flex-column">
+        <div
+          class="d-flex w-100 gap-2 flex-column"
+          v-for="(sprint, index) in sprintMarks"
+          :key="index"
+        >
           <div class="d-flex gap-3 w-100 justify-content-between h-100">
             <div class="w-25 h-100">
-              <div
-                v-for="(marks, index) in sprintMarks"
-                :key="index"
-                class="w-100 h-100"
-              >
-                <div v-if="'marks_' + index in fieldName"></div>
-                <Input
-                  :name="'marks_' + index"
-                  class-name="rounded finish-project-modal__input"
-                  placeholder="Оценка"
-                  v-model="marks.mark"
-                  :value="marks.mark"
-                />
-              </div>
+              <Input
+                :name="sprint.userId"
+                class-name="rounded finish-project-modal__input"
+                placeholder="Оценка"
+                v-model="sprint.mark"
+                validate-on-update
+              />
             </div>
 
-            <div
-              class="flex-column"
-              v-for="(sprint, index) in sprintMarks"
-              :key="index"
-            >
-              <!-- <ul class="list-group rounded-3 w-75 flex-column">
-                <li class="list-group-item p-0 overflow-hidden w-100">
-                  <Button
-                    variant="light"
-                    class-name="collapse-controller w-100 justify-content-between"
-                    v-collapse="sprint.userId"
+            <ul class="list-group rounded-3 w-75 flex-column">
+              <li class="list-group-item p-0 overflow-hidden w-100">
+                <Button
+                  variant="light"
+                  class-name="collapse-controller w-100 justify-content-between"
+                  v-collapse="sprint.userId"
+                >
+                  {{ sprint.firstName }} {{ sprint.lastName }}
+                  <div :class="getRoleProjectMemberStyle(sprint.projectRole)">
+                    {{ getRoleProjectMember().translatedRoles[sprint.projectRole] }}
+                  </div>
+                </Button>
+
+                <Collapse :id="sprint.userId">
+                  <div
+                    v-if="sprint.tasks"
+                    class="fp-2 m-2"
                   >
-                    {{ sprint.firstName }} {{ sprint.lastName }}
-                    <div :class="getRoleProjectMemberStyle(sprint.projectRole)">
-                      {{
-                        getRoleProjectMember().translatedRoles[sprint.projectRole]
-                      }}
-                    </div>
-                  </Button>
+                    <div class="text-primary">Выполненные задачи*</div>
 
-                  <Collapse :id="sprint.userId">
                     <div
-                      v-if="sprint.tasks"
-                      class="fp-2 m-2"
+                      v-for="(task, index) in sprint.tasks"
+                      :key="index"
                     >
-                      <div class="text-primary">Выполненные задачи*</div>
-
                       <div
-                        v-for="(task, index) in tasks"
-                        :key="index"
+                        v-if="task.status === 'Done'"
+                        class="rounded-3 border p-2 mb-1 gap-2 justify-content-between w-100"
                       >
-                        <div
-                          v-if="task.status === 'Done'"
-                          class="d-flex rounded-3 border p-2 mb-1 gap-2 justify-content-between w-100"
-                        >
+                        <div class="w-100">
                           <div>{{ task.name }}</div>
-                          <div
-                            v-for="(tag, index) in task.tag"
-                            :key="index"
-                            class="d-flex gap-1"
-                          >
-                            <Icon
-                              :style="{ color: tag.color }"
-                              class="bi bi-circle-fill"
+                          <div class="d-flex gap-3 overflow-auto w-100">
+                            <div
+                              v-for="(tag, index) in task.tag"
+                              :key="index"
+                              class="d-flex gap-1"
                             >
-                            </Icon>
+                              <Icon
+                                :style="{ color: tag.color }"
+                                class="bi bi-circle-fill"
+                              >
+                              </Icon>
 
-                            <Typography class-name="finish-project-modal__tag"
-                              >{{ tag.name }}
-                            </Typography>
+                              <Typography class-name="finish-project-modal__tag"
+                                >{{ tag.name }}
+                              </Typography>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </Collapse>
-                </li>
-              </ul> -->
-            </div>
+                  </div>
+                </Collapse>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

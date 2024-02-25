@@ -97,7 +97,7 @@ interface SprintMarks {
   firstName: string
   lastName: string
   projectRole: ProjectMemberRole
-  mark: number
+  mark: number | undefined
   tasks?: Task[]
 }
 

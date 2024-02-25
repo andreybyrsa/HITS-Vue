@@ -6,8 +6,13 @@ interface FinishSprintModalProps {
   activeSprint: Sprint
 }
 
+interface sprintValidationProps {
+  report: string
+  radio: boolean
+}
+
 interface FinishSprintModalEmits {
   (event: 'close-modal'): void
 }
 
-export { FinishSprintModalEmits, FinishSprintModalProps }
+export { FinishSprintModalEmits, FinishSprintModalProps, sprintValidationProps }

@@ -117,6 +117,28 @@ const changeTaskStatus = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
 }
 
+const changeTaskStatusInBackLog = async (
+  taskId: string,
+  status: 'InBackLog',
+  newStatusLog: TaskStatus[],
+  token: string,
+): Promise<Task[] | Error> => {
+  return tasksMocksAxios
+    .putNoRequestBody<Task[]>(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+        requestData: { status: status, taskMovementLog: newStatusLog },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
 const ProfileService = {
   getAllTasksProject,
   createTask,
@@ -124,6 +146,7 @@ const ProfileService = {
 
   changeExecutorTask,
   changeTaskStatus,
+  changeTaskStatusInBackLog,
 }
 
 export default ProfileService

@@ -1321,9 +1321,16 @@ export const tasksMocks: Task[] = [
     workHour: '3',
     position: 1,
     startDate: '01.01.24',
-    tag: [tagsMocks[1], tagsMocks[7], tagsMocks[10]],
-    taskMovementLog: ['InBackLog'],
-    status: 'Done',
+    tag: [
+      tagsMocks[1],
+      tagsMocks[7],
+      tagsMocks[10],
+      tagsMocks[2],
+      tagsMocks[3],
+      tagsMocks[5],
+    ],
+    taskMovementLog: ['NewTask'],
+    status: 'inProgress',
   },
   {
     id: '10',
@@ -1611,7 +1618,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     firstName: 'Кирилл',
     lastName: 'Власов',
-    mark: 0,
+    mark: undefined,
     projectRole: 'TEAM_LEADER',
     tasks: [tasksMocks[9], tasksMocks[12]],
   },
@@ -1620,7 +1627,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     userId: '123714',
     firstName: 'Иван',
     lastName: 'Иванович',
-    mark: 0,
+    mark: undefined,
     projectRole: 'MEMBER',
     tasks: [tasksMocks[10]],
   },
@@ -1630,10 +1637,11 @@ export const sprintMarksMocks: SprintMarks[] = [
     firstName: 'Менеджер',
     lastName: 'Менеджер',
     projectRole: 'MEMBER',
-    mark: 0,
+    mark: undefined,
     tasks: [tasksMocks[11]],
   },
 ]
+
 export const sprintMocks: Sprint[] = [
   {
     id: '0',
