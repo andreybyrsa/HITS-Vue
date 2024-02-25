@@ -101,7 +101,6 @@ const useProjectsStore = defineStore('projects', {
               projectRole: getMemberRole(userId, team, ideaMarket),
             }
           }),
-          logs: [],
           report: {
             projectId: '',
             marks: [],

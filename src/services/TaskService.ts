@@ -1,19 +1,26 @@
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import { tasksMocks } from '@Utils/getMocks'
+import { tasksMocks, taskMovementLogMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import axios from 'axios'
 import { develop } from '@Assets/images'
 import { MODE } from '@Main'
-import { Task, TaskStatus } from '@Domain/Project'
+import { Task, TaskMovementLog, TaskStatus } from '@Domain/Project'
 import { User } from '@Domain/User'
 
 const tasksMocksAxios = defineAxios(tasksMocks)
+const taskMovementLogMocksAxios = defineAxios(taskMovementLogMocks)
 
 function formatterAllTasksProject(tasks: Task[], currentProjectId: string) {
   return tasks.filter(({ projectId }) => projectId === currentProjectId)
+}
+function formatterAllTaskMovementLog(
+  logs: TaskMovementLog[],
+  currentTaskId: string,
+) {
+  return logs.filter(({ task }) => task.id === currentTaskId)
 }
 
 // --- GET --- //
@@ -35,6 +42,39 @@ const getAllTasksProject = async (
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка получения задач'))
+}
+
+const getTaskMovementLog = async (
+  taskId: string,
+  token: string,
+): Promise<TaskMovementLog[] | Error> => {
+  return taskMovementLogMocksAxios
+    .get<TaskMovementLog[]>(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        // FIX ROUTE
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (logs) => formatterAllTaskMovementLog(logs, taskId),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения задач'))
+}
+
+const createTaskLog = async (
+  log: TaskMovementLog,
+  token: string,
+): Promise<TaskMovementLog | Error> => {
+  return taskMovementLogMocksAxios
+    .post('/task/logs/add', log, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления тега'))
 }
 
 const createTask = async (task: Task, token: string): Promise<Task | Error> => {
@@ -141,6 +181,9 @@ const changeTaskStatusInBackLog = async (
 
 const ProfileService = {
   getAllTasksProject,
+  getTaskMovementLog,
+
+  createTaskLog,
   createTask,
   updateTasks,
 
