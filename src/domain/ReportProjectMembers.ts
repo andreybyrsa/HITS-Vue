@@ -7,13 +7,12 @@ interface ReportProject {
 }
 
 interface AverageMark {
-  id: string
   projectId: string
-  userID: string
+  userId: string
   firstName: string
   lastName: string
   projectRole: ProjectMemberRole
-  mark: string
+  mark: number
   tasks?: Task[]
 }
 

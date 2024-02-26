@@ -3,8 +3,9 @@ import { defineStore } from 'pinia'
 import SprintService from '@Services/SprintService'
 
 import InitialState from '@Store/sprints/initialState'
-import { SprintStatus } from '@Domain/Project'
+import { Sprint, SprintStatus, SprintMarks } from '@Domain/Project'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useTasksStore from '@Store/tasks/tasksStore'
 
 const useSprintsStore = defineStore('sprints', {
   state: (): InitialState => ({
@@ -44,6 +45,23 @@ const useSprintsStore = defineStore('sprints', {
   },
 
   actions: {
+    async postSprint(sprint: Sprint, token: string) {
+      const response = await SprintService.postSprint(sprint, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        this.sprints.push(sprint)
+        const tasksStore = useTasksStore()
+        tasksStore.tasks.forEach((task) => {
+          sprint.tasks.forEach((sprintTask) => {
+            if (task.status == 'InBackLog' && sprintTask.id == task.id)
+              task.status = 'inProgress'
+          })
+        })
+      }
+    },
+
     async changeSprintStatus(sprintId: string, status: SprintStatus, token: string) {
       const response = await SprintService.changeSprintStatus(
         sprintId,
@@ -76,7 +94,11 @@ const useSprintsStore = defineStore('sprints', {
     },
 
     async finishSprint(sprintId: string, finishDate: string, token: string) {
-      const response = await SprintService.finishSprint(sprintId, finishDate, token)
+      const response = await SprintService.finishSprintDate(
+        sprintId,
+        finishDate,
+        token,
+      )
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -85,6 +107,31 @@ const useSprintsStore = defineStore('sprints', {
 
         if (currentSprint) {
           currentSprint.finishDate = finishDate
+        }
+      }
+    },
+    async updateSprint(sprint: Sprint, token: string) {
+      const response = await SprintService.updateSprint(sprint, token)
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+      this.sprints.forEach((sprintInStore) => {
+        if (sprintInStore.id != sprint.id) return
+        sprintInStore = sprint
+      })
+    },
+
+    async saveMarkSprint(sprintId: string, marks: SprintMarks[], token: string) {
+      const response = await SprintService.saveMarkSprint(sprintId, marks, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const currentSprint = this.sprints.find(({ id }) => id === sprintId)
+
+        if (currentSprint && currentSprint.marks) {
+          currentSprint.marks = marks
         }
       }
     },

@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import { Skill } from '@Domain/Skill'
@@ -8,14 +9,19 @@ import { InitialState, StoredAvatar } from '@Store/profiles/initialState'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
-import { ProfileFullName } from '@Domain/Profile'
-import { User } from '@Domain/User'
+import { Profile, ProfileFullName } from '@Domain/Profile'
+import { User, UserTelegram } from '@Domain/User'
 import useUserStore from '@Store/user/userStore'
 import { TeamExperience } from '@Domain/Team'
 import TeamService from '@Services/TeamService'
+import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 
 const useProfilesStore = defineStore('profiles', {
-  state: (): InitialState => ({ avatars: [], profiles: [] }),
+  state: (): InitialState => ({
+    avatars: [],
+    profiles: [],
+    usersTelegram: [],
+  }),
 
   getters: {
     fetchUserProfile() {
@@ -50,6 +56,21 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
+    fetchUserTelegram() {
+      return async (userId: string, token: string) => {
+        const response = await ProfileService.getUserTelegram(userId, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        return findOneAndUpdate(this.usersTelegram, response, {
+          key: 'userId',
+          value: userId,
+        })
+      }
+    },
+
     getProfileByUserId(state) {
       return (userId: string) => state.profiles.find(({ id }) => id === userId)
     },
@@ -57,6 +78,10 @@ const useProfilesStore = defineStore('profiles', {
     getProfileAvatarByUserId(state) {
       return (userId: string) =>
         state.avatars.find(({ id }) => id === userId)?.avatar
+    },
+    getUserTagByUserId(state) {
+      return (userId: string) =>
+        state.profiles.find(({ id }) => id === userId)?.userTag
     },
   },
 
@@ -94,25 +119,115 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
+    setProfileTag(tag: string, userId: string) {
+      const profiles = JSON.parse(JSON.stringify(this.profiles))
+      const currentProfile = profiles.find(({ id }: { id: string }) => {
+        return id === userId
+      })
+      if (!currentProfile) return
+      currentProfile.userTag = tag
+      LocalStorageTelegramTag.set(tag)
+    },
+
     async updateUserFullName(user: User, token: string) {
       const userStore = useUserStore()
       const { id: userId, lastName, firstName } = user
 
-      const fullName: ProfileFullName = { lastName, firstName }
+      const fullName: ProfileFullName = { lastName, firstName, id: userId }
 
       const response = await ProfileService.updateUserFullName(fullName, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+
+      const currentProfile = this.profiles.find(({ id }) => id === userId)
+      const currentUser = userStore.user
+
+      if (currentProfile && currentUser) {
+        currentProfile.firstName = firstName
+        currentProfile.lastName = lastName
+
+        userStore.setUser({ ...currentUser, firstName, lastName })
+      }
+    },
+
+    async updateUserTelegramTag(
+      profile: Profile,
+      userTelegram: UserTelegram,
+      token: string,
+    ) {
+      const { id: userId, userTag } = profile
+      const newUserTelegram = { ...userTelegram, userTag } as UserTelegram
+
+      if (userTag) {
+        this.setProfileTag(userTag, userId)
+      }
+
+      if (!userTag) return
+      const response = await ProfileService.updateTelegramTag(
+        newUserTelegram,
+        profile.id,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+    },
+
+    async updateVisibilityOfTag(
+      user: User,
+      userTelegram: UserTelegram,
+      token: string,
+    ) {
+      const userStore = useUserStore()
+      const { id: userId } = user
+      const { userTag, isVisible } = userTelegram
+
+      if (isVisible === true) {
+        const response = await ProfileService.updateVisibilityOfTag(
+          userTag,
+          true,
+          token,
+        )
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentProfile = this.profiles.find(({ id }) => id === userId)
+          const currentUser = userStore.user
+
+          if (currentProfile && currentUser) {
+            currentProfile.isUserTagVisible = isVisible
+
+            userStore.setUser({ ...currentUser })
+          }
+        }
       } else {
-        const currentProfile = this.profiles.find(({ id }) => id === userId)
-        const currentUser = userStore.user
+        const response = await ProfileService.updateVisibilityOfTag(
+          userTag,
+          false,
+          token,
+        )
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentProfile = this.profiles.find(({ id }) => id === userId)
+          const currentUser = userStore.user
 
-        if (currentProfile && currentUser) {
-          currentProfile.firstName = firstName
-          currentProfile.lastName = lastName
+          if (currentProfile && currentUser) {
+            currentProfile.isUserTagVisible = isVisible
 
-          userStore.setUser({ ...currentUser, firstName, lastName })
+            userStore.setUser({ ...currentUser })
+          }
         }
       }
     },

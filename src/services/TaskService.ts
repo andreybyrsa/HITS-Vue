@@ -12,6 +12,7 @@ import { User } from '@Domain/User'
 
 const tasksMocksAxios = defineAxios(tasksMocks)
 const taskMovementLogMocksAxios = defineAxios(taskMovementLogMocks)
+const tasksAxios = defineAxios(tasksMocks)
 
 function formatterAllTasksProject(tasks: Task[], currentProjectId: string) {
   return tasks.filter(({ projectId }) => projectId === currentProjectId)
@@ -112,7 +113,24 @@ const updateTasks = async (
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка редактирования задач'))
 }
-
+const updateTask = async (
+  task: Task,
+  id: string,
+  token: string,
+): Promise<Task | Error> => {
+  return tasksAxios
+    .put(
+      `/task/update/${id}`,
+      task,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования задачи'))
+}
 // --- PUT --- //
 const changeExecutorTask = async (
   taskId: string,
@@ -138,6 +156,28 @@ const changeExecutorTask = async (
 const changeTaskStatus = async (
   taskId: string,
   status: TaskStatus,
+  newStatusLog: TaskStatus[],
+  token: string,
+): Promise<Task[] | Error> => {
+  return tasksMocksAxios
+    .putNoRequestBody<Task[]>(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+        requestData: { status: status, taskMovementLog: newStatusLog },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
+const changeTaskStatusInBackLog = async (
+  taskId: string,
+  status: 'InBackLog',
   newStatusLog: TaskStatus[],
   token: string,
 ): Promise<Task[] | Error> => {
@@ -185,10 +225,11 @@ const TaskService = {
   createTaskLog,
   createTask,
   updateTasks,
+  updateTask,
 
   changeExecutorTask,
   changeTaskStatus,
-
+  changeTaskStatusInBackLog,
   changeLeaderComment,
 }
 

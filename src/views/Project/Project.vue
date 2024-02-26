@@ -12,7 +12,6 @@ import ProjectHeader from '@Views/Project/ProjectHeader.vue'
 import ProjectContent from '@Views/Project/ProjectContent.vue'
 
 import useUserStore from '@Store/user/userStore'
-import ProjectService from '@Services/ProjectService'
 
 import { useRoute } from 'vue-router'
 

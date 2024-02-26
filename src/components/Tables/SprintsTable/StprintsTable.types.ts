@@ -1,7 +1,7 @@
 import { Sprint } from '@Domain/Project'
 
 interface SprintsTableProps {
-  sprint: Sprint[]
+  sprints: Sprint[]
 }
 
 export default SprintsTableProps

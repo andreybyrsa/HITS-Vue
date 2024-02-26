@@ -105,6 +105,40 @@ const useTasksStore = defineStore('tasks', {
       }
     },
 
+    async changeTaskStatusInBackLog(
+      taskId: string,
+      status: 'InBackLog',
+      token: string,
+    ) {
+      const curTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (curTask) {
+        const lastStatus = curTask.status
+        const newStatusLog = curTask.taskMovementLog.concat(lastStatus)
+
+        if (lastStatus && newStatusLog) {
+          curTask?.taskMovementLog.push(lastStatus)
+        }
+        const response = await TaskService.changeTaskStatusInBackLog(
+          taskId,
+          status,
+          newStatusLog,
+          token,
+        )
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentTask = this.tasks.find(({ id }) => id === taskId)
+          if (currentTask) {
+            currentTask.status = status
+          }
+        }
+      }
+    },
     async createTask(task: Task, token: string) {
       const response = await TaskService.createTask(task, token)
 
@@ -126,30 +160,26 @@ const useTasksStore = defineStore('tasks', {
 
       if (taskLogs instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', taskLogs.message)
-      } else {
-        const lastLog = taskLogs.reduce((prev, current) =>
-          new Date(prev.endDate) > new Date(current.endDate) ? prev : current,
-        )
+      }
 
-        if (currentTask && user) {
-          const log: TaskMovementLog = {
-            id: '',
-            task: currentTask,
-            executor: currentTask.executor,
-            user: user,
-            startDate: new Date().toJSON().toString(),
-            endDate: '',
-            taskStatus: newStatus,
-          }
+      if (currentTask && user) {
+        const log: TaskMovementLog = {
+          id: '',
+          task: currentTask,
+          executor: currentTask.executor,
+          user: user,
+          startDate: new Date().toJSON().toString(),
+          endDate: '',
+          taskStatus: newStatus,
+        }
 
-          const response = await TaskService.createTaskLog(log, token)
+        const response = await TaskService.createTaskLog(log, token)
 
-          if (response instanceof Error) {
-            useNotificationsStore().createSystemNotification(
-              'Система',
-              response.message,
-            )
-          }
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
         }
       }
     },

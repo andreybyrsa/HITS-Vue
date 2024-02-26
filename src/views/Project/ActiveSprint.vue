@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
-import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
+import FinishSprintModal from '@Components/Modals/FinishSprintModal/FinishSprintModal.vue'
 
 import { ActiveSprintProps } from '@Views/Project/Project.types'
 
@@ -27,7 +27,6 @@ import {
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
-import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
@@ -87,28 +86,6 @@ const tasksArray = computed<Task[][]>(() => {
 
 const currentSprint = ref<Sprint>()
 const isOpenedSprinttModal = ref(false)
-
-const logs = ref<TaskMovementLog[]>()
-
-async function getLogs(taskId: string) {
-  const currentUser = user.value
-
-  if (currentUser) {
-    const { token } = currentUser
-
-    if (token) {
-      const taskLogs = await TaskService.getTaskMovementLog(taskId, token)
-
-      if (taskLogs instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', taskLogs.message)
-      } else {
-        logs.value = taskLogs
-        console.log(logs)
-      }
-    }
-  }
-  return logs
-}
 
 async function moveTask(evt: any) {
   const currentUser = user.value
@@ -338,12 +315,6 @@ const changeLeaderComment = useDebounceFn((input: string) => {
 
 <template>
   <div class="active-sprint">
-    <button
-      class="text-danger"
-      @click="getLogs('0')"
-    >
-      get logs (REMOVE ME ON PRODUCTION)
-    </button>
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div
@@ -354,7 +325,7 @@ const changeLeaderComment = useDebounceFn((input: string) => {
             {{ sprint.name }}
           </Typography>
         </div>
-        <SprintModal
+        <FinishSprintModal
           :is-opened="isOpenedSprinttModal"
           :sprint="(currentSprint as Sprint)"
           @close-modal="closeSprintModal"
@@ -752,10 +723,10 @@ const changeLeaderComment = useDebounceFn((input: string) => {
         </draggable>
       </div>
     </div>
-    <FinishProjectModal
-      isFinishProject
+    <FinishSprintModal
+      isFinishSprint
       :is-opened="isOpenedFinishSprintModal"
-      status="SPRINT"
+      :active-sprint="sprint"
       @close-modal="closeFinishSprintModal"
     />
 

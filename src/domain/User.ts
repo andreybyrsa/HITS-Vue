@@ -14,6 +14,13 @@ interface User {
   lastLogin?: Date
 }
 
+interface UserTelegram {
+  userId: string
+  userTag: string
+  chatId: string | null
+  isVisible: boolean
+}
+
 interface LoginUser {
   email: string
   password: string
@@ -27,4 +34,4 @@ interface RegisterUser {
   roles: RolesTypes[]
 }
 
-export { User, LoginUser, RegisterUser }
+export { User, UserTelegram, LoginUser, RegisterUser }

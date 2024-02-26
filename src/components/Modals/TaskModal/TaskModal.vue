@@ -9,8 +9,8 @@ import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 
-import defineAxios from '@Utils/defineAxios'
-import { tagsMocks } from '@Utils/getMocks'
+// import defineAxios from '@Utils/defineAxios'
+// import { tagsMocks } from '@Utils/getMocks'
 import useTagsStore from '@Store/tags/tagsStore'
 import { storeToRefs } from 'pinia'
 import { Tag } from '@Domain/Tag'
@@ -25,13 +25,14 @@ import useTasksStore from '@Store/tasks/tasksStore'
 import { Task } from '@Domain/Project'
 import Validation from '@Utils/Validation'
 import { useForm } from 'vee-validate'
-import notificationsStore from '@Store/notifications/notificationsStore'
+import TaskService from '@Services/TaskService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<CreateNewTaskProps>()
 
 const emit = defineEmits<CreateTaskModalEmits>()
 
-const tagsAxios = defineAxios(tagsMocks)
+// const tagsAxios = defineAxios(tagsMocks)
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
@@ -44,9 +45,7 @@ const { tasks } = storeToRefs(tasksStore)
 
 const route = useRoute()
 
-const taskModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
-const isCreating = ref(false)
-const isUpdating = ref(false)
+const notificationsStore = useNotificationsStore()
 
 const nameTask = ref('')
 const descriptionTask = ref('')
@@ -56,14 +55,71 @@ const choosenTags = ref<Tag[]>([])
 function confirmedTags(tagsValue: Tag[]) {
   return tagsValue.filter(({ confirmed }) => confirmed)
 }
-async function createTask() {
+// async function createTask() {
+//   const currentUser = user.value
+//   if (currentUser?.token) {
+//     const { token } = currentUser
+//     const projectId = route.params.id.toString()
+//     const position = tasks.value.length + 1
+//     const currentDate = new Date().toJSON().toString()
+//     console.log(descriptionTask.value, choosenTags.value)
+//     const currentTask: Task = {
+//       id: '',
+//       projectId: projectId,
+//       name: nameTask.value,
+//       description: descriptionTask.value,
+//       initiator: currentUser,
+//       executor: null,
+//       workHour: workHourTask.value,
+//       position: position,
+//       startDate: currentDate,
+//       tag: choosenTags.value,
+//       taskMovementLog: props.isActiveSprint ? ['NewTask'] : ['InBackLog'],
+//       status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
+//     }
+//     await tasksStore.createTask(currentTask, token)
+//     emit('close-modal')
+//   }
+// }
+
+const taskModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
+const isCreating = ref(false)
+const isUpdating = ref(false)
+
+const { handleSubmit, setValues } = useForm<Task>({
+  validationSchema: {
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Неверно название задачи',
+    description: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Неверно описисание задачи',
+    workHour: (value: string) =>
+      Validation.checkNumber(value) || 'Неверно введено  число',
+    tags: (value: Tag) =>
+      Validation.checkIsEmptyValue(value) || 'Неверно выбраны теги',
+  },
+})
+
+onUpdated(async () => {
+  if (props.isOpened && props.task) {
+    taskModalMode.value = 'UPDATE'
+    setValues({ ...props.task })
+  } else if (props.isOpened && !props.task) {
+    taskModalMode.value = 'CREATE'
+  }
+})
+
+const handleCreateTask = handleSubmit(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
+
+    isCreating.value = true
+
     const projectId = route.params.id.toString()
     const position =
       tasks.value.filter(({ status }) => status === 'InBackLog').length + 1
     const currentDate = new Date().toJSON().toString()
+
     const currentTask: Task = {
       id: '',
       projectId: projectId,
@@ -78,46 +134,31 @@ async function createTask() {
       taskMovementLog: props.isActiveSprint ? ['NewTask'] : ['InBackLog'],
       status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
     }
-    console.log()
     await tasksStore.createTask(currentTask, token)
+    isCreating.value = false
     emit('close-modal')
   }
-}
-
-onUpdated(async () => {
-  if (props.isOpened && props.task) {
-    taskModalMode.value = 'UPDATE'
-    setValues({ ...props.task })
-  } else if (props.isOpened && !props.task) {
-    taskModalMode.value = 'CREATE'
-  }
 })
 
-const { handleSubmit, setValues } = useForm<Task>({
-  validationSchema: {
-    name: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Введите название задачи',
-    description: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Введите описисание задачи',
-    workHour: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Введите число',
-  },
-})
-const handleCreateTask = handleSubmit(async (values) => {
+const handleUpdateTask = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
 
-    isCreating.value = true
-    const response = await TasksService.createTask(values, token)
-    isCreating.value = false
+    isUpdating.value = true
+    const response = await TaskService.updateTask(values, values.id, token)
+    isUpdating.value = false
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    tasks.value.push(response)
+    const taskIndex = tasks.value.findIndex((task) => task.id === values.id)
+    if (taskIndex !== -1) {
+      tasks.value.splice(taskIndex, 1, values)
+    }
+
     emit('close-modal')
   }
 })
@@ -129,10 +170,12 @@ const handleCreateTask = handleSubmit(async (values) => {
     @on-outside-close="emit('close-modal')"
   >
     <div
-      class="task-modal border rounded-4 bg-white ps-4 pe-4 d-flex flex-column gap-2"
+      class="add-task-modal border rounded-4 bg-white ps-4 pe-4 d-flex flex-column gap-2"
     >
-      <div class="task-modal__header pt-2 w-100">
-        <Header class="fs-4 text-primary w-100">Создание задачи</Header>
+      <div class="add-task-modal__header pt-2 w-100">
+        <Typography class-name="fs-4 text-primary w-100">{{
+          taskModalMode === 'CREATE' ? 'Создание задачи' : 'Редактирование задачи'
+        }}</Typography>
         <Button
           @click="emit('close-modal')"
           class-name="fs-5"
@@ -147,6 +190,7 @@ const handleCreateTask = handleSubmit(async (values) => {
           v-model="nameTask"
           name="name"
           placeholder="Название"
+          validate-on-update
         />
       </div>
       <div class="">
@@ -157,15 +201,17 @@ const handleCreateTask = handleSubmit(async (values) => {
           v-model="descriptionTask"
           placeholder="Описание"
           name="description"
+          validate-on-update
         ></Textarea>
       </div>
       <div class="w-100">
         <ComboBox
-          name="Теги"
+          name="tags"
           :options="confirmedTags(tags)"
           :display-by="['name']"
           v-model="choosenTags"
           placeholder="Выберите теги"
+          validate-on-update
         ></ComboBox>
       </div>
       <div class="d-flex gap-2">
@@ -187,22 +233,37 @@ const handleCreateTask = handleSubmit(async (values) => {
           v-model="workHourTask"
           name="workHour"
           placeholder="Часы"
+          validate-on-update
         />
       </div>
       <div class="py-3 w-100">
         <Button
+          v-if="taskModalMode === 'CREATE'"
+          type="submit"
           variant="primary"
           class-name="w-100"
-          @click="createTask"
-          >Создать задачу</Button
+          :is-loading="isCreating"
+          @click="handleCreateTask"
         >
+          Создать задачу
+        </Button>
+        <Button
+          v-if="taskModalMode === 'UPDATE'"
+          type="submit"
+          variant="primary"
+          class-name="w-100"
+          :is-loading="isUpdating"
+          @click="handleUpdateTask"
+        >
+          Обновить задачу
+        </Button>
       </div>
     </div>
   </ModalLayout>
 </template>
 
 <style lang="scss" scoped>
-.task-modal {
+.add-task-modal {
   width: 450px;
   height: fit-content;
   @include flexible(
@@ -215,5 +276,9 @@ const handleCreateTask = handleSubmit(async (values) => {
   &__header {
     @include flexible(center, space-between);
   }
+}
+.modal-layout-enter-from .add-tag-modal,
+.modal-layout-leave-to .add-tag-modal {
+  transform: scale(0.9);
 }
 </style>

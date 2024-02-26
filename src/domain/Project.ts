@@ -79,12 +79,23 @@ interface Sprint {
   projectId: string
   name: string
   goal: string
+  marks: SprintMarks[]
   report: string
   startDate: string
   finishDate: string
   workingHours: string
   status: SprintStatus
   tasks: Task[]
+}
+
+interface SprintMarks {
+  sprintId: string
+  userId: string
+  firstName: string
+  lastName: string
+  projectRole: ProjectMemberRole
+  mark: number | undefined
+  tasks?: Task[]
 }
 
 export {
@@ -94,6 +105,7 @@ export {
   ProjectMemberRole,
   SprintStatus,
   Sprint,
+  SprintMarks,
   Task,
   TaskStatus,
   TaskMovementLog,
