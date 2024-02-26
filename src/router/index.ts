@@ -313,6 +313,7 @@ router.beforeEach((to) => {
   if (!user.value && !authRouteNames.includes(currentRouteName)) {
     return { name: 'login' }
   }
+
   if (
     user.value?.role &&
     (authRouteNames.includes(currentRouteName) || currentRouteName === 'home')
@@ -321,6 +322,7 @@ router.beforeEach((to) => {
 
     return getRouteByUserRole(role)
   }
+
   if (requiredRouteRoles.length && user.value?.role) {
     const { role } = user.value
 
