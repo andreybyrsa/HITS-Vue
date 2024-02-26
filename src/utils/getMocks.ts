@@ -1473,7 +1473,8 @@ export const projectMocks: Project[] = [
     team: teamsMocks[2],
     members: [
       {
-        projectName: 'Моя новая идея',
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
         teamId: '0',
         teamName: 'Визитка',
         userId: '2',
@@ -1485,7 +1486,8 @@ export const projectMocks: Project[] = [
         projectRole: 'INITIATOR',
       },
       {
-        projectName: 'Моя новая идея',
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
         teamId: '0',
         teamName: 'Визитка',
         userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
@@ -1497,7 +1499,8 @@ export const projectMocks: Project[] = [
         projectRole: 'TEAM_LEADER',
       },
       {
-        projectName: 'Моя новая идея',
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
         teamId: '0',
         teamName: 'Визитка',
         userId: '0',
@@ -1509,7 +1512,8 @@ export const projectMocks: Project[] = [
         projectRole: 'MEMBER',
       },
       {
-        projectName: 'Моя новая идея',
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
         teamId: '0',
         teamName: 'Визитка',
         userId: '1',
@@ -1943,6 +1947,54 @@ export const teamsProjectsMocks: ProjectMember[] = [
     finishDate: '',
     projectRole: 'MEMBER',
   },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: '2',
+    email: 'alex@inbox.ru',
+    firstName: 'Алексей',
+    lastName: 'Князев',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'INITIATOR',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    email: 'kirill.vlasov.05@inbox.ru',
+    firstName: 'Артем',
+    lastName: 'Иванов',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'TEAM_LEADER',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: '0',
+    email: 'timyr@mail.com',
+    firstName: 'Иван',
+    lastName: 'Кузнецов',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'MEMBER',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: '1',
+    email: 'admin@mail.com',
+    firstName: 'Данил',
+    lastName: 'Сафонов',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'MEMBER',
+  },
 ]
 
 export const profilesMocks: Profile[] = [
@@ -1989,7 +2041,7 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     executor: null,
     user: usersMocks[0],
     startDate: '2023-09-24T11:02:17Z',
-    endDate: '2023-09-25T11:02:17Z',
+    endDate: '2023-09-25T17:02:17Z',
     taskStatus: 'NewTask',
   },
   {
@@ -1997,7 +2049,7 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     task: tasksMocks[0],
     executor: usersMocks[1],
     user: usersMocks[1],
-    startDate: '2023-09-25T11:02:17Z',
+    startDate: '2023-09-25T17:02:17Z',
     endDate: '2023-09-30T10:11:17Z',
     taskStatus: 'inProgress',
   },
@@ -2015,7 +2067,7 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     task: tasksMocks[0],
     executor: usersMocks[1],
     user: usersMocks[0],
-    startDate: '2023-10-02T18:00:17Z',
+    startDate: '2023-10-02T18:31:17Z',
     endDate: '',
     taskStatus: 'Done',
   },

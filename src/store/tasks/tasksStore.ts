@@ -124,30 +124,26 @@ const useTasksStore = defineStore('tasks', {
 
       if (taskLogs instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', taskLogs.message)
-      } else {
-        const lastLog = taskLogs.reduce((prev, current) =>
-          new Date(prev.endDate) > new Date(current.endDate) ? prev : current,
-        )
+      }
 
-        if (currentTask && user) {
-          const log: TaskMovementLog = {
-            id: '',
-            task: currentTask,
-            executor: currentTask.executor,
-            user: user,
-            startDate: new Date().toJSON().toString(),
-            endDate: '',
-            taskStatus: newStatus,
-          }
+      if (currentTask && user) {
+        const log: TaskMovementLog = {
+          id: '',
+          task: currentTask,
+          executor: currentTask.executor,
+          user: user,
+          startDate: new Date().toJSON().toString(),
+          endDate: '',
+          taskStatus: newStatus,
+        }
 
-          const response = await TaskService.createTaskLog(log, token)
+        const response = await TaskService.createTaskLog(log, token)
 
-          if (response instanceof Error) {
-            useNotificationsStore().createSystemNotification(
-              'Система',
-              response.message,
-            )
-          }
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
         }
       }
     },

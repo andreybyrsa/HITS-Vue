@@ -82,28 +82,6 @@ const tasksArray = computed<Task[][]>(() => {
 const currentSprint = ref<Sprint>()
 const isOpenedSprinttModal = ref(false)
 
-const logs = ref<TaskMovementLog[]>()
-
-async function getLogs(taskId: string) {
-  const currentUser = user.value
-
-  if (currentUser) {
-    const { token } = currentUser
-
-    if (token) {
-      const taskLogs = await TaskService.getTaskMovementLog(taskId, token)
-
-      if (taskLogs instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', taskLogs.message)
-      } else {
-        logs.value = taskLogs
-        console.log(logs)
-      }
-    }
-  }
-  return logs
-}
-
 async function moveTask(evt: any) {
   const currentUser = user.value
 
@@ -320,7 +298,6 @@ function closeTaskModal() {
 
 <template>
   <div class="active-sprint">
-    <button @click="getLogs('0')">get logs</button>
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div
