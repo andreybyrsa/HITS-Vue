@@ -46,7 +46,7 @@
           <div>
             <div v-if="task.status === 'InBackLog'">
               <Button
-                @click="openUpdateNewTask"
+                @click="openUpdateNewTask(task)"
                 class-name="fs-5 fw-semibold text-truncate p-0"
                 >{{ task.name }}</Button
               >
