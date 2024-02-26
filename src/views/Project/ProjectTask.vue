@@ -42,9 +42,7 @@
           class="d-flex align-items-start flex-column"
           v-tooltip="task.name"
         >
-          <Typography class-name="fs-5 fw-semibold text-truncate">{{
-            task.name
-          }}</Typography>
+          <Typography :class-name="nameStyle">{{ task.name }}</Typography>
         </div>
         <div
           class="d-flex align-items-center gap-2"
