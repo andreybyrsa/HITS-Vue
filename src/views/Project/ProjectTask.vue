@@ -141,6 +141,9 @@ import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 
 import { TaskProps } from '@Views/Project/Project.types'
 import { useDateFormat } from '@vueuse/core'
+import { Task } from '@Domain/Project'
+import useTasksStore from '@Store/tasks/tasksStore'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps<TaskProps>()
 
