@@ -3,7 +3,7 @@ import axios from 'axios'
 import { API_URL } from '@Main'
 
 import { Profile, ProfileFullName } from '@Domain/Profile'
-import { UserTelegram } from '@Domain/User'
+import { User, UserTelegram } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
 
@@ -48,6 +48,23 @@ const getProfileAvatar = async (
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
 }
 
+const getUserTelegram = async (
+  userId: string,
+  token: string,
+): Promise<UserTelegram | Error> => {
+  return usersTelegramAxios
+    .get(
+      `/profile/telegram/${userId}`, // fix
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { userId } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки телеграмма'))
+}
+
 // --- POST --- //
 const saveProfileSkills = async (
   skills: Skill[],
@@ -81,12 +98,17 @@ const uploadProfileAvatar = async (
 const updateUserFullName = async (
   fullName: ProfileFullName,
   token: string,
-): Promise<Success | Error> => {
-  return axios
-    .put(`${API_URL}/profile/fullname/update`, fullName, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+): Promise<Profile[] | Error> => {
+  return profileUserAxios
+    .put<Profile[]>(
+      `${API_URL}/profile/fullname/update/`,
+      fullName,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id: fullName.id } },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения данных'))
 }
@@ -114,17 +136,19 @@ const createUserTelegram = async (
 
 // --- PUT --- //
 const updateTelegramTag = async (
-  userTag: string,
+  userTelegram: UserTelegram,
+  userId: string,
   token: string,
 ): Promise<Success | Error> => {
   return usersTelegramAxios
-    .putNoRequestBody<Success>(
-      `${API_URL}/profile/telegram/update/${userTag}`,
+    .put<Success>(
+      `${API_URL}/profile/telegram/update/`,
+      userTelegram,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { userTag } },
+      { params: { userId } },
     )
     .then((response) => response.data)
     .catch((error) =>
@@ -178,6 +202,7 @@ const deleteUserTelegram = async (
 const ProfileService = {
   getUserProfile,
   getProfileAvatar,
+  getUserTelegram,
 
   saveProfileSkills,
   uploadProfileAvatar,

@@ -9,14 +9,19 @@ import { InitialState, StoredAvatar } from '@Store/profiles/initialState'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
-import { ProfileFullName } from '@Domain/Profile'
+import { Profile, ProfileFullName } from '@Domain/Profile'
 import { User, UserTelegram } from '@Domain/User'
 import useUserStore from '@Store/user/userStore'
 import { TeamExperience } from '@Domain/Team'
 import TeamService from '@Services/TeamService'
+import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 
 const useProfilesStore = defineStore('profiles', {
-  state: (): InitialState => ({ avatars: [], profiles: [] }),
+  state: (): InitialState => ({
+    avatars: [],
+    profiles: [],
+    usersTelegram: [],
+  }),
 
   getters: {
     fetchUserProfile() {
@@ -48,6 +53,21 @@ const useProfilesStore = defineStore('profiles', {
         findOneAndUpdate(this.avatars, storedAvatar, { key: 'id', value: userId })
 
         return avatar
+      }
+    },
+
+    fetchUserTelegram() {
+      return async (userId: string, token: string) => {
+        const response = await ProfileService.getUserTelegram(userId, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        return findOneAndUpdate(this.usersTelegram, response, {
+          key: 'userId',
+          value: userId,
+        })
       }
     },
 
@@ -99,51 +119,62 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
+    setProfileTag(tag: string, userId: string) {
+      const profiles = JSON.parse(JSON.stringify(this.profiles))
+      const currentProfile = profiles.find(({ id }: { id: string }) => {
+        return id === userId
+      })
+      if (!currentProfile) return
+      currentProfile.userTag = tag
+      LocalStorageTelegramTag.set(tag)
+    },
+
     async updateUserFullName(user: User, token: string) {
       const userStore = useUserStore()
       const { id: userId, lastName, firstName } = user
 
-      const fullName: ProfileFullName = { lastName, firstName }
+      const fullName: ProfileFullName = { lastName, firstName, id: userId }
 
       const response = await ProfileService.updateUserFullName(fullName, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentProfile = this.profiles.find(({ id }) => id === userId)
-        const currentUser = userStore.user
+        return
+      }
 
-        if (currentProfile && currentUser) {
-          currentProfile.firstName = firstName
-          currentProfile.lastName = lastName
+      const currentProfile = this.profiles.find(({ id }) => id === userId)
+      const currentUser = userStore.user
 
-          userStore.setUser({ ...currentUser, firstName, lastName })
-        }
+      if (currentProfile && currentUser) {
+        currentProfile.firstName = firstName
+        currentProfile.lastName = lastName
+
+        userStore.setUser({ ...currentUser, firstName, lastName })
       }
     },
 
     async updateUserTelegramTag(
-      user: User,
+      profile: Profile,
       userTelegram: UserTelegram,
       token: string,
     ) {
-      const userStore = useUserStore()
-      const { id: userId } = user
-      const { userTag } = userTelegram
+      const { id: userId, userTag } = profile
+      const newUserTelegram = { ...userTelegram, userTag } as UserTelegram
 
-      const response = await ProfileService.updateTelegramTag(userTag, token)
+      if (userTag) {
+        this.setProfileTag(userTag, userId)
+      }
+
+      if (!userTag) return
+      const response = await ProfileService.updateTelegramTag(
+        newUserTelegram,
+        profile.id,
+        token,
+      )
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentProfile = this.profiles.find(({ id }) => id === userId)
-        const currentUser = userStore.user
-
-        if (currentProfile && currentUser) {
-          currentProfile.userTag = userTag
-
-          userStore.setUser({ ...currentUser })
-        }
+        return
       }
     },
 

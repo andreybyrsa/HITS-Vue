@@ -96,7 +96,7 @@ export const usersMocks: User[] = [
 export const usersTelegramMocks: UserTelegram[] = [
   {
     userId: usersMocks[0].id,
-    userTag: '@baobao',
+    userTag: 'baobao',
     chatId: '0',
     isVisible: true,
   },

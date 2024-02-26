@@ -23,6 +23,11 @@ class Validation {
     return emailRegExp.test(email)
   }
 
+  checkTag(userTag: string) {
+    const TagRegExp = /^[a-zA-Z0-9_]{5,32}$/
+    return TagRegExp.test(userTag)
+  }
+
   checkName(name: string) {
     const nameRegExp = /^[а-я a-z ,.'-]+$/i
     return name && nameRegExp.test(name) && name.length > 0

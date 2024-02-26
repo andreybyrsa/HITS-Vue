@@ -42,6 +42,8 @@ import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 import { getRouteByUserRole } from '@Utils/userRolesInfo'
+import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -296,7 +298,10 @@ router.beforeEach((to) => {
 
   const { user } = storeToRefs(userStore)
   const localStorageUser = LocalStorageUser.getLocalStorageUser()
-
+  const telegramTag = LocalStorageTelegramTag.get()
+  if (telegramTag && localStorageUser?.id) {
+    useProfilesStore().setProfileTag(telegramTag, localStorageUser.id)
+  }
   if (localStorageUser?.token && !user.value?.token) {
     useUserStore().setUser(localStorageUser)
   }
