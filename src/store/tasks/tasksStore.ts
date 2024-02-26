@@ -148,6 +148,7 @@ const useTasksStore = defineStore('tasks', {
         this.tasks.push(response)
       }
     },
+
     async createTaskLog(
       taskId: string,
       user: User | null,
@@ -180,6 +181,27 @@ const useTasksStore = defineStore('tasks', {
             response.message,
           )
         }
+      }
+    },
+
+    async changeLeaderComment(taskId: string, leaderComment: string, token: string) {
+      const currentTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (!currentTask) {
+        return
+      }
+
+      currentTask.leaderComment = leaderComment
+
+      const response = await TaskService.changeLeaderComment(
+        taskId,
+        leaderComment,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
       }
     },
   },
