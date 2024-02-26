@@ -51,7 +51,10 @@ class Validation {
     }
     return 'Дата не может быть раньше текущей'
   }
-
+  checkNumber(hours: string) {
+    const numbersRegExp = /^[0-9 ,]{1,}$/g
+    return numbersRegExp.test(hours)
+  }
   validateDates(startDateString: string, finishDateString: string) {
     const startDate = new Date(startDateString)
     const finishDate = new Date(finishDateString)
