@@ -25,8 +25,8 @@ import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 
 onBeforeMount(() => {
   const tag = LocalStorageTelegramTag.get()
+  if (tag === null) return
   setValues({ ...profile.value, userTag: tag ?? '' })
-  console.log(profile.value)
 })
 
 const route = useRoute()
@@ -83,6 +83,8 @@ const handleEditUserTag = handleSubmit(async (values) => {
   await profilesStore.updateUserTelegramTag(values, userTelegram, token)
 
   isUpdatingTelegram.value = false
+  profile.value = await profilesStore.getProfileByUserId(profileId)
+  console.log(profile.value?.userTag)
 })
 
 async function setUserValues() {
@@ -281,6 +283,7 @@ function getFormattedDate(date: string) {
       </div>
     </div>
   </div>
+  {{ profile?.userTag }}
   <NewEmailRequestModal
     :isOpened="isOpenedChangeEmailModal"
     @close-modal="handleCloseChangeEmailModal"

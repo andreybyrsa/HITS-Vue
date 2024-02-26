@@ -120,10 +120,7 @@ const useProfilesStore = defineStore('profiles', {
     },
 
     setProfileTag(tag: string, userId: string) {
-      const profiles = JSON.parse(JSON.stringify(this.profiles))
-      const currentProfile = profiles.find(({ id }: { id: string }) => {
-        return id === userId
-      })
+      const currentProfile = this.profiles.find(({ id }) => id === userId)
       if (!currentProfile) return
       currentProfile.userTag = tag
       LocalStorageTelegramTag.set(tag)
@@ -176,6 +173,7 @@ const useProfilesStore = defineStore('profiles', {
         useNotificationsStore().createSystemNotification('Система', response.message)
         return
       }
+      console.log(newUserTelegram)
     },
 
     async updateVisibilityOfTag(
