@@ -70,20 +70,23 @@ function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
   }
 }
 
-function getRouteByUserRole(currentRole: RolesTypes): RouteLocationRaw
-function getRouteByUserRole(currentRoles: RolesTypes[]): RouteLocationRaw
+// !котятки, не забываем следить за этой функцией, при добовлении новых ролей, чтобы нормально редиректило, иначе будет критический баг, спасибо))
 function getRouteByUserRole(
   currentRole: RolesTypes | RolesTypes[],
 ): RouteLocationRaw {
+  const teamList = ['TEAM_OWNER', 'TEAM_LEADER']
+
   if (currentRole instanceof Array) {
-    if (currentRole.includes('TEAM_OWNER')) {
+    const isTeam = teamList.some((role, index) => role === currentRole[index])
+
+    if (isTeam) {
       return { name: 'teams-list' }
     }
 
     return { name: 'ideas-list' }
   }
 
-  if (currentRole === 'TEAM_OWNER') {
+  if (teamList.includes(currentRole)) {
     return { name: 'teams-list' }
   }
 

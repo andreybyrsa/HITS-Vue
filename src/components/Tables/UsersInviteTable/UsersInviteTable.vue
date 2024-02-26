@@ -17,10 +17,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
-import type {
-  UsersInviteTableEmits,
-  UsersInviteTableProps,
-} from '@Components/Tables/UsersInviteTable/UsersInviteTable.types'
+import type { UsersInviteTableEmits } from '@Components/Tables/UsersInviteTable/UsersInviteTable.types'
 import Table from '@Components/Table/Table.vue'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
@@ -44,7 +41,6 @@ import {
 
 const invitationUsers = defineModel<TeamMember[]>()
 defineEmits<UsersInviteTableEmits>()
-const props = defineProps<UsersInviteTableProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -174,11 +170,11 @@ function navigateToUserProfile(user: TeamMember) {
 }
 
 function checkIsNotExistUser(user: TeamMember) {
-  return !props.selectedUsers.find(({ userId }) => userId === user.userId)
+  return !invitationUsers.value?.find(({ userId }) => userId === user.userId)
 }
 
 function checkIsExistUser(user: TeamMember) {
-  return !!props.selectedUsers.find(({ userId }) => userId === user.userId)
+  return !!invitationUsers.value?.find(({ userId }) => userId === user.userId)
 }
 </script>
 

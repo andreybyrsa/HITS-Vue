@@ -120,8 +120,7 @@ const dropdownUsersActions: DropdownMenuAction<User>[] = [
   {
     label: 'Удалить',
     className: 'text-danger',
-    click: () => null,
-    // click: openConfirmModal,
+    click: openConfirmModal,
   },
 ]
 

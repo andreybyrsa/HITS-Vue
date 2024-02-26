@@ -24,7 +24,7 @@ class Validation {
   }
 
   checkName(name: string) {
-    const nameRegExp = /^[а-я a-z ,.'-]+$/i
+    const nameRegExp = /^[а-я a-z ё ,.'-]+$/i
     return name && nameRegExp.test(name) && name.length > 0
   }
 

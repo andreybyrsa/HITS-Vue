@@ -18,6 +18,7 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
+import Validation from '@Utils/Validation'
 const router = useRouter()
 
 onMounted(async () => {
@@ -43,12 +44,17 @@ function switchContent() {
 
 const { values, handleSubmit } = useForm({
   validationSchema: {
-    component: (value: string) => value?.length || 'Обязательно к заполнению',
+    component: (value: string) =>
+      Validation.checkName(value) || 'Обязательно к заполнению',
   },
   initialValues: {
     combobox: undefined,
     component: undefined,
   },
+})
+
+const click = handleSubmit(() => {
+  return
 })
 
 const fieldSubmit = handleSubmit((values) => {
@@ -66,28 +72,20 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
   <PageLayout content-class-name="dev-page__content p-3">
     <template #leftSideBar>
       <LeftSideBar />
-      <MarketModal
-        :isOpened="true"
-        :market="null"
-      ></MarketModal>
     </template>
 
     <template #content>
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>
-      <KeepAlive>
-        <Input
-          v-if="switchButton"
-          name="первый"
-        >
-        </Input>
-      </KeepAlive>
-      <Input
-        v-if="!switchButton"
-        name="второй"
+      <KeepAlive> </KeepAlive>
+
+      <Input name="component"> </Input>
+      <Button
+        variant="primary"
+        @click="click"
+        >Валидация</Button
       >
-      </Input>
 
       <Button
         @click="router.push('/teams/list/1')"
@@ -101,7 +99,7 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
       <div class="table-responsive"></div>
 
       <Select
-        name="component"
+        name="1"
         :options="[
           { value: '123', label: '1' },
           { value: '231', label: '1' },

@@ -106,9 +106,9 @@ function checkIsActiveAdvertisement(advertisement: IdeaMarketAdvertisement) {
 }
 
 function checkAdvertisementsOwned() {
-  const { initiator, team } = props.ideaMarket
+  const { initiator } = props.ideaMarket
 
-  return user.value?.id === initiator.id || team?.owner.userId === user.value?.id
+  return user.value?.id === initiator.id
 }
 </script>
 

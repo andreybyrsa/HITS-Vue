@@ -23,22 +23,6 @@ const invitationUsers = defineModel<TeamMember[]>({ required: true })
 const newArrayUsers = ref<TeamMember[]>([])
 const selectedUsers = ref<TeamMember[]>([])
 
-watch(
-  () => props.isOpened,
-  () => {
-    if (props.isOpened) {
-      selectedUsers.value = structuredClone(invitationUsers.value)
-    }
-  },
-)
-
-watch(
-  () => newArrayUsers.value.length,
-  () => {
-    selectedUsers.value = newArrayUsers.value
-  },
-)
-
 const invitatinUsers = useInvitationUsersStore()
 const route = useRoute()
 
@@ -49,6 +33,23 @@ const isLoading = ref(false)
 
 const props = defineProps<InvitationTeamMemberModalProps>()
 const emit = defineEmits<InvitationTeamMemberModalEmits>()
+
+watch(
+  () => props.isOpened,
+  () => {
+    if (props.isOpened) {
+      selectedUsers.value = structuredClone(invitationUsers.value)
+      newArrayUsers.value = structuredClone(invitationUsers.value)
+    }
+  },
+)
+
+watch(
+  () => newArrayUsers.value.length,
+  () => {
+    selectedUsers.value = newArrayUsers.value
+  },
+)
 
 function inviteUsers() {
   invitationUsers.value = selectedUsers.value
@@ -82,6 +83,7 @@ async function inviteUsersInTeam() {
     await invitatinUsers.inviteUsers(invitationsToTeam, token)
 
     selectedUsers.value = []
+    newArrayUsers.value = []
     isLoading.value = false
     emit('close-modal')
   }
@@ -97,7 +99,7 @@ function closeInvitationModal() {
     :is-opened="isOpened"
     @on-outside-close="closeInvitationModal"
   >
-    <div class="invitation-modal p-3 bg-white overflow-y-scroll rounded">
+    <div class="invitation-modal p-3 bg-white rounded">
       <div class="invitation-modal__header w-100">
         <Typography class-name="fs-5 text-primary">
           Выберите пользователей для приглашения
@@ -112,7 +114,6 @@ function closeInvitationModal() {
       <div class="invitation-modal__table">
         <UsersInviteTable
           v-model="newArrayUsers"
-          :selectedUsers="selectedUsers"
           @close-modal="closeInvitationModal"
         />
       </div>
@@ -145,23 +146,26 @@ function closeInvitationModal() {
 
       <div class="invitation-modal__buttons">
         <Button
-          v-if="$route.name !== 'create-team'"
+          v-if="!isCreateTeam"
           :is-loading="isLoading"
           variant="success"
           @click="inviteUsersInTeam"
-          >Пригласить пользователей</Button
         >
+          Пригласить пользователей
+        </Button>
         <Button
-          v-if="$route.name === 'create-team'"
+          v-if="isCreateTeam"
           variant="success"
           @click="inviteUsers"
-          >Сохранить выбор</Button
         >
+          Сохранить выбор
+        </Button>
         <Button
           variant="danger"
           @click="closeInvitationModal"
-          >Отменить выбор</Button
         >
+          Отменить выбор
+        </Button>
       </div>
     </div>
   </ModalLayout>

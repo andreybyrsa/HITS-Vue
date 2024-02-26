@@ -82,7 +82,7 @@ const deleteUser = async (
 ): Promise<Success | Error> => {
   return usersAxios
     .delete(
-      `/profile/delete/${userId}`,
+      `/profile/delete/user/${userId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
