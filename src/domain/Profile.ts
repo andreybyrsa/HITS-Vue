@@ -10,11 +10,15 @@ interface Profile extends User {
 
   teamsExperience: TeamExperience[]
   teamsProjects: ProjectMember[]
+
+  userTag?: string
+  isUserTagVisible?: boolean
 }
 
 interface ProfileFullName {
   lastName: string
   firstName: string
+  id: string
 }
 
 export { Profile, ProfileFullName }
