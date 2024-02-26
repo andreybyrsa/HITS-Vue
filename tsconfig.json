@@ -15,6 +15,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": ["webpack-env"],
+
     "paths": {
       "@Main": ["src/main.ts"],
       "@Assets/*": ["src/assets/*"],
@@ -27,7 +28,14 @@
       "@Services/*": ["src/services/*"],
       "@Utils/*": ["src/utils/*"]
     },
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "inlineSources": true,
+
+    // Set `sourceRoot` to  "/" to strip the build path prefix
+    // from generated source code references.
+    // This improves issue grouping in Sentry.
+    "sourceRoot": "/"
   },
   "include": [
     "src/**/*.ts",

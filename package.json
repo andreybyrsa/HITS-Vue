@@ -3,17 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve && npm run sentry:sourcemaps",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org hits-cy --project javascript-vue  && sentry-cli sourcemaps upload --org hits-cy --project javascript-vue "
   },
   "dependencies": {
+    "@sentry/cli": "^2.28.6",
+    "@sentry/integrations": "^7.102.1",
+    "@sentry/vue": "^7.102.1",
     "@types/rsocket-core": "^0.0.7",
     "@types/rsocket-flowable": "^0.0.5",
     "@types/rsocket-websocket-client": "^0.0.4",
     "@vee-validate/yup": "^4.11.1",
     "@vueuse/components": "^10.3.0",
     "@vueuse/core": "^10.3.0",
+    "all": "^0.0.0",
     "apexcharts": "^3.44.0",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.1",
