@@ -30,7 +30,7 @@
         >Создать задачу</Button
       >
       <FilterBar
-        class-name=" border-start  w-100"
+        class-name=" border-start w-100"
         :filters="filters"
       />
     </div>
@@ -125,11 +125,11 @@ function closeCreateNewTask() {
 
 function openUpdateNewTask(task: Task) {
   updatingTask.value = task
-  isOpenedCreateNewTask.value = true
+  isOpenedUpdateNewTask.value = true
 }
 
 function closeUpdateNewTask() {
-  isOpenedCreateNewTask.value = false
+  isOpenedUpdateNewTask.value = false
 }
 
 const filteredAndSortedTasks = ref<Task[]>([...sortedInBackLogTasks.value])

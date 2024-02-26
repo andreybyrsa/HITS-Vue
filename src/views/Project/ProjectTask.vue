@@ -43,9 +43,20 @@
           class="d-flex align-items-center"
           v-tooltip="task.name"
         >
-          <Typography class-name="fs-5 fw-semibold text-truncate">{{
-            task.name
-          }}</Typography>
+          <div>
+            <div v-if="task.status === 'InBackLog'">
+              <Button
+                @click="openUpdateNewTask"
+                class-name="fs-5 fw-semibold text-truncate p-0"
+                >{{ task.name }}</Button
+              >
+            </div>
+            <div v-else>
+              <Typography class-name="fs-5 fw-semibold text-truncate">{{
+                task.name
+              }}</Typography>
+            </div>
+          </div>
         </div>
 
         <div class="d-flex align-items-center gap-2">
@@ -99,6 +110,12 @@
         </div>
       </div>
     </Collapse>
+    <TaskModal
+      :is-opened="isOpenedUpdateNewTask"
+      v-model="tasks"
+      :task="updatingTask"
+      @close-modal="closeUpdateNewTask"
+    />
   </div>
 </template>
 
@@ -110,10 +127,29 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+
 import { TaskProps } from '@Views/Project/Project.types'
 import { useDateFormat } from '@vueuse/core'
+import { Task } from '@Domain/Project'
+import useTasksStore from '@Store/tasks/tasksStore'
+import { storeToRefs } from 'pinia'
 
 defineProps<TaskProps>()
+
+const isOpenedUpdateNewTask = ref(false)
+const updatingTask = ref<Task | null>(null)
+const tasksStore = useTasksStore()
+const { tasks } = storeToRefs(tasksStore)
+
+function openUpdateNewTask(task: Task) {
+  updatingTask.value = task
+  isOpenedUpdateNewTask.value = true
+}
+
+function closeUpdateNewTask() {
+  isOpenedUpdateNewTask.value = false
+}
 
 const isOpenCollapse = ref(false)
 
