@@ -1,54 +1,149 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useDateFormat } from '@vueuse/core'
-
 import {
-  FinishSprintModalProps,
   FinishSprintModalEmits,
+  FinishSprintModalProps,
+  sprintValidationProps,
 } from '@Components/Modals/FinishSprintModal/FinishSprintModal.types'
-import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
-import Icon from '@Components/Icon/Icon.vue'
-import Typography from '@Components/Typography/Typography.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
-import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import Button from '@Components/Button/Button.vue'
+import Radio from '@Components/Inputs/Radio/Radio.vue'
+import Icon from '@Components/Icon/Icon.vue'
+import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 
-import { getProjectStatus, getProjectStatusStyle } from '@Utils/getProjectStatus'
+import Typography from '@Components/Typography/Typography.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
 
-import useUserStore from '@Store/user/userStore'
+import { SprintMarks, Task } from '@Domain/Project'
+import useProjectsStore from '@Store/projects/projectsStore'
+import useSprintsStore from '@Store/sprints/sprintsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
-import SprintsListPage from '@Views/Project/SprintsListPage.vue'
+import useUserStore from '@Store/user/userStore'
+import Validation from '@Utils/Validation'
+import {
+  RequestConfig,
+  openErrorNotification,
+  sendParallelRequests,
+} from '@Utils/sendParallelRequests'
 
-import BurndownChart from './BurndownChart.vue'
+import {
+  getRoleProjectMember,
+  getRoleProjectMemberStyle,
+} from '@Utils/getRoleProjectMember'
 
-function getFormattedDate(date: string) {
-  if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
-    return formattedDate.value
-  } else {
-    return 'Реализуется'
-  }
-}
-
-// onMounted(async () => {
-//   await passTasks.value = props.sprint.tasks.filter(
-//     (task) => task.status === 'Done',
-//   ).length
-//   allTasks.value = props.sprint.tasks.length
-// })
+import { storeToRefs } from 'pinia'
+import { useForm } from 'vee-validate'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { AverageMark } from '@Domain/ReportProjectMembers'
+import ProjectService from '@Services/ProjectService'
+import SprintService from '@Services/SprintService'
+import { reactiveComputed } from '@vueuse/core'
 
 const props = defineProps<FinishSprintModalProps>()
 const emit = defineEmits<FinishSprintModalEmits>()
+
+const tasksStore = useTasksStore()
+const { tasks } = storeToRefs(tasksStore)
+
+const projectStore = useProjectsStore()
+const { projects } = storeToRefs(projectStore)
+
+const sprintStore = useSprintsStore()
+const { sprints } = storeToRefs(sprintStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isLoading = ref(false)
 
-const tasks = storeToRefs(useTasksStore())
+const route = useRoute()
+const refValue = ref()
+const report = ref('')
+const radio1 = ref()
+const radio2 = ref()
+
+const averageMark = ref<AverageMark[]>([])
+const sprintMarks = ref<SprintMarks[]>([])
+
+const getValidations = ref<any>({
+  report: (value: string) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+  radio: (value: boolean) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+})
+
+onMounted(async () => {
+  if (props.isFinishSprint) {
+    const currentUser = user.value
+
+    if (currentUser?.token) {
+      const { token } = currentUser
+      const projectId = route.params.id.toString()
+      const sprintId = props.activeSprint.id
+
+      const sprintParallelRequests: RequestConfig[] = [
+        {
+          request: () => ProjectService.getAverageMarkProject(projectId, token),
+          refValue: averageMark,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => SprintService.getMarkSprint(sprintId, token),
+          refValue: sprintMarks,
+          onErrorFunc: openErrorNotification,
+        },
+      ]
+      await sendParallelRequests(sprintParallelRequests)
+
+      const arrayUserId = sprintMarks.value.map(({ userId }) => userId)
+      arrayUserId.forEach((userId) => {
+        getValidations.value[userId] = (value: boolean) =>
+          Validation.checkIsEmptyValue(value) || 'Обязательное поле'
+      })
+    }
+  }
+})
+
+const { handleSubmit } = useForm({
+  validationSchema: getValidations,
+})
+
+const FinishSprint = handleSubmit(async () => {
+  isLoading.value = true
+
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const sprintId = props.activeSprint.id
+    const finishDate = new Date().toJSON().toString()
+
+    const fiinishSprintParallelRequests: RequestConfig[] = [
+      {
+        request: () => sprintStore.changeSprintStatus(sprintId, 'DONE', token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => sprintStore.finishSprint(sprintId, finishDate, token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => sprintStore.reportSprint(sprintId, report.value, token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
+    ]
+
+    await sendParallelRequests(fiinishSprintParallelRequests)
+  }
+  isLoading.value = false
+  emit('close-modal')
+})
 </script>
 
 <template>
@@ -56,67 +151,153 @@ const tasks = storeToRefs(useTasksStore())
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="sprint-modal bg-white rounded p-3">
-      <div class="d-flex align-items-center justify-content-between border-bottom">
-        <Typography class-name="fs-3 text-primary text-center ">
-          Спринт: "{{ sprint?.name }}"
+    <div class="finish-project-modal bg-white rounded p-3 w-1">
+      <div class="finish-project-modal__header fs-2 w-100 border-2">
+        <Typography class-name="border-bottom text-primary fs-3 w-100">
+          {{ 'Завершение спринта' }}
         </Typography>
 
         <Button
-          variant="close"
           @click="emit('close-modal')"
+          class-name="fs-5"
+          variant="close"
         />
       </div>
-      <div class="d-flex gap-2 align-items-center">
-        <div :class="getProjectStatusStyle(sprint.status)">
-          {{ getProjectStatus().translatedStatus[sprint.status] }}
-        </div>
-        <Typography class-name="text-primary">Общие часы работы:</Typography>
-        {{ sprint?.workingHours }} ч.
-      </div>
-      <ul class="list-group rounded-3">
-        <li class="list-group-item p-0 overflow-hidden">
-          <Button
-            variant="light"
-            class-name="collapse-controller w-100"
-            v-collapse:openOnMount="sprint?.id"
-          >
-            Цель спринта:
-          </Button>
-          <Collapse :id="sprint?.id">
-            <div class="p-2">{{ sprint?.goal }}</div>
-          </Collapse>
-        </li>
-      </ul>
 
-      <div class="my-2 d-flex gap-2 w-100">
-        <div class="w-100">
-          <Typography class-name="text-primary">Начало спринта:</Typography>
-          <Button class-name="border w-100">{{
-            getFormattedDate(sprint?.startDate)
-          }}</Button>
+      <div class="d-flex w-100 gap-2 flex-column overflow-scroll">
+        <div class="d-flex gap-3 text-primary w-100">
+          <Typography class-name="w-25">{{ 'Оценка' }}</Typography>
+
+          <Typography class-name="w-75">{{ 'Статистика участника' }}</Typography>
         </div>
-        <div class="w-100">
-          <Typography class-name="text-primary">Конец спринта:</Typography>
-          <Button class-name="border w-100">{{
-            getFormattedDate(sprint?.finishDate)
-          }}</Button>
+        <div
+          class="d-flex w-100 gap-2 flex-column"
+          v-for="(sprint, index) in sprintMarks"
+          :key="index"
+        >
+          <div class="d-flex gap-3 w-100 justify-content-between h-100">
+            <div class="w-25 h-100">
+              <Input
+                :name="sprint.userId"
+                class-name="rounded finish-project-modal__input"
+                placeholder="Оценка"
+                v-model="sprint.mark"
+                validate-on-update
+              />
+            </div>
+
+            <ul class="list-group rounded-3 w-75 flex-column">
+              <li class="list-group-item p-0 overflow-hidden w-100">
+                <Button
+                  variant="light"
+                  class-name="collapse-controller w-100 justify-content-between"
+                  v-collapse="sprint.userId"
+                >
+                  {{ sprint.firstName }} {{ sprint.lastName }}
+                  <div :class="getRoleProjectMemberStyle(sprint.projectRole)">
+                    {{ getRoleProjectMember().translatedRoles[sprint.projectRole] }}
+                  </div>
+                </Button>
+
+                <Collapse :id="sprint.userId">
+                  <div
+                    v-if="sprint.tasks"
+                    class="fp-2 m-2"
+                  >
+                    <div class="text-primary">Выполненные задачи*</div>
+
+                    <div
+                      v-for="(task, index) in sprint.tasks"
+                      :key="index"
+                    >
+                      <div
+                        v-if="task.status === 'Done'"
+                        class="rounded-3 border p-2 mb-1 gap-2 justify-content-between w-100"
+                      >
+                        <div class="w-100">
+                          <div>{{ task.name }}</div>
+                          <div class="d-flex gap-3 overflow-auto w-100">
+                            <div
+                              v-for="(tag, index) in task.tag"
+                              :key="index"
+                              class="d-flex gap-1"
+                            >
+                              <Icon
+                                :style="{ color: tag.color }"
+                                class="bi bi-circle-fill"
+                              >
+                              </Icon>
+
+                              <Typography class-name="finish-project-modal__tag"
+                                >{{ tag.name }}
+                              </Typography>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Collapse>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div>
-        <Typography class-name="text-primary">Сгорающая диаграмма:</Typography>
+
+      <div class="w-100">
+        <div class="mb-2 text-primary">Отчет*</div>
+        <Textarea
+          name="report"
+          class-name="finish-project-modal__report rounded w-100"
+          placeholder="Отчет"
+          v-model="report"
+          validate-on-update
+        >
+          Отчет
+        </Textarea>
       </div>
+
       <div>
-        <BurndownChart :sprint="sprint" />
+        <div class="text-primary">Перенос незавершенных задач*</div>
+
+        {{ radio1 }}
+        {{ radio2 }}
+        <Radio
+          class-name=""
+          name="radio"
+          label="Перенести в новый спринт"
+          :value="true"
+          validate-on-update
+        />
+
+        <Radio
+          class-name=""
+          name="radio"
+          label="Перенести в Бэклог"
+          :value="false"
+          validate-on-update
+        />
       </div>
+
+      <Button
+        @click="FinishSprint"
+        :is-loading="isLoading"
+        :disabled="isLoading"
+        variant="primary"
+      >
+        {{ 'Завершить спринт' }}
+      </Button>
     </div>
   </ModalLayout>
 </template>
-<style lang="scss" scoped>
-.sprint-modal {
-  width: 75ex;
+
+<style lang="scss">
+.finish-project-modal {
+  width: 600px;
+  height: fit-content;
+  max-height: 800px;
   @include flexible(
-    stretch,
+    flex-start,
     flex-start,
     column,
     $align-self: center,
@@ -129,22 +310,35 @@ const tasks = storeToRefs(useTasksStore())
   &__header {
     @include flexible(center, space-between);
   }
-}
 
-.modal-layout-enter-from .sprint-modal,
-.modal-layout-leave-to .sprint-modal {
-  transform: scale(0.9);
+  &__member {
+    @include flexible(center, space-between);
+    height: 5vh;
+  }
+
+  &__report {
+    resize: none;
+    height: 200px;
+  }
+
+  &__input {
+    height: 5vh;
+  }
+
+  &__tag {
+    @include flexible(center, center);
+  }
 }
 
 .collapse-controller {
   border-radius: 0;
   background-color: $white-color;
 
-  color: $primary-color;
-
   @include flexible(center, flex-start);
 }
-.border-b {
-  border-bottom-width: 4px;
+
+.modal-layout-enter-from .finish-project-modal,
+.modal-layout-leave-to .finish-project-modal {
+  transform: scale(0.9);
 }
 </style>

@@ -19,11 +19,12 @@ import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import {
+  TaskMovementLog,
   Project,
   ProjectMember,
   Sprint,
+  SprintMarks,
   Task,
-  TaskMovementLog,
 } from '@Domain/Project'
 import { Tag } from '@Domain/Tag'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
@@ -1348,9 +1349,16 @@ export const tasksMocks: Task[] = [
     workHour: '3',
     position: 1,
     startDate: '01.01.24',
-    tag: [tagsMocks[1], tagsMocks[7], tagsMocks[10]],
-    taskMovementLog: ['InBackLog'],
-    status: 'Done',
+    tag: [
+      tagsMocks[1],
+      tagsMocks[7],
+      tagsMocks[10],
+      tagsMocks[2],
+      tagsMocks[3],
+      tagsMocks[5],
+    ],
+    taskMovementLog: ['NewTask'],
+    status: 'inProgress',
   },
   {
     id: '10',
@@ -1452,33 +1460,30 @@ export const tasksMocks: Task[] = [
 
 export const averageMarkMocks: AverageMark[] = [
   {
-    id: '0101',
     projectId: '0',
-    userID: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     firstName: 'Кирилл',
     lastName: 'Власов',
     projectRole: 'TEAM_LEADER',
-    mark: '9.9',
+    mark: 9.9,
     tasks: [tasksMocks[9], tasksMocks[12]],
   },
   {
-    id: '1010',
     projectId: '0',
-    userID: '1',
+    userId: '1',
     firstName: 'Иван',
     lastName: 'Иванович',
     projectRole: 'MEMBER',
-    mark: '6.7',
+    mark: 6.7,
     tasks: [tasksMocks[10]],
   },
   {
-    id: '2211',
     projectId: '0',
-    userID: '2',
+    userId: '2',
     firstName: 'Менеджер',
     lastName: 'Менеджер',
     projectRole: 'MEMBER',
-    mark: '7.8',
+    mark: 7.8,
     tasks: [tasksMocks[11]],
   },
 ]
@@ -1633,12 +1638,43 @@ export const notificationsMocks: Notification[] = [
   },
 ]
 
+export const sprintMarksMocks: SprintMarks[] = [
+  {
+    sprintId: '3',
+    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    firstName: 'Кирилл',
+    lastName: 'Власов',
+    mark: undefined,
+    projectRole: 'TEAM_LEADER',
+    tasks: [tasksMocks[9], tasksMocks[12]],
+  },
+  {
+    sprintId: '3',
+    userId: '123714',
+    firstName: 'Иван',
+    lastName: 'Иванович',
+    mark: undefined,
+    projectRole: 'MEMBER',
+    tasks: [tasksMocks[10]],
+  },
+  {
+    sprintId: '3',
+    userId: '1231231',
+    firstName: 'Менеджер',
+    lastName: 'Менеджер',
+    projectRole: 'MEMBER',
+    mark: undefined,
+    tasks: [tasksMocks[11]],
+  },
+]
+
 export const sprintMocks: Sprint[] = [
   {
     id: '0',
     projectId: projectMocks[0].id,
     name: 'Спринт 1',
     goal: 'Цель 1',
+    marks: [sprintMarksMocks[0]],
     report: 'Отчет 1',
     startDate: '2023-12-26T11:02:17Z',
     finishDate: '2024-01-02T11:02:17Z',
@@ -1651,6 +1687,7 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Спринт 2',
     goal: 'Цель 2',
+    marks: [sprintMarksMocks[1]],
     report: 'Отчет 2',
     startDate: '2024-01-03T11:02:17Z',
     finishDate: '2024-01-11T11:02:17Z',
@@ -1663,6 +1700,7 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Спринт 3',
     goal: 'Цель 3',
+    marks: [sprintMarksMocks[2]],
     report: 'Отчет 3',
     startDate: '2024-01-12T11:02:17Z',
     finishDate: '2024-01-19T11:02:17Z',
@@ -1675,6 +1713,7 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Проектировка скрама',
     goal: 'Цель 4',
+    marks: [sprintMarksMocks[1]],
     report: 'Отчет 4',
     startDate: '2024-01-20T11:02:17Z',
     finishDate: '2024-01-27T11:02:17Z',

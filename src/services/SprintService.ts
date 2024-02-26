@@ -1,37 +1,23 @@
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import { sprintMocks } from '@Utils/getMocks'
+import { sprintMarksMocks, sprintMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
-import { Sprint, SprintStatus } from '@Domain/Project'
+import { Sprint, SprintStatus, SprintMarks } from '@Domain/Project'
 import Success from '@Domain/ResponseMessage'
 import { MODE } from '@Main'
 import axios from 'axios'
 
 const sprintMocksAxios = defineAxios(sprintMocks)
+const sprintMarksMocksAxios = defineAxios(sprintMarksMocks)
 
 function formatterAllSprintsProject(sprints: Sprint[], currentProjectId: string) {
   return sprints.filter(({ projectId }) => projectId === currentProjectId)
 }
 
-// --- POST --- //
-
-const postSprint = async (
-  sprint: Sprint,
-  token: string,
-): Promise<Sprint | Error> => {
-  return sprintMocksAxios
-    .post(
-      'some-address', // FIX ROUTE
-      sprint,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка создания спринта'))
+function formatGetMarksSprint(sprintMarksMocks: SprintMarks[], sprintId: string) {
+  return sprintMarksMocks.filter((mark) => mark.sprintId === sprintId)
 }
 
 // --- GET --- //
@@ -73,6 +59,25 @@ const getActiveSprintsProject = async (
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка получения спринтов'))
+}
+
+const getMarkSprint = async (
+  sprintId: string,
+  token: string,
+): Promise<SprintMarks[] | Error> => {
+  return sprintMarksMocksAxios
+    .get<SprintMarks[]>(
+      '/sprint/mark', // FIX ROUTE
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (sprintMarks) => formatGetMarksSprint(sprintMarks, sprintId),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения оценки за спринт'))
 }
 
 // --- PUT --- //
@@ -148,7 +153,7 @@ const reportSprint = async (
     .catch((error) => handleAxiosError(error, 'Ошибка заполнения отчета проекта'))
 }
 
-const finishSprint = async (
+const finishSprintDate = async (
   sprintId: string,
   finishDate: string,
   token: string,
@@ -178,14 +183,49 @@ const finishSprint = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
 }
 
+// --- POST --- //
+
+const postSprint = async (
+  sprint: Sprint,
+  token: string,
+): Promise<Sprint | Error> => {
+  return sprintMocksAxios
+    .post(
+      'some-address', // FIX ROUTE
+      sprint,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка создания спринта'))
+}
+
+const saveMarkSprint = async (
+  sprintId: string,
+  marks: SprintMarks[],
+  token: string,
+): Promise<Success | Error> => {
+  return axios
+    .post<Success>(`/sprint/marks/${sprintId}`, marks, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка добавления оценки'))
+}
+
 const ProfileService = {
   getAllSprintsProject,
   changeSprintStatus,
   reportSprint,
-  finishSprint,
+  finishSprintDate,
   getActiveSprintsProject,
   postSprint,
   updateSprint,
+  saveMarkSprint,
+  getMarkSprint,
 }
 
 export default ProfileService
