@@ -22,7 +22,6 @@ import {
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
-import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
@@ -297,7 +296,7 @@ function closeSprintModal() {
             {{ sprint.name }}
           </Typography>
         </div>
-        <SprintModal
+        <FinishSprintModal
           :is-opened="isOpenedSprinttModal"
           :sprint="currentSprint"
           @close-modal="closeSprintModal"

@@ -118,6 +118,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 
     <SprintsListPage
       v-if="isTabSprints"
+      :projectId="project.id"
       :sprints="sprint"
     />
 

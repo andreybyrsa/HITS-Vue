@@ -38,28 +38,18 @@
             class="particle bg-warning"
           ></div>
         </div>
-
         <div
-          class="d-flex align-items-center"
+          class="d-flex align-items-start flex-column"
           v-tooltip="task.name"
         >
-          <div>
-            <div v-if="task.status === 'InBackLog'">
-              <Button
-                @click="openUpdateNewTask"
-                class-name="fs-5 fw-semibold text-truncate p-0"
-                >{{ task.name }}</Button
-              >
-            </div>
-            <div v-else>
-              <Typography class-name="fs-5 fw-semibold text-truncate">{{
-                task.name
-              }}</Typography>
-            </div>
-          </div>
+          <Typography class-name="fs-5 fw-semibold text-truncate">{{
+            task.name
+          }}</Typography>
         </div>
-
-        <div class="d-flex align-items-center gap-2">
+        <div
+          class="d-flex align-items-center gap-2"
+          v-if="size !== 'SMALL'"
+        >
           <div
             v-for="tag in task.tag"
             :key="tag.id"
@@ -77,8 +67,28 @@
           </div>
         </div>
       </div>
-
+      <div
+        class="d-flex align-items-center gap-2 p-1"
+        v-if="size == 'SMALL'"
+      >
+        <div
+          v-for="tag in task.tag"
+          :key="tag.id"
+          class="d-flex gap-1 p-1 rounded-2 text-center align-items-center"
+          :style="{
+            backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+            color: tag.color,
+          }"
+        >
+          <Icon
+            class-name="bi bi-circle-fill "
+            :style="{ color: tag.color }"
+            v-tooltip="tag.name"
+          />
+        </div>
+      </div>
       <Button
+        v-if="size != 'SMALL'"
         v-collapse="task.id"
         class-name="d-flex gap-2 border-0 fw-semibold"
         @click="openCollapse"
@@ -131,11 +141,8 @@ import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 
 import { TaskProps } from '@Views/Project/Project.types'
 import { useDateFormat } from '@vueuse/core'
-import { Task } from '@Domain/Project'
-import useTasksStore from '@Store/tasks/tasksStore'
-import { storeToRefs } from 'pinia'
 
-defineProps<TaskProps>()
+const props = defineProps<TaskProps>()
 
 const isOpenedUpdateNewTask = ref(false)
 const updatingTask = ref<Task | null>(null)
@@ -152,6 +159,13 @@ function closeUpdateNewTask() {
 }
 
 const isOpenCollapse = ref(false)
+
+function getNameStyle(): string {
+  if (props.size && props.size == 'SMALL') return 'fw-semibold fs-6'
+  return 'fw-semibold text-truncate fs-5'
+}
+
+const nameStyle = getNameStyle()
 
 function hexToRgb(hex: string) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -180,6 +194,9 @@ function openCollapse() {
 </script>
 
 <style scoped lang="scss">
+.block {
+  width: 10px;
+}
 .particle {
   position: absolute;
   width: 10px;

@@ -15,6 +15,25 @@ function formatterAllSprintsProject(sprints: Sprint[], currentProjectId: string)
   return sprints.filter(({ projectId }) => projectId === currentProjectId)
 }
 
+// --- POST --- //
+
+const postSprint = async (
+  sprint: Sprint,
+  token: string,
+): Promise<Sprint | Error> => {
+  return sprintMocksAxios
+    .post(
+      'some-address', // FIX ROUTE
+      sprint,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка создания спринта'))
+}
+
 // --- GET --- //
 const getAllSprintsProject = async (
   projectId: string,
@@ -77,6 +96,26 @@ const changeSprintStatus = async (
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
+}
+
+const updateSprint = async (
+  sprint: Sprint,
+  token: string,
+): Promise<Success | Error> => {
+  return sprintMocksAxios
+    .put<Success>(
+      `/sprint`, //  FIX
+      sprint,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: sprint.id },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения спринта'))
 }
 
 const reportSprint = async (
@@ -145,6 +184,8 @@ const ProfileService = {
   reportSprint,
   finishSprint,
   getActiveSprintsProject,
+  postSprint,
+  updateSprint,
 }
 
 export default ProfileService
