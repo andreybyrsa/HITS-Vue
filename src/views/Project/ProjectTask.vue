@@ -42,7 +42,20 @@
           class="d-flex align-items-start flex-column"
           v-tooltip="task.name"
         >
-          <Typography :class-name="nameStyle">{{ task.name }}</Typography>
+          <div>
+            <div v-if="task.status === 'InBackLog'">
+              <Button
+                @click="openUpdateNewTask(task)"
+                class-name="fs-5 fw-semibold text-truncate p-0"
+                >{{ task.name }}</Button
+              >
+            </div>
+            <div v-else>
+              <Typography class-name="fs-5 fw-semibold text-truncate">{{
+                task.name
+              }}</Typography>
+            </div>
+          </div>
         </div>
         <div
           class="d-flex align-items-center gap-2"
