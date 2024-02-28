@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import RequestToIdeaModal from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
-import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
+import { Filter } from '@Components/FilterBar/FilterBar.types'
 import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
@@ -155,12 +155,14 @@ const searchedIdeas = computed(() => {
 
     return ideasMarket.value?.filter((idea) => {
       const ideaName = idea.name.toLowerCase().trim()
+      const ideaInitiatorFirstName = idea.initiator.firstName.toLowerCase().trim()
+      const ideaInitiatorLastName = idea.initiator.lastName.toLowerCase().trim()
 
-      const isMatchedToFilter = filterByIdeaMarketStatus.value
-        ? checkIdeaMarketStatus(idea, filterByIdeaMarketStatus.value)
-        : true
-
-      return ideaName.includes(lowercaseSearch) && isMatchedToFilter
+      return (
+        ideaName.includes(lowercaseSearch) ||
+        ideaInitiatorFirstName.includes(lowercaseSearch) ||
+        ideaInitiatorLastName.includes(lowercaseSearch)
+      )
     })
   }
 
@@ -198,10 +200,6 @@ function getFilterSkills() {
         }))
         .sort((a, b) => +b.isMarked - +a.isMarked)
     : []
-}
-
-function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
-  return ideaMarket.status === status
 }
 
 async function switchNavTab(value: boolean, callback: () => Promise<void>) {
