@@ -17,6 +17,7 @@
     "types": ["webpack-env"],
     "paths": {
       "@Main": ["src/main.ts"],
+      "@Api": ["src/api/index.ts"],
       "@Assets/*": ["src/assets/*"],
       "@Components/*": ["src/components/*"],
       "@Layouts/*": ["src/layouts/*"],
