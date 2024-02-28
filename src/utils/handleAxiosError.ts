@@ -14,9 +14,12 @@ function handleAxiosError(
     const serverError = response?.data?.error
 
     if (serverError) {
+      console.error(serverError)
+
       return new Error(serverError)
     }
 
+    console.error(errorMessage)
     return new Error(errorMessage)
   }
 
