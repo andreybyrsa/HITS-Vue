@@ -120,10 +120,14 @@ const useProfilesStore = defineStore('profiles', {
     },
 
     setProfileTag(tag: string, userId: string) {
-      const currentProfile = this.profiles.find(({ id }) => id === userId)
+      const currentProfile = this.getProfileByUserId(userId)
+      const currentUserTelegram = this.usersTelegram.find(
+        ({ userId: id }) => id === userId,
+      )
       if (!currentProfile) return
       currentProfile.userTag = tag
-      LocalStorageTelegramTag.set(tag)
+      if (!currentUserTelegram) return
+      currentUserTelegram.userTag = tag
     },
 
     async updateUserFullName(user: User, token: string) {
@@ -173,7 +177,6 @@ const useProfilesStore = defineStore('profiles', {
         useNotificationsStore().createSystemNotification('Система', response.message)
         return
       }
-      console.log(newUserTelegram)
     },
 
     async updateVisibilityOfTag(

@@ -19,14 +19,17 @@ import useProfilesStore from '@Store/profiles/profilesStore'
 import Validation from '@Utils/Validation'
 import { Profile } from '@Domain/Profile'
 import { string } from 'yup'
-import { usersTelegramMocks } from '@Utils/getMocks'
 import LoginForm from '@Components/Forms/LoginForm/LoginForm.vue'
 import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 
-onBeforeMount(() => {
-  const tag = LocalStorageTelegramTag.get()
-  if (tag === null) return
-  setValues({ ...profile.value, userTag: tag ?? '' })
+onBeforeMount(async () => {
+  const UserTelegram = (await profilesStore.fetchUserTelegram(
+    profileId ?? '',
+    profile.value?.token ?? '',
+  )) as UserTelegram
+  if (UserTelegram.userTag === null) return
+  profile.value = profilesStore.getProfileByUserId(profileId)
+  setValues({ ...profile.value, userTag: UserTelegram.userTag ?? '' })
 })
 
 const route = useRoute()
@@ -34,6 +37,8 @@ const profileId = route.params.id.toString()
 
 const profilesStore = useProfilesStore()
 const profile = ref(profilesStore.getProfileByUserId(profileId))
+// const profiles = storeToRefs(profilesStore)
+// const profile = computed(() => profiles.find((prof) => prof.id == profileId))
 const computedProfile = computed(() => profile.value)
 
 const isOwnProfile = computed(
@@ -81,18 +86,22 @@ const handleEditUserTag = handleSubmit(async (values) => {
   const { token } = currentUser
 
   await profilesStore.updateUserTelegramTag(values, userTelegram, token)
-
+  if (!profile.value) return
+  profile.value.userTag = values.userTag
   isUpdatingTelegram.value = false
-  profile.value = await profilesStore.getProfileByUserId(profileId)
-  console.log(profile.value?.userTag)
 })
 
 async function setUserValues() {
   if (computedProfile.value?.email === profile.value?.email) {
     setValues({ ...profile.value })
   } else if (computedProfile.value) {
-    const { email, firstName, lastName, userTag } = computedProfile.value
-    setValues({ email, firstName, lastName, userTag })
+    const userTelegram = (await profilesStore.fetchUserTelegram(
+      profileId ?? '',
+      profile.value?.token ?? '',
+    )) as UserTelegram
+    if (userTelegram.userTag === null) return
+    const { email, firstName, lastName } = computedProfile.value
+    setValues({ email, firstName, lastName, userTag: userTelegram.userTag })
   }
 }
 
