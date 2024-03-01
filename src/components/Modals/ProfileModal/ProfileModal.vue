@@ -106,7 +106,7 @@ function handleCloseProfileModal() {
         </div>
 
         <div class="profile-modal__content">
-          <div class="d-flex flex-column gap-3">
+          <div class="d-flex flex-column gap-3 w-75">
             <ProfileAvatar />
 
             <ProfileInfo />
