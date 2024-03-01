@@ -1,138 +1,77 @@
 import { Market, MarketStatus } from '@Domain/Market'
 import Success from '@Domain/ResponseMessage'
-
-import useUserStore from '@Store/user/userStore'
-
-import defineAxios from '@Utils/defineAxios'
-import getAbortedSignal from '@Utils/getAbortedSignal'
 import { marketMocks } from '@Utils/getMocks'
-import handleAxiosError from '@Utils/handleAxiosError'
+import defineAxios from '@Utils/defineAxios'
 
-const marketAxios = defineAxios(marketMocks)
+const defineApi = defineAxios(marketMocks)
 
-function formatMarketsByActiveStatus(markets: Market[]) {
+const formatMarketsByActiveStatus = (markets: Market[]) => {
   return markets.filter(({ status }) => status === 'ACTIVE')
 }
 
-// --- GET --- //
-const getAllMarkets = async (token: string): Promise<Market[] | Error> => {
-  return marketAxios
-    .get('/market/all', {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка загрузки бирж'))
+const getAllMarkets = async (): Promise<Market[] | Error> => {
+  const response = await defineApi.get('/market/all')
+  return response.data
 }
 
-const getAllActiveMarkets = async (token: string): Promise<Market[] | Error> => {
-  return marketAxios
-    .get<Market[]>(
-      '/market/active',
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      {
-        formatter: formatMarketsByActiveStatus,
-      },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка загрузки активных бирж'))
+const getAllActiveMarkets = async (): Promise<Market[] | Error> => {
+  const response = await defineApi.get<Market[]>(
+    '/market/active',
+    {},
+    {
+      formatter: formatMarketsByActiveStatus,
+    },
+  )
+  return response.data
 }
 
-const getMarket = async (id: string, token: string): Promise<Market | Error> => {
-  return marketAxios
-    .get(
-      `/market/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка загрузки биржи'))
+const getMarket = async (id: string): Promise<Market | Error> => {
+  const response = await defineApi.get(`/market/${id}`, {}, { params: { id } })
+  return response.data
 }
 
-// --- POST --- //
-const createMarket = async (
-  market: Market,
-  token: string,
-): Promise<Market | Error> => {
-  return marketAxios
-    .post('/market/create', market, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка создания биржи'))
+const createMarket = async (market: Market): Promise<Market | Error> => {
+  const response = await defineApi.post('/market/create', market)
+  return response.data
 }
 
-// --- PUT --- //
-const updateMarket = async (
-  id: string,
-  market: Market,
-  token: string,
-): Promise<Market | Error> => {
-  return marketAxios
-    .put(
-      `/market/update/${id}`,
-      market,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка редактирования биржи'))
+const updateMarket = async (id: string, market: Market): Promise<Market | Error> => {
+  const response = await defineApi.put(
+    `/market/update/${id}`,
+    market,
+    {},
+    { params: { id } },
+  )
+  return response.data
 }
 
 const updateMarketStatus = async (
   id: string,
   status: MarketStatus,
-  token: string,
 ): Promise<Success | Error> => {
-  return marketAxios
-    .putNoRequestBody<Success>(
-      `/market/status/${id}/${status}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id }, requestData: { status } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка смены статуса биржи'))
+  const response = await defineApi.putNoRequestBody<Success>(
+    `/market/status/${id}/${status}`,
+    {},
+    { params: { id }, requestData: { status } },
+  )
+  return response.data
 }
 
-// --- DELETE --- //
-const deleteMarket = async (id: string, token: string): Promise<Success | Error> => {
-  return marketAxios
-    .delete(
-      `/market/delete/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка удаления биржи'))
+const deleteMarket = async (id: string): Promise<Success | Error> => {
+  const response = await defineApi.delete(
+    `/market/delete/${id}`,
+    {},
+    { params: { id } },
+  )
+  return response.data
 }
 
-const MarketService = {
+export const MarketService = {
   getAllMarkets,
   getAllActiveMarkets,
   getMarket,
-
   createMarket,
-
   updateMarket,
   updateMarketStatus,
-
   deleteMarket,
 }
-
-export default MarketService

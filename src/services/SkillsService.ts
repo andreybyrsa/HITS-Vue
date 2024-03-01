@@ -1,21 +1,13 @@
-import axios from 'axios'
-
-import { API_URL } from '@Main'
-
+import { api } from '@Api'
 import { Skill, SkillType } from '@Domain/Skill'
 import { TeamMember } from '@Domain/Team'
 import Success from '@Domain/ResponseMessage'
-
-import useUserStore from '@Store/user/userStore'
-
-import defineAxios from '@Utils/defineAxios'
-import getAbortedSignal from '@Utils/getAbortedSignal'
-import handleAxiosError from '@Utils/handleAxiosError'
 import { skillsMocks } from '@Utils/getMocks'
+import defineAxios from '@Utils/defineAxios'
 
-const skillsAxios = defineAxios(skillsMocks)
+const defineApi = defineAxios(skillsMocks)
 
-function mockSkillsFormatter(skills: Skill[]) {
+const mockSkillsFormatter = (skills: Skill[]) => {
   const LANGUAGE = skills.filter((skill) => skill.type === 'LANGUAGE')
   const FRAMEWORK = skills.filter((skill) => skill.type === 'FRAMEWORK')
   const DATABASE = skills.filter((skill) => skill.type === 'DATABASE')
@@ -23,152 +15,87 @@ function mockSkillsFormatter(skills: Skill[]) {
   return { LANGUAGE, FRAMEWORK, DATABASE, DEVOPS }
 }
 
-function mockSkillsByTypeMather(skills: Skill[], type: SkillType) {
+const mockSkillsByTypeMather = (skills: Skill[], type: SkillType) => {
   return skills.filter((skill) => skill.type === type)
 }
 
-const getAllUsersSkills = async (token: string): Promise<TeamMember[] | Error> => {
-  return axios
-    .get(`${API_URL}/team/users`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) =>
-      handleAxiosError(error, 'Ошибка получения компетенций пользователей'),
-    )
+const getAllUsersSkills = async (): Promise<TeamMember[] | Error> => {
+  const response = await api.get('/team/users')
+  return response.data
 }
 
-const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
-  return skillsAxios
-    .get('/skill/all', {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения компетенций'))
+const getAllSkills = async (): Promise<Skill[] | Error> => {
+  const response = await defineApi.get('/skill/all')
+  return response.data
 }
 
-const getAllConfirmedOrCreatorSkills = async (
-  token: string,
-): Promise<Record<SkillType, Skill[]> | Error> => {
-  return skillsAxios
-    .get<Record<SkillType, Skill[]>>(
-      '/skill/all-confirmed-or-creator',
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { formatter: mockSkillsFormatter },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения компетенций'))
+const getAllConfirmedOrCreatorSkills = async (): Promise<
+  Record<SkillType, Skill[]> | Error
+> => {
+  const response = await defineApi.get<Record<SkillType, Skill[]>>(
+    '/skill/all-confirmed-or-creator',
+    {},
+    { formatter: mockSkillsFormatter },
+  )
+  return response.data
 }
 
-const getSkillsByType = async (
-  skillType: SkillType,
-  token: string,
-): Promise<Skill[] | Error> => {
-  return skillsAxios
-    .get<Skill[]>(
-      `/skill/${skillType}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { formatter: (data) => mockSkillsByTypeMather(data, skillType) },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения компетенций'))
+const getSkillsByType = async (skillType: SkillType): Promise<Skill[] | Error> => {
+  const response = await defineApi.get<Skill[]>(
+    `/skill/${skillType}`,
+    {},
+    { formatter: (data) => mockSkillsByTypeMather(data, skillType) },
+  )
+  return response.data
 }
 
-const createSkill = async (skill: Skill, token: string): Promise<Skill | Error> => {
-  return skillsAxios
-    .post('/skill/add', skill, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка добавления компетенции'))
+const createSkill = async (skill: Skill): Promise<Skill | Error> => {
+  const response = await defineApi.post('/skill/add', skill)
+  return response.data
 }
 
-const createNoConfirmedSkill = async (
-  skill: Skill,
-  token: string,
-): Promise<Skill | Error> => {
-  return skillsAxios
-    .post('/skill/add/no-confirmed', skill, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка добавления компетенции'))
+const createNoConfirmedSkill = async (skill: Skill): Promise<Skill | Error> => {
+  const response = await defineApi.post('/skill/add/no-confirmed', skill)
+  return response.data
 }
 
-const confirmSkill = async (
-  skill: Skill,
-  id: string,
-  token: string,
-): Promise<Skill | Error> => {
-  return skillsAxios
-    .put(
-      `/skill/confirm/${id}`,
-      skill,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка утверждения компетенции'))
+const confirmSkill = async (skill: Skill, id: string): Promise<Skill | Error> => {
+  const response = await defineApi.put(
+    `/skill/confirm/${id}`,
+    skill,
+    {},
+    { params: { id } },
+  )
+  return response.data
 }
 
-const updateSkill = async (
-  skill: Skill,
-  id: string,
-  token: string,
-): Promise<Skill | Error> => {
-  return skillsAxios
-    .put(
-      `/skill/update/${id}`,
-      skill,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка редактирования компетенции'))
+const updateSkill = async (skill: Skill, id: string): Promise<Skill | Error> => {
+  const response = await defineApi.put(
+    `/skill/update/${id}`,
+    skill,
+    {},
+    { params: { id } },
+  )
+  return response.data
 }
 
-const deleteSkill = async (id: string, token: string): Promise<Success | Error> => {
-  return skillsAxios
-    .delete(
-      `/skill/delete/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка удаления компетенции'))
+const deleteSkill = async (id: string): Promise<Success | Error> => {
+  const response = await defineApi.delete(
+    `/skill/delete/${id}`,
+    {},
+    { params: { id } },
+  )
+  return response.data
 }
 
-const SkillsService = {
+export const SkillsService = {
   getAllSkills,
   getSkillsByType,
   getAllConfirmedOrCreatorSkills,
   getAllUsersSkills,
-
   createSkill,
   createNoConfirmedSkill,
-
   confirmSkill,
   deleteSkill,
   updateSkill,
 }
-
-export default SkillsService

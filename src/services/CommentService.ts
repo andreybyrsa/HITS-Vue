@@ -1,92 +1,49 @@
 import Comment from '@Domain/Comment'
 import Success from '@Domain/ResponseMessage'
-
-import useUserStore from '@Store/user/userStore'
-
 import defineAxios from '@Utils/defineAxios'
-import getAbortedSignal from '@Utils/getAbortedSignal'
 import { commentsMocks } from '@Utils/getMocks'
-import handleAxiosError from '@Utils/handleAxiosError'
 
-const commentAxios = defineAxios(commentsMocks)
+const defineApi = defineAxios(commentsMocks)
 
-function filterCommentsById(ideaId: string, comments: Comment[]) {
-  return comments.filter((comment) => comment.ideaId === ideaId)
+const filterById = (id: string, comments: Comment[]) => {
+  return comments.filter((comment) => comment.ideaId === id)
 }
 
-const getComments = async (
-  ideaId: string,
-  token: string,
-): Promise<Comment[] | Error> => {
-  return commentAxios
-    .get<Comment[]>(
-      `/comment/all/${ideaId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { formatter: (comments) => filterCommentsById(ideaId, comments) },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения комментариев'))
+const get = async (id: string): Promise<Comment[] | Error> => {
+  const response = await defineApi.get<Comment[]>(
+    `/comment/all/${id}`,
+    {},
+    { formatter: (comments) => filterById(id, comments) },
+  )
+  return response.data
 }
 
-const createComment = async (
-  comment: Comment,
-  token: string,
-): Promise<Comment | Error> => {
-  return commentAxios
-    .post('/comment/send', comment, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка добавления комментария'))
+const create = async (comment: Comment): Promise<Comment | Error> => {
+  const response = await defineApi.post('/comment/send', comment)
+  return response.data
 }
 
-const checkComment = async (
-  id: string,
-  userId: string,
-  token: string,
-): Promise<void | Error> => {
-  return commentAxios
-    .putNoRequestBody<void>(
-      `/comment/check/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id }, requestData: { checkedBy: [userId] } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка просмотра комментария'))
+const remove = async (id: string): Promise<Success | Error> => {
+  const response = await defineApi.delete(
+    `/comment/delete/${id}`,
+    {},
+    { params: { id } },
+  )
+  return response.data
 }
 
-const deleteComment = async (
-  id: string,
-  token: string,
-): Promise<Success | Error> => {
-  return commentAxios
-    .delete(
-      `/comment/delete/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка удаления комментария'))
+const check = async (id: string, userId: string): Promise<void | Error> => {
+  const response = await defineApi.putNoRequestBody<void>(
+    `/comment/check/${id}`,
+    {},
+    { params: { id }, requestData: { checkedBy: [userId] } },
+  )
+  return response.data
 }
 
-const CommentService = {
-  getComments,
-
-  createComment,
-
-  checkComment,
-
-  deleteComment,
+export const CommentService = {
+  get,
+  create,
+  remove,
+  check,
 }
-
-export default CommentService

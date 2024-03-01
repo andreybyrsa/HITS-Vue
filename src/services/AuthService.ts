@@ -1,17 +1,12 @@
-import axios from 'axios'
-
-import { API_URL } from '@Main'
-
+import { api } from '@Api'
 import { User, LoginUser, RegisterUser } from '@Domain/User'
 
-import handleAxiosError from '@Utils/handleAxiosError'
-
-const loginUser = async (user: LoginUser): Promise<User | Error> => {
-  return axios
-    .post(`${API_URL}/auth/login`, user)
+// TODO: Рефакторинг логина
+const login = async (user: LoginUser): Promise<User | Error> => {
+  return api
+    .post('/auth/login', user)
     .then((response) => response.data)
-    .catch(({ response }) => {
-      const error = response?.data?.error ?? 'Ошибка авторизации'
+    .catch(() => {
       return {
         id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
         token: '11110',
@@ -29,16 +24,13 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
       }
     })
 }
-const registerUser = async (user: RegisterUser): Promise<User | Error> => {
-  return axios
-    .post(`${API_URL}/auth/register`, user)
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка регистрации'))
+
+const register = async (user: RegisterUser): Promise<User | Error> => {
+  const response = await api.post('/auth/register', user)
+  return response.data
 }
 
-const AuthService = {
-  loginUser,
-  registerUser,
+export const AuthService = {
+  login,
+  register,
 }
-
-export default AuthService

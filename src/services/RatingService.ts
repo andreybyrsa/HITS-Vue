@@ -1,96 +1,60 @@
 import { Rating } from '@Domain/Idea'
-
-import useUserStore from '@Store/user/userStore'
-
-import defineAxios from '@Utils/defineAxios'
-import getAbortedSignal from '@Utils/getAbortedSignal'
 import { ratingsMocks } from '@Utils/getMocks'
-import handleAxiosError from '@Utils/handleAxiosError'
+import defineAxios from '@Utils/defineAxios'
 
-function filterRatingsById(ideaId: string, ratings: Rating[]) {
+const filterRatingsById = (ideaId: string, ratings: Rating[]) => {
   return ratings.filter((rating) => rating.ideaId === ideaId)
 }
 
-const ratingsAxios = defineAxios(ratingsMocks)
+const defineApi = defineAxios(ratingsMocks)
 
-const getAllIdeaRatings = async (
-  ideaId: string,
-  token: string,
-): Promise<Rating[] | Error> => {
-  return ratingsAxios
-    .get<Rating[]>(
-      `/rating/all/${ideaId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { formatter: (ratings) => filterRatingsById(ideaId, ratings) },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения рейтингов'))
+const getAllIdeaRatings = async (ideaId: string): Promise<Rating[] | Error> => {
+  const response = await defineApi.get<Rating[]>(
+    `/rating/all/${ideaId}`,
+    {},
+    { formatter: (ratings) => filterRatingsById(ideaId, ratings) },
+  )
+  return response.data
 }
 
-const getExpertRating = async (
-  ideaId: string,
-  token: string,
-): Promise<Rating | Error> => {
-  return ratingsAxios
-    .get(
-      `/rating/${ideaId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { ideaId } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения рейтинга'))
+const getExpertRating = async (ideaId: string): Promise<Rating | Error> => {
+  const response = await defineApi.get(
+    `/rating/${ideaId}`,
+    {},
+    { params: { ideaId } },
+  )
+  return response.data
 }
 
 const saveExpertRating = async (
   rating: Rating,
   ideaId: string,
-  token: string,
 ): Promise<void | Error> => {
-  return ratingsAxios
-    .put<void>(
-      '/rating/save',
-      rating,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { ideaId } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка сохранения рейтинга'))
+  const response = await defineApi.put<void>(
+    '/rating/save',
+    rating,
+    {},
+    { params: { ideaId } },
+  )
+  return response.data
 }
 
 const confirmExpertRating = async (
   rating: Rating,
   ideaId: string,
-  token: string,
 ): Promise<void | Error> => {
-  return ratingsAxios
-    .put<void>(
-      '/rating/confirm',
-      rating,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { ideaId }, requestData: { ...rating, isConfirmed: true } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка утверждения рейтинга'))
+  const response = await defineApi.put<void>(
+    '/rating/confirm',
+    rating,
+    {},
+    { params: { ideaId }, requestData: { ...rating, isConfirmed: true } },
+  )
+  return response.data
 }
 
-const RatingService = {
+export const RatingService = {
   getAllIdeaRatings,
   getExpertRating,
-
   saveExpertRating,
   confirmExpertRating,
 }
-
-export default RatingService

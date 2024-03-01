@@ -1,135 +1,74 @@
 import Company from '@Domain/Company'
 import Success from '@Domain/ResponseMessage'
 import { User } from '@Domain/User'
-
-import useUserStore from '@Store/user/userStore'
-
 import defineAxios from '@Utils/defineAxios'
-import getAbortedSignal from '@Utils/getAbortedSignal'
 import { companiesMocks, usersMocks } from '@Utils/getMocks'
-import handleAxiosError from '@Utils/handleAxiosError'
 
-const companiesAxios = defineAxios(companiesMocks)
-const usersAxios = defineAxios(usersMocks)
+const companiesDefineApi = defineAxios(companiesMocks)
+const usersDefineApi = defineAxios(usersMocks)
 
-function formatOwnerCompanies(owenId: string, companies: Company[]) {
-  return companies.filter((company) => company.owner.id === owenId)
+const formatOwnerCompanies = (id: string, companies: Company[]) => {
+  return companies.filter((company) => company.owner.id === id)
 }
 
-const getCompanies = async (token: string): Promise<Company[] | Error> => {
-  return companiesAxios
-    .get('/company/all', {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения компаний'))
+const get = async (id: string): Promise<Company | Error> => {
+  const response = await companiesDefineApi.get(
+    `/company/${id}`,
+    {},
+    { params: { id } },
+  )
+  return response.data
 }
 
-const getOwnerCompanies = async (
-  id: string,
-  token: string,
-): Promise<Company[] | Error> => {
-  return companiesAxios
-    .get<Company[]>(
-      '/company/owner',
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { formatter: (companies) => formatOwnerCompanies(id, companies) },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения компаний'))
+const getAll = async (): Promise<Company[] | Error> => {
+  const response = await companiesDefineApi.get('/company/all')
+  return response.data
 }
 
-const getCompany = async (id: string, token: string): Promise<Company | Error> => {
-  return companiesAxios
-    .get(
-      `/company/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения компании'))
+const getOwner = async (id: string): Promise<Company[] | Error> => {
+  const response = await companiesDefineApi.get<Company[]>(
+    '/company/owner',
+    {},
+    { formatter: (companies) => formatOwnerCompanies(id, companies) },
+  )
+  return response.data
 }
 
-const getCompanyStaff = async (
-  id: string,
-  token: string,
-): Promise<User[] | Error> => {
-  return usersAxios
-    .get(`/company/staff/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения контактных лиц'))
+const getStaff = async (id: string): Promise<User[] | Error> => {
+  const response = await usersDefineApi.get(`/company/staff/${id}`)
+  return response.data
 }
 
-const createCompany = async (
-  company: Company,
-  token: string,
-): Promise<Company | Error> => {
-  return companiesAxios
-    .post('/company/create', company, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка создания компании'))
+const create = async (company: Company): Promise<Company | Error> => {
+  const response = await companiesDefineApi.post('/company/create', company)
+  return response.data
 }
 
-const updateCompany = async (
-  company: Company,
-  id: string,
-  token: string,
-): Promise<Success | Error> => {
-  return companiesAxios
-    .put<Success>(
-      `/company/update/${id}`,
-      company,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id }, responseData: { success: 'Успешное обновление компании' } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка обновления компании'))
+const update = async (company: Company, id: string): Promise<Success | Error> => {
+  const response = await companiesDefineApi.put<Success>(
+    `/company/update/${id}`,
+    company,
+    {},
+    { params: { id }, responseData: { success: 'Успешное обновление компании' } },
+  )
+  return response.data
 }
 
-const deleteCompany = async (
-  id: string,
-  token: string,
-): Promise<Success | Error> => {
-  return companiesAxios
-    .delete(
-      `/company/delete/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка удаления компании'))
+const remove = async (id: string): Promise<Success | Error> => {
+  const response = await companiesDefineApi.delete(
+    `/company/delete/${id}`,
+    {},
+    { params: { id } },
+  )
+  return response.data
 }
 
-const CompanyService = {
-  getCompanies,
-  getOwnerCompanies,
-  getCompany,
-  getCompanyStaff,
-
-  createCompany,
-
-  updateCompany,
-
-  deleteCompany,
+export const CompanyService = {
+  get,
+  getAll,
+  getOwner,
+  getStaff,
+  create,
+  update,
+  remove,
 }
-
-export default CompanyService
