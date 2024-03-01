@@ -1,35 +1,37 @@
 <script lang="ts" setup>
-import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
-import { storeToRefs } from 'pinia'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { useRoute } from 'vue-router'
-import { useDateFormat, watchImmediate } from '@vueuse/core'
+import { useDateFormat } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import NewEmailRequestModal from '@Components/Modals/NewEmailRequestModal/NewEmailRequestModal.vue'
 
-import ProfileService from '@Services/ProfileService'
-
-import { User, UserTelegram } from '@Domain/User'
+import { UserTelegram } from '@Domain/User'
 
 import useProfilesStore from '@Store/profiles/profilesStore'
 
 import Validation from '@Utils/Validation'
 import { Profile } from '@Domain/Profile'
-import { string } from 'yup'
-import LoginForm from '@Components/Forms/LoginForm/LoginForm.vue'
-import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 
 onBeforeMount(async () => {
-  const UserTelegram = (await profilesStore.fetchUserTelegram(
+  userTelegramRef.value = (await profilesStore.fetchUserTelegram(
     profileId ?? '',
     profile.value?.token ?? '',
   )) as UserTelegram
-  if (UserTelegram.userTag === null) return
+
+  if (userTelegramRef.value.userTag === null) return
   profile.value = profilesStore.getProfileByUserId(profileId)
-  setValues({ ...profile.value, userTag: UserTelegram.userTag ?? '' })
+  if (!profile.value) return
+  const { firstName, lastName, email } = profile.value
+  setValues({
+    firstName,
+    lastName,
+    email,
+    userTag: userTelegramRef.value.userTag,
+  })
 })
 
 const route = useRoute()
@@ -37,8 +39,7 @@ const profileId = route.params.id.toString()
 
 const profilesStore = useProfilesStore()
 const profile = ref(profilesStore.getProfileByUserId(profileId))
-// const profiles = storeToRefs(profilesStore)
-// const profile = computed(() => profiles.find((prof) => prof.id == profileId))
+const userTelegramRef = ref<UserTelegram>()
 const computedProfile = computed(() => profile.value)
 
 const isOwnProfile = computed(
@@ -84,11 +85,18 @@ const handleEditUserTag = handleSubmit(async (values) => {
   if (!userTelegram || userTelegram instanceof Error) return
 
   const { token } = currentUser
+  if (!values.userTag) return
+  userTelegram.userTag = values.userTag
 
-  await profilesStore.updateUserTelegramTag(values, userTelegram, token)
+  await profilesStore.updateUserTelegramTag(userTelegram, token)
   if (!profile.value) return
   profile.value.userTag = values.userTag
   isUpdatingTelegram.value = false
+
+  userTelegramRef.value = (await profilesStore.fetchUserTelegram(
+    profileId ?? '',
+    profile.value?.token ?? '',
+  )) as UserTelegram
 })
 
 async function setUserValues() {
@@ -292,7 +300,6 @@ function getFormattedDate(date: string) {
       </div>
     </div>
   </div>
-  {{ profile?.userTag }}
   <NewEmailRequestModal
     :isOpened="isOpenedChangeEmailModal"
     @close-modal="handleCloseChangeEmailModal"

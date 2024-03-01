@@ -86,7 +86,7 @@ export const usersMocks: User[] = [
   // {
   //   id: '6',
   //   token: '6745354',
-  //   email: '6@mail.com',
+  //   email: '6@mail.com',UserTelegram
   //   firstName: 'Дмитрий',
   //   lastName: 'Амонов',
   //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
@@ -98,19 +98,19 @@ export const usersTelegramMocks: UserTelegram[] = [
     userId: usersMocks[0].id,
     userTag: 'baobao',
     chatId: '0',
-    isVisible: true,
+    isUserTagVisible: true,
   },
   {
     userId: usersMocks[1].id,
     userTag: '@chipichipi',
     chatId: '5',
-    isVisible: false,
+    isUserTagVisible: false,
   },
   {
     userId: usersMocks[1].id,
     userTag: '@chapachapa',
     chatId: null,
-    isVisible: true,
+    isUserTagVisible: true,
   },
 ]
 
@@ -1570,7 +1570,7 @@ export const profilesMocks: Profile[] = [
     ideas: [ideasMocks[0], ideasMocks[1]],
     teamsExperience: teamsExperienceMocks,
     teamsProjects: teamsProjectsMocks,
-    userTag: usersTelegramMocks[0].userTag,
+    // userTag: usersTelegramMocks[0].userTag,
     isUserTagVisible: true,
   },
 ]

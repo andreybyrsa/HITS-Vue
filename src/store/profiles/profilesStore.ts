@@ -81,7 +81,7 @@ const useProfilesStore = defineStore('profiles', {
     },
     getUserTagByUserId(state) {
       return (userId: string) =>
-        state.profiles.find(({ id }) => id === userId)?.userTag
+        state.usersTelegram.find(({ userId: id }) => id === userId)?.userTag
     },
   },
 
@@ -120,12 +120,9 @@ const useProfilesStore = defineStore('profiles', {
     },
 
     setProfileTag(tag: string, userId: string) {
-      const currentProfile = this.getProfileByUserId(userId)
       const currentUserTelegram = this.usersTelegram.find(
         ({ userId: id }) => id === userId,
       )
-      if (!currentProfile) return
-      currentProfile.userTag = tag
       if (!currentUserTelegram) return
       currentUserTelegram.userTag = tag
     },
@@ -154,24 +151,20 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
-    async updateUserTelegramTag(
-      profile: Profile,
-      userTelegram: UserTelegram,
-      token: string,
-    ) {
-      const { id: userId, userTag } = profile
+    async updateUserTelegramTag(userTelegram: UserTelegram, token: string) {
+      const { userId, userTag } = userTelegram
       const newUserTelegram = { ...userTelegram, userTag } as UserTelegram
-
-      if (userTag) {
-        this.setProfileTag(userTag, userId)
-      }
 
       if (!userTag) return
       const response = await ProfileService.updateTelegramTag(
         newUserTelegram,
-        profile.id,
+        userTelegram.userId,
         token,
       )
+
+      if (userTag) {
+        this.setProfileTag(userTag, userId)
+      }
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -186,7 +179,7 @@ const useProfilesStore = defineStore('profiles', {
     ) {
       const userStore = useUserStore()
       const { id: userId } = user
-      const { userTag, isVisible } = userTelegram
+      const { userTag, isUserTagVisible: isVisible } = userTelegram
 
       if (isVisible === true) {
         const response = await ProfileService.updateVisibilityOfTag(

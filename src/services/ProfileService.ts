@@ -168,7 +168,7 @@ const updateVisibilityOfTag = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { isVisible } },
+      { params: { isUserTagVisible: isVisible } },
     )
     .then((response) => response.data)
     .catch((error) =>

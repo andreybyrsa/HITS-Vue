@@ -18,7 +18,7 @@ interface UserTelegram {
   userId: string
   userTag: string
   chatId: string | null
-  isVisible: boolean
+  isUserTagVisible: boolean
 }
 
 interface LoginUser {
