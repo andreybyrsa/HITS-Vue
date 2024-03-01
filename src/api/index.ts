@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios'
 import { API_URL } from '@Main'
 import useUserStore from '@Store/user/userStore'
 import getAbortedSignal from '@Utils/getAbortedSignal'
+import handleAxiosError from '@Utils/handleAxiosError'
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -13,3 +14,8 @@ api.interceptors.request.use((config) => {
   config.signal = getAbortedSignal(useUserStore().checkIsExpiredToken)
   return config
 })
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => handleAxiosError(error),
+)
