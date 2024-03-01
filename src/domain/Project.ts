@@ -1,11 +1,9 @@
-import { Idea } from '@Domain/Idea'
-import { User } from '@Domain/User'
-import { Team } from '@Domain/Team'
+import { User, Idea, Team } from '@Domain'
 
-type ProjectStatus = 'ACTIVE' | 'DONE' | 'PAUSED' | 'FAILED'
-type ProjectMemberRole = 'CUSTOMER' | 'TEAM_LEADER' | 'DEVELOPER'
+export type ProjectStatus = 'ACTIVE' | 'DONE' | 'PAUSED' | 'FAILED'
+export type ProjectMemberRole = 'CUSTOMER' | 'TEAM_LEADER' | 'DEVELOPER'
 
-interface Project {
+export interface Project {
   id: string
 
   idea: Idea
@@ -18,7 +16,7 @@ interface Project {
   status: ProjectStatus
 }
 
-interface ProjectMember {
+export interface ProjectMember {
   projectId: string
   projectName: string
   teamId: string
@@ -31,5 +29,3 @@ interface ProjectMember {
   finishDate: string | null
   role: ProjectMemberRole
 }
-
-export { Project, ProjectMember }

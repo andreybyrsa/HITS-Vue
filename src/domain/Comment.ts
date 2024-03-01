@@ -1,6 +1,6 @@
-import { User } from '@Domain/User'
+import { User } from '@Domain'
 
-interface Comment {
+export interface Comment {
   id: string
   ideaId: string
   createdAt: string
@@ -9,5 +9,3 @@ interface Comment {
   sender: User
   checkedBy: string[]
 }
-
-export default Comment

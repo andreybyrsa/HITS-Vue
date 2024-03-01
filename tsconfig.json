@@ -18,12 +18,12 @@
     "paths": {
       "@Main": ["src/main.ts"],
       "@Api": ["src/api/index.ts"],
+      "@Domain": ["src/domain/index.ts"],
       "@Assets/*": ["src/assets/*"],
       "@Components/*": ["src/components/*"],
       "@Layouts/*": ["src/layouts/*"],
       "@Views/*": ["src/views/*"],
       "@Hooks/*": ["src/hooks/*"],
-      "@Domain/*": ["src/domain/*"],
       "@Store/*": ["src/store/*"],
       "@Services/*": ["src/services/*"],
       "@Utils/*": ["src/utils/*"]

@@ -1,5 +1,3 @@
-interface Success {
+export interface Success {
   success: string
 }
-
-export default Success

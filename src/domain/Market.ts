@@ -1,11 +1,9 @@
-type MarketStatus = 'NEW' | 'ACTIVE' | 'DONE'
+export type MarketStatus = 'NEW' | 'ACTIVE' | 'DONE'
 
-interface Market {
+export interface Market {
   id: string
   name: string
   startDate: string
   finishDate: string
   status: MarketStatus
 }
-
-export { Market, MarketStatus }

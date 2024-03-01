@@ -1,13 +1,13 @@
-import { Skill } from '@Domain/Skill'
+import { Skill } from '@Domain'
 
-type InvitationTeamToIdeaStatus =
+export type InvitationTeamToIdeaStatus =
   | 'NEW'
   | 'ACCEPTED'
   | 'CANCELED'
   | 'ANNULLED'
   | 'WITHDRAWN'
 
-interface InvitationTeamToIdea {
+export interface InvitationTeamToIdea {
   id: string
   teamId: string
   ideaId: string
@@ -21,5 +21,3 @@ interface InvitationTeamToIdea {
   teamMembersCount: number
   skills: Skill[]
 }
-
-export { InvitationTeamToIdeaStatus, InvitationTeamToIdea }
