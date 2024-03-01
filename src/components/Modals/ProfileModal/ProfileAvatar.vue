@@ -13,7 +13,7 @@ import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
-import { defProfile } from '@Assets/images'
+import { profile } from '@Assets/images'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -81,7 +81,7 @@ async function handleFileUpload(event: HTMLTargetEvent) {
         <img
           v-else
           class="text-secondary"
-          :src="defProfile"
+          :src="profile"
           width="150"
           height="150"
         />

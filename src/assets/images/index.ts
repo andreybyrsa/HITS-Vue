@@ -1,5 +1,5 @@
-import bgImage from './backgroundImage.webp'
-import develop from './develop.png'
-import defProfile from './defProfile.png'
+import background from './background.webp'
+import support from './support.png'
+import profile from './profile.png'
 
-export { bgImage, develop, defProfile }
+export { background, support, profile }

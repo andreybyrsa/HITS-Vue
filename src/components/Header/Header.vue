@@ -16,7 +16,7 @@ import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import { defProfile } from '@Assets/images'
+import { profile } from '@Assets/images'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -101,7 +101,7 @@ function handleCloseNotificationModal() {
         <img
           v-else
           class="text-secondary"
-          :src="defProfile"
+          :src="profile"
           width="58"
           height="58"
         />
