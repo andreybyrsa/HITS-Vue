@@ -1,7 +1,8 @@
 import { Ref, ref } from 'vue'
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
-import { MODE, API_URL } from '@Main'
+import { api } from '@Api'
+import { MODE } from '@Main'
 
 import Success from '@Domain/ResponseMessage'
 
@@ -62,7 +63,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig?: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<MocksType | ResponseType | MocksType[]>> {
     if (MODE === 'PRODUCTION') {
-      return axios.get(`${API_URL}${endPoint}`, config)
+      return api.get(endPoint, config)
     }
 
     return new Promise((resolve, reject) =>
@@ -120,7 +121,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig?: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<MocksType | MocksType[] | ResponseType>> {
     if (MODE === 'PRODUCTION') {
-      return axios.post(`${API_URL}${endPoint}`, mockData, config)
+      return api.post(endPoint, mockData, config)
     }
 
     return new Promise((resolve, reject) =>
@@ -177,7 +178,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<ResponseType | MocksType>> {
     if (MODE === 'PRODUCTION') {
-      return axios.post(`${API_URL}${endPoint}`, null, config)
+      return api.post(endPoint, null, config)
     }
 
     return new Promise((resolve) => {
@@ -229,7 +230,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<MocksType | MocksType[] | ResponseType>> {
     if (MODE === 'PRODUCTION') {
-      return axios.put(`${API_URL}${endPoint}`, newMockData, config)
+      return api.put(endPoint, newMockData, config)
     }
 
     return new Promise((resolve, reject) => {
@@ -317,7 +318,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<ResponseType | void>> {
     if (MODE === 'PRODUCTION') {
-      return axios.put(`${API_URL}${endPoint}`, null, config)
+      return api.put(endPoint, null, config)
     }
 
     return new Promise((resolve, reject) => {
@@ -360,7 +361,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig: AxiosMockConfig<MocksType>,
   ): Promise<AxiosResponse<Success>> {
     if (MODE === 'PRODUCTION') {
-      return axios.delete(`${API_URL}${endPoint}`, config)
+      return api.delete(endPoint, config)
     }
 
     return new Promise((resolve, reject) => {
