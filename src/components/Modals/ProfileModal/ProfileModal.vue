@@ -70,7 +70,6 @@ function handleCloseProfileModal() {
   if (props.canGoBack) {
     return router.go(-1)
   }
-
   const parentBaseRoute = route.matched[route.matched.length - 2].path
 
   isOpenedProfileModal.value = false
