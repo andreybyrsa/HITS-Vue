@@ -39,10 +39,6 @@ const { setValues, handleSubmit } = useForm<User>({
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
-    // telephone: (value: string) =>
-    //   Validation.checkIsEmptyValue(value) || 'Обязательное поле',
-    // studyGroup: (value: string) =>
-    //   Validation.checkIsEmptyValue(value) || 'Обязательное поле',
   },
 })
 
@@ -168,7 +164,7 @@ function getFormattedDate(date: string) {
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Почта:</Typography>
           <div
-            v-if="isOwnProfile"
+            v-if="isOwnProfile || user?.role === 'ADMIN'"
             class="link text-secondary cursor-pointer"
             @click="openChangeEmailModal"
           >
@@ -188,11 +184,12 @@ function getFormattedDate(date: string) {
           <Typography class-name="text-primary">Имя:</Typography>
           <div
             v-if="
-              isOwnProfile &&
-              !isUpdatingUserLastname &&
-              !isUpdatingUserName &&
-              !isUpdatingUserStudyGroup &&
-              !isUpdatingUserTelephone
+              (isOwnProfile &&
+                !isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
             "
             s
             class="link text-secondary cursor-pointer"
@@ -216,11 +213,12 @@ function getFormattedDate(date: string) {
           <Typography class-name="text-primary">Фамилия:</Typography>
           <div
             v-if="
-              isOwnProfile &&
-              !isUpdatingUserLastname &&
-              !isUpdatingUserName &&
-              !isUpdatingUserStudyGroup &&
-              !isUpdatingUserTelephone
+              (isOwnProfile &&
+                !isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
             "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdateUserLastname(true)"
@@ -243,11 +241,12 @@ function getFormattedDate(date: string) {
           <Typography class-name="text-primary">Группа:</Typography>
           <div
             v-if="
-              isOwnProfile &&
-              !isUpdatingUserLastname &&
-              !isUpdatingUserName &&
-              !isUpdatingUserStudyGroup &&
-              !isUpdatingUserTelephone
+              (isOwnProfile &&
+                !isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
             "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdateUserStudyGroup(true)"
@@ -266,17 +265,18 @@ function getFormattedDate(date: string) {
       </div>
 
       <div
-        v-if="isOwnProfile"
+        v-if="isOwnProfile || user?.role === 'ADMIN'"
         class="w-100 d-flex flex-column gap-2"
       >
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Телефон:</Typography>
           <div
             v-if="
-              !isUpdatingUserLastname &&
-              !isUpdatingUserName &&
-              !isUpdatingUserStudyGroup &&
-              !isUpdatingUserTelephone
+              (!isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
             "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdatingUserTelephone(true)"
