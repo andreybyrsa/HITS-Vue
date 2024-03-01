@@ -13,6 +13,8 @@ interface Profile extends User {
 interface ProfileFullName {
   lastName: string
   firstName: string
+  studyGroup: string
+  telephone: string
 }
 
 export { Profile, ProfileFullName }

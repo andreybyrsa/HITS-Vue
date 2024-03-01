@@ -3,6 +3,7 @@ import App from './App.vue'
 import { createPinia } from 'pinia'
 import router from './router/index'
 import VueApexCharts from 'vue3-apexcharts'
+import VueTheMask from 'vue-the-mask'
 
 import tooltipDirective from '@Utils/tooltip'
 import dropdownDirective from '@Utils/dropdown'
@@ -25,6 +26,8 @@ pinia.use(({ store }) => {
   store.router = markRaw(router)
 })
 app.use(pinia)
+
+app.use(VueTheMask)
 
 app.use(router)
 
