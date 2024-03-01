@@ -4,9 +4,9 @@ interface ServerError {
   error: string
 }
 
-function handleAxiosError(
+export default function handleAxiosError(
   axiosError: AxiosError<ServerError>,
-  errorMessage: string,
+  errorMessage?: string,
 ) {
   const { code, response } = axiosError
 
@@ -16,11 +16,12 @@ function handleAxiosError(
     if (serverError) {
       return new Error(serverError)
     }
+    if (errorMessage) {
+      return new Error(errorMessage)
+    }
 
-    return new Error(errorMessage)
+    return new Error('Ошибка в системе, повторите попытку позже')
   }
 
   return new Error('Ваша сессия истекла')
 }
-
-export default handleAxiosError
