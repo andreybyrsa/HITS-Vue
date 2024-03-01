@@ -27,11 +27,11 @@ pinia.use(({ store }) => {
 })
 app.use(pinia)
 
-app.use(VueTheMask)
-
 app.use(router)
 
 app.use(VueApexCharts)
+
+app.use(VueTheMask)
 
 app.directive('tooltip', tooltipDirective)
 app.directive('dropdown', dropdownDirective)
