@@ -169,7 +169,7 @@ function handleCloseProfileModal() {
   }
 
   &__info {
-    width: 66%;
+    width: 100%;
     height: 100%;
 
     @include flexible(center, flex-start, column, $gap: 16px);

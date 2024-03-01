@@ -27,7 +27,7 @@ pinia.use(({ store }) => {
 })
 app.use(pinia)
 
-app.use(VueTheMask)
+app.use(VueTheMask as any)
 
 app.use(router)
 
