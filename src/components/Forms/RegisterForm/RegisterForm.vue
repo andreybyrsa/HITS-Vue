@@ -50,8 +50,8 @@ const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
       Validation.checkName(value) || 'Неверно введена фамилия',
     password: (value: string) => Validation.checkPassword(value),
     roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
-    telephone: (value: string) => Validation.checkIsEmptyValue(value),
-    studyGroup: (value: string) => Validation.checkIsEmptyValue(value),
+    telephone: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
   },
 })
 
