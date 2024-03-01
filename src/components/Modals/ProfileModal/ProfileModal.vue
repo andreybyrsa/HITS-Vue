@@ -106,11 +106,13 @@ function handleCloseProfileModal() {
         </div>
 
         <div class="profile-modal__content">
-          <ProfileAvatar />
+          <div class="d-flex flex-column gap-3">
+            <ProfileAvatar />
+
+            <ProfileInfo />
+          </div>
 
           <div class="profile-modal__info mb-3">
-            <ProfileInfo />
-
             <ProfileSkills />
 
             <ProfileIdeas />

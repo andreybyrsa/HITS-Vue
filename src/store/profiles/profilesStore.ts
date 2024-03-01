@@ -94,9 +94,14 @@ const profilesStore = defineStore('profiles', {
 
     async updateUserFullName(user: User, token: string) {
       const userStore = useUserStore()
-      const { id: userId, lastName, firstName } = user
+      const { id: userId, lastName, firstName, studyGroup, telephone } = user
 
-      const fullName: ProfileFullName = { lastName, firstName }
+      const fullName: ProfileFullName = {
+        lastName,
+        firstName,
+        studyGroup,
+        telephone,
+      }
 
       const response = await ProfileService.updateUserFullName(fullName, token)
 
@@ -110,7 +115,13 @@ const profilesStore = defineStore('profiles', {
           currentProfile.firstName = firstName
           currentProfile.lastName = lastName
 
-          userStore.setUser({ ...currentUser, firstName, lastName })
+          userStore.setUser({
+            ...currentUser,
+            firstName,
+            lastName,
+            studyGroup,
+            telephone,
+          })
         }
       }
     },
