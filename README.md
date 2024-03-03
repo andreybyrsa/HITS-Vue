@@ -1,34 +1,52 @@
-# HITS-Vue
+# 🐱 HITS-Vue
 
-## Project setup
+</br>
 
+## 🏃 Запуск проекта
+
+### Создаем новую директорию под проект, открываем в ней терминал, клонируем репозиторий
+```
+git clone https://github.com/andreybyrsa/HITS-Vue.git
+```
+
+### Устанавливаем зависимости
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### В файле `src/main.ts` изменяем MODE на DEVELOPMENT
+```
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
+```
 
+
+</br>
+
+
+### Команда запуска проекта, проект стартует на порте 8080
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-
+### Сборка билда для продакшена
 ```
 npm run build
 ```
 
-### Lints and fixes files
-
+### Запуск линтера
 ```
 npm run lint
 ```
 
-### Customize configuration
 
-See [Configuration Reference](https://cli.vuejs.org/config/).
 
-# defineAxios - параллельная разработка
+</br>
+</br>
+</br>
+
+
+
+# 🔀 defineAxios - параллельная разработка
 
 ### Для чего нужна функция
 

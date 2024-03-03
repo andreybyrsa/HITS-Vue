@@ -22,15 +22,12 @@ import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 import IdeaMarketModal from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.vue'
 import { InvitationsToIdeaForTeamTableProps } from '@Components/Modals/TeamModal/TeamModal.types'
-import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 const props = defineProps<InvitationsToIdeaForTeamTableProps>()
 const selectedTeam = defineModel<InvitationTeamToIdea[]>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-
-const ideasMarketStore = useIdeasMarketStore()
 
 const invitationTeamsToIdeaStore = useInvitationsTeamToIdeaStore()
 const { ideaInvitations } = storeToRefs(invitationTeamsToIdeaStore)
@@ -60,7 +57,7 @@ const requestToInvitationColumns: TableColumn<InvitationTeamToIdea>[] = [
     getRowCellStyle: getJoinStatusStyle,
   },
   {
-    key: 'ideaMarketName',
+    key: 'ideaName',
     label: 'Название',
     size: 'col-5',
     rowCellClick: navigateToTeamModal,
@@ -99,13 +96,19 @@ const dropdownRequestActions: DropdownMenuAction<InvitationTeamToIdea>[] = [
   {
     label: 'Принять приглашение',
     click: (requestToIdea) => openModal(isOpenedConfirmModal, requestToIdea),
-    statement: (item) => item.status == 'NEW',
+    statement: (item) =>
+      item.status == 'NEW' &&
+      user.value?.role !== 'ADMIN' &&
+      !props.team.hasActiveProject,
   },
   {
     label: 'Отклонить приглашение',
     className: 'text-danger',
     click: (requestToIdea) => openModal(isOpenedRevokeModal, requestToIdea),
-    statement: (item) => item.status == 'NEW',
+    statement: (item) =>
+      item.status == 'NEW' &&
+      user.value?.role !== 'ADMIN' &&
+      !props.team.hasActiveProject,
   },
 ]
 
@@ -120,11 +123,7 @@ function navigateToTeamModal(invitation: InvitationTeamToIdea) {
     },
   }
 
-  navigateToAliasRoute(
-    'teams-list',
-    `/market/${invitation.marketId}/${invitation.ideaMarketId}`,
-    ideaMarketRoute,
-  )
+  navigateToAliasRoute('teams-list', `${invitation.ideaId}`, ideaMarketRoute)
 }
 
 function openModal(refValue: Ref<boolean>, requestToIdea: InvitationTeamToIdea) {
@@ -149,16 +148,15 @@ async function handleAcceptInvitationToIdea(
 
   if (currentUser?.token && invitationToIdea) {
     const { token } = currentUser
-    const { id, ideaMarketId } = invitationToIdea
-    const status = 'ACCEPTED'
+    const { id, ideaId } = invitationToIdea
 
-    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
-    await ideasMarketStore.updateIdeaMarketStatus(
-      ideaMarketId,
-      'RECRUITMENT_IS_CLOSED',
+    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(
+      'ACCEPTED',
+      id,
       token,
+      ideaId,
+      props.team,
     )
-    await ideasMarketStore.addIdeaMarketTeam(ideaMarketId, props.team, token)
   }
 }
 
@@ -172,8 +170,7 @@ async function handleRevokeInvitationToIdea(
     const { id } = invitationToIdea
     const status = 'CANCELED'
 
-    if (id)
-      await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
+    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
   }
 }
 </script>
@@ -183,7 +180,7 @@ async function handleRevokeInvitationToIdea(
     :data="ideaInvitations"
     :columns="requestToInvitationColumns"
     :dropdown-actions-menu="dropdownRequestActions"
-    :search-by="['ideaMarketName']"
+    :search-by="['ideaName']"
     v-model="selectedInvitation"
   />
 

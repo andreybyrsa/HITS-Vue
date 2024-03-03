@@ -31,8 +31,8 @@ import {
   RequestConfig,
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 const props = defineProps<IdeaMarketModalProps>()
 
@@ -111,6 +111,22 @@ onMounted(async () => {
     ]
 
     await sendParallelRequests(ideaMarketParallelRequests)
+
+    if (
+      ideaMarket.value &&
+      (user.value?.role === 'INITIATOR' || user.value?.role === 'ADMIN')
+    ) {
+      const response = await invitationTeamsToIdeaStore.getIdeaInvitations(
+        ideaMarket.value.ideaId,
+        token,
+      )
+
+      if (response instanceof Error) {
+        return
+      }
+
+      invitationTeamToIdea.value = response
+    }
   }
 })
 
@@ -140,7 +156,7 @@ function getAccessToTables() {
     const { id, role } = currentUser
     const { id: initiatorId } = ideaMarket.value?.initiator
 
-    return id === initiatorId && role === 'INITIATOR'
+    return (id === initiatorId && role === 'INITIATOR') || role == 'ADMIN'
   }
 }
 </script>
@@ -166,7 +182,7 @@ function getAccessToTables() {
           v-if="getAccessToTables()"
           :idea-market="ideaMarket"
           :request-teams="requestTeams"
-          :invitationsToTeams="invitationTeamToIdea"
+          :invitations-to-teams="invitationTeamToIdea"
           v-model:skillsRequestTeam="skillsRequestTeam"
           v-model:skillsAcceptedTeam="skillsAcceptedTeam"
         />
@@ -176,6 +192,7 @@ function getAccessToTables() {
           :idea-market="ideaMarket"
           :requests="requestTeams"
           :owner-teams="ownerTeams"
+          v-model:skillsAcceptedTeam="skillsAcceptedTeam"
         />
 
         <IdeaMarketAdverts

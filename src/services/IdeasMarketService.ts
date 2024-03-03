@@ -123,25 +123,6 @@ const getAllInitiatorMarketIdeas = async (
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей на бирже'))
 }
 
-const getAllInitiatorMarketIdeasByUserId = async (
-  userId: string,
-  token: string,
-): Promise<IdeaMarket[] | Error> => {
-  return ideasMarketAxios
-    .get<IdeaMarket[]>(
-      `/user/${userId}/ideas`, // FIX ROUTE
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      {
-        formatter: (ideasMarket) => formatIdeaByInitiator(ideasMarket, userId),
-      },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей инициатора'))
-}
-
 const getIdeaMarketAdvertisements = async (
   ideaMarketId: string,
   token: string,
@@ -172,6 +153,7 @@ const sendIdeaOnMarket = async (
     const ideasMarket = ideas.map((idea) => {
       return {
         id: '',
+        ideaId: idea.id,
         marketId: marketId,
         initiator: usersMocks.find(({ id }) => id === idea.initiator.id),
         createdAt: idea.createdAt,

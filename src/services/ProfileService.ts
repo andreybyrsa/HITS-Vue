@@ -9,11 +9,17 @@ import Success from '@Domain/ResponseMessage'
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import { profilesMocks } from '@Utils/getMocks'
+import { profilesMocks, teamsExperienceMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import { TeamExperience } from '@Domain/Team'
 
 const profileUserAxios = defineAxios(profilesMocks)
+const teamExperienceAxios = defineAxios(teamsExperienceMocks)
+
+function filterTeamExperienceByUserId(teamExperience: TeamExperience[], id: string) {
+  return teamExperience.filter(({ userId }) => userId == id)
+}
 
 const getUserProfile = async (
   id: string,
@@ -41,6 +47,26 @@ const getProfileAvatar = async (
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
+}
+
+const getTeamExperience = async (
+  userId: string,
+  token: string,
+): Promise<TeamExperience[] | Error> => {
+  return teamExperienceAxios
+    .get<TeamExperience[]>(
+      `${API_URL}/profile/avatar/get`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (teamExperience) =>
+          filterTeamExperienceByUserId(teamExperience, userId),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
 }
@@ -79,7 +105,7 @@ const updateUserFullName = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .put(`${API_URL}/profile/fullname/update`, fullName, {
+    .put(`${API_URL}/profile/update`, fullName, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -90,6 +116,7 @@ const updateUserFullName = async (
 const ProfileService = {
   getUserProfile,
   getProfileAvatar,
+  getTeamExperience,
 
   saveProfileSkills,
   uploadProfileAvatar,

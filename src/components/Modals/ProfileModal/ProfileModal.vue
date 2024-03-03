@@ -7,7 +7,7 @@ import ProfileAvatar from '@Components/Modals/ProfileModal/ProfileAvatar.vue'
 import ProfileInfo from '@Components/Modals/ProfileModal/ProfileInfo.vue'
 import ProfileSkills from '@Components/Modals/ProfileModal/ProfileSkills.vue'
 import ProfileIdeas from '@Components/Modals/ProfileModal/ProfileIdeas.vue'
-import ProfileExperience from '@Components/Modals/ProfileModal/ProfileExperience.vue'
+import ProfilePortfolio from '@Components/Modals/ProfileModal/ProfilePortfolio.vue'
 import ProfileModalPlaceholder from '@Components/Modals/ProfileModal/ProfileModalPlaceholder.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -55,11 +55,11 @@ onMounted(async () => {
         refValue: DBProfile,
         onErrorFunc: openErrorNotification,
       },
-      // {
-      //   request: () => profilesStore.fetchProfileAvatar(profileId, token),
-      //   refValue: DBProfileAvatar,
-      //   onErrorFunc: openErrorNotification,
-      // },
+      {
+        request: () => profilesStore.fetchProfileAvatar(profileId, token),
+        refValue: DBProfileAvatar,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
     await sendParallelRequests(profileParallelRequests)
@@ -106,16 +106,18 @@ function handleCloseProfileModal() {
         </div>
 
         <div class="profile-modal__content">
-          <ProfileAvatar />
+          <div class="d-flex flex-column gap-3 w-75">
+            <ProfileAvatar />
 
-          <div class="profile-modal__info">
             <ProfileInfo />
+          </div>
 
+          <div class="profile-modal__info mb-3">
             <ProfileSkills />
 
             <ProfileIdeas />
 
-            <ProfileExperience />
+            <ProfilePortfolio />
           </div>
         </div>
       </div>
@@ -163,14 +165,13 @@ function handleCloseProfileModal() {
 
   &__content {
     width: 100%;
-    height: 100%;
     @include flexible(stretch, flex-start, $gap: 16px);
   }
 
   &__info {
-    width: 66%;
+    width: 100%;
     height: 100%;
-    display: block;
+
     @include flexible(center, flex-start, column, $gap: 16px);
   }
 }

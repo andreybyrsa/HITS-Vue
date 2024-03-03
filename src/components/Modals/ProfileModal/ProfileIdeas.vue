@@ -60,7 +60,7 @@ function navigateToIdeaModal(ideaId: string) {
               class="w-100 d-flex gap-2 align-items-center justify-content-between"
             >
               <div
-                class="fs-6 profile-ideas__idea-link"
+                class="fs-6 profile-ideas__idea-link w-100"
                 @click="navigateToIdeaModal(idea.id)"
               >
                 {{ idea.name }}
@@ -132,6 +132,7 @@ function navigateToIdeaModal(ideaId: string) {
 
     &-link {
       cursor: pointer;
+      @include textEllipsis(1);
 
       &:hover {
         text-decoration: underline;

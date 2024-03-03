@@ -39,6 +39,8 @@ export const usersMocks: User[] = [
       'TEAM_LEADER',
     ],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '1111111111',
+    studyGroup: 'AAAA-22-1',
   },
   {
     id: '1',
@@ -48,6 +50,8 @@ export const usersMocks: User[] = [
     lastName: 'Иванович',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '22222222222',
+    studyGroup: 'BBBB-22-1',
   },
   {
     id: '2',
@@ -57,6 +61,8 @@ export const usersMocks: User[] = [
     lastName: 'Менеджер',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '33333333333',
+    studyGroup: 'CCCC-22-1',
   },
   {
     id: '3',
@@ -66,6 +72,8 @@ export const usersMocks: User[] = [
     lastName: 'Владелец',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '44444444444',
+    studyGroup: 'DDDD-22-1',
   },
   {
     id: '4',
@@ -75,6 +83,8 @@ export const usersMocks: User[] = [
     lastName: 'Загрев',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '55555555555',
+    studyGroup: 'EEEE-22-1',
   },
   {
     id: '5',
@@ -84,6 +94,8 @@ export const usersMocks: User[] = [
     lastName: 'Кустерман',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '66666666666',
+    studyGroup: 'FFFF-22-1',
   },
 ]
 
@@ -326,20 +338,25 @@ export const teamMembersMocks: TeamMember[] = [
 
 export const teamsMocks: Team[] = [
   {
-    id: '0',
+    id: '01',
     name: 'Визитка',
     closed: true,
-    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
     membersCount: 4,
     owner: teamMembersMocks[1],
     leader: teamMembersMocks[1],
-    members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
+    members: [
+      teamMembersMocks[0],
+      teamMembersMocks[1],
+      teamMembersMocks[2],
+      teamMembersMocks[3],
+    ],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
+    hasActiveProject: true,
   },
   {
     id: '1',
@@ -368,12 +385,7 @@ export const teamsMocks: Team[] = [
     membersCount: 4,
     owner: teamMembersMocks[0],
     leader: teamMembersMocks[0],
-    members: [
-      teamMembersMocks[0],
-      teamMembersMocks[1],
-      teamMembersMocks[2],
-      teamMembersMocks[3],
-    ],
+    members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
@@ -383,12 +395,8 @@ export const teamsMocks: Team[] = [
 export const ideasMarketMocks: IdeaMarket[] = [
   {
     id: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
-    initiator: {
-      id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-      email: 'kirill.vlasov.05@inbox.ru',
-      lastName: 'Кирилл',
-      firstName: 'Власов',
-    } as User,
+    ideaId: 'dfaedabe-2b3b-44e7-851e-35c9c6409869',
+    initiator: usersMocks[0],
     team: null,
     marketId: '201',
     name: 'Цифровой помощник сотрудника приемной комиссии университета',
@@ -439,6 +447,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: '279b3fbf-de63-426f-bf9f-0c01ea19706b',
+    ideaId: '279b3fbf-de63-426f-bf9f-0c01ea19706b',
     initiator: {
       id: '2bafebe0-9514-43e0-badf-548388dfa2d4',
       email: 'warkingzar@gmail.com',
@@ -483,6 +492,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: 'c2d8b869-2731-4c37-b0de-17c1950a770f',
+    ideaId: 'c2d8b869-2731-4c37-b0de-17c1950a770f',
     initiator: {
       id: '09e6884f-65c5-4cd5-98f1-2f4ebb5823c0',
       email: 'l.a.nikiforova@tmn3.etagi.com',
@@ -557,6 +567,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: 'a51c17fd-c089-448c-be7b-714bceee8109',
+    ideaId: 'a51c17fd-c089-448c-be7b-714bceee8109',
     initiator: {
       id: '12c1534d-c6d1-4515-b531-ea380d75b772',
       email: 'd.shirokov@unlim.group',
@@ -631,6 +642,7 @@ export const ideasMarketMocks: IdeaMarket[] = [
   },
   {
     id: 'hfdnmkdfg-45678ejhdf-dhfc383-3456787654',
+    ideaId: 'a51c17fd-c089-448c-be7b-714bceee8109',
     initiator: usersMocks[0],
     team: null,
     marketId: '201',
@@ -1861,44 +1873,14 @@ export const companiesMocks: Company[] = [
 
 export const teamsExperienceMocks: TeamExperience[] = [
   {
-    teamId: '0',
-    teamName: 'Визитка',
-    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-    firstName: 'Кирилл',
-    lastName: 'Власов',
+    teamId: teamsMocks[0].id,
+    teamName: teamsMocks[0].name,
+    userId: usersMocks[0].id,
+    firstName: usersMocks[0].firstName,
+    lastName: usersMocks[0].lastName,
     startDate: '2023-01-01T11:02:17Z',
-    finishDate: '2023-03-14T11:02:17Z',
-    hasActiveProject: false,
-  },
-  {
-    teamId: '2',
-    teamName: 'Карасики',
-    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-    firstName: 'Кирилл',
-    lastName: 'Власов',
-    startDate: '2023-03-14T11:02:17Z',
-    finishDate: '2023-09-20T11:02:17Z',
-    hasActiveProject: false,
-  },
-  {
-    teamId: '1',
-    teamName: 'Кактус',
-    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-    firstName: 'Кирилл',
-    lastName: 'Власов',
-    startDate: '2023-09-20T11:02:17Z',
-    finishDate: '2023-11-25T11:02:17Z',
-    hasActiveProject: false,
-  },
-  {
-    teamId: '2',
-    teamName: 'Карасики',
-    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-    firstName: 'Кирилл',
-    lastName: 'Власов',
-    startDate: '2023-11-25T11:02:17Z',
     finishDate: null,
-    hasActiveProject: true,
+    hasActiveProject: teamsMocks[0].hasActiveProject,
   },
 ]
 
@@ -1946,34 +1928,31 @@ export const profilesMocks: Profile[] = [
     ...usersMocks[0],
     skills: [...skillsMocks],
     ideas: [ideasMocks[0], ideasMocks[1]],
-    teamsExperience: teamsExperienceMocks,
-    teamsProjects: teamsProjectsMocks,
+    teams: teamsExperienceMocks,
   },
 ]
 
 export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
   {
-    ideaMarketId: ideasMarketMocks[0].id,
-    ideaMarketName: ideasMarketMocks[0].name,
+    ideaId: ideasMarketMocks[0].id,
+    ideaName: ideasMarketMocks[0].name,
     status: 'NEW',
-    marketId: ideasMarketMocks[0].marketId,
     teamId: teamsMocks[0].id,
     initiatorId: ideasMarketMocks[0].initiator.id,
     id: '245vs-d52ff-d4sd-2s',
     teamName: teamsMocks[0].name,
-    membersCount: teamsMocks[0].membersCount,
+    teamMembersCount: teamsMocks[0].membersCount,
     skills: ideasMarketMocks[0].stack,
   },
   {
-    ideaMarketId: ideasMarketMocks[1].id,
-    ideaMarketName: ideasMarketMocks[1].name,
+    ideaId: ideasMarketMocks[1].id,
+    ideaName: ideasMarketMocks[1].name,
     status: 'NEW',
-    marketId: ideasMarketMocks[1].marketId,
     teamId: teamsMocks[1].id,
     initiatorId: ideasMarketMocks[1].initiator.id,
     id: '245vs-d52ff-d4sd-2s1',
     teamName: teamsMocks[1].name,
-    membersCount: teamsMocks[1].membersCount,
+    teamMembersCount: teamsMocks[1].membersCount,
     skills: ideasMarketMocks[1].stack,
   },
 ]

@@ -27,6 +27,8 @@ interface Team {
   members: TeamMember[]
   skills: Skill[]
   wantedSkills: Skill[]
+
+  hasActiveProject: boolean
 }
 
 interface TeamSkills {

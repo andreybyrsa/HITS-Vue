@@ -10,16 +10,15 @@ type InvitationTeamToIdeaStatus =
 interface InvitationTeamToIdea {
   id: string
   teamId: string
-  ideaMarketId: string
+  ideaId: string
   initiatorId: string
-  marketId: string
 
-  ideaMarketName: string
+  ideaName: string
   teamName: string
 
   status: InvitationTeamToIdeaStatus
 
-  membersCount: number
+  teamMembersCount: number
   skills: Skill[]
 }
 

@@ -24,7 +24,6 @@ import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import { Project } from '@Domain/Project'
 
 const notificationsStore = useNotificationsStore()
-const { getUnreadedNotifications } = storeToRefs(notificationsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -108,7 +107,11 @@ async function getActiveMarkets() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (response.length === 0) {
+    if (
+      response.length === 0 &&
+      user.value?.role !== 'ADMIN' &&
+      user.value?.role !== 'PROJECT_OFFICE'
+    ) {
       spliceMarketsTab()
     } else if (index !== -1) {
       updateActiveMarketRoute(response, index)
@@ -191,10 +194,6 @@ function handleCloseRoleModal() {
   isOpenedRoleModal.value = false
 }
 
-function handleOpenNotificationModal() {
-  isOpenedNotificationsModal.value = true
-}
-
 function handleCloseNotificationModal() {
   isOpenedNotificationsModal.value = false
 }
@@ -231,21 +230,6 @@ function handleCloseNotificationModal() {
         :disabled="user?.roles.length === 1"
       >
         {{ isHovered ? getTranslatedRole(user.role) : '' }}
-      </Button>
-
-      <Button
-        variant="light"
-        class-name="left-side-bar__button btn-light w-100 position-relative"
-        @click="handleOpenNotificationModal"
-        prepend-icon-name="bi bi-bell"
-      >
-        {{ isHovered ? 'Уведомления' : '' }}
-        <span
-          v-if="getUnreadedNotifications.length"
-          class="position-absolute top-0 start-100 px-2 translate-middle badge rounded-pill bg-danger"
-        >
-          {{ getUnreadedNotifications.length }}
-        </span>
       </Button>
 
       <Button
