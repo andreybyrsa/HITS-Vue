@@ -6,7 +6,7 @@ import InitialState from '@Store/tasks/initialState'
 import { User } from '@Domain/User'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-import { TaskStatus, Task } from '@Domain/Project'
+import { TaskStatus, Task, TaskMovementLog } from '@Domain/Project'
 
 const useTasksStore = defineStore('tasks', {
   state: (): InitialState => ({
@@ -26,6 +26,18 @@ const useTasksStore = defineStore('tasks', {
         return this.tasks
       }
     },
+    // getTaskLogs() {
+    //   return async (taskId: string, token: string) => {
+    //     const response = await TaskService.getTaskMovementLog(taskId, token)
+
+    //     if (response instanceof Error) {
+    //       return response
+    //     }
+
+    //     this.logs = response
+    //     return this.logs
+    //   }
+    // },
   },
   actions: {
     async changePosition(
@@ -92,6 +104,41 @@ const useTasksStore = defineStore('tasks', {
         }
       }
     },
+
+    async changeTaskStatusInBackLog(
+      taskId: string,
+      status: 'InBackLog',
+      token: string,
+    ) {
+      const curTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (curTask) {
+        const lastStatus = curTask.status
+        const newStatusLog = curTask.taskMovementLog.concat(lastStatus)
+
+        if (lastStatus && newStatusLog) {
+          curTask?.taskMovementLog.push(lastStatus)
+        }
+        const response = await TaskService.changeTaskStatusInBackLog(
+          taskId,
+          status,
+          newStatusLog,
+          token,
+        )
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const currentTask = this.tasks.find(({ id }) => id === taskId)
+          if (currentTask) {
+            currentTask.status = status
+          }
+        }
+      }
+    },
     async createTask(task: Task, token: string) {
       const response = await TaskService.createTask(task, token)
 
@@ -99,6 +146,62 @@ const useTasksStore = defineStore('tasks', {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         this.tasks.push(response)
+      }
+    },
+
+    async createTaskLog(
+      taskId: string,
+      user: User | null,
+      newStatus: TaskStatus,
+      token: string,
+    ) {
+      const currentTask = this.tasks.find(({ id }) => id === taskId)
+      const taskLogs = await TaskService.getTaskMovementLog(taskId, token)
+
+      if (taskLogs instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', taskLogs.message)
+      }
+
+      if (currentTask && user) {
+        const log: TaskMovementLog = {
+          id: '',
+          task: currentTask,
+          executor: currentTask.executor,
+          user: user,
+          startDate: new Date().toJSON().toString(),
+          endDate: '',
+          taskStatus: newStatus,
+        }
+
+        const response = await TaskService.createTaskLog(log, token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        }
+      }
+    },
+
+    async changeLeaderComment(taskId: string, leaderComment: string, token: string) {
+      const currentTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (!currentTask) {
+        return
+      }
+
+      currentTask.leaderComment = leaderComment
+
+      const response = await TaskService.changeLeaderComment(
+        taskId,
+        leaderComment,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
       }
     },
   },

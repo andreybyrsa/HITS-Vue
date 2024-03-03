@@ -1,4 +1,4 @@
-import { User } from '@Domain/User'
+import { User, UserTelegram } from '@Domain/User'
 import { Profile } from '@Domain/Profile'
 import UsersGroup from '@Domain/UsersGroup'
 import Company from '@Domain/Company'
@@ -18,7 +18,14 @@ import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Project, ProjectMember, Sprint, Task } from '@Domain/Project'
+import {
+  TaskMovementLog,
+  Project,
+  ProjectMember,
+  Sprint,
+  SprintMarks,
+  Task,
+} from '@Domain/Project'
 import { Tag } from '@Domain/Tag'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import { AverageMark } from '@Domain/ReportProjectMembers'
@@ -96,6 +103,27 @@ export const usersMocks: User[] = [
     createdAt: '2023-10-20T11:02:17Z',
     telephone: '66666666666',
     studyGroup: 'FFFF-22-1',
+  },
+]
+
+export const usersTelegramMocks: UserTelegram[] = [
+  {
+    userId: usersMocks[0].id,
+    userTag: 'baobao',
+    chatId: '0',
+    isVisible: true,
+  },
+  {
+    userId: usersMocks[1].id,
+    userTag: '@chipichipi',
+    chatId: '5',
+    isVisible: false,
+  },
+  {
+    userId: usersMocks[1].id,
+    userTag: '@chapachapa',
+    chatId: null,
+    isVisible: true,
   },
 ]
 
@@ -1188,7 +1216,7 @@ export const tasksMocks: Task[] = [
     initiator: usersMocks[0],
     executor: null,
     workHour: '3',
-    startDate: '01.01.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[0], tagsMocks[1], tagsMocks[5]],
     taskMovementLog: ['InBackLog'],
     status: 'NewTask',
@@ -1204,7 +1232,7 @@ export const tasksMocks: Task[] = [
     initiator: usersMocks[1],
     executor: null,
     workHour: '1',
-    startDate: '02.04.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[0], tagsMocks[5]],
     taskMovementLog: ['InBackLog'],
     status: 'NewTask',
@@ -1220,7 +1248,7 @@ export const tasksMocks: Task[] = [
     initiator: usersMocks[2],
     executor: null,
     workHour: '3',
-    startDate: '01.01.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[1], tagsMocks[6]],
     taskMovementLog: ['InBackLog'],
     status: 'NewTask',
@@ -1236,7 +1264,7 @@ export const tasksMocks: Task[] = [
     executor: null,
     workHour: '3',
     position: 3,
-    startDate: '01.01.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[1], tagsMocks[8]],
     taskMovementLog: ['InBackLog'],
     status: 'NewTask',
@@ -1252,10 +1280,11 @@ export const tasksMocks: Task[] = [
     executor: usersMocks[3],
     workHour: '1',
     position: 2,
-    startDate: '02.04.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[0], tagsMocks[1], tagsMocks[5]],
     taskMovementLog: ['InBackLog'],
     status: 'OnModification',
+    leaderComment: 'Котята, нужно прибраться!',
   },
   {
     id: '5',
@@ -1268,7 +1297,7 @@ export const tasksMocks: Task[] = [
     executor: usersMocks[0],
     workHour: '3',
     position: 3,
-    startDate: '01.01.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[1], tagsMocks[9]],
     taskMovementLog: ['InBackLog'],
     status: 'OnModification',
@@ -1284,7 +1313,7 @@ export const tasksMocks: Task[] = [
     executor: usersMocks[2],
     workHour: '3',
     position: 1,
-    startDate: '01.01.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[0], tagsMocks[1], tagsMocks[6]],
     taskMovementLog: ['InBackLog'],
     status: 'inProgress',
@@ -1300,7 +1329,7 @@ export const tasksMocks: Task[] = [
     executor: usersMocks[1],
     workHour: '3',
     position: 3,
-    startDate: '01.01.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[0], tagsMocks[7]],
     taskMovementLog: ['InBackLog'],
     status: 'inProgress',
@@ -1316,7 +1345,7 @@ export const tasksMocks: Task[] = [
     executor: usersMocks[1],
     workHour: '1',
     position: 2,
-    startDate: '02.04.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[0], tagsMocks[1]],
     taskMovementLog: ['InBackLog'],
     status: 'OnVerification',
@@ -1332,7 +1361,7 @@ export const tasksMocks: Task[] = [
     executor: usersMocks[0],
     workHour: '3',
     position: 1,
-    startDate: '01.01.24',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[1], tagsMocks[7], tagsMocks[10]],
     taskMovementLog: ['InBackLog'],
     status: 'Done',
@@ -1348,7 +1377,7 @@ export const tasksMocks: Task[] = [
     executor: usersMocks[1],
     workHour: '1',
     position: 2,
-    startDate: '02.04.24',
+    startDate: '2023-09-25T11:02:17Z',
     finishDate: '22.01.2024',
     tag: [tagsMocks[0], tagsMocks[11], tagsMocks[5]],
     taskMovementLog: ['InBackLog'],
@@ -1365,7 +1394,7 @@ export const tasksMocks: Task[] = [
     executor: usersMocks[2],
     workHour: '3',
     position: 3,
-    startDate: '01.01.24',
+    startDate: '2023-09-25T11:02:17Z',
     finishDate: '21.01.2024',
     tag: [tagsMocks[1]],
     taskMovementLog: ['InBackLog'],
@@ -1382,7 +1411,7 @@ export const tasksMocks: Task[] = [
     executor: usersMocks[0],
     workHour: '3',
     position: 3,
-    startDate: '01.01.24',
+    startDate: '2023-09-25T11:02:17Z',
     finishDate: '25.01.2024',
     tag: [tagsMocks[1]],
     taskMovementLog: ['InBackLog'],
@@ -1398,7 +1427,7 @@ export const tasksMocks: Task[] = [
     initiator: usersMocks[1],
     executor: null,
     workHour: '8',
-    startDate: '08.01.22',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[0], tagsMocks[5]],
     taskMovementLog: ['InBackLog', 'NewTask'],
     status: 'InBackLog',
@@ -1413,7 +1442,7 @@ export const tasksMocks: Task[] = [
     initiator: usersMocks[2],
     executor: null,
     workHour: '4',
-    startDate: '06.11.20',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[1], tagsMocks[7]],
     taskMovementLog: ['InBackLog', 'NewTask'],
     status: 'InBackLog',
@@ -1422,13 +1451,13 @@ export const tasksMocks: Task[] = [
     id: '16',
     projectId: '0',
     position: 3,
-    name: 'Внедрение системы контроля доступа',
+    name: 'Внедрение системы контроля доступа ',
     description:
       'Настройка системы контроля доступа и ролевой модели для управления правами пользователей и доступом к функционалу',
     initiator: usersMocks[4],
     executor: null,
     workHour: '2',
-    startDate: '06.01.21',
+    startDate: '2023-09-25T11:02:17Z',
     tag: [tagsMocks[1], tagsMocks[10]],
     taskMovementLog: ['InBackLog', 'NewTask'],
     status: 'InBackLog',
@@ -1437,33 +1466,30 @@ export const tasksMocks: Task[] = [
 
 export const averageMarkMocks: AverageMark[] = [
   {
-    id: '0101',
     projectId: '0',
-    userID: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     firstName: 'Кирилл',
     lastName: 'Власов',
     projectRole: 'TEAM_LEADER',
-    mark: '9.9',
+    mark: 9.9,
     tasks: [tasksMocks[9], tasksMocks[12]],
   },
   {
-    id: '1010',
     projectId: '0',
-    userID: '1',
+    userId: '1',
     firstName: 'Иван',
     lastName: 'Иванович',
     projectRole: 'MEMBER',
-    mark: '6.7',
+    mark: 6.7,
     tasks: [tasksMocks[10]],
   },
   {
-    id: '2211',
     projectId: '0',
-    userID: '2',
+    userId: '2',
     firstName: 'Менеджер',
     lastName: 'Менеджер',
     projectRole: 'MEMBER',
-    mark: '7.8',
+    mark: 7.8,
     tasks: [tasksMocks[11]],
   },
 ]
@@ -1479,7 +1505,8 @@ export const projectMocks: Project[] = [
     team: teamsMocks[2],
     members: [
       {
-        projectName: 'Моя новая идея',
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
         teamId: '0',
         teamName: 'Визитка',
         userId: '2',
@@ -1491,7 +1518,8 @@ export const projectMocks: Project[] = [
         projectRole: 'INITIATOR',
       },
       {
-        projectName: 'Моя новая идея',
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
         teamId: '0',
         teamName: 'Визитка',
         userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
@@ -1503,7 +1531,8 @@ export const projectMocks: Project[] = [
         projectRole: 'TEAM_LEADER',
       },
       {
-        projectName: 'Моя новая идея',
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
         teamId: '0',
         teamName: 'Визитка',
         userId: '0',
@@ -1515,7 +1544,8 @@ export const projectMocks: Project[] = [
         projectRole: 'MEMBER',
       },
       {
-        projectName: 'Моя новая идея',
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
         teamId: '0',
         teamName: 'Визитка',
         userId: '1',
@@ -1528,7 +1558,6 @@ export const projectMocks: Project[] = [
       },
     ],
 
-    logs: [],
     report: {
       projectId: '0',
       marks: [averageMarkMocks[0], averageMarkMocks[1], averageMarkMocks[2]],
@@ -1561,7 +1590,6 @@ export const projectMocks: Project[] = [
       },
     ],
 
-    logs: [],
     report: {
       projectId: '1',
       marks: [],
@@ -1620,12 +1648,43 @@ export const notificationsMocks: Notification[] = [
   },
 ]
 
+export const sprintMarksMocks: SprintMarks[] = [
+  {
+    sprintId: '3',
+    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    firstName: 'Кирилл',
+    lastName: 'Власов',
+    mark: undefined,
+    projectRole: 'TEAM_LEADER',
+    tasks: [tasksMocks[9], tasksMocks[12]],
+  },
+  {
+    sprintId: '3',
+    userId: '123714',
+    firstName: 'Иван',
+    lastName: 'Иванович',
+    mark: undefined,
+    projectRole: 'MEMBER',
+    tasks: [tasksMocks[10]],
+  },
+  {
+    sprintId: '3',
+    userId: '1231231',
+    firstName: 'Менеджер',
+    lastName: 'Менеджер',
+    projectRole: 'MEMBER',
+    mark: undefined,
+    tasks: [tasksMocks[11]],
+  },
+]
+
 export const sprintMocks: Sprint[] = [
   {
     id: '0',
     projectId: projectMocks[0].id,
     name: 'Спринт 1',
     goal: 'Цель 1',
+    marks: [sprintMarksMocks[0]],
     report: 'Отчет 1',
     startDate: '2023-12-26T11:02:17Z',
     finishDate: '2024-01-02T11:02:17Z',
@@ -1638,6 +1697,7 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Спринт 2',
     goal: 'Цель 2',
+    marks: [sprintMarksMocks[1]],
     report: 'Отчет 2',
     startDate: '2024-01-03T11:02:17Z',
     finishDate: '2024-01-11T11:02:17Z',
@@ -1650,6 +1710,7 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Спринт 3',
     goal: 'Цель 3',
+    marks: [sprintMarksMocks[2]],
     report: 'Отчет 3',
     startDate: '2024-01-12T11:02:17Z',
     finishDate: '2024-01-19T11:02:17Z',
@@ -1662,6 +1723,7 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Проектировка скрама',
     goal: 'Цель 4',
+    marks: [sprintMarksMocks[1]],
     report: 'Отчет 4',
     startDate: '2024-01-20T11:02:17Z',
     finishDate: '2024-01-27T11:02:17Z',
@@ -1921,6 +1983,54 @@ export const teamsProjectsMocks: ProjectMember[] = [
     finishDate: '',
     projectRole: 'MEMBER',
   },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: '2',
+    email: 'alex@inbox.ru',
+    firstName: 'Алексей',
+    lastName: 'Князев',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'INITIATOR',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    email: 'kirill.vlasov.05@inbox.ru',
+    firstName: 'Артем',
+    lastName: 'Иванов',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'TEAM_LEADER',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: '0',
+    email: 'timyr@mail.com',
+    firstName: 'Иван',
+    lastName: 'Кузнецов',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'MEMBER',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: '1',
+    email: 'admin@mail.com',
+    firstName: 'Данил',
+    lastName: 'Сафонов',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'MEMBER',
+  },
 ]
 
 export const profilesMocks: Profile[] = [
@@ -1928,7 +2038,9 @@ export const profilesMocks: Profile[] = [
     ...usersMocks[0],
     skills: [...skillsMocks],
     ideas: [ideasMocks[0], ideasMocks[1]],
-    teams: teamsExperienceMocks,
+    teamsExperience: teamsExperienceMocks,
+    userTag: usersTelegramMocks[0].userTag,
+    isUserTagVisible: true,
   },
 ]
 
@@ -1954,5 +2066,44 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
     teamName: teamsMocks[1].name,
     teamMembersCount: teamsMocks[1].membersCount,
     skills: ideasMarketMocks[1].stack,
+  },
+]
+
+export const taskMovementLogMocks: TaskMovementLog[] = [
+  {
+    id: '0',
+    task: tasksMocks[0],
+    executor: null,
+    user: usersMocks[0],
+    startDate: '2023-09-24T11:02:17Z',
+    endDate: '2023-09-25T17:02:17Z',
+    taskStatus: 'NewTask',
+  },
+  {
+    id: '1',
+    task: tasksMocks[0],
+    executor: usersMocks[1],
+    user: usersMocks[1],
+    startDate: '2023-09-25T17:02:17Z',
+    endDate: '2023-09-30T10:11:17Z',
+    taskStatus: 'inProgress',
+  },
+  {
+    id: '2',
+    task: tasksMocks[0],
+    executor: usersMocks[1],
+    user: usersMocks[1],
+    startDate: '2023-09-30T10:11:17Z',
+    endDate: '2023-10-02T18:00:17Z',
+    taskStatus: 'OnVerification',
+  },
+  {
+    id: '3',
+    task: tasksMocks[0],
+    executor: usersMocks[1],
+    user: usersMocks[0],
+    startDate: '2023-10-02T18:31:17Z',
+    endDate: '',
+    taskStatus: 'Done',
   },
 ]

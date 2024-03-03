@@ -143,6 +143,25 @@ const getIdeaMarketAdvertisements = async (
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки объявлений'))
 }
 
+const getAllInitiatorMarketIdeasByUserId = async (
+  userId: string,
+  token: string,
+): Promise<IdeaMarket[] | Error> => {
+  return ideasMarketAxios
+    .get<IdeaMarket[]>(
+      `/idea/invitation/idea-market`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (ideasMarket) => formatIdeaByInitiator(ideasMarket, userId),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки идей инициатора'))
+}
+
 // --- POST --- //
 const sendIdeaOnMarket = async (
   marketId: string,

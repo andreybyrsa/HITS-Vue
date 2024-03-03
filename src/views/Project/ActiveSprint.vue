@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
-import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
+import FinishSprintModal from '@Components/Modals/FinishSprintModal/FinishSprintModal.vue'
 
 import { ActiveSprintProps } from '@Views/Project/Project.types'
 
@@ -13,16 +13,25 @@ import Button from '@Components/Button/Button.vue'
 import sprintsStore from '@Store/projects/projectsStore'
 import useUserStore from '@Store/user/userStore'
 
-import { Task, Sprint } from '@Domain/Project'
-import { reactiveComputed, useDateFormat, watchImmediate } from '@vueuse/core'
+import { Task, Sprint, TaskMovementLog } from '@Domain/Project'
+import TaskService from '@Services/TaskService'
+import {
+  reactiveComputed,
+  useDateFormat,
+  useDebounceFn,
+  watchImmediate,
+} from '@vueuse/core'
 import useTasksStore from '@Store/tasks/tasksStore'
 import {
   RequestConfig,
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
-import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+import TaskDescriptionModal from '@Components/Modals/SprintModal/TaskDescriptionModal.vue'
+import { User } from '@Domain/User'
 
 defineProps<ActiveSprintProps>()
 
@@ -93,7 +102,22 @@ async function moveTask(evt: any) {
       )
 
       if (currentArrayTask === onModificationTask) {
-        await taskStore.changeTaskStatus(taskId, 'OnModification', token)
+        const onModificationTaskParallelRequests: RequestConfig[] = [
+          {
+            request: () =>
+              taskStore.changeTaskStatus(taskId, 'OnModification', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'OnModification', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+        ]
+
+        await sendParallelRequests(onModificationTaskParallelRequests)
       }
 
       if (currentArrayTask === inProgressTask) {
@@ -105,6 +129,12 @@ async function moveTask(evt: any) {
           },
           {
             request: () => taskStore.changeTaskStatus(taskId, 'inProgress', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'inProgress', token),
             refValue: refValue,
             onErrorFunc: openErrorNotification,
           },
@@ -125,17 +155,52 @@ async function moveTask(evt: any) {
             refValue: refValue,
             onErrorFunc: openErrorNotification,
           },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'NewTask', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
         ]
 
         await sendParallelRequests(newTaskParallelRequests)
       }
 
       if (currentArrayTask === onVerificationTask) {
-        await taskStore.changeTaskStatus(taskId, 'OnVerification', token)
+        const onVerificationTaskParallelRequests: RequestConfig[] = [
+          {
+            request: () =>
+              taskStore.changeTaskStatus(taskId, 'OnVerification', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'OnVerification', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+        ]
+
+        await sendParallelRequests(onVerificationTaskParallelRequests)
       }
 
       if (currentArrayTask === doneTask) {
-        await taskStore.changeTaskStatus(taskId, 'Done', token)
+        const doneTaskParallelRequests: RequestConfig[] = [
+          {
+            request: () => taskStore.changeTaskStatus(taskId, 'Done', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+          {
+            request: () =>
+              taskStore.createTaskLog(taskId, user.value, 'Done', token),
+            refValue: refValue,
+            onErrorFunc: openErrorNotification,
+          },
+        ]
+
+        await sendParallelRequests(doneTaskParallelRequests)
       }
 
       isLoadingTaskData.value = false
@@ -202,6 +267,50 @@ function openModalSprint(sprint: Sprint) {
 function closeSprintModal() {
   isOpenedSprinttModal.value = false
 }
+
+const isOpenedTaskModal = ref(false)
+const currentTask = ref<Task>()
+
+function openTaskModal(task: Task) {
+  if (task) {
+    currentTask.value = task
+    isOpenedTaskModal.value = true
+  }
+}
+
+function closeTaskModal() {
+  isOpenedTaskModal.value = false
+}
+
+const changeLeaderComment = useDebounceFn((input: string) => {
+  if (!currentTask.value?.id) {
+    return
+  }
+
+  if (!user.value?.token) {
+    return
+  }
+
+  taskStore.changeLeaderComment(currentTask.value.id, input, user.value.token)
+}, 450)
+
+// const wildcardTask = ref({
+//   id: '1',
+//   sprintId: '1',
+//   projectId: '1',
+//   position: 1,
+//   name: 'Scram проекты',
+//   description:
+//     'Сделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проекты',
+//   initiator: { lastName: 'Кирилл', firstName: 'Власов' },
+//   executor: { lastName: 'Кирилл', firstName: 'Власов' },
+//   workHour: '3 часа',
+//   startDate: '2022-01-01',
+//   finishDate: '2022-01-02',
+//   tag: 'Фронтенд',
+//   taskMovementLog: ['Выполняется', 'В бэклоге', 'На доработке', 'Выполнена'],
+//   status: 'Выполняется',
+// })
 </script>
 
 <template>
@@ -216,12 +325,12 @@ function closeSprintModal() {
             {{ sprint.name }}
           </Typography>
         </div>
-        <SprintModal
+        <FinishSprintModal
           :is-opened="isOpenedSprinttModal"
-          :sprint="currentSprint"
+          :sprint="(currentSprint as Sprint)"
           @close-modal="closeSprintModal"
         />
-        <Typography>( до {{ getFormattedDate(sprint.finishDate) }} )</Typography>
+        <Typography>(до {{ getFormattedDate(sprint.finishDate) }})</Typography>
       </div>
       <div class="d-flex gap-2">
         <Button
@@ -257,7 +366,9 @@ function closeSprintModal() {
             </div>
             <Icon
               class-name="bi bi-patch-question"
-              v-tooltip="'Описание столбца'"
+              v-tooltip="
+                'Здесь находятся задачи, которые были отправлены на доработку для исправления ошибок или улучшения качества. Эти задачи нужно выполнить в первую очередь, чтобы не затягивать сроки проекта.'
+              "
             />
           </div>
         </div>
@@ -272,7 +383,10 @@ function closeSprintModal() {
           :animation="200"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -286,6 +400,14 @@ function closeSprintModal() {
                   </div>
                   <div class="d-flex gap-1 text-secondary">
                     {{ getExecutorTask(element.id) ?? 'нет испольнителя' }}
+                  </div>
+                  <div
+                    class="d-flex gap-1 text-secondary text-info"
+                    v-if="element.leaderComment"
+                  >
+                    <Typography>
+                      {{ element.leaderComment }}
+                    </Typography>
                   </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 w-100 mt-2">
@@ -330,7 +452,9 @@ function closeSprintModal() {
               />
               <Icon
                 class-name="bi bi-patch-question"
-                v-tooltip="'Описание столбца'"
+                v-tooltip="
+                  'Здесь находятся задачи, которые еще не были назначены команде или отдельному разработчику. Эти задачи можно выбирать по своему усмотрению, учитывая приоритеты и сложность.'
+                "
               />
             </div>
           </div>
@@ -346,7 +470,10 @@ function closeSprintModal() {
           :animation="200"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -396,7 +523,9 @@ function closeSprintModal() {
             </div>
             <Icon
               class-name="bi bi-patch-question"
-              v-tooltip="'Описание столбца'"
+              v-tooltip="
+                'Здесь находятся задачи, которые в данный момент выполняются командой или отдельным разработчиком. Эти задачи нужно довести до конца и не переключаться на другие, пока они не будут готовы к проверке.'
+              "
             />
           </div>
         </div>
@@ -411,7 +540,10 @@ function closeSprintModal() {
           :animation="200"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -464,7 +596,9 @@ function closeSprintModal() {
             </div>
             <Icon
               class-name="bi bi-patch-question"
-              v-tooltip="'Описание столбца'"
+              v-tooltip="
+                'Здесь находятся задачи, которые были выполнены и отправлены на проверку качества, функциональности и соответствия требованиям. Эти задачи должны проверяться тимлидом команды.'
+              "
             />
           </div>
         </div>
@@ -479,7 +613,10 @@ function closeSprintModal() {
           :handle="user?.role !== 'TEAM_LEADER'"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -532,7 +669,9 @@ function closeSprintModal() {
             </div>
             <Icon
               class-name="bi bi-patch-question"
-              v-tooltip="'Описание столбца'"
+              v-tooltip="
+                'Здесь находятся задачи, которые были успешно проверены и одобрены. Эти задачи можно считать завершенными и не требующими дальнейшего внимания.'
+              "
             />
           </div>
         </div>
@@ -546,7 +685,10 @@ function closeSprintModal() {
           :disabled="isLoadingTaskData || user?.role !== 'TEAM_LEADER'"
         >
           <template #item="{ element }">
-            <div class="d-flex my-1">
+            <div
+              class="d-flex my-1"
+              @click="openTaskModal(element)"
+            >
               <div
                 :style="{ width: '6px', backgroundColor: getColorBand(element) }"
                 class="rounded-start"
@@ -581,10 +723,10 @@ function closeSprintModal() {
         </draggable>
       </div>
     </div>
-    <FinishProjectModal
-      isFinishProject
+    <FinishSprintModal
+      isFinishSprint
       :is-opened="isOpenedFinishSprintModal"
-      status="SPRINT"
+      :active-sprint="sprint"
       @close-modal="closeFinishSprintModal"
     />
 
@@ -593,6 +735,13 @@ function closeSprintModal() {
       @close-modal="closeCreateNewTask"
     />
   </div>
+  <TaskDescriptionModal
+    :is-opened="isOpenedTaskModal"
+    :task="(currentTask as Task)"
+    :user="(user as User)"
+    @close-modal="closeTaskModal"
+    @update-leader-comment="changeLeaderComment"
+  />
 </template>
 
 <style lang="scss" scoped>
