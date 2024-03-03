@@ -1,25 +1,29 @@
-import { User } from '@Domain/User'
-import { Profile } from '@Domain/Profile'
-import UsersGroup from '@Domain/UsersGroup'
-import Company from '@Domain/Company'
-import UsersSkills from '@Domain/UsersSkills'
-import { Skill } from '@Domain/Skill'
-import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
-import Comment from '@Domain/Comment'
 import {
+  User,
+  Profile,
+  UsersGroup,
+  Company,
+  UsersSkills,
+  Idea,
+  IdeaSkills,
+  Rating,
+  Skill,
+  Comment,
   RequestToTeam,
   Team,
   TeamExperience,
   TeamInvitation,
   TeamMember,
   TeamSkills,
-} from '@Domain/Team'
-import Notification from '@Domain/Notification'
-import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
-import { Market } from '@Domain/Market'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Project, ProjectMember } from '@Domain/Project'
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
+  Notification,
+  IdeaMarket,
+  IdeaMarketAdvertisement,
+  Market,
+  RequestTeamToIdea,
+  Project,
+  ProjectMember,
+  InvitationTeamToIdea,
+} from '@Domain'
 
 export const usersMocks: User[] = [
   {

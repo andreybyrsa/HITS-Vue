@@ -1,21 +1,15 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-
+import { Company, RolesTypes } from '@Domain'
+import { useUserStore, useNotificationsStore } from '@Store'
+import { CompanyService } from '@Service'
 import {
   CustomerAndContact,
   CustomerAndContactEmits,
 } from '@Components/Forms/IdeaForm/CustomerAndContact.types'
-import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import { hints } from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
-
-import Company from '@Domain/Company'
-import RolesTypes from '@Domain/Roles'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import CompanyService from '@Services/CompanyService'
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
 const props = defineProps<CustomerAndContact>()
 const emit = defineEmits<CustomerAndContactEmits>()
@@ -29,8 +23,8 @@ const companiesNames = computed(() => companies.value.map((company) => company.n
 
 const companyContacts = ref<string[]>([])
 
-async function getAllCompaniesByRole(token: string, role: RolesTypes) {
-  const response = await CompanyService.getCompanies(token)
+async function getAllCompaniesByRole(role: RolesTypes) {
+  const response = await CompanyService.getAll()
 
   if (response instanceof Error) {
     return notificationsStore.createSystemNotification('Система', response.message)
@@ -46,11 +40,11 @@ async function getAllCompaniesByRole(token: string, role: RolesTypes) {
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role) {
-    const { token, id, role } = currentUser
+  if (currentUser?.role) {
+    const { id, role } = currentUser
 
     if (role !== 'ADMIN') {
-      const response = await CompanyService.getOwnerCompanies(id, token)
+      const response = await CompanyService.getOwner(id)
 
       if (response instanceof Error) {
         return notificationsStore.createSystemNotification(
@@ -60,12 +54,12 @@ onMounted(async () => {
       }
 
       if (response.length === 0) {
-        return getAllCompaniesByRole(token, role)
+        return getAllCompaniesByRole(role)
       }
 
       companies.value = response
     } else {
-      getAllCompaniesByRole(token, role)
+      getAllCompaniesByRole(role)
     }
   }
 })
@@ -75,14 +69,10 @@ const getCompanyByName = (companyName: string) => {
 }
 
 async function handleCustomerChange(selectedCompany: string) {
-  const currentUser = user.value
   const currentCompany = getCompanyByName(selectedCompany)
 
-  if (currentUser?.token && currentCompany) {
-    const response = await CompanyService.getCompany(
-      currentCompany.id,
-      currentUser.token,
-    )
+  if (currentCompany) {
+    const response = await CompanyService.get(currentCompany.id)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)

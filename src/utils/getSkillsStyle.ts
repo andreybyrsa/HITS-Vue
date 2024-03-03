@@ -1,6 +1,6 @@
-import { Skill } from '@Domain/Skill'
+import { Skill } from '@Domain'
 
-function getSkillStyle(skills: Skill[], index: number) {
+export function getSkillStyle(skills: Skill[], index: number) {
   const currentSkill = skills[index]
   const initialClass = [
     'px-2',
@@ -30,5 +30,3 @@ function getSkillStyle(skills: Skill[], index: number) {
     return initialClass
   }
 }
-
-export default getSkillStyle

@@ -1,5 +1,4 @@
-import RolesTypes from '@Domain/Roles'
-import { IdeaStatusType } from '@Domain/Idea'
+import { IdeaStatusType, RolesTypes } from '@Domain'
 
 interface GetFiltersByRolesType {
   filter: {
@@ -10,7 +9,7 @@ interface GetFiltersByRolesType {
   }
 }
 
-function GetFiltersByRoles(): GetFiltersByRolesType {
+export function GetFiltersByRoles(): GetFiltersByRolesType {
   return {
     filter: {
       INITIATOR: [],
@@ -30,5 +29,3 @@ function GetFiltersByRoles(): GetFiltersByRolesType {
     },
   }
 }
-
-export default GetFiltersByRoles

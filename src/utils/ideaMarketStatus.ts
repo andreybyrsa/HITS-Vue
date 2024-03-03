@@ -1,4 +1,4 @@
-import { IdeaMarketStatusType } from '@Domain/IdeaMarket'
+import { IdeaMarketStatusType } from '@Domain'
 
 interface GetIdeaMarketStatusType {
   status: IdeaMarketStatusType[]
@@ -7,7 +7,7 @@ interface GetIdeaMarketStatusType {
   }
 }
 
-function getIdeaMarketStatus(): GetIdeaMarketStatusType {
+export function getIdeaMarketStatus(): GetIdeaMarketStatusType {
   return {
     status: ['RECRUITMENT_IS_OPEN', 'RECRUITMENT_IS_CLOSED'],
     translatedStatus: {
@@ -16,5 +16,3 @@ function getIdeaMarketStatus(): GetIdeaMarketStatusType {
     },
   }
 }
-
-export default getIdeaMarketStatus

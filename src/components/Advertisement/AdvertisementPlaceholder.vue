@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
 import { AdvertisementPlaceholderProps } from '@Components/Advertisement/Advertisement.types'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 

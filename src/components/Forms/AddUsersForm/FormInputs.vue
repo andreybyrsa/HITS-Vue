@@ -1,24 +1,16 @@
 <script lang="ts" setup>
 import { ref, onMounted, VueElement } from 'vue'
 import { useFocusWithin } from '@vueuse/core'
-import { storeToRefs } from 'pinia'
-
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import {
   FormInputsProps,
   FormInputsEmits,
 } from '@Components/Forms/AddUsersForm/AddUsersForm.types'
-
-import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
-
-import ManageUsersService from '@Services/ManageUsersService'
-
-import useUserStore from '@Store/user/userStore'
-
-import Validation from '@Utils/Validation'
-
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { HTMLTargetEvent } from '@Domain'
+import { useNotificationsStore } from '@Store'
+import { ManageUsersService } from '@Service'
+import { validation } from '@Utils'
 
 const notificationsStore = useNotificationsStore()
 
@@ -28,9 +20,6 @@ const fileInputRef = defineModel<VueElement | null>({
 const props = defineProps<FormInputsProps>()
 const emit = defineEmits<FormInputsEmits>()
 
-const userSotre = useUserStore()
-const { user } = storeToRefs(userSotre)
-
 const DBUsersEmails = ref<string[]>([])
 const inputsWrapperRef = ref<VueElement | null>(null)
 const { focused } = useFocusWithin(inputsWrapperRef)
@@ -38,18 +27,13 @@ const { focused } = useFocusWithin(inputsWrapperRef)
 const fileIsLoaded = ref(false)
 
 onMounted(async () => {
-  const currentUser = user.value
+  const response = await ManageUsersService.getUsersEmails()
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await ManageUsersService.getUsersEmails(token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', 'Ошибка')
-    }
-
-    DBUsersEmails.value = response
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', 'Ошибка')
   }
+
+  DBUsersEmails.value = response
 })
 
 const handleFileLoad = async (event: HTMLTargetEvent) => {
@@ -63,7 +47,7 @@ const handleFileLoad = async (event: HTMLTargetEvent) => {
         const emails = text.replace(/(\r\n|\r|\n)/g, ' ').split(' ')
         const validEmails = emails.reduce(
           (validAmount, email) =>
-            Validation.checkEmail(email) ? (validAmount += 1) : validAmount,
+            validation.checkEmail(email) ? (validAmount += 1) : validAmount,
           0,
         )
         const notificationMessage = `Валидацию прошло ${validEmails} из ${emails.length}.`
@@ -97,7 +81,7 @@ const moveErrorEmail = async (index: number) => {
   if (
     index > 0 &&
     !focused.value &&
-    Validation.checkEmail(prevEmail) &&
+    validation.checkEmail(prevEmail) &&
     !DBUsersEmails.value.includes(prevEmail)
   ) {
     emit('move-email', index, 0)
@@ -105,7 +89,7 @@ const moveErrorEmail = async (index: number) => {
 }
 
 function getError(email: string, index: number) {
-  if ((props.submitCount || fileIsLoaded.value) && !Validation.checkEmail(email)) {
+  if ((props.submitCount || fileIsLoaded.value) && !validation.checkEmail(email)) {
     moveErrorEmail(index)
     return 'Неверно введена почта'
   }

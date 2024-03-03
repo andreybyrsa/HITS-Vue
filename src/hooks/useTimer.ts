@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-function useTimer(initialSeconds: number) {
+export const useTimer = (initialSeconds: number) => {
   const expiredTime = ref('')
 
   const intervalID = setInterval(() => {
@@ -21,5 +21,3 @@ function useTimer(initialSeconds: number) {
 
   return expiredTime
 }
-
-export default useTimer

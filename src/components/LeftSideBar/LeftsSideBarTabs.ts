@@ -1,6 +1,6 @@
-import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
+import { LeftSideBarTabType } from '@Components/LeftSideBar/LeftSideBar.types'
 
-const leftSideBarTabs: LeftSideBarTabType[] = [
+export const leftSideBarTabs: LeftSideBarTabType[] = [
   {
     name: 'ideas',
     text: 'Реестр идей',
@@ -108,5 +108,3 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     roles: ['ADMIN'],
   },
 ]
-
-export default leftSideBarTabs

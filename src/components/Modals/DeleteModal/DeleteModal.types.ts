@@ -1,11 +1,9 @@
-interface DeleteModalProps {
+export interface DeleteModalProps {
   isOpened: boolean
   itemName?: string
 }
 
-interface DeleteModalEmits {
+export interface DeleteModalEmits {
   (event: 'close-modal'): void
   (evant: 'delete'): void
 }
-
-export { DeleteModalProps, DeleteModalEmits }

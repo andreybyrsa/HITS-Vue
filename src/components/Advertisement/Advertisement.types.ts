@@ -1,6 +1,6 @@
 import { Action } from '@Components/ActionsList/ActionsList.types'
 
-interface AdvertisementProps<AdvertisementType> {
+export interface AdvertisementProps<AdvertisementType> {
   className?: string
 
   advertisement?: AdvertisementType
@@ -13,8 +13,6 @@ interface AdvertisementProps<AdvertisementType> {
   hasAccessToActions?: boolean
 }
 
-interface AdvertisementPlaceholderProps {
+export interface AdvertisementPlaceholderProps {
   className?: string
 }
-
-export { AdvertisementProps, AdvertisementPlaceholderProps }

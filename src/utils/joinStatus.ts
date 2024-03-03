@@ -1,4 +1,4 @@
-import { JoinStatus } from '@Domain/Team'
+import { JoinStatus } from '@Domain'
 
 interface GetInvitationsToTeamType {
   requests: JoinStatus[]
@@ -7,7 +7,7 @@ interface GetInvitationsToTeamType {
   }
 }
 
-function getJoinStatus(): GetInvitationsToTeamType {
+export function getJoinStatus(): GetInvitationsToTeamType {
   return {
     requests: ['NEW', 'WITHDRAWN', 'ACCEPTED', 'ANNULLED', 'CANCELED'],
     translatedRequests: {
@@ -19,7 +19,8 @@ function getJoinStatus(): GetInvitationsToTeamType {
     },
   }
 }
-function getJoinStatusStyle(status: JoinStatus) {
+
+export function getJoinStatusStyle(status: JoinStatus) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
 
   if (status === 'NEW' || status === 'ANNULLED') {
@@ -42,5 +43,3 @@ function getJoinStatusStyle(status: JoinStatus) {
     return initialClass
   }
 }
-
-export { getJoinStatus, getJoinStatusStyle }

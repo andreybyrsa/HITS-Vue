@@ -2,30 +2,22 @@
 import { ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
-
-import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
-import Typography from '@Components/Typography/Typography.vue'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import { RolesTypes, User } from '@Domain'
+import { ManageUsersService } from '@Service'
+import { useUserStore, useNotificationsStore } from '@Store'
+import { getUserRolesInfo, validation } from '@Utils'
 import {
   EditUserModalProps,
   EditUserModalEmits,
 } from '@Components/Modals/EditUserModal/EditUserModal.types'
-import editUserInputs from '@Components/Modals/EditUserModal/EditUserInputs'
+import { editUserInputs } from '@Components/Modals/EditUserModal/EditUserInputs'
+import Button from '@Components/Button/Button.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
+import Typography from '@Components/Typography/Typography.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Icon from '@Components/Icon/Icon.vue'
-
-import RolesTypes from '@Domain/Roles'
-import { User } from '@Domain/User'
-
-import ManageUsersService from '@Services/ManageUsersService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import { getUserRolesInfo } from '@Utils/userRolesInfo'
-import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
 
@@ -44,12 +36,12 @@ const availableRoles = getUserRolesInfo()
 const { errors, setValues, handleSubmit } = useForm<User>({
   validationSchema: {
     email: (value: string) =>
-      Validation.checkEmail(value) || 'Неверно введена почта',
+      validation.checkEmail(value) || 'Неверно введена почта',
     firstName: (value: string) =>
-      Validation.checkName(value) || 'Неверно введено имя',
+      validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
-      Validation.checkName(value) || 'Неверно введена фамилия',
-    roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
+      validation.checkName(value) || 'Неверно введена фамилия',
+    roles: (value: RolesTypes[]) => validation.checkIsEmptyValue(value),
   },
 })
 
@@ -63,30 +55,24 @@ watch(
 )
 
 const handleEditUser = handleSubmit(async (values) => {
-  const currentUser = user.value
+  isLoading.value = true
+  const response = await ManageUsersService.updateUserInfo(values)
+  isLoading.value = false
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isLoading.value = true
-    const response = await ManageUsersService.updateUserInfo(values, token)
-    isLoading.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    const currentUserIndex = users.value.findIndex((user) => user.id === response.id)
-    if (currentUserIndex !== -1) {
-      users.value.splice(currentUserIndex, 1, response)
-    }
-
-    emit('close-modal')
-    return notificationsStore.createSystemNotification(
-      'Система',
-      'Пользователь успешно изменен',
-    )
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  const currentUserIndex = users.value.findIndex((user) => user.id === response.id)
+  if (currentUserIndex !== -1) {
+    users.value.splice(currentUserIndex, 1, response)
+  }
+
+  emit('close-modal')
+  return notificationsStore.createSystemNotification(
+    'Система',
+    'Пользователь успешно изменен',
+  )
 })
 </script>
 
@@ -196,3 +182,4 @@ const handleEditUser = handleSubmit(async (values) => {
   transform: scale(0.9);
 }
 </style>
+@Utils/validation

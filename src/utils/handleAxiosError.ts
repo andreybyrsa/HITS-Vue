@@ -4,7 +4,7 @@ interface ServerError {
   error: string
 }
 
-export default function handleAxiosError(
+export function handleAxiosError(
   axiosError: AxiosError<ServerError>,
   errorMessage?: string,
 ) {

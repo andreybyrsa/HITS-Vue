@@ -1,4 +1,4 @@
-type ChangeStatusCode = 'WRONG_CODE' | 'CHANGE_FAILED'
+export type ChangeStatusCode = 'WRONG_CODE' | 'CHANGE_FAILED'
 
 interface GetChangeStatusCode {
   translatedStatus: {
@@ -6,7 +6,7 @@ interface GetChangeStatusCode {
   }
 }
 
-function getChangeStatusCode(): GetChangeStatusCode {
+export const getChangeStatusCode = (): GetChangeStatusCode => {
   return {
     translatedStatus: {
       WRONG_CODE: 'Неверный код',
@@ -14,5 +14,3 @@ function getChangeStatusCode(): GetChangeStatusCode {
     },
   }
 }
-
-export { getChangeStatusCode, ChangeStatusCode }

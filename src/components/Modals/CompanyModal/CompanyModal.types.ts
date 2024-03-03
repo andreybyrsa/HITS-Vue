@@ -1,24 +1,21 @@
 import { FieldEntry } from 'vee-validate'
+import { User } from '@Domain'
 
-import { User } from '@Domain/User'
-
-interface CompanyModalProps {
+export interface CompanyModalProps {
   isOpened: boolean
   companyId?: string
 }
 
-interface UsersColumnsProps {
+export interface UsersColumnsProps {
   users: FieldEntry<User>[]
   unselectedUsers: User[]
 }
 
-interface CompanyModalEmits {
+export interface CompanyModalEmits {
   (event: 'close-modal'): void
 }
 
-interface UsersColumnsEmits {
+export interface UsersColumnsEmits {
   (event: 'selectUser', user: User): void
   (event: 'unselectUser', user: User, index: number): void
 }
-
-export { CompanyModalProps, UsersColumnsProps, CompanyModalEmits, UsersColumnsEmits }

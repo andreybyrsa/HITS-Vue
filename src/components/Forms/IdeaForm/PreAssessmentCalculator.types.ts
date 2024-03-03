@@ -1,12 +1,11 @@
 import { OptionType } from '@Components/Inputs/Select/Select.types'
+import { Idea } from '@Domain'
 
-import { Idea } from '@Domain/Idea'
-
-interface PreAssessmentProps {
+export interface PreAssessmentProps {
   idea: Idea
 }
 
-interface PreAssessmentSelect {
+export interface PreAssessmentSelect {
   name: 'suitability' | 'budget'
   label: string
   options: OptionType[]
@@ -28,7 +27,7 @@ const budgetOptions = [
   { label: 'Свыше 100.000 руб', value: 1 },
 ]
 
-const preAssessmentSelects: PreAssessmentSelect[] = [
+export const preAssessmentSelects: PreAssessmentSelect[] = [
   {
     name: 'suitability',
     label: 'Пригодность*',
@@ -40,5 +39,3 @@ const preAssessmentSelects: PreAssessmentSelect[] = [
     options: budgetOptions,
   },
 ]
-
-export { PreAssessmentProps, PreAssessmentSelect, preAssessmentSelects }

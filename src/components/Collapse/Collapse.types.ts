@@ -1,6 +1,4 @@
-interface CollapseProps {
+export interface CollapseProps {
   id: string
   className?: string
 }
-
-export default CollapseProps

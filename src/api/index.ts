@@ -1,8 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
-import { API_URL } from '@Main'
-import useUserStore from '@Store/user/userStore'
-import getAbortedSignal from '@Utils/getAbortedSignal'
-import handleAxiosError from '@Utils/handleAxiosError'
+import { API_URL } from '@Config'
+import { useUserStore } from '@Store'
+import { getAbortedSignal, handleAxiosError } from '@Utils'
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,

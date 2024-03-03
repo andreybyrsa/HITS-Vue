@@ -1,10 +1,8 @@
 import { Ref, ref } from 'vue'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
-
 import { api } from '@Api'
-import { MODE } from '@Main'
-
-import Success from '@Domain/ResponseMessage'
+import { MODE } from '@Config'
+import { Success } from '@Domain'
 
 type OptionalMocksDataType<MocksType> = Partial<
   Record<keyof MocksType, MocksType[keyof MocksType]>
@@ -40,7 +38,7 @@ function createMockResponse<MockResponseType>(
   } as AxiosResponse<MockResponseType>
 }
 
-function defineAxios<MocksType>(mocks: MocksType[]) {
+export function defineAxios<MocksType>(mocks: MocksType[]) {
   const mockArray = ref(mocks) as Ref<MocksType[]>
 
   function get(
@@ -408,5 +406,3 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     delete: deleteData,
   }
 }
-
-export default defineAxios

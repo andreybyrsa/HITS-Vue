@@ -1,25 +1,17 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-
+import { useMarketsStore } from '@Store'
 import {
   CloseIdeasMarketModalProps,
   CloseIdeasMarketModalEmits,
 } from '@Components/Modals/CloseIdeasMarketModal/CloseIdeasMarketModal.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import useUserStore from '@Store/user/userStore'
-import useMarketsStore from '@Store/markets/marketsStore'
 
 const props = defineProps<CloseIdeasMarketModalProps>()
 const emit = defineEmits<CloseIdeasMarketModalEmits>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const marketsStore = useMarketsStore()
 
@@ -28,21 +20,15 @@ const isLoading = ref(false)
 const router = useRouter()
 
 async function closeIdeasMarket() {
-  const currentUser = user.value
+  isLoading.value = true
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  const { id } = props.market
 
-    isLoading.value = true
+  await marketsStore.updateMarketStatus(id, 'DONE')
 
-    const { id } = props.market
-
-    await marketsStore.updateMarketStatus(id, 'DONE', token)
-
-    isLoading.value = false
-    emit('close-modal')
-    router.push({ name: 'markets-list' })
-  }
+  isLoading.value = false
+  emit('close-modal')
+  router.push({ name: 'markets-list' })
 }
 </script>
 

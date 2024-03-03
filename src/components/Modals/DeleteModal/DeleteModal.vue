@@ -1,14 +1,13 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
-
-import Button from '@Components/Button/Button.vue'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import {
   DeleteModalEmits,
   DeleteModalProps,
 } from '@Components/Modals/DeleteModal/DeleteModal.types'
+import Button from '@Components/Button/Button.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 const props = defineProps<DeleteModalProps>()
 

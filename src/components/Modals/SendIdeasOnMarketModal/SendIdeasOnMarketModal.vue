@@ -204,3 +204,4 @@ function resetIdea(ideaId: string) {
   transform: scale(0.9);
 }
 </style>
+@Utils/validation

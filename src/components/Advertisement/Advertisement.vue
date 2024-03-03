@@ -1,7 +1,6 @@
 <script lang="ts" setup generic="AdvertisementType">
 import { computed } from 'vue'
 import { useDateFormat } from '@vueuse/core'
-
 import { AdvertisementProps } from '@Components/Advertisement/Advertisement.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'

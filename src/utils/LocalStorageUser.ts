@@ -1,4 +1,4 @@
-import { User } from '@Domain/User'
+import { User } from '@Domain'
 
 class LocalStorageUser {
   private LOCAL_STORAGE_KEY = 'user'
@@ -49,4 +49,4 @@ class LocalStorageUser {
   }
 }
 
-export default new LocalStorageUser()
+export const localStorageUser = new LocalStorageUser()

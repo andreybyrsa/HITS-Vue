@@ -203,3 +203,4 @@ function getCurrentTooltip(select: RatingSelect) {
   @include flexible(flex-start, stretch, column, $gap: 8px);
 }
 </style>
+@Utils/validation

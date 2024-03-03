@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
 import { IconEmits, IconProps } from '@Components/Icon/Icon.types'
 
 const props = defineProps<IconProps>()

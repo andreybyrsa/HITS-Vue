@@ -1,5 +1,3 @@
-interface DropDownProps {
+export interface DropDownProps {
   className?: string
 }
-
-export default DropDownProps

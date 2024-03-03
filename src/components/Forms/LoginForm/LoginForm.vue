@@ -1,29 +1,23 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useForm } from 'vee-validate'
-
+import { LoginUser } from '@Domain'
+import { useUserStore } from '@Store'
+import { validation } from '@Utils'
+import { loginInputs } from '@Components/Forms/LoginForm/LoginFormInputs'
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import loginInputs from '@Components/Forms/LoginForm/LoginFormInputs'
-
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
-
-import { LoginUser } from '@Domain/User'
-
-import useUserStore from '@Store/user/userStore'
-
-import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
-
 const isLoading = ref(false)
 
 const { handleSubmit } = useForm<LoginUser>({
   validationSchema: {
     email: (value: string) =>
-      Validation.checkEmail(value) || 'Неверно введена почта',
-    password: (value: string) => Validation.checkPassword(value),
+      validation.checkEmail(value) || 'Неверно введена почта',
+    password: (value: string) => validation.checkPassword(value),
   },
 })
 
@@ -69,3 +63,4 @@ const handleLogin = handleSubmit(async (values) => {
     </Button>
   </FormLayout>
 </template>
+@Utils/validation

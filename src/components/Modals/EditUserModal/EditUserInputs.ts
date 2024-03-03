@@ -1,6 +1,6 @@
 import { EditUserInputType } from '@Components/Modals/EditUserModal/EditUserModal.types'
 
-const editUserInputs: EditUserInputType[] = [
+export const editUserInputs: EditUserInputType[] = [
   {
     id: 0,
     type: 'email',
@@ -21,5 +21,3 @@ const editUserInputs: EditUserInputType[] = [
     prependIconName: 'bi bi-fonts',
   },
 ]
-
-export default editUserInputs

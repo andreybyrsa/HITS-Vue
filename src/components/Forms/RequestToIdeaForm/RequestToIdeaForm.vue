@@ -1,18 +1,14 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
-
+import { Team } from '@Domain'
+import { useUserStore } from '@Store'
 import { RequestToIdeaFormProps } from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.types.'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import RequestTeamCollapse from '@Components/Forms/RequestToIdeaForm/RequestTeamCollapse.vue'
 
-import useUserStore from '@Store/user/userStore'
-import { Team } from '@Domain/Team'
-
 const userStore = useUserStore()
-
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
-
 const router = useRouter()
 
 defineProps<RequestToIdeaFormProps>()
