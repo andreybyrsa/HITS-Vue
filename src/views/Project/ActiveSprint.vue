@@ -590,6 +590,7 @@ function closeSprintModal() {
 
     <TaskModal
       :is-opened="isOpenedCreateNewTask"
+      :is-active-sprint="newTask"
       @close-modal="closeCreateNewTask"
     />
   </div>

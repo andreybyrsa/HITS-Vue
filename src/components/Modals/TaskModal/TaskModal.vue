@@ -55,32 +55,6 @@ const choosenTags = ref<Tag[]>([])
 function confirmedTags(tagsValue: Tag[]) {
   return tagsValue.filter(({ confirmed }) => confirmed)
 }
-// async function createTask() {
-//   const currentUser = user.value
-//   if (currentUser?.token) {
-//     const { token } = currentUser
-//     const projectId = route.params.id.toString()
-//     const position = tasks.value.length + 1
-//     const currentDate = new Date().toJSON().toString()
-//     console.log(descriptionTask.value, choosenTags.value)
-//     const currentTask: Task = {
-//       id: '',
-//       projectId: projectId,
-//       name: nameTask.value,
-//       description: descriptionTask.value,
-//       initiator: currentUser,
-//       executor: null,
-//       workHour: workHourTask.value,
-//       position: position,
-//       startDate: currentDate,
-//       tag: choosenTags.value,
-//       taskMovementLog: props.isActiveSprint ? ['NewTask'] : ['InBackLog'],
-//       status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
-//     }
-//     await tasksStore.createTask(currentTask, token)
-//     emit('close-modal')
-//   }
-// }
 
 const taskModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 const isCreating = ref(false)
