@@ -23,7 +23,7 @@ const getUserProfile = async (id: string): Promise<Profile | Error> => {
 
 const getProfileAvatar = async (id: string): Promise<string | Error> => {
   const response = await api.get(`/profile/avatar/get/${id}`)
-  return response.data
+  return response?.data
 }
 
 const getTeamExperience = async (
@@ -51,14 +51,14 @@ const uploadProfileAvatar = async (formData: FormData): Promise<string | Error> 
       'Content-Type': 'multipart/form-data',
     },
   })
-  return response.data
+  return response?.data
 }
 
 const updateUserFullName = async (
   fullName: ProfileFullName,
 ): Promise<Success | Error> => {
   const response = await api.put('/profile/fullname/update', fullName)
-  return response.data
+  return response?.data
 }
 
 export const ProfileService = {
