@@ -14,7 +14,6 @@ import {
   useTeamStore,
   useInvitationUsersStore,
   useRequestsToTeamStore,
-  useRequestsToIdeaStore,
   useInvitationsTeamToIdeaStore,
 } from '@Store'
 import {
