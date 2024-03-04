@@ -1,4 +1,4 @@
-import { Market } from '@Domain/Market'
+import { Market } from '@Domain'
 
 interface MarketModalInputType {
   type?: string
@@ -7,16 +7,16 @@ interface MarketModalInputType {
   placeholder: string
 }
 
-interface MarketModalProps {
+export interface MarketModalProps {
   isOpened: boolean
   market: Market | null
 }
 
-interface MarketModalEmits {
+export interface MarketModalEmits {
   (event: 'close-modal'): void
 }
 
-const marketModalInputs: MarketModalInputType[] = [
+export const marketModalInputs: MarketModalInputType[] = [
   {
     type: 'text',
     name: 'name',
@@ -36,5 +36,3 @@ const marketModalInputs: MarketModalInputType[] = [
     placeholder: 'Введите дату конца',
   },
 ]
-
-export { MarketModalProps, MarketModalEmits, marketModalInputs }

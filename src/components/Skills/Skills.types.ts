@@ -1,12 +1,10 @@
-import { Skill } from '@Domain/Skill'
+import { Skill } from '@Domain'
 
-interface SkillsProps {
+export interface SkillsProps {
   skills?: Skill[]
   skillActionIcon?: string
 }
 
-interface SkillsEmits {
+export interface SkillsEmits {
   (event: 'skill-action', skill: Skill, index: number): void
 }
-
-export { SkillsProps, SkillsEmits }

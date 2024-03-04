@@ -9,7 +9,7 @@ interface GetFiltersByRolesType {
   }
 }
 
-export function GetFiltersByRoles(): GetFiltersByRolesType {
+export function getFiltersByRoles(): GetFiltersByRolesType {
   return {
     filter: {
       INITIATOR: [],

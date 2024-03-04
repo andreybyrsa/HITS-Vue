@@ -1,37 +1,16 @@
-<template>
-  <Table
-    class-name="p-3"
-    :header="ideasTableHeader"
-    :columns="ideaTableColumns"
-    :data="ideas"
-    :search-by="['name', 'description']"
-    :filters="ideasFilters"
-    :checked-data-actions="checkedIdeasActions"
-    :dropdown-actions-menu="dropdownIdeasActions"
-    v-model="checkedIdeas"
-    :isCheckbox="user?.role === 'PROJECT_OFFICE'"
-  />
-
-  <DeleteModal
-    :is-opened="isOpenedIdeaDeleteModal"
-    :item-name="deletingIdeaName"
-    @close-modal="handleCloseDeleteModal"
-    @delete="handleDeleteIdea"
-  />
-
-  <SendIdeasOnMarketModal
-    :is-opened="isOpenSendIdeasModal"
-    :ideas="sendingIdeasOnMarket"
-    @close-modal="closeSendIdeasModal"
-  />
-</template>
-
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-
+import { Idea, IdeaStatusType } from '@Domain'
+import { useUserStore, useIdeasStore, useRatingsStore } from '@Store'
+import {
+  getFiltersByRoles,
+  mutableSort,
+  getIdeaStatus,
+  getIdeaStatusStyle,
+} from '@Utils'
 import Table from '@Components/Table/Table.vue'
 import {
   TableColumn,
@@ -42,16 +21,6 @@ import {
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import SendIdeasOnMarketModal from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.vue'
-
-import { Idea, IdeaStatusType } from '@Domain/Idea'
-
-import useUserStore from '@Store/user/userStore'
-import useIdeasStore from '@Store/ideas/ideasStore'
-import useRatingsStore from '@Store/ratings/ratingsStore'
-
-import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
-import mutableSort from '@Utils/mutableSort'
-import getFiltersByRoles from '@Utils/getFiltersByRoles'
 
 const router = useRouter()
 
@@ -93,14 +62,14 @@ watchImmediate(
 watchImmediate(filterByConfirmedExpert, async (value) => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role) {
-    const { token, role } = currentUser
+  if (currentUser?.role) {
+    const { role } = currentUser
 
     if (value) {
-      return await ideaStore.getExpertNotConfirmedIdeas(token)
+      return await ideaStore.getExpertNotConfirmedIdeas()
     }
 
-    return await ideaStore.getIdeas(role, token)
+    return await ideaStore.getIdeas(role)
   }
 })
 
@@ -336,11 +305,8 @@ function handleCloseDeleteModal() {
 }
 
 async function handleDeleteIdea() {
-  const currentUser = user.value
-
-  if (currentUser?.token && deletingIdeaId.value !== null) {
-    const { token } = currentUser
-    await ideaStore.deleteIdea(deletingIdeaId.value, token)
+  if (deletingIdeaId.value !== null) {
+    await ideaStore.deleteIdea(deletingIdeaId.value)
   }
 }
 
@@ -392,3 +358,31 @@ function checkIdeaStatus(idea: Idea, status: FilterValue) {
   return idea.status === status
 }
 </script>
+
+<template>
+  <Table
+    class-name="p-3"
+    :header="ideasTableHeader"
+    :columns="ideaTableColumns"
+    :data="ideas"
+    :search-by="['name', 'description']"
+    :filters="ideasFilters"
+    :checked-data-actions="checkedIdeasActions"
+    :dropdown-actions-menu="dropdownIdeasActions"
+    v-model="checkedIdeas"
+    :isCheckbox="user?.role === 'PROJECT_OFFICE'"
+  />
+
+  <DeleteModal
+    :is-opened="isOpenedIdeaDeleteModal"
+    :item-name="deletingIdeaName"
+    @close-modal="handleCloseDeleteModal"
+    @delete="handleDeleteIdea"
+  />
+
+  <SendIdeasOnMarketModal
+    :is-opened="isOpenSendIdeasModal"
+    :ideas="sendingIdeasOnMarket"
+    @close-modal="closeSendIdeasModal"
+  />
+</template>

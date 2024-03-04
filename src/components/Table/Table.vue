@@ -1,14 +1,13 @@
 <script lang="ts" setup generic="DataType">
 import { ref, Ref, onMounted, computed, StyleValue } from 'vue'
 import { watchImmediate } from '@vueuse/core'
-
 import {
   TableProps,
   TypedFormatFunction,
   TypedStyleFunction,
 } from '@Components/Table/Table.types'
-import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import { FilterValue } from '@Components/FilterBar/FilterBar.types'
+import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'

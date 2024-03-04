@@ -2,21 +2,17 @@
 import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
-
-import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
-import Typography from '@Components/Typography/Typography.vue'
+import { Skill, SkillType } from '@Domain'
+import { useUserStore, useNotificationsStore } from '@Store'
+import { SkillsService } from '@Service'
 import {
   StackCategoriesProps,
   comboboxStackCategories,
 } from '@Components/StackCategories/StackCategories'
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import Skills from '@Components/Skills/Skills.vue'
-import { Skill, SkillType } from '@Domain/Skill'
-
-import SkillsService from '@Services/SkillsService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const props = defineProps<StackCategoriesProps>()
 
@@ -41,17 +37,13 @@ const choosenSkills = ref<Record<SkillType, Skill[]>>({
 })
 
 onMounted(async () => {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await SkillsService.getAllConfirmedOrCreatorSkills(token)
+  const response = await SkillsService.getAllConfirmedOrCreatorSkills()
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    skills.value = response
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  skills.value = response
 })
 
 watchImmediate(
@@ -96,21 +88,16 @@ function checkIsChoosenSkills() {
 }
 
 const handleAddNoConfirmedStack = async (name: string, type: SkillType) => {
-  const currentUser = user.value
+  const newSkill = { name, type, confirmed: false } as Skill
+  const response = await SkillsService.createNoConfirmedSkill(newSkill)
 
-  if (currentUser?.token) {
-    const newSkill = { name, type, confirmed: false } as Skill
-    const { token } = currentUser
-    const response = await SkillsService.createNoConfirmedSkill(newSkill, token)
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
+  }
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    if (skills.value) {
-      skills.value[type] = [...skills.value[type], response]
-      choosenSkills.value[type] = [...choosenSkills.value[type], response]
-    }
+  if (skills.value) {
+    skills.value[type] = [...skills.value[type], response]
+    choosenSkills.value[type] = [...choosenSkills.value[type], response]
   }
 }
 </script>

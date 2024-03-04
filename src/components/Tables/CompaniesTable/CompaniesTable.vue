@@ -1,37 +1,8 @@
-<template>
-  <Table
-    class-name="p-3"
-    :header="companiesTableHeader"
-    :columns="companiesTableColumns"
-    :data="companies"
-    :search-by="['name']"
-    :dropdown-actions-menu="dropdownCompaniesActions"
-  ></Table>
-
-  <CompanyModal
-    :isOpened="isOpenedCreatingCompanyModal"
-    v-model="companies"
-    @close-modal="closeCreatingCompanyModal"
-  />
-  <CompanyModal
-    :isOpened="isOpenedUpdatingCompanyModal"
-    :company-id="currentCompanyId"
-    v-model="companies"
-    @close-modal="closeUpdatingCompanyModal"
-  />
-
-  <DeleteModal
-    :is-opened="isOpenedDeletingCompanyModal"
-    :item-name="currentDeleteCompanyName"
-    @delete="handleDeleteCompany"
-    @close-modal="closeDeletingCompanyModal"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
-
+import { User, Company } from '@Domain'
+import { useNotificationsStore } from '@Store'
+import { CompanyService } from '@Service'
 import Table from '@Components/Table/Table.vue'
 import {
   DropdownMenuAction,
@@ -41,18 +12,8 @@ import {
 import CompanyModal from '@Components/Modals/CompanyModal/CompanyModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 
-import Company from '@Domain/Company'
-import { User } from '@Domain/User'
-
-import CompanyService from '@Services/CompanyService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
 const companies = defineModel<Company[]>({ required: true })
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const currentCompanyId = ref<string>()
@@ -135,14 +96,8 @@ function closeDeletingCompanyModal() {
 }
 
 const handleDeleteCompany = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentDeleteCompanyId.value !== null) {
-    const { token } = currentUser
-    const response = await CompanyService.deleteCompany(
-      currentDeleteCompanyId.value,
-      token,
-    )
+  if (currentDeleteCompanyId.value !== null) {
+    const response = await CompanyService.remove(currentDeleteCompanyId.value)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -154,3 +109,33 @@ const handleDeleteCompany = async () => {
   }
 }
 </script>
+
+<template>
+  <Table
+    class-name="p-3"
+    :header="companiesTableHeader"
+    :columns="companiesTableColumns"
+    :data="companies"
+    :search-by="['name']"
+    :dropdown-actions-menu="dropdownCompaniesActions"
+  ></Table>
+
+  <CompanyModal
+    :isOpened="isOpenedCreatingCompanyModal"
+    v-model="companies"
+    @close-modal="closeCreatingCompanyModal"
+  />
+  <CompanyModal
+    :isOpened="isOpenedUpdatingCompanyModal"
+    :company-id="currentCompanyId"
+    v-model="companies"
+    @close-modal="closeUpdatingCompanyModal"
+  />
+
+  <DeleteModal
+    :is-opened="isOpenedDeletingCompanyModal"
+    :item-name="currentDeleteCompanyName"
+    @delete="handleDeleteCompany"
+    @close-modal="closeDeletingCompanyModal"
+  />
+</template>

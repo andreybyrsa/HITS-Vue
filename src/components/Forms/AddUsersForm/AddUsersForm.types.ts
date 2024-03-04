@@ -20,4 +20,3 @@ export interface FormInputsEmits {
 export interface FormControllersEmits {
   (event: 'push-email', email: string): void
 }
-

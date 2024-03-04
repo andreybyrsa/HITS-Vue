@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import {
   ProjectExprienceModalProps,
   RequestToIdeaModalEmits,
 } from '@Components/Modals/ProjectExperienceModal/ProjectExperienceModal.types'
-
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import TeamProjectsTable from '@Components/Tables/ProfileExperienceTable/TeamProjectsTable.vue'

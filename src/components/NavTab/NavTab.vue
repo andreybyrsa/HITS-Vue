@@ -2,15 +2,12 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
+import { RolesTypes } from '@Domain'
+import { useUserStore } from '@Store'
 import { NavTabProps } from '@Components/NavTab/NavTab.types'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
-
-import RolesTypes from '@Domain/Roles'
-
-import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

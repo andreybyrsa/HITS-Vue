@@ -2,15 +2,11 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { RequestTeamToIdea, InvitationTeamToIdea, Team } from '@Domain'
 import { IdeaMarketTablesProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 import RequestsToIdeaTable from '@Components/Tables/RequestsToIdeaTable/RequestsToIdeaTable.vue'
 import IdeaMarketTeamsTable from '@Components/Tables/IdeaMarketTeamsTable/IdeaMarketTeamsTable.vue'
 import InvitedTeamsToIdeaTable from '@Components/Tables/InvitedTeamsToIdeaTable/InvitedTeamsToIdeaTable.vue'
-
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Team } from '@Domain/Team'
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
-
 import Button from '@Components/Button/Button.vue'
 
 const skillsRequestTeam = defineModel<RequestTeamToIdea[]>('skillsRequestTeam')

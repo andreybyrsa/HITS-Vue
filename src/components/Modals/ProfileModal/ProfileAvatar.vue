@@ -2,18 +2,12 @@
 import { Ref, ref, computed, VueElement } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
+import { HTMLTargetEvent } from '@Domain'
+import { useUserStore, useProfilesStore } from '@Store'
+import { getUserRolesInfo } from '@Utils'
+import { profileImage } from '@Assets'
 import Icon from '@Components/Icon/Icon.vue'
 import LoadingWrapper from '@Components/LoadingWrapper/LoadingWrapper.vue'
-
-import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
-
-import useUserStore from '@Store/user/userStore'
-import useProfilesStore from '@Store/profiles/profilesStore'
-
-import { getUserRolesInfo } from '@Utils/userRolesInfo'
-
-import { profile } from '@Assets/images'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -42,14 +36,14 @@ async function handleFileUpload(event: HTMLTargetEvent) {
   const currentUser = user.value
   const file = event.target.files?.[0]
 
-  if (currentUser?.token && file) {
-    const { token, id } = currentUser
+  if (file && currentUser) {
+    const { id } = currentUser
 
     const formData = new FormData()
     formData.append('file', file)
 
     isLoadingAvatar.value = true
-    await profilesStore.uploadAvatar(id, file, formData, token)
+    await profilesStore.uploadAvatar(id, file, formData)
     isLoadingAvatar.value = false
   }
 }
@@ -81,7 +75,7 @@ async function handleFileUpload(event: HTMLTargetEvent) {
         <img
           v-else
           class="text-secondary"
-          :src="profile"
+          :src="profileImage"
           width="150"
           height="150"
         />

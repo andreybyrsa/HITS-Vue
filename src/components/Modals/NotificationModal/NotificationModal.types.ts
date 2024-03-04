@@ -1,12 +1,10 @@
-import Notification from '@Domain/Notification'
+import { Notification } from '@Domain'
 
-interface NotificationModalProps {
+export interface NotificationModalProps {
   notification: Notification
   timeExpired?: number
 }
 
-interface NotificationModalEmits {
+export interface NotificationModalEmits {
   (event: 'close-notification', notification: Notification): void
 }
-
-export { NotificationModalProps, NotificationModalEmits }

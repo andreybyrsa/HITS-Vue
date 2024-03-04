@@ -2,12 +2,9 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-
+import { useUserStore, useIdeasStore } from '@Store'
 import { IdeaActionsProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
 import Button from '@Components/Button/Button.vue'
-
-import useUserStore from '@Store/user/userStore'
-import useIdeasStore from '@Store/ideas/ideasStore'
 
 const props = defineProps<IdeaActionsProps>()
 
@@ -51,12 +48,12 @@ function getAccessToApproval() {
 const handleSendOnApproval = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role) {
-    const { token, role } = currentUser
+  if (currentUser?.role) {
+    const { role } = currentUser
     const { id } = props.idea
 
     isSendingOnApproval.value = true
-    await ideasStore.updateIdeaStatus(id, 'ON_APPROVAL', role, token)
+    await ideasStore.updateIdeaStatus(id, 'ON_APPROVAL', role)
     isSendingOnApproval.value = false
   }
 }
@@ -64,12 +61,12 @@ const handleSendOnApproval = async () => {
 const handleSendOnEditing = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role) {
-    const { token, role } = currentUser
+  if (currentUser?.role) {
+    const { role } = currentUser
     const { id } = props.idea
 
     isSendingOnEditing.value = true
-    await ideasStore.updateIdeaStatus(id, 'ON_EDITING', role, token)
+    await ideasStore.updateIdeaStatus(id, 'ON_EDITING', role)
     isSendingOnEditing.value = false
   }
 }
@@ -77,12 +74,12 @@ const handleSendOnEditing = async () => {
 const handleSendOnConfirmation = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role) {
-    const { token, role } = currentUser
+  if (currentUser?.role) {
+    const { role } = currentUser
     const { id } = props.idea
 
     isSendingOnConfirmation.value = true
-    await ideasStore.updateIdeaStatus(id, 'ON_CONFIRMATION', role, token)
+    await ideasStore.updateIdeaStatus(id, 'ON_CONFIRMATION', role)
     isSendingOnConfirmation.value = false
   }
 }

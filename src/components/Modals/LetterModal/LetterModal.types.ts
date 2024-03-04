@@ -1,14 +1,12 @@
-import { IdeaMarket } from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain'
 
-interface LetterModalProps {
+export interface LetterModalProps {
   isOpened: boolean
   ideaMarket?: IdeaMarket
   letter?: string
 }
 
-interface LetterModalEmits {
+export interface LetterModalEmits {
   (event: 'close-modal'): void
   (event: 'accept-request'): void
 }
-
-export { LetterModalProps, LetterModalEmits }

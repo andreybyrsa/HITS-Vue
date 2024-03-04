@@ -1,32 +1,22 @@
 <script lang="ts" setup>
 import { onUpdated, ref } from 'vue'
-import { storeToRefs } from 'pinia'
 import { useDateFormat } from '@vueuse/core'
 import { useForm } from 'vee-validate'
-
+import { Market } from '@Domain'
+import { useMarketsStore } from '@Store'
+import { validation } from '@Utils'
 import {
   MarketModalProps,
   MarketModalEmits,
   marketModalInputs,
 } from '@Components/Modals/MarketModal/MarketModal.types'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { Market } from '@Domain/Market'
-
-import useUserStore from '@Store/user/userStore'
-import useMarketsStore from '@Store/markets/marketsStore'
-
-import Validation from '@Utils/Validation'
-
 const props = defineProps<MarketModalProps>()
 const emit = defineEmits<MarketModalEmits>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const marketsStore = useMarketsStore()
 
@@ -35,11 +25,11 @@ const isLoading = ref(false)
 const { handleSubmit, setValues, values } = useForm<Market>({
   validationSchema: {
     name: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Неверно введено название',
+      validation.checkIsEmptyValue(value) || 'Неверно введено название',
     startDate: (value: string) =>
-      Validation.checkDate(value) || 'Неверно введена дата',
+      validation.checkDate(value) || 'Неверно введена дата',
     finishDate: () =>
-      Validation.validateDates(values.startDate, values.finishDate) ||
+      validation.validateDates(values.startDate, values.finishDate) ||
       'Неверно введена дата',
   },
 })
@@ -56,31 +46,19 @@ onUpdated(() => {
 })
 
 const createMarket = handleSubmit(async (values) => {
-  const currentUser = user.value
+  isLoading.value = true
+  await marketsStore.createMarket({ ...values, status: 'NEW' })
+  isLoading.value = false
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isLoading.value = true
-    await marketsStore.createMarket({ ...values, status: 'NEW' }, token)
-    isLoading.value = false
-
-    emit('close-modal')
-  }
+  emit('close-modal')
 })
 
 const updateMarket = handleSubmit(async (values) => {
-  const currentUser = user.value
+  isLoading.value = true
+  await marketsStore.updateMarket(values)
+  isLoading.value = false
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isLoading.value = true
-    await marketsStore.updateMarket(values, token)
-    isLoading.value = false
-
-    emit('close-modal')
-  }
+  emit('close-modal')
 })
 </script>
 

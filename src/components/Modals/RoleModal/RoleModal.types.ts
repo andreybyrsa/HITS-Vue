@@ -1,9 +1,7 @@
-interface RoleModalProps {
+export interface RoleModalProps {
   isOpened: boolean
 }
 
-interface RoleModalEmits {
+export interface RoleModalEmits {
   (event: 'close-modal'): void
 }
-
-export { RoleModalProps, RoleModalEmits }

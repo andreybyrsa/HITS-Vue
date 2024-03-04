@@ -1,71 +1,21 @@
-<template>
-  <Table
-    class-name="p-3"
-    :header="marketTableHeader"
-    :columns="marketTableColumns"
-    :data="markets"
-    :search-by="['name']"
-    :filters="marketFilters"
-    :dropdown-actions-menu="dropdownMarketActions"
-  />
-
-  <MarketModal
-    :is-opened="isOpenedMarketModal"
-    :market="currentMarket"
-    @close-modal="closeMarketModal"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedStartMarketConfirmation"
-    :text-question="startMarketConfirmationText"
-    text-button="Запустить биржу"
-    @close-modal="closeStartMarketConfirmationModal"
-    @action="handleUpdateMarketStatus('ACTIVE')"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedFinishMarketConfirmation"
-    :text-question="finishMarketConfirmationText"
-    text-button="Завершить биржу"
-    @close-modal="closeFinishMarketConfirmationModal"
-    @action="handleUpdateMarketStatus('DONE')"
-  />
-
-  <DeleteModal
-    :is-opened="isOpenedDeletingMarketModal"
-    :item-name="currentMarket?.name"
-    @close-modal="closeDeletingMarketModal"
-    @delete="handleDeleteMarket"
-  />
-</template>
-
 <script lang="ts" setup>
 import { Ref, computed, ref } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-
-import Table from '@Components/Table/Table.vue'
+import { Market, MarketStatus } from '@Domain'
+import { useMarketsStore } from '@Store'
+import { mutableSort, getMarketStatus, getMarketStatusStyle } from '@Utils'
 import {
   TableColumn,
   DropdownMenuAction,
   TableHeader,
 } from '@Components/Table/Table.types'
 import { Filter } from '@Components/FilterBar/FilterBar.types'
+import Table from '@Components/Table/Table.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
-
-import { Market, MarketStatus } from '@Domain/Market'
-
-import useUserStore from '@Store/user/userStore'
-import useMarketsStore from '@Store/markets/marketsStore'
-
-import { getMarketStatus, getMarketStatusStyle } from '@Utils/marketStatus'
-import mutableSort from '@Utils/mutableSort'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const marketsStore = useMarketsStore()
 const { markets } = storeToRefs(marketsStore)
@@ -226,24 +176,18 @@ function closeFinishMarketConfirmationModal() {
 }
 
 async function handleDeleteMarket() {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentMarket.value) {
-    const { token } = currentUser
+  if (currentMarket.value) {
     const { id } = currentMarket.value
 
-    await marketsStore.deleteMarket(id, token)
+    await marketsStore.deleteMarket(id)
   }
 }
 
 async function handleUpdateMarketStatus(marketStatus: MarketStatus) {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentMarket.value) {
-    const { token } = currentUser
+  if (currentMarket.value) {
     const { id } = currentMarket.value
 
-    await marketsStore.updateMarketStatus(id, marketStatus, token)
+    await marketsStore.updateMarketStatus(id, marketStatus)
   }
 }
 
@@ -251,3 +195,44 @@ function checkMarketStatus(market: Market, status: MarketStatus) {
   return market.status === status
 }
 </script>
+
+<template>
+  <Table
+    class-name="p-3"
+    :header="marketTableHeader"
+    :columns="marketTableColumns"
+    :data="markets"
+    :search-by="['name']"
+    :filters="marketFilters"
+    :dropdown-actions-menu="dropdownMarketActions"
+  />
+
+  <MarketModal
+    :is-opened="isOpenedMarketModal"
+    :market="currentMarket"
+    @close-modal="closeMarketModal"
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedStartMarketConfirmation"
+    :text-question="startMarketConfirmationText"
+    text-button="Запустить биржу"
+    @close-modal="closeStartMarketConfirmationModal"
+    @action="handleUpdateMarketStatus('ACTIVE')"
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedFinishMarketConfirmation"
+    :text-question="finishMarketConfirmationText"
+    text-button="Завершить биржу"
+    @close-modal="closeFinishMarketConfirmationModal"
+    @action="handleUpdateMarketStatus('DONE')"
+  />
+
+  <DeleteModal
+    :is-opened="isOpenedDeletingMarketModal"
+    :item-name="currentMarket?.name"
+    @close-modal="closeDeletingMarketModal"
+    @delete="handleDeleteMarket"
+  />
+</template>

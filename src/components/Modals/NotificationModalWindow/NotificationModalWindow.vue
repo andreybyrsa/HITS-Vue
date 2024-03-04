@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
-
+import { useNotificationsStore } from '@Store'
 import {
   NotificatonModalWindowEmits,
   NotificatonModalWindowProps,
@@ -16,14 +15,8 @@ import ReadedNotificationsModal from '@Components/Modals/NotificationModalWindow
 import NotificationTabsPlaceholder from '@Components/Modals/NotificationModalWindow/NotificationTabsPlaceholder.vue'
 import Button from '@Components/Button/Button.vue'
 
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
 defineProps<NotificatonModalWindowProps>()
 const emit = defineEmits<NotificatonModalWindowEmits>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
 
@@ -33,19 +26,13 @@ const isLoading = ref(false)
 onMounted(async () => await getNotification(true))
 
 async function getNotification(isAllNotifications: boolean) {
-  const currentUser = user.value
+  const currentGetterKey = isAllNotifications
+    ? 'fetchNotifications'
+    : 'fetchFavouriteNotifications'
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const currentGetterKey = isAllNotifications
-      ? 'fetchNotifications'
-      : 'fetchFavouriteNotifications'
-
-    isLoading.value = true
-    await notificationsStore[currentGetterKey](token)
-    isLoading.value = false
-  }
+  isLoading.value = true
+  await notificationsStore[currentGetterKey]()
+  isLoading.value = false
 }
 
 async function switchTab(isAllNotifications: boolean) {

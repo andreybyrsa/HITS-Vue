@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
-import TypographyProps from '@Components/Typography/Typography.types'
+import { TypographyProps } from '@Components/Typography/Typography.types'
 import Icon from '@Components/Icon/Icon.vue'
-const props = defineProps<TypographyProps>()
 
+const props = defineProps<TypographyProps>()
 const isTextProperty = props.className?.includes('fs')
 
 const typographyClassName = computed(() => {

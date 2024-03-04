@@ -2,32 +2,23 @@
 import { ref, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-
+import { IdeaMarket, Team, TeamInvitation, RequestToTeam } from '@Domain'
+import {
+  useUserStore,
+  useTeamStore,
+  useInvitationUsersStore,
+  useRequestsToTeamStore,
+  useRequestsToIdeaStore,
+  useInvitationsTeamToIdeaStore,
+} from '@Store'
+import { IdeaMarketService } from '@Service'
+import { sendParallelRequests, RequestConfig, openErrorNotification } from '@Utils'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import TeamModalPlaceholder from '@Components/Modals/TeamModal/TeamModalPlaceholder.vue'
 import TeamDescription from '@Components/Modals/TeamModal/TeamDescription.vue'
 import TeamModalActions from '@Components/Modals/TeamModal/TeamModalActions.vue'
 import TeamModalInfo from '@Components/Modals/TeamModal/TeamModalInfo.vue'
 import TeamModalTables from '@Components/Modals/TeamModal/TeamModalTables.vue'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { Team, TeamInvitation, RequestToTeam } from '@Domain/Team'
-
-import useUserStore from '@Store/user/userStore'
-import useTeamStore from '@Store/teams/teamsStore'
-import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
-import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
-import IdeasMarketService from '@Services/IdeasMarketService'
-
-import {
-  sendParallelRequests,
-  RequestConfig,
-  openErrorNotification,
-} from '@Utils/sendParallelRequests'
-import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
-
-import { IdeaMarket } from '@Domain/IdeaMarket'
 
 const requestsToIdea = useRequestsToIdeaStore()
 const { requestsTeamsToIdea } = storeToRefs(requestsToIdea)
@@ -56,30 +47,30 @@ const isOpened = ref<boolean>(true)
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser) {
     const id = route.params.teamId.toString()
-    const { token, role, id: userId } = currentUser
+    const { role, id: userId } = currentUser
 
     const teamParallelRequests: RequestConfig[] = [
       {
-        request: () => teamsStore.getTeam(id, token),
+        request: () => teamsStore.getTeam(id),
         refValue: team,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => requestsToTeamStore.getRequestsToTeam(id, token),
+        request: () => requestsToTeamStore.getRequestsToTeam(id),
         refValue: requestsToTeam,
         statement: role === 'TEAM_OWNER' || role === 'MEMBER' || role === 'ADMIN',
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => invitatinUsers.getInvitationUsers(id, token),
+        request: () => invitatinUsers.getInvitationUsers(id),
         refValue: teamInvitations,
         statement: role === 'TEAM_OWNER' || role === 'MEMBER' || role === 'ADMIN',
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => requestsToIdea.getTeamRequestsToIdeas(id, token),
+        request: () => requestsToIdea.getTeamRequestsToIdeas(id),
         refValue: requestsTeamsToIdea,
         statement:
           role === 'TEAM_OWNER' ||
@@ -90,8 +81,7 @@ onMounted(async () => {
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () =>
-          IdeasMarketService.getAllInitiatorMarketIdeasByUserId(userId, token),
+        request: () => IdeaMarketService.getAllInitiatorMarketIdeasByUserId(userId),
         refValue: ideasMarketInitiator,
         onErrorFunc: openErrorNotification,
       },
@@ -104,10 +94,9 @@ onMounted(async () => {
 watch(
   team,
   async () => {
-    if (user.value?.token && team.value?.id) {
-      const { token } = user.value
+    if (team.value?.id) {
       const { id: teamId } = team.value
-      await invitationsTeamToIdeaStore.getTeamInvitations(teamId, token)
+      await invitationsTeamToIdeaStore.getTeamInvitations(teamId)
     }
   },
   { deep: true },

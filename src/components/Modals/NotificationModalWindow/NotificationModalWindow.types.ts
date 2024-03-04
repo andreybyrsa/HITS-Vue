@@ -1,19 +1,13 @@
-import Notification from '@Domain/Notification'
+import { Notification } from '@Domain'
 
-interface NotificatonModalWindowProps {
+export interface NotificatonModalWindowProps {
   isOpened: boolean
 }
 
-interface NotificationTabProps {
+export interface NotificationTabProps {
   notification: Notification
 }
 
-interface NotificatonModalWindowEmits {
+export interface NotificatonModalWindowEmits {
   (event: 'close-modal'): void
-}
-
-export {
-  NotificatonModalWindowProps,
-  NotificationTabProps,
-  NotificatonModalWindowEmits,
 }

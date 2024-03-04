@@ -1,43 +1,17 @@
-<template>
-  <div v-if="users">
-    <Table
-      :data="users"
-      :columns="inviteUserColumns"
-      :search-by="['email', 'firstName', 'lastName']"
-      :dropdown-actions-menu="dropdownInviteUserActions"
-      :filters="usersFilters"
-    />
-  </div>
-
-  <TablePlaceholder v-else />
-</template>
-
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
+import { Profile, Skill, TeamMember } from '@Domain'
+import { useUserStore } from '@Store'
+import { ProfileService, SkillsService } from '@Service'
+import { sendParallelRequests, RequestConfig, openErrorNotification } from '@Utils'
 import type { UsersInviteTableEmits } from '@Components/Tables/UsersInviteTable/UsersInviteTable.types'
-import Table from '@Components/Table/Table.vue'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
-import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
-
-import { TeamMember } from '@Domain/Team'
-import { Skill } from '@Domain/Skill'
-import { Profile } from '@Domain/Profile'
-
-import SkillsService from '@Services/SkillsService'
-import ProfileService from '@Services/ProfileService'
-
-import useUserStore from '@Store/user/userStore'
-
-import {
-  sendParallelRequests,
-  RequestConfig,
-  openErrorNotification,
-} from '@Utils/sendParallelRequests'
+import Table from '@Components/Table/Table.vue'
 
 const invitationUsers = defineModel<TeamMember[]>()
 defineEmits<UsersInviteTableEmits>()
@@ -57,22 +31,22 @@ const searchBySkills = ref('')
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token, id } = currentUser
+  if (currentUser) {
+    const { id } = currentUser
 
     const usersInviteParallelRequests: RequestConfig[] = [
       {
-        request: () => SkillsService.getAllSkills(token),
+        request: () => SkillsService.getAllSkills(),
         refValue: skills,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => ProfileService.getUserProfile(id, token),
+        request: () => ProfileService.getUserProfile(id),
         refValue: profile,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => SkillsService.getAllUsersSkills(token),
+        request: () => SkillsService.getAllUsersSkills(),
         refValue: users,
         onErrorFunc: openErrorNotification,
       },
@@ -177,6 +151,20 @@ function checkIsExistUser(user: TeamMember) {
   return !!invitationUsers.value?.find(({ userId }) => userId === user.userId)
 }
 </script>
+
+<template>
+  <div v-if="users">
+    <Table
+      :data="users"
+      :columns="inviteUserColumns"
+      :search-by="['email', 'firstName', 'lastName']"
+      :dropdown-actions-menu="dropdownInviteUserActions"
+      :filters="usersFilters"
+    />
+  </div>
+
+  <TablePlaceholder v-else />
+</template>
 
 <style lang="scss">
 .user-invite-table {

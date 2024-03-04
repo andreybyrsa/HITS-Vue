@@ -1,7 +1,5 @@
-import RolesTypes from '@Domain/Roles'
-import { IdeaStatusType } from '@Domain/Idea'
-
-import { getIdeaStatus } from '@Utils/ideaStatus'
+import { IdeaStatusType, RolesTypes } from '@Domain'
+import { getIdeaStatus } from '@Utils'
 
 const status = getIdeaStatus().status
 
@@ -13,7 +11,7 @@ interface ModeButtonsType {
   status: IdeaStatusType[]
 }
 
-const modeButtons: ModeButtonsType[] = [
+export const modeButtons: ModeButtonsType[] = [
   {
     id: 1,
     text: 'Админ',
@@ -33,5 +31,3 @@ const modeButtons: ModeButtonsType[] = [
     status: ['ON_CONFIRMATION'],
   },
 ]
-
-export default modeButtons

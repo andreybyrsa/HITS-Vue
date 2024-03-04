@@ -1,35 +1,13 @@
-<template>
-  <Table
-    class-name="px-3 pb-3 pt-1"
-    :data="requests"
-    :columns="requestToTeamColumns"
-    :search-by="['name']"
-    :dropdown-actions-menu="dropdownRequestToTeamActions"
-  />
-
-  <LetterModal
-    :is-opened="isOpenedLetterModal"
-    :letter="letterCurrentTeam"
-    @close-modal="closeLetterModal"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { RouteRecordRaw } from 'vue-router'
-
-import Table from '@Components/Table/Table.vue'
+import { JoinStatus, RequestTeamToIdea } from '@Domain'
+import { getJoinStatus, getJoinStatusStyle, navigateToAliasRoute } from '@Utils'
 import { RequestsTeamToIdeasProps } from '@Components/Modals/TeamModal/TeamModal.types'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
-
+import Table from '@Components/Table/Table.vue'
 import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
-
-import { JoinStatus } from '@Domain/Team'
-
-import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import IdeaMarketModal from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.vue'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 defineProps<RequestsTeamToIdeasProps>()
 
@@ -92,3 +70,19 @@ function getStatusFormat(status: JoinStatus) {
   return requestsToTeamStatus.translatedRequests[status]
 }
 </script>
+
+<template>
+  <Table
+    class-name="px-3 pb-3 pt-1"
+    :data="requests"
+    :columns="requestToTeamColumns"
+    :search-by="['name']"
+    :dropdown-actions-menu="dropdownRequestToTeamActions"
+  />
+
+  <LetterModal
+    :is-opened="isOpenedLetterModal"
+    :letter="letterCurrentTeam"
+    @close-modal="closeLetterModal"
+  />
+</template>

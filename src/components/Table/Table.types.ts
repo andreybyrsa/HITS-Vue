@@ -7,8 +7,12 @@ type KeyValueFunction<T, K extends keyof T> = (
   ...args: number[]
 ) => void
 
-type TypedStyleFunction<T> = { [K in keyof T]-?: KeyValueFunction<T, K> }[keyof T]
-type TypedFormatFunction<T> = { [K in keyof T]-?: KeyValueFunction<T, K> }[keyof T]
+export type TypedStyleFunction<T> = {
+  [K in keyof T]-?: KeyValueFunction<T, K>
+}[keyof T]
+export type TypedFormatFunction<T> = {
+  [K in keyof T]-?: KeyValueFunction<T, K>
+}[keyof T]
 
 type ColumnSize =
   | 'col'
@@ -21,14 +25,14 @@ type ColumnSize =
   | 'col-7'
   | 'col-8'
 
-interface CheckedDataAction<DataType> {
+export interface CheckedDataAction<DataType> {
   label: string
   className?: string
   statement?: boolean
   click: (values: DataType[]) => void
 }
 
-interface DropdownMenuAction<DataType> {
+export interface DropdownMenuAction<DataType> {
   label: string
   beforeLabel?: string
   statementLabel?: (data: DataType) => boolean
@@ -43,13 +47,13 @@ interface HeaderButton extends ButtonProps {
   click: () => void
 }
 
-interface TableHeader {
+export interface TableHeader {
   label: string
   countData?: boolean
   buttons?: HeaderButton[]
 }
 
-interface TableColumn<DataType> {
+export interface TableColumn<DataType> {
   key: keyof DataType
   label: string
   size?: ColumnSize
@@ -61,7 +65,7 @@ interface TableColumn<DataType> {
   rowCellClick?: (value: DataType) => void
 }
 
-interface TableProps<DataType> {
+export interface TableProps<DataType> {
   className?: string
   header?: TableHeader
   columns: TableColumn<DataType>[]
@@ -71,14 +75,4 @@ interface TableProps<DataType> {
   checkedDataActions?: CheckedDataAction<DataType>[]
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]
   isCheckbox?: boolean
-}
-
-export {
-  TableProps,
-  TableHeader,
-  TableColumn,
-  TypedFormatFunction,
-  TypedStyleFunction,
-  CheckedDataAction,
-  DropdownMenuAction,
 }

@@ -2,10 +2,8 @@
 import { ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-
+import { useUserStore } from '@Store'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
-
-import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

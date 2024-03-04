@@ -1,4 +1,4 @@
-import {RolesTypes} from '@Domain'
+import { RolesTypes } from '@Domain'
 
 export interface User {
   id: string

@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
-import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
-
+import { Profile } from '@Domain'
+import { useProfilesStore } from '@Store'
+import { sendParallelRequests, RequestConfig, openErrorNotification } from '@Utils'
+import { ProfileModalProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import ProfileAvatar from '@Components/Modals/ProfileModal/ProfileAvatar.vue'
 import ProfileInfo from '@Components/Modals/ProfileModal/ProfileInfo.vue'
 import ProfileSkills from '@Components/Modals/ProfileModal/ProfileSkills.vue'
@@ -11,25 +14,8 @@ import ProfilePortfolio from '@Components/Modals/ProfileModal/ProfilePortfolio.v
 import ProfileModalPlaceholder from '@Components/Modals/ProfileModal/ProfileModalPlaceholder.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import { ProfileModalProps } from '@Components/Modals/ProfileModal/ProfileModal.types'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { Profile } from '@Domain/Profile'
-
-import useUserStore from '@Store/user/userStore'
-import useProfilesStore from '@Store/profiles/profilesStore'
-
-import {
-  sendParallelRequests,
-  RequestConfig,
-  openErrorNotification,
-} from '@Utils/sendParallelRequests'
 
 const props = defineProps<ProfileModalProps>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const router = useRouter()
 const route = useRoute()
@@ -44,26 +30,20 @@ const DBProfileAvatar = ref<string>()
 const isOpenedProfileModal = ref(true)
 
 onMounted(async () => {
-  const currentUser = user.value
+  const profileParallelRequests: RequestConfig[] = [
+    {
+      request: () => profilesStore.fetchUserProfile(profileId),
+      refValue: DBProfile,
+      onErrorFunc: openErrorNotification,
+    },
+    {
+      request: () => profilesStore.fetchProfileAvatar(profileId),
+      refValue: DBProfileAvatar,
+      onErrorFunc: openErrorNotification,
+    },
+  ]
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const profileParallelRequests: RequestConfig[] = [
-      {
-        request: () => profilesStore.fetchUserProfile(profileId, token),
-        refValue: DBProfile,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => profilesStore.fetchProfileAvatar(profileId, token),
-        refValue: DBProfileAvatar,
-        onErrorFunc: openErrorNotification,
-      },
-    ]
-
-    await sendParallelRequests(profileParallelRequests)
-  }
+  await sendParallelRequests(profileParallelRequests)
 })
 
 function handleCloseProfileModal() {

@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-
-import Typography from '@Components/Typography/Typography.vue'
 import {
   UsersColumnsProps,
   UsersColumnsEmits,
 } from '@Components/UserColumns/UsersColumns.types'
+import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 
 const props = defineProps<UsersColumnsProps>()

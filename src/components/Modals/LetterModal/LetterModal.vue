@@ -1,14 +1,13 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@Store'
 import {
   LetterModalProps,
   LetterModalEmits,
 } from '@Components/Modals/LetterModal/LetterModal.types'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

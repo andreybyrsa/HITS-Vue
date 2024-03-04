@@ -1,35 +1,23 @@
 <script lang="ts" setup>
 import { onUpdated, ref } from 'vue'
-import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-
+import { Skill, SkillType } from '@Domain'
+import { useNotificationsStore } from '@Store'
+import { SkillsService } from '@Service'
+import { getSkillsInfo, validation } from '@Utils'
 import {
   SkillModalProps,
   SkillModalEmits,
 } from '@Components/Modals/SkillModal/SkillModal.types'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { Skill, SkillType } from '@Domain/Skill'
-
-import SkillsService from '@Services/SkillsService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import { getSkillsInfo } from '@Utils/skillsInfo'
-import Validation from '@Utils/Validation'
-
 const skills = defineModel<Skill[]>({ required: true })
 const props = defineProps<SkillModalProps>()
 const emit = defineEmits<SkillModalEmits>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
 
@@ -48,9 +36,9 @@ const skillTypeOptions = availableSkills.skills.map((skillType) => ({
 const { handleSubmit, setValues } = useForm<Skill>({
   validationSchema: {
     name: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Неверно введено название компетенции',
+      validation.checkIsEmptyValue(value) || 'Неверно введено название компетенции',
     type: (value: SkillType) =>
-      Validation.checkIsEmptyValue(value) || 'Неверно выбран тип компетенции',
+      validation.checkIsEmptyValue(value) || 'Неверно выбран тип компетенции',
   },
   initialValues: {
     confirmed: true,
@@ -67,45 +55,33 @@ onUpdated(async () => {
 })
 
 const handleCreateSkill = handleSubmit(async (values) => {
-  const currentUser = user.value
+  isCreating.value = true
+  const response = await SkillsService.createSkill(values)
+  isCreating.value = false
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isCreating.value = true
-    const response = await SkillsService.createSkill(values, token)
-    isCreating.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    skills.value.push(response)
-    emit('close-modal')
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  skills.value.push(response)
+  emit('close-modal')
 })
 
 const handleUpdateSkill = handleSubmit(async (values) => {
-  const currentUser = user.value
+  isUpdating.value = true
+  const response = await SkillsService.updateSkill(values, values.id)
+  isUpdating.value = false
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isUpdating.value = true
-    const response = await SkillsService.updateSkill(values, values.id, token)
-    isUpdating.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    const skillIndex = skills.value.findIndex((skill) => skill.id === values.id)
-    if (skillIndex !== -1) {
-      skills.value.splice(skillIndex, 1, values)
-    }
-
-    emit('close-modal')
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  const skillIndex = skills.value.findIndex((skill) => skill.id === values.id)
+  if (skillIndex !== -1) {
+    skills.value.splice(skillIndex, 1, values)
+  }
+
+  emit('close-modal')
 })
 </script>
 

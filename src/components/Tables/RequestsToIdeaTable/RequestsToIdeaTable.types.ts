@@ -1,9 +1,7 @@
-import { IdeaMarket } from '@Domain/IdeaMarket'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { IdeaMarket } from '@Domain'
+import { RequestTeamToIdea } from '@Domain'
 
-interface RequestsToIdeaTableProps {
+export interface RequestsToIdeaTableProps {
   ideaMarket: IdeaMarket
   requests: RequestTeamToIdea[]
 }
-
-export default RequestsToIdeaTableProps
