@@ -3,28 +3,23 @@ import { ref, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
+import { NewEmailForm } from '@Domain'
+import { useUserStore, useNotificationsStore } from '@Store'
+import { InviteService, ManageUsersService } from '@Service'
+import {
+  validation,
+  getRouteByUserRole,
+  ChangeStatusCode,
+  getChangeStatusCode,
+} from '@Utils'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Header from '@Components/Header/Header.vue'
 import LoadingWrapper from '@Components/LoadingWrapper/LoadingWrapper.vue'
-
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
-import { NewEmailForm } from '@Domain/Invitation'
-
-import ManageUsersService from '@Services/ManageUsersService'
-import InvitationService from '@Services/InvitationService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import Validation from '@Utils/Validation'
-import { ChangeStatusCode, getChangeStatusCode } from '@Utils/changeStatusCodeInfo'
-import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -43,52 +38,46 @@ const isFethingDataToChangeEmail = ref(false)
 
 const { setFieldValue, handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
-    oldEmail: (value: string) => Validation.checkEmail(value),
+    oldEmail: (value: string) => validation.checkEmail(value),
     code: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Неверно введен код',
-    newEmail: (value: string) => Validation.checkEmail(value),
-    key: (value: string) => Validation.checkIsEmptyValue(value),
+      validation.checkIsEmptyValue(value) || 'Неверно введен код',
+    newEmail: (value: string) => validation.checkEmail(value),
+    key: (value: string) => validation.checkIsEmptyValue(value),
   },
   initialValues: { key: slug.toString() },
 })
 
 onMounted(async () => {
   const { slug } = route.params
-  const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  isFethingDataToChangeEmail.value = true
+  const response = await InviteService.getInfoToChangeEmail(slug)
 
-    isFethingDataToChangeEmail.value = true
-    const response = await InvitationService.getInfoToChangeEmail(slug, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    isFethingDataToChangeEmail.value = false
-
-    const { newEmail, oldEmail } = response
-    isOpenedCodeModal.value = true
-
-    setFieldValue('newEmail', newEmail)
-    setFieldValue('oldEmail', oldEmail)
-
-    notificationsStore.createSystemNotification(
-      'Система',
-      'На старую почту отправлен код аутентификации',
-    )
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  isFethingDataToChangeEmail.value = false
+
+  const { newEmail, oldEmail } = response
+  isOpenedCodeModal.value = true
+
+  setFieldValue('newEmail', newEmail)
+  setFieldValue('oldEmail', oldEmail)
+
+  notificationsStore.createSystemNotification(
+    'Система',
+    'На старую почту отправлен код аутентификации',
+  )
 })
 
 const handleChangeEmail = handleSubmit(async (values) => {
   const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token, role } = currentUser
+  if (currentUser) {
+    const { role } = currentUser
 
     isChangingEmail.value = true
-    const response = await ManageUsersService.updateUserEmail(values, token)
+    const response = await ManageUsersService.updateUserEmail(values)
     isChangingEmail.value = false
 
     if (response instanceof Error) {

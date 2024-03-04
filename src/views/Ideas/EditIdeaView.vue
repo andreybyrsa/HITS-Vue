@@ -2,20 +2,14 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
+import { Idea } from '@Domain'
+import { IdeaService } from '@Service'
+import { useUserStore, useNotificationsStore } from '@Store'
 import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import IdeaFormPlaceholder from '@Components/Forms/IdeaForm/IdeaFormPlaceholder.vue'
 import Header from '@Components/Header/Header.vue'
-
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
-import { Idea } from '@Domain/Idea'
-
-import IdeasService from '@Services/IdeasService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -28,13 +22,12 @@ const currentIdea = ref<Idea>()
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role) {
+  if (currentUser?.role) {
     const id = router.params.id.toString()
-    const { token, role } = currentUser
-    const currentIdeaServiceKey =
-      role === 'INITIATOR' ? 'getInitiatorIdea' : 'getIdea'
+    const { role } = currentUser
+    const currentIdeaServiceKey = role === 'INITIATOR' ? 'getInitiator' : 'get'
 
-    const response = await IdeasService[currentIdeaServiceKey](id, token)
+    const response = await IdeaService[currentIdeaServiceKey](id)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)

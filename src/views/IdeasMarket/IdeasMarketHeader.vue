@@ -2,21 +2,17 @@
 import { computed, ref } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-
+import { useUserStore, useIdeasMarketStore } from '@Store'
+import {
+  IdeasMarketHeaderProps,
+  IdeasMarketHeaderEmits,
+} from '@Views/IdeasMarket/IdeasMarketView.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import CloseIdeasMarketModal from '@Components/Modals/CloseIdeasMarketModal/CloseIdeasMarketModal.vue'
 import Icon from '@Components/Icon/Icon.vue'
-
-import {
-  IdeasMarketHeaderProps,
-  IdeasMarketHeaderEmits,
-} from '@Views/IdeasMarket/IdeasMarketView.types'
-
-import useUserStore from '@Store/user/userStore'
-import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
 const props = defineProps<IdeasMarketHeaderProps>()
 const emit = defineEmits<IdeasMarketHeaderEmits>()

@@ -1,3 +1,35 @@
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { User, TeamMember } from '@Domain'
+import { TeamService, ManageUsersService } from '@Service'
+import { sendParallelRequests, RequestConfig, openErrorNotification } from '@Utils'
+import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
+import UsersTable from '@Components/Tables/UsersTable/UsersTable.vue'
+import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
+import Header from '@Components/Header/Header.vue'
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+
+const users = ref<User[]>()
+const userInTeams = ref<TeamMember[]>([])
+
+onMounted(async () => {
+  const ideaMarketParallelRequests: RequestConfig[] = [
+    {
+      request: () => ManageUsersService.getUsers(),
+      refValue: users,
+      onErrorFunc: openErrorNotification,
+    },
+    {
+      request: () => TeamService.getAllUsersInTeams(),
+      refValue: userInTeams,
+      onErrorFunc: openErrorNotification,
+    },
+  ]
+
+  await sendParallelRequests(ideaMarketParallelRequests)
+})
+</script>
+
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
@@ -23,60 +55,6 @@
     </template>
   </PageLayout>
 </template>
-
-<script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
-
-import {
-  sendParallelRequests,
-  RequestConfig,
-  openErrorNotification,
-} from '@Utils/sendParallelRequests'
-
-import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import UsersTable from '@Components/Tables/UsersTable/UsersTable.vue'
-import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
-import Header from '@Components/Header/Header.vue'
-
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
-import { User } from '@Domain/User'
-
-import ManageUsersService from '@Services/ManageUsersService'
-import TeamService from '@Services/TeamService'
-
-import useUserStore from '@Store/user/userStore'
-import { TeamMember } from '@Domain/Team'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
-const users = ref<User[]>()
-const userInTeams = ref<TeamMember[]>([])
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const ideaMarketParallelRequests: RequestConfig[] = [
-      {
-        request: () => ManageUsersService.getUsers(token),
-        refValue: users,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => TeamService.getAllUsersInTeams(token),
-        refValue: userInTeams,
-        onErrorFunc: openErrorNotification,
-      },
-    ]
-
-    await sendParallelRequests(ideaMarketParallelRequests)
-  }
-})
-</script>
 
 <style lang="scss">
 .users-view {

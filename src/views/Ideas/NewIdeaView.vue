@@ -2,7 +2,6 @@
 import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Header from '@Components/Header/Header.vue'
-
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 </script>
 

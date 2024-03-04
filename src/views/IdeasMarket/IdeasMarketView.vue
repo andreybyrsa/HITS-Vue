@@ -2,39 +2,29 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
-
+import { Profile, Skill, Market, IdeaMarket, IdeaMarketStatusType } from '@Domain'
+import {
+  useProfilesStore,
+  useUserStore,
+  useIdeasMarketStore,
+  useNotificationsStore,
+} from '@Store'
+import { SkillsService, IdeaMarketService, MarketService } from '@Service'
+import {
+  getIdeaMarketStatus,
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import RequestToIdeaModal from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
 import { Filter } from '@Components/FilterBar/FilterBar.types'
 import Header from '@Components/Header/Header.vue'
-
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
 import IdeaMarketCard from '@Views/IdeasMarket/IdeaMarketCard.vue'
 import IdeaMarketCardsPlaceholder from '@Views/IdeasMarket/IdeaMarketCardsPlaceholder.vue'
 import IdeasMarketHeader from '@Views/IdeasMarket/IdeasMarketHeader.vue'
-
-import { IdeaMarket, IdeaMarketStatusType } from '@Domain/IdeaMarket'
-import { Market } from '@Domain/Market'
-
-import IdeasMarketService from '@Services/IdeasMarketService'
-import MarketService from '@Services/MarketService'
-
-import useUserStore from '@Store/user/userStore'
-import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
-import {
-  sendParallelRequests,
-  RequestConfig,
-  openErrorNotification,
-} from '@Utils/sendParallelRequests'
-import { Skill } from '@Domain/Skill'
-import useProfilesStore from '@Store/profiles/profilesStore'
-import { Profile } from '@Domain/Profile'
-import SkillsService from '@Services/SkillsService'
 
 const profilesStore = useProfilesStore()
 
@@ -77,8 +67,8 @@ watch(
 async function getIdeasMarket() {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser?.role) {
-    const { token, role, id } = currentUser
+  if (currentUser?.role) {
+    const { role, id } = currentUser
     const marketId = route.params.marketId.toString()
 
     ideasMarket.value = null
@@ -86,22 +76,22 @@ async function getIdeasMarket() {
 
     const ideasMarketParallelRequests: RequestConfig[] = [
       {
-        request: () => ideasMarketStore.getMarketIdeas(marketId, role, token),
+        request: () => ideasMarketStore.getMarketIdeas(marketId, role),
         refValue: ideasMarket,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => SkillsService.getAllSkills(token),
+        request: () => SkillsService.getAllSkills(),
         refValue: skills,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => MarketService.getMarket(marketId, token),
+        request: () => MarketService.getMarket(marketId),
         refValue: market,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => profilesStore.fetchUserProfile(id, token),
+        request: () => profilesStore.fetchUserProfile(id),
         refValue: profile,
         onErrorFunc: openErrorNotification,
       },
@@ -112,21 +102,16 @@ async function getIdeasMarket() {
 }
 
 async function getFavoriteIdeasMarket() {
-  const currentUser = user.value
+  const marketId = route.params.marketId.toString()
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const marketId = route.params.marketId.toString()
+  ideasMarket.value = null
+  const response = await IdeaMarketService.fetchFavoritesIdeas(marketId)
 
-    ideasMarket.value = null
-    const response = await IdeasMarketService.fetchFavoritesIdeas(marketId, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    ideasMarket.value = response
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  ideasMarket.value = response
 }
 
 const searchedIdeas = computed(() => {

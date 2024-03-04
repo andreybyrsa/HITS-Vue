@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import LoginForm from '@Components/Forms/LoginForm/LoginForm.vue'
-
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 </script>
 

@@ -1,20 +1,11 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import { storeToRefs } from 'pinia'
-
+import { useMarketsStore, useNotificationsStore } from '@Store'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import MarketTable from '@Components/Tables/MarketTable/MarketTable.vue'
 import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
 import Header from '@Components/Header/Header.vue'
-
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
-import useUserStore from '@Store/user/userStore'
-import useMarketsStore from '@Store/markets/marketsStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const marketsStore = useMarketsStore()
 
@@ -23,20 +14,14 @@ const notificationsStore = useNotificationsStore()
 const isLoading = ref(false)
 
 onMounted(async () => {
-  const currentUser = user.value
+  isLoading.value = true
+  const response = await marketsStore.getAllMarkets()
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isLoading.value = true
-    const response = await marketsStore.getAllMarkets(token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    isLoading.value = false
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  isLoading.value = false
 })
 </script>
 

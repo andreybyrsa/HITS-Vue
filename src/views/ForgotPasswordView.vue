@@ -1,22 +1,16 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useForm } from 'vee-validate'
-
+import { RecoveryData } from '@Domain'
+import { InviteService } from '@Service'
+import { useNotificationsStore } from '@Store'
+import { validation } from '@Utils'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import NewPasswordModal from '@Components/Modals/NewPasswordModal/NewPasswordModal.vue'
-
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
-
-import { RecoveryData } from '@Domain/Invitation'
-
-import InvitationService from '@Services/InvitationService'
-
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
 
@@ -28,12 +22,12 @@ const isLoading = ref(false)
 const { values, handleSubmit } = useForm<RecoveryData>({
   validationSchema: {
     email: (value: string) =>
-      Validation.checkEmail(value) || 'Неверно введена почта',
+      validation.checkEmail(value) || 'Неверно введена почта',
   },
 })
 const sendRevoveryEmail = handleSubmit(async (values) => {
   isLoading.value = true
-  const response = await InvitationService.sendRecoveryEmail(values)
+  const response = await InviteService.sendRecoveryEmail(values)
   isLoading.value = false
 
   if (response instanceof Error) {

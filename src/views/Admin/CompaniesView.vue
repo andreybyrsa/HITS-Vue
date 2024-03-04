@@ -1,3 +1,32 @@
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { Company } from '@Domain'
+import { useNotificationsStore } from '@Store'
+import { CompanyService } from '@Service'
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
+import CompaniesTable from '@Components/Tables/CompaniesTable/CompaniesTable.vue'
+import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
+import Header from '@Components/Header/Header.vue'
+
+const notificationsStore = useNotificationsStore()
+
+const companies = ref<Company[]>()
+
+onMounted(async () => {
+  const responseGroups = await CompanyService.getAll()
+
+  if (responseGroups instanceof Error) {
+    return notificationsStore.createSystemNotification(
+      'Система',
+      responseGroups.message,
+    )
+  }
+
+  companies.value = responseGroups
+})
+</script>
+
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
@@ -22,49 +51,6 @@
     </template>
   </PageLayout>
 </template>
-
-<script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
-
-import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import CompaniesTable from '@Components/Tables/CompaniesTable/CompaniesTable.vue'
-import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
-import Header from '@Components/Header/Header.vue'
-
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
-import Company from '@Domain/Company'
-
-import CompanyService from '@Services/CompanyService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-const notificationsStore = useNotificationsStore()
-
-const companies = ref<Company[]>()
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const responseGroups = await CompanyService.getCompanies(token)
-
-    if (responseGroups instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        responseGroups.message,
-      )
-    }
-
-    companies.value = responseGroups
-  }
-})
-</script>
 
 <style lang="scss">
 .companies-view {
