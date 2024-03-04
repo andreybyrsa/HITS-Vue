@@ -1,32 +1,28 @@
 <script lang="ts" setup>
-import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { useRoute } from 'vue-router'
-import { useDateFormat, watchImmediate } from '@vueuse/core'
+import { useDateFormat } from '@vueuse/core'
 
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import NewEmailRequestModal from '@Components/Modals/NewEmailRequestModal/NewEmailRequestModal.vue'
 
-import ProfileService from '@Services/ProfileService'
-
-import { User, UserTelegram } from '@Domain/User'
-
 import useProfilesStore from '@Store/profiles/profilesStore'
 
 import Validation from '@Utils/Validation'
 import { Profile } from '@Domain/Profile'
-import { string } from 'yup'
-import { usersTelegramMocks } from '@Utils/getMocks'
-import LoginForm from '@Components/Forms/LoginForm/LoginForm.vue'
 import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
+import useUserStore from '@Store/user/userStore'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 onBeforeMount(() => {
   const tag = LocalStorageTelegramTag.get()
   setValues({ ...profile.value, userTag: tag ?? '' })
-  console.log(profile.value)
 })
 
 const route = useRoute()
@@ -41,6 +37,8 @@ const isOwnProfile = computed(
 )
 const isUpdatingUserName = ref(false)
 const isUpdatingUserLastname = ref(false)
+const isUpdatingUserStudyGroup = ref(false)
+const isUpdatingUserTelephone = ref(false)
 const isOpenedChangeEmailModal = ref(false)
 const isUpdatingTelegram = ref(false)
 
@@ -50,31 +48,38 @@ const { setValues, handleSubmit } = useForm<Profile>({
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
-    userTag: (value: string) =>
-      Validation.checkTag(value) || 'Неверно введён тег телеграм',
+    // userTag: (value: string) =>
+    //   Validation.checkTag(value) || 'Неверно введён тег телеграм',
   },
-})
+}) // Если поставить здесь валидацию, то в случае, когда поле userTag будет незаполнено,
+// а пользователь захочет изменить другое поле, то система этого сделать не даст,
+// потому что стоит валидация на пустое поле
 
 watch(computedProfile, () => setUserValues(), { deep: true, immediate: true })
 
 const handleEditUser = handleSubmit(async (values) => {
-  const currentUser = profile.value
+  const currentUser = user.value
+
   if (currentUser?.token) {
     const { token } = currentUser
+
     await profilesStore.updateUserFullName(values, token)
+
+    isUpdatingUserTelephone.value = false
     isUpdatingUserName.value = false
     isUpdatingUserLastname.value = false
+    isUpdatingUserStudyGroup.value = false
   }
 })
 
 const handleEditUserTag = handleSubmit(async (values) => {
-  const currentUser = profile.value
+  const currentUser = profile.value // token брать из user
   if (!currentUser?.token) return
 
   const userTelegram = await profilesStore.fetchUserTelegram(
     profileId,
     currentUser.token,
-  )
+  ) // не понял махинацию здесь
 
   if (!userTelegram || userTelegram instanceof Error) return
 
@@ -86,11 +91,12 @@ const handleEditUserTag = handleSubmit(async (values) => {
 })
 
 async function setUserValues() {
-  if (computedProfile.value?.email === profile.value?.email) {
-    setValues({ ...profile.value })
-  } else if (computedProfile.value) {
-    const { email, firstName, lastName, userTag } = computedProfile.value
-    setValues({ email, firstName, lastName, userTag })
+  if (computedProfile.value?.email === user.value?.email) {
+    setValues({ ...user.value })
+  } else if (profile.value) {
+    const { email, firstName, lastName, studyGroup, telephone, userTag } =
+      profile.value
+    setValues({ email, firstName, lastName, studyGroup, telephone, userTag })
   }
 }
 
@@ -108,12 +114,27 @@ function toogleUpdateUserLastname(value: boolean) {
   }
 }
 
+function toogleUpdateUserStudyGroup(value: boolean) {
+  isUpdatingUserStudyGroup.value = value
+  if (!value) {
+    setUserValues()
+  }
+}
+
 function toogleUpdateTelegram(value: boolean) {
   isUpdatingTelegram.value = value
   if (!value) {
     setUserValues()
   }
 }
+
+function toogleUpdatingUserTelephone(value: boolean) {
+  isUpdatingUserTelephone.value = value
+  if (!value) {
+    setUserValues()
+  }
+}
+
 function openChangeEmailModal() {
   isOpenedChangeEmailModal.value = true
 }
@@ -136,34 +157,42 @@ function getFormattedDate(date: string) {
       <Typography class-name="fs-5 text-primary">Информация</Typography>
       <div class="d-flex justify-content-end gap-2">
         <Button
-          v-if="isUpdatingUserName"
+          v-if="
+            isUpdatingUserName ||
+            isUpdatingUserLastname ||
+            isUpdatingUserStudyGroup ||
+            isUpdatingUserTelephone
+          "
           variant="success"
           @click="handleEditUser"
         >
           Сохранить
+        </Button>
+        <Button
+          v-if="isUpdatingUserName"
+          variant="danger"
+          @click="toogleUpdateUserName(false)"
+        >
+          Отменить
         </Button>
         <Button
           v-if="isUpdatingUserLastname"
-          variant="success"
-          @click="handleEditUser"
-        >
-          Сохранить
-        </Button>
-        <Button
-          v-if="isUpdatingTelegram"
-          variant="success"
-          @click="handleEditUserTag"
-        >
-          Сохранить
-        </Button>
-        <Button
-          v-if="isUpdatingUserName || isUpdatingUserLastname || isUpdatingTelegram"
           variant="danger"
-          @click="
-            toogleUpdateUserName(false),
-              toogleUpdateUserLastname(false),
-              toogleUpdateTelegram(false)
-          "
+          @click="toogleUpdateUserLastname(false)"
+        >
+          Отменить
+        </Button>
+        <Button
+          v-if="isUpdatingUserStudyGroup"
+          variant="danger"
+          @click="toogleUpdateUserStudyGroup(false)"
+        >
+          Отменить
+        </Button>
+        <Button
+          v-if="isUpdatingUserTelephone"
+          variant="danger"
+          @click="toogleUpdatingUserTelephone(false)"
         >
           Отменить
         </Button>
@@ -175,12 +204,7 @@ function getFormattedDate(date: string) {
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Почта:</Typography>
           <div
-            v-if="
-              isOwnProfile &&
-              !isUpdatingUserLastname &&
-              !isUpdatingUserName &&
-              !isUpdatingTelegram
-            "
+            v-if="isOwnProfile || user?.role === 'ADMIN'"
             class="link text-secondary cursor-pointer"
             @click="openChangeEmailModal"
           >
@@ -195,7 +219,7 @@ function getFormattedDate(date: string) {
         />
       </div>
 
-      <div class="w-100 d-flex flex-column gap-2">
+      <!-- <div class="w-100 d-flex flex-column gap-2">
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Telegram-тег:</Typography>
           <div
@@ -220,18 +244,21 @@ function getFormattedDate(date: string) {
           validate-on-update
           prepend="@"
         />
-      </div>
+      </div> -->
 
       <div class="w-100 d-flex flex-column gap-2">
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Имя:</Typography>
           <div
             v-if="
-              isOwnProfile &&
-              !isUpdatingUserName &&
-              !isUpdatingUserLastname &&
-              !isUpdatingTelegram
+              (isOwnProfile &&
+                !isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
             "
+            s
             class="link text-secondary cursor-pointer"
             @click="toogleUpdateUserName(true)"
           >
@@ -253,10 +280,12 @@ function getFormattedDate(date: string) {
           <Typography class-name="text-primary">Фамилия:</Typography>
           <div
             v-if="
-              isOwnProfile &&
-              !isUpdatingUserLastname &&
-              !isUpdatingUserName &&
-              !isUpdatingTelegram
+              (isOwnProfile &&
+                !isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
             "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdateUserLastname(true)"
@@ -273,6 +302,66 @@ function getFormattedDate(date: string) {
           validate-on-update
         />
       </div>
+
+      <div class="w-100 d-flex flex-column gap-2">
+        <div class="d-flex gap-1">
+          <Typography class-name="text-primary">Группа:</Typography>
+          <div
+            v-if="
+              (isOwnProfile &&
+                !isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
+            "
+            class="link text-secondary cursor-pointer"
+            @click="toogleUpdateUserStudyGroup(true)"
+          >
+            изменить
+          </div>
+        </div>
+
+        <Input
+          name="studyGroup"
+          class-name="rounded-end w-100"
+          placeholder="Введите вашу учебную группу"
+          :disabled="!isUpdatingUserStudyGroup"
+          validate-on-update
+        />
+      </div>
+
+      <div
+        v-if="isOwnProfile || user?.role === 'ADMIN'"
+        class="w-100 d-flex flex-column gap-2"
+      >
+        <div class="d-flex gap-1">
+          <Typography class-name="text-primary">Телефон:</Typography>
+          <div
+            v-if="
+              (!isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
+            "
+            class="link text-secondary cursor-pointer"
+            @click="toogleUpdatingUserTelephone(true)"
+          >
+            изменить
+          </div>
+        </div>
+
+        <Input
+          name="telephone"
+          class-name="rounded-end w-100"
+          placeholder="+7 (___)-___-__-__"
+          :disabled="!isUpdatingUserTelephone"
+          validate-on-update
+          v-mask="'+7(###)-###-##-##'"
+        />
+      </div>
+
       <div class="d-flex gap-1">
         <Typography class-name="text-primary">Дата регистрации:</Typography>
         <Typography class-name="text-secondary">

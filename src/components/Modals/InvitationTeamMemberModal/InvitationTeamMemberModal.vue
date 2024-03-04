@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
@@ -20,6 +20,7 @@ import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
 import useUserStore from '@Store/user/userStore'
 
 const invitationUsers = defineModel<TeamMember[]>({ required: true })
+const newArrayUsers = ref<TeamMember[]>([])
 const selectedUsers = ref<TeamMember[]>([])
 
 const invitatinUsers = useInvitationUsersStore()
@@ -30,8 +31,25 @@ const { user } = storeToRefs(userStore)
 
 const isLoading = ref(false)
 
-defineProps<InvitationTeamMemberModalProps>()
+const props = defineProps<InvitationTeamMemberModalProps>()
 const emit = defineEmits<InvitationTeamMemberModalEmits>()
+
+watch(
+  () => props.isOpened,
+  () => {
+    if (props.isOpened) {
+      selectedUsers.value = structuredClone(invitationUsers.value)
+      newArrayUsers.value = structuredClone(invitationUsers.value)
+    }
+  },
+)
+
+watch(
+  () => newArrayUsers.value.length,
+  () => {
+    selectedUsers.value = newArrayUsers.value
+  },
+)
 
 function inviteUsers() {
   invitationUsers.value = selectedUsers.value
@@ -39,8 +57,8 @@ function inviteUsers() {
 }
 
 function cancelSelectedUsers(user: TeamMember) {
-  selectedUsers.value = selectedUsers.value.filter(
-    (selectedUser) => selectedUser.id !== user.id,
+  newArrayUsers.value = newArrayUsers.value.filter(
+    (selectedUser) => selectedUser.userId !== user.userId,
   )
 }
 
@@ -65,13 +83,13 @@ async function inviteUsersInTeam() {
     await invitatinUsers.inviteUsers(invitationsToTeam, token)
 
     selectedUsers.value = []
+    newArrayUsers.value = []
     isLoading.value = false
     emit('close-modal')
   }
 }
 
 function closeInvitationModal() {
-  selectedUsers.value = invitationUsers.value
   emit('close-modal')
 }
 </script>
@@ -81,7 +99,7 @@ function closeInvitationModal() {
     :is-opened="isOpened"
     @on-outside-close="closeInvitationModal"
   >
-    <div class="invitation-modal p-3 bg-white overflow-y-scroll rounded">
+    <div class="invitation-modal p-3 bg-white rounded">
       <div class="invitation-modal__header w-100">
         <Typography class-name="fs-5 text-primary">
           Выберите пользователей для приглашения
@@ -95,7 +113,7 @@ function closeInvitationModal() {
 
       <div class="invitation-modal__table">
         <UsersInviteTable
-          v-model="selectedUsers"
+          v-model="newArrayUsers"
           @close-modal="closeInvitationModal"
         />
       </div>
@@ -128,23 +146,26 @@ function closeInvitationModal() {
 
       <div class="invitation-modal__buttons">
         <Button
-          v-if="$route.name !== 'create-team'"
+          v-if="!isCreateTeam"
           :is-loading="isLoading"
           variant="success"
           @click="inviteUsersInTeam"
-          >Пригласить пользователей</Button
         >
+          Пригласить пользователей
+        </Button>
         <Button
-          v-if="$route.name === 'create-team'"
+          v-if="isCreateTeam"
           variant="success"
           @click="inviteUsers"
-          >Сохранить выбор</Button
         >
+          Сохранить выбор
+        </Button>
         <Button
           variant="danger"
           @click="closeInvitationModal"
-          >Отменить выбор</Button
         >
+          Отменить выбор
+        </Button>
       </div>
     </div>
   </ModalLayout>

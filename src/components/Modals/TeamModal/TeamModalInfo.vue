@@ -50,7 +50,10 @@ function navigateToUserProfile(id: string) {
     },
   }
 
-  router.addRoute('teams-list', profileRoute)
+  router.addRoute(
+    route.name === 'team' ? 'teams-list' : (route.meta.from as string),
+    profileRoute,
+  )
   router.push({ path: `/profile/${id}` })
 }
 

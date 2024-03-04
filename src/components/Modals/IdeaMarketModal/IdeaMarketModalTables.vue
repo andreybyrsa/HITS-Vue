@@ -89,15 +89,15 @@ function getNavLinkStyle(isCurrentTable: boolean) {
       />
 
       <RequestsToIdeaTable
-        v-if="isRequestsToIdeaTable && requestTeams"
+        v-if="isRequestsToIdeaTable"
         :idea-market="ideaMarket"
-        :requests="requestTeams"
+        :requests="requestTeams ?? []"
         v-model="skillsRequestTeam"
       />
 
       <InvitedTeamsToIdeaTable
-        v-if="isInvitedTeamsTable && invitationsToTeams"
-        :invitations="invitationsToTeams"
+        v-if="isInvitedTeamsTable"
+        :invitations="invitationsToTeams ?? []"
         :idea-market-id="ideaMarket.id"
         v-model="invitedTeamsToIdea"
       />
@@ -107,8 +107,9 @@ function getNavLinkStyle(isCurrentTable: boolean) {
       class-name="btn-invite-teams"
       variant="primary"
       v-if="isInvitedTeamsTable && invitationsToTeams"
-      >Отправить приглашения</Button
     >
+      Отправить приглашения
+    </Button>
   </div>
 </template>
 

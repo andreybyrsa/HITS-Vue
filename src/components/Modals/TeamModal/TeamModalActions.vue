@@ -154,7 +154,7 @@ function getAccessToLeave() {
 }
 
 function getAccessToInviteInIdea() {
-  return user.value?.role === 'INITIATOR'
+  return user.value?.role === 'INITIATOR' && !props.team.hasActiveProject
 }
 
 function getAccess() {
@@ -313,10 +313,10 @@ function closeConfirmModal() {
   isOpenedConfirmModalCancelRequest.value = false
 }
 
-function getVariantButton(ideaId: string) {
+function getVariantButton(curretnIdeaId: string) {
   return ideaInvitations.value.find(
-    ({ teamId, ideaMarketId, status }) =>
-      teamId === props.team.id && ideaMarketId === ideaId && status === 'NEW',
+    ({ teamId, ideaId, status }) =>
+      teamId === props.team.id && ideaId === curretnIdeaId && status === 'NEW',
   )
 }
 
@@ -330,13 +330,13 @@ async function handleInviteTeam() {
 
     const invitation: InvitationTeamToIdea = {
       id: '',
-      ideaMarketId: id,
-      ideaMarketName: ideaName,
+      ideaId: id,
+      ideaName: ideaName,
       status: 'NEW',
       initiatorId: userId,
       teamId: teamId,
       teamName: teamName,
-      membersCount: membersCount,
+      teamMembersCount: membersCount,
       skills: skills,
     }
 
@@ -453,7 +453,9 @@ function closeConfirmModalTeamCanceled() {
       class="d-flex flex-wrap gap-3"
     >
       <div
-        v-for="(invite, index) in props.ideasInitiator"
+        v-for="(invite, index) in props.ideasInitiator.filter(
+          ({ status }) => status === 'RECRUITMENT_IS_OPEN',
+        )"
         :key="index"
       >
         <Button

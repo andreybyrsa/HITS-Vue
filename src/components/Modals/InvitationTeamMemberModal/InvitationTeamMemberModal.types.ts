@@ -1,4 +1,5 @@
 interface InvitationTeamMemberModalProps {
+  isCreateTeam?: boolean
   isOpened: boolean
 }
 

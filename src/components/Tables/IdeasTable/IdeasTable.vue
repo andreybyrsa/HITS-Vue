@@ -9,7 +9,7 @@
     :checked-data-actions="checkedIdeasActions"
     :dropdown-actions-menu="dropdownIdeasActions"
     v-model="checkedIdeas"
-    is-checkbox
+    :isCheckbox="user?.role === 'PROJECT_OFFICE'"
   />
 
   <DeleteModal

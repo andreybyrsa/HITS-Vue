@@ -63,7 +63,7 @@ const requestToInvitationColumns: TableColumn<InvitationTeamToIdea>[] = [
     getRowCellStyle: getJoinStatusStyle,
   },
   {
-    key: 'membersCount',
+    key: 'teamMembersCount',
     label: 'Участники',
     contentClassName: 'justify-content-center align-items-center text-center',
     rowCellClick: navigateToTeamModal,
@@ -109,14 +109,18 @@ const dropdownRequestActions: DropdownMenuAction<InvitationTeamToIdea>[] = [
 
 function navigateToTeamModal(requestTeam: InvitationTeamToIdea) {
   const teamModalRoute: RouteRecordRaw = {
-    name: 'teams',
-    path: 'teams/list/:id',
-    alias: '/teams/list/:id',
+    name: 'team-modal',
+    path: 'team/:teamId',
+    alias: '/team/:teamId',
+    meta: { from: 'market-ideas' },
     component: TeamModal,
+    props: {
+      canGoBack: true,
+    },
   }
 
-  router.addRoute('market', teamModalRoute)
-  router.push({ path: `/teams/list/${requestTeam.teamId}` })
+  router.addRoute('market-ideas', teamModalRoute)
+  router.push({ path: `/team/${requestTeam.teamId}` })
 }
 
 function openModal(refValue: Ref<boolean>, requestToIdea: InvitationTeamToIdea) {
@@ -134,10 +138,12 @@ async function cancelRequestToIdea(invitationToIdea: InvitationTeamToIdea | null
   if (currentUser?.token && invitationToIdea) {
     const { token } = currentUser
     const { id } = invitationToIdea
-    const status = 'CANCELED'
 
-    if (id)
-      await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
+    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(
+      'WITHDRAWN',
+      id,
+      token,
+    )
   }
 }
 </script>

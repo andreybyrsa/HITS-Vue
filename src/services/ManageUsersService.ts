@@ -76,6 +76,22 @@ const updateUserEmail = async (
     .catch((error) => handleAxiosError(error, 'Ошибка обновления почты'))
 }
 
+const deleteUser = async (
+  userId: string,
+  token: string,
+): Promise<Success | Error> => {
+  return usersAxios
+    .delete(
+      `/profile/delete/user/${userId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      { params: { id: userId } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления почты'))
+}
+
 const ManageUsersService = {
   getUsers,
   getUsersEmails,
@@ -83,6 +99,8 @@ const ManageUsersService = {
   updateUserInfo,
   updateUserPassword,
   updateUserEmail,
+
+  deleteUser,
 }
 
 export default ManageUsersService

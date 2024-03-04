@@ -6,8 +6,6 @@
       :search-by="['email', 'firstName', 'lastName']"
       :dropdown-actions-menu="dropdownInviteUserActions"
       :filters="usersFilters"
-      v-model="invitationUsers"
-      is-checkbox
     />
   </div>
 
@@ -41,7 +39,7 @@ import {
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
 
-const invitationUsers = defineModel<TeamMember[]>({ required: true })
+const invitationUsers = defineModel<TeamMember[]>()
 defineEmits<UsersInviteTableEmits>()
 
 const userStore = useUserStore()
@@ -147,15 +145,13 @@ function getFilterSkills() {
 }
 
 function chooseUser(user: TeamMember) {
-  invitationUsers.value.push(user)
+  invitationUsers.value?.push(user)
 }
 
 function unselectUser(user: TeamMember) {
-  const currentUserIndex = invitationUsers.value.findIndex(
-    ({ id }) => id === user.id,
+  invitationUsers.value = invitationUsers.value?.filter(
+    ({ userId }) => userId !== user.userId,
   )
-
-  invitationUsers.value.splice(currentUserIndex, 1)
 }
 
 function navigateToUserProfile(user: TeamMember) {
@@ -174,11 +170,11 @@ function navigateToUserProfile(user: TeamMember) {
 }
 
 function checkIsNotExistUser(user: TeamMember) {
-  return !invitationUsers.value.find(({ id }) => id === user.id)
+  return !invitationUsers.value?.find(({ userId }) => userId === user.userId)
 }
 
 function checkIsExistUser(user: TeamMember) {
-  return !!invitationUsers.value.find(({ id }) => id === user.id)
+  return !!invitationUsers.value?.find(({ userId }) => userId === user.userId)
 }
 </script>
 

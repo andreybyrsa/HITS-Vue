@@ -3,18 +3,28 @@ import axios from 'axios'
 import { API_URL } from '@Main'
 
 import { Profile, ProfileFullName } from '@Domain/Profile'
-import { User, UserTelegram } from '@Domain/User'
+import { UserTelegram } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
 
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import { profilesMocks, usersTelegramMocks } from '@Utils/getMocks'
+import {
+  profilesMocks,
+  teamsExperienceMocks,
+  usersTelegramMocks,
+} from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import { TeamExperience } from '@Domain/Team'
 
 const profileUserAxios = defineAxios(profilesMocks)
+const teamExperienceAxios = defineAxios(teamsExperienceMocks)
+
+function filterTeamExperienceByUserId(teamExperience: TeamExperience[], id: string) {
+  return teamExperience.filter(({ userId }) => userId == id)
+}
 const usersTelegramAxios = defineAxios(usersTelegramMocks)
 
 // --- GET --- //
@@ -44,6 +54,26 @@ const getProfileAvatar = async (
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
+}
+
+const getTeamExperience = async (
+  userId: string,
+  token: string,
+): Promise<TeamExperience[] | Error> => {
+  return teamExperienceAxios
+    .get<TeamExperience[]>(
+      `${API_URL}/profile/avatar/get`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (teamExperience) =>
+          filterTeamExperienceByUserId(teamExperience, userId),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
 }
@@ -101,7 +131,7 @@ const updateUserFullName = async (
 ): Promise<Profile[] | Error> => {
   return profileUserAxios
     .put<Profile[]>(
-      `${API_URL}/profile/fullname/update/`,
+      `/profile/update`,
       fullName,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -202,6 +232,7 @@ const deleteUserTelegram = async (
 const ProfileService = {
   getUserProfile,
   getProfileAvatar,
+  getTeamExperience,
   getUserTelegram,
 
   saveProfileSkills,

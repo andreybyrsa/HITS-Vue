@@ -9,6 +9,10 @@ import {
   InvitationTeamToIdeaStatus,
 } from '@Domain/InvitationTeamToIdea'
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
+import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
+import { Team } from '@Domain/Team'
+import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
+import useTeamStore from '@Store/teams/teamsStore'
 
 const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', {
   state: (): InitialState => ({
@@ -24,14 +28,11 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
         )
 
         if (response instanceof Error) {
-          return response
-        }
-
-        if (response instanceof Error) {
           useNotificationsStore().createSystemNotification(
             'Система',
             response.message,
           )
+          return response
         } else {
           this.ideaInvitations = response
 
@@ -110,11 +111,19 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
       status: InvitationTeamToIdeaStatus,
       invitationId: string,
       token: string,
+      ideaMarketId?: string,
+      team?: Team,
     ) {
+      const teamStore = useTeamStore()
+      const ideasMarketStore = useIdeasMarketStore()
+      const requestTeamInIdea = useRequestsToIdeaStore()
+
       const response = await invitationTeamToIdeaService.changeInvitationStatus(
         invitationId,
         status,
         token,
+        status === 'ACCEPTED' ? ideaMarketId : '',
+        status === 'ACCEPTED' ? team?.id : '',
       )
 
       if (response instanceof Error) {
@@ -128,13 +137,27 @@ const useInvitationsTeamToIdeaStore = defineStore('invitationsTeamToIdeaStore', 
           currentInvitation.status = status
         }
 
-        if (status === 'ACCEPTED') {
+        if (status === 'ACCEPTED' && team) {
           this.ideaInvitations.forEach((invite) => {
             if (invite.status === 'NEW') {
-              console.log(invite.teamName, invite.id)
               invite.status = 'ANNULLED'
             }
           })
+          requestTeamInIdea.requests.forEach((request) => {
+            if (request.ideaMarketId === ideaMarketId && request.status === 'NEW') {
+              request.status = 'ANNULLED'
+            }
+          })
+          ideasMarketStore.ideasMarket.forEach((idea) => {
+            if (idea.id === ideaMarketId) {
+              idea.status = 'RECRUITMENT_IS_CLOSED'
+              idea.team = team
+            }
+          })
+          const currentTeam = teamStore.teams.find(({ id }) => id === team.id)
+          if (currentTeam) {
+            currentTeam.hasActiveProject = true
+          }
         }
       }
     },

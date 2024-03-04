@@ -131,25 +131,36 @@ const useProfilesStore = defineStore('profiles', {
 
     async updateUserFullName(user: User, token: string) {
       const userStore = useUserStore()
-      const { id: userId, lastName, firstName } = user
+      const { id: userId, lastName, firstName, studyGroup, telephone } = user
 
-      const fullName: ProfileFullName = { lastName, firstName, id: userId }
+      const fullName: ProfileFullName = {
+        lastName,
+        firstName,
+        studyGroup,
+        telephone,
+        id: userId,
+      }
 
       const response = await ProfileService.updateUserFullName(fullName, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
-        return
-      }
+      } else {
+        const currentProfile = this.profiles.find(({ id }) => id === userId)
+        const currentUser = userStore.user
 
-      const currentProfile = this.profiles.find(({ id }) => id === userId)
-      const currentUser = userStore.user
+        if (currentProfile && currentUser) {
+          currentProfile.firstName = firstName
+          currentProfile.lastName = lastName
 
-      if (currentProfile && currentUser) {
-        currentProfile.firstName = firstName
-        currentProfile.lastName = lastName
-
-        userStore.setUser({ ...currentUser, firstName, lastName })
+          userStore.setUser({
+            ...currentUser,
+            firstName,
+            lastName,
+            studyGroup,
+            telephone,
+          })
+        }
       }
     },
 
@@ -265,28 +276,6 @@ const useProfilesStore = defineStore('profiles', {
             const currentDate = new Date().toJSON().toString()
             currentTeamExperience.finishDate = currentDate
             currentTeamExperience.hasActiveProject = false
-          }
-        }
-      }
-    },
-
-    async finishTeamProject(userId: string, teamId: string, token: string) {
-      const response = await TeamService.finishTeamProject(teamId, token)
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentProfile = this.profiles.find((profile) => profile.id === userId)
-
-        if (currentProfile) {
-          const currentTeamProject = currentProfile.teamsProjects.find(
-            (team) =>
-              team.teamId === teamId && team.userId === userId && !team.finishDate,
-          )
-
-          if (currentTeamProject) {
-            const currentDate = new Date().toJSON().toString()
-            currentTeamProject.finishDate = currentDate
           }
         }
       }

@@ -18,7 +18,7 @@ import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
 import { Team } from '@Domain/Team'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
+import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
 
 import TeamService from '@Services/TeamService'
 
@@ -26,13 +26,13 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 import { watchImmediate } from '@vueuse/core'
+import { ButtonVariants } from '@Components/Button/Button.types'
 
 const props = defineProps<RequestTeamCollapseProps>()
 
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
 const notificationsStore = useNotificationsStore()
-const requestToIdeaStore = useRequestsToIdeaStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -43,11 +43,10 @@ const { user } = storeToRefs(userStore)
 const currentTeam = ref<Team>()
 const isOpenedConfirmModal = ref<boolean>(false)
 const currentRequest = ref<RequestTeamToIdea>()
-const letter = ref<string>('')
+const checkboxTeam = ref(false)
 
-const requestTeams = defineModel<RequestTeamToIdea[]>('requestTeams', {
-  required: true,
-})
+const requestsToIdeaStore = useRequestsToIdeaStore()
+const { requests } = storeToRefs(requestsToIdeaStore)
 
 const { handleSubmit } = useForm({
   validationSchema: {
@@ -68,11 +67,12 @@ const takeTeamData = async (id: string) => {
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
+
     currentTeam.value = response
   }
 }
 
-const sendRequestTeam = handleSubmit(async () => {
+const sendRequestTeam = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token && currentTeam.value) {
@@ -80,11 +80,11 @@ const sendRequestTeam = handleSubmit(async () => {
     const id = props.idea.id
     const marketId = route.params.marketId.toString()
 
-    requestToIdeaStore.postRequest(
+    requestsToIdeaStore.postRequest(
       currentTeam.value,
       id,
       marketId,
-      letter.value,
+      values.letter,
       token,
     )
   }
@@ -97,11 +97,11 @@ const withdrawRequestToIdea = async () => {
     const { token } = currentUser
     const { id } = currentRequest.value
 
-    await requestToIdeaStore.updateRequestToIdea(id, 'WITHDRAWN', token)
+    await requestsToIdeaStore.updateRequestToIdea(id, 'WITHDRAWN', token)
   }
 }
 
-function navigateToUserProfile(team: Team | RequestTeamToIdea) {
+function navigateToTeamProfile(team: Team) {
   const profileRoute: RouteRecordRaw = {
     name: 'team-profile',
     path: 'team-profile/:teamId',
@@ -112,12 +112,12 @@ function navigateToUserProfile(team: Team | RequestTeamToIdea) {
     },
   }
 
-  router.addRoute('market', profileRoute)
+  router.addRoute('market-ideas', profileRoute)
   router.push({ path: `/team-profile/${team.id}` })
 }
 
 function openConfirmModal(team: Team) {
-  currentRequest.value = requestTeams.value.find(
+  currentRequest.value = requests.value.find(
     (request) => request.teamId === team.id && request.status === 'NEW',
   )
   isOpenedConfirmModal.value = true
@@ -127,68 +127,65 @@ function closeConfirmModal() {
   isOpenedConfirmModal.value = false
 }
 
-function getTextStatusRequest(team: Team) {
-  const currentRequestIsNew = requestTeams.value.find(
-    (request) => request.teamId === team.id && request.status === 'NEW',
-  )
-  if (currentRequestIsNew) return 'Отозвать заявку'
+function formatDataButtonByStatus(
+  currentRequestStatus: (false | RequestToIdeaStatus)[],
+) {
+  const initialData = ref<{ variant: ButtonVariants; text: string }>({
+    variant: 'primary',
+    text: 'Подать заявку',
+  })
 
-  const currentRequestIsAccepted = requestTeams.value.find(
-    (request) => request.teamId === team.id && request.status === 'ACCEPTED',
-  )
-  if (currentRequestIsAccepted) return 'Команда принята'
-
-  const currentRequestIsCanceled = requestTeams.value.find(
-    (request) => request.teamId === team.id && request.status === 'CANCELED',
-  )
-  if (currentRequestIsCanceled) return 'Заявка отклонена'
-
-  const currentRequestIsAnnulated = requestTeams.value.find(
-    (request) => request.teamId === team.id && request.status === 'ANNULLED',
-  )
-  if (currentRequestIsAnnulated) return 'Команда занята'
+  if (currentRequestStatus.includes('CANCELED')) {
+    initialData.value = { variant: 'danger', text: 'Заявка отклонена' }
+  }
+  if (currentRequestStatus.includes('ANNULLED')) {
+    initialData.value = { variant: 'secondary', text: 'Команда в работе' }
+  }
+  if (currentRequestStatus.includes('WITHDRAWN')) {
+    initialData.value = { variant: 'primary', text: 'Подать заявку' }
+  }
+  return initialData.value
 }
 
 function getStyleRequest(team: Team) {
-  const currentRequestIsNew = requestTeams.value.find(
-    (request) => request.teamId === team.id && request.status === 'NEW',
+  const { id } = team
+  const currentRequestStatus = requests.value.map(
+    ({ teamId, status }) => teamId === id && status,
   )
-  if (currentRequestIsNew) return 'danger'
 
-  const currentRequestIsAccepted = requestTeams.value.find(
-    (request) => request.teamId === team.id && request.status === 'ACCEPTED',
-  )
-  if (currentRequestIsAccepted) return 'success'
+  return formatDataButtonByStatus(currentRequestStatus).variant
+}
 
-  const currentRequestIsCanceled = requestTeams.value.find(
-    (request) => request.teamId === team.id && request.status === 'CANCELED',
+function getTextRequest(team: Team) {
+  const { id } = team
+  const currentRequestStatus = requests.value.map(
+    ({ teamId, status }) => teamId === id && status,
   )
-  if (currentRequestIsCanceled) return 'danger'
 
-  const currentRequestIsAnnulated = requestTeams.value.find(
-    (request) => request.teamId === team.id && request.status === 'ANNULLED',
-  )
-  if (currentRequestIsAnnulated) return 'secondary'
+  return formatDataButtonByStatus(currentRequestStatus).text
 }
 
 function getDisabledRequest(team: Team) {
-  return requestTeams.value.find(
-    (request) =>
-      request.teamId === team.id &&
-      (request.status === 'ACCEPTED' ||
-        request.status === 'CANCELED' ||
-        request.status === 'ANNULLED'),
+  const { id } = team
+  const currentRequestStatus = requests.value.map(
+    ({ teamId, status }) => teamId === id && status,
+  )
+
+  return (
+    currentRequestStatus.includes('CANCELED') ||
+    currentRequestStatus.includes('ANNULLED')
   )
 }
 
-function checkRequestStatusNew(team: Team) {
-  const currentRequest = requestTeams.value.find(
-    (request) => request.teamId === team.id && request.status !== 'WITHDRAWN',
+function accessCollapseOpen(team: Team) {
+  const { id } = team
+  const currentRequestStatus = requests.value.map(
+    ({ teamId, status }) => teamId === id && status,
   )
-  return currentRequest && props.idea.id === currentRequest.ideaMarketId
+
+  return !currentRequestStatus.includes('NEW')
 }
 
-const checkboxTeam = ref(false)
 watchImmediate(
   () => checkboxTeam.value,
   () => {
@@ -208,25 +205,27 @@ watchImmediate(
       <div class="team-request-collapse__button">
         <Button
           variant="link"
-          @click="navigateToUserProfile(team)"
+          @click="navigateToTeamProfile(team)"
         >
           {{ team.name }}
         </Button>
+
         <Button
-          v-if="checkRequestStatusNew(team)"
+          v-if="accessCollapseOpen(team)"
           :variant="getStyleRequest(team)"
-          @click="openConfirmModal(team)"
           :disabled="getDisabledRequest(team)"
-        >
-          {{ getTextStatusRequest(team) }}
-        </Button>
-        <Button
-          v-else
-          variant="primary"
           v-collapse="team.id"
           @click="takeTeamData(team.id)"
         >
-          Заполнить заявку
+          {{ getTextRequest(team) }}
+        </Button>
+
+        <Button
+          v-else
+          variant="danger"
+          @click="openConfirmModal(team)"
+        >
+          Отозвать заявку
         </Button>
       </div>
 
@@ -234,9 +233,7 @@ watchImmediate(
         <div class="team-request-collapse__info py-1">
           <div class="w-100 d-flex p-2">
             <div class="w-50">
-              <div class="d-flex align-items-center text-primary pb-1">
-                <div>Состав:</div>
-              </div>
+              <div class="d-flex align-items-center text-primary pb-1">Состав:</div>
               <div class="d-flex flex-wrap gap-2">
                 <div
                   class="p-1 rounded bg-light border"
@@ -250,7 +247,7 @@ watchImmediate(
             <div class="w-50 border-start ps-3 pb-1">
               <div class="d-flex gap-2 align-items-center text-primary pb-1">
                 <Checkbox
-                  v-if="!isDisabledButtonSkills"
+                  v-if="isDisabledButtonSkills"
                   name="compare"
                   :value="currentTeam"
                   v-model="checkboxTeam"
@@ -266,20 +263,17 @@ watchImmediate(
           <Textarea
             class-name="team-request-collapse__letter w-100 rounded-end"
             name="letter"
-            v-model="letter"
             label="Мотивационное письмо"
             :hint="hintLetter"
           />
 
-          <div class="d-flex gap-2">
-            <Button
-              class-name="btn-success"
-              v-collapse="team.id"
-              @click="sendRequestTeam()"
-            >
-              Подать заявку
-            </Button>
-          </div>
+          <Button
+            class-name="btn-success"
+            v-collapse="team.id"
+            @click="sendRequestTeam()"
+          >
+            Подать заявку
+          </Button>
         </div>
       </Collapse>
     </div>
