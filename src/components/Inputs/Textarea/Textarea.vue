@@ -60,7 +60,7 @@ const LabelClassName = computed(() => [
       <textarea
         :class="TextareaClassName"
         :name="name"
-        v-model="value as string"
+        model="value"
         @change="(event) => emit('change', event as HTMLTargetEvent)"
         @focus="emit('focus')"
         @blur="emit('blur')"

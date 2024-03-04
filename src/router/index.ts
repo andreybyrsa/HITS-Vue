@@ -223,7 +223,7 @@ const routes: RouteRecordRaw[] = [
   },
 ]
 
-export const router = createRouter({
+const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 })
@@ -261,3 +261,5 @@ router.beforeEach((to) => {
     return requiredRouteRoles.includes(role) ? true : { name: 'error' }
   }
 })
+
+export { router }

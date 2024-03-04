@@ -17,6 +17,8 @@ export const useUserStore = defineStore('user', {
     async loginUser(user: LoginUser) {
       const response = await AuthService.login(user)
 
+      console.log(response)
+
       if (response instanceof Error) {
         useNotification('Система', response.message)
         return response
@@ -25,7 +27,7 @@ export const useUserStore = defineStore('user', {
       localStorageUser.setLocalStorageUser(response)
       this.user = localStorageUser.getLocalStorageUser()
 
-      this.router.push(getRouteByUserRole(response.roles))
+      this.router.push(getRouteByUserRole(response?.roles))
     },
 
     async registerUser(user: RegisterUser, slug: string) {
@@ -57,7 +59,7 @@ export const useUserStore = defineStore('user', {
     },
 
     setRole(role: RolesTypes) {
-      if (this.user) {
+      if (this?.user) {
         this.user.role = role
         localStorageUser.setLocalStorageUser(this.user)
       }

@@ -39,7 +39,7 @@ export const useProfilesStore = defineStore('profiles', {
           return response
         }
 
-        const avatar = response.length ? `data:image/jpeg;base64,${response}` : ''
+        const avatar = response?.length ? `data:image/jpeg;base64,${response}` : ''
         const storedAvatar: StoredAvatar = { id: userId, avatar }
 
         findOneAndUpdate(this.avatars, storedAvatar, { key: 'id', value: userId })
