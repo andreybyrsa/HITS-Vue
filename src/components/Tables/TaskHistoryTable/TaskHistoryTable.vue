@@ -7,6 +7,7 @@
   />
 
   <TaskHistoryModal
+    v-if="currentLog"
     :is-opened="isOpenetTaskHistoryModal"
     :log="currentLog"
     @close-modal="closeTaskHistoryModal"
