@@ -57,7 +57,9 @@ const { setValues, handleSubmit } = useForm<Profile>({
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
     userTag: (value: string) =>
-      Validation.checkTag(value) || 'Неверно введён тег телеграм',
+      (!value && !computedProfile.value?.userTag) ||
+      Validation.checkTag(value) ||
+      'Неверно введён тег телеграм',
   },
 })
 

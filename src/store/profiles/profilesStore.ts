@@ -131,7 +131,7 @@ const useProfilesStore = defineStore('profiles', {
       const userStore = useUserStore()
       const { id: userId, lastName, firstName } = user
 
-      const fullName: ProfileFullName = { lastName, firstName, id: userId }
+      const fullName: ProfileFullName = { lastName, firstName }
 
       const response = await ProfileService.updateUserFullName(fullName, token)
 

@@ -18,7 +18,6 @@ interface Profile extends User {
 interface ProfileFullName {
   lastName: string
   firstName: string
-  id: string
 }
 
 export { Profile, ProfileFullName }
