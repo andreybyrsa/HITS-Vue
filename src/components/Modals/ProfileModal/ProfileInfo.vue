@@ -288,7 +288,7 @@ function getFormattedDate(date: string) {
         <Input
           name="telephone"
           class-name="rounded-end w-100"
-          placeholder="+7 (___)-___-__-__"
+          placeholder="+7(___)-___-__-__"
           :disabled="!isUpdatingUserTelephone"
           validate-on-update
           v-mask="'+7(###)-###-##-##'"
