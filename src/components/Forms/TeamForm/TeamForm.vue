@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { watchImmediate } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { User, Team, TeamMember, TeamInvitation, Skill } from '@Domain'
-import { useUserStore, useNotificationsStore } from '@Store'
+import { useNotificationsStore } from '@Store'
 import { TeamService } from '@Service'
 import { validation } from '@Utils'
 import { TeamFormProps } from '@Components/Forms/TeamForm/TeamForm.types'
@@ -20,9 +19,6 @@ import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
 
 const props = defineProps<TeamFormProps>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
 
@@ -158,13 +154,14 @@ watchImmediate(
         validate-on-update
         placeholder="Введите название команды"
       />
+
       <Textarea
         name="description"
         class-name="rounded-end"
         label="Описание команды*"
         validate-on-update
         placeholder="Введите описание команды"
-      ></Textarea>
+      />
 
       <TeamType />
 
