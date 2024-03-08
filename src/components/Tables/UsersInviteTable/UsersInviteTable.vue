@@ -112,7 +112,7 @@ function getFilterSkills() {
         .map(({ name }) => ({
           label: name,
           value: name,
-          isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+          isMarked: !!profile.value?.skills?.find((skill) => skill.name === name),
         }))
         .sort((a, b) => +b.isMarked - +a.isMarked)
     : []
