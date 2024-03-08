@@ -24,6 +24,8 @@ const profile = computed(() => profilesStore.getProfileByUserId(profileId))
 const isOwnProfile = computed(() => profile.value?.email === user.value?.email)
 const isUpdatingUserName = ref(false)
 const isUpdatingUserLastname = ref(false)
+const isUpdatingUserStudyGroup = ref(false)
+const isUpdatingUserTelephone = ref(false)
 const isOpenedChangeEmailModal = ref(false)
 
 const { setValues, handleSubmit } = useForm<User>({
@@ -38,17 +40,26 @@ const { setValues, handleSubmit } = useForm<User>({
 watchImmediate(profile, () => setUserValues())
 
 const handleEditUser = handleSubmit(async (values) => {
-  await profilesStore.updateUserFullName(values)
-  isUpdatingUserName.value = false
-  isUpdatingUserLastname.value = false
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    await profilesStore.updateUserFullName(values)
+
+    isUpdatingUserTelephone.value = false
+    isUpdatingUserName.value = false
+    isUpdatingUserLastname.value = false
+    isUpdatingUserStudyGroup.value = false
+  }
 })
 
 function setUserValues() {
   if (profile.value?.email === user.value?.email) {
     setValues({ ...user.value })
   } else if (profile.value) {
-    const { email, firstName, lastName } = profile.value
-    setValues({ email, firstName, lastName })
+    const { email, firstName, lastName, studyGroup, telephone } = profile.value
+    setValues({ email, firstName, lastName, studyGroup, telephone })
   }
 }
 
@@ -61,6 +72,20 @@ function toogleUpdateUserName(value: boolean) {
 
 function toogleUpdateUserLastname(value: boolean) {
   isUpdatingUserLastname.value = value
+  if (!value) {
+    setUserValues()
+  }
+}
+
+function toogleUpdateUserStudyGroup(value: boolean) {
+  isUpdatingUserStudyGroup.value = value
+  if (!value) {
+    setUserValues()
+  }
+}
+
+function toogleUpdatingUserTelephone(value: boolean) {
+  isUpdatingUserTelephone.value = value
   if (!value) {
     setUserValues()
   }
@@ -88,7 +113,12 @@ function getFormattedDate(date: string) {
       <Typography class-name="fs-5 text-primary">Информация</Typography>
       <div class="d-flex justify-content-end gap-2">
         <Button
-          v-if="isUpdatingUserName || isUpdatingUserLastname"
+          v-if="
+            isUpdatingUserName ||
+            isUpdatingUserLastname ||
+            isUpdatingUserStudyGroup ||
+            isUpdatingUserTelephone
+          "
           variant="success"
           @click="handleEditUser"
         >
@@ -108,6 +138,20 @@ function getFormattedDate(date: string) {
         >
           Отменить
         </Button>
+        <Button
+          v-if="isUpdatingUserStudyGroup"
+          variant="danger"
+          @click="toogleUpdateUserStudyGroup(false)"
+        >
+          Отменить
+        </Button>
+        <Button
+          v-if="isUpdatingUserTelephone"
+          variant="danger"
+          @click="toogleUpdatingUserTelephone(false)"
+        >
+          Отменить
+        </Button>
       </div>
     </div>
 
@@ -116,7 +160,7 @@ function getFormattedDate(date: string) {
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Почта:</Typography>
           <div
-            v-if="isOwnProfile"
+            v-if="isOwnProfile || user?.role === 'ADMIN'"
             class="link text-secondary cursor-pointer"
             @click="openChangeEmailModal"
           >
@@ -135,7 +179,15 @@ function getFormattedDate(date: string) {
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Имя:</Typography>
           <div
-            v-if="isOwnProfile && !isUpdatingUserName && !isUpdatingUserLastname"
+            v-if="
+              (isOwnProfile &&
+                !isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
+            "
+            s
             class="link text-secondary cursor-pointer"
             @click="toogleUpdateUserName(true)"
           >
@@ -156,7 +208,14 @@ function getFormattedDate(date: string) {
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Фамилия:</Typography>
           <div
-            v-if="isOwnProfile && !isUpdatingUserLastname && !isUpdatingUserName"
+            v-if="
+              (isOwnProfile &&
+                !isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
+            "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdateUserLastname(true)"
           >
@@ -170,6 +229,65 @@ function getFormattedDate(date: string) {
           placeholder="Введите вашу фамилия"
           :disabled="!isUpdatingUserLastname"
           validate-on-update
+        />
+      </div>
+
+      <div class="w-100 d-flex flex-column gap-2">
+        <div class="d-flex gap-1">
+          <Typography class-name="text-primary">Группа:</Typography>
+          <div
+            v-if="
+              (isOwnProfile &&
+                !isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
+            "
+            class="link text-secondary cursor-pointer"
+            @click="toogleUpdateUserStudyGroup(true)"
+          >
+            изменить
+          </div>
+        </div>
+
+        <Input
+          name="studyGroup"
+          class-name="rounded-end w-100"
+          placeholder="Введите вашу учебную группу"
+          :disabled="!isUpdatingUserStudyGroup"
+          validate-on-update
+        />
+      </div>
+
+      <div
+        v-if="isOwnProfile || user?.role === 'ADMIN'"
+        class="w-100 d-flex flex-column gap-2"
+      >
+        <div class="d-flex gap-1">
+          <Typography class-name="text-primary">Телефон:</Typography>
+          <div
+            v-if="
+              (!isUpdatingUserLastname &&
+                !isUpdatingUserName &&
+                !isUpdatingUserStudyGroup &&
+                !isUpdatingUserTelephone) ||
+              user?.role === 'ADMIN'
+            "
+            class="link text-secondary cursor-pointer"
+            @click="toogleUpdatingUserTelephone(true)"
+          >
+            изменить
+          </div>
+        </div>
+
+        <Input
+          name="telephone"
+          class-name="rounded-end w-100"
+          placeholder="+7(___)-___-__-__"
+          :disabled="!isUpdatingUserTelephone"
+          validate-on-update
+          v-mask="'+7(###)-###-##-##'"
         />
       </div>
 

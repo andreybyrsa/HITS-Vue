@@ -42,11 +42,14 @@ const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
       validation.checkName(value) || 'Неверно введена фамилия',
     password: (value: string) => validation.checkPassword(value),
     roles: (value: RolesTypes[]) => validation.checkIsEmptyValue(value),
+    telephone: (value: string) =>
+      validation.checkIsEmptyValue(value) || 'Это обязательное поле',
   },
 })
 
 const handleRegister = handleSubmit(async (values) => {
   const slug = route.params.slug.toString()
+  console.log(values)
 
   isLoading.value = true
   await userStore.registerUser(values, slug)
@@ -58,20 +61,39 @@ const handleRegister = handleSubmit(async (values) => {
   <FormLayout>
     <Typography class-name="fs-3 text-primary text-center">Регистрация</Typography>
 
-    <Input
+    <div
       v-for="input in registerInputs"
       :key="input.key"
-      :type="input.type"
-      :name="input.name"
-      class-name="rounded-end"
-      :placeholder="input.placeholder"
-      :prepend="input.prepend"
-      :disabled="input.disabled"
     >
-      <template #prepend>
-        <i :class="input.prependIcon"></i>
-      </template>
-    </Input>
+      <Input
+        v-if="input.name !== 'telephone'"
+        :type="input.type"
+        :name="input.name"
+        class-name="rounded-end"
+        :placeholder="input.placeholder"
+        :prepend="input.prepend"
+        :disabled="input.disabled"
+      >
+        <template #prepend>
+          <i :class="input.prependIcon" />
+        </template>
+      </Input>
+
+      <Input
+        v-else
+        :type="input.type"
+        :name="input.name"
+        class-name="rounded-end"
+        :placeholder="input.placeholder"
+        :prepend="input.prepend"
+        :disabled="input.disabled"
+        v-mask="'+7(###)-###-##-##'"
+      >
+        <template #prepend>
+          <i :class="input.prependIcon" />
+        </template>
+      </Input>
+    </div>
 
     <Button
       type="submit"

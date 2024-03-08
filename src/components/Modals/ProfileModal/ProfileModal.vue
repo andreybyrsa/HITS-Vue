@@ -86,11 +86,13 @@ function handleCloseProfileModal() {
         </div>
 
         <div class="profile-modal__content">
-          <ProfileAvatar />
+          <div class="d-flex flex-column gap-3 w-75">
+            <ProfileAvatar />
+
+            <ProfileInfo />
+          </div>
 
           <div class="profile-modal__info mb-3">
-            <ProfileInfo />
-
             <ProfileSkills />
 
             <ProfileIdeas />
@@ -147,7 +149,7 @@ function handleCloseProfileModal() {
   }
 
   &__info {
-    width: 66%;
+    width: 100%;
     height: 100%;
 
     @include flexible(center, flex-start, column, $gap: 16px);

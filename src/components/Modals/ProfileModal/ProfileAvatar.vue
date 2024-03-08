@@ -50,7 +50,9 @@ async function handleFileUpload(event: HTMLTargetEvent) {
 </script>
 
 <template>
-  <div class="profile-avatar bg-white border p-3 rounded-3 d-flex flex-column gap-3">
+  <div
+    class="profile-avatar w-100 bg-white border p-3 rounded-3 d-flex flex-column gap-3"
+  >
     <input
       ref="fileInputRef"
       type="file"

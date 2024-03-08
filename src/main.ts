@@ -1,6 +1,7 @@
-import VueApexCharts from 'vue3-apexcharts'
 import { createApp, markRaw } from 'vue'
 import { createPinia } from 'pinia'
+import VueApexCharts from 'vue3-apexcharts'
+import VueTheMask from 'vue-the-mask'
 import { router } from '@Router'
 import { tooltipDirective, dropdownDirective, collapseDirective } from '@Utils'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -15,6 +16,8 @@ pinia.use(({ store }) => {
   store.router = markRaw(router)
 })
 app.use(pinia)
+
+app.use(VueTheMask as any)
 
 app.use(router)
 

@@ -91,8 +91,14 @@ export const useProfilesStore = defineStore('profiles', {
 
     async updateUserFullName(user: User) {
       const userStore = useUserStore()
-      const { id: userId, lastName, firstName } = user
-      const fullName: ProfileFullName = { lastName, firstName }
+      const { id: userId, lastName, firstName, studyGroup, telephone } = user
+      const fullName: ProfileFullName = {
+        lastName,
+        firstName,
+        studyGroup,
+        telephone,
+      }
+
       const response = await ProfileService.updateUserFullName(fullName)
 
       if (response instanceof Error) {

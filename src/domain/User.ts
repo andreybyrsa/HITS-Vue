@@ -12,6 +12,9 @@ export interface User {
   roles: RolesTypes[]
   role?: RolesTypes
   lastLogin?: Date
+
+  telephone: string
+  studyGroup: string
 }
 
 export interface LoginUser {
@@ -25,4 +28,6 @@ export interface RegisterUser {
   lastName: string
   password: string
   roles: RolesTypes[]
+  telephone: string
+  studyGroup: string
 }

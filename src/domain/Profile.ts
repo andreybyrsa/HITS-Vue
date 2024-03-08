@@ -10,4 +10,6 @@ export interface Profile extends User {
 export interface ProfileFullName {
   lastName: string
   firstName: string
+  studyGroup: string
+  telephone: string
 }
