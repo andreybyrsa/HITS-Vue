@@ -307,7 +307,7 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
       .map(({ name }) => ({
         label: name,
         value: name,
-        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+        isMarked: !!profile.value?.skills?.find((skill) => skill.name === name),
       }))
       .sort((a, b) => +b.isMarked - +a.isMarked),
     refValue: filterBySkills,
@@ -324,7 +324,7 @@ function getAccessInvitationsInIdeaMarket(team: Team, idea: IdeaMarket) {
   const currentsInvitesIdea = ideaInvitations.value.filter(
     ({ ideaId, status }) => ideaId === currentIdeaId && status === 'NEW',
   )
-  const isTeamInviteInIdea = currentsInvitesIdea.find(
+  const isTeamInviteInIdea = currentsInvitesIdea?.find(
     ({ teamId }) => teamId === currentTeamId,
   )
 
@@ -371,7 +371,7 @@ async function handleRevokeTeam(invitation: InvitationTeamToIdea) {
 
 function getCheckedSkills() {
   return filterBySkills.value.reduce<Skill[]>((prevSkills, skillName) => {
-    const skill = skills.value.find(({ name }) => skillName === name)
+    const skill = skills.value?.find(({ name }) => skillName === name)
 
     if (skill) prevSkills.push(skill)
 
@@ -525,7 +525,7 @@ function checkTeamHasActiveProject(team: Team, status: FilterValue) {
 }
 
 function checkIsTeamSent(team: Team, status: FilterValue) {
-  const result = ideaInvitations.value.find(
+  const result = ideaInvitations.value?.find(
     (invitation) => invitation.teamId == team.id && invitation.status === 'NEW',
   )
 
