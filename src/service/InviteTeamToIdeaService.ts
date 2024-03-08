@@ -1,6 +1,6 @@
 import { MODE } from '@Config'
 import { InvitationTeamToIdea, InvitationTeamToIdeaStatus, Success } from '@Domain'
-import { defineAxios, invitationTeamToIdeaMocks } from '@Utils'
+import { TryCatch, defineAxios, invitationTeamToIdeaMocks } from '@Utils'
 
 const invitationTeamToIdeaDefineApi = defineAxios(invitationTeamToIdeaMocks)
 
@@ -25,89 +25,88 @@ const filterTeamInvitations = (
   return invitations.filter((invitation) => invitation.teamId === teamId)
 }
 
-const getInvitationsByIdea = async (
-  ideaMarketId: string,
-): Promise<InvitationTeamToIdea[] | Error> => {
-  const response = await invitationTeamToIdeaDefineApi.get<InvitationTeamToIdea[]>(
-    `/idea/invitation/all/${ideaMarketId}`,
-    {},
-    {
-      formatter: (applications) =>
-        filterInvitationsByMarketId(ideaMarketId, applications),
-    },
-  )
-  return response.data
-}
-
-const getAllInvitationsByInitiator = async (
-  userId: string,
-): Promise<InvitationTeamToIdea[] | Error> => {
-  const response = await invitationTeamToIdeaDefineApi.get<InvitationTeamToIdea[]>(
-    '/idea/invitation/all/initiator',
-    {},
-    {
-      formatter: (applications) =>
-        filterInvitationsByInitiator(applications, userId),
-    },
-  )
-  return response.data
-}
-
-const getTeamInvitations = async (
-  teamId: string,
-): Promise<InvitationTeamToIdea[] | Error> => {
-  const response = await invitationTeamToIdeaDefineApi.get<InvitationTeamToIdea[]>(
-    `/idea/invitation/team/all/${teamId}`, // FIX ROUTE
-    {},
-    {
-      formatter: (applications) => filterTeamInvitations(applications, teamId),
-    },
-  )
-  return response.data
-}
-
-const inviteTeamToIdea = async (
-  invitation: InvitationTeamToIdea,
-): Promise<InvitationTeamToIdea | Error> => {
-  const response = await invitationTeamToIdeaDefineApi.post(
-    `/idea/invitation/${invitation.teamId}/${invitation.ideaId}`,
-    invitation,
-  )
-  return response.data
-}
-
-const changeInvitationStatus = async (
-  invitationId: string,
-  status: InvitationTeamToIdeaStatus,
-  ideaId?: string,
-  teamId?: string,
-): Promise<Success | Error> => {
-  if (MODE === 'DEVELOPMENT') {
-    if (status === 'ACCEPTED') {
-      invitationTeamToIdeaMocks.forEach((invitation) => {
-        if (invitation.id === invitationId) {
-          invitation.status = status
-        }
-        invitation.status = 'ANNULLED'
-      })
-    }
+export class InviteTeamToIdeaService {
+  @TryCatch
+  static async getInvitationsByIdea(
+    ideaMarketId: string,
+  ): Promise<InvitationTeamToIdea[] | Error> {
+    const response = await invitationTeamToIdeaDefineApi.get<InvitationTeamToIdea[]>(
+      `/idea/invitation/all/${ideaMarketId}`,
+      {},
+      {
+        formatter: (applications) =>
+          filterInvitationsByMarketId(ideaMarketId, applications),
+      },
+    )
+    return response.data
   }
 
-  const response = await invitationTeamToIdeaDefineApi.put<Success | Error>(
-    '/idea/invitation/status',
-    { id: invitationId, teamId: teamId, ideaId: ideaId, status: status },
-    {},
-    {
-      params: { id: invitationId },
-    },
-  )
-  return response.data
-}
+  @TryCatch
+  static async getAllInvitationsByInitiator(
+    userId: string,
+  ): Promise<InvitationTeamToIdea[] | Error> {
+    const response = await invitationTeamToIdeaDefineApi.get<InvitationTeamToIdea[]>(
+      '/idea/invitation/all/initiator',
+      {},
+      {
+        formatter: (applications) =>
+          filterInvitationsByInitiator(applications, userId),
+      },
+    )
+    return response.data
+  }
 
-export const InviteTeamToIdeaService = {
-  getInvitationsByIdea,
-  getAllInvitationsByInitiator,
-  getTeamInvitations,
-  inviteTeamToIdea,
-  changeInvitationStatus,
+  @TryCatch
+  static async getTeamInvitations(
+    teamId: string,
+  ): Promise<InvitationTeamToIdea[] | Error> {
+    const response = await invitationTeamToIdeaDefineApi.get<InvitationTeamToIdea[]>(
+      `/idea/invitation/team/all/${teamId}`, // FIX ROUTE
+      {},
+      {
+        formatter: (applications) => filterTeamInvitations(applications, teamId),
+      },
+    )
+    return response.data
+  }
+
+  @TryCatch
+  static async inviteTeamToIdea(
+    invitation: InvitationTeamToIdea,
+  ): Promise<InvitationTeamToIdea | Error> {
+    const response = await invitationTeamToIdeaDefineApi.post(
+      `/idea/invitation/${invitation.teamId}/${invitation.ideaId}`,
+      invitation,
+    )
+    return response.data
+  }
+
+  @TryCatch
+  static async changeInvitationStatus(
+    invitationId: string,
+    status: InvitationTeamToIdeaStatus,
+    ideaId?: string,
+    teamId?: string,
+  ): Promise<Success | Error> {
+    if (MODE === 'DEVELOPMENT') {
+      if (status === 'ACCEPTED') {
+        invitationTeamToIdeaMocks.forEach((invitation) => {
+          if (invitation.id === invitationId) {
+            invitation.status = status
+          }
+          invitation.status = 'ANNULLED'
+        })
+      }
+    }
+
+    const response = await invitationTeamToIdeaDefineApi.put<Success | Error>(
+      '/idea/invitation/status',
+      { id: invitationId, teamId: teamId, ideaId: ideaId, status: status },
+      {},
+      {
+        params: { id: invitationId },
+      },
+    )
+    return response.data
+  }
 }
