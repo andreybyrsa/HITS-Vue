@@ -1,10 +1,10 @@
-import { Idea } from '@Domain/Idea'
+import { Idea } from '@Domain'
 
-interface CustomerAndContact {
+export interface CustomerAndContact {
   idea: Idea
 }
 
-interface CustomerAndContactEmits {
+export interface CustomerAndContactEmits {
   (
     event: 'set-value',
     field: keyof Idea,
@@ -12,5 +12,3 @@ interface CustomerAndContactEmits {
     shouldValidate?: boolean,
   ): void
 }
-
-export { CustomerAndContact, CustomerAndContactEmits }

@@ -61,9 +61,6 @@ class Validation {
   }
 }
 
-const ValidationController = new Validation()
-type ValidationKeys = keyof typeof ValidationController
-type ValidationMethods = (typeof ValidationController)[ValidationKeys]
-
-export default new Validation()
-export type { ValidationMethods }
+export const validation = new Validation()
+type ValidationKeys = keyof typeof validation
+export type ValidationMethods = (typeof validation)[ValidationKeys]

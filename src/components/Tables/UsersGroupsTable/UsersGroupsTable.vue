@@ -1,62 +1,21 @@
-<template>
-  <Table
-    class-name="p-3"
-    :header="usersGroupsTableHeader"
-    :columns="usersGroupsTableColumns"
-    :data="usersGroups"
-    :search-by="['name']"
-    :filters="usersGroupsFilters"
-    :dropdown-actions-menu="dropdownUsersGroupsActions"
-  ></Table>
-
-  <UsersGroupModal
-    :isOpened="isOpenedCreatingGroupModal"
-    v-model="usersGroups"
-    @close-modal="closeCreatingGroupModal"
-  />
-  <UsersGroupModal
-    :isOpened="isOpenedUpdatingGroupModal"
-    :users-group-id="currentGroupId"
-    v-model="usersGroups"
-    @close-modal="closeUpdatingGroupModal"
-  />
-
-  <DeleteModal
-    :is-opened="isOpenedDeletingGroupModal"
-    :item-name="currentDeleteGroupName"
-    @delete="handleDeleteGroup"
-    @close-modal="closeDeletingGroupModal"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
-
-import Table from '@Components/Table/Table.vue'
+import { UsersGroup, RolesTypes } from '@Domain'
+import { useNotificationsStore } from '@Store'
+import { UsersGroupsService } from '@Service'
+import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils'
 import {
   DropdownMenuAction,
   TableColumn,
   TableHeader,
 } from '@Components/Table/Table.types'
+import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
+import Table from '@Components/Table/Table.vue'
 import UsersGroupModal from '@Components/Modals/UsersGroupModal/UsersGroupModal.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
-
-import UsersGroup from '@Domain/UsersGroup'
-import RolesTypes from '@Domain/Roles'
-
-import UsersGroupsService from '@Services/UsersGroupsService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils/userRolesInfo'
 
 const usersGroups = defineModel<UsersGroup[]>({ required: true })
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const currentGroupId = ref()
@@ -164,13 +123,9 @@ function closeDeletingGroupModal() {
 }
 
 const handleDeleteGroup = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentDeleteGroupId.value !== null) {
-    const { token } = currentUser
+  if (currentDeleteGroupId.value !== null) {
     const response = await UsersGroupsService.deleteUsersGroup(
       currentDeleteGroupId.value,
-      token,
     )
 
     if (response instanceof Error) {
@@ -183,3 +138,34 @@ const handleDeleteGroup = async () => {
   }
 }
 </script>
+
+<template>
+  <Table
+    class-name="p-3"
+    :header="usersGroupsTableHeader"
+    :columns="usersGroupsTableColumns"
+    :data="usersGroups"
+    :search-by="['name']"
+    :filters="usersGroupsFilters"
+    :dropdown-actions-menu="dropdownUsersGroupsActions"
+  ></Table>
+
+  <UsersGroupModal
+    :isOpened="isOpenedCreatingGroupModal"
+    v-model="usersGroups"
+    @close-modal="closeCreatingGroupModal"
+  />
+  <UsersGroupModal
+    :isOpened="isOpenedUpdatingGroupModal"
+    :users-group-id="currentGroupId"
+    v-model="usersGroups"
+    @close-modal="closeUpdatingGroupModal"
+  />
+
+  <DeleteModal
+    :is-opened="isOpenedDeletingGroupModal"
+    :item-name="currentDeleteGroupName"
+    @delete="handleDeleteGroup"
+    @close-modal="closeDeletingGroupModal"
+  />
+</template>

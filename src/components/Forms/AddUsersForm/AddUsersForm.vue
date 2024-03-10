@@ -2,26 +2,17 @@
 import { ref, VueElement } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
-
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import FormControllers from '@Components/Forms/AddUsersForm/FormControllers.vue'
 import FormInputs from '@Components/Forms/AddUsersForm/FormInputs.vue'
-
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
-
-import { InviteUsersForm } from '@Domain/Invitation'
-import RolesTypes from '@Domain/Roles'
-
-import InvitationService from '@Services/InvitationService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import Validation from '@Utils/Validation'
-import { getUserRolesInfo } from '@Utils/userRolesInfo'
+import { InviteUsersForm, RolesTypes } from '@Domain'
+import { useUserStore, useNotificationsStore } from '@Store'
+import { InviteService } from '@Service'
+import { validation, getUserRolesInfo } from '@Utils'
 
 const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
@@ -35,8 +26,8 @@ const isLoading = ref(false)
 const { errors, resetForm, submitCount, handleSubmit } = useForm<InviteUsersForm>({
   validationSchema: {
     emails: (value: string[]) =>
-      value?.every((email) => Validation.checkEmail(email)),
-    roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
+      value?.every((email) => validation.checkEmail(email)),
+    roles: (value: RolesTypes[]) => validation.checkIsEmptyValue(value),
   },
   initialValues: {
     emails: [''],
@@ -47,25 +38,19 @@ const { errors, resetForm, submitCount, handleSubmit } = useForm<InviteUsersForm
 const { fields, push, move, remove } = useFieldArray<string>('emails')
 
 const handleInvite = handleSubmit(async (values) => {
-  const currentUser = user.value
+  isLoading.value = true
+  const response = await InviteService.inviteUsers(values)
+  isLoading.value = false
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isLoading.value = true
-    const response = await InvitationService.inviteUsers(values, token)
-    isLoading.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    resetForm()
-    notificationsStore.createSystemNotification(
-      'Система',
-      'Приглашения успешно отправлены.',
-    )
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  resetForm()
+  notificationsStore.createSystemNotification(
+    'Система',
+    'Приглашения успешно отправлены.',
+  )
 })
 </script>
 
@@ -141,3 +126,4 @@ const handleInvite = handleSubmit(async (values) => {
   }
 }
 </style>
+@Utils/validation

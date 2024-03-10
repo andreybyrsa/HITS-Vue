@@ -1,14 +1,17 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { RouteRecordRaw, useRoute, useRouter } from 'vue-router'
-import { useForm } from 'vee-validate'
+import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-
+import { useForm } from 'vee-validate'
+import { RequestTeamToIdea, RequestToIdeaStatus, Team } from '@Domain'
+import { useUserStore, useNotificationsStore, useRequestsToIdeaStore } from '@Store'
+import { TeamService } from '@Service'
 import {
   RequestTeamCollapseProps,
   hintLetter,
 } from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.types.'
-
+import { ButtonVariants } from '@Components/Button/Button.types'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
@@ -17,21 +20,8 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 
-import { Team } from '@Domain/Team'
-import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
-
-import TeamService from '@Services/TeamService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
-import { watchImmediate } from '@vueuse/core'
-import { ButtonVariants } from '@Components/Button/Button.types'
-
 const props = defineProps<RequestTeamCollapseProps>()
-
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
-
 const notificationsStore = useNotificationsStore()
 
 const router = useRouter()
@@ -58,46 +48,28 @@ const { handleSubmit } = useForm({
 })
 
 const takeTeamData = async (id: string) => {
-  const currentUser = user.value
+  const response = await TeamService.getTeam(id)
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await TeamService.getTeam(id, token)
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    currentTeam.value = response
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  currentTeam.value = response
 }
 
 const sendRequestTeam = handleSubmit(async (values) => {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentTeam.value) {
-    const { token } = currentUser
+  if (currentTeam.value) {
     const id = props.idea.id
     const marketId = route.params.marketId.toString()
 
-    requestsToIdeaStore.postRequest(
-      currentTeam.value,
-      id,
-      marketId,
-      values.letter,
-      token,
-    )
+    requestsToIdeaStore.postRequest(currentTeam.value, id, marketId, values.letter)
   }
 })
 
 const withdrawRequestToIdea = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentRequest.value) {
-    const { token } = currentUser
+  if (currentRequest.value) {
     const { id } = currentRequest.value
-
-    await requestsToIdeaStore.updateRequestToIdea(id, 'WITHDRAWN', token)
+    await requestsToIdeaStore.updateRequestToIdea(id, 'WITHDRAWN')
   }
 }
 

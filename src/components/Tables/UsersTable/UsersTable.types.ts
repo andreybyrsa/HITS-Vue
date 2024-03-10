@@ -1,7 +1,5 @@
-import { TeamMember } from '@Domain/Team'
+import { TeamMember } from '@Domain'
 
-interface UsersTableProps {
+export interface UsersTableProps {
   usersInTeams: TeamMember[]
 }
-
-export default UsersTableProps

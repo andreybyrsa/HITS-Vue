@@ -1,23 +1,17 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
-
+import { TeamMember, TeamInvitation } from '@Domain'
+import { useInvitationUsersStore } from '@Store'
 import {
   InvitationTeamMemberModalEmits,
   InvitationTeamMemberModalProps,
 } from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.types'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import UsersInviteTable from '@Components/Tables/UsersInviteTable/UsersInviteTable.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { TeamMember, TeamInvitation } from '@Domain/Team'
-
-import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-import useUserStore from '@Store/user/userStore'
 
 const invitationUsers = defineModel<TeamMember[]>({ required: true })
 const newArrayUsers = ref<TeamMember[]>([])
@@ -25,9 +19,6 @@ const selectedUsers = ref<TeamMember[]>([])
 
 const invitatinUsers = useInvitationUsersStore()
 const route = useRoute()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const isLoading = ref(false)
 
@@ -63,11 +54,8 @@ function cancelSelectedUsers(user: TeamMember) {
 }
 
 async function inviteUsersInTeam() {
-  const currentUser = user.value
-
-  if (currentUser?.token && route.params.teamId) {
+  if (route.params.teamId) {
     isLoading.value = true
-    const { token } = currentUser
     const { teamId } = route.params
 
     const invitationsToTeam = selectedUsers.value.map(
@@ -80,7 +68,7 @@ async function inviteUsersInTeam() {
       }),
     ) as TeamInvitation[]
 
-    await invitatinUsers.inviteUsers(invitationsToTeam, token)
+    await invitatinUsers.inviteUsers(invitationsToTeam)
 
     selectedUsers.value = []
     newArrayUsers.value = []

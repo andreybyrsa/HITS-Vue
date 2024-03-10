@@ -1,66 +1,24 @@
-<template>
-  <Table
-    class-name="px-3 pb-3 pt-1"
-    :data="requestToIdeaTeams"
-    :columns="requestToIdeaColumns"
-    :search-by="['name']"
-    :dropdown-actions-menu="dropdownRequestActions"
-    v-model="selectedRequest"
-  />
-
-  <LetterModal
-    :letter="currentRequestToIdea?.letter"
-    :is-opened="isOpenedLetterModal"
-    :idea-market="ideaMarket"
-    @close-modal="closeLetterModal"
-    @accept-request="acceptRequestToIdea(currentRequestToIdea)"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedAcceptModal"
-    text-button="Принять заявку"
-    text-question="Команду можно выбрать только один раз"
-    @close-modal="closeAcceptModal"
-    @action="acceptRequestToIdea(currentRequestToIdea)"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedCancelModal"
-    text-button="Отклонить заявку"
-    text-question="Эта команда больше не сможет подать заявку"
-    @close-modal="closeCancelModal"
-    @action="cancelRequestToIdea(currentRequestToIdea)"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref, Ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { useRouter, RouteRecordRaw } from 'vue-router'
-import { storeToRefs } from 'pinia'
-
-import Table from '@Components/Table/Table.vue'
-import RequestsToIdeaTableProps from '@Components/Tables/RequestsToIdeaTable/RequestsToIdeaTable.types'
+import { Skill, RequestTeamToIdea, RequestToIdeaStatus } from '@Domain'
+import { useRequestsToIdeaStore } from '@Store'
+import {
+  mutableSort,
+  getSkillInfoStyle,
+  getJoinStatus,
+  getJoinStatusStyle,
+} from '@Utils'
+import { RequestsToIdeaTableProps } from '@Components/Tables/RequestsToIdeaTable/RequestsToIdeaTable.types'
 import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import Table from '@Components/Table/Table.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import LetterModal from '@Components/Modals/LetterModal/LetterModal.vue'
 
-import { Skill } from '@Domain/Skill'
-import { RequestTeamToIdea, RequestToIdeaStatus } from '@Domain/RequestTeamToIdea'
-
-import useUserStore from '@Store/user/userStore'
-import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
-
-import mutableSort from '@Utils/mutableSort'
-import { getSkillInfoStyle } from '@Utils/skillsInfo'
-import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
-
 const props = defineProps<RequestsToIdeaTableProps>()
 const selectedTeam = defineModel<RequestTeamToIdea[]>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const requestsToIdeaStore = useRequestsToIdeaStore()
 
@@ -211,16 +169,11 @@ function closeCancelModal() {
 }
 
 async function acceptRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
-  const currentUser = user.value
-
-  if (currentUser?.token && requestToIdea) {
-    const { token } = currentUser
-
-    await requestsToIdeaStore.acceptRequestToIdea(requestToIdea, token)
+  if (requestToIdea) {
+    await requestsToIdeaStore.acceptRequestToIdea(requestToIdea)
     await requestsToIdeaStore.updateRequestToIdea(
       requestToIdea.id,
       'ACCEPTED',
-      token,
       props.ideaMarket.ideaId,
       requestToIdea.teamId,
       props.ideaMarket.id,
@@ -229,13 +182,9 @@ async function acceptRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
 }
 
 async function cancelRequestToIdea(requestToIdea: RequestTeamToIdea | null) {
-  const currentUser = user.value
-
-  if (currentUser?.token && requestToIdea) {
-    const { token } = currentUser
+  if (requestToIdea) {
     const { id } = requestToIdea
-
-    await requestsToIdeaStore.updateRequestToIdea(id, 'CANCELED', token)
+    await requestsToIdeaStore.updateRequestToIdea(id, 'CANCELED')
   }
 }
 
@@ -243,3 +192,38 @@ function checkRecruitmentIdeaStatus(team: RequestTeamToIdea) {
   return props.ideaMarket.status === 'RECRUITMENT_IS_OPEN' && team.status === 'NEW'
 }
 </script>
+
+<template>
+  <Table
+    class-name="px-3 pb-3 pt-1"
+    :data="requestToIdeaTeams"
+    :columns="requestToIdeaColumns"
+    :search-by="['name']"
+    :dropdown-actions-menu="dropdownRequestActions"
+    v-model="selectedRequest"
+  />
+
+  <LetterModal
+    :letter="currentRequestToIdea?.letter"
+    :is-opened="isOpenedLetterModal"
+    :idea-market="ideaMarket"
+    @close-modal="closeLetterModal"
+    @accept-request="acceptRequestToIdea(currentRequestToIdea)"
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedAcceptModal"
+    text-button="Принять заявку"
+    text-question="Команду можно выбрать только один раз"
+    @close-modal="closeAcceptModal"
+    @action="acceptRequestToIdea(currentRequestToIdea)"
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedCancelModal"
+    text-button="Отклонить заявку"
+    text-question="Эта команда больше не сможет подать заявку"
+    @close-modal="closeCancelModal"
+    @action="cancelRequestToIdea(currentRequestToIdea)"
+  />
+</template>

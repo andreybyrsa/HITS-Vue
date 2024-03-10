@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
-
-import CheckboxProps from '@Components/Inputs/Checkbox/Checkbox.types'
+import { CheckboxProps } from '@Components/Inputs/Checkbox/Checkbox.types'
 
 const props = defineProps<CheckboxProps>()
 

@@ -1,8 +1,7 @@
 import { OptionType } from '@Components/Inputs/Select/Select.types'
+import { Idea } from '@Domain'
 
-import { Idea } from '@Domain/Idea'
-
-interface RatingSelect {
+export interface RatingSelect {
   name:
     | 'marketValue'
     | 'originality'
@@ -13,7 +12,7 @@ interface RatingSelect {
   options: OptionType[]
 }
 
-interface ExperCalculatorProps {
+export interface ExperCalculatorProps {
   idea: Idea
 }
 
@@ -60,7 +59,7 @@ const budgetOptions = [
   { label: 'Свыше 100.000 руб', value: 1 },
 ]
 
-const ratingSelects: RatingSelect[] = [
+export const ratingSelects: RatingSelect[] = [
   {
     name: 'marketValue',
     label: 'Рыночная ценность*',
@@ -87,5 +86,3 @@ const ratingSelects: RatingSelect[] = [
     options: budgetOptions,
   },
 ]
-
-export { ExperCalculatorProps, RatingSelect, ratingSelects }

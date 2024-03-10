@@ -2,7 +2,9 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
-
+import { Rating } from '@Domain'
+import { useUserStore, useRatingsStore } from '@Store'
+import { validation } from '@Utils'
 import {
   RatingSelect,
   ratingSelects,
@@ -14,13 +16,6 @@ import Select from '@Components/Inputs/Select/Select.vue'
 import Button from '@Components/Button/Button.vue'
 import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
 import ExpertRatingCalculatorPlaceholder from '@Components/Modals/IdeaModal/ExpertRatingCalculatorPlaceholder.vue'
-
-import { Rating } from '@Domain/Idea'
-
-import useUserStore from '@Store/user/userStore'
-import useRatingsStore from '@Store/ratings/ratingsStore'
-
-import Validation from '@Utils/Validation'
 
 const props = defineProps<ExperCalculatorProps>()
 
@@ -39,24 +34,24 @@ const isConfirming = ref(false)
 const { values, setFieldValue, setValues, handleSubmit } = useForm<Rating>({
   validationSchema: {
     rating: (value: number) =>
-      Validation.checkIsEmptyValue(value) || 'Поля не заполнены',
+      validation.checkIsEmptyValue(value) || 'Поля не заполнены',
     marketValue: (value: number) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     originality: (value: number) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     technicalRealizability: (value: number) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     suitability: (value: number) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     budget: (value: number) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      validation.checkIsEmptyValue(value) || 'Поле не заполнено',
   },
 })
 
 onMounted(() => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
+  if (currentUser) {
     const { idea } = props
     const { id } = currentUser
 
@@ -94,27 +89,19 @@ watch(overallRating, () => {
 })
 
 const handleConfirmRating = handleSubmit(async (values) => {
-  const currentUser = user.value
+  const { id } = props.idea
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = props.idea
-
-    isConfirming.value = true
-    await ratingsStore.confirmRating(values, id, token)
-    isConfirming.value = false
-  }
+  isConfirming.value = true
+  await ratingsStore.confirmRating(values, id)
+  isConfirming.value = false
 })
 
 const handleSaveRating = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && props.idea) {
-    const { token } = currentUser
+  if (props.idea) {
     const { id } = props.idea
 
     isSaving.value = true
-    await ratingsStore.saveRating(values, id, token)
+    await ratingsStore.saveRating(values, id)
     isSaving.value = false
 
     isSavedRating.value = true
@@ -203,3 +190,4 @@ function getCurrentTooltip(select: RatingSelect) {
   @include flexible(flex-start, stretch, column, $gap: 8px);
 }
 </style>
+@Utils/validation

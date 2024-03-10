@@ -1,4 +1,4 @@
-interface Notification {
+export interface Notification {
   id: string
   userId: string
   title: string
@@ -9,5 +9,3 @@ interface Notification {
   isFavourite: boolean
   createdAt: string
 }
-
-export default Notification

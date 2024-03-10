@@ -1,13 +1,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
+import { Skill, RequestTeamToIdea, Team } from '@Domain'
 import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
-import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
 import { IdeaMarketSkillsProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
-
-import { Skill } from '@Domain/Skill'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Team } from '@Domain/Team'
+import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
 
 const props = defineProps<IdeaMarketSkillsProps>()
 

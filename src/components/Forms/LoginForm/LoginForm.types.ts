@@ -1,4 +1,4 @@
-interface LoginInputType {
+export interface LoginInputType {
   key: 'email' | 'password'
   type?: string
   name: 'email' | 'password'
@@ -6,5 +6,3 @@ interface LoginInputType {
   prepend?: string
   prependIcon?: string
 }
-
-export default LoginInputType

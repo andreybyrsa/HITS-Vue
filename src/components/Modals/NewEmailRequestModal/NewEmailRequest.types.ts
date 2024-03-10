@@ -1,9 +1,7 @@
-interface NewEmailRequestProps {
+export interface NewEmailRequestProps {
   isOpened: boolean
 }
 
-interface NewEmailRequestEmits {
+export interface NewEmailRequestEmits {
   (event: 'close-modal'): void
 }
-
-export { NewEmailRequestProps, NewEmailRequestEmits }

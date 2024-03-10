@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed, useSlots } from 'vue'
-
-import PageLayoutProps from '@Layouts/PageLayout/PageLayout.types'
+import { PageLayoutProps } from '@Layouts/PageLayout/PageLayout.types'
 
 const props = defineProps<PageLayoutProps>()
 

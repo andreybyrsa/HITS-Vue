@@ -1,4 +1,4 @@
-function getAbortedSignal(checkForAbort: () => boolean) {
+export function getAbortedSignal(checkForAbort: () => boolean) {
   const controller = new AbortController()
 
   if (checkForAbort()) {
@@ -7,5 +7,3 @@ function getAbortedSignal(checkForAbort: () => boolean) {
 
   return controller.signal
 }
-
-export default getAbortedSignal

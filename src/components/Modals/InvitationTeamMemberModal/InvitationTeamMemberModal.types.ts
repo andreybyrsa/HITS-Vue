@@ -1,10 +1,8 @@
-interface InvitationTeamMemberModalProps {
+export interface InvitationTeamMemberModalProps {
   isCreateTeam?: boolean
   isOpened: boolean
 }
 
-interface InvitationTeamMemberModalEmits {
+export interface InvitationTeamMemberModalEmits {
   (event: 'close-modal'): void
 }
-
-export { InvitationTeamMemberModalProps, InvitationTeamMemberModalEmits }

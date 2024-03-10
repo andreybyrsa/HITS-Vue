@@ -1,6 +1,6 @@
 import { DirectiveBinding } from 'vue'
-import { Dropdown } from 'bootstrap'
 import { onClickOutside } from '@vueuse/core'
+import { Dropdown } from 'bootstrap'
 
 interface DropdownDirective {
   dropdowns: { element: HTMLElement; dropdown: Dropdown; isOpen: boolean }[]
@@ -42,7 +42,7 @@ function rotateIcon(icon: HTMLElement | null, degree: number) {
   }
 }
 
-const dropdownDirective: DropdownDirective = {
+export const dropdownDirective: DropdownDirective = {
   dropdowns: [],
   mounted(element: HTMLElement, binding: DirectiveBinding) {
     const currentDropdown = createDropdown(element, binding)
@@ -78,5 +78,3 @@ const dropdownDirective: DropdownDirective = {
     })
   },
 }
-
-export default dropdownDirective

@@ -1,12 +1,10 @@
-import { IdeaMarket } from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain'
 
-interface RequestToIdeaModalProps {
+export interface RequestToIdeaModalProps {
   isOpened: boolean
   ideaMarket: IdeaMarket | null
 }
 
-interface RequestToIdeaModalEmits {
+export interface RequestToIdeaModalEmits {
   (event: 'close-modal'): void
 }
-
-export { RequestToIdeaModalProps, RequestToIdeaModalEmits }

@@ -1,14 +1,11 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
-
 import {
   TextareaProps,
   TextareaEmits,
 } from '@Components/Inputs/Textarea/Textarea.types'
-
-import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
-
+import { HTMLTargetEvent } from '@Domain'
 import Icon from '@Components/Icon/Icon.vue'
 
 const props = defineProps<TextareaProps>()
@@ -19,7 +16,7 @@ defineModel<string>({
   required: false,
 })
 
-const { value, errorMessage } = useField(props.name, props.validation, {
+const { value, errorMessage } = useField(props.name, props.validation as any, {
   validateOnValueUpdate: props.validateOnUpdate ?? false,
   validateOnMount: false,
   syncVModel: true,

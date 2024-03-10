@@ -1,13 +1,11 @@
 <script lang="ts" setup>
 import { useDateFormat, useToggle } from '@vueuse/core'
-
 import { TableColumn } from '@Components/Table/Table.types'
-import Table from '@Components/Table/Table.vue'
-
 import {
   LastActivityNoteProps,
   Change,
 } from '@Views/LastActivityNote/LastActivityNote.types'
+import Table from '@Components/Table/Table.vue'
 
 const props = defineProps<LastActivityNoteProps>()
 

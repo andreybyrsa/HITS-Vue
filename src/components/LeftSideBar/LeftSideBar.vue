@@ -3,25 +3,17 @@ import { onMounted, ref, VueElement, watch } from 'vue'
 import { watchImmediate, useElementHover } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
+import { RolesTypes, Market } from '@Domain'
+import { useUserStore, useNotificationsStore, useMarketsStore } from '@Store'
+import { MarketService } from '@Service'
+import { getUserRolesInfo } from '@Utils'
+import { leftSideBarTabs } from '@Components/LeftSideBar/LeftsSideBarTabs'
+import { LeftSideBarTabType } from '@Components/LeftSideBar/LeftSideBar.types'
 import NavTab from '@Components/NavTab/NavTab.vue'
 import Button from '@Components/Button/Button.vue'
-import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
-import LeftSideBarTabs from '@Components/LeftSideBar/LeftsSideBarTabs'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import LeftSideBarPlaceholder from '@Components/LeftSideBar/LeftSideBarPlaceholder.vue'
 import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
-
-import RolesTypes from '@Domain/Roles'
-import { Market } from '@Domain/Market'
-
-import MarketService from '@Services/MarketService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import useMarketsStore from '@Store/markets/marketsStore'
-
-import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 const notificationsStore = useNotificationsStore()
 
@@ -33,7 +25,7 @@ const { markets } = storeToRefs(marketsStore)
 
 const router = useRouter()
 
-const tabs = ref(structuredClone(LeftSideBarTabs))
+const tabs = ref(structuredClone(leftSideBarTabs))
 
 const isOpenedRoleModal = ref(false)
 const isOpenedNotificationsModal = ref(false)
@@ -61,7 +53,7 @@ onMounted(getActiveMarkets)
 
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const initialMarketRoutes: LeftSideBarTabType[] =
-    LeftSideBarTabs[index].routes ?? []
+    leftSideBarTabs[index].routes ?? []
   const marketRoutes: LeftSideBarTabType[] = activeMarkets.map(({ id, name }) => ({
     name: `market-${id}`,
     text: name,
@@ -76,15 +68,14 @@ function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
 async function getActiveMarkets() {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role !== 'EXPERT') {
-    const { token } = currentUser
+  if (currentUser?.role !== 'EXPERT') {
     const index = tabs.value.findIndex(({ name }) => name === 'markets')
 
     const spliceMarketsTab = () => {
       if (index !== -1) tabs.value.splice(index, 1)
     }
 
-    const response = await MarketService.getAllActiveMarkets(token)
+    const response = await MarketService.getAllActiveMarkets()
 
     if (response instanceof Error) {
       spliceMarketsTab()

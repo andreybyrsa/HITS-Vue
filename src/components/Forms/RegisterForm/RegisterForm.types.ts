@@ -1,4 +1,4 @@
-interface RegisterInputType {
+export interface RegisterInputType {
   key: 'email' | 'firstName' | 'lastName' | 'password' | 'telephone' | 'studyGroup'
   type?: string
   name: 'email' | 'firstName' | 'lastName' | 'password' | 'telephone' | 'studyGroup'
@@ -7,5 +7,3 @@ interface RegisterInputType {
   prependIcon?: string
   disabled?: boolean
 }
-
-export default RegisterInputType

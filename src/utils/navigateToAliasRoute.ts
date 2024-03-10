@@ -1,7 +1,7 @@
 import { RouteRecordRaw } from 'vue-router'
-import router from '../router/index'
+import { router } from '@Router'
 
-function navigateToAliasRoute(
+export function navigateToAliasRoute(
   nestedRouteName: string,
   aliasPath: string,
   aliasRoute: RouteRecordRaw,
@@ -9,5 +9,3 @@ function navigateToAliasRoute(
   router.addRoute(nestedRouteName, aliasRoute)
   router.push({ path: aliasPath })
 }
-
-export default navigateToAliasRoute

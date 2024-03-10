@@ -1,6 +1,6 @@
-import LoginInputType from './LoginForm.types'
+import { LoginInputType } from './LoginForm.types'
 
-const loginInputs: LoginInputType[] = [
+export const loginInputs: LoginInputType[] = [
   {
     key: 'email',
     type: 'email',
@@ -16,5 +16,3 @@ const loginInputs: LoginInputType[] = [
     prependIcon: 'bi bi-key',
   },
 ]
-
-export default loginInputs

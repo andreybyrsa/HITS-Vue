@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
-import LoadingSpinnerProps from '@Components/LoadingSpinner/LoadingSpinner.types'
+import { LoadingSpinnerProps } from '@Components/LoadingSpinner/LoadingSpinner.types'
 
 const props = defineProps<LoadingSpinnerProps>()
 

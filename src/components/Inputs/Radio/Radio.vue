@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
-
-import RadioProps from '@Components/Inputs/Radio/Radio.types'
+import { RadioProps } from '@Components/Inputs/Radio/Radio.types'
 
 const props = defineProps<RadioProps>()
 

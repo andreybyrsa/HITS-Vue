@@ -1,23 +1,15 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { storeToRefs } from 'pinia'
 import { useDateFormat } from '@vueuse/core'
-
+import { Notification } from '@Domain'
+import { useNotificationsStore } from '@Store'
 import Typography from '@Components/Typography/Typography.vue'
 import { NotificationTabProps } from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.types'
-
-import Notification from '@Domain/Notification'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 import Button from '@Components/Button/Button.vue'
 
 const props = defineProps<NotificationTabProps>()
 
 const notificationsStore = useNotificationsStore()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const NatificationTabClassName = computed(() => {
   const { notification } = props
@@ -44,30 +36,15 @@ function getFormattedDate(date: string) {
 }
 
 async function readNotification(notification: Notification) {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    await notificationsStore.readNotification(notification.id, token)
-  }
+  await notificationsStore.readNotification(notification.id)
 }
 
 async function addToFavorites(notification: Notification) {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    await notificationsStore.markAsFavoriteNotification(notification.id, token)
-  }
+  await notificationsStore.markAsFavoriteNotification(notification.id)
 }
 
 async function removeFromFavorites(notification: Notification) {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    await notificationsStore.unMarkAsFavoriteNotification(notification.id, token)
-  }
+  await notificationsStore.unMarkAsFavoriteNotification(notification.id)
 }
 </script>
 

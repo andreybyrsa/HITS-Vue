@@ -1,6 +1,6 @@
-import RolesTypes from './Roles'
+import { RolesTypes } from '@Domain'
 
-interface UpdateUserData {
+export interface UpdateUserData {
   email: string
   newEmail: string
   newFirstName: string
@@ -8,14 +8,14 @@ interface UpdateUserData {
   newRoles: RolesTypes[]
 }
 
-interface UpdateUserPassword {
+export interface UpdateUserPassword {
   key: string
   email: string
   code: string
   password: string
 }
 
-interface ChangeUserEmail {
+export interface ChangeUserEmail {
   key: string
   oldEmail: string
   code: string
@@ -23,5 +23,3 @@ interface ChangeUserEmail {
   newEmail: string
   url: string
 }
-
-export { UpdateUserData, UpdateUserPassword, ChangeUserEmail }

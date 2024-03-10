@@ -3,27 +3,18 @@ import { ref, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
-
+import { Idea, Market } from '@Domain'
+import { useUserStore, useIdeasStore, useNotificationsStore } from '@Store'
+import { IdeaMarketService, MarketService } from '@Service'
+import { validation } from '@Utils'
 import {
   SendIdeasOnMarketModalProps,
   SendIdeasOnMarketModalEmits,
 } from '@Components/Modals/SendIdeasOnMarketModal/SendIdeasOnMarketModal.types'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
-import Validation from '@Utils/Validation'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { Idea } from '@Domain/Idea'
-
-import IdeasMarketService from '@Services/IdeasMarketService'
-import MarketsService from '@Services/MarketService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import useIdeasStore from '@Store/ideas/ideasStore'
-import { Market } from '@Domain/Market'
 
 const props = defineProps<SendIdeasOnMarketModalProps>()
 const emit = defineEmits<SendIdeasOnMarketModalEmits>()
@@ -45,10 +36,8 @@ const selectedMarketActive = ref<Market>()
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role !== 'EXPERT') {
-    const { token } = currentUser
-
-    const response = await MarketsService.getAllActiveMarkets(token)
+  if (currentUser?.role !== 'EXPERT') {
+    const response = await MarketService.getAllActiveMarkets()
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -69,24 +58,18 @@ watchImmediate(
 const { handleSubmit } = useForm({
   validationSchema: {
     marketToSend: (value: Market) =>
-      Validation.checkIsEmptyValue(value) || 'Выберите биржу',
+      validation.checkIsEmptyValue(value) || 'Выберите биржу',
   },
 })
 
 const sendIdeasToMarket = handleSubmit(async () => {
-  const currentUser = user.value
   const currentMarket = selectedMarketActive.value
 
-  if (currentUser?.token && currentMarket) {
-    const { token } = currentUser
+  if (currentMarket) {
     const { id } = currentMarket
     isLoading.value = true
 
-    const response = await IdeasMarketService.sendIdeaOnMarket(
-      id,
-      checkedIdeas.value,
-      token,
-    )
+    const response = await IdeaMarketService.sendIdeaOnMarket(id, checkedIdeas.value)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -204,3 +187,4 @@ function resetIdea(ideaId: string) {
   transform: scale(0.9);
 }
 </style>
+@Utils/validation

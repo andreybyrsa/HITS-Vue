@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-
+import { useNotificationsStore } from '@Store'
 import NotificationTab from '@Components/Modals/NotificationModalWindow/NotificationTab.vue'
 import Typography from '@Components/Typography/Typography.vue'
-
-import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const notificationsStore = useNotificationsStore()
 const { getFavouriteNotifications } = storeToRefs(notificationsStore)

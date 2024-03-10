@@ -4,18 +4,13 @@ import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { useRoute } from 'vue-router'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
-
+import { User } from '@Domain'
+import { useUserStore, useProfilesStore } from '@Store'
+import { validation } from '@Utils'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import NewEmailRequestModal from '@Components/Modals/NewEmailRequestModal/NewEmailRequestModal.vue'
-
-import { User } from '@Domain/User'
-
-import useUserStore from '@Store/user/userStore'
-import useProfilesStore from '@Store/profiles/profilesStore'
-
-import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -36,9 +31,9 @@ const isOpenedChangeEmailModal = ref(false)
 const { setValues, handleSubmit } = useForm<User>({
   validationSchema: {
     firstName: (value: string) =>
-      Validation.checkName(value) || 'Неверно введено имя',
+      validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
-      Validation.checkName(value) || 'Неверно введена фамилия',
+      validation.checkName(value) || 'Неверно введена фамилия',
   },
 })
 
@@ -50,7 +45,8 @@ const handleEditUser = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    await profilesStore.updateUserFullName(values, token, profileId)
+    await profilesStore.updateUserFullName(values)
+
     isUpdatingUserTelephone.value = false
     isUpdatingUserName.value = false
     isUpdatingUserLastname.value = false
@@ -330,3 +326,4 @@ function getFormattedDate(date: string) {
   }
 }
 </style>
+@Utils/validation

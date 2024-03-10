@@ -1,8 +1,6 @@
-import { Skill } from './Skill'
+import { Skill } from '@Domain'
 
-interface UsersSkills {
+export interface UsersSkills {
   idUsers: string
   skills: Skill[]
 }
-
-export default UsersSkills

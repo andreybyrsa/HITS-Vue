@@ -1,4 +1,4 @@
-import { SkillType } from '@Domain/Skill'
+import { SkillType } from '@Domain'
 
 interface GetSkillType {
   skills: SkillType[]
@@ -7,7 +7,7 @@ interface GetSkillType {
   }
 }
 
-function getSkillsInfo(): GetSkillType {
+export function getSkillsInfo(): GetSkillType {
   return {
     skills: ['LANGUAGE', 'FRAMEWORK', 'DATABASE', 'DEVOPS'],
     translatedSkills: {
@@ -19,7 +19,7 @@ function getSkillsInfo(): GetSkillType {
   }
 }
 
-function getSkillInfoStyle(skillType: SkillType) {
+export function getSkillInfoStyle(skillType: SkillType) {
   if (skillType === 'LANGUAGE') {
     return ['bg-success-subtle', 'text-success']
   }
@@ -34,5 +34,3 @@ function getSkillInfoStyle(skillType: SkillType) {
 
   return ['bg-danger-subtle', 'text-danger']
 }
-
-export { getSkillsInfo, getSkillInfoStyle }

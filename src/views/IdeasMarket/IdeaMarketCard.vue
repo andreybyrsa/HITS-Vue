@@ -1,25 +1,18 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
-
-import Button from '@Components/Button/Button.vue'
-import Typography from '@Components/Typography/Typography.vue'
-import Icon from '@Components/Icon/Icon.vue'
-import Skills from '@Components/Skills/Skills.vue'
-
+import { IdeaMarket, IdeaMarketStatusType } from '@Domain'
+import { useNotificationsStore, useUserStore } from '@Store'
+import { IdeaMarketService } from '@Service'
+import { getIdeaMarketStatus } from '@Utils'
 import {
   IdeaMarketCardProps,
   IdeaMarketCardEmits,
 } from '@Views/IdeasMarket/IdeasMarketView.types'
-
-import { IdeaMarket, IdeaMarketStatusType } from '@Domain/IdeaMarket'
-
-import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
-
-import IdeasMarketService from '@Services/IdeasMarketService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+import Button from '@Components/Button/Button.vue'
+import Typography from '@Components/Typography/Typography.vue'
+import Icon from '@Components/Icon/Icon.vue'
+import Skills from '@Components/Skills/Skills.vue'
 
 const props = defineProps<IdeaMarketCardProps>()
 const emit = defineEmits<IdeaMarketCardEmits>()
@@ -40,13 +33,10 @@ function getTranslatedStatus(status: IdeaMarketStatusType) {
 }
 
 const handleAddIdeaToFavorites = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && props.ideaMarket) {
-    const { token } = currentUser
+  if (props.ideaMarket) {
     const { id } = props.ideaMarket
 
-    const response = await IdeasMarketService.addIdeaToFavorites(id, token)
+    const response = await IdeaMarketService.addIdeaToFavorites(id)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -61,13 +51,10 @@ const handleAddIdeaToFavorites = async () => {
 }
 
 const handleRemoveIdeaFromFavorites = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && props.ideaMarket) {
-    const { token } = currentUser
+  if (props.ideaMarket) {
     const { id } = props.ideaMarket
 
-    const response = await IdeasMarketService.removeIdeaFromFavorites(id, token)
+    const response = await IdeaMarketService.removeIdeaFromFavorites(id)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)

@@ -1,24 +1,18 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
+import { useDateFormat } from '@vueuse/core'
 import { RouteRecordRaw, useRoute } from 'vue-router'
-
-import { MODE } from '@Main'
-
+import { storeToRefs } from 'pinia'
+import { MODE } from '@Config'
+import { useUserStore, useIdeasMarketStore } from '@Store'
+import { getIdeaMarketStatus, navigateToAliasRoute } from '@Utils'
 import { IdeaMarketInfoProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
+import { IdeaMarketInfoTabs } from '@Components/Modals/IdeaMarketModal/IdeaMarketInfoTabs'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
-import IdeaMarketInfoTabs from '@Components/Modals/IdeaMarketModal/IdeaMarketInfoTabs'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import Profile from '@Components/Modals/ProfileModal/ProfileModal.vue'
-
-import useUserStore from '@Store/user/userStore'
-import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-
-import { useDateFormat } from '@vueuse/core'
-import getIdeaMarketStatus from '@Utils/ideaMarketStatus'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const props = defineProps<IdeaMarketInfoProps>()
 
@@ -59,7 +53,9 @@ function valueTab(key: string) {
     return initiator.firstName + ' ' + initiator.lastName
   }
   if (key === 'status') {
-    return marketStatus.translatedStatus[status]
+    return marketStatus.translatedStatus[
+      status as keyof typeof marketStatus.translatedStatus
+    ]
   }
   if (key === 'startDate') {
     return getFormattedDate(props.market?.startDate)
@@ -93,19 +89,14 @@ function getAccessToCloseRecruitment() {
 }
 
 async function changeIdeaMarketStatus() {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = props.ideaMarket
-
-    await ideasMarketStore.updateIdeaMarketStatus(id, 'RECRUITMENT_IS_CLOSED', token)
-  }
+  const { id } = props.ideaMarket
+  await ideasMarketStore.updateIdeaMarketStatus(id, 'RECRUITMENT_IS_CLOSED')
 }
 
 function openConfirmModal() {
   isOpenedConfirmModal.value = true
 }
+
 function closeConfirmModal() {
   isOpenedConfirmModal.value = false
 }
@@ -143,11 +134,11 @@ function navigateToProfileModal(id: string) {
           <Icon :class-name="`${tab.icon} text-secondary fs-2 opacity-25`" />
 
           <div
-            @click="clickTab(tab.key)"
+            @click="clickTab(String(tab.key))"
             :class="tab.key === 'initiator' && 'exchange-info__link'"
             class="text-primary"
           >
-            {{ valueTab(tab.key) }}
+            {{ valueTab(String(tab.key)) }}
           </div>
         </div>
       </div>

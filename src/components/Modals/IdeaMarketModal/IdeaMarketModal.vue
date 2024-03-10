@@ -2,37 +2,31 @@
 import { ref, onMounted, VueElement } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
+import {
+  Market,
+  Team,
+  RequestTeamToIdea,
+  IdeaMarket,
+  IdeaMarketAdvertisement,
+  InvitationTeamToIdea,
+} from '@Domain'
+import {
+  useUserStore,
+  useIdeasMarketStore,
+  useRequestsToIdeaStore,
+  useIdeaMarketAdvertisementsStore,
+  useInvitationsTeamToIdeaStore,
+} from '@Store'
+import { TeamService, MarketService } from '@Service'
+import { sendParallelRequests, RequestConfig, openErrorNotification } from '@Utils'
 import { IdeaMarketModalProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import IdeaMarketDescription from '@Components/Modals/IdeaMarketModal/IdeaMarketDescription.vue'
 import IdeaMarketModalPlaceholder from '@Components/Modals/IdeaMarketModal/IdeaMarketModalPlaceholder.vue'
 import IdeaMarketRightSide from '@Components/Modals/IdeaMarketModal/IdeaMarketRightSide.vue'
 import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
 import IdeaMarketModalTables from '@Components/Modals/IdeaMarketModal/IdeaMarketModalTables.vue'
 import IdeaMarketAdverts from '@Components/Modals/IdeaMarketModal/IdeaMarketAdverts.vue'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { Market } from '@Domain/Market'
-import { Team } from '@Domain/Team'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
-
-import MarketService from '@Services/MarketService'
-import TeamService from '@Services/TeamService'
-
-import useUserStore from '@Store/user/userStore'
-import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
-import useIdeaMarketAdvertisementsStore from '@Store/ideaMarketAdvertisements/ideaMarketAdvertisementsStore'
-
-import {
-  sendParallelRequests,
-  RequestConfig,
-  openErrorNotification,
-} from '@Utils/sendParallelRequests'
-import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 const props = defineProps<IdeaMarketModalProps>()
 
@@ -64,40 +58,37 @@ const isOpenedMarketModal = ref(true)
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser.role) {
-    const { token, id: userId, role } = currentUser
+  if (currentUser?.role) {
+    const { id: userId, role } = currentUser
     const ideaMarketId = route.params.ideaMarketId.toString()
     const marketId = route.params.marketId.toString()
 
     const ideaMarketParallelRequests: RequestConfig[] = [
       {
-        request: () => ideasMarketStore.getMarketIdea(ideaMarketId, role, token),
+        request: () => ideasMarketStore.getMarketIdea(ideaMarketId, role),
         refValue: ideaMarket,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId, token),
+        request: () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId),
         refValue: requestTeams,
         statement: role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => TeamService.getOwnerTeams(userId, token),
+        request: () => TeamService.getOwnerTeams(userId),
         refValue: ownerTeams,
         statement: role === 'TEAM_OWNER' || role === 'ADMIN',
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => MarketService.getMarket(marketId, token),
+        request: () => MarketService.getMarket(marketId),
         refValue: market,
         onErrorFunc: openErrorNotification,
       },
       {
         request: () =>
-          ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(
-            ideaMarketId,
-            token,
-          ),
+          ideaMarketAdvertisementsStore.getIdeaMarketAdvertisements(ideaMarketId),
         refValue: ideaMarketAdvertisements,
         onErrorFunc: openErrorNotification,
       },
@@ -111,7 +102,6 @@ onMounted(async () => {
     ) {
       const response = await invitationTeamsToIdeaStore.getIdeaInvitations(
         ideaMarket.value.ideaId,
-        token,
       )
 
       if (response instanceof Error) {

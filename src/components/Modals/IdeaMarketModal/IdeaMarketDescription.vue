@@ -1,16 +1,14 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-
-import ideaMarketCollapses from '@Components/Modals/IdeaMarketModal/IdeaMarketModalCollapses'
-import Button from '@Components/Button/Button.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
-import Typography from '@Components/Typography/Typography.vue'
+import { useUserStore } from '@Store'
 import {
   IdeaMarketDescriptionProps,
   IdeaMarketModalEmits,
 } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
-
-import useUserStore from '@Store/user/userStore'
+import { ideaMarketCollapses } from '@Components/Modals/IdeaMarketModal/IdeaMarketModalCollapses'
+import Button from '@Components/Button/Button.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 defineProps<IdeaMarketDescriptionProps>()
 const emit = defineEmits<IdeaMarketModalEmits>()

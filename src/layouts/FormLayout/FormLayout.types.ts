@@ -1,5 +1,3 @@
-interface FormLayoutProps {
+export interface FormLayoutProps {
   className?: string
 }
-
-export default FormLayoutProps

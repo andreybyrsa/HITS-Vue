@@ -1,12 +1,10 @@
 <script lang="ts" setup>
+import { SkillType } from '@Domain'
+import { getSkillInfoStyle } from '@Utils'
 import { SkillsProps, SkillsEmits } from '@Components/Skills/Skills.types'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-
-import { SkillType } from '@Domain/Skill'
-
-import { getSkillInfoStyle } from '@Utils/skillsInfo'
 
 defineProps<SkillsProps>()
 const emit = defineEmits<SkillsEmits>()

@@ -1,15 +1,8 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-
+import { Notification } from '@Domain'
+import { useNotificationsStore } from '@Store'
 import NotificationModal from '@Components/Modals/NotificationModal/NotificationModal.vue'
-
-import Notification from '@Domain/Notification'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
 const { notifications, systemNotifications } = storeToRefs(notificationsStore)
@@ -19,11 +12,7 @@ function closeSystemNotification(notification: Notification) {
 }
 
 async function closeNotification(notification: Notification) {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    await notificationsStore.closeNotification(notification.id, token)
-  }
+  await notificationsStore.closeNotification(notification.id)
 }
 </script>
 

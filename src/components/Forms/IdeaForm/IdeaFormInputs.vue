@@ -1,7 +1,7 @@
 <script lang="ts" setup>
+import { textareas, hints } from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
-import { textareas, hints } from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
 import Typography from '@Components/Typography/Typography.vue'
 
 function checkKeyDownValue(event: KeyboardEvent) {

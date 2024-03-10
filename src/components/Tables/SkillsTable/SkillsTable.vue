@@ -1,38 +1,9 @@
-<template>
-  <Table
-    class-name="p-3"
-    :header="skillsTableHeader"
-    :columns="skillTableColumns"
-    :data="skills"
-    :search-by="['name']"
-    :filters="skillsFilters"
-    :dropdown-actions-menu="dropdownSkillsActions"
-  ></Table>
-
-  <SkillModal
-    :is-opened="isOpenCreatingSkillModal"
-    v-model="skills"
-    @close-modal="closeCreatingSkillModal"
-  />
-  <SkillModal
-    :is-opened="isOpenUpdatingSkillModal"
-    :skill="updatingSkill"
-    v-model="skills"
-    @close-modal="closeUpdatingSkillModal"
-  />
-
-  <DeleteModal
-    :is-opened="isOpenedDeletingModal"
-    :item-name="currentDeleteSkillName"
-    @close-modal="closeDeletingModal"
-    @delete="handleDeleteSkill"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
-
+import { Skill, SkillType } from '@Domain'
+import { useNotificationsStore } from '@Store'
+import { SkillsService } from '@Service'
+import { getSkillsInfo, getSkillInfoStyle } from '@Utils'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import Table from '@Components/Table/Table.vue'
 import SkillModal from '@Components/Modals/SkillModal/SkillModal.vue'
@@ -43,19 +14,8 @@ import {
 } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 
-import { Skill, SkillType } from '@Domain/Skill'
-
-import SkillsService from '@Services/SkillsService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import { getSkillsInfo, getSkillInfoStyle } from '@Utils/skillsInfo'
-
 const skills = defineModel<Skill[]>({ required: true })
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 const notificationsStore = useNotificationsStore()
 
 const updatingSkill = ref<Skill | null>(null)
@@ -176,38 +136,26 @@ function checkSkillConfirmed(skill: Skill, value: FilterValue) {
 }
 
 async function handleConfirmSkill(skill: Skill) {
-  const currentUser = user.value
+  const { id } = skill
+  const response = await SkillsService.confirmSkill(
+    { ...skill, confirmed: true },
+    id,
+  )
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = skill
-    const response = await SkillsService.confirmSkill(
-      { ...skill, confirmed: true },
-      id,
-      token,
-    )
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
+  }
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
+  const currentSkill = skills.value.find((skill) => skill.id === id)
 
-    const currentSkill = skills.value.find((skill) => skill.id === id)
-
-    if (currentSkill) {
-      currentSkill.confirmed = true
-    }
+  if (currentSkill) {
+    currentSkill.confirmed = true
   }
 }
 
 const handleDeleteSkill = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentDeleteSkillId.value !== null) {
-    const { token } = currentUser
-    const response = await SkillsService.deleteSkill(
-      currentDeleteSkillId.value,
-      token,
-    )
+  if (currentDeleteSkillId.value !== null) {
+    const response = await SkillsService.deleteSkill(currentDeleteSkillId.value)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
@@ -247,3 +195,34 @@ function closeDeletingModal() {
   isOpenedDeletingModal.value = false
 }
 </script>
+
+<template>
+  <Table
+    class-name="p-3"
+    :header="skillsTableHeader"
+    :columns="skillTableColumns"
+    :data="skills"
+    :search-by="['name']"
+    :filters="skillsFilters"
+    :dropdown-actions-menu="dropdownSkillsActions"
+  ></Table>
+
+  <SkillModal
+    :is-opened="isOpenCreatingSkillModal"
+    v-model="skills"
+    @close-modal="closeCreatingSkillModal"
+  />
+  <SkillModal
+    :is-opened="isOpenUpdatingSkillModal"
+    :skill="updatingSkill"
+    v-model="skills"
+    @close-modal="closeUpdatingSkillModal"
+  />
+
+  <DeleteModal
+    :is-opened="isOpenedDeletingModal"
+    :item-name="currentDeleteSkillName"
+    @close-modal="closeDeletingModal"
+    @delete="handleDeleteSkill"
+  />
+</template>

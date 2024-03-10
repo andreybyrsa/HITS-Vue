@@ -1,7 +1,6 @@
-import { Skill } from '@Domain/Skill'
-import { Project } from '@Domain/Project'
+import { Skill, Project } from '@Domain'
 
-interface TeamMember {
+export interface TeamMember {
   id: string
   teamId: string
   userId: string
@@ -11,7 +10,7 @@ interface TeamMember {
   skills: Skill[]
 }
 
-interface Team {
+export interface Team {
   id: string
   createdAt: string
 
@@ -30,13 +29,13 @@ interface Team {
   hasActiveProject: boolean
 }
 
-interface TeamSkills {
+export interface TeamSkills {
   teamId: string
   skills: Skill[]
   wantedSkills: Skill[]
 }
 
-interface TeamExperience {
+export interface TeamExperience {
   teamId: string
   teamName: string
   userId: string
@@ -47,15 +46,15 @@ interface TeamExperience {
   hasActiveProject: boolean
 }
 
-interface TeamProject {
+export interface TeamProject {
   teamId: string
   teamName: string
   project: Project
 }
 
-type JoinStatus = 'NEW' | 'ANNULLED' | 'ACCEPTED' | 'CANCELED' | 'WITHDRAWN'
+export type JoinStatus = 'NEW' | 'ANNULLED' | 'ACCEPTED' | 'CANCELED' | 'WITHDRAWN'
 
-interface RequestToTeam {
+export interface RequestToTeam {
   id: string
   teamId: string
   userId: string
@@ -65,7 +64,7 @@ interface RequestToTeam {
   lastName: string
 }
 
-interface TeamInvitation {
+export interface TeamInvitation {
   id: string
   teamId: string
   userId: string
@@ -73,15 +72,4 @@ interface TeamInvitation {
   email: string
   firstName: string
   lastName: string
-}
-
-export {
-  Team,
-  TeamMember,
-  TeamSkills,
-  TeamInvitation,
-  RequestToTeam,
-  JoinStatus,
-  TeamExperience,
-  TeamProject,
 }

@@ -1,6 +1,6 @@
-import { Skill, SkillType } from '@Domain/Skill'
+import { Skill, SkillType } from '@Domain'
 
-interface StackCategoriesProps {
+export interface StackCategoriesProps {
   label?: string
   skills?: Skill[]
   hint?: string
@@ -13,7 +13,7 @@ interface StackCategories {
   multiselectPlaceholder: string
 }
 
-const comboboxStackCategories: StackCategories[] = [
+export const comboboxStackCategories: StackCategories[] = [
   {
     id: '0',
     key: 'LANGUAGE',
@@ -39,5 +39,3 @@ const comboboxStackCategories: StackCategories[] = [
     multiselectPlaceholder: 'DevOps',
   },
 ]
-
-export { StackCategoriesProps, comboboxStackCategories }

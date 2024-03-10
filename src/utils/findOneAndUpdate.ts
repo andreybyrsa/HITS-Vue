@@ -1,4 +1,4 @@
-function findOneAndUpdate<DataType>(
+export function findOneAndUpdate<DataType>(
   data: DataType[],
   newValue: DataType,
   params: { key: keyof DataType; value: DataType[keyof DataType] },
@@ -16,5 +16,3 @@ function findOneAndUpdate<DataType>(
 
   return newValue
 }
-
-export default findOneAndUpdate

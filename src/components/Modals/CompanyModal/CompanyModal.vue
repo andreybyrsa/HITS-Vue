@@ -2,7 +2,10 @@
 import { ref, onMounted, onUpdated } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm, useFieldArray } from 'vee-validate'
-
+import { User, Company } from '@Domain'
+import { useUserStore, useNotificationsStore } from '@Store'
+import { CompanyService, ManageUsersService } from '@Service'
+import { validation } from '@Utils'
 import {
   CompanyModalProps,
   CompanyModalEmits,
@@ -14,17 +17,6 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import UsersColumns from '@Components/UserColumns/UsersColumns.vue'
 import CompanyModalPlaceholder from '@Components/Modals/CompanyModal/CompanyModalPlaceholder.vue'
-
-import { User } from '@Domain/User'
-import Company from '@Domain/Company'
-
-import CompanyService from '@Services/CompanyService'
-import ManageUsersService from '@Services/ManageUsersService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
 
@@ -48,31 +40,26 @@ const isUpdating = ref(false)
 const companyModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
 onMounted(async () => {
-  const currentUser = user.value
+  const responseUsers = await ManageUsersService.getUsers()
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const responseUsers = await ManageUsersService.getUsers(token)
-
-    if (responseUsers instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        responseUsers.message,
-      )
-    }
-
-    users.value = responseUsers
+  if (responseUsers instanceof Error) {
+    return notificationsStore.createSystemNotification(
+      'Система',
+      responseUsers.message,
+    )
   }
+
+  users.value = responseUsers
 })
 
 const { setValues, handleSubmit } = useForm<Company>({
   validationSchema: {
     name: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+      validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     owner: (value: User) =>
-      Validation.checkIsEmptyValue(value) || 'Выберите руководителя компании',
+      validation.checkIsEmptyValue(value) || 'Выберите руководителя компании',
     users: (value: User[]) =>
-      Validation.checkIsEmptyValue(value) || 'Выберите представителей',
+      validation.checkIsEmptyValue(value) || 'Выберите представителей',
   },
   initialValues: {
     users: [],
@@ -83,30 +70,22 @@ const { fields, push, remove } = useFieldArray<User>('users')
 
 onUpdated(async () => {
   if (props.companyId !== undefined && props.isOpened) {
-    const currentUser = user.value
+    const { companyId } = props
 
-    if (currentUser?.token) {
-      const { token } = currentUser
-      const { companyId } = props
+    isLoadingCompany.value = true
+    const response = await CompanyService.get(companyId)
 
-      isLoadingCompany.value = true
-      const response = await CompanyService.getCompany(companyId, token)
-
-      if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-
-      setValues({ ...response })
-      unselectedUsers.value = users.value.filter((user) =>
-        response.users.every((companyUser) => companyUser.id !== user.id),
-      )
-      companyModalMode.value = 'UPDATE'
-
-      isLoadingCompany.value = false
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
+
+    setValues({ ...response })
+    unselectedUsers.value = users.value.filter((user) =>
+      response.users.every((companyUser) => companyUser.id !== user.id),
+    )
+    companyModalMode.value = 'UPDATE'
+
+    isLoadingCompany.value = false
   } else if (props.isOpened) {
     setValues({ name: '', users: [] })
     unselectedUsers.value = [...users.value]
@@ -133,59 +112,42 @@ function unselectUser(user: User, index: number) {
 }
 
 const handleCreateCompany = handleSubmit(async (values) => {
-  const currentUser = user.value
+  isCreating.value = true
+  const response = await CompanyService.create(values)
+  isCreating.value = false
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isCreating.value = true
-    const response = await CompanyService.createCompany(values, token)
-    isCreating.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    companies.value.push(response)
-
-    notificationsStore.createSystemNotification(
-      'Система',
-      'Компания успешно создана',
-    )
-    emit('close-modal')
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  companies.value.push(response)
+
+  notificationsStore.createSystemNotification('Система', 'Компания успешно создана')
+  emit('close-modal')
 })
 
 const handleUpdateCompany = handleSubmit(async (values) => {
-  const currentUser = user.value
+  const { id } = values
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = values
+  isUpdating.value = true
+  const response = await CompanyService.update(values, id)
+  isUpdating.value = false
 
-    isUpdating.value = true
-    const response = await CompanyService.updateCompany(values, id, token)
-    isUpdating.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    const editingCompanyIndex = companies.value.findIndex(
-      (company) => company.id === values.id,
-    )
-
-    if (editingCompanyIndex !== -1) {
-      companies.value.splice(editingCompanyIndex, 1, values)
-    }
-
-    notificationsStore.createSystemNotification(
-      'Система',
-      'Компания успешно изменена',
-    )
-
-    emit('close-modal')
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  const editingCompanyIndex = companies.value.findIndex(
+    (company) => company.id === values.id,
+  )
+
+  if (editingCompanyIndex !== -1) {
+    companies.value.splice(editingCompanyIndex, 1, values)
+  }
+
+  notificationsStore.createSystemNotification('Система', 'Компания успешно изменена')
+
+  emit('close-modal')
 })
 </script>
 

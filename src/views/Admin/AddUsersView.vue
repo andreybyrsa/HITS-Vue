@@ -1,3 +1,10 @@
+<script lang="ts" setup>
+import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
+import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
+import Header from '@Components/Header/Header.vue'
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+</script>
+
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
@@ -18,14 +25,6 @@
     </template>
   </PageLayout>
 </template>
-
-<script lang="ts" setup>
-import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import AddUsersForm from '@Components/Forms/AddUsersForm/AddUsersForm.vue'
-import Header from '@Components/Header/Header.vue'
-
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-</script>
 
 <style lang="scss">
 .add-users-page {

@@ -1,6 +1,6 @@
-import RolesTypes from '@Domain/Roles'
+import { RolesTypes } from '@Domain'
 
-interface NavRoute {
+export interface NavRoute {
   name: string
   to: string
   text: string
@@ -8,7 +8,7 @@ interface NavRoute {
   roles: RolesTypes[]
 }
 
-interface NavTabProps {
+export interface NavTabProps {
   className?: string
   wrapperClassName?: string
   iconName?: string
@@ -20,5 +20,3 @@ interface NavTabProps {
 
   isActive?: boolean
 }
-
-export { NavTabProps, NavRoute }

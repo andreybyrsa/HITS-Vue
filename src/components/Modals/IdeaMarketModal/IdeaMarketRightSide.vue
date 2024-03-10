@@ -1,13 +1,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-
+import { RequestTeamToIdea, Team } from '@Domain'
 import { IdeaMarketRightSideProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 import IdeaMarketSkills from '@Components/Modals/IdeaMarketModal/IdeaMarketSkills.vue'
 import IdeaMarketInfo from '@Components/Modals/IdeaMarketModal/IdeaMarketInfo.vue'
 import Button from '@Components/Button/Button.vue'
-
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Team } from '@Domain/Team'
 
 const props = defineProps<IdeaMarketRightSideProps>()
 

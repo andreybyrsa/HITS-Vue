@@ -1,4 +1,4 @@
-interface Change {
+export interface Change {
   name: string
   date: Date
   who: string
@@ -6,8 +6,6 @@ interface Change {
   doing: string
 }
 
-interface LastActivityNoteProps {
+export interface LastActivityNoteProps {
   changes: Change[]
 }
-
-export { LastActivityNoteProps, Change }

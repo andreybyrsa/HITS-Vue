@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
-import CollapseProps from '@Components/Collapse/Collapse.types'
+import { CollapseProps } from '@Components/Collapse/Collapse.types'
 
 const props = defineProps<CollapseProps>()
 

@@ -1,46 +1,15 @@
-<template>
-  <Table
-    class-name="px-3 pb-3 pt-1"
-    :data="requests"
-    :columns="requestToTeamColumns"
-    :search-by="['email', 'firstName', 'lastName']"
-    :dropdown-actions-menu="dropdownRequestToTeamActions"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedConfirmModalAccepted"
-    text-button="Принять заявку"
-    text-question="Вы действительно хотите принять заявку?"
-    @close-modal="closeConfirmModal"
-    @action="acceptRequestToTeam"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedConfirmModalCancel"
-    text-button="Отклонить заявку"
-    text-question="Вы действительно хотите отклонить заявку?"
-    @close-modal="closeConfirmModal"
-    @action="cancelRequestToTeam"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
-import Table from '@Components/Table/Table.vue'
+import { RequestToTeam, JoinStatus } from '@Domain'
+import { useUserStore, useRequestsToTeamStore } from '@Store'
+import { getJoinStatus, getJoinStatusStyle } from '@Utils'
 import { RequestsToTeamProps } from '@Components/Modals/TeamModal/TeamModal.types'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
+import Table from '@Components/Table/Table.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
-
-import { RequestToTeam, JoinStatus } from '@Domain/Team'
-
-import useUserStore from '@Store/user/userStore'
-import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
-
-import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
 
 const props = defineProps<RequestsToTeamProps>()
 
@@ -139,15 +108,10 @@ function closeConfirmModal() {
 }
 
 async function acceptRequestToTeam() {
-  const currentUser = user.value
-
-  if (currentUser?.token && requestToTeam.value) {
-    const { token } = currentUser
-
+  if (requestToTeam.value) {
     await requestsToTeamStore.updateRequestToTeamStatus(
       requestToTeam.value,
       'ACCEPTED',
-      token,
     )
 
     requestToTeam.value = undefined
@@ -156,15 +120,10 @@ async function acceptRequestToTeam() {
 }
 
 async function cancelRequestToTeam() {
-  const currentUser = user.value
-
-  if (currentUser?.token && requestToTeam.value) {
-    const { token } = currentUser
-
+  if (requestToTeam.value) {
     await requestsToTeamStore.updateRequestToTeamStatus(
       requestToTeam.value,
       'CANCELED',
-      token,
     )
 
     requestToTeam.value = undefined
@@ -182,3 +141,29 @@ function checkDropdownAction(requestToTeam: RequestToTeam) {
   )
 }
 </script>
+
+<template>
+  <Table
+    class-name="px-3 pb-3 pt-1"
+    :data="requests"
+    :columns="requestToTeamColumns"
+    :search-by="['email', 'firstName', 'lastName']"
+    :dropdown-actions-menu="dropdownRequestToTeamActions"
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModalAccepted"
+    text-button="Принять заявку"
+    text-question="Вы действительно хотите принять заявку?"
+    @close-modal="closeConfirmModal"
+    @action="acceptRequestToTeam"
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModalCancel"
+    text-button="Отклонить заявку"
+    text-question="Вы действительно хотите отклонить заявку?"
+    @close-modal="closeConfirmModal"
+    @action="cancelRequestToTeam"
+  />
+</template>

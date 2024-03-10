@@ -3,29 +3,17 @@ import { ref, Ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
-import Table from '@Components/Table/Table.vue'
-import InvitedTeamsToIdeaTableProps from '@Components/Tables/InvitedTeamsToIdeaTable/InvitedTeamsToIdeaTable.types'
+import { InvitationTeamToIdea, InvitationTeamToIdeaStatus, Skill } from '@Domain'
+import { useInvitationsTeamToIdeaStore } from '@Store'
+import { getSkillInfoStyle, getJoinStatus, getJoinStatusStyle } from '@Utils'
+import { InvitedTeamsToIdeaTableProps } from '@Components/Tables/InvitedTeamsToIdeaTable/InvitedTeamsToIdeaTable.types'
 import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import Table from '@Components/Table/Table.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
-import {
-  InvitationTeamToIdea,
-  InvitationTeamToIdeaStatus,
-} from '@Domain/InvitationTeamToIdea'
-
-import useUserStore from '@Store/user/userStore'
-import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
-import { getSkillInfoStyle } from '@Utils/skillsInfo'
-import { Skill } from '@Domain/Skill'
-import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
-
 defineProps<InvitedTeamsToIdeaTableProps>()
 const selectedTeam = defineModel<InvitationTeamToIdea[]>()
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const invitationTeamsToIdeaStore = useInvitationsTeamToIdeaStore()
 const { ideaInvitations } = storeToRefs(invitationTeamsToIdeaStore)
@@ -133,20 +121,13 @@ function closeCancelModal() {
   isOpenedCancelModal.value = false
 }
 async function cancelRequestToIdea(invitationToIdea: InvitationTeamToIdea | null) {
-  const currentUser = user.value
-
-  if (currentUser?.token && invitationToIdea) {
-    const { token } = currentUser
+  if (invitationToIdea) {
     const { id } = invitationToIdea
-
-    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(
-      'WITHDRAWN',
-      id,
-      token,
-    )
+    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea('WITHDRAWN', id)
   }
 }
 </script>
+
 <template>
   <Table
     class-name="px-3 pb-3 pt-1"

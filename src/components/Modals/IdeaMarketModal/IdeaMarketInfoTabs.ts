@@ -1,6 +1,6 @@
 import { IdeaMarketTabType } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
 
-const IdeaMarketInfoTabs: IdeaMarketTabType[] = [
+export const IdeaMarketInfoTabs: IdeaMarketTabType[] = [
   {
     id: '0',
     key: 'customer',
@@ -32,5 +32,3 @@ const IdeaMarketInfoTabs: IdeaMarketTabType[] = [
     icon: 'bi bi-calendar',
   },
 ]
-
-export default IdeaMarketInfoTabs

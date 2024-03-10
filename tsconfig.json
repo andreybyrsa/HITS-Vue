@@ -17,15 +17,18 @@
     "types": ["webpack-env"],
     "paths": {
       "@Main": ["src/main.ts"],
-      "@Assets/*": ["src/assets/*"],
+      "@Config": ["src/config.ts"],
+      "@Api": ["src/api/index.ts"],
+      "@Domain": ["src/domain/.index.ts"],
+      "@Hooks": ["src/hooks/.index.ts"],
+      "@Assets": ["src/assets/index.ts"],
+      "@Router": ["src/router/index.ts"],
+      "@Service": ["src/service/.index.ts"],
+      "@Store": ["src/store/.index.ts"],
+      "@Utils": ["src/utils/.index.ts"],
       "@Components/*": ["src/components/*"],
       "@Layouts/*": ["src/layouts/*"],
-      "@Views/*": ["src/views/*"],
-      "@Hooks/*": ["src/hooks/*"],
-      "@Domain/*": ["src/domain/*"],
-      "@Store/*": ["src/store/*"],
-      "@Services/*": ["src/services/*"],
-      "@Utils/*": ["src/utils/*"]
+      "@Views/*": ["src/views/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
@@ -35,7 +38,11 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "src/assets/images/index.js"
+    "src/assets/images/index.js",
+    "src/store/.index.ts",
+    "src/service/.index.ts",
+    "src/hooks/.index.ts",
+    "src/domain/.index.ts"
   ],
   "exclude": ["node_modules"]
 }

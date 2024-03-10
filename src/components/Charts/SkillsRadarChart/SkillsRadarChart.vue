@@ -3,14 +3,12 @@ import { Ref, ref, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import VueApexCharts from 'vue3-apexcharts'
 import { ApexOptions } from 'apexcharts'
-
 import {
   SkillsRadarChartsProps,
   SkillsData,
   UniqueSkill,
 } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
-
-import { Skill, SkillType } from '@Domain/Skill'
+import { Skill, SkillType } from '@Domain'
 
 const props = defineProps<SkillsRadarChartsProps>()
 
@@ -208,7 +206,7 @@ function setRadarOptions(
 }
 
 function checkIsExistRadarData(radarOptions: ApexOptions) {
-  return radarOptions.series?.some((value) => value.data.length)
+  return radarOptions.series?.some((value: any) => value.data.length)
 }
 </script>
 

@@ -1,6 +1,6 @@
-import RegisterInputType from './RegisterForm.types'
+import { RegisterInputType } from './RegisterForm.types'
 
-const registerInputs: RegisterInputType[] = [
+export const registerInputs: RegisterInputType[] = [
   {
     key: 'email',
     type: 'email',
@@ -42,5 +42,3 @@ const registerInputs: RegisterInputType[] = [
     prependIcon: 'bi bi-key',
   },
 ]
-
-export default registerInputs

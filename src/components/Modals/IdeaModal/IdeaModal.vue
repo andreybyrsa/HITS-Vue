@@ -2,32 +2,23 @@
 import { ref, onMounted, VueElement } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-
+import { Idea, IdeaSkills, Rating, Comment } from '@Domain'
+import {
+  useUserStore,
+  useIdeasStore,
+  useRatingsStore,
+  useCommentsStore,
+} from '@Store'
+import { IdeaService } from '@Service'
+import { sendParallelRequests, RequestConfig, openErrorNotification } from '@Utils'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import { IdeaModalProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
 import IdeaDescription from '@Components/Modals/IdeaModal/IdeaDescription.vue'
 import IdeaComments from '@Components/Modals/IdeaModal/IdeaComments.vue'
 import IdeaActions from '@Components/Modals/IdeaModal/IdeaActions.vue'
 import IdeaInfo from '@Components/Modals/IdeaModal/IdeaInfo.vue'
 import IdeaModalPlaceholder from '@Components/Modals/IdeaModal/IdeaModalPlaceholder.vue'
 import ExpertRatingCalculator from '@Components/Modals/IdeaModal/ExpertRatingCalculator.vue'
-import { IdeaModalProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
-import Comment from '@Domain/Comment'
-
-import IdeasService from '@Services/IdeasService'
-
-import useUserStore from '@Store/user/userStore'
-import useIdeasStore from '@Store/ideas/ideasStore'
-import useRatingsStore from '@Store/ratings/ratingsStore'
-import useCommentsStore from '@Store/comments/commentsStore'
-
-import {
-  sendParallelRequests,
-  RequestConfig,
-  openErrorNotification,
-} from '@Utils/sendParallelRequests'
 
 const props = defineProps<IdeaModalProps>()
 
@@ -53,30 +44,30 @@ const ideaModalRef = ref<VueElement | null>(null)
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && currentUser?.role) {
-    const { token, role } = currentUser
+  if (currentUser?.role) {
+    const { role } = currentUser
     const id = route.params.id.toString()
 
     const ideaParallelRequests: RequestConfig[] = [
       {
-        request: () => ideasStore.getIdea(id, role, token),
+        request: () => ideasStore.getIdea(id, role),
         refValue: idea,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => IdeasService.getIdeaSkills(id, token),
+        request: () => IdeaService.getSkills(id),
         refValue: ideaSkills,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => ratingsStore.getIdeaRatings(id, token),
+        request: () => ratingsStore.getIdeaRatings(id),
         refValue: ratings,
         statement:
           role === 'EXPERT' || role === 'PROJECT_OFFICE' || role === 'ADMIN',
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => commentsStore.getComments(id, token),
+        request: () => commentsStore.getComments(id),
         refValue: comments,
         onErrorFunc: openErrorNotification,
       },

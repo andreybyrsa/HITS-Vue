@@ -3,25 +3,20 @@ import { ref, Ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
-import Table from '@Components/Table/Table.vue'
-import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
-import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
-
+import { Skill, InvitationTeamToIdea, InvitationTeamToIdeaStatus } from '@Domain'
+import { useUserStore, useInvitationsTeamToIdeaStore } from '@Store'
 import {
-  InvitationTeamToIdea,
-  InvitationTeamToIdeaStatus,
-} from '@Domain/InvitationTeamToIdea'
+  navigateToAliasRoute,
+  getSkillInfoStyle,
+  getJoinStatus,
+  getJoinStatusStyle,
+} from '@Utils'
 
-import useUserStore from '@Store/user/userStore'
-import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
-import { getSkillInfoStyle } from '@Utils/skillsInfo'
-import { Skill } from '@Domain/Skill'
-import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
-
-import IdeaMarketModal from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.vue'
 import { InvitationsToIdeaForTeamTableProps } from '@Components/Modals/TeamModal/TeamModal.types'
+import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import Table from '@Components/Table/Table.vue'
+import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
+import IdeaMarketModal from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.vue'
 
 const props = defineProps<InvitationsToIdeaForTeamTableProps>()
 const selectedTeam = defineModel<InvitationTeamToIdea[]>()
@@ -144,16 +139,12 @@ function closeRevokeModal() {
 async function handleAcceptInvitationToIdea(
   invitationToIdea: InvitationTeamToIdea | null,
 ) {
-  const currentUser = user.value
-
-  if (currentUser?.token && invitationToIdea) {
-    const { token } = currentUser
+  if (invitationToIdea) {
     const { id, ideaId } = invitationToIdea
 
     await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(
       'ACCEPTED',
       id,
-      token,
       ideaId,
       props.team,
     )
@@ -163,17 +154,15 @@ async function handleAcceptInvitationToIdea(
 async function handleRevokeInvitationToIdea(
   invitationToIdea: InvitationTeamToIdea | null,
 ) {
-  const currentUser = user.value
-
-  if (currentUser?.token && invitationToIdea) {
-    const { token } = currentUser
+  if (invitationToIdea) {
     const { id } = invitationToIdea
     const status = 'CANCELED'
 
-    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id, token)
+    await invitationTeamsToIdeaStore.putInvitationForTeamToIdea(status, id)
   }
 }
 </script>
+
 <template>
   <Table
     class-name="px-3 pb-3 pt-1"

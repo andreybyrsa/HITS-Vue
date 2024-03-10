@@ -1,12 +1,10 @@
-interface ModalLayoutProps {
+export interface ModalLayoutProps {
   className?: string
 
   isOpened: boolean
   appearOnRender?: boolean
 }
 
-interface ModalLayoutEmits {
+export interface ModalLayoutEmits {
   (event: 'on-outside-close'): void
 }
-
-export { ModalLayoutProps, ModalLayoutEmits }

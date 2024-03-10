@@ -1,17 +1,13 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRoute, RouteRecordRaw } from 'vue-router'
-
+import { useProfilesStore } from '@Store'
+import { navigateToAliasRoute, getIdeaStatus, getIdeaStatusStyle } from '@Utils'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
-
-import useProfilesStore from '@Store/profiles/profilesStore'
-
-import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const route = useRoute()
 const profileId = route.params.id.toString()

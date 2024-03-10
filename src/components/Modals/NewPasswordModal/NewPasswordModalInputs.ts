@@ -1,6 +1,5 @@
 import { NewPasswordModalInput } from './NewPasswordModal.types'
-
-const newPaswordModalInputs: NewPasswordModalInput[] = [
+export const newPasswordModalInputs: NewPasswordModalInput[] = [
   {
     id: 0,
     name: 'code',
@@ -15,5 +14,3 @@ const newPaswordModalInputs: NewPasswordModalInput[] = [
     placeholder: 'Введите новый пароль',
   },
 ]
-
-export default newPaswordModalInputs

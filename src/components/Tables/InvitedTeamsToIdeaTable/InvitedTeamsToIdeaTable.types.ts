@@ -1,8 +1,6 @@
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
+import { InvitationTeamToIdea } from '@Domain'
 
-interface InvitedTeamsToIdeaTableProps {
+export interface InvitedTeamsToIdeaTableProps {
   invitations: InvitationTeamToIdea[]
   ideaMarketId: string
 }
-
-export default InvitedTeamsToIdeaTableProps

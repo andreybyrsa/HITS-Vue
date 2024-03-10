@@ -1,8 +1,10 @@
-import Colors from '@Domain/Colors'
+import { Colors } from '@Domain'
 
-type ButtonVariants = Colors | { [color in Colors]: `outline-${color}` }[Colors]
+export type ButtonVariants =
+  | Colors
+  | { [color in Colors]: `outline-${color}` }[Colors]
 
-interface ButtonProps {
+export interface ButtonProps {
   id?: string
   className?: string
   variant?: ButtonVariants
@@ -10,5 +12,3 @@ interface ButtonProps {
   appendIconName?: string
   isLoading?: boolean
 }
-
-export { ButtonProps, ButtonVariants }

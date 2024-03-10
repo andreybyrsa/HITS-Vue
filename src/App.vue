@@ -42,7 +42,7 @@ import UserRolesWrapper from '@Components/UserRolesWrapper/UserRolesWrapper.vue'
 }
 
 body {
-  background: url('/src/assets/images/backgroundImage.webp') center $white-color;
+  background: url('/src/assets/images/background.webp') center $white-color;
   background-size: cover;
 
   &.overflow {

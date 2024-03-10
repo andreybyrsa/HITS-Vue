@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
-import LoadingWrapperProps from '@Components/LoadingWrapper/LoadingWrapper.types'
+import { LoadingWrapperProps } from '@Components/LoadingWrapper/LoadingWrapper.types'
 import LoadingSpinner from '@Components/LoadingSpinner/LoadingSpinner.vue'
 
 const props = defineProps<LoadingWrapperProps>()

@@ -1,10 +1,8 @@
-import { User } from '@Domain/User'
-import { Team } from '@Domain/Team'
-import { Skill } from '@Domain/Skill'
+import { Team, Skill, User } from '@Domain'
 
-type IdeaMarketStatusType = 'RECRUITMENT_IS_OPEN' | 'RECRUITMENT_IS_CLOSED'
+export type IdeaMarketStatusType = 'RECRUITMENT_IS_OPEN' | 'RECRUITMENT_IS_CLOSED'
 
-interface IdeaMarket {
+export interface IdeaMarket {
   id: string
   marketId: string
   ideaId: string
@@ -26,7 +24,7 @@ interface IdeaMarket {
   isFavorite: boolean
 }
 
-interface IdeaMarketAdvertisement {
+export interface IdeaMarketAdvertisement {
   id: string
   ideaMarketId: string
   createdAt: string
@@ -35,5 +33,3 @@ interface IdeaMarketAdvertisement {
   sender: User
   checkedBy: string[]
 }
-
-export { IdeaMarket, IdeaMarketStatusType, IdeaMarketAdvertisement }

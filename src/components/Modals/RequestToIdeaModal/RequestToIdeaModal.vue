@@ -1,30 +1,18 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-
+import { RequestTeamToIdea, Team } from '@Domain'
+import { useUserStore, useRequestsToIdeaStore } from '@Store'
+import { TeamService } from '@Service'
+import { sendParallelRequests, RequestConfig, openErrorNotification } from '@Utils'
 import {
   RequestToIdeaModalProps,
   RequestToIdeaModalEmits,
 } from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.types'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import RequestToIdeaForm from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.vue'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Team } from '@Domain/Team'
-
-import TeamService from '@Services/TeamService'
-
-import useUserStore from '@Store/user/userStore'
-import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
-
-import {
-  sendParallelRequests,
-  RequestConfig,
-  openErrorNotification,
-} from '@Utils/sendParallelRequests'
 
 const props = defineProps<RequestToIdeaModalProps>()
 const emit = defineEmits<RequestToIdeaModalEmits>()
@@ -43,19 +31,19 @@ watch(
   async (isOpened) => {
     const currentUser = user.value
 
-    if (isOpened && currentUser?.token && props.ideaMarket) {
-      const { token, role } = currentUser
+    if (isOpened && currentUser?.role && props.ideaMarket) {
+      const { role } = currentUser
       const { id } = props.ideaMarket
 
       const parallelRequests: RequestConfig[] = [
         {
-          request: () => TeamService.getOwnerTeams(id, token),
+          request: () => TeamService.getOwnerTeams(id),
           refValue: ownerTeams,
           statement: role === 'TEAM_OWNER' || role === 'ADMIN',
           onErrorFunc: openErrorNotification,
         },
         {
-          request: () => requestsToIdeaStore.getRequestsToIdea(id, token),
+          request: () => requestsToIdeaStore.getRequestsToIdea(id),
           refValue: requestTeams,
           statement:
             role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',

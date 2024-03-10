@@ -1,60 +1,27 @@
-<template>
-  <Table
-    class-name="p-3"
-    :header="usersTableHeader"
-    :columns="usersTableColumns"
-    :data="users"
-    :search-by="['email', 'firstName', 'lastName']"
-    :filters="usersFilters"
-    :dropdown-actions-menu="dropdownUsersActions"
-  />
-
-  <EditUserModal
-    :is-opened="isOpenedUpdatingUserModal"
-    :user="updatingUser"
-    v-model="users"
-    @close-modal="handleCloseUpdatingModal"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedConfirmModal"
-    text-button="Удалить"
-    text-question="Вы действительно хотите удалить пользователя?"
-    @close-modal="closeConfirmModal"
-    @action="deleteUser"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRoute, RouteRecordRaw } from 'vue-router'
 import { useDateFormat } from '@vueuse/core'
-
+import { User, RolesTypes } from '@Domain'
+import { useNotificationsStore } from '@Store'
+import { ManageUsersService } from '@Service'
+import {
+  getUserRolesInfo,
+  getUserRoleInfoStyle,
+  mutableSort,
+  navigateToAliasRoute,
+} from '@Utils'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import {
   DropdownMenuAction,
   TableColumn,
   TableHeader,
 } from '@Components/Table/Table.types'
-import UsersTableProps from '@Components/Tables/UsersTable/UsersTable.types'
+import { UsersTableProps } from '@Components/Tables/UsersTable/UsersTable.types'
 import Table from '@Components/Table/Table.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
-
-import { User } from '@Domain/User'
-import RolesTypes from '@Domain/Roles'
-
-import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils/userRolesInfo'
-import mutableSort from '@Utils/mutableSort'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
-import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
-import ManageUsersService from '@Services/ManageUsersService'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
 const props = defineProps<UsersTableProps>()
 
@@ -148,22 +115,16 @@ const usersFilters: Filter<User>[] = [
 ]
 
 async function deleteUser() {
-  const currentUser = user.value
+  const response = await ManageUsersService.deleteUser(currentUserId.value)
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const response = await ManageUsersService.deleteUser(currentUserId.value, token)
-
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
-    }
-
-    users.value = users.value.filter(({ id }) => id !== currentUserId.value)
+  if (response instanceof Error) {
+    return useNotificationsStore().createSystemNotification(
+      'Система',
+      response.message,
+    )
   }
+
+  users.value = users.value.filter(({ id }) => id !== currentUserId.value)
 }
 
 function navigateToUserProfile(user: User) {
@@ -239,3 +200,30 @@ function openConfirmModal(currentUser: User) {
   isOpenedConfirmModal.value = true
 }
 </script>
+
+<template>
+  <Table
+    class-name="p-3"
+    :header="usersTableHeader"
+    :columns="usersTableColumns"
+    :data="users"
+    :search-by="['email', 'firstName', 'lastName']"
+    :filters="usersFilters"
+    :dropdown-actions-menu="dropdownUsersActions"
+  />
+
+  <EditUserModal
+    :is-opened="isOpenedUpdatingUserModal"
+    :user="updatingUser"
+    v-model="users"
+    @close-modal="handleCloseUpdatingModal"
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModal"
+    text-button="Удалить"
+    text-question="Вы действительно хотите удалить пользователя?"
+    @close-modal="closeConfirmModal"
+    @action="deleteUser"
+  />
+</template>

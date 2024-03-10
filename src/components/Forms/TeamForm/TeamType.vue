@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useField } from 'vee-validate'
-
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 

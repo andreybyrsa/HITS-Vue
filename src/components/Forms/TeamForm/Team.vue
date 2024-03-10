@@ -2,15 +2,12 @@
 import { ref, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFieldValue } from 'vee-validate'
-
+import { TeamMember } from '@Domain'
+import { useUserStore } from '@Store'
+import { TeamProps, TeamEmits } from '@Components/Forms/TeamForm/TeamForm.types'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import { TeamProps, TeamEmits } from '@Components/Forms/TeamForm/TeamForm.types'
-
-import { TeamMember } from '@Domain/Team'
-
-import useUserStore from '@Store/user/userStore'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
 
 const invitationUsers = defineModel<TeamMember[]>({ required: true })
@@ -33,8 +30,8 @@ onMounted(async () => {
 
   if (currentUser) {
     if (!props.team) {
-      owner.value = currentUser
-      users.value = [currentUser]
+      owner.value = currentUser as any
+      users.value = [currentUser as any]
     } else {
       users.value = [...props.team.members]
     }

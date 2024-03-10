@@ -1,11 +1,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
-import Icon from '@Components/Icon/Icon.vue'
-
+import { HTMLTargetEvent } from '@Domain'
 import { InputProps, InputEmits } from '@Components/Inputs/Input/Input.types'
-
-import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
+import Icon from '@Components/Icon/Icon.vue'
 
 const props = defineProps<InputProps>()
 
@@ -15,7 +13,7 @@ defineModel<string>({
   required: false,
 })
 
-const { value, errorMessage } = useField(props.name, props.validation, {
+const { value, errorMessage } = useField(props.name, props.validation as any, {
   validateOnValueUpdate: props.validateOnUpdate ?? false,
   validateOnMount: false,
   controlled: props.noFormControlled ? false : true,

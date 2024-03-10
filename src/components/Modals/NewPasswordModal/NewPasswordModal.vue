@@ -2,24 +2,17 @@
 import { ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import { UpdateUserPassword } from '@Domain'
+import { useNotificationsStore } from '@Store'
+import { ManageUsersService } from '@Service'
+import { validation, getChangeStatusCode, ChangeStatusCode } from '@Utils'
+import { newPasswordModalInputs } from '@Components/Modals/NewPasswordModal/NewPasswordModalInputs'
 import { NewPasswordModalProps } from '@Components/Modals/NewPasswordModal/NewPasswordModal.types'
-import newPasswordModalInputs from '@Components/Modals/NewPasswordModal/NewPasswordModalInputs'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
-
-import { UpdateUserPassword } from '@Domain/ManageUsers'
-
-import ManageUsersService from '@Services/ManageUsersService'
-
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import Validation from '@Utils/Validation'
-import { getChangeStatusCode, ChangeStatusCode } from '@Utils/changeStatusCodeInfo'
 
 const props = defineProps<NewPasswordModalProps>()
 
@@ -33,11 +26,11 @@ const isLoading = ref(false)
 
 const { setValues, handleSubmit } = useForm<UpdateUserPassword>({
   validationSchema: {
-    key: (value: string) => Validation.checkIsEmptyValue(value),
-    email: (value: string) => Validation.checkEmail(value),
+    key: (value: string) => validation.checkIsEmptyValue(value),
+    email: (value: string) => validation.checkEmail(value),
     code: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Неверно введен код',
-    password: (value: string) => Validation.checkPassword(value),
+      validation.checkIsEmptyValue(value) || 'Неверно введен код',
+    password: (value: string) => validation.checkPassword(value),
   },
 })
 
@@ -126,3 +119,4 @@ const handleUpdatePassword = handleSubmit(async (values) => {
   transform: scale(0.9);
 }
 </style>
+@Utils/validation

@@ -2,23 +2,15 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
-
+import { RegisterUser, RolesTypes } from '@Domain'
+import { useUserStore, useNotificationsStore } from '@Store'
+import { InviteService } from '@Service'
+import { validation } from '@Utils'
+import { registerInputs } from '@Components/Forms/RegisterForm/RegisterFormInputs'
+import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Button from '@Components/Button/Button.vue'
-import registerInputs from '@Components/Forms/RegisterForm/RegisterFormInputs'
-
-import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
-
-import { RegisterUser } from '@Domain/User'
-import RolesTypes from '@Domain/Roles'
-
-import InvitationService from '@Services/InvitationService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import Validation from '@Utils/Validation'
 
 const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
@@ -29,7 +21,7 @@ const isLoading = ref(false)
 
 onMounted(async () => {
   const { slug } = route.params
-  const response = await InvitationService.getInvitationInfo(slug)
+  const response = await InviteService.getInvitationInfo(slug)
 
   if (response instanceof Error) {
     return notificationsStore.createSystemNotification('Система', response.message)
@@ -43,15 +35,15 @@ onMounted(async () => {
 const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
   validationSchema: {
     email: (value: string) =>
-      Validation.checkEmail(value) || 'Неверно введена почта',
+      validation.checkEmail(value) || 'Неверно введена почта',
     firstName: (value: string) =>
-      Validation.checkName(value) || 'Неверно введено имя',
+      validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
-      Validation.checkName(value) || 'Неверно введена фамилия',
-    password: (value: string) => Validation.checkPassword(value),
-    roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
+      validation.checkName(value) || 'Неверно введена фамилия',
+    password: (value: string) => validation.checkPassword(value),
+    roles: (value: RolesTypes[]) => validation.checkIsEmptyValue(value),
     telephone: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+      validation.checkIsEmptyValue(value) || 'Это обязательное поле',
   },
 })
 
@@ -113,3 +105,4 @@ const handleRegister = handleSubmit(async (values) => {
     </Button>
   </FormLayout>
 </template>
+@Utils/validation

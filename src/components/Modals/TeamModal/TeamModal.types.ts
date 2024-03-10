@@ -1,13 +1,17 @@
-import { IdeaMarket } from '@Domain/IdeaMarket'
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Team, TeamInvitation, RequestToTeam } from '@Domain/Team'
+import {
+  IdeaMarket,
+  InvitationTeamToIdea,
+  RequestTeamToIdea,
+  Team,
+  TeamInvitation,
+  RequestToTeam,
+} from '@Domain'
 
-interface TeamDescriptionProps {
+export interface TeamDescriptionProps {
   team: Team
 }
 
-interface TeamModalTables {
+export interface TeamModalTables {
   team: Team
   invitations?: TeamInvitation[]
   requests?: RequestToTeam[]
@@ -15,57 +19,43 @@ interface TeamModalTables {
   invitationsForTeam?: InvitationTeamToIdea[]
 }
 
-interface TeamMembersProps {
+export interface TeamMembersProps {
   team: Team
 }
 
-interface TeamInvitationsProps {
+export interface TeamInvitationsProps {
   invitations: TeamInvitation[]
   team: Team
 }
 
-interface RequestsToTeamProps {
+export interface RequestsToTeamProps {
   requests: RequestToTeam[]
   team: Team
 }
 
-interface RequestsTeamToIdeasProps {
+export interface RequestsTeamToIdeasProps {
   requests: RequestTeamToIdea[]
   team?: Team
 }
 
-interface TeamModalActionsProps {
+export interface TeamModalActionsProps {
   ideasInitiator: IdeaMarket[]
   team: Team
 }
 
-interface TeamModalInfoProps {
+export interface TeamModalInfoProps {
   team: Team
 }
 
-interface TeamDescriptionEmits {
+export interface TeamDescriptionEmits {
   (event: 'close-modal'): void
 }
 
-interface TeamModalActionsEmits {
+export interface TeamModalActionsEmits {
   (event: 'close-modal'): void
 }
 
-interface InvitationsToIdeaForTeamTableProps {
+export interface InvitationsToIdeaForTeamTableProps {
   invitations: InvitationTeamToIdea[]
   team: Team
-}
-
-export {
-  TeamDescriptionProps,
-  TeamModalTables,
-  TeamMembersProps,
-  TeamInvitationsProps,
-  RequestsToTeamProps,
-  RequestsTeamToIdeasProps,
-  TeamModalActionsProps,
-  TeamModalInfoProps,
-  TeamDescriptionEmits,
-  TeamModalActionsEmits,
-  InvitationsToIdeaForTeamTableProps,
 }
