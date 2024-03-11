@@ -14,6 +14,8 @@ export function handleAxiosError(
     const serverError = response?.data?.error
 
     if (serverError) {
+      console.error(serverError)
+
       return new Error(serverError)
     }
     if (errorMessage) {
@@ -22,6 +24,6 @@ export function handleAxiosError(
 
     return new Error('Ошибка в системе, повторите попытку позже')
   }
-
+  console.error(errorMessage)
   return new Error('Ваша сессия истекла')
 }

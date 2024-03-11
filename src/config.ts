@@ -1,6 +1,6 @@
 // TODO: Вынести в .env
 
-export const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
+export const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'PRODUCTION'
 
 export const API_URL:
   | 'http://localhost:80/api/v1/ideas-service'
