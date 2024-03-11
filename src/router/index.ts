@@ -303,19 +303,11 @@ router.beforeEach(async (to) => {
 
   const { user } = storeToRefs(userStore)
 
-  // if (telegramTag && localStorageUser?.id) {
-  //   useProfilesStore().setProfileTag(telegramTag, localStorageUser.id)
-  // }
-  // if (localStorageUser?.token && !user.value?.token) {
-  //   useUserStore().setUser(localStorageUser)
-  // }
-
   const currentRouteName = to.name?.toString() ?? ''
   const requiredRouteRoles = to.meta?.roles ?? []
   const authRouteNames = ['login', 'register', 'forgot-password']
 
   if (!user.value && !authRouteNames.includes(currentRouteName)) {
-    console.log(1)
     return { name: 'login' }
   }
 
@@ -323,15 +315,12 @@ router.beforeEach(async (to) => {
     user.value?.role &&
     (authRouteNames.includes(currentRouteName) || currentRouteName === 'home')
   ) {
-    console.log(2)
-
     const { role } = user.value
 
     return getRouteByUserRole(role)
   }
 
   if (requiredRouteRoles.length && user.value?.role) {
-    console.log(3)
     const { role } = user.value
 
     return requiredRouteRoles.includes(role) ? true : { name: 'error' }
