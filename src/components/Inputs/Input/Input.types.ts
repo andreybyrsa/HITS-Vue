@@ -1,8 +1,7 @@
-import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
+import { HTMLTargetEvent } from '@Domain'
+import { ValidationMethods } from '@Utils'
 
-import { ValidationMethods } from '@Utils/Validation'
-
-interface InputProps {
+export interface InputProps {
   className?: string
   labelClassName?: string
   type?: string
@@ -13,25 +12,19 @@ interface InputProps {
   noFormControlled?: boolean
   max?: number
   min?: number
-
   label?: string
   placeholder?: string
-
   prepend?: string
   append?: string
   error?: string
-
   disabled?: boolean
-
   hint?: string
 }
 
-interface InputEmits {
+export interface InputEmits {
   (event: 'input', value: HTMLTargetEvent): void
   (event: 'change', value: HTMLTargetEvent): void
   (event: 'focus'): void
   (event: 'blur'): void
   (event: 'keydown', value: KeyboardEvent): void
 }
-
-export { InputProps, InputEmits }

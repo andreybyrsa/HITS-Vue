@@ -1,15 +1,13 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
-
+import { useUserStore } from '@Store'
+import { TeamModalTables } from '@Components/Modals/TeamModal/TeamModal.types'
 import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
 import TeamInvitations from '@Components/Tables/TeamsTable/TeamInvitations.vue'
 import RequestsToTeam from '@Components/Tables/TeamsTable/RequestsToTeam.vue'
 import RequestTeamToIdea from '@Components/Tables/TeamsTable/RequestsTeamToIdea.vue'
 import InvitationsToIdeaForTeam from '@Components/Tables/TeamsTable/InvitationsToIdeaForTeam.vue'
-import { TeamModalTables } from '@Components/Modals/TeamModal/TeamModal.types'
-
-import useUserStore from '@Store/user/userStore'
 
 const props = defineProps<TeamModalTables>()
 

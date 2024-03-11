@@ -1,76 +1,27 @@
-<template>
-  <Table
-    class-name="p-3"
-    :header="teamsTableHeader"
-    :columns="teamTableColumns"
-    :data="teams"
-    :search-by="['name', 'description']"
-    :filters="teamsFilters"
-    :dropdown-actions-menu="dropdownTeamsActions"
-  />
-
-  <DeleteModal
-    :is-opened="isOpenedTeamDeleteModal"
-    :item-name="deletingTeamName?.toString()"
-    @close-modal="handleCloseDeleteModal"
-    @delete="handleDeleteTeam"
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedConfirmModalAccepted"
-    text-button="Пригласить команду"
-    text-question="Вы действительно хотите пригласить команду?"
-    @close-modal="closeConfirmModalAccepted"
-    @action="
-      currentTeam && currentIdea && handleInviteTeam(currentTeam, currentIdea)
-    "
-  />
-
-  <ConfirmModal
-    :is-opened="isOpenedConfirmModalCanceled"
-    text-button="Отозвать команду"
-    text-question="Вы действительно хотите отозвать команду?"
-    @close-modal="closeConfirmModalCanceled"
-    @action="currentInvitation && handleRevokeTeam(currentInvitation)"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { useDateFormat, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-
-import Table from '@Components/Table/Table.vue'
+import { Team, Skill, Profile, InvitationTeamToIdea, IdeaMarket } from '@Domain'
+import {
+  useIdeasMarketStore,
+  useNotificationsStore,
+  useInvitationsTeamToIdeaStore,
+  useUserStore,
+  useTeamStore,
+} from '@Store'
+import { TeamService, ProfileService, SkillsService } from '@Service'
+import { sendParallelRequests, RequestConfig, openErrorNotification } from '@Utils'
 import {
   TableColumn,
   DropdownMenuAction,
   TableHeader,
 } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
+import Table from '@Components/Table/Table.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
-
-import { Team } from '@Domain/Team'
-import { Skill } from '@Domain/Skill'
-import { Profile } from '@Domain/Profile'
-
-import SkillsService from '@Services/SkillsService'
-import ProfileService from '@Services/ProfileService'
-import TeamService from '@Services/TeamService'
-import useUserStore from '@Store/user/userStore'
-import useTeamStore from '@Store/teams/teamsStore'
-import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
-
-import {
-  sendParallelRequests,
-  RequestConfig,
-  openErrorNotification,
-} from '@Utils/sendParallelRequests'
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
-import { IdeaMarket } from '@Domain/IdeaMarket'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -118,23 +69,23 @@ const computedIsInitiator = computed<boolean>(() => user.value?.role == 'INITIAT
 
 onMounted(async () => {
   const currentUser = user.value
-  if (currentUser?.token) {
-    const { token, id } = currentUser
+
+  if (currentUser) {
+    const { id } = currentUser
 
     const teamsTableParallelRequests: RequestConfig[] = [
       {
-        request: () => SkillsService.getAllSkills(token),
+        request: () => SkillsService.getAllSkills(),
         refValue: skills,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => ProfileService.getUserProfile(id, token),
+        request: () => ProfileService.getUserProfile(id),
         refValue: profile,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () =>
-          ideasMarketStore.getAllInitiatorMarketIdeasByUserId(id, token),
+        request: () => ideasMarketStore.getAllInitiatorMarketIdeasByUserId(id),
         refValue: ideas,
         onErrorFunc: openErrorNotification,
       },
@@ -150,10 +101,10 @@ watchImmediate(
     if (role === 'INITIATOR') {
       const currentUser = user.value
 
-      if (currentUser?.token) {
-        const { token, id } = currentUser
+      if (currentUser) {
+        const { id } = currentUser
 
-        await invitationsTeamToIdeaStore.getIdeaInvitationsByInitiator(id, token)
+        await invitationsTeamToIdeaStore.getIdeaInvitationsByInitiator(id)
       }
     }
   },
@@ -166,15 +117,11 @@ watch(
 
     const checkedSkills = getCheckedSkills()
 
-    if (currentUser?.token && currentUser.role) {
+    if (currentUser?.role) {
       if (checkedSkills.length && currentUser.role) {
-        const { token, role } = currentUser
+        const { role } = currentUser
 
-        const response = await TeamService.filterBySkillsAndRole(
-          checkedSkills,
-          role,
-          token,
-        )
+        const response = await TeamService.filterBySkillsAndRole(checkedSkills, role)
 
         if (response instanceof Error) {
           return notificationsStore.createSystemNotification(
@@ -185,9 +132,7 @@ watch(
 
         teams.value = response
       } else {
-        const { token } = currentUser
-
-        const response = await TeamService.getTeams(token)
+        const response = await TeamService.getTeams()
 
         if (response instanceof Error) {
           return notificationsStore.createSystemNotification(
@@ -204,35 +149,24 @@ watch(
 )
 
 watch(filterByVacancies, async (isVacancies) => {
-  const currentUser = user.value
+  const checkedSkills = getCheckedSkills()
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const checkedSkills = getCheckedSkills()
+  if (isVacancies && checkedSkills.length) {
+    const response = await TeamService.filterByVacancies(checkedSkills)
 
-    if (isVacancies && checkedSkills.length) {
-      const response = await TeamService.filterByVacancies(checkedSkills, token)
-
-      if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-
-      teams.value = response
-    } else {
-      const response = await TeamService.getTeams(token)
-
-      if (response instanceof Error) {
-        return notificationsStore.createSystemNotification(
-          'Система',
-          response.message,
-        )
-      }
-
-      teams.value = response
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
     }
+
+    teams.value = response
+  } else {
+    const response = await TeamService.getTeams()
+
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    teams.value = response
   }
 })
 
@@ -373,7 +307,7 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
       .map(({ name }) => ({
         label: name,
         value: name,
-        isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+        isMarked: !!profile.value?.skills?.find((skill) => skill.name === name),
       }))
       .sort((a, b) => +b.isMarked - +a.isMarked),
     refValue: filterBySkills,
@@ -390,7 +324,7 @@ function getAccessInvitationsInIdeaMarket(team: Team, idea: IdeaMarket) {
   const currentsInvitesIdea = ideaInvitations.value.filter(
     ({ ideaId, status }) => ideaId === currentIdeaId && status === 'NEW',
   )
-  const isTeamInviteInIdea = currentsInvitesIdea.find(
+  const isTeamInviteInIdea = currentsInvitesIdea?.find(
     ({ teamId }) => teamId === currentTeamId,
   )
 
@@ -408,8 +342,8 @@ function checkByUserRole() {
 async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token, id: userId } = currentUser
+  if (currentUser) {
+    const { id: userId } = currentUser
     const { ideaId, name: ideaName } = ideaMarket
     const { id: teamId, name: teamName, membersCount, wantedSkills } = team
 
@@ -425,28 +359,19 @@ async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
       skills: wantedSkills,
     }
 
-    await invitationsTeamToIdeaStore.postInvitationsToIdea(invitation, token)
+    await invitationsTeamToIdeaStore.postInvitationsToIdea(invitation)
   }
 }
 
 async function handleRevokeTeam(invitation: InvitationTeamToIdea) {
-  const currentUser = user.value
+  const { id } = invitation
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = invitation
-
-    await invitationsTeamToIdeaStore.putInvitationForTeamToIdea(
-      'WITHDRAWN',
-      id,
-      token,
-    )
-  }
+  await invitationsTeamToIdeaStore.putInvitationForTeamToIdea('WITHDRAWN', id)
 }
 
 function getCheckedSkills() {
   return filterBySkills.value.reduce<Skill[]>((prevSkills, skillName) => {
-    const skill = skills.value.find(({ name }) => skillName === name)
+    const skill = skills.value?.find(({ name }) => skillName === name)
 
     if (skill) prevSkills.push(skill)
 
@@ -560,12 +485,8 @@ function closeConfirmModalCanceled() {
 }
 
 async function handleDeleteTeam() {
-  const currentUser = user.value
-
-  if (currentUser?.token && deletingTeamId.value !== null) {
-    const { token } = currentUser
-
-    await teamsStore.deleteTeam(deletingTeamId.value, token)
+  if (deletingTeamId.value !== null) {
+    await teamsStore.deleteTeam(deletingTeamId.value)
   }
 }
 
@@ -604,7 +525,7 @@ function checkTeamHasActiveProject(team: Team, status: FilterValue) {
 }
 
 function checkIsTeamSent(team: Team, status: FilterValue) {
-  const result = ideaInvitations.value.find(
+  const result = ideaInvitations.value?.find(
     (invitation) => invitation.teamId == team.id && invitation.status === 'NEW',
   )
 
@@ -639,3 +560,40 @@ function checkOwnerTeams(team: Team, userId: FilterValue) {
 //   )
 // }
 </script>
+
+<template>
+  <Table
+    class-name="p-3"
+    :header="teamsTableHeader"
+    :columns="teamTableColumns"
+    :data="teams"
+    :search-by="['name', 'description']"
+    :filters="teamsFilters"
+    :dropdown-actions-menu="dropdownTeamsActions"
+  />
+
+  <DeleteModal
+    :is-opened="isOpenedTeamDeleteModal"
+    :item-name="deletingTeamName?.toString()"
+    @close-modal="handleCloseDeleteModal"
+    @delete="handleDeleteTeam"
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModalAccepted"
+    text-button="Пригласить команду"
+    text-question="Вы действительно хотите пригласить команду?"
+    @close-modal="closeConfirmModalAccepted"
+    @action="
+      currentTeam && currentIdea && handleInviteTeam(currentTeam, currentIdea)
+    "
+  />
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModalCanceled"
+    text-button="Отозвать команду"
+    text-question="Вы действительно хотите отозвать команду?"
+    @close-modal="closeConfirmModalCanceled"
+    @action="currentInvitation && handleRevokeTeam(currentInvitation)"
+  />
+</template>

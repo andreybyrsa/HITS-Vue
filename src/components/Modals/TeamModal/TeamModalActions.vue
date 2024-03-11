@@ -2,25 +2,28 @@
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-
-import Button from '@Components/Button/Button.vue'
+import {
+  InvitationTeamToIdea,
+  IdeaMarket,
+  Team,
+  TeamMember,
+  RequestToTeam,
+} from '@Domain'
+import {
+  useUserStore,
+  useTeamStore,
+  useInvitationUsersStore,
+  useRequestsToTeamStore,
+  useInvitationsTeamToIdeaStore,
+} from '@Store'
 import {
   TeamModalActionsProps,
   TeamModalActionsEmits,
 } from '@Components/Modals/TeamModal/TeamModal.types'
+import Button from '@Components/Button/Button.vue'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import InvitationTeamMemberModal from '@Components/Modals/InvitationTeamMemberModal/InvitationTeamMemberModal.vue'
-
-import { RequestToTeam, Team, TeamMember } from '@Domain/Team'
-
-import useUserStore from '@Store/user/userStore'
-import useTeamStore from '@Store/teams/teamsStore'
-import useRequestsToTeamStore from '@Store/requestsToTeam/requestsToTeamStore'
-import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-import useInvitationsTeamToIdeaStore from '@Store/invitationTeamToIdea/invitationTeamToIdeaStore'
-import { IdeaMarket } from '@Domain/IdeaMarket'
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 const props = defineProps<TeamModalActionsProps>()
 const emit = defineEmits<TeamModalActionsEmits>()
@@ -196,32 +199,26 @@ function closeInvitationModal() {
 }
 
 async function handleDeleteTeam() {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = props.team
-
-    await teamsStore.deleteTeam(id, token).then(() => emit('close-modal'))
-  }
+  const { id } = props.team
+  await teamsStore.deleteTeam(id).then(() => emit('close-modal'))
 }
 
 async function handleLeaveTeam() {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token, id: userId } = currentUser
+  if (currentUser) {
+    const { id: userId } = currentUser
     const { id } = props.team
 
-    await teamsStore.leaveFromTeam(id, userId, token)
+    await teamsStore.leaveFromTeam(id, userId)
   }
 }
 
 async function sendRequestInTeam() {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token, id: userId, email, firstName, lastName } = currentUser
+  if (currentUser) {
+    const { id: userId, email, firstName, lastName } = currentUser
     const { id: teamId } = props.team
 
     const requestToTeam = {
@@ -233,15 +230,15 @@ async function sendRequestInTeam() {
       lastName,
     } as RequestToTeam
 
-    await requestsToTeamStore.sendRequestInTeam(requestToTeam, token)
+    await requestsToTeamStore.sendRequestInTeam(requestToTeam)
   }
 }
 
 async function withdrawRequestToTeam() {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token, id } = currentUser
+  if (currentUser) {
+    const { id } = currentUser
 
     const currentRequest = requests.value.find(
       ({ userId, status }) => userId === id && status === 'NEW',
@@ -251,7 +248,6 @@ async function withdrawRequestToTeam() {
       await requestsToTeamStore.updateRequestToTeamStatus(
         currentRequest,
         'WITHDRAWN',
-        token,
       )
     }
   }
@@ -263,14 +259,8 @@ async function acceptInvitationToTeam() {
     ({ userId, status }) => userId === currentUser?.id && status === 'NEW',
   )
 
-  if (currentUser?.token && currentUserInvitation) {
-    const { token } = currentUser
-
-    await invitatinUsers.updateInvitationStatus(
-      currentUserInvitation,
-      'ACCEPTED',
-      token,
-    )
+  if (currentUserInvitation) {
+    await invitatinUsers.updateInvitationStatus(currentUserInvitation, 'ACCEPTED')
   }
 }
 
@@ -280,14 +270,8 @@ async function cancelInvitationToTeam() {
     ({ userId, status }) => userId === currentUser?.id && status === 'NEW',
   )
 
-  if (currentUser?.token && currentUserInvitation) {
-    const { token } = currentUser
-
-    await invitatinUsers.updateInvitationStatus(
-      currentUserInvitation,
-      'CANCELED',
-      token,
-    )
+  if (currentUserInvitation) {
+    await invitatinUsers.updateInvitationStatus(currentUserInvitation, 'CANCELED')
   }
 }
 
@@ -323,8 +307,8 @@ function getVariantButton(curretnIdeaId: string) {
 async function handleInviteTeam() {
   const currentUser = user.value
 
-  if (currentUser?.token && currentTeam.value && currentIdea.value) {
-    const { token, id: userId } = currentUser
+  if (currentUser && currentTeam.value && currentIdea.value) {
+    const { id: userId } = currentUser
     const { id, name: ideaName } = currentIdea.value
     const { id: teamId, name: teamName, membersCount, skills } = currentTeam.value
 
@@ -340,7 +324,7 @@ async function handleInviteTeam() {
       skills: skills,
     }
 
-    await invitationsTeamToIdeaStore.postInvitationsToIdea(invitation, token)
+    await invitationsTeamToIdeaStore.postInvitationsToIdea(invitation)
   }
 }
 
@@ -355,17 +339,9 @@ function closeConfirmModalTeamNew() {
 }
 
 async function handleRevokeTeam() {
-  const currentUser = user.value
-
-  if (currentUser?.token && currentInvitation.value) {
-    const { token } = currentUser
+  if (currentInvitation.value) {
     const { id } = currentInvitation.value
-
-    await invitationsTeamToIdeaStore.putInvitationForTeamToIdea(
-      'WITHDRAWN',
-      id,
-      token,
-    )
+    await invitationsTeamToIdeaStore.putInvitationForTeamToIdea('WITHDRAWN', id)
   }
 }
 

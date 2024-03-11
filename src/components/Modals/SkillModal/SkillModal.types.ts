@@ -1,12 +1,10 @@
-import { Skill } from '@Domain/Skill'
+import { Skill } from '@Domain'
 
-interface SkillModalProps {
+export interface SkillModalProps {
   isOpened: boolean
   skill?: Skill | null
 }
 
-interface SkillModalEmits {
+export interface SkillModalEmits {
   (event: 'close-modal'): void
 }
-
-export { SkillModalProps, SkillModalEmits }

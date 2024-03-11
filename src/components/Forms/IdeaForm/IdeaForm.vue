@@ -4,25 +4,18 @@ import { watchImmediate } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-
+import { Idea, IdeaSkills, Skill } from '@Domain'
+import { useUserStore, useNotificationsStore } from '@Store'
+import { IdeaService } from '@Service'
+import { validation } from '@Utils'
+import { IdeaForm } from '@Components/Forms/IdeaForm/IdeaForm.types'
+import { hints } from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
 import Typography from '@Components/Typography/Typography.vue'
 import CustomerAndContact from '@Components/Forms/IdeaForm/CustomerAndContact.vue'
-import IdeaForm from '@Components/Forms/IdeaForm/IdeaForm.types'
 import PreAssessmentCalculator from '@Components/Forms/IdeaForm/PreAssessmentCalculator.vue'
 import IdeaFormInputs from '@Components/Forms/IdeaForm/IdeaFormInputs.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import Button from '@Components/Button/Button.vue'
-import { hints } from '@Components/Forms/IdeaForm/IdeaFormInputs.types'
-
-import { Idea, IdeaSkills } from '@Domain/Idea'
-import { Skill } from '@Domain/Skill'
-
-import IdeasService from '@Services/IdeasService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import Validation from '@Utils/Validation'
 
 const notificationsStore = useNotificationsStore()
 
@@ -44,29 +37,29 @@ const { values, setFieldValue, setValues, validateField, handleSubmit } =
   useForm<Idea>({
     validationSchema: {
       name: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+        validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       problem: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+        validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       solution: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+        validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       result: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+        validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       description: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+        validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       maxTeamSize: (value: number) =>
         (value && value >= 3 && value <= 7) || 'Значение должно быть от 3 до 7',
       minTeamSize: (value: number) =>
         (value && value >= 3 && value <= 7) || 'Значение должно быть от 3 до 7',
 
       customer: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+        validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       contactPerson: (value: string) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+        validation.checkIsEmptyValue(value) || 'Поле не заполнено',
 
       suitability: (value: number) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+        validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       budget: (value: number) =>
-        Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+        validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     },
     initialValues: {
       status: 'NEW',
@@ -79,62 +72,8 @@ watchImmediate(
     if (idea) {
       setValues({ ...idea })
 
-      const currentUser = user.value
-
-      if (currentUser?.token) {
-        const { token } = currentUser
-        const { id } = idea
-        const response = await IdeasService.getIdeaSkills(id, token)
-
-        if (response instanceof Error) {
-          return notificationsStore.createSystemNotification(
-            'Система',
-            response.message,
-          )
-        }
-
-        ideaSkills.value = response.skills
-      }
-    }
-  },
-)
-
-const handleSaveAndSendOnApproval = handleSubmit(async (values) => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isSendingOnApproval.value = true
-    const ideaResponse = await IdeasService.saveAndSendIdeaOnApproval(
-      { ...values, status: 'ON_APPROVAL' },
-      token,
-    )
-
-    if (ideaResponse instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        ideaResponse.message,
-      )
-    }
-
-    await saveIdeaSkills(ideaResponse.id, token, props.idea)
-    isSendingOnApproval.value = false
-
-    router.push({ name: 'ideas-list' })
-  }
-})
-
-const handleSaveDraftIdea = async () => {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const { valid } = await validateField('name')
-
-    if (valid) {
-      isSavingDraft.value = true
-      const response = await IdeasService.saveIdeaDraft(values, token)
+      const { id } = idea
+      const response = await IdeaService.getSkills(id)
 
       if (response instanceof Error) {
         return notificationsStore.createSystemNotification(
@@ -143,49 +82,70 @@ const handleSaveDraftIdea = async () => {
         )
       }
 
-      await saveIdeaSkills(response.id, token, props.idea)
-      isSavingDraft.value = false
-
-      router.push({ name: 'ideas-list' })
+      ideaSkills.value = response[0].skills
     }
+  },
+)
+
+const handleSaveAndSendOnApproval = handleSubmit(async (values) => {
+  isSendingOnApproval.value = true
+  const ideaResponse = await IdeaService.create({
+    ...values,
+    status: 'ON_APPROVAL',
+  })
+
+  if (ideaResponse instanceof Error) {
+    return notificationsStore.createSystemNotification(
+      'Система',
+      ideaResponse.message,
+    )
   }
-}
 
-const handleUpdateIdeaByAdmin = async () => {
-  const currentUser = user.value
+  await saveIdeaSkills(ideaResponse.id, props.idea)
+  isSendingOnApproval.value = false
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+  router.push({ name: 'ideas-list' })
+})
 
-    isUpdatingByAdmin.value = true
-    const response = await IdeasService.updateIdeaByAdmin(values, values.id, token)
+const handleSaveDraftIdea = async () => {
+  const { valid } = await validateField('name')
+
+  if (valid) {
+    isSavingDraft.value = true
+    const response = await IdeaService.createDraft(values)
 
     if (response instanceof Error) {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    await saveIdeaSkills(values.id, token, props.idea)
-    isUpdatingByAdmin.value = false
+    await saveIdeaSkills(response.id, props.idea)
+    isSavingDraft.value = false
 
     router.push({ name: 'ideas-list' })
   }
 }
 
-async function saveIdeaSkills(
-  ideaId: string,
-  token: string,
-  idea: Idea | undefined,
-) {
+const handleUpdateIdeaByAdmin = async () => {
+  isUpdatingByAdmin.value = true
+  const response = await IdeaService.updateByAdmin(values, values.id)
+
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
+  }
+
+  await saveIdeaSkills(values.id, props.idea)
+  isUpdatingByAdmin.value = false
+
+  router.push({ name: 'ideas-list' })
+}
+
+async function saveIdeaSkills(ideaId: string, idea: Idea | undefined) {
   const ideaSkills = {
     ideaId,
     skills: stackTechnologies.value,
   } as IdeaSkills
   if (idea) {
-    const ideaSkillsResponse = await IdeasService.updateIdeaSkills(
-      ideaId,
-      ideaSkills,
-      token,
-    )
+    const ideaSkillsResponse = await IdeaService.updateSkills(ideaId, ideaSkills)
 
     if (ideaSkillsResponse instanceof Error) {
       return notificationsStore.createSystemNotification(
@@ -194,7 +154,7 @@ async function saveIdeaSkills(
       )
     }
   } else {
-    const ideaSkillsResponse = await IdeasService.createIdeaSkills(ideaSkills, token)
+    const ideaSkillsResponse = await IdeaService.createSkills(ideaSkills)
 
     if (ideaSkillsResponse instanceof Error) {
       return notificationsStore.createSystemNotification(

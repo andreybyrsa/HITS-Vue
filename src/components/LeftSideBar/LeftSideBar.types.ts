@@ -1,8 +1,7 @@
+import { RolesTypes } from '@Domain'
 import { NavRoute } from '@Components/NavTab/NavTab.types'
 
-import RolesTypes from '@Domain/Roles'
-
-interface LeftSideBarTabType {
+export interface LeftSideBarTabType {
   name: string
   text: string
   to: string
@@ -10,5 +9,3 @@ interface LeftSideBarTabType {
   iconName: string
   roles: RolesTypes[]
 }
-
-export default LeftSideBarTabType

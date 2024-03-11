@@ -1,11 +1,8 @@
-import Colors from '@Domain/Colors'
+import { Colors } from '@Domain'
 
-interface LoadingSpinnerProps {
+export interface LoadingSpinnerProps {
   isLoading: boolean
-
   className?: string
   variant?: Colors
   size?: 'sm' | 'md'
 }
-
-export default LoadingSpinnerProps

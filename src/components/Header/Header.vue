@@ -2,21 +2,14 @@
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, RouteRecordRaw } from 'vue-router'
-
+import { useUserStore, useProfilesStore, useNotificationsStore } from '@Store'
+import { getUserRolesInfo, navigateToAliasRoute } from '@Utils'
+import { profileImage } from '@Assets'
 import Typography from '@Components/Typography/Typography.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import RoleModal from '@Components/Modals/RoleModal/RoleModal.vue'
 import Button from '@Components/Button/Button.vue'
 import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/NotificationModalWindow.vue'
-
-import useUserStore from '@Store/user/userStore'
-import useProfilesStore from '@Store/profiles/profilesStore'
-
-import { getUserRolesInfo } from '@Utils/userRolesInfo'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import { defProfile } from '@Assets/images'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -38,10 +31,9 @@ const isOpenedRoleModal = ref(false)
 onMounted(async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { id, token } = currentUser
-
-    await profilesStore.fetchProfileAvatar(id, token)
+  if (currentUser) {
+    const { id } = currentUser
+    await profilesStore.fetchProfileAvatar(id)
   }
 })
 
@@ -101,7 +93,7 @@ function handleCloseNotificationModal() {
         <img
           v-else
           class="text-secondary"
-          :src="defProfile"
+          :src="profileImage"
           width="58"
           height="58"
         />

@@ -1,10 +1,8 @@
-interface UsersGroupModalProps {
+export interface UsersGroupModalProps {
   isOpened: boolean
   usersGroupId?: string
 }
 
-interface UsersGroupModalEmits {
+export interface UsersGroupModalEmits {
   (event: 'close-modal'): void
 }
-
-export { UsersGroupModalProps, UsersGroupModalEmits }

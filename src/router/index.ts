@@ -1,44 +1,32 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
+import { useUserStore } from '@Store'
+import { getRouteByUserRole, localStorageUser } from '@Utils'
+import IdeaMarketModal from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.vue'
+import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
+import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
+import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import LoginView from '@Views/LoginView.vue'
 import RegisterView from '@Views/RegisterView.vue'
 import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
-import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-
 import UsersView from '@Views/Admin/UsersView.vue'
 import AddUsersView from '@Views/Admin/AddUsersView.vue'
 import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
 import SkillsView from '@Views/Admin/SkillsView.vue'
 import CompaniesView from '@Views/Admin/CompaniesView.vue'
-
 import IdeasView from '@Views/Ideas/IdeasView.vue'
-import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
-import IdeaMarketModal from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.vue'
 import NewIdeaView from '@Views/Ideas/NewIdeaView.vue'
 import EditIdeaView from '@Views/Ideas/EditIdeaView.vue'
-
 import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
-import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
-
 import MarketsView from '@Views/Markets/MarketsView.vue'
 import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
-
 import HomeView from '@Views/HomeView.vue'
-
 import ErrorView from '@Views/ErrorView.vue'
-
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
-
 import DevView from '@Views/DevView.vue'
-
-import useUserStore from '@Store/user/userStore'
-
-import LocalStorageUser from '@Utils/LocalStorageUser'
-import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -90,13 +78,23 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'teams-list',
         component: TeamsView,
-        meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
+        meta: {
+          roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN', 'PROJECT_OFFICE'],
+        },
         children: [
           {
             path: ':teamId',
             name: 'team',
             component: TeamModal,
-            meta: { roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'] },
+            meta: {
+              roles: [
+                'INITIATOR',
+                'TEAM_OWNER',
+                'MEMBER',
+                'ADMIN',
+                'PROJECT_OFFICE',
+              ],
+            },
           },
           {
             name: 'profile',
@@ -244,10 +242,10 @@ router.beforeEach((to) => {
   const userStore = useUserStore()
 
   const { user } = storeToRefs(userStore)
-  const localStorageUser = LocalStorageUser.getLocalStorageUser()
+  const lsUser = localStorageUser.getLocalStorageUser()
 
-  if (localStorageUser?.token && !user.value?.token) {
-    useUserStore().setUser(localStorageUser)
+  if (lsUser?.token && !user.value?.token) {
+    useUserStore().setUser(lsUser)
   }
 
   const currentRouteName = to.name?.toString() ?? ''
@@ -274,4 +272,4 @@ router.beforeEach((to) => {
   }
 })
 
-export default router
+export { router }

@@ -1,30 +1,14 @@
-<template>
-  <Table
-    class-name="px-3 pb-3 pt-1"
-    :data="ideaMarketTeams"
-    :columns="ideaMarketTeamColumns"
-    :search-by="['name']"
-    :dropdown-actions-menu="dropdownIdeaMarketTeamActions"
-    v-model="selectedTeam"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { useRouter, RouteRecordRaw } from 'vue-router'
-
-import Table from '@Components/Table/Table.vue'
-import IdeaMarketTeamsTableProps from '@Components/Tables/IdeaMarketTeamsTable/IdeaMarketTeamsTable.types'
+import { Skill, Team, TeamMember } from '@Domain'
+import { mutableSort, getSkillInfoStyle } from '@Utils'
+import { IdeaMarketTeamsTableProps } from '@Components/Tables/IdeaMarketTeamsTable/IdeaMarketTeamsTable.types'
 import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import Table from '@Components/Table/Table.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-
-import { Skill } from '@Domain/Skill'
-import { Team, TeamMember } from '@Domain/Team'
-
-import mutableSort from '@Utils/mutableSort'
-import { getSkillInfoStyle } from '@Utils/skillsInfo'
 
 const props = defineProps<IdeaMarketTeamsTableProps>()
 const skillsTeam = defineModel<Team>()
@@ -147,3 +131,14 @@ function navigateToLeaderProfile(team: Team) {
   }
 }
 </script>
+
+<template>
+  <Table
+    class-name="px-3 pb-3 pt-1"
+    :data="ideaMarketTeams"
+    :columns="ideaMarketTeamColumns"
+    :search-by="['name']"
+    :dropdown-actions-menu="dropdownIdeaMarketTeamActions"
+    v-model="selectedTeam"
+  />
+</template>

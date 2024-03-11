@@ -1,6 +1,6 @@
-import RolesTypes from '@Domain/Roles'
+import { RolesTypes } from '@Domain'
 
-interface User {
+export interface User {
   id: string
   token?: string
 
@@ -12,19 +12,22 @@ interface User {
   roles: RolesTypes[]
   role?: RolesTypes
   lastLogin?: Date
+
+  telephone: string
+  studyGroup: string
 }
 
-interface LoginUser {
+export interface LoginUser {
   email: string
   password: string
 }
 
-interface RegisterUser {
+export interface RegisterUser {
   email: string
   firstName: string
   lastName: string
   password: string
   roles: RolesTypes[]
+  telephone: string
+  studyGroup: string
 }
-
-export { User, LoginUser, RegisterUser }

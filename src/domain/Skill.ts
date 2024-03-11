@@ -1,6 +1,6 @@
-type SkillType = 'LANGUAGE' | 'FRAMEWORK' | 'DATABASE' | 'DEVOPS'
+export type SkillType = 'LANGUAGE' | 'FRAMEWORK' | 'DATABASE' | 'DEVOPS'
 
-interface Skill {
+export interface Skill {
   id: string
   name: string
   type: SkillType
@@ -9,5 +9,3 @@ interface Skill {
   updaterId?: string
   deleterId?: string
 }
-
-export { Skill, SkillType }

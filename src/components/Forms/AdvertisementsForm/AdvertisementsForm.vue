@@ -1,9 +1,8 @@
 <script setup lang="ts" generic="FormType">
 import { useForm } from 'vee-validate'
 import { string } from 'yup'
-
-import Typography from '@Components/Typography/Typography.vue'
 import { AdvertisementsFormProps } from '@Components/Forms/AdvertisementsForm/AdvertisementsForm.types'
+import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 
@@ -19,7 +18,7 @@ const { handleSubmit, resetForm } = useForm<FormType>({
 })
 
 const handleSendAdvertisement = handleSubmit(async (values) => {
-  await props.handleSendAdvertisement(values)
+  await props.handleSendAdvertisement(values as any)
 
   resetForm()
 })

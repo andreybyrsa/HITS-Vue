@@ -2,21 +2,15 @@
 import { ref } from 'vue'
 import { RouteRecordRaw, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
-import { MODE } from '@Main'
-
+import { MODE } from '@Config'
+import { useUserStore } from '@Store'
+import { getIdeaStatus, navigateToAliasRoute } from '@Utils'
+import { IdeaInfoProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
+import { modeButtons } from '@Components/Modals/IdeaModal/IdeaInfo.types'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
-import { IdeaInfoProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
 import Button from '@Components/Button/Button.vue'
 import Profile from '@Components/Modals/ProfileModal/ProfileModal.vue'
-
-import useUserStore from '@Store/user/userStore'
-
-import modeButtons from '@Components/Modals/IdeaModal/IdeaInfo.types'
-
-import { getIdeaStatus } from '@Utils/ideaStatus'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const props = defineProps<IdeaInfoProps>()
 
@@ -70,7 +64,7 @@ function getIdeaModalStatus() {
     return `Утвердили ${confirmedRatings}/${expertRatings.length}`
   }
 
-  return status.translatedStatus[idea.status]
+  return status.translatedStatus[idea.status as keyof typeof status.translatedStatus]
 }
 
 function getExpertRatingicon(isConfirmed: boolean) {

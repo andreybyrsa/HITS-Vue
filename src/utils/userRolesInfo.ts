@@ -1,5 +1,5 @@
-import RolesTypes from '@Domain/Roles'
 import { RouteLocationRaw } from 'vue-router'
+import { RolesTypes } from '@Domain'
 
 interface GetUserRolesType {
   roles: RolesTypes[]
@@ -11,7 +11,7 @@ interface GetUserRolesType {
   }
 }
 
-function getUserRolesInfo(): GetUserRolesType {
+export function getUserRolesInfo(): GetUserRolesType {
   return {
     roles: [
       'INITIATOR',
@@ -40,7 +40,7 @@ function getUserRolesInfo(): GetUserRolesType {
   }
 }
 
-function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
+export function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
   const currentRole = roles[index]
   const initialClass = [
     'px-2',
@@ -71,7 +71,7 @@ function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
 }
 
 // !котятки, не забываем следить за этой функцией, при добовлении новых ролей, чтобы нормально редиректило, иначе будет критический баг, спасибо))
-function getRouteByUserRole(
+export function getRouteByUserRole(
   currentRole: RolesTypes | RolesTypes[],
 ): RouteLocationRaw {
   const teamList = ['TEAM_OWNER', 'TEAM_LEADER']
@@ -92,5 +92,3 @@ function getRouteByUserRole(
 
   return { name: 'ideas-list' }
 }
-
-export { getUserRolesInfo, getUserRoleInfoStyle, getRouteByUserRole }

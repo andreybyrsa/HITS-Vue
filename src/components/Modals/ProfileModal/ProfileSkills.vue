@@ -3,17 +3,13 @@ import { ref, computed } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
-
+import { Skill } from '@Domain'
+import { useUserStore, useProfilesStore } from '@Store'
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import StackCategories from '@Components/StackCategories/StackCategories.vue'
 import SkillsRadarCharts from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
-import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
-
-import { Skill } from '@Domain/Skill'
-
-import useUserStore from '@Store/user/userStore'
-import useProfilesStore from '@Store/profiles/profilesStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -49,11 +45,11 @@ function toogleUpdatingSkills(value: boolean) {
 const handleSaveSkills = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token, id } = currentUser
+  if (currentUser) {
+    const { id } = currentUser
 
     await profilesStore
-      .saveProfileSkills(id, selectedSkills.value, token)
+      .saveProfileSkills(id, selectedSkills.value)
       .then(() => toogleUpdatingSkills(false))
   }
 }

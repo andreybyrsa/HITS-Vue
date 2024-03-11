@@ -1,48 +1,37 @@
 import { VueElement } from 'vue'
+import { Idea, IdeaSkills, Rating } from '@Domain'
 
-import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
-
-interface IdeaModalProps {
+export interface IdeaModalProps {
   canGoBack?: boolean
 }
 
-interface IdeaDescriptionProps {
+export interface IdeaDescriptionProps {
   idea: Idea
   ideaSkills?: IdeaSkills
 }
 
-interface IdeaActionsProps {
+export interface IdeaActionsProps {
   idea: Idea
 }
 
-interface IdeaCommentsProps {
+export interface IdeaCommentsProps {
   idea: Idea
 
   ideaModalRef: VueElement | null
 }
 
-interface IdeaInfoProps {
+export interface IdeaInfoProps {
   idea: Idea
   expertRatings?: Rating[]
 }
 
-interface IdeaDescriptionEmits {
+export interface IdeaDescriptionEmits {
   (event: 'close-modal'): void
 }
 
-interface IdeaModalCollapseType {
+export interface IdeaModalCollapseType {
   key: string
   id: string
   ideaKey: keyof Idea
   text: string
-}
-
-export {
-  IdeaModalProps,
-  IdeaDescriptionProps,
-  IdeaActionsProps,
-  IdeaCommentsProps,
-  IdeaInfoProps,
-  IdeaDescriptionEmits,
-  IdeaModalCollapseType,
 }

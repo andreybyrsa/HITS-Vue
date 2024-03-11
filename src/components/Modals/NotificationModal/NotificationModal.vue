@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { computed, onMounted } from 'vue'
-
-import Button from '@Components/Button/Button.vue'
 import {
   NotificationModalProps,
   NotificationModalEmits,
 } from '@Components/Modals/NotificationModal/NotificationModal.types'
+import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
 const props = defineProps<NotificationModalProps>()

@@ -1,28 +1,14 @@
-<template>
-  <Table
-    class-name="px-3 pb-3 pt-1"
-    :data="teamMembers"
-    :columns="teamMemberColumns"
-    :search-by="['email', 'firstName', 'lastName']"
-    :dropdown-actions-menu="dropdownTeamMemberActions"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { useRouter, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
-import Table from '@Components/Table/Table.vue'
+import { TeamMember } from '@Domain'
+import { useTeamStore, useUserStore } from '@Store'
 import { TeamMembersProps } from '@Components/Modals/TeamModal/TeamModal.types'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
+import Table from '@Components/Table/Table.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-
-import { TeamMember } from '@Domain/Team'
-
-import useUserStore from '@Store/user/userStore'
-import useTeamStore from '@Store/teams/teamsStore'
 
 const props = defineProps<TeamMembersProps>()
 
@@ -143,36 +129,18 @@ function navigateToUserProfile(teamMember: TeamMember) {
 }
 
 async function kickTeamMember(teamMember: TeamMember) {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = props.team
-
-    await teamsStore.kickTeamMember(id, teamMember.id, token)
-  }
+  const { id } = props.team
+  await teamsStore.kickTeamMember(id, teamMember.id)
 }
 
 async function appointLeaderTeam(teamMember: TeamMember) {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id } = props.team
-
-    await teamsStore.changeLeaderTeamMember(id, teamMember, token)
-  }
+  const { id } = props.team
+  await teamsStore.changeLeaderTeamMember(id, teamMember)
 }
 
 async function switchLeaderToOwner() {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const { id, owner } = props.team
-
-    await teamsStore.changeLeaderTeamMember(id, owner, token)
-  }
+  const { id, owner } = props.team
+  await teamsStore.changeLeaderTeamMember(id, owner)
 }
 
 function checkManageMemberDropdownAction(teamMember: TeamMember) {
@@ -181,7 +149,7 @@ function checkManageMemberDropdownAction(teamMember: TeamMember) {
 
   return (
     (currentUser?.id === owner.id &&
-      currentUser.role === 'TEAM_OWNER' &&
+      currentUser?.role === 'TEAM_OWNER' &&
       teamMember.id !== owner.id &&
       teamMember.id !== leader?.id) ||
     currentUser?.role === 'ADMIN'
@@ -194,10 +162,20 @@ function checkRemoveLeaderRole(teamMember: TeamMember) {
 
   return (
     (currentUser?.id === owner.id &&
-      currentUser.role === 'TEAM_OWNER' &&
+      currentUser?.role === 'TEAM_OWNER' &&
       teamMember.id !== owner.id &&
       teamMember.id === leader?.id) ||
     currentUser?.role === 'ADMIN'
   )
 }
 </script>
+
+<template>
+  <Table
+    class-name="px-3 pb-3 pt-1"
+    :data="teamMembers"
+    :columns="teamMemberColumns"
+    :search-by="['email', 'firstName', 'lastName']"
+    :dropdown-actions-menu="dropdownTeamMemberActions"
+  />
+</template>

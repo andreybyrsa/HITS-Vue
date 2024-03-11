@@ -1,3 +1,32 @@
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { UsersGroup } from '@Domain'
+import { UsersGroupsService } from '@Service'
+import { useNotificationsStore } from '@Store'
+import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
+import UsersGroupsTable from '@Components/Tables/UsersGroupsTable/UsersGroupsTable.vue'
+import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
+import Header from '@Components/Header/Header.vue'
+import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+
+const notificationsStore = useNotificationsStore()
+
+const usersGroups = ref<UsersGroup[]>()
+
+onMounted(async () => {
+  const responseGroups = await UsersGroupsService.getUsersGroups()
+
+  if (responseGroups instanceof Error) {
+    return notificationsStore.createSystemNotification(
+      'Система',
+      responseGroups.message,
+    )
+  }
+
+  usersGroups.value = responseGroups
+})
+</script>
+
 <template>
   <PageLayout
     content-wrapper-class-name="bg-white"
@@ -22,49 +51,6 @@
     </template>
   </PageLayout>
 </template>
-
-<script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
-
-import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
-import UsersGroupsTable from '@Components/Tables/UsersGroupsTable/UsersGroupsTable.vue'
-import TablePlaceholder from '@Components/Table/TablePlaceholder.vue'
-import Header from '@Components/Header/Header.vue'
-
-import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
-import UsersGroup from '@Domain/UsersGroup'
-
-import UsersGroupsService from '@Services/UsersGroupsService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-const notificationsStore = useNotificationsStore()
-
-const usersGroups = ref<UsersGroup[]>()
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const responseGroups = await UsersGroupsService.getUsersGroups(token)
-
-    if (responseGroups instanceof Error) {
-      return notificationsStore.createSystemNotification(
-        'Система',
-        responseGroups.message,
-      )
-    }
-
-    usersGroups.value = responseGroups
-  }
-})
-</script>
 
 <style lang="scss">
 .users-groups-view {

@@ -1,13 +1,10 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-
+import { Change } from '@Views/LastActivityNote/LastActivityNote.types'
 import LastActivityNoteTable from '@Views/LastActivityNote/LastActivityNoteTable.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Typography from '@Components/Typography/Typography.vue'
-
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
-
-import { Change } from '@Views/LastActivityNote/LastActivityNote.types'
 
 const changes = ref<Change[]>([])
 

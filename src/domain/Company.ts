@@ -1,10 +1,8 @@
-import { User } from '@Domain/User'
+import { User } from '@Domain'
 
-interface Company {
+export interface Company {
   id: string
   name: string
   owner: User
   users: User[]
 }
-
-export default Company

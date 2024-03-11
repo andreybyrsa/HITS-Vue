@@ -1,19 +1,19 @@
-import { Skill } from '@Domain/Skill'
-import { Team } from '@Domain/Team'
+import { Skill, Team } from '@Domain'
 
-interface TeamFormProps {
+export interface TeamFormProps {
   team?: Team
 }
-interface SkillsRadarChartsProps {
+
+export interface SkillsRadarChartsProps {
   skills: Skill[]
   className?: string
 }
 
-interface TeamProps {
+export interface TeamProps {
   team?: Team
 }
 
-interface TeamEmits {
+export interface TeamEmits {
   (
     event: 'set-value',
     field: keyof Team,
@@ -21,5 +21,3 @@ interface TeamEmits {
     shouldValidate?: boolean,
   ): void
 }
-
-export { TeamFormProps, SkillsRadarChartsProps, TeamProps, TeamEmits }

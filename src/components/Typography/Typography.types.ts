@@ -1,6 +1,4 @@
-interface TypographyProps {
+export interface TypographyProps {
   className?: string
   hint?: string
 }
-
-export default TypographyProps

@@ -1,13 +1,11 @@
-import { ProjectMember } from '@Domain/Project'
+import { ProjectMember } from '@Domain'
 
-interface ProjectExprienceModalProps {
+export interface ProjectExprienceModalProps {
   isOpened: boolean
   teamName: string
   teamProject: ProjectMember[]
 }
 
-interface RequestToIdeaModalEmits {
+export interface RequestToIdeaModalEmits {
   (event: 'close-modal'): void
 }
-
-export { RequestToIdeaModalEmits, ProjectExprienceModalProps }

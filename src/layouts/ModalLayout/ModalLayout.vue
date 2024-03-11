@@ -1,13 +1,11 @@
 <script lang="ts" setup>
 import { computed, ref, VueElement } from 'vue'
 import { useEventListener } from '@vueuse/core'
-
+import { HTMLTargetEvent } from '@Domain'
 import {
   ModalLayoutProps,
   ModalLayoutEmits,
 } from '@Layouts/ModalLayout/ModalLayout.types'
-
-import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 const props = defineProps<ModalLayoutProps>()
 

@@ -1,15 +1,15 @@
-import { User } from '@Domain/User'
+import { User } from '@Domain'
 
-interface EditUserModalProps {
+export interface EditUserModalProps {
   isOpened: boolean
   user: User | null
 }
 
-interface EditUserModalEmits {
+export interface EditUserModalEmits {
   (event: 'close-modal'): void
 }
 
-interface EditUserInputType {
+export interface EditUserInputType {
   id: number
   type?: string
   name: 'email' | 'firstName' | 'lastName'
@@ -17,5 +17,3 @@ interface EditUserInputType {
   prepend?: string
   prependIconName?: string
 }
-
-export { EditUserModalProps, EditUserModalEmits, EditUserInputType }

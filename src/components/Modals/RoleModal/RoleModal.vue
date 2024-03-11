@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-
+import { RolesTypes } from '@Domain'
+import { useUserStore } from '@Store'
+import { getUserRolesInfo, getRouteByUserRole } from '@Utils'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
@@ -9,12 +11,6 @@ import {
   RoleModalProps,
   RoleModalEmits,
 } from '@Components/Modals/RoleModal/RoleModal.types'
-
-import RolesTypes from '@Domain/Roles'
-
-import useUserStore from '@Store/user/userStore'
-
-import { getUserRolesInfo, getRouteByUserRole } from '@Utils/userRolesInfo'
 
 defineProps<RoleModalProps>()
 

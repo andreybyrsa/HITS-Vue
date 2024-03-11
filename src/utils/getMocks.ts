@@ -1,35 +1,41 @@
-import { User } from '@Domain/User'
-import { Profile } from '@Domain/Profile'
-import UsersGroup from '@Domain/UsersGroup'
-import Company from '@Domain/Company'
-import UsersSkills from '@Domain/UsersSkills'
-import { Skill } from '@Domain/Skill'
-import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
-import Comment from '@Domain/Comment'
 import {
+  User,
+  Profile,
+  UsersGroup,
+  Company,
+  UsersSkills,
+  Idea,
+  IdeaSkills,
+  Rating,
+  Skill,
+  Comment,
   RequestToTeam,
   Team,
   TeamExperience,
   TeamInvitation,
   TeamMember,
   TeamSkills,
-} from '@Domain/Team'
-import Notification from '@Domain/Notification'
-import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
-import { Market } from '@Domain/Market'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Project, ProjectMember } from '@Domain/Project'
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
+  Notification,
+  IdeaMarket,
+  IdeaMarketAdvertisement,
+  Market,
+  RequestTeamToIdea,
+  Project,
+  ProjectMember,
+  InvitationTeamToIdea,
+} from '@Domain'
 
 export const usersMocks: User[] = [
   {
-    id: '126288eb-9d4d-4074-9c87-6e4a566ef8f9',
+    id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
     token: '10296538',
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
     lastName: 'Власов',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '1111111111',
+    studyGroup: 'AAAA-22-1',
   },
   {
     id: '1',
@@ -39,6 +45,8 @@ export const usersMocks: User[] = [
     lastName: 'Иванович',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '22222222222',
+    studyGroup: 'BBBB-22-1',
   },
   {
     id: '2',
@@ -48,6 +56,8 @@ export const usersMocks: User[] = [
     lastName: 'Менеджер',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '33333333333',
+    studyGroup: 'CCCC-22-1',
   },
   {
     id: '3',
@@ -57,6 +67,8 @@ export const usersMocks: User[] = [
     lastName: 'Владелец',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '44444444444',
+    studyGroup: 'DDDD-22-1',
   },
   {
     id: '4',
@@ -66,6 +78,8 @@ export const usersMocks: User[] = [
     lastName: 'Загрев',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '55555555555',
+    studyGroup: 'EEEE-22-1',
   },
   {
     id: '5',
@@ -75,6 +89,8 @@ export const usersMocks: User[] = [
     lastName: 'Кустерман',
     roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER'],
     createdAt: '2023-10-20T11:02:17Z',
+    telephone: '66666666666',
+    studyGroup: 'FFFF-22-1',
   },
   // {
   //   id: '6',

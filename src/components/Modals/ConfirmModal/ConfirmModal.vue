@@ -1,14 +1,13 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
-
-import Button from '@Components/Button/Button.vue'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import {
   ConfirmModalEmits,
   ConfirmModalProps,
 } from '@Components/Modals/ConfirmModal/ConfirmModal.types'
+import Button from '@Components/Button/Button.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 defineProps<ConfirmModalProps>()
 

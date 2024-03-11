@@ -1,26 +1,15 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-
+import { useNotificationsStore } from '@Store'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 import NotificationTab from '@Components/Modals/NotificationModalWindow/NotificationTab.vue'
 
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import useUserStore from '@Store/user/userStore'
-
 const notificationsStore = useNotificationsStore()
 const { getUnreadedNotifications } = storeToRefs(notificationsStore)
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
 const markAllAsRead = async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    await notificationsStore.readAllNotifications(token)
-  }
+  await notificationsStore.readAllNotifications()
 }
 </script>
 

@@ -1,6 +1,6 @@
-import LeftSideBarTabType from '@Components/LeftSideBar/LeftSideBar.types'
+import { LeftSideBarTabType } from '@Components/LeftSideBar/LeftSideBar.types'
 
-const leftSideBarTabs: LeftSideBarTabType[] = [
+export const leftSideBarTabs: LeftSideBarTabType[] = [
   {
     name: 'ideas',
     text: 'Реестр идей',
@@ -34,7 +34,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Список команд',
         to: '/teams/list',
         iconName: 'bi bi-list',
-        roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'],
+        roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN', 'PROJECT_OFFICE'],
       },
       {
         name: 'create-team',
@@ -45,7 +45,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
     ],
     iconName: 'bi bi-people',
-    roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN'],
+    roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN', 'PROJECT_OFFICE'],
   },
   {
     name: 'markets',
@@ -108,5 +108,3 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     roles: ['ADMIN'],
   },
 ]
-
-export default leftSideBarTabs

@@ -1,77 +1,65 @@
 import { VueElement } from 'vue'
+import {
+  IdeaMarket,
+  RequestTeamToIdea,
+  Skill,
+  Market,
+  InvitationTeamToIdea,
+} from '@Domain'
 
-import { IdeaMarket } from '@Domain/IdeaMarket'
-import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Skill } from '@Domain/Skill'
-import { Market } from '@Domain/Market'
-import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
-
-interface IdeaMarketModalProps {
+export interface IdeaMarketModalProps {
   isOpened: boolean
   canGoBack?: boolean
 }
 
-interface IdeaMarketDescriptionProps {
+export interface IdeaMarketDescriptionProps {
   ideaMarket: IdeaMarket
 }
 
-interface IdeaMarketTablesProps {
+export interface IdeaMarketTablesProps {
   ideaMarket: IdeaMarket
   requestTeams?: RequestTeamToIdea[]
   invitationsToTeams?: InvitationTeamToIdea[]
 }
 
-interface IdeaMarketInfoProps {
+export interface IdeaMarketInfoProps {
   market: Market
   ideaMarket: IdeaMarket
 }
 
-interface IdeaMarketCollapseType {
+export interface IdeaMarketCollapseType {
   key: number
   id: number
   ideaKey: keyof IdeaMarket
   text: string
 }
 
-interface IdeaMarketTabType {
+export interface IdeaMarketTabType {
   id: string
   key: keyof IdeaMarket | keyof Market
   name: string
   icon: string
 }
 
-interface IdeaMarketAdvertsProps {
+export interface IdeaMarketAdvertsProps {
   ideaMarket: IdeaMarket
 
   ideaMarketModalRef: VueElement | null
 }
 
-interface IdeaMarketRightSideProps {
+export interface IdeaMarketRightSideProps {
   market: Market
   idea: IdeaMarket
   skills: Skill[]
   skillsTeam?: Skill[]
 }
 
-interface IdeaMarketSkillsProps {
+export interface IdeaMarketSkillsProps {
   skills: Skill[]
   skillsTeam?: Skill[]
   idea: IdeaMarket
 }
 
-interface IdeaMarketModalEmits {
+export interface IdeaMarketModalEmits {
   (event: 'close-modal'): void
-}
-
-export {
-  IdeaMarketModalProps,
-  IdeaMarketDescriptionProps,
-  IdeaMarketTablesProps,
-  IdeaMarketAdvertsProps,
-  IdeaMarketInfoProps,
-  IdeaMarketCollapseType,
-  IdeaMarketTabType,
-  IdeaMarketSkillsProps,
-  IdeaMarketRightSideProps,
-  IdeaMarketModalEmits,
 }

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import RegisterForm from '@Components/Forms/RegisterForm/RegisterForm.vue'
-
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 </script>
 

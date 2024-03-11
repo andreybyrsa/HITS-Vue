@@ -2,26 +2,19 @@
 import { ref } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
-
-import Button from '@Components/Button/Button.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
-import Typography from '@Components/Typography/Typography.vue'
+import { NewEmailForm } from '@Domain'
+import { useUserStore, useNotificationsStore } from '@Store'
+import { InviteService } from '@Service'
+import { validation } from '@Utils'
 import {
   NewEmailRequestProps,
   NewEmailRequestEmits,
 } from '@Components/Modals/NewEmailRequestModal/NewEmailRequest.types'
-
 import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-
-import { NewEmailForm } from '@Domain/Invitation'
-
-import InvitationService from '@Services/InvitationService'
-
-import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-import Validation from '@Utils/Validation'
+import Button from '@Components/Button/Button.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
+import Typography from '@Components/Typography/Typography.vue'
 
 defineProps<NewEmailRequestProps>()
 const emit = defineEmits<NewEmailRequestEmits>()
@@ -36,33 +29,27 @@ const isLoading = ref(false)
 const { handleSubmit } = useForm<NewEmailForm>({
   validationSchema: {
     newEmail: (value: string) =>
-      Validation.checkEmail(value) || 'Неверно введена почта',
+      validation.checkEmail(value) || 'Неверно введена почта',
     oldEmail: (value: string) =>
-      Validation.checkEmail(value) || 'Неверно введена почта',
+      validation.checkEmail(value) || 'Неверно введена почта',
   },
   initialValues: { oldEmail: user.value?.email },
 })
 
 const sendChangingUrl = handleSubmit(async (values) => {
-  const currentUser = user.value
+  isLoading.value = true
+  const response = await InviteService.sendUrlToChangeEmail(values)
+  isLoading.value = false
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    isLoading.value = true
-    const response = await InvitationService.sendUrlToChangeEmail(values, token)
-    isLoading.value = false
-
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    notificationsStore.createSystemNotification(
-      'Система',
-      'Ссылка для изменения почты отправлена на новую почту',
-    )
-    emit('close-modal')
+  if (response instanceof Error) {
+    return notificationsStore.createSystemNotification('Система', response.message)
   }
+
+  notificationsStore.createSystemNotification(
+    'Система',
+    'Ссылка для изменения почты отправлена на новую почту',
+  )
+  emit('close-modal')
 })
 </script>
 
@@ -125,3 +112,4 @@ const sendChangingUrl = handleSubmit(async (values) => {
   transform: scale(0.9);
 }
 </style>
+@Utils/validation

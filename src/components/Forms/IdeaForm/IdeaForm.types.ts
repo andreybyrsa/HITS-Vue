@@ -1,9 +1,6 @@
-import { Idea } from '@Domain/Idea'
+import { Idea } from '@Domain'
 
-interface IdeaForm {
+export interface IdeaForm {
   title: string
-
   idea?: Idea
 }
-
-export default IdeaForm

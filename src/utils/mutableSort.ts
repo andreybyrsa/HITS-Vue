@@ -2,7 +2,7 @@ import { ref } from 'vue'
 
 const isSorted = ref<boolean>(false)
 
-function mutableSort<DataType>(
+export function mutableSort<DataType>(
   data: DataType[],
   getCompariedValue: (data: DataType) => number | null,
 ) {
@@ -22,5 +22,3 @@ function mutableSort<DataType>(
   })
   isSorted.value = !isSorted.value
 }
-
-export default mutableSort

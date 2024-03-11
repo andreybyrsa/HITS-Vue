@@ -1,15 +1,14 @@
 <script lang="ts" setup>
+import { Idea } from '@Domain'
 import {
   IdeaDescriptionProps,
   IdeaDescriptionEmits,
 } from '@Components/Modals/IdeaModal/IdeaModal.types'
-import ideaModalCollapses from '@Components/Modals/IdeaModal/IdeaModalCollapses'
+import { ideaModalCollapses } from '@Components/Modals/IdeaModal/IdeaModalCollapses'
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Skills from '@Components/Skills/Skills.vue'
-
-import { Idea } from '@Domain/Idea'
 
 defineProps<IdeaDescriptionProps>()
 const emit = defineEmits<IdeaDescriptionEmits>()

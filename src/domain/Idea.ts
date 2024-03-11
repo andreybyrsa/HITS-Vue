@@ -1,8 +1,6 @@
-import UsersGroup from '@Domain/UsersGroup'
-import { Skill } from '@Domain/Skill'
-import { User } from '@Domain/User'
+import { UsersGroup, Skill, User } from '@Domain'
 
-type IdeaStatusType =
+export type IdeaStatusType =
   | 'NEW'
   | 'ON_EDITING'
   | 'ON_APPROVAL'
@@ -10,7 +8,7 @@ type IdeaStatusType =
   | 'CONFIRMED'
   | 'ON_MARKET'
 
-interface Idea {
+export interface Idea {
   id: string
   initiator: User
   createdAt: string
@@ -39,7 +37,7 @@ interface Idea {
   isActive: boolean
 }
 
-interface Rating {
+export interface Rating {
   id: string
   ideaId: string
   expertId: string
@@ -55,9 +53,7 @@ interface Rating {
   isConfirmed: boolean
 }
 
-interface IdeaSkills {
+export interface IdeaSkills {
   ideaId: string
   skills: Skill[]
 }
-
-export { Idea, IdeaStatusType, Rating, IdeaSkills }

@@ -1,13 +1,11 @@
-import { User } from '@Domain/User'
+import { User } from '@Domain'
 
-interface ProfileModalProps {
+export interface ProfileModalProps {
   canGoBack?: boolean
 }
 
-interface ProfileAvatarProps {
+export interface ProfileAvatarProps {
   user: User
   avatar: FormData
   status: boolean
 }
-
-export { ProfileModalProps, ProfileAvatarProps }

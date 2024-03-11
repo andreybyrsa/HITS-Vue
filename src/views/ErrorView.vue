@@ -1,11 +1,8 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
-
-import { develop } from '@Assets/images'
-
+import { supportImage } from '@Assets'
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
-
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
 const router = useRouter()
@@ -19,7 +16,7 @@ function navigateToHomePage() {
   <PageLayout content-class-name="error-view__content">
     <template #content>
       <img
-        :src="develop"
+        :src="supportImage"
         alt="Ошибка"
         class="error-view__img"
       />

@@ -1,6 +1,6 @@
-import RegisterInputType from './RegisterForm.types'
+import { RegisterInputType } from './RegisterForm.types'
 
-const registerInputs: RegisterInputType[] = [
+export const registerInputs: RegisterInputType[] = [
   {
     key: 'email',
     type: 'email',
@@ -22,6 +22,19 @@ const registerInputs: RegisterInputType[] = [
     prependIcon: 'bi bi-fonts',
   },
   {
+    key: 'telephone',
+    type: 'tel',
+    name: 'telephone',
+    placeholder: '+7 (___)-___-__-__',
+    prependIcon: 'bi bi-telephone',
+  },
+  {
+    key: 'studyGroup',
+    name: 'studyGroup',
+    placeholder: 'Введите номер группы',
+    prependIcon: 'bi bi-people',
+  },
+  {
     key: 'password',
     type: 'password',
     name: 'password',
@@ -29,5 +42,3 @@ const registerInputs: RegisterInputType[] = [
     prependIcon: 'bi bi-key',
   },
 ]
-
-export default registerInputs

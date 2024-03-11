@@ -1,4 +1,4 @@
-import { IdeaStatusType } from '@Domain/Idea'
+import { IdeaStatusType } from '@Domain'
 
 interface GetIdeaStatusType {
   status: IdeaStatusType[]
@@ -7,7 +7,7 @@ interface GetIdeaStatusType {
   }
 }
 
-function getIdeaStatus(): GetIdeaStatusType {
+export function getIdeaStatus(): GetIdeaStatusType {
   return {
     status: [
       'NEW',
@@ -28,7 +28,7 @@ function getIdeaStatus(): GetIdeaStatusType {
   }
 }
 
-function getIdeaStatusStyle(status: IdeaStatusType) {
+export function getIdeaStatusStyle(status: IdeaStatusType) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
 
   if (status === 'NEW') {
@@ -51,5 +51,3 @@ function getIdeaStatusStyle(status: IdeaStatusType) {
     return initialClass
   }
 }
-
-export { getIdeaStatus, getIdeaStatusStyle }

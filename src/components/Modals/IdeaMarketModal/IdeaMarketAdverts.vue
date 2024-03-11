@@ -1,17 +1,13 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { vIntersectionObserver } from '@vueuse/components'
-
+import { IdeaMarketAdvertisement } from '@Domain'
+import { useUserStore, useIdeaMarketAdvertisementsStore } from '@Store'
 import { IdeaMarketAdvertsProps } from '@Components/Modals/IdeaMarketModal/IdeaMarketModal.types'
-import MarketAdvertisementsPlaceholder from '@Components/Modals/IdeaMarketModal/IdeaMarketModalPlaceholder.vue'
-import Advertisement from '@Components/Advertisement/Advertisement.vue'
-import AdvertisementsForm from '@Components/Forms/AdvertisementsForm/AdvertisementsForm.vue'
 import { Action } from '@Components/ActionsList/ActionsList.types'
-
-import { IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
-
-import useUserStore from '@Store/user/userStore'
-import useIdeaMarketAdvertisementsStore from '@Store/ideaMarketAdvertisements/ideaMarketAdvertisementsStore'
+import MarketAdvertisementsPlaceholder from '@Components/Modals/IdeaMarketModal/IdeaMarketModalPlaceholder.vue'
+import AdvertisementsForm from '@Components/Forms/AdvertisementsForm/AdvertisementsForm.vue'
+import Advertisement from '@Components/Advertisement/Advertisement.vue'
 
 const props = defineProps<IdeaMarketAdvertsProps>()
 
@@ -38,11 +34,8 @@ const advertisementDropdownActions: Action<IdeaMarketAdvertisement>[] = [
 ]
 
 async function handleSendAdvertisement(values: IdeaMarketAdvertisement) {
-  const currentUser = user.value
-
-  if (currentUser?.token && props.ideaMarket) {
-    const { token } = currentUser
-    await ideaMarketAdvertisementsStore.postIdeaMarketAdvertisement(values, token)
+  if (props.ideaMarket) {
+    await ideaMarketAdvertisementsStore.postIdeaMarketAdvertisement(values)
 
     props.ideaMarketModalRef?.scrollTo({
       top: props.ideaMarketModalRef.scrollHeight,
@@ -52,12 +45,9 @@ async function handleSendAdvertisement(values: IdeaMarketAdvertisement) {
 }
 
 async function handleDeleteAdvertisement(advertisement?: IdeaMarketAdvertisement) {
-  const currentUser = user.value
-
-  if (currentUser?.token && advertisement) {
-    const { token } = currentUser
+  if (advertisement) {
     const { id } = advertisement
-    await ideaMarketAdvertisementsStore.deleteIdeaMarketAdvertisement(id, token)
+    await ideaMarketAdvertisementsStore.deleteIdeaMarketAdvertisement(id)
   }
 }
 
@@ -66,12 +56,11 @@ const handleCheckAdvertisement = async (
 ) => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token, email } = currentUser
+  if (currentUser) {
+    const { email } = currentUser
     await ideaMarketAdvertisementsStore.checkIdeaMarketAdvertisement(
       ideaMarketAdvertisement,
       email,
-      token,
     )
   }
 }

@@ -1,8 +1,13 @@
-import { Skill } from '@Domain/Skill'
+import { Skill } from '@Domain'
 
-type RequestToIdeaStatus = 'NEW' | 'ACCEPTED' | 'CANCELED' | 'ANNULLED' | 'WITHDRAWN'
+export type RequestToIdeaStatus =
+  | 'NEW'
+  | 'ACCEPTED'
+  | 'CANCELED'
+  | 'ANNULLED'
+  | 'WITHDRAWN'
 
-interface RequestTeamToIdea {
+export interface RequestTeamToIdea {
   ideaMarketId: string
   status: RequestToIdeaStatus
   letter: string
@@ -14,5 +19,3 @@ interface RequestTeamToIdea {
   membersCount: number
   skills: Skill[]
 }
-
-export { RequestTeamToIdea, RequestToIdeaStatus }

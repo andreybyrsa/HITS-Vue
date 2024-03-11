@@ -1,4 +1,4 @@
-type Colors =
+export type Colors =
   | 'primary'
   | 'secondary'
   | 'success'
@@ -10,5 +10,3 @@ type Colors =
   | 'close'
   | 'mute'
   | 'link'
-
-export default Colors

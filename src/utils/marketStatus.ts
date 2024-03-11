@@ -1,4 +1,4 @@
-import { MarketStatus } from '@Domain/Market'
+import { MarketStatus } from '@Domain'
 
 interface GetMarketStatusType {
   status: MarketStatus[]
@@ -7,7 +7,7 @@ interface GetMarketStatusType {
   }
 }
 
-function getMarketStatus(): GetMarketStatusType {
+export function getMarketStatus(): GetMarketStatusType {
   return {
     status: ['NEW', 'ACTIVE', 'DONE'],
     translatedStatus: {
@@ -18,7 +18,7 @@ function getMarketStatus(): GetMarketStatusType {
   }
 }
 
-function getMarketStatusStyle(status: MarketStatus) {
+export function getMarketStatusStyle(status: MarketStatus) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
 
   if (status === 'NEW') {
@@ -36,5 +36,3 @@ function getMarketStatusStyle(status: MarketStatus) {
     return initialClass
   }
 }
-
-export { getMarketStatus, getMarketStatusStyle }

@@ -1,8 +1,7 @@
 import { Ref, ref, watch } from 'vue'
+import { useNotification } from '@Hooks'
 
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-
-interface RequestConfig {
+export interface RequestConfig {
   request: () => Promise<unknown>
   refValue: Ref<unknown>
   statement?: boolean
@@ -15,7 +14,7 @@ interface ResolvedRequest extends RequestConfig {
   value: unknown
 }
 
-async function sendParallelRequests(parallelRequests: RequestConfig[]) {
+export async function sendParallelRequests(parallelRequests: RequestConfig[]) {
   const handledRequests = ref(0)
   const resolvedRequests: ResolvedRequest[] = []
 
@@ -71,10 +70,6 @@ async function sendParallelRequests(parallelRequests: RequestConfig[]) {
   })
 }
 
-function openErrorNotification(error: Error) {
-  const notificationsStore = useNotificationsStore()
-
-  notificationsStore.createSystemNotification('Система', error.message)
+export function openErrorNotification(error: Error) {
+  useNotification('Система', error.message)
 }
-
-export { sendParallelRequests, RequestConfig, openErrorNotification }

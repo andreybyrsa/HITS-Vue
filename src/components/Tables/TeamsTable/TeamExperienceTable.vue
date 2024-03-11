@@ -1,26 +1,13 @@
-<template>
-  <Table
-    :data="profile?.teams ?? []"
-    :columns="teamExperienceColumns"
-    :search-by="['teamName']"
-    :dropdown-actions-menu="dropdownTeamsActions"
-  />
-</template>
-
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { RouteRecordRaw, useRoute } from 'vue-router'
-
-import Table from '@Components/Table/Table.vue'
+import { TeamExperience } from '@Domain'
+import { useProfilesStore } from '@Store'
+import { navigateToAliasRoute } from '@Utils'
 import { TableColumn, DropdownMenuAction } from '@Components/Table/Table.types'
+import Table from '@Components/Table/Table.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
-
-import { TeamExperience } from '@Domain/Team'
-
-import useProfilesStore from '@Store/profiles/profilesStore'
-
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const route = useRoute()
 const profileId = route.params.id.toString()
@@ -114,3 +101,12 @@ function getStatusWorkStyle(workStatus: boolean) {
   return initialClass
 }
 </script>
+
+<template>
+  <Table
+    :data="profile?.teams ?? []"
+    :columns="teamExperienceColumns"
+    :search-by="['teamName']"
+    :dropdown-actions-menu="dropdownTeamsActions"
+  />
+</template>

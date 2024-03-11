@@ -1,18 +1,15 @@
-import { User } from '@Domain/User'
-import { Skill } from '@Domain/Skill'
-import { Idea } from '@Domain/Idea'
-import { TeamExperience } from '@Domain/Team'
+import { User, Skill, TeamExperience, Idea } from '@Domain'
 
-interface Profile extends User {
+export interface Profile extends User {
   skills: Skill[]
   ideas: Idea[]
 
   teams: TeamExperience[]
 }
 
-interface ProfileFullName {
+export interface ProfileFullName {
   lastName: string
   firstName: string
+  studyGroup: string
+  telephone: string
 }
-
-export { Profile, ProfileFullName }

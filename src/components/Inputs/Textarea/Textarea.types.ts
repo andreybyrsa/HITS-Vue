@@ -1,31 +1,23 @@
-import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
+import { HTMLTargetEvent } from '@Domain'
+import { ValidationMethods } from '@Utils'
 
-import { ValidationMethods } from '@Utils/Validation'
-
-interface TextareaProps {
+export interface TextareaProps {
   className?: string
   labelClassName?: string
   name: string
-
   validation?: ValidationMethods
   validateOnUpdate?: boolean
-
   label?: string
   placeholder?: string
-
   prepend?: string
   append?: string
   error?: string
-
   disabled?: boolean
-
   hint?: string
 }
 
-interface TextareaEmits {
+export interface TextareaEmits {
   (event: 'change', value: HTMLTargetEvent): void
   (event: 'focus'): void
   (event: 'blur'): void
 }
-
-export { TextareaProps, TextareaEmits }

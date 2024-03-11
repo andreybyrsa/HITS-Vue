@@ -1,17 +1,13 @@
 <script lang="ts" setup>
 import { vIntersectionObserver } from '@vueuse/components'
 import { storeToRefs } from 'pinia'
-
+import { Comment } from '@Domain'
+import { useUserStore, useCommentsStore } from '@Store'
+import { Action } from '@Components/ActionsList/ActionsList.types'
 import { IdeaCommentsProps } from '@Components/Modals/IdeaModal/IdeaModal.types'
 import AdvertisementsForm from '@Components/Forms/AdvertisementsForm/AdvertisementsForm.vue'
 import Advertisement from '@Components/Advertisement/Advertisement.vue'
-import { Action } from '@Components/ActionsList/ActionsList.types'
 import IdeaCommentsPlaceholder from '@Components/Modals/IdeaModal/IdeaCommentsPlaceholder.vue'
-
-import Comment from '@Domain/Comment'
-
-import useUserStore from '@Store/user/userStore'
-import useCommentsStore from '@Store/comments/commentsStore'
 
 const props = defineProps<IdeaCommentsProps>()
 
@@ -38,11 +34,8 @@ const commentDropdownActions: Action<Comment>[] = [
 ]
 
 async function handleSendComment(values: Comment) {
-  const currentUser = user.value
-
-  if (currentUser?.token && props.idea) {
-    const { token } = currentUser
-    await commentsStore.createComment(values, token)
+  if (props.idea) {
+    await commentsStore.createComment(values)
 
     props.ideaModalRef?.scrollTo({
       top: props.ideaModalRef.scrollHeight,
@@ -52,21 +45,18 @@ async function handleSendComment(values: Comment) {
 }
 
 async function handleDeleteComment(comment?: Comment) {
-  const currentUser = user.value
-
-  if (currentUser?.token && comment) {
-    const { token } = currentUser
+  if (comment) {
     const { id } = comment
-    await commentsStore.deleteComment(id, token)
+    await commentsStore.deleteComment(id)
   }
 }
 
 const handleCheckComment = async (commentId: string) => {
   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token, id } = currentUser
-    await commentsStore.checkComment(commentId, id, token)
+  if (currentUser) {
+    const { id } = currentUser
+    await commentsStore.checkComment(commentId, id)
   }
 }
 

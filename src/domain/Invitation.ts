@@ -1,35 +1,27 @@
-import RolesTypes from './Roles'
+import { RolesTypes } from '@Domain'
 
-interface InviteUserForm {
+export interface InviteUserForm {
   email: string
 }
 
-interface InviteUsersForm {
+export interface InviteUsersForm {
   emails: string[]
   roles: RolesTypes[]
 }
 
-interface InvitationInfo {
+export interface InvitationInfo {
   email: string
   roles: RolesTypes[]
 }
 
-interface RecoveryData {
+export interface RecoveryData {
   email: string
 }
 
-interface NewEmailForm {
+export interface NewEmailForm {
   key: string
   oldEmail: string
   newEmail: string
   code: number
   url?: string | string[]
-}
-
-export {
-  InviteUserForm,
-  InviteUsersForm,
-  InvitationInfo,
-  RecoveryData,
-  NewEmailForm,
 }

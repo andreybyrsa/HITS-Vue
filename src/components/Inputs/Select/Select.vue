@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
-
 import { SelectProps } from '@Components/Inputs/Select/Select.types'
-
 import Icon from '@Components/Icon/Icon.vue'
 
 const props = defineProps<SelectProps>()
@@ -12,11 +10,15 @@ defineModel({
   required: false,
 })
 
-const { value: selectValue, errorMessage } = useField(props.name, props.validation, {
-  validateOnValueUpdate: props.validateOnUpdate ?? false,
-  validateOnMount: false,
-  syncVModel: true,
-})
+const { value: selectValue, errorMessage } = useField(
+  props.name,
+  props.validation as any,
+  {
+    validateOnValueUpdate: props.validateOnUpdate ?? false,
+    validateOnMount: false,
+    syncVModel: true,
+  },
+)
 
 const SelectClassName = computed(() => [
   'form-select',

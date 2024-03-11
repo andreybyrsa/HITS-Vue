@@ -1,29 +1,15 @@
-<template>
-  <Table
-    class-name="px-3 pb-3 pt-1"
-    :data="teamInvitations"
-    :columns="teamInvitationColumns"
-    :search-by="['email', 'firstName', 'lastName']"
-    :dropdown-actions-menu="dropdownTeamInvitationActions"
-  />
-</template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useRouter, RouteRecordRaw } from 'vue-router'
-
-import Table from '@Components/Table/Table.vue'
+import { useUserStore, useInvitationUsersStore } from '@Store'
+import { JoinStatus, TeamInvitation } from '@Domain'
+import { getJoinStatus, getJoinStatusStyle } from '@Utils'
 import { TeamInvitationsProps } from '@Components/Modals/TeamModal/TeamModal.types'
 import { DropdownMenuAction, TableColumn } from '@Components/Table/Table.types'
+import Table from '@Components/Table/Table.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
-
-import { getJoinStatus, getJoinStatusStyle } from '@Utils/joinStatus'
-
-import useUserStore from '@Store/user/userStore'
-import useInvitationUsersStore from '@Store/invitationUsers/invitationUsers'
-import { JoinStatus, TeamInvitation } from '@Domain/Team'
 
 const props = defineProps<TeamInvitationsProps>()
 
@@ -116,16 +102,16 @@ function checkWithdrawAction(teaminvitation: TeamInvitation) {
 }
 
 async function withdrawTeamInvitation(teaminvitation: TeamInvitation) {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    await invitationsToTeamStore.updateInvitationStatus(
-      teaminvitation,
-      'WITHDRAWN',
-      token,
-    )
-  }
+  await invitationsToTeamStore.updateInvitationStatus(teaminvitation, 'WITHDRAWN')
 }
 </script>
+
+<template>
+  <Table
+    class-name="px-3 pb-3 pt-1"
+    :data="teamInvitations"
+    :columns="teamInvitationColumns"
+    :search-by="['email', 'firstName', 'lastName']"
+    :dropdown-actions-menu="dropdownTeamInvitationActions"
+  />
+</template>

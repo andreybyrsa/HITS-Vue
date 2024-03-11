@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-
-import LoadingPlaceholderProps from '@Components/LoadingPlaceholder/LoadingPlaceholder.types'
+import { LoadingPlaceholderProps } from '@Components/LoadingPlaceholder/LoadingPlaceholder.types'
 
 const props = defineProps<LoadingPlaceholderProps>()
 

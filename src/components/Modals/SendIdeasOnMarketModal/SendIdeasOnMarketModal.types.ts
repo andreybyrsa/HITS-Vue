@@ -1,12 +1,10 @@
-import { Idea } from '@Domain/Idea'
+import { Idea } from '@Domain'
 
-interface SendIdeasOnMarketModalProps {
+export interface SendIdeasOnMarketModalProps {
   ideas: Idea[]
   isOpened: boolean
 }
 
-interface SendIdeasOnMarketModalEmits {
+export interface SendIdeasOnMarketModalEmits {
   (event: 'close-modal'): void
 }
-
-export { SendIdeasOnMarketModalProps, SendIdeasOnMarketModalEmits }

@@ -1,7 +1,5 @@
-import { IdeaMarket } from '@Domain/IdeaMarket'
+import { IdeaMarket } from '@Domain'
 
-interface IdeaMarketTeamsTableProps {
+export interface IdeaMarketTeamsTableProps {
   ideaMarket: IdeaMarket
 }
-
-export default IdeaMarketTeamsTableProps

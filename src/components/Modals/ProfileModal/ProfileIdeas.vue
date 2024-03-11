@@ -1,17 +1,13 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRoute, RouteRecordRaw } from 'vue-router'
-
+import { useProfilesStore } from '@Store'
+import { navigateToAliasRoute, getIdeaStatus, getIdeaStatusStyle } from '@Utils'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
-
-import useProfilesStore from '@Store/profiles/profilesStore'
-
-import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const route = useRoute()
 const profileId = route.params.id.toString()
@@ -60,7 +56,7 @@ function navigateToIdeaModal(ideaId: string) {
               class="w-100 d-flex gap-2 align-items-center justify-content-between"
             >
               <div
-                class="fs-6 profile-ideas__idea-link"
+                class="fs-6 profile-ideas__idea-link w-100"
                 @click="navigateToIdeaModal(idea.id)"
               >
                 {{ idea.name }}
@@ -132,6 +128,7 @@ function navigateToIdeaModal(ideaId: string) {
 
     &-link {
       cursor: pointer;
+      @include textEllipsis(1);
 
       &:hover {
         text-decoration: underline;

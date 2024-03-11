@@ -2,16 +2,14 @@
 import { computed, ref } from 'vue'
 import { useDateFormat } from '@vueuse/core'
 import { useRouter, useRoute, RouteRecordRaw } from 'vue-router'
-
-import { MODE } from '@Main'
-
+import { MODE } from '@Config'
+import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
+import { TeamModalInfoProps } from '@Components/Modals/TeamModal/TeamModal.types'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import { TeamModalInfoProps } from '@Components/Modals/TeamModal/TeamModal.types'
 import Button from '@Components/Button/Button.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import SkillsRadarChart from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.vue'
-import { SkillsArea } from '@Components/Charts/SkillsRadarChart/SkillsRadarChart.types'
 
 const props = defineProps<TeamModalInfoProps>()
 

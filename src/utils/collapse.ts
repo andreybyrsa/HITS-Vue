@@ -1,5 +1,5 @@
-import { Collapse } from 'bootstrap'
 import { DirectiveBinding } from 'vue'
+import { Collapse } from 'bootstrap'
 
 interface CollapseDirective {
   collapses: { element: HTMLElement; collapse: Collapse; isOpen: boolean }[]
@@ -50,7 +50,8 @@ function clickHandler(event: Event, iconIsRotate: boolean) {
     }
   }
 }
-const collapseDirective: CollapseDirective = {
+
+export const collapseDirective: CollapseDirective = {
   collapses: [],
   mounted(element: HTMLElement, binding: DirectiveBinding) {
     const currentCollapse = createCollapse(element, binding)
@@ -64,5 +65,3 @@ const collapseDirective: CollapseDirective = {
     )
   },
 }
-
-export default collapseDirective
