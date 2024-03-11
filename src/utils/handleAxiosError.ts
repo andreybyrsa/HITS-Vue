@@ -24,6 +24,6 @@ export function handleAxiosError(
 
     return new Error('Ошибка в системе, повторите попытку позже')
   }
-  console.error(errorMessage)
+
   return new Error('Ваша сессия истекла')
 }
