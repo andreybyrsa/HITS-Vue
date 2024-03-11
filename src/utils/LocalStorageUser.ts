@@ -1,51 +1,23 @@
-import { User } from '@Domain/User'
+import { UserMetadata } from '@Domain/User'
 
 class LocalStorageUser {
-  private LOCAL_STORAGE_KEY = 'user'
+  private LOCAL_STORAGE_KEY = 'metadata'
 
-  public getLocalStorageUser(): User | null {
-    const stringifiedUser = localStorage.getItem(this.LOCAL_STORAGE_KEY) ?? '{}'
-    const jsonParsedUser = JSON.parse(stringifiedUser) as User
-
-    if (jsonParsedUser.token) {
-      return JSON.parse(stringifiedUser, (key: string, value: string) => {
-        return key === 'lastLogin' ? new Date(value) : value
-      })
-    }
-
-    return null
-  }
-
-  public setLocalStorageUser(user: User) {
-    const localStorageUser = this.getLocalStorageUser()
-
-    const updateLocalStorageUser = (value: User) =>
+  public setMetadata(metadata: UserMetadata): void {
+    const updateLocalStorageMetadata = (value: UserMetadata) =>
       localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(value))
 
-    if (localStorageUser?.token) {
-      const currentLocalStorageUser: User = {
-        ...localStorageUser,
-        ...user,
-      }
-
-      updateLocalStorageUser(currentLocalStorageUser)
-
-      localStorage.setItem(
-        this.LOCAL_STORAGE_KEY,
-        JSON.stringify(currentLocalStorageUser),
-      )
-    } else {
-      const currentLocalStorageUser: User = {
-        ...user,
-        lastLogin: new Date(),
-      }
-
-      updateLocalStorageUser(currentLocalStorageUser)
-    }
+    updateLocalStorageMetadata(metadata)
   }
 
-  public removeLocalStorageUser() {
-    localStorage.removeItem('user')
+  public getMetadata(): UserMetadata | null {
+    const stringifiedUser = localStorage.getItem(this.LOCAL_STORAGE_KEY) ?? '{}'
+    const jsonParsedUser = JSON.parse(stringifiedUser) as UserMetadata
+    return jsonParsedUser
+  }
+
+  public removeMetadata() {
+    localStorage.removeItem(this.LOCAL_STORAGE_KEY)
   }
 }
 

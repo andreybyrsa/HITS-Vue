@@ -42,8 +42,8 @@ import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 import { getRouteByUserRole } from '@Utils/userRolesInfo'
-import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
-import useProfilesStore from '@Store/profiles/profilesStore'
+// import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
+// import useProfilesStore from '@Store/profiles/profilesStore'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -293,24 +293,29 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const userStore = useUserStore()
+  const localStorageMetadata = LocalStorageUser.getMetadata()
+
+  if (localStorageMetadata?.token) {
+    await userStore.getMe()
+  }
 
   const { user } = storeToRefs(userStore)
-  const localStorageUser = LocalStorageUser.getLocalStorageUser()
-  const telegramTag = LocalStorageTelegramTag.get()
-  if (telegramTag && localStorageUser?.id) {
-    useProfilesStore().setProfileTag(telegramTag, localStorageUser.id)
-  }
-  if (localStorageUser?.token && !user.value?.token) {
-    useUserStore().setUser(localStorageUser)
-  }
+
+  // if (telegramTag && localStorageUser?.id) {
+  //   useProfilesStore().setProfileTag(telegramTag, localStorageUser.id)
+  // }
+  // if (localStorageUser?.token && !user.value?.token) {
+  //   useUserStore().setUser(localStorageUser)
+  // }
 
   const currentRouteName = to.name?.toString() ?? ''
   const requiredRouteRoles = to.meta?.roles ?? []
   const authRouteNames = ['login', 'register', 'forgot-password']
 
   if (!user.value && !authRouteNames.includes(currentRouteName)) {
+    console.log(1)
     return { name: 'login' }
   }
 
@@ -318,12 +323,15 @@ router.beforeEach((to) => {
     user.value?.role &&
     (authRouteNames.includes(currentRouteName) || currentRouteName === 'home')
   ) {
+    console.log(2)
+
     const { role } = user.value
 
     return getRouteByUserRole(role)
   }
 
   if (requiredRouteRoles.length && user.value?.role) {
+    console.log(3)
     const { role } = user.value
 
     return requiredRouteRoles.includes(role) ? true : { name: 'error' }

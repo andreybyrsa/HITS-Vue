@@ -39,4 +39,9 @@ interface RegisterUser {
   studyGroup: string
 }
 
-export { User, UserTelegram, LoginUser, RegisterUser }
+interface UserMetadata {
+  lastLogin: Date
+  token: string
+}
+
+export { User, UserTelegram, LoginUser, RegisterUser, UserMetadata }

@@ -10,11 +10,11 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
 import { Profile, ProfileFullName } from '@Domain/Profile'
-import { User, UserTelegram } from '@Domain/User'
+import { User, UserMetadata, UserTelegram } from '@Domain/User'
 import useUserStore from '@Store/user/userStore'
 import { TeamExperience } from '@Domain/Team'
 import TeamService from '@Services/TeamService'
-import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
+// import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 
 const useProfilesStore = defineStore('profiles', {
   state: (): InitialState => ({
@@ -126,7 +126,7 @@ const useProfilesStore = defineStore('profiles', {
       })
       if (!currentProfile) return
       currentProfile.userTag = tag
-      LocalStorageTelegramTag.set(tag)
+      // LocalStorageTelegramTag.set(tag)
     },
 
     async updateUserFullName(user: User, token: string) {
@@ -153,13 +153,13 @@ const useProfilesStore = defineStore('profiles', {
           currentProfile.firstName = firstName
           currentProfile.lastName = lastName
 
-          userStore.setUser({
-            ...currentUser,
-            firstName,
-            lastName,
-            studyGroup,
-            telephone,
-          })
+          // userStore.setUser({
+          //   ...currentUser,
+          //   firstName,
+          //   lastName,
+          //   studyGroup,
+          //   telephone,
+          // })
         }
       }
     },
@@ -216,7 +216,7 @@ const useProfilesStore = defineStore('profiles', {
           if (currentProfile && currentUser) {
             currentProfile.isUserTagVisible = isVisible
 
-            userStore.setUser({ ...currentUser })
+            // userStore.setUser({ ...currentUser })
           }
         }
       } else {
@@ -236,8 +236,7 @@ const useProfilesStore = defineStore('profiles', {
 
           if (currentProfile && currentUser) {
             currentProfile.isUserTagVisible = isVisible
-
-            userStore.setUser({ ...currentUser })
+            // userStore.setUserMetadata({ ...currentUser })
           }
         }
       }

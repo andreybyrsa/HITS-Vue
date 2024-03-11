@@ -5,6 +5,7 @@ import { API_URL } from '@Main'
 import { User, LoginUser, RegisterUser } from '@Domain/User'
 
 import handleAxiosError from '@Utils/handleAxiosError'
+import { usersMocks } from '@Utils/getMocks'
 
 const loginUser = async (user: LoginUser): Promise<User | Error> => {
   return axios
@@ -39,9 +40,23 @@ const registerUser = async (user: RegisterUser): Promise<User | Error> => {
     .catch((error) => handleAxiosError(error, 'Ошибка регистрации'))
 }
 
+const getMe = async (): Promise<User | Error> => {
+  return usersMocks[0]
+  try {
+    const response = await axios.get(`${API_URL}/me`)
+    if (response instanceof Error) {
+      return usersMocks[0]
+    }
+    return response.data
+  } catch {
+    undefined
+  }
+}
+
 const AuthService = {
   loginUser,
   registerUser,
+  getMe,
 }
 
 export default AuthService

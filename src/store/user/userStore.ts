@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { User, LoginUser, RegisterUser } from '@Domain/User'
+import { LoginUser, RegisterUser, UserMetadata } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
 import AuthService from '@Services/AuthService'
@@ -15,6 +15,7 @@ import { getRouteByUserRole } from '@Utils/userRolesInfo'
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
     user: null,
+    metadata: null,
   }),
   actions: {
     async loginUser(user: LoginUser) {
@@ -23,11 +24,27 @@ const useUserStore = defineStore('user', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        LocalStorageUser.setLocalStorageUser(response)
-        this.user = LocalStorageUser.getLocalStorageUser()
+        if (!response.token) return
+        const metadata: UserMetadata = {
+          token: response.token,
+          lastLogin: new Date(),
+        }
+        LocalStorageUser.setMetadata(metadata)
+        this.metadata = metadata
+        this.user = response
 
         this.router.push(getRouteByUserRole(response.roles))
       }
+    },
+
+    async getMe() {
+      const response = await AuthService.getMe()
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+      this.user = response
     },
 
     async registerUser(user: RegisterUser, slug: string) {
@@ -36,8 +53,15 @@ const useUserStore = defineStore('user', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        LocalStorageUser.setLocalStorageUser(response)
-        this.user = LocalStorageUser.getLocalStorageUser()
+        if (!response.token) return
+        const metadata: UserMetadata = {
+          token: response.token,
+          lastLogin: new Date(),
+        }
+        LocalStorageUser.setMetadata(metadata)
+        this.metadata = metadata
+
+        this.user = response
 
         this.router.push(getRouteByUserRole(response.roles))
 
@@ -47,30 +71,30 @@ const useUserStore = defineStore('user', {
 
     logoutUser() {
       this.user = null
-      LocalStorageUser.removeLocalStorageUser()
+      this.metadata = null
+      LocalStorageUser.removeMetadata()
 
       this.router.push({ name: 'login' })
     },
 
-    setUser(user: User) {
-      this.user = user
-      LocalStorageUser.setLocalStorageUser(this.user)
+    setUserMetadata(userMetadata: UserMetadata) {
+      LocalStorageUser.setMetadata(userMetadata)
     },
 
     setRole(role: RolesTypes) {
       if (this.user) {
         this.user.role = role
-        LocalStorageUser.setLocalStorageUser(this.user)
       }
     },
 
     checkIsExpiredToken() {
       const currentActivity = new Date()
-      const currentUser = LocalStorageUser.getLocalStorageUser()
+      const currentUserMetadata = LocalStorageUser.getMetadata()
 
-      if (currentUser?.lastLogin) {
+      if (currentUserMetadata?.lastLogin) {
         const activityDifference =
-          (currentActivity.getTime() - currentUser.lastLogin.getTime()) /
+          (currentActivity.getTime() -
+            new Date(currentUserMetadata.lastLogin).getTime()) /
           (1000 * 60 * 60)
 
         if (activityDifference > 4) {

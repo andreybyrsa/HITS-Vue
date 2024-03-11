@@ -14,22 +14,25 @@ import useProfilesStore from '@Store/profiles/profilesStore'
 
 import Validation from '@Utils/Validation'
 import { Profile } from '@Domain/Profile'
-import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
+// import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
+const profilesStore = useProfilesStore()
+
+const profile = ref<Profile>()
+
 const { user } = storeToRefs(userStore)
 
-onBeforeMount(() => {
-  const tag = LocalStorageTelegramTag.get()
-  setValues({ ...profile.value, userTag: tag ?? '' })
+onBeforeMount(async () => {
+  if (!user.value?.token || !user.value?.id) return
+  const { id } = user.value
+  const response = await profilesStore.getProfileByUserId(id)
+  if (response instanceof Error) return
+  profile.value = response
+  setValues({ ...profile, userTag: profile.value?.userTag ?? '' })
 })
 
-const route = useRoute()
-const profileId = route.params.id.toString()
-
-const profilesStore = useProfilesStore()
-const profile = ref(profilesStore.getProfileByUserId(profileId))
 const computedProfile = computed(() => profile.value)
 
 const isOwnProfile = computed(
