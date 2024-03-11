@@ -14,7 +14,8 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// TODO: пока не трогать, вдруг кому-то пригодится
 api.interceptors.response.use(
   (response) => response,
-  (error) => handleAxiosError(error),
+  (error) => error,
 )
