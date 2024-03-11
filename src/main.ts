@@ -27,7 +27,7 @@ Sentry.init({
   sendDefaultPii: true,
   integrations: [
     captureConsoleIntegration({
-      levels: ['error', 'warn'],
+      levels: ['error'],
     }),
     httpClientIntegration({
       failedRequestStatusCodes: [400, [402, 599]],
