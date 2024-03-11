@@ -36,6 +36,8 @@ const emit = defineEmits<TaskDescriptionModalEmits>()
 
 const isLeader = props.user.role === 'TEAM_LEADER'
 
+const isNameChange = ref(false)
+
 function navigateToProfileModal(id: string) {
   const profileModalRoute: RouteRecordRaw = {
     name: 'profile',
@@ -75,9 +77,36 @@ function hexToRgb(hex: string) {
         <div
           class="d-flex justify-content-between align-items-start border-bottom align-items-center"
         >
-          <Typography class-name="fs-3 text-primary">
+          <Typography
+            v-if="isNameChange === false"
+            class-name="fs-3 text-primary d-flex align-items-center "
+          >
             {{ props.task.name }}
+            <Button
+              @click="isNameChange = true"
+              class-name="border-0"
+            >
+              <Icon
+                v-if="isLeader || props.user === props.task.executor"
+                class-name="bi bi-pencil-square fs-5 mt-2 text-primary"
+              />
+            </Button>
           </Typography>
+
+          <div
+            v-else
+            class="rounded-end w-75"
+          >
+            <Input
+              ref="name"
+              name="name"
+              class-name="rounded-end"
+              :model-value="props.task.name"
+              @keyup.enter="isNameChange = false"
+              @input="(event: HTMLTargetEvent)=>emit('update-name', event.target.value)"
+            />
+          </div>
+
           <Button
             variant="close"
             @click="emit('close-modal')"
@@ -95,7 +124,24 @@ function hexToRgb(hex: string) {
                   Описание
                 </Button>
                 <Collapse :id="props.task.id">
-                  <div class="p-2">{{ props.task.description }}</div>
+                  <div v-if="isLeader || props.user === props.task.executor">
+                    <Input
+                      ref="description"
+                      name="description"
+                      :model-value="props.task.description"
+                      @input="(event: HTMLTargetEvent)=>emit('update-description', event.target.value)"
+                    />
+                  </div>
+
+                  <div
+                    v-if="
+                      !isLeader &&
+                      props.user != props.task.executor &&
+                      props.task.description
+                    "
+                  >
+                    <div class="p-2">{{ props.task.description }}</div>
+                  </div>
                 </Collapse>
               </li>
               <li

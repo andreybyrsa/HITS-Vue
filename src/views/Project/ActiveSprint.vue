@@ -294,6 +294,30 @@ const changeLeaderComment = useDebounceFn((input: string) => {
   taskStore.changeLeaderComment(currentTask.value.id, input, user.value.token)
 }, 450)
 
+const changeDescription = useDebounceFn((input: string) => {
+  if (!currentTask.value?.id) {
+    return
+  }
+
+  if (!user.value?.token) {
+    return
+  }
+
+  taskStore.changeDescription(currentTask.value.id, input, user.value.token)
+}, 450)
+
+const changeName = useDebounceFn((input: string) => {
+  if (!currentTask.value?.id) {
+    return
+  }
+
+  if (!user.value?.token) {
+    return
+  }
+
+  taskStore.changeName(currentTask.value.id, input, user.value.token)
+}, 450)
+
 // const wildcardTask = ref({
 //   id: '1',
 //   sprintId: '1',
@@ -741,6 +765,8 @@ const changeLeaderComment = useDebounceFn((input: string) => {
     :user="(user as User)"
     @close-modal="closeTaskModal"
     @update-leader-comment="changeLeaderComment"
+    @update-description="changeDescription"
+    @update-name="changeName"
   />
 </template>
 

@@ -218,6 +218,48 @@ const changeLeaderComment = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
 }
 
+const changeDescription = async (
+  taskId: string,
+  description: string,
+  token: string,
+): Promise<Task[] | Error> => {
+  return tasksMocksAxios
+    .putNoRequestBody<Task[]>(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+        requestData: { description },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
+const changeName = async (
+  taskId: string,
+  name: string,
+  token: string,
+): Promise<Task[] | Error> => {
+  return tasksMocksAxios
+    .putNoRequestBody<Task[]>(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+        requestData: { name },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
 const TaskService = {
   getAllTasksProject,
   getTaskMovementLog,
@@ -231,6 +273,8 @@ const TaskService = {
   changeTaskStatus,
   changeTaskStatusInBackLog,
   changeLeaderComment,
+  changeDescription,
+  changeName,
 }
 
 export default TaskService
