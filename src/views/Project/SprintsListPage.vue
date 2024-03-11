@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
 
 import SprintsTable from '@Components/Tables/SprintsTable/SprintsTable.vue'
 

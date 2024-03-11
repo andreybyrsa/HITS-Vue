@@ -46,14 +46,12 @@
             <div v-if="task.status === 'InBackLog'">
               <Button
                 @click="openUpdateNewTask(task)"
-                class-name="fs-5 fw-semibold text-truncate p-0"
+                :class-name="nameStyle"
                 >{{ task.name }}</Button
               >
             </div>
             <div v-else>
-              <Typography class-name="fs-5 fw-semibold text-truncate">{{
-                task.name
-              }}</Typography>
+              <Typography :class-name="nameStyle">{{ task.name }}</Typography>
             </div>
           </div>
         </div>
