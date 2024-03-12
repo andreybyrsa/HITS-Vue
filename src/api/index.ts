@@ -5,7 +5,6 @@ import { getAbortedSignal, handleAxiosError } from '@Utils'
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,
-  withCredentials: true,
 })
 
 api.interceptors.request.use((config) => {
