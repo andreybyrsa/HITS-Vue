@@ -76,33 +76,41 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 
 <template>
   <div class="content">
-    <div class="border-bottom px-3">
-      <ul class="nav nav-underline">
-        <div
-          :class="getNavLinkStyle(isTabAboutProject)"
-          @click="switchToTabAboutProject"
-        >
-          О проекте
-        </div>
-        <div
-          :class="getNavLinkStyle(isTabBacklog)"
-          @click="switchToTabBacklog"
-        >
-          Бэклог
-        </div>
-        <div
-          :class="getNavLinkStyle(isTabSprints)"
-          @click="switchToTabSprints"
-        >
-          Спринты
-        </div>
-        <div
-          v-if="activeSprint"
-          :class="getNavLinkStyle(isTabActiveSprint)"
-          @click="switchToTabSprint"
-        >
-          Активный спринт
-        </div>
+    <div class="px-3">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <div
+            :class="getNavLinkStyle(isTabAboutProject)"
+            @click="switchToTabAboutProject"
+          >
+            О проекте
+          </div>
+        </li>
+        <li class="nav-item">
+          <div
+            :class="getNavLinkStyle(isTabBacklog)"
+            @click="switchToTabBacklog"
+          >
+            Бэклог
+          </div>
+        </li>
+        <li class="nav-item">
+          <div
+            :class="getNavLinkStyle(isTabSprints)"
+            @click="switchToTabSprints"
+          >
+            Спринты
+          </div>
+        </li>
+        <li class="nav-item">
+          <div
+            v-if="activeSprint"
+            :class="getNavLinkStyle(isTabActiveSprint)"
+            @click="switchToTabSprint"
+          >
+            Активный спринт
+          </div>
+        </li>
       </ul>
     </div>
 

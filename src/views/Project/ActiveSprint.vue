@@ -349,11 +349,11 @@ const changeName = useDebounceFn((input: string) => {
             {{ sprint.name }}
           </Typography>
         </div>
-        <FinishSprintModal
+        <!-- <FinishSprintModal
           :is-opened="isOpenedSprinttModal"
           :sprint="(currentSprint as Sprint)"
           @close-modal="closeSprintModal"
-        />
+        /> -->
         <Typography>(до {{ getFormattedDate(sprint.finishDate) }})</Typography>
       </div>
       <div class="d-flex gap-2">
