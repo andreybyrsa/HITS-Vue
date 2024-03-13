@@ -27,14 +27,19 @@ import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import TaskDescriptionModal from '@Components/Modals/SprintModal/TaskDescriptionModal.vue'
+import { SprintModalProps } from '@Components/Modals/SprintModal/SprintModal.types'
+import useSprintsStore from '@Store/sprints/sprintsStore'
 
-defineProps<ActiveSprintProps>()
+const props = defineProps<ActiveSprintProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const taskStore = useTasksStore()
 const { tasks } = storeToRefs(taskStore)
+
+const sprintStore = useSprintsStore()
+const { sprints } = storeToRefs(sprintStore)
 
 const checkMyInProgressTask = ref(false)
 const isLoadingTaskData = ref(false)
@@ -179,7 +184,6 @@ async function moveTask(evt: any) {
             onErrorFunc: openErrorNotification,
           },
         ]
-
         await sendParallelRequests(newTaskParallelRequests)
       }
 
@@ -319,8 +323,11 @@ function closeTaskModal() {
 </script>
 
 <template>
-  <div class="active-sprint">
-    <button @click="getLogs('0')">get logs</button>
+  <div
+    v-if="sprint.status == 'ACTIVE'"
+    class="active-sprint"
+  >
+    <!-- <button @click="getLogs('0')">get logs</button> -->
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div
@@ -329,6 +336,7 @@ function closeTaskModal() {
         >
           <Typography class-name="fs-5 fw-semibold cursor-pointer">
             {{ sprint.name }}
+            {{ sprint.status }}
           </Typography>
         </div>
         <SprintModal

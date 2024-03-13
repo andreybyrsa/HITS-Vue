@@ -1,9 +1,10 @@
-import { Sprint } from '@Domain/Project'
+import { Sprint, Task } from '@Domain/Project'
 
 interface FinishSprintModalProps {
   isOpened: boolean
   isFinishSprint?: boolean
   activeSprint: Sprint
+  activeTask?: Task
 }
 
 interface sprintValidationProps {
