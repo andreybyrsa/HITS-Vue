@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { ref, computed, ComputedRef } from 'vue'
+import { ref, computed, ComputedRef, onBeforeMount, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-import { watchImmediate } from '@vueuse/core'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -12,7 +11,7 @@ import {
   SprintFormProps,
   SprintFormEmits,
 } from '@Components/Forms/SprintForm/SprintForm.types'
-
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import useUserStore from '@Store/user/userStore'
 
 import useSprintsStore from '@Store/sprints/sprintsStore'
@@ -22,6 +21,11 @@ import { Sprint, Task } from '@Domain/Project'
 
 import ProjectTask from '@Views/Project/ProjectTask.vue'
 import useTasksStore from '@Store/tasks/tasksStore'
+import useProjectsStore from '@Store/projects/projectsStore'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const projectId = route.params.id.toString()
 
 const props = defineProps<SprintFormProps>()
 const emit = defineEmits<SprintFormEmits>()
@@ -34,6 +38,8 @@ const { user } = storeToRefs(userStore)
 const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
+const projectsStore = useProjectsStore()
+
 const initialBackLogTasks: ComputedRef<Task[]> = computed<Task[]>(() =>
   tasks.value.filter((task) => task.status === 'InBackLog'),
 )
@@ -44,12 +50,52 @@ const newSprintTasks = ref<Task[]>([])
 
 const isLoading = ref<boolean>(false)
 
+const countMembers = ref<number>(1)
+
+const workingHours = ref<number>(1)
+
+const recommendedLoad = ref<number>(1)
+
+const computedWorkingHoursStyle = computed(() => {
+  const style =
+    'rounded-end ' +
+    (recommendedLoad.value < workingHours.value ? 'text-danger' : 'text-success')
+  return style
+})
+
+const isOpenedCreateNewTask = ref(false)
+
+function openCreateNewTask() {
+  isOpenedCreateNewTask.value = true
+}
+
+function closeCreateNewTask() {
+  isOpenedCreateNewTask.value = false
+}
+
+watch(
+  () => tasks,
+  (tasks) => {
+    const newTasks = tasks.value.filter((task) => {
+      if (
+        backlogTasks.value.find((item) => item.id == task.id) ||
+        newSprintTasks.value.find((item) => item.id == task.id)
+      ) {
+        return false
+      }
+      if (task.status === 'InBackLog') return true
+    })
+
+    if (newTasks) backlogTasks.value.push(...newTasks)
+  },
+  { deep: true },
+)
+
 const { handleSubmit, setValues, values } = useForm<Sprint>({
   validationSchema: {
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    goal: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    goal: (value: string) => true,
     startDate: (value: string) => Validation.checkDate(value) || 'Поле не заполнено',
     finishDate: (value: string) =>
       Validation.validateDates(values.startDate, value) || 'Поле не заполнено',
@@ -82,9 +128,11 @@ function moveTaskToBacklog(id: string) {
 const CreateSprint = handleSubmit(async (sprint) => {
   if (user.value?.token && sprint && newSprintTasks.value.length !== 0) {
     sprint.tasks = newSprintTasks.value
-    sprint.projectId = newSprintTasks.value[0].projectId
+    sprint.workingHours = workingHours.value.toString()
     const { token } = user.value
     await sprintsStore.postSprint(sprint, token)
+    console.log(sprint)
+
     emit('close-modal')
   }
 })
@@ -92,7 +140,7 @@ const CreateSprint = handleSubmit(async (sprint) => {
 const UpdateSprint = handleSubmit(async (sprint) => {
   if (user.value?.token && sprint && newSprintTasks.value.length !== 0) {
     sprint.tasks = newSprintTasks.value
-    sprint.projectId = newSprintTasks.value[0].projectId
+    sprint.workingHours = workingHours.value.toString()
     const { token } = user.value
     await sprintsStore.updateSprint(sprint, token)
     emit('close-modal')
@@ -107,25 +155,67 @@ async function emitUpdateSprint() {
   UpdateSprint()
 }
 
-watchImmediate(
-  () => props.sprint,
-  async (sprint) => {
-    if (sprint) {
-      setValues({ ...sprint })
-    }
-  },
-)
+const getDaysDifference = (startDate: Date, finishDate: Date): number => {
+  const daysDifference = Math.round(
+    (finishDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+  )
+  return daysDifference
+}
 
-watchImmediate(
+const getWorkingHoursString = (): string => {
+  const startDate = new Date(values.startDate)
+  const finishDate = new Date(values.finishDate)
+  const daysDifference = getDaysDifference(startDate, finishDate)
+  recommendedLoad.value = daysDifference * countMembers.value
+  workingHours.value = newSprintTasks.value.reduce(
+    (sum, item) => sum + Number(item.workHour),
+    0,
+  )
+
+  const hintString = workingHours.value.toString() + ` / ${recommendedLoad.value}`
+  return hintString
+}
+
+onBeforeMount(async () => {
+  if (props.sprint) {
+    setValues({ ...props.sprint })
+    return
+  }
+  const currentDate: Date = new Date()
+
+  const startDate = currentDate.toISOString().substring(0, 10)
+
+  const secondDate = new Date()
+  secondDate.setDate(currentDate.getDate() + 2 * 7)
+
+  const finishDate = secondDate.toISOString().substring(0, 10)
+
+  setValues({ name: 'Спринт', startDate, finishDate, projectId })
+  if (user.value?.token) {
+    const { token } = user.value
+    const project = await projectsStore.getProject(projectId, token)
+    if (project instanceof Error) return
+    countMembers.value = project.team.members.length
+  }
+})
+
+watch(
   () => newSprintTasks,
   async (newSprintTasks) => {
     if (newSprintTasks) {
-      const workingHours = newSprintTasks.value.reduce(
-        (sum, item) => sum + Number(item.workHour),
-        0,
-      )
+      const workingHoursString = getWorkingHoursString()
+      setValues({ workingHours: workingHoursString })
+    }
+  },
+  { deep: true },
+)
 
-      setValues({ workingHours: workingHours.toString() })
+watch(
+  () => values,
+  async (values) => {
+    if (values) {
+      const workingHoursString = getWorkingHoursString()
+      setValues({ workingHours: workingHoursString })
     }
   },
   { deep: true },
@@ -147,6 +237,15 @@ watchImmediate(
             <Typography class-name="fs-4 text-secondary">Бэклог</Typography>
           </div>
           <div class="tasks-list d-flex flex-column gap-2">
+            <Button
+              @click="openCreateNewTask()"
+              variant="primary"
+              >Создать новую задачу</Button
+            >
+            <TaskModal
+              :is-opened="isOpenedCreateNewTask"
+              @close-modal="closeCreateNewTask"
+            />
             <ProjectTask
               @click="moveTaskToNewTasks(task.id)"
               v-for="task in backlogTasks"
@@ -213,9 +312,9 @@ watchImmediate(
         <Input
           disabled
           name="workingHours"
-          class-name="rounded-end"
+          :class-name="computedWorkingHoursStyle"
           label="Общие часы работы"
-          type="number"
+          type="string"
           validate-on-update
           placeholder="Часы"
         />
