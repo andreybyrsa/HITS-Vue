@@ -29,6 +29,7 @@ const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
 
 import Collapse from '@Components/Collapse/Collapse.vue'
+import Validation from '@Utils/Validation'
 const router = useRouter()
 
 onMounted(async () => {
@@ -55,12 +56,17 @@ function switchContent() {
 
 const { values, handleSubmit } = useForm({
   validationSchema: {
-    component: (value: string) => value?.length || 'Обязательно к заполнению',
+    component: (value: string) =>
+      Validation.checkName(value) || 'Обязательно к заполнению',
   },
   initialValues: {
     combobox: undefined,
     component: undefined,
   },
+})
+
+const click = handleSubmit(() => {
+  return
 })
 
 const fieldSubmit = handleSubmit((values) => {
@@ -90,18 +96,14 @@ const b = ref()
       <router-view></router-view>
 
       <Button @click="switchContent"> Проверка KeepAlive </Button>
-      <KeepAlive>
-        <Input
-          v-if="switchButton"
-          name="первый"
-        >
-        </Input>
-      </KeepAlive>
-      <Input
-        v-if="!switchButton"
-        name="второй"
+      <KeepAlive> </KeepAlive>
+
+      <Input name="component"> </Input>
+      <Button
+        variant="primary"
+        @click="click"
+        >Валидация</Button
       >
-      </Input>
 
       <Button
         @click="router.push('/teams/list/1')"

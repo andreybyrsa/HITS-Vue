@@ -12,6 +12,7 @@ import { User } from '@Domain/User'
 
 const tasksMocksAxios = defineAxios(tasksMocks)
 const taskMovementLogMocksAxios = defineAxios(taskMovementLogMocks)
+const tasksAxios = defineAxios(tasksMocks)
 
 function formatterAllTasksProject(tasks: Task[], currentProjectId: string) {
   return tasks.filter(({ projectId }) => projectId === currentProjectId)
@@ -112,7 +113,24 @@ const updateTasks = async (
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка редактирования задач'))
 }
-
+const updateTask = async (
+  task: Task,
+  id: string,
+  token: string,
+): Promise<Task | Error> => {
+  return tasksAxios
+    .put(
+      `/task/update/${id}`,
+      task,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка редактирования задачи'))
+}
 // --- PUT --- //
 const changeExecutorTask = async (
   taskId: string,
@@ -205,17 +223,84 @@ const changeTaskStatusInBackLog = async (
 //     .catch((error) => handleAxiosError(error, 'Ошибка редактирования задач'))
 // }
 
-const ProfileService = {
+const changeLeaderComment = async (
+  taskId: string,
+  leaderComment: string,
+  token: string,
+): Promise<Task[] | Error> => {
+  return tasksMocksAxios
+    .putNoRequestBody<Task[]>(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+        requestData: { leaderComment },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
+const changeDescription = async (
+  taskId: string,
+  description: string,
+  token: string,
+): Promise<Task[] | Error> => {
+  return tasksMocksAxios
+    .putNoRequestBody<Task[]>(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+        requestData: { description },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
+const changeName = async (
+  taskId: string,
+  name: string,
+  token: string,
+): Promise<Task[] | Error> => {
+  return tasksMocksAxios
+    .putNoRequestBody<Task[]>(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+        requestData: { name },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
+const TaskService = {
   getAllTasksProject,
   getTaskMovementLog,
 
   createTaskLog,
   createTask,
   updateTasks,
+  updateTask,
 
   changeExecutorTask,
   changeTaskStatus,
   changeTaskStatusInBackLog,
+  changeLeaderComment,
+  changeDescription,
+  changeName,
 }
 
-export default ProfileService
+export default TaskService

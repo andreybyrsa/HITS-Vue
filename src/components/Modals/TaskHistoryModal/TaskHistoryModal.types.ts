@@ -2,7 +2,7 @@ import { TaskMovementLog } from '@Domain/Project'
 
 interface TaskHistoryModalProps {
   isOpened: boolean
-  log: TaskMovementLog | undefined
+  log: TaskMovementLog
 }
 
 interface TaskHistoryModalEmits {

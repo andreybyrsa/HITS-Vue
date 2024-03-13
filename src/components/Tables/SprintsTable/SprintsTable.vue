@@ -3,20 +3,26 @@
     class-name="p-3"
     :header="sprintsTableHeader"
     :columns="usersTableColumns"
-    :data="sprint"
+    :data="sprints"
     :search-by="['name']"
     :dropdown-actions-menu="dropdownUsersActions"
     :filters="sprintsFilters"
   />
+  <SprintModal
+    :is-opened="isOpenedSprintModal"
+    @close-modal="closeSprintModal"
+  />
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref } from 'vue'
+import { ref } from 'vue'
 import {
   DropdownMenuAction,
   TableColumn,
   TableHeader,
 } from '@Components/Table/Table.types'
+
+import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import SprintsTableProps from '@Components/Tables/SprintsTable/StprintsTable.types'
 import Table from '@Components/Table/Table.vue'
 import { useDateFormat } from '@vueuse/core'
@@ -28,6 +34,8 @@ import { getSprintStatus, getSprintStatusStyle } from '@Utils/getSprintStatus'
 
 defineProps<SprintsTableProps>()
 
+const isOpenedSprintModal = ref(false)
+
 const sprintsTableHeader: TableHeader = {
   label: 'Список спринтов',
   countData: true,
@@ -36,7 +44,7 @@ const sprintsTableHeader: TableHeader = {
       label: 'Создать спринт',
       variant: 'primary',
       prependIconName: 'bi bi-plus-lg',
-      click: () => null,
+      click: openSprintModal,
     },
   ],
 }
@@ -65,9 +73,6 @@ const usersTableColumns: TableColumn<Sprint>[] = [
     getRowCellStyle: getFinishDate,
   },
 ]
-
-const currentSprint = ref<Sprint>()
-const isOpenedSprinttModal = ref(false)
 
 function getSprintStatusFormat(status: SprintStatus) {
   return getSprintStatus().translatedStatus[status]
@@ -118,5 +123,13 @@ const sprintsFilters: Filter<Sprint>[] = [
 
 function checkSprintStatus(sprint: Sprint, status: FilterValue) {
   return sprint.status === status
+}
+
+function openSprintModal() {
+  isOpenedSprintModal.value = true
+}
+
+function closeSprintModal() {
+  isOpenedSprintModal.value = false
 }
 </script>

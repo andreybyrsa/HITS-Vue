@@ -156,6 +156,7 @@ const useTasksStore = defineStore('tasks', {
         this.tasks.push(response)
       }
     },
+
     async createTaskLog(
       taskId: string,
       user: User | null,
@@ -167,31 +168,86 @@ const useTasksStore = defineStore('tasks', {
 
       if (taskLogs instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', taskLogs.message)
-      } else {
-        const lastLog = taskLogs.reduce((prev, current) =>
-          new Date(prev.endDate) > new Date(current.endDate) ? prev : current,
-        )
+      }
 
-        if (currentTask && user) {
-          const log: TaskMovementLog = {
-            id: '',
-            task: currentTask,
-            executor: currentTask.executor,
-            user: user,
-            startDate: new Date().toJSON().toString(),
-            endDate: '',
-            taskStatus: newStatus,
-          }
-
-          const response = await TaskService.createTaskLog(log, token)
-
-          if (response instanceof Error) {
-            useNotificationsStore().createSystemNotification(
-              'Система',
-              response.message,
-            )
-          }
+      if (currentTask && user) {
+        const log: TaskMovementLog = {
+          id: '',
+          task: currentTask,
+          executor: currentTask.executor,
+          user: user,
+          startDate: new Date().toJSON().toString(),
+          endDate: '',
+          taskStatus: newStatus,
         }
+
+        const response = await TaskService.createTaskLog(log, token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        }
+      }
+    },
+
+    async changeLeaderComment(taskId: string, leaderComment: string, token: string) {
+      const currentTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (!currentTask) {
+        return
+      }
+
+      currentTask.leaderComment = leaderComment
+
+      const response = await TaskService.changeLeaderComment(
+        taskId,
+        leaderComment,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+    },
+
+    async changeDescription(taskId: string, description: string, token: string) {
+      const currentTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (!currentTask) {
+        return
+      }
+
+      currentTask.description = description
+
+      const response = await TaskService.changeDescription(
+        taskId,
+        description,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+    },
+
+    async changeName(taskId: string, name: string, token: string) {
+      const currentTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (!currentTask) {
+        return
+      }
+
+      currentTask.name = name
+
+      const response = await TaskService.changeName(taskId, name, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
       }
     },
   },

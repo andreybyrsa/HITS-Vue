@@ -112,6 +112,26 @@ const changeSprintStatus = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
 }
 
+const updateSprint = async (
+  sprint: Sprint,
+  token: string,
+): Promise<Success | Error> => {
+  return sprintMocksAxios
+    .put<Success>(
+      `/sprint`, //  FIX
+      sprint,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: sprint.id },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения спринта'))
+}
+
 const reportSprint = async (
   sprintId: string,
   report: string,
@@ -172,6 +192,25 @@ const finishSprintDate = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
 }
 
+// --- POST --- //
+
+const postSprint = async (
+  sprint: Sprint,
+  token: string,
+): Promise<Sprint | Error> => {
+  return sprintMocksAxios
+    .post(
+      'some-address', // FIX ROUTE
+      sprint,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка создания спринта'))
+}
+
 const saveMarkSprint = async (
   sprintId: string,
   marks: SprintMarks[],
@@ -192,6 +231,8 @@ const ProfileService = {
   reportSprint,
   finishSprintDate,
   getActiveSprintsProject,
+  postSprint,
+  updateSprint,
   saveMarkSprint,
   getMarkSprint,
 }

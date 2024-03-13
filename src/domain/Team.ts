@@ -18,7 +18,6 @@ interface Team {
   name: string
   description: string
   closed: boolean
-  hasActiveProject: boolean
   isRefused: boolean
   membersCount: number
   owner: TeamMember
@@ -27,6 +26,8 @@ interface Team {
   members: TeamMember[]
   skills: Skill[]
   wantedSkills: Skill[]
+
+  hasActiveProject: boolean
 }
 
 interface TeamSkills {

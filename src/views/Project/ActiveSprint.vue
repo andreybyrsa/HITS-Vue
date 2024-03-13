@@ -15,22 +15,28 @@ import useUserStore from '@Store/user/userStore'
 
 import { Task, Sprint, TaskMovementLog } from '@Domain/Project'
 import TaskService from '@Services/TaskService'
-import { reactiveComputed, useDateFormat, watchImmediate } from '@vueuse/core'
+import {
+  reactiveComputed,
+  useDateFormat,
+  useDebounceFn,
+  watchImmediate,
+} from '@vueuse/core'
 import useTasksStore from '@Store/tasks/tasksStore'
 import {
   RequestConfig,
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
-import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import TaskDescriptionModal from '@Components/Modals/SprintModal/TaskDescriptionModal.vue'
 import { SprintModalProps } from '@Components/Modals/SprintModal/SprintModal.types'
 import useSprintsStore from '@Store/sprints/sprintsStore'
+import { User } from '@Domain/User'
+import { useRoute } from 'vue-router'
 
-const props = defineProps<ActiveSprintProps>()
+defineProps<ActiveSprintProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -40,6 +46,10 @@ const { tasks } = storeToRefs(taskStore)
 
 const sprintStore = useSprintsStore()
 const { sprints } = storeToRefs(sprintStore)
+
+const activeSprint = computed(() =>
+  sprints.value.find(({ status }) => status === 'ACTIVE'),
+)
 
 const checkMyInProgressTask = ref(false)
 const isLoadingTaskData = ref(false)
@@ -86,28 +96,6 @@ const tasksArray = computed<Task[][]>(() => {
 
 const currentSprint = ref<Sprint>()
 const isOpenedSprinttModal = ref(false)
-
-const logs = ref<TaskMovementLog[]>()
-
-async function getLogs(taskId: string) {
-  const currentUser = user.value
-
-  if (currentUser) {
-    const { token } = currentUser
-
-    if (token) {
-      const taskLogs = await TaskService.getTaskMovementLog(taskId, token)
-
-      if (taskLogs instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', taskLogs.message)
-      } else {
-        logs.value = taskLogs
-        console.log(logs)
-      }
-    }
-  }
-  return logs
-}
 
 async function moveTask(evt: any) {
   const currentUser = user.value
@@ -303,6 +291,42 @@ function closeTaskModal() {
   isOpenedTaskModal.value = false
 }
 
+const changeLeaderComment = useDebounceFn((input: string) => {
+  if (!currentTask.value?.id) {
+    return
+  }
+
+  if (!user.value?.token) {
+    return
+  }
+
+  taskStore.changeLeaderComment(currentTask.value.id, input, user.value.token)
+}, 450)
+
+const changeDescription = useDebounceFn((input: string) => {
+  if (!currentTask.value?.id) {
+    return
+  }
+
+  if (!user.value?.token) {
+    return
+  }
+
+  taskStore.changeDescription(currentTask.value.id, input, user.value.token)
+}, 450)
+
+const changeName = useDebounceFn((input: string) => {
+  if (!currentTask.value?.id) {
+    return
+  }
+
+  if (!user.value?.token) {
+    return
+  }
+
+  taskStore.changeName(currentTask.value.id, input, user.value.token)
+}, 450)
+
 // const wildcardTask = ref({
 //   id: '1',
 //   sprintId: '1',
@@ -324,10 +348,9 @@ function closeTaskModal() {
 
 <template>
   <div
-    v-if="sprint.status == 'ACTIVE'"
+    v-if="activeSprint?.status === 'ACTIVE'"
     class="active-sprint"
   >
-    <!-- <button @click="getLogs('0')">get logs</button> -->
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div
@@ -339,9 +362,9 @@ function closeTaskModal() {
             {{ sprint.status }}
           </Typography>
         </div>
-        <SprintModal
+        <FinishSprintModal
           :is-opened="isOpenedSprinttModal"
-          :sprint="currentSprint"
+          :sprint="(currentSprint as Sprint)"
           @close-modal="closeSprintModal"
         />
         <Typography>(до {{ getFormattedDate(sprint.finishDate) }})</Typography>
@@ -414,6 +437,14 @@ function closeTaskModal() {
                   </div>
                   <div class="d-flex gap-1 text-secondary">
                     {{ getExecutorTask(element.id) ?? 'нет испольнителя' }}
+                  </div>
+                  <div
+                    class="d-flex gap-1 text-secondary text-info"
+                    v-if="element.leaderComment"
+                  >
+                    <Typography>
+                      {{ element.leaderComment }}
+                    </Typography>
                   </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 w-100 mt-2">
@@ -743,8 +774,12 @@ function closeTaskModal() {
   </div>
   <TaskDescriptionModal
     :is-opened="isOpenedTaskModal"
-    :task="currentTask"
+    :task="(currentTask as Task)"
+    :user="(user as User)"
     @close-modal="closeTaskModal"
+    @update-leader-comment="changeLeaderComment"
+    @update-description="changeDescription"
+    @update-name="changeName"
   />
 </template>
 

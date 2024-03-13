@@ -10,6 +10,7 @@ type IdeaMarketStatusType =
 interface IdeaMarket {
   id: string
   marketId: string
+  ideaId: string
   initiator: User
   name: string
   problem: string

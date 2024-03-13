@@ -95,6 +95,7 @@ const deletingTeamId = ref<string | null>(null)
 const deletingTeamName = ref<string>()
 
 const filterByIsClosed = ref<boolean>()
+const filterByIsHasActiveProject = ref<boolean>()
 const filterByIsFree = ref<boolean>()
 const filterByOwnerTeams = ref<string>()
 const filterByVacancies = ref<boolean>(false)
@@ -251,18 +252,18 @@ const dropdownTeamsActions = computed<DropdownMenuAction<Team>[]>(() => [
     statement: checkDeleteTeamAction,
     click: handleOpenDeleteModal,
   },
-  ...ideas.value.map((idea) => {
-    return {
-      label: `Пригласить в "${idea.name}"`,
-      beforeLabel: `Отозвать из "${idea.name}"`,
-      statementLabel: (team: Team) => getAccessInvitationsInIdeaMarket(team, idea),
-      statement: checkByUserRole,
-      click: async (team: Team) =>
-        getAccessInvitationsInIdeaMarket(team, idea)
-          ? openConfirmModalCanceled()
-          : openConfirmModalAccepted(),
-    }
-  }),
+  // ...ideas.value.map((idea) => {
+  //   return {
+  //     label: `Пригласить в "${idea.name}"`,
+  //     beforeLabel: `Отозвать из "${idea.name}"`,
+  //     statementLabel: (team: Team) => getAccessInvitationsInIdeaMarket(team, idea),
+  //     statement: checkByUserRole,
+  //     click: async (team: Team) =>
+  //       getAccessInvitationsInIdeaMarket(team, idea)
+  //         ? openConfirmModalCanceled()
+  //         : openConfirmModalAccepted(),
+  //   }
+  // }),
 ])
 
 const teamsTableHeader = computed<TableHeader>(() => ({
@@ -336,7 +337,7 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     statement: computedIsInitiator,
   },
   {
-    category: 'Статус',
+    category: 'Приватность',
     choices: [
       { label: 'Открытая команда', value: false },
       { label: 'Закрытая команда', value: true },
@@ -344,6 +345,16 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     refValue: filterByIsClosed,
     isUniqueChoice: true,
     checkFilter: checkTeamStatus,
+  },
+  {
+    category: 'Статус',
+    choices: [
+      { label: 'В поисках', value: false },
+      { label: 'В работе', value: true },
+    ],
+    refValue: filterByIsHasActiveProject,
+    isUniqueChoice: true,
+    checkFilter: checkTeamHasActiveProject,
   },
   {
     category: 'Компетенции',
@@ -374,10 +385,10 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
 
 function getAccessInvitationsInIdeaMarket(team: Team, idea: IdeaMarket) {
   const { id: currentTeamId } = team
-  const { id: currentIdeaId } = idea
+  const { ideaId: currentIdeaId } = idea
 
   const currentsInvitesIdea = ideaInvitations.value.filter(
-    ({ ideaMarketId, status }) => ideaMarketId === currentIdeaId && status === 'NEW',
+    ({ ideaId, status }) => ideaId === currentIdeaId && status === 'NEW',
   )
   const isTeamInviteInIdea = currentsInvitesIdea.find(
     ({ teamId }) => teamId === currentTeamId,
@@ -399,20 +410,19 @@ async function handleInviteTeam(team: Team, ideaMarket: IdeaMarket) {
 
   if (currentUser?.token) {
     const { token, id: userId } = currentUser
-    const { id, name: ideaName, marketId } = ideaMarket
-    const { id: teamId, name: teamName, membersCount, skills } = team
+    const { ideaId, name: ideaName } = ideaMarket
+    const { id: teamId, name: teamName, membersCount, wantedSkills } = team
 
     const invitation: InvitationTeamToIdea = {
       id: '',
-      ideaMarketId: id,
-      ideaMarketName: ideaName,
+      ideaId: ideaId,
+      ideaName: ideaName,
       status: 'NEW',
-      marketId: marketId,
       initiatorId: userId,
       teamId: teamId,
       teamName: teamName,
-      membersCount: membersCount,
-      skills: skills,
+      teamMembersCount: membersCount,
+      skills: wantedSkills,
     }
 
     await invitationsTeamToIdeaStore.postInvitationsToIdea(invitation, token)
@@ -589,12 +599,16 @@ function checkTeamStatus(team: Team, status: FilterValue) {
   return team.closed === status
 }
 
+function checkTeamHasActiveProject(team: Team, status: FilterValue) {
+  return team.hasActiveProject === status
+}
+
 function checkIsTeamSent(team: Team, status: FilterValue) {
   const result = ideaInvitations.value.find(
     (invitation) => invitation.teamId == team.id && invitation.status === 'NEW',
   )
 
-  return Boolean(result) === status && !team.hasActiveProject
+  return Boolean(result) === status
 }
 
 function checkOwnerTeams(team: Team, userId: FilterValue) {

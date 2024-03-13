@@ -16,9 +16,11 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Profile from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import TaskHistoryTable from '@Components/Tables/TaskHistoryTable/TaskHistoryTable.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
 
 import { getTaskStatus } from '@Utils/getTaskStatus'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 function getFormattedDate(date: string) {
   if (date) {
@@ -31,6 +33,10 @@ function getFormattedDate(date: string) {
 
 const props = defineProps<TaskDescriptionModalProps>()
 const emit = defineEmits<TaskDescriptionModalEmits>()
+
+const isLeader = props.user.role === 'TEAM_LEADER'
+
+const isNameChange = ref(false)
 
 function navigateToProfileModal(id: string) {
   const profileModalRoute: RouteRecordRaw = {
@@ -71,9 +77,36 @@ function hexToRgb(hex: string) {
         <div
           class="d-flex justify-content-between align-items-start border-bottom align-items-center"
         >
-          <Typography class-name="fs-3 text-primary">
+          <Typography
+            v-if="isNameChange === false"
+            class-name="fs-3 text-primary d-flex align-items-center "
+          >
             {{ props.task.name }}
+            <Button
+              @click="isNameChange = true"
+              class-name="border-0"
+            >
+              <Icon
+                v-if="isLeader || props.user === props.task.executor"
+                class-name="bi bi-pencil-square fs-5 mt-2 text-primary"
+              />
+            </Button>
           </Typography>
+
+          <div
+            v-else
+            class="rounded-end w-75"
+          >
+            <Input
+              ref="name"
+              name="name"
+              class-name="rounded-end"
+              :model-value="props.task.name"
+              @keyup.enter="isNameChange = false"
+              @input="(event: HTMLTargetEvent)=>emit('update-name', event.target.value)"
+            />
+          </div>
+
           <Button
             variant="close"
             @click="emit('close-modal')"
@@ -85,14 +118,56 @@ function hexToRgb(hex: string) {
               <li class="list-group-item p-0 overflow-hidden">
                 <Button
                   variant="light"
-                  class-name="collapse-controller w-100 "
+                  class-name="collapse-controller w-100"
                   v-collapse:openOnMount="props.task.id"
                 >
                   Описание
                 </Button>
                 <Collapse :id="props.task.id">
-                  <div class="p-2">{{ props.task.description }}</div>
+                  <div v-if="isLeader || props.user === props.task.executor">
+                    <Input
+                      ref="description"
+                      name="description"
+                      :model-value="props.task.description"
+                      @input="(event: HTMLTargetEvent)=>emit('update-description', event.target.value)"
+                    />
+                  </div>
+
+                  <div
+                    v-if="
+                      !isLeader &&
+                      props.user != props.task.executor &&
+                      props.task.description
+                    "
+                  >
+                    <div class="p-2">{{ props.task.description }}</div>
+                  </div>
                 </Collapse>
+              </li>
+              <li
+                class="list-group-item p-0 overflow-hidden"
+                v-if="props.task.status === 'OnModification'"
+              >
+                <Button
+                  variant="light"
+                  class-name="collapse-controller w-100"
+                  v-if="isLeader || props.task.leaderComment"
+                >
+                  Комментарий лидера
+                </Button>
+                <div v-if="isLeader">
+                  <Input
+                    ref="leaderComment"
+                    name="leaderComment"
+                    :model-value="props.task.leaderComment"
+                    @input="(event: HTMLTargetEvent)=>emit('update-leader-comment', event.target.value)"
+                  />
+                </div>
+                <div v-if="!isLeader && props.task.leaderComment">
+                  <div class="p-2">
+                    {{ props.task.leaderComment }}
+                  </div>
+                </div>
               </li>
             </ul>
 
@@ -100,10 +175,9 @@ function hexToRgb(hex: string) {
               <Typography class-name="text-primary"
                 >История перемещений*:</Typography
               >
-              <TaskHistoryTable
-                class="task-history"
-                :task-id="props.task.id"
-              />
+              <div class="task-history">
+                <TaskHistoryTable :task-id="props.task.id" />
+              </div>
             </div>
           </div>
           <div class="idea-modal__right-side bg-white rounded">
@@ -275,10 +349,9 @@ function hexToRgb(hex: string) {
   overflow-y: auto;
   line-height: 1.5;
 }
-
 .task-history {
-  max-height: 350px;
-  overflow-y: auto;
+  max-height: 350px !important;
+  overflow-y: scroll;
 }
 
 .task-info {

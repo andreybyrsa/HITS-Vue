@@ -15,6 +15,14 @@
     v-model="users"
     @close-modal="handleCloseUpdatingModal"
   />
+
+  <ConfirmModal
+    :is-opened="isOpenedConfirmModal"
+    text-button="Удалить"
+    text-question="Вы действительно хотите удалить пользователя?"
+    @close-modal="closeConfirmModal"
+    @action="deleteUser"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -32,6 +40,7 @@ import UsersTableProps from '@Components/Tables/UsersTable/UsersTable.types'
 import Table from '@Components/Table/Table.vue'
 import EditUserModal from '@Components/Modals/EditUserModal/EditUserModal.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
+import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
 import { User } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
@@ -39,6 +48,13 @@ import RolesTypes from '@Domain/Roles'
 import { getUserRolesInfo, getUserRoleInfoStyle } from '@Utils/userRolesInfo'
 import mutableSort from '@Utils/mutableSort'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+import ManageUsersService from '@Services/ManageUsersService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const props = defineProps<UsersTableProps>()
 
@@ -49,6 +65,8 @@ const usersInTeamsFilter = ref<boolean>()
 
 const updatingUser = ref<User | null>(null)
 const isOpenedUpdatingUserModal = ref(false)
+const isOpenedConfirmModal = ref(false)
+const currentUserId = ref('')
 
 const route = useRoute()
 
@@ -99,6 +117,11 @@ const dropdownUsersActions: DropdownMenuAction<User>[] = [
     label: 'Редактировать',
     click: handleOpenUpdatingModal,
   },
+  {
+    label: 'Удалить',
+    className: 'text-danger',
+    click: openConfirmModal,
+  },
 ]
 
 const usersFilters: Filter<User>[] = [
@@ -123,6 +146,25 @@ const usersFilters: Filter<User>[] = [
     checkFilter: checkUsersInTeams,
   },
 ]
+
+async function deleteUser() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const response = await ManageUsersService.deleteUser(currentUserId.value, token)
+
+    if (response instanceof Error) {
+      return useNotificationsStore().createSystemNotification(
+        'Система',
+        response.message,
+      )
+    }
+
+    users.value = users.value.filter(({ id }) => id !== currentUserId.value)
+  }
+}
 
 function navigateToUserProfile(user: User) {
   const profileRoute: RouteRecordRaw = {
@@ -186,5 +228,14 @@ function handleOpenUpdatingModal(currentUser: User) {
 
 function handleCloseUpdatingModal() {
   isOpenedUpdatingUserModal.value = false
+}
+
+function closeConfirmModal() {
+  isOpenedConfirmModal.value = false
+}
+
+function openConfirmModal(currentUser: User) {
+  currentUserId.value = currentUser.id
+  isOpenedConfirmModal.value = true
 }
 </script>

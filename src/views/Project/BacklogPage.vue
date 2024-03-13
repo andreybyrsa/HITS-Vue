@@ -30,14 +30,21 @@
         >Создать задачу</Button
       >
       <FilterBar
-        class-name=" border-start  w-100"
+        class-name=" border-start w-100"
         :filters="filters"
       />
     </div>
 
     <TaskModal
       :is-opened="isOpenedCreateNewTask"
+      v-model="tasks"
       @close-modal="closeCreateNewTask"
+    />
+    <TaskModal
+      :is-opened="isOpenedUpdateNewTask"
+      v-model="tasks"
+      :task="updatingTask"
+      @close-modal="closeUpdateNewTask"
     />
   </div>
 </template>
@@ -105,6 +112,8 @@ const filters: Filter<Task>[] = [
   },
 ]
 const isOpenedCreateNewTask = ref(false)
+const isOpenedUpdateNewTask = ref(false)
+const updatingTask = ref<Task | null>(null)
 
 function openCreateNewTask() {
   isOpenedCreateNewTask.value = true
@@ -112,6 +121,15 @@ function openCreateNewTask() {
 
 function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
+}
+
+function openUpdateNewTask(task: Task) {
+  updatingTask.value = task
+  isOpenedUpdateNewTask.value = true
+}
+
+function closeUpdateNewTask() {
+  isOpenedUpdateNewTask.value = false
 }
 
 const filteredAndSortedTasks = ref<Task[]>([...sortedInBackLogTasks.value])
