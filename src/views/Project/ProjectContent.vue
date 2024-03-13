@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
@@ -15,6 +15,10 @@ import BacklogPage from './BacklogPage.vue'
 
 const sprintsStore = useSprintsStore()
 const { sprints, activeSprint } = storeToRefs(sprintsStore)
+
+const sprintWithStatusActive = computed(() =>
+  sprints.value.find(({ status }) => status === 'ACTIVE'),
+)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -97,7 +101,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
           Спринты
         </div>
         <div
-          v-if="activeSprint"
+          v-if="sprintWithStatusActive"
           :class="getNavLinkStyle(isTabActiveSprint)"
           @click="switchToTabSprint"
         >
