@@ -17,12 +17,17 @@ export const useUserStore = defineStore('user', {
     async loginUser(user: LoginUser) {
       const response = await AuthService.login(user)
 
-      console.log(response)
-
       if (response instanceof Error) {
         useNotification('Система', response.message)
         return response
       }
+
+      if (!response.token) {
+        useNotification('Система', 'Произошла ошибка при авторизации')
+        return
+      }
+
+      localStorage.setItem('token', response.token)
 
       localStorageUser.setLocalStorageUser(response)
       this.user = localStorageUser.getLocalStorageUser()
