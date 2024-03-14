@@ -44,7 +44,7 @@ Sentry.init({
   ],
 })
 
-const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'PRODUCTION'
+const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'DEVELOPMENT'
 
 const API_URL:
   | 'http://localhost:80/api/v1/ideas-service'
