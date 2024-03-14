@@ -32,7 +32,7 @@ watchImmediate(
     if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
       return switchToTabAboutProject()
     } else if (sprints.value.find(({ status }) => status === 'ACTIVE')) {
-      return switchToTabSprint()
+      return switchToTabSprints()
     } else return switchToTabSprints()
   },
 )
@@ -126,7 +126,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 
     <SprintsListPage
       v-if="isTabSprints"
-      :projectId="project.id"
+      :project="project"
       :sprints="sprint"
     />
 

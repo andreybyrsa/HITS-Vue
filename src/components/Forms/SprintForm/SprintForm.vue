@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { ref, computed, ComputedRef, onBeforeMount, watch } from 'vue'
+import { ref, computed, onBeforeMount, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 
+import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
@@ -13,7 +14,6 @@ import {
 } from '@Components/Forms/SprintForm/SprintForm.types'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import useUserStore from '@Store/user/userStore'
-
 import useSprintsStore from '@Store/sprints/sprintsStore'
 
 import Validation from '@Utils/Validation'
@@ -21,7 +21,6 @@ import { Sprint, Task } from '@Domain/Project'
 
 import ProjectTask from '@Views/Project/ProjectTask.vue'
 import useTasksStore from '@Store/tasks/tasksStore'
-import useProjectsStore from '@Store/projects/projectsStore'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -31,6 +30,7 @@ const props = defineProps<SprintFormProps>()
 const emit = defineEmits<SprintFormEmits>()
 
 const sprintsStore = useSprintsStore()
+const { sprints } = storeToRefs(sprintsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -38,23 +38,18 @@ const { user } = storeToRefs(userStore)
 const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
-const projectsStore = useProjectsStore()
-
-const initialBackLogTasks: ComputedRef<Task[]> = computed<Task[]>(() =>
+const initialBackLogTasks = computed<Task[]>(() =>
   tasks.value.filter((task) => task.status === 'InBackLog'),
 )
 
 const backlogTasks = ref<Task[]>(initialBackLogTasks.value)
-
 const newSprintTasks = ref<Task[]>([])
-
-const isLoading = ref<boolean>(false)
-
 const countMembers = ref<number>(1)
-
 const workingHours = ref<number>(1)
-
 const recommendedLoad = ref<number>(1)
+
+const isOpenedCreateNewTask = ref(false)
+const isLoading = ref<boolean>(false)
 
 const computedWorkingHoursStyle = computed(() => {
   const style =
@@ -63,15 +58,52 @@ const computedWorkingHoursStyle = computed(() => {
   return style
 })
 
-const isOpenedCreateNewTask = ref(false)
+onBeforeMount(async () => {
+  countMembers.value = props.project.team.membersCount
 
-function openCreateNewTask() {
-  isOpenedCreateNewTask.value = true
-}
+  if (props.sprint) {
+    newSprintTasks.value = props.sprint.tasks
 
-function closeCreateNewTask() {
-  isOpenedCreateNewTask.value = false
-}
+    setValues({ ...props.sprint })
+    return
+  }
+
+  const currentDate = new Date()
+  const secondDate = new Date()
+  secondDate.setDate(currentDate.getDate() + 14)
+
+  const startDate = currentDate.toISOString().substring(0, 10)
+  const finishDate = secondDate.toISOString().substring(0, 10)
+
+  setValues({
+    name: `Спринт ${sprints.value.length + 1}`,
+    startDate,
+    finishDate,
+    projectId,
+  })
+})
+
+watch(
+  () => newSprintTasks.value,
+  async (newSprintTasks) => {
+    if (newSprintTasks) {
+      const workingHoursString = getWorkingHoursString()
+      setValues({ workingHours: workingHoursString })
+    }
+  },
+  { deep: true },
+)
+
+watch(
+  () => values,
+  async (values) => {
+    if (values) {
+      const workingHoursString = getWorkingHoursString()
+      setValues({ workingHours: workingHoursString })
+    }
+  },
+  { deep: true },
+)
 
 watch(
   () => tasks,
@@ -95,12 +127,15 @@ const { handleSubmit, setValues, values } = useForm<Sprint>({
   validationSchema: {
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    goal: (value: string) => true,
+    goal: () => true,
     startDate: (value: string) => Validation.checkDate(value) || 'Поле не заполнено',
     finishDate: (value: string) =>
       Validation.validateDates(values.startDate, value) || 'Поле не заполнено',
     workingHours: (value: number) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+  },
+  initialValues: {
+    status: 'ACTIVE',
   },
 })
 
@@ -126,34 +161,32 @@ function moveTaskToBacklog(id: string) {
 }
 
 const CreateSprint = handleSubmit(async (sprint) => {
-  if (user.value?.token && sprint && newSprintTasks.value.length !== 0) {
+  const currentUser = user.value
+
+  if (currentUser?.token && sprint && newSprintTasks.value.length !== 0) {
+    const { token } = currentUser
+
     sprint.tasks = newSprintTasks.value
     sprint.workingHours = workingHours.value.toString()
-    const { token } = user.value
-    await sprintsStore.postSprint(sprint, token)
-    console.log(sprint)
 
+    await sprintsStore.postSprint(sprint, token)
     emit('close-modal')
   }
 })
 
 const UpdateSprint = handleSubmit(async (sprint) => {
-  if (user.value?.token && sprint && newSprintTasks.value.length !== 0) {
+  const currentUser = user.value
+
+  if (currentUser?.token && newSprintTasks.value.length !== 0 && props.sprint) {
+    const { token } = currentUser
+
     sprint.tasks = newSprintTasks.value
     sprint.workingHours = workingHours.value.toString()
-    const { token } = user.value
-    await sprintsStore.updateSprint(sprint, token)
+
+    await sprintsStore.updateSprint(sprint, props.sprint.id, token)
     emit('close-modal')
   }
 })
-
-async function emitCreateSprint() {
-  CreateSprint()
-}
-
-async function emitUpdateSprint() {
-  UpdateSprint()
-}
 
 const getDaysDifference = (startDate: Date, finishDate: Date): number => {
   const daysDifference = Math.round(
@@ -162,203 +195,144 @@ const getDaysDifference = (startDate: Date, finishDate: Date): number => {
   return daysDifference
 }
 
-const getWorkingHoursString = (): string => {
+const getWorkingHoursString = () => {
   const startDate = new Date(values.startDate)
   const finishDate = new Date(values.finishDate)
   const daysDifference = getDaysDifference(startDate, finishDate)
+
   recommendedLoad.value = daysDifference * countMembers.value
   workingHours.value = newSprintTasks.value.reduce(
     (sum, item) => sum + Number(item.workHour),
     0,
   )
 
-  const hintString = workingHours.value.toString() + ` / ${recommendedLoad.value}`
+  const hintString = `${workingHours.value} / ${recommendedLoad.value}`
   return hintString
 }
 
-onBeforeMount(async () => {
-  if (props.sprint) {
-    setValues({ ...props.sprint })
-    return
-  }
-  const currentDate: Date = new Date()
+function openCreateNewTask() {
+  isOpenedCreateNewTask.value = true
+}
 
-  const startDate = currentDate.toISOString().substring(0, 10)
-
-  const secondDate = new Date()
-  secondDate.setDate(currentDate.getDate() + 2 * 7)
-
-  const finishDate = secondDate.toISOString().substring(0, 10)
-
-  setValues({ name: 'Спринт', startDate, finishDate, projectId })
-  if (user.value?.token) {
-    const { token } = user.value
-    const project = await projectsStore.getProject(projectId, token)
-    if (project instanceof Error) return
-    countMembers.value = project.team.members.length
-  }
-})
-
-watch(
-  () => newSprintTasks,
-  async (newSprintTasks) => {
-    if (newSprintTasks) {
-      const workingHoursString = getWorkingHoursString()
-      setValues({ workingHours: workingHoursString })
-    }
-  },
-  { deep: true },
-)
-
-watch(
-  () => values,
-  async (values) => {
-    if (values) {
-      const workingHoursString = getWorkingHoursString()
-      setValues({ workingHours: workingHoursString })
-    }
-  },
-  { deep: true },
-)
+function closeCreateNewTask() {
+  isOpenedCreateNewTask.value = false
+}
 </script>
 
 <template>
-  <div class="team-form w-100 bg-white p-3 overflow-auto">
-    <div class="left-block width-auto">
-      <div class="form-name">
-        <Typography class-name="fs-3 text-primary">{{
-          props.sprint ? 'Редактирование спринта' : 'Создание спринта'
-        }}</Typography>
-      </div>
+  <div class="sprint-form w-100">
+    <!-- header -->
+    <div class="sprint-form__header w-100">
+      <Typography class-name="fs-3 text-primary">
+        {{ props.sprint ? 'Редактирование спринта' : 'Создание спринта' }}
+      </Typography>
 
-      <div class="tasks">
-        <div class="backlog">
-          <div class="backlog-name border-bottom border-4">
-            <Typography class-name="fs-4 text-secondary">Бэклог</Typography>
-          </div>
-          <div class="tasks-list d-flex flex-column gap-2">
-            <Button
-              @click="openCreateNewTask()"
-              variant="primary"
-              >Создать новую задачу</Button
-            >
-            <TaskModal
-              :is-opened="isOpenedCreateNewTask"
-              @close-modal="closeCreateNewTask"
+      <Button
+        variant="close"
+        class="close"
+        @click="emit('close-modal')"
+      />
+    </div>
+
+    <!-- content -->
+    <div class="d-flex gap-3 mt-1 w-100">
+      <!-- tasks -->
+      <div class="sprint-form__content-tasks d-flex gap-4">
+        <!-- backlog -->
+        <div class="d-flex flex-column w-100">
+          <div class="sprint-form__backlog-name border-bottom">
+            <Typography class-name="fs-5 text-secondary">Бэклог</Typography>
+            <Icon
+              class-name="bi bi-plus sprint-form__backlog-add p-1 rounded"
+              @click="openCreateNewTask"
             />
+          </div>
+          <div class="d-flex flex-column mt-3">
             <ProjectTask
-              @click="moveTaskToNewTasks(task.id)"
               v-for="task in backlogTasks"
               :key="task.id"
-              :size="'SMALL'"
+              @click="moveTaskToNewTasks(task.id)"
+              size="SMALL"
               :task="task"
             />
           </div>
         </div>
-        <div class="new-sprint">
-          <div class="new-sprint-name border-bottom border-4">
-            <Typography class-name="fs-4 text-secondary">Новый спринт</Typography>
+
+        <!-- new-sprint -->
+        <div class="d-flex flex-column w-100">
+          <div class="border-bottom">
+            <Typography class-name="fs-5 text-secondary">Новый спринт</Typography>
           </div>
-          <div class="tasks-list d-flex flex-column gap-2">
+          <div class="d-flex flex-column mt-3">
             <ProjectTask
               @click="moveTaskToBacklog(task.id)"
               v-for="task in newSprintTasks"
               :key="task.id"
-              :size="'SMALL'"
+              size="SMALL"
               :task="task"
             />
           </div>
         </div>
       </div>
-    </div>
-    <div class="right-block">
-      <div class="form">
-        <Button
-          variant="close"
-          class="close"
-          @click="emit('close-modal')"
-        ></Button>
-        <Input
-          name="name"
-          class-name="rounded-end"
-          label="Название спринта"
-          validate-on-update
-          placeholder="Введите название спринта"
-        />
-        <Textarea
-          name="goal"
-          class-name="rounded-end"
-          label="Цель"
-          validate-on-update
-          placeholder="Введите цель спринта"
-        ></Textarea>
 
-        <Input
-          name="startDate"
-          class-name="rounded-end"
-          label="Начало спринта"
-          type="date"
-          validate-on-update
-          placeholder=".. | .. | .."
-        />
-        <Input
-          name="finishDate"
-          class-name="rounded-end"
-          label="Конец спринта"
-          type="date"
-          validate-on-update
-          placeholder=".. | .. | .."
-        />
-        <Input
-          disabled
-          name="workingHours"
-          :class-name="computedWorkingHoursStyle"
-          label="Общие часы работы"
-          type="string"
-          validate-on-update
-          placeholder="Часы"
-        />
-      </div>
+      <!-- form -->
+      <div class="sprint-form__form d-flex flex-column gap-3">
+        <!-- inputs -->
+        <div class="d-flex flex-column gap-3">
+          <Input
+            name="name"
+            class-name="rounded-end"
+            label="Название спринта"
+            validate-on-update
+            placeholder="Введите название спринта"
+          />
+          <Textarea
+            name="goal"
+            class-name="textarea rounded-end"
+            label="Цель"
+            validate-on-update
+            placeholder="Введите цель спринта"
+          />
+          <Input
+            name="startDate"
+            class-name="rounded-end"
+            label="Начало спринта"
+            type="date"
+            validate-on-update
+            placeholder=".. | .. | .."
+          />
+          <Input
+            name="finishDate"
+            class-name="rounded-end"
+            label="Конец спринта"
+            type="date"
+            validate-on-update
+            placeholder=".. | .. | .."
+          />
+          <Input
+            disabled
+            name="workingHours"
+            :class-name="computedWorkingHoursStyle"
+            label="Общие часы работы"
+            type="string"
+            validate-on-update
+            placeholder="Часы"
+          />
+        </div>
 
-      <div
-        v-tooltip="newSprintTasks.length == 0 && 'в спринте должны быть задачи'"
-        v-if="newSprintTasks.length == 0"
-      >
+        <!-- Кнопки -->
         <Button
-          @click="emitUpdateSprint()"
+          @click="UpdateSprint"
           v-if="props.sprint"
           variant="primary"
-          class-name="w-75"
           :isLoading="isLoading"
         >
           Сохранить изменения
         </Button>
         <Button
           v-else
-          @click="emitCreateSprint()"
+          @click="CreateSprint"
           variant="primary"
-          class-name="w-75"
-          :isLoading="isLoading"
-          :disabled="newSprintTasks.length == 0"
-        >
-          Создать спринт
-        </Button>
-      </div>
-      <div v-if="newSprintTasks.length != 0">
-        <Button
-          @click="emitUpdateSprint()"
-          v-if="props.sprint"
-          variant="primary"
-          class-name="w-75"
-          :isLoading="isLoading"
-        >
-          Сохранить изменения
-        </Button>
-        <Button
-          v-else
-          @click="emitCreateSprint()"
-          variant="primary"
-          class-name="w-75"
           :isLoading="isLoading"
           :disabled="newSprintTasks.length == 0"
         >
@@ -367,75 +341,52 @@ watch(
       </div>
     </div>
   </div>
+
+  <TaskModal
+    :is-opened="isOpenedCreateNewTask"
+    @close-modal="closeCreateNewTask"
+  />
 </template>
 
-<style lang="scss" scoped>
-.close {
-  justify-self: end;
-}
-.tasks-list {
-  display: flex;
-  padding: 7px 0;
-}
-.left-block {
-  display: flex;
-  justify-content: start;
-  flex-direction: column;
-  width: 66.66%;
-  padding: 0 3rem;
+<style lang="scss">
+.textarea {
+  resize: none;
+  height: 100px;
 }
 
-.line {
-  width: 11px;
-  height: auto;
-  background-color: gray;
-}
+.sprint-form {
+  @include flexible(flex-start, flex-start, column);
 
-.right-block {
-  width: 33.33%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
+  &__header {
+    @include flexible(center, space-between);
+  }
 
-.form {
-  display: grid;
-  gap: 1rem;
-}
+  &__content {
+    &-tasks {
+      width: 70%;
+      overflow-y: scroll;
+    }
+  }
 
-.form-name {
-  margin-bottom: 2rem;
-}
+  &__backlog {
+    &-name {
+      @include flexible(center, space-between);
+    }
 
-.tasks {
-  width: auto;
-  display: flex;
-  justify-content: space-between;
-  overflow-y: scroll;
-  padding: 0 10px;
-}
+    &-add {
+      transition: all linear 0.15s;
+      -webkit-transition: all linear 0.15s;
 
-.backlog {
-  width: 45%;
-}
+      &:hover {
+        cursor: pointer;
+        color: white;
+        background-color: rgb(13, 110, 253);
+      }
+    }
+  }
 
-.new-sprint {
-  width: 45%;
-}
-
-.team-form {
-  display: flex;
-  justify-content: space-between;
-  border-color: gray;
-  height: 100%;
-}
-.team-invite-form {
-  width: 100%;
-  @include flexible(start, start, column);
-
-  &__main {
-    width: 100%;
-    @include flexible(start, start);
+  &__form {
+    width: 30%;
   }
 }
 </style>

@@ -44,7 +44,7 @@
           class="task"
         >
           <div
-            class="cursor-pointer"
+            class="task__name cursor-pointer"
             @click="task.status === 'InBackLog' && openUpdateNewTask(task)"
           >
             {{ task.name }}
@@ -219,6 +219,10 @@ function openCollapse() {
 
   &:hover {
     color: rgb(13, 110, 253);
+  }
+
+  &__name {
+    @include textEllipsis(2);
   }
 }
 </style>
