@@ -11,6 +11,8 @@ import {
 
 import router from './router/index'
 import VueApexCharts from 'vue3-apexcharts'
+import VueTheMask from 'vue-the-mask'
+
 import tooltipDirective from '@Utils/tooltip'
 import dropdownDirective from '@Utils/dropdown'
 import collapseDirective from '@Utils/collapse'
@@ -58,6 +60,9 @@ pinia.use(({ store }) => {
 })
 
 app.use(pinia)
+
+app.use(VueTheMask as any)
+
 app.use(router)
 app.use(VueApexCharts)
 app.directive('tooltip', tooltipDirective)

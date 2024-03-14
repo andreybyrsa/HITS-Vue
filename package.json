@@ -34,6 +34,7 @@
     "vue-final-form": "^4.0.1",
     "vue-loader": "^17.2.2",
     "vue-router": "^4.0.3",
+    "vue-the-mask": "^0.11.1",
     "vue3-apexcharts": "^1.4.4",
     "yup": "^1.2.0"
   },
@@ -41,6 +42,7 @@
     "@types/bootstrap": "^5.2.7",
     "@types/rsocket-core": "^0.0.7",
     "@types/rsocket-websocket-client": "^0.0.4",
+    "@types/vue-the-mask": "^0.11.5",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
