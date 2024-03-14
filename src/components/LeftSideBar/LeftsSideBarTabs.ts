@@ -11,7 +11,14 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Список идей',
         to: '/ideas/list',
         iconName: 'bi bi-list',
-        roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+        roles: [
+          'INITIATOR',
+          'MEMBER',
+          'PROJECT_OFFICE',
+          'EXPERT',
+          'ADMIN',
+          'TEACHER',
+        ],
       },
       {
         name: 'create-idea',
@@ -22,7 +29,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
     ],
     iconName: 'bi bi-lightbulb',
-    roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+    roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'TEACHER'],
   },
   {
     name: 'teams',
@@ -34,7 +41,14 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Список команд',
         to: '/teams/list',
         iconName: 'bi bi-list',
-        roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN', 'PROJECT_OFFICE'],
+        roles: [
+          'INITIATOR',
+          'TEAM_OWNER',
+          'MEMBER',
+          'ADMIN',
+          'PROJECT_OFFICE',
+          'TEACHER',
+        ],
       },
       {
         name: 'create-team',
@@ -45,7 +59,14 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
     ],
     iconName: 'bi bi-people',
-    roles: ['INITIATOR', 'TEAM_OWNER', 'MEMBER', 'ADMIN', 'PROJECT_OFFICE'],
+    roles: [
+      'INITIATOR',
+      'TEAM_OWNER',
+      'MEMBER',
+      'ADMIN',
+      'PROJECT_OFFICE',
+      'TEACHER',
+    ],
   },
   {
     name: 'markets',
@@ -61,7 +82,14 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
     ],
     iconName: 'bi bi-shop-window',
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    roles: [
+      'INITIATOR',
+      'MEMBER',
+      'TEAM_OWNER',
+      'PROJECT_OFFICE',
+      'ADMIN',
+      'TEACHER',
+    ],
   },
   {
     name: 'admin',

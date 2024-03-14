@@ -65,7 +65,14 @@ function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const marketRoutes: LeftSideBarTabType[] = activeMarkets.map(({ id, name }) => ({
     name: `market-${id}`,
     text: name,
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    roles: [
+      'INITIATOR',
+      'MEMBER',
+      'TEAM_OWNER',
+      'PROJECT_OFFICE',
+      'ADMIN',
+      'TEACHER',
+    ],
     iconName: 'bi bi-basket3',
     to: `/market/${id}`,
   }))
@@ -94,7 +101,8 @@ async function getActiveMarkets() {
     if (
       response.length === 0 &&
       user.value?.role !== 'ADMIN' &&
-      user.value?.role !== 'PROJECT_OFFICE'
+      user.value?.role !== 'PROJECT_OFFICE' &&
+      user.value?.role !== 'TEACHER'
     ) {
       spliceMarketsTab()
     } else if (index !== -1) {
