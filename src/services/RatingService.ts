@@ -19,7 +19,7 @@ const getAllIdeaRatings = async (
 ): Promise<Rating[] | Error> => {
   return ratingsAxios
     .get<Rating[]>(
-      `/rating/all/${ideaId}`,
+      `/ideas-service/rating/all/${ideaId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -36,7 +36,7 @@ const getExpertRating = async (
 ): Promise<Rating | Error> => {
   return ratingsAxios
     .get(
-      `/rating/${ideaId}`,
+      `/ideas-service/rating/${ideaId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -54,7 +54,7 @@ const saveExpertRating = async (
 ): Promise<void | Error> => {
   return ratingsAxios
     .put<void>(
-      '/rating/save',
+      '/ideas-service/rating/save',
       rating,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -73,7 +73,7 @@ const confirmExpertRating = async (
 ): Promise<void | Error> => {
   return ratingsAxios
     .put<void>(
-      '/rating/confirm',
+      '/ideas-service/rating/confirm',
       rating,
       {
         headers: { Authorization: `Bearer ${token}` },

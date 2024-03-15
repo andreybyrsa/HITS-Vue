@@ -20,7 +20,7 @@ const getInvitationInfo = async (
   slug: string | string[],
 ): Promise<InvitationInfo | Error> => {
   return axios
-    .get(`${API_URL}/profile/get/invitation/${slug}`)
+    .get(`${API_URL}/ideas-service/profile/get/invitation/${slug}`)
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка приглашения'))
 }
@@ -30,7 +30,7 @@ const getInfoToChangeEmail = async (
   token: string,
 ): Promise<NewEmailForm | Error> => {
   return axios
-    .get(`${API_URL}/profile/change/email/${slug}`, {
+    .get(`${API_URL}/ideas-service/profile/change/email/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -42,7 +42,7 @@ const inviteUserByEmail = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .post(`${API_URL}/profile/send/email`, userData, {
+    .post(`${API_URL}/ideas-service/profile/send/email`, userData, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -55,7 +55,7 @@ const inviteUsers = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .post(`${API_URL}/profile/send/emails`, usersData, {
+    .post(`${API_URL}/ideas-service/profile/send/emails`, usersData, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -67,7 +67,7 @@ const sendRecoveryEmail = async (
   recoveryData: RecoveryData,
 ): Promise<string | Error> => {
   return axios
-    .post(`${API_URL}/profile/send/change/password`, recoveryData)
+    .post(`${API_URL}/ideas-service/profile/send/change/password`, recoveryData)
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка отправки почты'))
 }
@@ -77,7 +77,7 @@ const sendUrlToChangeEmail = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .post(`${API_URL}/profile/send/change/email`, userData, {
+    .post(`${API_URL}/ideas-service/profile/send/change/email`, userData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -88,7 +88,7 @@ const sendUrlToChangeEmail = async (
 
 const deleteInvitationInfo = async (slug: string | string[]) => {
   return axios
-    .delete(`${API_URL}/profile/delete/invitation/${slug}`)
+    .delete(`${API_URL}/ideas-service/profile/delete/invitation/${slug}`)
     .catch<Error>((error) => handleAxiosError(error, 'Ошибка удаления приглашения'))
 }
 

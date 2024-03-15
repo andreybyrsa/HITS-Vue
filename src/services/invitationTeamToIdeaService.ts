@@ -37,7 +37,7 @@ const getInvitationsByIdea = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/idea/invitation/all/${ideaMarketId}`,
+      `/ideas-service/idea/invitation/all/${ideaMarketId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -59,7 +59,7 @@ const getAllInvitationsByInitiator = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/idea/invitation/all/initiator`,
+      `/ideas-service/idea/invitation/all/initiator`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -81,7 +81,7 @@ const getTeamInvitations = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/idea/invitation/team/all/${teamId}`, // FIX ROUTE
+      `/ideas-service/idea/invitation/team/all/${teamId}`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -103,10 +103,14 @@ const inviteTeamToIdea = async (
   token: string,
 ): Promise<InvitationTeamToIdea | Error> => {
   return invitationTeamToIdeaAxios
-    .post(`/idea/invitation/${invitation.teamId}/${invitation.ideaId}`, invitation, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .post(
+      `/ideas-service/idea/invitation/${invitation.teamId}/${invitation.ideaId}`,
+      invitation,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка отправки приглашения'))
 }
@@ -133,7 +137,7 @@ const changeInvitationStatus = async (
 
   return invitationTeamToIdeaAxios
     .put<Success | Error>(
-      `/idea/invitation/status`,
+      `/ideas-service/idea/invitation/status`,
       { id: invitationId, teamId: teamId, ideaId: ideaId, status: status },
       {
         headers: { Authorization: `Bearer ${token}` },

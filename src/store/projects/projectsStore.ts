@@ -7,20 +7,9 @@ import { IdeaMarket } from '@Domain/IdeaMarket'
 
 import useIdeasMarketStore from '@Store/ideasMarket/ideasMarket'
 
-import { Project, ProjectStatus } from '@Domain/Project'
-import { Team } from '@Domain/Team'
+import { ProjectStatus } from '@Domain/Project'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
-
-function getMemberRole(userId: string, team: Team, ideaMarket: IdeaMarket) {
-  if (team.leader?.userId === userId) {
-    return 'TEAM_LEADER'
-  }
-  if (ideaMarket.initiator.id === userId) {
-    return 'MEMBER'
-  }
-  return 'INITIATOR'
-}
 
 const useProjectsStore = defineStore('projects', {
   state: (): InitialState => ({
@@ -73,64 +62,21 @@ const useProjectsStore = defineStore('projects', {
 
   actions: {
     async postProject(ideaMarket: IdeaMarket, token: string) {
-      const { team, name, description, customer, initiator } = ideaMarket
-      const currentDate = new Date().toJSON().toString()
+      const response = await ProjectService.convertIdeaToProject(ideaMarket, token)
 
-      if (team) {
-        const { members, name: teamName, id: teamId } = team
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        this.projects?.push(response)
 
-        const project: Project = {
-          id: '',
-          name: name,
-          description: description,
-          customer: customer,
-          initiator: initiator,
-          team: team,
-          members: members.map(({ userId, email, firstName, lastName }) => {
-            const currentDate = new Date().toJSON().toString()
-            return {
-              projectName: name,
-              teamId: teamId,
-              teamName: teamName,
-              userId: userId,
-              email: email,
-              firstName: firstName,
-              lastName: lastName,
-              startDate: currentDate,
-              finishDate: '',
-              projectRole: getMemberRole(userId, team, ideaMarket),
-            }
-          }),
-          report: {
-            projectId: '',
-            marks: [],
-            report: '',
-          },
+        const ideaMarketsStore = useIdeasMarketStore()
+        const currentIdeaMarket = ideaMarketsStore.ideasMarket.find(
+          (ideaFromMarket) => ideaFromMarket.id === ideaMarket.id,
+        )
 
-          startDate: currentDate,
-          finishDate: '',
-          status: 'ACTIVE',
-        }
-
-        const response = await ProjectService.convertIdeaToProject(project, token)
-
-        if (response instanceof Error) {
-          useNotificationsStore().createSystemNotification(
-            'Система',
-            response.message,
-          )
-        } else {
-          this.projects?.push(response)
-
-          const ideaMarketsStore = useIdeasMarketStore()
-          const currentIdeaMarket = ideaMarketsStore.ideasMarket.find(
-            (ideaFromMarket) => ideaFromMarket.id === ideaMarket.id,
-          )
-
-          if (currentIdeaMarket) {
-            const { id } = currentIdeaMarket
-            await ideaMarketsStore.updateIdeaMarketStatus(id, 'PROJECT', token)
-          }
+        if (currentIdeaMarket) {
+          const { id } = currentIdeaMarket
+          await ideaMarketsStore.updateIdeaMarketStatus(id, 'PROJECT', token)
         }
       }
     },
