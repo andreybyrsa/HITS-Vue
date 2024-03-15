@@ -113,14 +113,14 @@ const useSprintsStore = defineStore('sprints', {
 
     async updateSprint(sprint: Sprint, sprintId: string, token: string) {
       const response = await SprintService.updateSprint(sprint, sprintId, token)
-      console.log(response)
+
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        this.sprints.map((sprintInStore) => {
-          if (sprintInStore.id != sprintId) return
-          sprintInStore = { ...sprint, id: sprintId }
-        })
+        const index = this.sprints.findIndex(({ id }) => id === sprintId)
+        if (index !== -1) {
+          this.sprints[index] = { ...sprint, id: sprintId }
+        }
 
         useTasksStore().tasks.forEach((task) => {
           if (task.status === 'InBackLog' && sprint.tasks.includes(task)) {

@@ -103,10 +103,8 @@
       <Button
         v-if="size != 'SMALL'"
         v-collapse="task.id"
-        class-name="d-flex gap-2 border-0 fw-semibold"
         @click="openCollapse"
       >
-        <Typography>Описание</Typography>
         <Icon class-name="bi bi-chevron-down fs-5" />
       </Button>
     </div>

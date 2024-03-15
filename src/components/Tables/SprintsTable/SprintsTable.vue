@@ -62,18 +62,21 @@ const sprintsTableHeader = computed<TableHeader>(() => ({
 const usersTableColumns: TableColumn<Sprint>[] = [
   {
     key: 'name',
+    size: 'col-3',
     label: 'Название',
     rowCellClick: OpenEditSprintModal,
   },
   {
     key: 'status',
     label: 'Статус',
+    contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getSprintStatusStyle,
     getRowCellFormat: getSprintStatusFormat,
   },
   {
     key: 'startDate',
     label: 'Дата старта',
+    contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getFormattedDate,
   },
   {

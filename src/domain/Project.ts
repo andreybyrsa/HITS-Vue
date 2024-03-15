@@ -78,7 +78,7 @@ interface Sprint {
   id: string
   projectId: string
   name: string
-  goal: string
+  goal?: string
   marks: SprintMarks[]
   report: string
   startDate: string

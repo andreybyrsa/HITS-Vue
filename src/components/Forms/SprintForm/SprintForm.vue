@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onBeforeMount, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 
@@ -13,18 +13,17 @@ import {
   SprintFormEmits,
 } from '@Components/Forms/SprintForm/SprintForm.types'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+
+import Validation from '@Utils/Validation'
+
+import ProjectTask from '@Views/Project/ProjectTask.vue'
+
+import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 
-import Validation from '@Utils/Validation'
 import { Sprint, Task } from '@Domain/Project'
-
-import ProjectTask from '@Views/Project/ProjectTask.vue'
-import useTasksStore from '@Store/tasks/tasksStore'
 import { useRoute } from 'vue-router'
-
-const route = useRoute()
-const projectId = route.params.id.toString()
 
 const props = defineProps<SprintFormProps>()
 const emit = defineEmits<SprintFormEmits>()
@@ -38,72 +37,29 @@ const { user } = storeToRefs(userStore)
 const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
+const route = useRoute()
+const projectId = route.params.id.toString()
+
 const initialBackLogTasks = computed<Task[]>(() =>
   tasks.value.filter((task) => task.status === 'InBackLog'),
 )
 
 const backlogTasks = ref<Task[]>(initialBackLogTasks.value)
-const newSprintTasks = ref<Task[]>([])
-const countMembers = ref<number>(1)
-const workingHours = ref<number>(1)
-const recommendedLoad = ref<number>(1)
+const newSprintTasks = ref<Task[]>(props.sprint?.tasks ?? [])
 
 const isOpenedCreateNewTask = ref(false)
 const isLoading = ref<boolean>(false)
 
-const computedWorkingHoursStyle = computed(() => {
-  const style =
-    'rounded-end ' +
-    (recommendedLoad.value < workingHours.value ? 'text-danger' : 'text-success')
-  return style
-})
-
-onBeforeMount(async () => {
-  countMembers.value = props.project.team.membersCount
-
-  if (props.sprint) {
-    newSprintTasks.value = props.sprint.tasks
-
-    setValues({ ...props.sprint })
-    return
-  }
-
-  const currentDate = new Date()
-  const secondDate = new Date()
-  secondDate.setDate(currentDate.getDate() + 14)
-
-  const startDate = currentDate.toISOString().substring(0, 10)
-  const finishDate = secondDate.toISOString().substring(0, 10)
-
-  setValues({
-    name: `Спринт ${sprints.value.length + 1}`,
-    startDate,
-    finishDate,
-    projectId,
-  })
-})
-
-watch(
-  () => newSprintTasks.value,
-  async (newSprintTasks) => {
-    if (newSprintTasks) {
-      const workingHoursString = getWorkingHoursString()
-      setValues({ workingHours: workingHoursString })
-    }
-  },
-  { deep: true },
+const workingHours = computed<number>(() =>
+  newSprintTasks.value.reduce((sum, item) => sum + Number(item.workHour), 0),
 )
+const recommendedLoad = computed<number>(() => {
+  const startDate = new Date(values.startDate)
+  const finishDate = new Date(values.finishDate)
+  const daysDifference = getDaysDifference(startDate, finishDate)
 
-watch(
-  () => values,
-  async (values) => {
-    if (values) {
-      const workingHoursString = getWorkingHoursString()
-      setValues({ workingHours: workingHoursString })
-    }
-  },
-  { deep: true },
-)
+  return daysDifference * props.project.team.membersCount
+})
 
 watch(
   () => tasks,
@@ -123,6 +79,23 @@ watch(
   { deep: true },
 )
 
+function updateDate(newStartDate?: string) {
+  if (props.sprint && !newStartDate) {
+    const currentStartDate = props.sprint.startDate
+    const currentFinishDate = props.sprint.finishDate
+    return { currentStartDate, currentFinishDate }
+  }
+
+  const currentDate = newStartDate ? new Date(newStartDate) : new Date()
+  const secondDate = new Date()
+  secondDate.setDate(currentDate.getDate() + 14)
+
+  const startDate = currentDate.toISOString().substring(0, 10)
+  const finishDate = secondDate.toISOString().substring(0, 10)
+
+  return { startDate, finishDate }
+}
+
 const { handleSubmit, setValues, values } = useForm<Sprint>({
   validationSchema: {
     name: (value: string) =>
@@ -131,18 +104,29 @@ const { handleSubmit, setValues, values } = useForm<Sprint>({
     startDate: (value: string) => Validation.checkDate(value) || 'Поле не заполнено',
     finishDate: (value: string) =>
       Validation.validateDates(values.startDate, value) || 'Поле не заполнено',
-    workingHours: (value: number) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
   },
   initialValues: {
+    name: props.sprint?.name ?? `Спринт ${sprints.value.length + 1}`,
     status: 'ACTIVE',
+    goal: props.sprint?.goal,
+    projectId,
+    ...updateDate(),
   },
 })
 
-function moveTaskToNewTasks(id: string) {
-  const choosenTask = backlogTasks.value.find((task) => task.id == id)
-  backlogTasks.value = backlogTasks.value.filter((task) => task.id !== id)
-  if (choosenTask) newSprintTasks.value.push(choosenTask)
+watch(values, () => {
+  setValues({ ...updateDate(values.startDate) })
+})
+
+function moveTaskToNewTasks(currentTask: Task) {
+  backlogTasks.value = backlogTasks.value.filter((task) => task !== currentTask)
+  newSprintTasks.value.push(currentTask)
+  clearTooltips()
+}
+
+function moveTaskToBacklog(currentTask: Task) {
+  newSprintTasks.value = newSprintTasks.value.filter((task) => task !== currentTask)
+  backlogTasks.value.push(currentTask)
   clearTooltips()
 }
 
@@ -153,23 +137,18 @@ function clearTooltips() {
   })
 }
 
-function moveTaskToBacklog(id: string) {
-  const choosenTask = newSprintTasks.value.find((task) => task.id == id)
-  newSprintTasks.value = newSprintTasks.value.filter((task) => task.id !== id)
-  if (choosenTask) backlogTasks.value.push(choosenTask)
-  clearTooltips()
-}
-
 const CreateSprint = handleSubmit(async (sprint) => {
   const currentUser = user.value
 
   if (currentUser?.token && sprint && newSprintTasks.value.length !== 0) {
     const { token } = currentUser
+    isLoading.value = true
 
     sprint.tasks = newSprintTasks.value
     sprint.workingHours = workingHours.value.toString()
 
     await sprintsStore.postSprint(sprint, token)
+    isLoading.value = false
     emit('close-modal')
   }
 })
@@ -179,35 +158,22 @@ const UpdateSprint = handleSubmit(async (sprint) => {
 
   if (currentUser?.token && newSprintTasks.value.length !== 0 && props.sprint) {
     const { token } = currentUser
+    isLoading.value = true
 
     sprint.tasks = newSprintTasks.value
     sprint.workingHours = workingHours.value.toString()
 
     await sprintsStore.updateSprint(sprint, props.sprint.id, token)
+    isLoading.value = false
     emit('close-modal')
   }
 })
 
-const getDaysDifference = (startDate: Date, finishDate: Date): number => {
+const getDaysDifference = (startDate: Date, finishDate: Date) => {
   const daysDifference = Math.round(
     (finishDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
   )
   return daysDifference
-}
-
-const getWorkingHoursString = () => {
-  const startDate = new Date(values.startDate)
-  const finishDate = new Date(values.finishDate)
-  const daysDifference = getDaysDifference(startDate, finishDate)
-
-  recommendedLoad.value = daysDifference * countMembers.value
-  workingHours.value = newSprintTasks.value.reduce(
-    (sum, item) => sum + Number(item.workHour),
-    0,
-  )
-
-  const hintString = `${workingHours.value} / ${recommendedLoad.value}`
-  return hintString
 }
 
 function openCreateNewTask() {
@@ -217,10 +183,18 @@ function openCreateNewTask() {
 function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
 }
+
+function checkworkingHoursTask() {
+  return recommendedLoad.value >= workingHours.value
+}
+
+function checkDisabledButton() {
+  return newSprintTasks.value.length === 0 || !checkworkingHoursTask()
+}
 </script>
 
 <template>
-  <div class="sprint-form w-100">
+  <div class="sprint-form w-100 mb-1">
     <!-- header -->
     <div class="sprint-form__header w-100">
       <Typography class-name="fs-3 text-primary">
@@ -251,7 +225,7 @@ function closeCreateNewTask() {
             <ProjectTask
               v-for="task in backlogTasks"
               :key="task.id"
-              @click="moveTaskToNewTasks(task.id)"
+              @click="moveTaskToNewTasks(task)"
               size="SMALL"
               :task="task"
             />
@@ -261,11 +235,13 @@ function closeCreateNewTask() {
         <!-- new-sprint -->
         <div class="d-flex flex-column w-100">
           <div class="border-bottom">
-            <Typography class-name="fs-5 text-secondary">Новый спринт</Typography>
+            <Typography class-name="fs-5 text-secondary">
+              Выбранные задачи
+            </Typography>
           </div>
           <div class="d-flex flex-column mt-3">
             <ProjectTask
-              @click="moveTaskToBacklog(task.id)"
+              @click="moveTaskToBacklog(task)"
               v-for="task in newSprintTasks"
               :key="task.id"
               size="SMALL"
@@ -309,32 +285,44 @@ function closeCreateNewTask() {
             validate-on-update
             placeholder=".. | .. | .."
           />
-          <Input
-            disabled
-            name="workingHours"
-            :class-name="computedWorkingHoursStyle"
-            label="Общие часы работы"
-            type="string"
-            validate-on-update
-            placeholder="Часы"
-          />
+          <div>
+            <div class="d-flex gap-1">
+              <div
+                class="d-flex gap-1"
+                :class="checkworkingHoursTask() ? 'text-primary' : 'text-danger'"
+              >
+                <Icon
+                  v-if="!checkworkingHoursTask()"
+                  class-name="bi bi-exclamation-circle fs-6"
+                />
+                Выбранное количество часов:
+              </div>
+              <div>{{ workingHours }}</div>
+            </div>
+
+            <div class="d-flex gap-1">
+              <div class="text-primary">Трудомкость команды (часы):</div>
+              <div>{{ recommendedLoad }}</div>
+            </div>
+          </div>
         </div>
 
         <!-- Кнопки -->
         <Button
-          @click="UpdateSprint"
           v-if="props.sprint"
           variant="primary"
+          @click="UpdateSprint"
           :isLoading="isLoading"
+          :disabled="checkDisabledButton()"
         >
           Сохранить изменения
         </Button>
         <Button
           v-else
-          @click="CreateSprint"
           variant="primary"
+          @click="CreateSprint"
           :isLoading="isLoading"
-          :disabled="newSprintTasks.length == 0"
+          :disabled="checkDisabledButton()"
         >
           Создать спринт
         </Button>
@@ -356,6 +344,7 @@ function closeCreateNewTask() {
 
 .sprint-form {
   @include flexible(flex-start, flex-start, column);
+  overflow-y: scroll;
 
   &__header {
     @include flexible(center, space-between);

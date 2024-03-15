@@ -1419,6 +1419,7 @@ export const tasksMocks: Task[] = [
   },
   {
     id: '14',
+    sprintId: undefined,
     projectId: '0',
     position: 1,
     name: 'Разработка мобильного приложения для работы с задачами',
@@ -1434,6 +1435,7 @@ export const tasksMocks: Task[] = [
   },
   {
     id: '15',
+    sprintId: undefined,
     projectId: '0',
     position: 2,
     name: 'Интеграция с системой управления версиями',
@@ -1449,6 +1451,7 @@ export const tasksMocks: Task[] = [
   },
   {
     id: '16',
+    sprintId: undefined,
     projectId: '0',
     position: 3,
     name: 'Внедрение системы контроля доступа ',
