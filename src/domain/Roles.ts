@@ -5,5 +5,6 @@ type RolesTypes =
   | 'PROJECT_OFFICE'
   | 'EXPERT'
   | 'ADMIN'
+  | 'TEACHER'
 
 export default RolesTypes
