@@ -82,7 +82,7 @@ const usersTableColumns: TableColumn<User>[] = [
     key: 'email',
     label: 'Почта',
     getRowCellStyle: getUserEmailStyle,
-    rowCellClick: handleOpenUpdatingModal,
+    rowCellClick: navigateToUserProfile,
   },
   {
     key: 'firstName',
@@ -115,11 +115,13 @@ const dropdownUsersActions: DropdownMenuAction<User>[] = [
   },
   {
     label: 'Редактировать',
+    statement: () => user.value?.role === 'ADMIN',
     click: handleOpenUpdatingModal,
   },
   {
     label: 'Удалить',
     className: 'text-danger',
+    statement: () => user.value?.role === 'ADMIN',
     click: openConfirmModal,
   },
 ]

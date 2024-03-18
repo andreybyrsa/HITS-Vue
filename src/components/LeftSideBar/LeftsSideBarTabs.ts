@@ -101,7 +101,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         to: '/admin/users',
         text: 'Пользователи',
         iconName: 'bi bi-person-gear',
-        roles: ['ADMIN'],
+        roles: ['ADMIN', 'TEACHER'],
       },
       {
         name: 'admin-add-users',
@@ -133,7 +133,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       },
     ],
     iconName: 'bi bi-ui-checks-grid',
-    roles: ['ADMIN'],
+    roles: ['ADMIN', 'TEACHER'],
   },
 ]
 

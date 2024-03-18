@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, onUpdated } from 'vue'
+import { computed, ref, onMounted, onUpdated } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm, useFieldArray } from 'vee-validate'
 
@@ -47,6 +47,8 @@ const unselectedUsers = ref<User[]>([])
 const isLoadingGroup = ref(true)
 const isCreating = ref(false)
 const isUpdating = ref(false)
+
+const selectedUsersCount = computed(() => fields.value.length)
 
 const groupRoles = getUserRolesInfo().roles
 
@@ -226,7 +228,7 @@ const handleUpdateGroup = handleSubmit(async (values) => {
           :users="fields"
           :unselected-users="unselectedUsers"
           unselected-users-label="Пользователи:"
-          selected-users-label="Пользователи в группе:"
+          :selected-users-label="'Пользователи в группе: ' + selectedUsersCount"
           @selectUser="selectUser"
           @unselect-user="unselectUser"
         />
