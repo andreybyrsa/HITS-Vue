@@ -50,6 +50,9 @@ const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
 })
 
+// Роутер биржи
+onMounted(getActiveMarkets)
+
 watch(
   markets,
   () => {
@@ -59,18 +62,6 @@ watch(
   },
   { deep: true },
 )
-
-watch(
-  myActiveProjects,
-  (projects) => {
-    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
-    if (projectIndex !== -1) updateActiveProjectRoute(projects, projectIndex)
-  },
-  { deep: true },
-)
-
-onMounted(getActiveProjects)
-onMounted(getActiveMarkets)
 
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const initialMarketRoutes: LeftSideBarTabType[] =
@@ -112,28 +103,42 @@ async function getActiveMarkets() {
   }
 }
 
+// Роутер проектов
+onMounted(getActiveProjects)
+
+function updateRolesByTabProject() {
+  const { role } = user.value
+
+  if (role !== 'ADMIN' && role !== 'PROJECT_OFFICE') {
+    tabs.value.forEach(
+      (tab) =>
+        tab.name === 'projects' &&
+        (tab.roles = tab.roles.filter(
+          (role) => role === 'ADMIN' || role === 'PROJECT_OFFICE',
+        )),
+    )
+  } else if (myActiveProjects.value.length === 0) {
+    tabs.value.forEach(
+      (tab) =>
+        tab.name === 'projects' &&
+        tab.roles.push('INITIATOR', 'MEMBER', 'TEAM_LEADER', 'TEAM_OWNER'),
+    )
+  }
+}
+
+watch(
+  myActiveProjects,
+  (projects) => {
+    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
+    if (projectIndex !== -1) updateActiveProjectRoute(projects, projectIndex)
+  },
+  { deep: true },
+)
+
 watch(
   () => user.value?.role,
-  (currentRole) => {
-    if (
-      currentRole !== 'ADMIN' &&
-      currentRole !== 'PROJECT_OFFICE' &&
-      myActiveProjects.value.length === 0
-    ) {
-      tabs.value = tabs.value.map((tab) => {
-        if (tab.name === 'projects')
-          tab.roles = tab.roles.filter(
-            (role) => role === 'ADMIN' || role === 'PROJECT_OFFICE',
-          )
-        return tab
-      })
-    } else if (myActiveProjects.value.length === 0) {
-      tabs.value = tabs.value.map((tab) => {
-        if (tab.name === 'projects')
-          tab.roles.push('INITIATOR', 'MEMBER', 'TEAM_LEADER', 'TEAM_OWNER')
-        return tab
-      })
-    }
+  () => {
+    updateRolesByTabProject()
   },
   { deep: true },
 )
@@ -156,7 +161,7 @@ async function getActiveProjects() {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser.role !== 'EXPERT') {
-    const { token, id, role } = currentUser
+    const { token, id } = currentUser
     const projectsIndex = tabs.value.findIndex(({ name }) => name === 'projects')
 
     const spliceMarketsTab = () => {
@@ -170,10 +175,8 @@ async function getActiveProjects() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (response.length === 0 && role !== 'ADMIN' && role !== 'PROJECT_OFFICE') {
-      updateActiveProjectRoute(response, projectsIndex)
-
-      spliceMarketsTab()
+    if (response.length === 0) {
+      updateRolesByTabProject()
     } else if (projectsIndex !== -1) {
       updateActiveProjectRoute(response, projectsIndex)
     }
