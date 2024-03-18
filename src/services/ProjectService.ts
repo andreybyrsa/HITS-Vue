@@ -8,10 +8,22 @@ import { Project, ProjectStatus } from '@Domain/Project'
 import { AverageMark, ReportProject } from '@Domain/ReportProjectMembers'
 import Success from '@Domain/ResponseMessage'
 import axios from 'axios'
-import { MODE } from '@Main'
+import { API_URL, MODE } from '@Main'
+import { IdeaMarket } from '@Domain/IdeaMarket'
+import { Team } from '@Domain/Team'
 
 const projectMocksAxios = defineAxios(projectMocks)
 const averageMarkMocksAxios = defineAxios(averageMarkMocks)
+
+function getMemberRole(userId: string, team: Team, ideaMarket: IdeaMarket) {
+  if (team.leader?.userId === userId) {
+    return 'TEAM_LEADER'
+  }
+  if (ideaMarket.initiator.id === userId) {
+    return 'MEMBER'
+  }
+  return 'INITIATOR'
+}
 
 function formatGetMyProjects(projects: Project[], userId: string) {
   return projects.filter(
@@ -40,7 +52,7 @@ function formatGetReportProject(
 // --- GET --- //
 const getAllProjects = async (token: string): Promise<Project[] | Error> => {
   return projectMocksAxios
-    .get('/ТУТ-БУДЕТ-ЧТО-ТО', {
+    .get('/scrum-service/project/all', {
       // FIX ROUTE
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -69,7 +81,7 @@ const getMyProjects = async (
 ): Promise<Project[] | Error> => {
   return projectMocksAxios
     .get<Project[]>(
-      `/ТУТ-БУДЕТ-ЧТО-ТО/${userId}`,
+      `/scrum-service/project/active/all`,
       // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -127,11 +139,62 @@ const getAverageMarkProject = async (
 
 // --- POST --- //
 const convertIdeaToProject = async (
-  project: Project,
+  ideaMarket: IdeaMarket,
   token: string,
 ): Promise<Project | Error> => {
-  return projectMocksAxios
-    .post(`/market/idea/convert`, project, {
+  if (MODE === 'DEVELOPMENT') {
+    const { team, name, description, customer, initiator } = ideaMarket
+    const currentDate = new Date().toJSON().toString()
+    if (team) {
+      const { members, name: teamName, id: teamId } = team
+
+      const project: Project = {
+        id: '0000000',
+        name,
+        description,
+        customer,
+        initiator,
+        team,
+        members: members.map(({ userId, email, firstName, lastName }) => {
+          const currentDate = new Date().toJSON().toString()
+          return {
+            projectName: name,
+            teamId,
+            teamName,
+            userId,
+            email,
+            firstName,
+            lastName,
+            startDate: currentDate,
+            finishDate: '',
+            projectRole: getMemberRole(userId, team, ideaMarket),
+          }
+        }),
+        report: {
+          projectId: '',
+          marks: [],
+          report: '',
+        },
+
+        startDate: currentDate,
+        finishDate: '',
+        status: 'ACTIVE',
+      }
+
+      return projectMocksAxios
+        .post(`${API_URL}/scrum-service/project/send`, project, {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+        })
+        .then((response) => response.data)
+        .catch((error) =>
+          handleAxiosError(error, 'Ошибка конвертации идеи в проект'),
+        )
+    }
+  }
+
+  return axios
+    .post(`${API_URL}/scrum-service/project/send`, ideaMarket, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

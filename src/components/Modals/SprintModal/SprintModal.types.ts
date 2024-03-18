@@ -1,5 +1,9 @@
+import { Project, Sprint } from '@Domain/Project'
+
 interface SprintModalProps {
   isOpened: boolean
+  project: Project
+  sprint?: Sprint
 }
 
 interface SprintModalEmits {

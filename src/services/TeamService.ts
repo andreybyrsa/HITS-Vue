@@ -143,7 +143,7 @@ function setRequestsAndInvitationsAnnulled(
 // --- GET --- //
 const getTeams = async (token: string): Promise<Team[] | Error> => {
   return teamsAxios
-    .get(`/team/all`, {
+    .get(`/ideas-service/team/all`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -156,7 +156,7 @@ const getOwnerTeams = async (
   token: string,
 ): Promise<Team[] | Error> => {
   return teamsAxios
-    .get(`/team/owner/all/${ideaMarketId}`, {
+    .get(`/ideas-service/team/owner/all/${ideaMarketId}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -167,7 +167,7 @@ const getOwnerTeams = async (
 const getTeam = async (id: string, token: string): Promise<Team | Error> => {
   return teamsAxios
     .get(
-      `/team/${id}`,
+      `/ideas-service/team/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -184,7 +184,7 @@ const getTeamInvitations = async (
 ): Promise<TeamInvitation[] | Error> => {
   return teamInvitationsAxios
     .get<TeamInvitation[]>(
-      `/team/invitations/${teamId}`,
+      `/ideas-service/team/invitations/${teamId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -204,7 +204,7 @@ const getRequestsToTeam = async (
 ): Promise<RequestToTeam[] | Error> => {
   return requestsToTeamAxios
     .get<RequestToTeam[]>(
-      `/team/users/requests/${teamId}`,
+      `/ideas-service/team/users/requests/${teamId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -222,7 +222,7 @@ const getTeamRequestsToIdeas = async (
   token: string,
 ): Promise<RequestTeamToIdea[] | Error> => {
   return requestTeamsAxios
-    .get(`/team/idea/requests/${teamId}`, {
+    .get(`/ideas-service/team/idea/requests/${teamId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -231,7 +231,7 @@ const getTeamRequestsToIdeas = async (
 
 const getAllUsersInTeams = async (token: string): Promise<TeamMember[] | Error> => {
   return teamMemberAxios
-    .get(`/team/users/consist`, {
+    .get(`/ideas-service/team/users/consist`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -247,7 +247,7 @@ const filterBySkillsAndRole = async (
 ): Promise<Team[] | Error> => {
   return teamsAxios
     .get<Team[] | Error>(
-      `${API_URL}/team/skill-filter/${role}`,
+      `${API_URL}/ideas-service/team/skill-filter/${role}`,
       // skills,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -265,7 +265,7 @@ const filterBySkillsAndRole = async (
 // --- POST --- //
 const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
   return teamsAxios
-    .post(`/team/add`, team, {
+    .post(`/ideas-service/team/add`, team, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -282,7 +282,7 @@ const createInvitationsToTeam = async (
   }
 
   return teamInvitationsAxios
-    .post(`/team/send-invites`, invitationsToTeam, {
+    .post(`/ideas-service/team/send-invites`, invitationsToTeam, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -296,7 +296,7 @@ const createRequestToTeam = async (
 ): Promise<RequestToTeam | Error> => {
   return requestsToTeamAxios
     .postNoRequestBody<RequestToTeam>(
-      `/team/request/send/${requestToTeam.teamId}`,
+      `/ideas-service/team/request/send/${requestToTeam.teamId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -323,7 +323,7 @@ const addTeamMember = async (
 
   return teamMemberAxios
     .postNoRequestBody<TeamMember>(
-      `/team/invite/${teamMember.teamId}/${teamMember.userId}`,
+      `/ideas-service/team/invite/${teamMember.teamId}/${teamMember.userId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -361,7 +361,7 @@ const filterByVacancies = async (
   token: string,
 ): Promise<Team[] | Error> => {
   return axios
-    .post(`${API_URL}/team/vacancy-filter`, skills, {
+    .post(`${API_URL}/ideas-service/team/vacancy-filter`, skills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -374,7 +374,7 @@ const addTeamExperince = async (
   token: string,
 ): Promise<TeamExperience | Error> => {
   return teamExperienceAxios
-    .post(`${API_URL}/team/vacancy-filter`, teamExperience, {
+    .post(`${API_URL}/ideas-service/team/vacancy-filter`, teamExperience, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -390,7 +390,7 @@ const updateTeam = async (
 ): Promise<Team | Error> => {
   return teamsAxios
     .put<Team>(
-      `/team/update/${id}`,
+      `/ideas-service/team/update/${id}`,
       team,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -431,7 +431,7 @@ const appointLeaderTeam = async (
 ): Promise<Success | Error> => {
   return teamsAxios
     .putNoRequestBody<Success>(
-      `/team/change/leader/${teamId}/${teamMember.id}`,
+      `/ideas-service/team/change/leader/${teamId}/${teamMember.id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -457,7 +457,7 @@ const updateRequestToTeamStatus = async (
 
   return requestsToTeamAxios
     .put<RequestToTeam>(
-      `/team/request/${requestId}/update/${status}`,
+      `/ideas-service/team/request/${requestId}/update/${status}`,
       { status: status },
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -481,7 +481,7 @@ const updateInvitationToTeamStatus = async (
 
   return teamInvitationsAxios
     .put<TeamInvitation>(
-      `/team/invitation/${id}/update/${status}`,
+      `/ideas-service/team/invitation/${id}/update/${status}`,
       { status: status },
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -502,7 +502,7 @@ const finishTeamExperience = async (
   const currentDate = new Date().toJSON().toString()
   return teamExperienceAxios
     .putNoRequestBody<Success>(
-      `/team/finish/experience/${teamId}/`,
+      `/ideas-service/team/finish/experience/${teamId}/`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -523,7 +523,7 @@ const finishTeamProject = async (
   const currentDate = new Date().toJSON().toString()
   return teamProjectAxios
     .putNoRequestBody<Success>(
-      `/team/finish/project/${teamId}/`,
+      `/ideas-service/team/finish/project/${teamId}/`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -541,7 +541,7 @@ const finishTeamProject = async (
 const deleteTeam = async (id: string, token: string): Promise<Success | Error> => {
   return teamsAxios
     .delete(
-      `/team/delete/${id}`,
+      `/ideas-service/team/delete/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -570,7 +570,7 @@ const kickTeamMember = async (
 
   return teamMemberAxios
     .delete(
-      `/team/kick/${teamId}/${teamMemberId}`,
+      `/ideas-service/team/kick/${teamId}/${teamMemberId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -593,7 +593,7 @@ const leaveFromTeam = async (
 
   return teamMemberAxios
     .delete(
-      `/team/leave/${teamId}`,
+      `/ideas-service/team/leave/${teamId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

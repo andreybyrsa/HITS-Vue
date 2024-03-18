@@ -114,6 +114,7 @@ const changeSprintStatus = async (
 
 const updateSprint = async (
   sprint: Sprint,
+  sprintId: string,
   token: string,
 ): Promise<Success | Error> => {
   return sprintMocksAxios
@@ -125,7 +126,7 @@ const updateSprint = async (
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       {
-        params: { id: sprint.id },
+        params: { id: sprintId },
       },
     )
     .then((response) => response.data)

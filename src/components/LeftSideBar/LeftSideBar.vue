@@ -93,7 +93,7 @@ async function getActiveMarkets() {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser.role !== 'EXPERT') {
-    const { token } = currentUser
+    const { token, role } = currentUser
     const index = tabs.value.findIndex(({ name }) => name === 'markets')
 
     const spliceMarketsTab = () => {
@@ -107,11 +107,7 @@ async function getActiveMarkets() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (
-      response.length === 0 &&
-      user.value?.role !== 'ADMIN' &&
-      user.value?.role !== 'PROJECT_OFFICE'
-    ) {
+    if (response.length === 0 && role !== 'ADMIN' && role !== 'PROJECT_OFFICE') {
       spliceMarketsTab()
     } else if (index !== -1) {
       updateActiveMarketRoute(response, index)
@@ -137,7 +133,7 @@ async function getActiveProjects() {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser.role !== 'EXPERT') {
-    const { token, id } = currentUser
+    const { token, id, role } = currentUser
     const projectsIndex = tabs.value.findIndex(({ name }) => name === 'projects')
 
     const spliceMarketsTab = () => {
@@ -151,7 +147,7 @@ async function getActiveProjects() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (response.length === 0) {
+    if (response.length === 0 && role !== 'ADMIN' && role !== 'PROJECT_OFFICE') {
       updateActiveProjectRoute(response, projectsIndex)
 
       spliceMarketsTab()

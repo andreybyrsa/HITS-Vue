@@ -1419,6 +1419,7 @@ export const tasksMocks: Task[] = [
   },
   {
     id: '14',
+    sprintId: undefined,
     projectId: '0',
     position: 1,
     name: 'Разработка мобильного приложения для работы с задачами',
@@ -1434,6 +1435,7 @@ export const tasksMocks: Task[] = [
   },
   {
     id: '15',
+    sprintId: undefined,
     projectId: '0',
     position: 2,
     name: 'Интеграция с системой управления версиями',
@@ -1449,6 +1451,7 @@ export const tasksMocks: Task[] = [
   },
   {
     id: '16',
+    sprintId: undefined,
     projectId: '0',
     position: 3,
     name: 'Внедрение системы контроля доступа ',
@@ -1717,19 +1720,6 @@ export const sprintMocks: Sprint[] = [
     workingHours: '15',
     status: 'DONE',
     tasks: [],
-  },
-  {
-    id: '3',
-    projectId: projectMocks[0].id,
-    name: 'Проектировка скрама',
-    goal: 'Цель 4',
-    marks: [sprintMarksMocks[1]],
-    report: 'Отчет 4',
-    startDate: '2024-01-20T11:02:17Z',
-    finishDate: '2024-01-27T11:02:17Z',
-    workingHours: '20',
-    status: 'ACTIVE',
-    tasks: tasksMocks,
   },
 ]
 

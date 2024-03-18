@@ -89,7 +89,7 @@ const handleRemoveIdeaFromFavorites = async () => {
 const handleConvertIdeaToProject = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && props.ideaMarket && props.ideaMarket.team) {
+  if (currentUser?.token && props.ideaMarket) {
     const { token } = currentUser
 
     await projectsStore.postProject(props.ideaMarket, token)

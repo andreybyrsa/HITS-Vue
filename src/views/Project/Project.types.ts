@@ -13,7 +13,7 @@ interface ActiveSprintProps {
 }
 
 interface SprintListProps {
-  projectId: string
+  project: Project
 }
 
 interface TaskProps {

@@ -38,25 +38,27 @@
             class="particle bg-warning"
           ></div>
         </div>
+
         <div
-          class="d-flex align-items-start flex-column"
-          v-tooltip="task.name"
+          v-if="task.status === 'InBackLog'"
+          class="task"
         >
-          <div>
-            <div v-if="task.status === 'InBackLog'">
-              <Button
-                @click="openUpdateNewTask(task)"
-                class-name="fs-5 fw-semibold text-truncate p-0"
-                >{{ task.name }}</Button
-              >
-            </div>
-            <div v-else>
-              <Typography class-name="fs-5 fw-semibold text-truncate">{{
-                task.name
-              }}</Typography>
-            </div>
+          <div
+            class="task__name cursor-pointer"
+            @click="task.status === 'InBackLog' && openUpdateNewTask(task)"
+          >
+            {{ task.name }}
           </div>
         </div>
+        <div
+          v-else
+          class="d-flex align-items-center"
+        >
+          <Typography>
+            {{ task.name }}
+          </Typography>
+        </div>
+
         <div
           class="d-flex align-items-center gap-2"
           v-if="size !== 'SMALL'"
@@ -101,10 +103,8 @@
       <Button
         v-if="size != 'SMALL'"
         v-collapse="task.id"
-        class-name="d-flex gap-2 border-0 fw-semibold"
         @click="openCollapse"
       >
-        <Typography>Описание</Typography>
         <Icon class-name="bi bi-chevron-down fs-5" />
       </Button>
     </div>
@@ -156,7 +156,7 @@ import { Task } from '@Domain/Project'
 import useTasksStore from '@Store/tasks/tasksStore'
 import { storeToRefs } from 'pinia'
 
-const props = defineProps<TaskProps>()
+defineProps<TaskProps>()
 
 const isOpenedUpdateNewTask = ref(false)
 const updatingTask = ref<Task | null>(null)
@@ -173,13 +173,6 @@ function closeUpdateNewTask() {
 }
 
 const isOpenCollapse = ref(false)
-
-function getNameStyle(): string {
-  if (props.size && props.size == 'SMALL') return 'fw-semibold fs-6'
-  return 'fw-semibold text-truncate fs-5'
-}
-
-const nameStyle = getNameStyle()
 
 function hexToRgb(hex: string) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -217,5 +210,17 @@ function openCollapse() {
   height: 10px;
   bottom: 0;
   left: 0;
+}
+.task {
+  @include flexible(center, flex-start);
+  transition: $default-transition-settings;
+
+  &:hover {
+    color: rgb(13, 110, 253);
+  }
+
+  &__name {
+    @include textEllipsis(2);
+  }
 }
 </style>

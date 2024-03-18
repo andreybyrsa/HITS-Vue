@@ -34,7 +34,7 @@ const getUserProfile = async (
 ): Promise<Profile | Error> => {
   return profileUserAxios
     .get(
-      `/profile/${id}`,
+      `/ideas-service/profile/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -50,7 +50,7 @@ const getProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return axios
-    .get(`${API_URL}/profile/avatar/get/${id}`, {
+    .get(`${API_URL}/ideas-service/profile/avatar/get/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -64,7 +64,7 @@ const getTeamExperience = async (
 ): Promise<TeamExperience[] | Error> => {
   return teamExperienceAxios
     .get<TeamExperience[]>(
-      `${API_URL}/profile/avatar/get`,
+      `${API_URL}/ideas-service/profile/avatar/get`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -84,7 +84,7 @@ const getUserTelegram = async (
 ): Promise<UserTelegram | Error> => {
   return usersTelegramAxios
     .get(
-      `/profile/telegram/${userId}`, // fix
+      `/ideas-service/profile/telegram/${userId}`, // fix
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -101,7 +101,7 @@ const saveProfileSkills = async (
   token: string,
 ): Promise<Skill[] | Error> => {
   return axios
-    .post(`${API_URL}/profile/skills/save`, skills, {
+    .post(`${API_URL}/ideas-service/profile/skills/save`, skills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -114,7 +114,7 @@ const uploadProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return axios
-    .post(`${API_URL}/profile/avatar/upload`, formData, {
+    .post(`${API_URL}/ideas-service/profile/avatar/upload`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
@@ -131,7 +131,7 @@ const updateUserFullName = async (
 ): Promise<Profile[] | Error> => {
   return profileUserAxios
     .put<Profile[]>(
-      `/profile/update`,
+      `/ideas-service/profile/update`,
       fullName,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -149,7 +149,7 @@ const createUserTelegram = async (
 ): Promise<UserTelegram | Error> => {
   return usersTelegramAxios
     .postNoRequestBody<UserTelegram>(
-      `${API_URL}/profile/telegram/add-tag`,
+      `${API_URL}/ideas-service/profile/telegram/add-tag`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -172,7 +172,7 @@ const updateTelegramTag = async (
 ): Promise<Success | Error> => {
   return usersTelegramAxios
     .put<Success>(
-      `${API_URL}/profile/telegram/update/`,
+      `${API_URL}/ideas-service/profile/telegram/update/`,
       userTelegram,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -193,7 +193,7 @@ const updateVisibilityOfTag = async (
 ): Promise<Success | Error> => {
   return usersTelegramAxios
     .putNoRequestBody<Success>(
-      `${API_URL}/profile/telegram/visibility/${userTag}`,
+      `${API_URL}/ideas-service/profile/telegram/visibility/${userTag}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -216,7 +216,7 @@ const deleteUserTelegram = async (
 ): Promise<Success | Error> => {
   return usersTelegramAxios
     .delete(
-      `${API_URL}/profile/telegram/delete/${userTag}`,
+      `${API_URL}/ideas-service/profile/telegram/delete/${userTag}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

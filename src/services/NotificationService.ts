@@ -15,7 +15,7 @@ const notificationsAxios = defineAxios(notificationsMocks)
 
 const getNotifications = async (token: string): Promise<Notification[] | Error> => {
   return notificationsAxios
-    .get('/notification/all', {
+    .get('/ideas-service/notification/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -27,7 +27,7 @@ const getFavoriteNotifications = async (
   token: string,
 ): Promise<Notification[] | Error> => {
   return notificationsAxios
-    .get('/notification/favourite', {
+    .get('/ideas-service/notification/favourite', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -42,7 +42,7 @@ const createNotification = async (
   token: string,
 ): Promise<Notification | Error> => {
   return notificationsAxios
-    .post('/notification/create', notification, {
+    .post('/ideas-service/notification/create', notification, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -56,7 +56,7 @@ const markAsFavoriteNotification = async (
 ): Promise<Notification | Error> => {
   return notificationsAxios
     .putNoRequestBody<Notification>(
-      `/notification/favourite/${id}`,
+      `/ideas-service/notification/favourite/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -75,7 +75,7 @@ const unMarkAsFavoriteNotification = async (
 ): Promise<Notification | Error> => {
   return notificationsAxios
     .putNoRequestBody<Notification>(
-      `/notification/unfavourite/${id}`,
+      `/ideas-service/notification/unfavourite/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -94,7 +94,7 @@ const readNotification = async (
 ): Promise<void | Error> => {
   return notificationsAxios
     .putNoRequestBody<void>(
-      `/notification/read/${id}`,
+      `/ideas-service/notification/read/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -115,7 +115,7 @@ const readAllNotifications = async (token: string): Promise<void | Error> => {
   }
 
   return axios
-    .put(`${API_URL}/notification/read/all`, null, {
+    .put(`${API_URL}/ideas-service/notification/read/all`, null, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -129,7 +129,7 @@ const closeNotification = async (
 ): Promise<void | Error> => {
   return notificationsAxios
     .putNoRequestBody<void>(
-      `/notification/show/${id}`,
+      `/ideas-service/notification/show/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

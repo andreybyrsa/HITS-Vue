@@ -12,7 +12,7 @@ const usersGroupsAxios = defineAxios(usersGroupsMocks)
 
 const getUsersGroups = async (token: string): Promise<UserGroup[] | Error> => {
   return usersGroupsAxios
-    .get('/group/all', {
+    .get('/ideas-service/group/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -28,7 +28,7 @@ const getUsersGroup = async (
 ): Promise<UserGroup | Error> => {
   return usersGroupsAxios
     .get(
-      `/group/${id}`,
+      `/ideas-service/group/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -46,7 +46,7 @@ const createUsersGroup = async (
   token: string,
 ): Promise<UserGroup | Error> => {
   return usersGroupsAxios
-    .post('/group/create', usersData, {
+    .post('/ideas-service/group/create', usersData, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -63,7 +63,7 @@ const updateUsersGroup = async (
 ): Promise<UserGroup | Error> => {
   return usersGroupsAxios
     .put(
-      `/group/update/${id}`,
+      `/ideas-service/group/update/${id}`,
       usersGroup,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -83,7 +83,7 @@ const deleteUsersGroup = async (
 ): Promise<Success | Error> => {
   return usersGroupsAxios
     .delete(
-      `/group/delete/${id}`,
+      `/ideas-service/group/delete/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

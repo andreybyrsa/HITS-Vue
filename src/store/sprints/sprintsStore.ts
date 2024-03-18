@@ -51,13 +51,13 @@ const useSprintsStore = defineStore('sprints', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        this.sprints.push(sprint)
-        const tasksStore = useTasksStore()
-        tasksStore.tasks.forEach((task) => {
-          sprint.tasks.forEach((sprintTask) => {
-            if (task.status == 'InBackLog' && sprintTask.id == task.id)
-              task.status = 'inProgress'
-          })
+        this.sprints.push(response)
+
+        useTasksStore().tasks.forEach((task) => {
+          if (task.status === 'InBackLog' && sprint.tasks.includes(task)) {
+            task.sprintId = response.id
+            task.status = 'inProgress'
+          }
         })
       }
     },
@@ -110,16 +110,25 @@ const useSprintsStore = defineStore('sprints', {
         }
       }
     },
-    async updateSprint(sprint: Sprint, token: string) {
-      const response = await SprintService.updateSprint(sprint, token)
+
+    async updateSprint(sprint: Sprint, sprintId: string, token: string) {
+      const response = await SprintService.updateSprint(sprint, sprintId, token)
+
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
-        return
+      } else {
+        const index = this.sprints.findIndex(({ id }) => id === sprintId)
+        if (index !== -1) {
+          this.sprints[index] = { ...sprint, id: sprintId }
+        }
+
+        useTasksStore().tasks.forEach((task) => {
+          if (task.status === 'InBackLog' && sprint.tasks.includes(task)) {
+            task.sprintId = sprintId
+            task.status = 'inProgress'
+          }
+        })
       }
-      this.sprints.forEach((sprintInStore) => {
-        if (sprintInStore.id != sprint.id) return
-        sprintInStore = sprint
-      })
     },
 
     async saveMarkSprint(sprintId: string, marks: SprintMarks[], token: string) {

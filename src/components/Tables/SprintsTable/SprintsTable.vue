@@ -3,19 +3,21 @@
     class-name="p-3"
     :header="sprintsTableHeader"
     :columns="usersTableColumns"
-    :data="sprints"
+    :data="sortSprintsList(sprints)"
     :search-by="['name']"
     :dropdown-actions-menu="dropdownUsersActions"
-    :filters="sprintsFilters"
   />
   <SprintModal
     :is-opened="isOpenedSprintModal"
+    :sprint="sprint"
+    :project="project"
     @close-modal="closeSprintModal"
   />
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { computed, ref } from 'vue'
 import {
   DropdownMenuAction,
   TableColumn,
@@ -26,17 +28,22 @@ import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import SprintsTableProps from '@Components/Tables/SprintsTable/StprintsTable.types'
 import Table from '@Components/Table/Table.vue'
 import { useDateFormat } from '@vueuse/core'
-import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 
 import { Sprint, SprintStatus } from '@Domain/Project'
 
 import { getSprintStatus, getSprintStatusStyle } from '@Utils/getSprintStatus'
 
-defineProps<SprintsTableProps>()
+import useUserStore from '@Store/user/userStore'
+
+const props = defineProps<SprintsTableProps>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const isOpenedSprintModal = ref(false)
+const sprint = ref<Sprint>()
 
-const sprintsTableHeader: TableHeader = {
+const sprintsTableHeader = computed<TableHeader>(() => ({
   label: 'Список спринтов',
   countData: true,
   buttons: [
@@ -45,24 +52,31 @@ const sprintsTableHeader: TableHeader = {
       variant: 'primary',
       prependIconName: 'bi bi-plus-lg',
       click: openSprintModal,
+      statement:
+        Boolean(!props.sprints.find(({ status }) => status === 'ACTIVE')) &&
+        user.value?.role === 'TEAM_LEADER',
     },
   ],
-}
+}))
 
 const usersTableColumns: TableColumn<Sprint>[] = [
   {
     key: 'name',
+    size: 'col-3',
     label: 'Название',
+    rowCellClick: OpenEditSprintModal,
   },
   {
     key: 'status',
     label: 'Статус',
+    contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getSprintStatusStyle,
     getRowCellFormat: getSprintStatusFormat,
   },
   {
     key: 'startDate',
     label: 'Дата старта',
+    contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getFormattedDate,
   },
   {
@@ -73,6 +87,10 @@ const usersTableColumns: TableColumn<Sprint>[] = [
     getRowCellStyle: getFinishDate,
   },
 ]
+
+function sortSprintsList(sprintsList: Sprint[]) {
+  return sprintsList.sort((a, b) => +new Date(b.startDate) - +new Date(a.startDate))
+}
 
 function getSprintStatusFormat(status: SprintStatus) {
   return getSprintStatus().translatedStatus[status]
@@ -105,31 +123,19 @@ function getFinishDate(date: string) {
   return initialClass
 }
 
-const availableStatus = getSprintStatus()
-const filterBySprintStatus = ref<SprintStatus[]>([])
-
-const sprintsFilters: Filter<Sprint>[] = [
-  {
-    category: 'Статус',
-    choices: availableStatus.status.map((sprintStatus) => ({
-      label: availableStatus.translatedStatus[sprintStatus],
-      value: sprintStatus,
-    })),
-    refValue: filterBySprintStatus,
-    isUniqueChoice: false,
-    checkFilter: checkSprintStatus,
-  },
-]
-
-function checkSprintStatus(sprint: Sprint, status: FilterValue) {
-  return sprint.status === status
-}
-
 function openSprintModal() {
   isOpenedSprintModal.value = true
 }
 
+function OpenEditSprintModal(currentSprint: Sprint) {
+  if (currentSprint.status === 'ACTIVE') {
+    sprint.value = currentSprint
+    isOpenedSprintModal.value = true
+  }
+}
+
 function closeSprintModal() {
+  sprint.value = undefined
   isOpenedSprintModal.value = false
 }
 </script>
