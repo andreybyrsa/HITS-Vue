@@ -65,11 +65,14 @@ function getAccessToEdit() {
 function getAccessToDelete() {
   if (user.value) {
     const { id, role } = user.value
-    const { owner, members } = props.team
+    const { owner, members, hasActiveProject } = props.team
 
     return (
       role === 'ADMIN' ||
-      (id === owner.id && members.length === 1 && role === 'TEAM_OWNER')
+      (id === owner.id &&
+        members.length === 1 &&
+        role === 'TEAM_OWNER' &&
+        !hasActiveProject)
     )
   }
 }
@@ -143,12 +146,13 @@ function getAccessCancelOrAcceptInvitationToTeam() {
 function getAccessToLeave() {
   if (user.value) {
     const { id: userId } = user.value
-    const { owner, leader, members } = props.team
+    const { owner, leader, members, hasActiveProject } = props.team
 
     return (
       userId !== owner.id &&
       leader?.id !== userId &&
-      members.find((user) => user.id === userId)
+      members.find((user) => user.id === userId) &&
+      !hasActiveProject
     )
   }
 }
