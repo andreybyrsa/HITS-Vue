@@ -60,6 +60,7 @@ const recommendedLoad = computed<number>(() => {
 
   return daysDifference * props.project.team.membersCount
 })
+// const recommendedLoad = computed<number>(() => 8)
 
 watch(
   () => tasks,

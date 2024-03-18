@@ -62,12 +62,9 @@ watch(
 
 watch(
   myActiveProjects,
-  () => {
-    const currentProjects = myActiveProjects.value.filter(
-      ({ status }) => status === 'ACTIVE',
-    )
+  (projects) => {
     const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
-    if (projectIndex !== -1) updateActiveProjectRoute(currentProjects, projectIndex)
+    if (projectIndex !== -1) updateActiveProjectRoute(projects, projectIndex)
   },
   { deep: true },
 )
@@ -114,6 +111,32 @@ async function getActiveMarkets() {
     }
   }
 }
+
+watch(
+  () => user.value?.role,
+  (currentRole) => {
+    if (
+      currentRole !== 'ADMIN' &&
+      currentRole !== 'PROJECT_OFFICE' &&
+      myActiveProjects.value.length === 0
+    ) {
+      tabs.value = tabs.value.map((tab) => {
+        if (tab.name === 'projects')
+          tab.roles = tab.roles.filter(
+            (role) => role === 'ADMIN' || role === 'PROJECT_OFFICE',
+          )
+        return tab
+      })
+    } else if (myActiveProjects.value.length === 0) {
+      tabs.value = tabs.value.map((tab) => {
+        if (tab.name === 'projects')
+          tab.roles.push('INITIATOR', 'MEMBER', 'TEAM_LEADER', 'TEAM_OWNER')
+        return tab
+      })
+    }
+  },
+  { deep: true },
+)
 
 function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const initialProjectRoutes: LeftSideBarTabType[] =

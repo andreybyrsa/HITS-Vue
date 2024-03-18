@@ -32,7 +32,7 @@ watchImmediate(
     if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
       return switchToTabAboutProject()
     } else if (sprints.value.find(({ status }) => status === 'ACTIVE')) {
-      return switchToTabSprints()
+      return switchToTabBacklog()
     } else return switchToTabSprints()
   },
 )
@@ -136,9 +136,3 @@ function getNavLinkStyle(isCurrentTab: boolean) {
     />
   </div>
 </template>
-
-<style lang="scss" scoped>
-// .content {
-//   height: 90%;
-// }
-</style>

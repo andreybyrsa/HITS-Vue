@@ -1500,7 +1500,6 @@ export const averageMarkMocks: AverageMark[] = [
 export const projectMocks: Project[] = [
   {
     id: '0',
-
     name: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
     description: ideasMocks[1].description,
     customer: ideasMocks[1].customer,
@@ -1719,6 +1718,19 @@ export const sprintMocks: Sprint[] = [
     finishDate: '2024-01-19T11:02:17Z',
     workingHours: '15',
     status: 'DONE',
+    tasks: [],
+  },
+  {
+    id: '3',
+    projectId: projectMocks[0].id,
+    name: 'Спринт 4',
+    goal: 'Цель 4',
+    marks: [sprintMarksMocks[2]],
+    report: 'Отчет 4',
+    startDate: '2024-01-12T11:02:17Z',
+    finishDate: '2024-01-19T11:02:17Z',
+    workingHours: '15',
+    status: 'ACTIVE',
     tasks: [],
   },
 ]
