@@ -46,6 +46,8 @@ const userRoles = getUserRolesInfo()
 const leftSideBarRef = ref<VueElement | null>(null)
 const LeftSideBarClassName = ref<string[]>()
 
+const activeProjects = ref<Project[]>([])
+
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
 })
@@ -107,9 +109,9 @@ async function getActiveMarkets() {
 onMounted(getActiveProjects)
 
 function updateRolesByTabProject() {
-  const { role } = user.value
+  const currentRole = user.value?.role
 
-  if (role !== 'ADMIN' && role !== 'PROJECT_OFFICE') {
+  if (currentRole !== 'ADMIN' && currentRole !== 'PROJECT_OFFICE') {
     tabs.value.forEach(
       (tab) =>
         tab.name === 'projects' &&
@@ -138,7 +140,7 @@ watch(
 watch(
   () => user.value?.role,
   () => {
-    updateRolesByTabProject()
+    if (activeProjects.value.length === 0) updateRolesByTabProject()
   },
   { deep: true },
 )
@@ -175,10 +177,12 @@ async function getActiveProjects() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (response.length === 0) {
+    activeProjects.value = response
+
+    if (activeProjects.value.length === 0) {
       updateRolesByTabProject()
     } else if (projectsIndex !== -1) {
-      updateActiveProjectRoute(response, projectsIndex)
+      updateActiveProjectRoute(activeProjects.value, projectsIndex)
     }
   }
 }
