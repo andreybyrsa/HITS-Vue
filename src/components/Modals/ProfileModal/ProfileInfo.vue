@@ -265,7 +265,7 @@ function getFormattedDate(date: string) {
       </div>
 
       <div
-        v-if="isOwnProfile || user?.role === 'ADMIN'"
+        v-if="isOwnProfile || user?.role === 'ADMIN' || user?.role === 'TEACHER'"
         class="w-100 d-flex flex-column gap-2"
       >
         <div class="d-flex gap-1">
