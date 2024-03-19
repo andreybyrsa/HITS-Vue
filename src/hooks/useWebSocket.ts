@@ -18,7 +18,7 @@ async function useWebSocket<Type>(subscribeUrl: string, socketData?: Type) {
       metadataMimeType: 'message/x.rsocket.routing.v0',
     },
     transport: new RSocketWebsocketClient({
-      url: 'ws://localhost:3000/rs',
+      url: 'ws://localhost:80/rs',
     }),
   })
 

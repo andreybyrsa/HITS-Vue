@@ -70,7 +70,6 @@ function handleCloseProfileModal() {
   if (props.canGoBack) {
     return router.go(-1)
   }
-
   const parentBaseRoute = route.matched[route.matched.length - 2].path
 
   isOpenedProfileModal.value = false
@@ -171,7 +170,6 @@ function handleCloseProfileModal() {
   &__info {
     width: 100%;
     height: 100%;
-
     @include flexible(center, flex-start, column, $gap: 16px);
   }
 }
