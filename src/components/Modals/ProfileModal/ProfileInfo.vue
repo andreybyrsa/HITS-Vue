@@ -272,11 +272,12 @@ function getFormattedDate(date: string) {
           <Typography class-name="text-primary">Телефон:</Typography>
           <div
             v-if="
-              (!isUpdatingUserLastname &&
+              ((!isUpdatingUserLastname &&
                 !isUpdatingUserName &&
                 !isUpdatingUserStudyGroup &&
                 !isUpdatingUserTelephone) ||
-              user?.role === 'ADMIN'
+                user?.role === 'ADMIN') &&
+              user?.role !== 'TEACHER'
             "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdatingUserTelephone(true)"
