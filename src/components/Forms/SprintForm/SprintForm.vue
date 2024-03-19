@@ -84,7 +84,7 @@ function updateDate(newStartDate?: string) {
   if (props.sprint && !newStartDate) {
     const currentStartDate = props.sprint.startDate
     const currentFinishDate = props.sprint.finishDate
-    return { currentStartDate, currentFinishDate }
+    return { startDate: currentStartDate, finishDate: currentFinishDate }
   }
 
   const currentDate = newStartDate ? new Date(newStartDate) : new Date()

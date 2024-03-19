@@ -50,7 +50,7 @@ export const usersMocks: User[] = [
     studyGroup: 'AAAA-22-1',
   },
   {
-    id: '1',
+    id: '126288eb-9d4d-4074-9c87-6e4a566ef8f9',
     token: '1',
     email: '1@mail.com',
     firstName: 'Иван',
@@ -1720,19 +1720,19 @@ export const sprintMocks: Sprint[] = [
     status: 'DONE',
     tasks: [],
   },
-  {
-    id: '3',
-    projectId: projectMocks[0].id,
-    name: 'Спринт 4',
-    goal: 'Цель 4',
-    marks: [sprintMarksMocks[2]],
-    report: 'Отчет 4',
-    startDate: '2024-01-12T11:02:17Z',
-    finishDate: '2024-01-19T11:02:17Z',
-    workingHours: '15',
-    status: 'ACTIVE',
-    tasks: [],
-  },
+  // {
+  //   id: '3',
+  //   projectId: projectMocks[0].id,
+  //   name: 'Спринт 4',
+  //   goal: 'Цель 4',
+  //   marks: [sprintMarksMocks[2]],
+  //   report: 'Отчет 4',
+  //   startDate: '2024-01-19T11:02:17Z',
+  //   finishDate: '2024-01-29T11:02:17Z',
+  //   workingHours: '15',
+  //   status: 'ACTIVE',
+  //   tasks: [],
+  // },
 ]
 
 export const RequestTeamsMocks: RequestTeamToIdea[] = [
