@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, onBeforeMount } from 'vue'
 import draggable from 'vuedraggable'
 import FinishSprintModal from '@Components/Modals/FinishSprintModal/FinishSprintModal.vue'
 
@@ -46,10 +46,6 @@ const { tasks } = storeToRefs(taskStore)
 
 const sprintStore = useSprintsStore()
 const { sprints } = storeToRefs(sprintStore)
-
-const activeSprint = computed(() =>
-  sprints.value.find(({ status }) => status === 'ACTIVE'),
-)
 
 const checkMyInProgressTask = ref(false)
 const isLoadingTaskData = ref(false)
@@ -347,10 +343,7 @@ const changeName = useDebounceFn((input: string) => {
 </script>
 
 <template>
-  <div
-    v-if="activeSprint?.status === 'ACTIVE'"
-    class="active-sprint"
-  >
+  <div class="active-sprint">
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div
