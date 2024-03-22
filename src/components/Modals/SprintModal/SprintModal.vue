@@ -8,7 +8,29 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
 import SprintForm from '@Components/Forms/SprintForm/SprintForm.vue'
 
-defineProps<SprintModalProps>()
+// import useUserStore from '@Store/user/userStore'
+// import useTasksStore from '@Store/tasks/tasksStore'
+// import SprintsListPage from '@Views/Project/SprintsListPage.vue'
+
+// import BurndownChart from '../../Charts/BurndownChart/BurndownChart.vue'
+
+// function getFormattedDate(date: string) {
+//   if (date) {
+//     const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+//     return formattedDate.value
+//   } else {
+//     return 'Реализуется'
+//   }
+// }
+
+// onMounted(async () => {
+//   await passTasks.value = props.sprint.tasks.filter(
+//     (task) => task.status === 'Done',
+//   ).length
+//   allTasks.value = props.sprint.tasks.length
+// })
+
+const props = defineProps<SprintModalProps>()
 const emit = defineEmits<SprintModalEmits>()
 
 function close() {
