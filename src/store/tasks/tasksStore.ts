@@ -26,18 +26,6 @@ const useTasksStore = defineStore('tasks', {
         return this.tasks
       }
     },
-    // getTaskLogs() {
-    //   return async (taskId: string, token: string) => {
-    //     const response = await TaskService.getTaskMovementLog(taskId, token)
-
-    //     if (response instanceof Error) {
-    //       return response
-    //     }
-
-    //     this.logs = response
-    //     return this.logs
-    //   }
-    // },
   },
   actions: {
     async changePosition(
@@ -84,6 +72,7 @@ const useTasksStore = defineStore('tasks', {
         if (lastStatus && newStatusLog) {
           curTask?.taskMovementLog.push(lastStatus)
         }
+
         const response = await TaskService.changeTaskStatus(
           taskId,
           status,

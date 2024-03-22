@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
@@ -12,13 +12,6 @@ import ActiveSprint from '@Views/Project/ActiveSprint.vue'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 import useUserStore from '@Store/user/userStore'
 import BacklogPage from './BacklogPage.vue'
-import { Sprint } from '@Domain/Project'
-import { useRoute } from 'vue-router'
-import {
-  RequestConfig,
-  openErrorNotification,
-  sendParallelRequests,
-} from '@Utils/sendParallelRequests'
 
 const sprintsStore = useSprintsStore()
 const { sprints } = storeToRefs(sprintsStore)
@@ -43,7 +36,7 @@ watchImmediate(
     if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
       return switchToTabAboutProject()
     } else if (sprints.value.find(({ status }) => status === 'ACTIVE')) {
-      return switchToTabSprints()
+      return switchToTabSprint()
     } else return switchToTabSprints()
   },
 )
@@ -82,37 +75,6 @@ function getNavLinkStyle(isCurrentTab: boolean) {
     { 'active text-primary': isCurrentTab },
     { 'text-secondary': !isCurrentTab },
   ]
-}
-
-const sprintStore = useSprintsStore()
-const route = useRoute()
-const isLoading = ref(false)
-const activeSprint = ref<Sprint>()
-
-onBeforeMount(updateActiveSprint)
-
-async function updateActiveSprint() {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const projectId = route.params.id.toString()
-
-    isLoading.value = true
-
-    const ideasMarketParallelRequests: RequestConfig[] = [
-      {
-        request: () => sprintStore.getActiveSprint(projectId, token),
-        refValue: activeSprint,
-        onErrorFunc: openErrorNotification,
-        statement: Boolean(sprints.value?.find(({ status }) => status === 'ACTIVE')),
-      },
-    ]
-
-    await sendParallelRequests(ideasMarketParallelRequests)
-
-    isLoading.value = false
-  }
 }
 </script>
 
@@ -164,10 +126,7 @@ async function updateActiveSprint() {
       :sprints="sprint"
     />
 
-    <ActiveSprint
-      v-if="activeSprint && isTabActiveSprint"
-      :sprint="activeSprint"
-    />
+    <ActiveSprint v-if="isTabActiveSprint" />
   </div>
 </template>
 

@@ -8,10 +8,6 @@ interface ProjectProps {
   tasks?: Task[]
 }
 
-interface ActiveSprintProps {
-  sprint: Sprint
-}
-
 interface SprintListProps {
   project: Project
 }
@@ -21,4 +17,4 @@ interface TaskProps {
   size?: SizeType
 }
 
-export { ProjectProps, ActiveSprintProps, SprintListProps, TaskProps, SizeType }
+export { ProjectProps, SprintListProps, TaskProps, SizeType }

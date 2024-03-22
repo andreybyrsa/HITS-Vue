@@ -84,12 +84,12 @@ async function getProject() {
         refValue: tags,
         onErrorFunc: openErrorNotification,
       },
-      {
-        request: () => sprintsStore.getActiveSprint(projectId, token),
-        refValue: activeSprint,
-        onErrorFunc: openErrorNotification,
-        statement: Boolean(sprints.value?.find(({ status }) => status === 'ACTIVE')),
-      },
+      // {
+      //   request: () => sprintsStore.getActiveSprint(projectId, token),
+      //   refValue: activeSprint,
+      //   onErrorFunc: openErrorNotification,
+      //   statement: Boolean(sprints.value?.find(({ status }) => status === 'ACTIVE')),
+      // },
       {
         request: () => tagsStore.getAllTags(token),
         refValue: tags,

@@ -158,9 +158,9 @@ const changeTaskStatus = async (
   status: TaskStatus,
   newStatusLog: TaskStatus[],
   token: string,
-): Promise<Task[] | Error> => {
+): Promise<Task | Error> => {
   return tasksMocksAxios
-    .putNoRequestBody<Task[]>(
+    .putNoRequestBody<Task>(
       '/ТУТ-БУДЕТ-ЧТО-ТО',
       {
         headers: { Authorization: `Bearer ${token}` },

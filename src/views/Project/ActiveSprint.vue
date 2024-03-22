@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { computed, ref, onBeforeMount } from 'vue'
+import { computed, ref, onBeforeMount, onMounted } from 'vue'
 import draggable from 'vuedraggable'
 import FinishSprintModal from '@Components/Modals/FinishSprintModal/FinishSprintModal.vue'
-
-import { ActiveSprintProps } from '@Views/Project/Project.types'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
@@ -13,7 +11,7 @@ import Button from '@Components/Button/Button.vue'
 import sprintsStore from '@Store/projects/projectsStore'
 import useUserStore from '@Store/user/userStore'
 
-import { Task, Sprint, TaskMovementLog } from '@Domain/Project'
+import { Task, Sprint, TaskMovementLog, TaskStatus } from '@Domain/Project'
 import TaskService from '@Services/TaskService'
 import {
   reactiveComputed,
@@ -36,8 +34,6 @@ import useSprintsStore from '@Store/sprints/sprintsStore'
 import { User } from '@Domain/User'
 import { useRoute } from 'vue-router'
 
-defineProps<ActiveSprintProps>()
-
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -45,7 +41,7 @@ const taskStore = useTasksStore()
 const { tasks } = storeToRefs(taskStore)
 
 const sprintStore = useSprintsStore()
-const { sprints } = storeToRefs(sprintStore)
+const { sprints, activeSprint } = storeToRefs(sprintStore)
 
 const checkMyInProgressTask = ref(false)
 const isLoadingTaskData = ref(false)
@@ -63,28 +59,30 @@ function openFinishSprintModal() {
 function openCreateNewTask() {
   isOpenedCreateNewTask.value = true
 }
-
 function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
 }
 
 const refValue = ref()
 
+function getTasksStatus(currentStatus: TaskStatus) {
+  return (
+    tasks.value.filter(
+      ({ status, sprintId }) =>
+        status === currentStatus && sprintId === activeSprint?.value?.id,
+    ) ?? []
+  )
+}
+
 const onModificationTask = reactiveComputed<Task[]>(() =>
-  tasks.value.filter(({ status }) => status === 'OnModification'),
+  getTasksStatus('OnModification'),
 )
-const newTask = reactiveComputed<Task[]>(() =>
-  tasks.value.filter(({ status }) => status === 'NewTask'),
-)
-const inProgressTask = reactiveComputed<Task[]>(() =>
-  tasks.value.filter(({ status }) => status === 'inProgress'),
-)
+const newTask = reactiveComputed<Task[]>(() => getTasksStatus('NewTask'))
+const inProgressTask = reactiveComputed<Task[]>(() => getTasksStatus('inProgress'))
 const onVerificationTask = reactiveComputed<Task[]>(() =>
-  tasks.value.filter(({ status }) => status === 'OnVerification'),
+  getTasksStatus('OnVerification'),
 )
-const doneTask = reactiveComputed<Task[]>(() =>
-  tasks.value.filter(({ status }) => status === 'Done'),
-)
+const doneTask = reactiveComputed<Task[]>(() => getTasksStatus('Done'))
 
 const tasksArray = computed<Task[][]>(() => {
   return [onModificationTask, newTask, inProgressTask, onVerificationTask, doneTask]
@@ -92,6 +90,26 @@ const tasksArray = computed<Task[][]>(() => {
 
 const currentSprint = ref<Sprint>()
 const isOpenedSprinttModal = ref(false)
+
+const route = useRoute()
+const isLoading = ref(false)
+
+onMounted(updateActiveSprint)
+
+async function updateActiveSprint() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const projectId = route.params.id.toString()
+
+    isLoading.value = true
+
+    await sprintStore.getActiveSprint(projectId, token)
+
+    isLoading.value = false
+  }
+}
 
 async function moveTask(evt: any) {
   const currentUser = user.value
@@ -102,7 +120,6 @@ async function moveTask(evt: any) {
     if (evt.added) {
       const task: Task = evt.added.element
       const { id: taskId } = task
-      console.log(task.status, 1)
       const currentArrayTask = tasksArray.value.find((arrayTasks) =>
         arrayTasks.includes(task),
       )
@@ -145,7 +162,6 @@ async function moveTask(evt: any) {
             onErrorFunc: openErrorNotification,
           },
         ]
-
         await sendParallelRequests(inProgressTaskParallelRequests)
       }
 
@@ -186,7 +202,6 @@ async function moveTask(evt: any) {
             onErrorFunc: openErrorNotification,
           },
         ]
-
         await sendParallelRequests(onVerificationTaskParallelRequests)
       }
 
@@ -204,7 +219,6 @@ async function moveTask(evt: any) {
             onErrorFunc: openErrorNotification,
           },
         ]
-
         await sendParallelRequests(doneTaskParallelRequests)
       }
 
@@ -322,37 +336,22 @@ const changeName = useDebounceFn((input: string) => {
 
   taskStore.changeName(currentTask.value.id, input, user.value.token)
 }, 450)
-
-// const wildcardTask = ref({
-//   id: '1',
-//   sprintId: '1',
-//   projectId: '1',
-//   position: 1,
-//   name: 'Scram проекты',
-//   description:
-//     'Сделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проектыСделать скрам проекты',
-//   initiator: { lastName: 'Кирилл', firstName: 'Власов' },
-//   executor: { lastName: 'Кирилл', firstName: 'Власов' },
-//   workHour: '3 часа',
-//   startDate: '2022-01-01',
-//   finishDate: '2022-01-02',
-//   tag: 'Фронтенд',
-//   taskMovementLog: ['Выполняется', 'В бэклоге', 'На доработке', 'Выполнена'],
-//   status: 'Выполняется',
-// })
 </script>
 
 <template>
-  <div class="active-sprint">
+  <div
+    v-if="activeSprint"
+    class="active-sprint"
+  >
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div
           class="bs-link mb-1 fw-semibold text-primary"
-          @click="openModalSprint(sprint)"
+          @click="openModalSprint(activeSprint)"
         >
           <Typography class-name="fs-5 fw-semibold cursor-pointer">
-            {{ sprint.name }}
-            {{ sprint.status }}
+            {{ activeSprint.name }}
+            {{ activeSprint.status }}
           </Typography>
         </div>
         <!-- <FinishSprintModal
@@ -360,7 +359,7 @@ const changeName = useDebounceFn((input: string) => {
           :sprint="(currentSprint as Sprint)"
           @close-modal="closeSprintModal"
         /> -->
-        <Typography>(до {{ getFormattedDate(sprint.finishDate) }})</Typography>
+        <Typography>(до {{ getFormattedDate(activeSprint.finishDate) }})</Typography>
       </div>
       <div class="d-flex gap-2">
         <Button
@@ -756,7 +755,7 @@ const changeName = useDebounceFn((input: string) => {
     <FinishSprintModal
       isFinishSprint
       :is-opened="isOpenedFinishSprintModal"
-      :active-sprint="sprint"
+      :active-sprint="activeSprint"
       @close-modal="closeFinishSprintModal"
     />
 
