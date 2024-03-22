@@ -4,9 +4,9 @@ import { storeToRefs } from 'pinia'
 import { useDateFormat } from '@vueuse/core'
 
 import {
-  SprintModalProps,
-  SprintModalEmits,
-} from '@Components/Modals/SprintModal/SprintModal.types'
+  SprintChartModalProps,
+  SprintChartModalEmits,
+} from '@Components/Modals/SprintChartModal/SprintChartModal.types'
 import Button from '@Components/Button/Button.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Icon from '@Components/Icon/Icon.vue'
@@ -40,8 +40,8 @@ function getFormattedDate(date: string) {
 //   allTasks.value = props.sprint.tasks.length
 // })
 
-const props = defineProps<SprintModalProps>()
-const emit = defineEmits<SprintModalEmits>()
+const props = defineProps<SprintChartModalProps>()
+const emit = defineEmits<SprintChartModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -148,3 +148,4 @@ const tasks = storeToRefs(useTasksStore())
   border-bottom-width: 4px;
 }
 </style>
+@Components/Modals/SprintChartModal/SprintChartModal.types
