@@ -1,8 +1,14 @@
 <script lang="ts" setup>
 import {
-  SprintModalProps,
-  SprintModalEmits,
-} from '@Components/Modals/SprintModal/SprintModal.types'
+  SprintChartModalProps,
+  SprintChartModalEmits,
+} from '@Components/Modals/SprintChartModal/SprintChartModal.types'
+import Button from '@Components/Button/Button.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
+import Icon from '@Components/Icon/Icon.vue'
+import Typography from '@Components/Typography/Typography.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
+import ProgressBar from '@Components/ProgressBar/ProgressBar.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 
@@ -30,8 +36,8 @@ import SprintForm from '@Components/Forms/SprintForm/SprintForm.vue'
 //   allTasks.value = props.sprint.tasks.length
 // })
 
-const props = defineProps<SprintModalProps>()
-const emit = defineEmits<SprintModalEmits>()
+const props = defineProps<SprintChartModalProps>()
+const emit = defineEmits<SprintChartModalEmits>()
 
 function close() {
   emit('close-modal')
@@ -74,3 +80,4 @@ function close() {
   transform: scale(0.9);
 }
 </style>
+<!-- @Components/Modals/SprintChartModal/SprintChartModal.types -->
