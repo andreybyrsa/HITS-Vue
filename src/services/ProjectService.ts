@@ -82,7 +82,6 @@ const getMyProjects = async (
   return projectMocksAxios
     .get<Project[]>(
       `/scrum-service/project/active/all`,
-      // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

@@ -50,7 +50,7 @@ export const usersMocks: User[] = [
     studyGroup: 'AAAA-22-1',
   },
   {
-    id: '1',
+    id: '126288eb-9d4d-4074-9c87-6e4a566ef8f9',
     token: '1',
     email: '1@mail.com',
     firstName: 'Иван',
@@ -1500,7 +1500,6 @@ export const averageMarkMocks: AverageMark[] = [
 export const projectMocks: Project[] = [
   {
     id: '0',
-
     name: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
     description: ideasMocks[1].description,
     customer: ideasMocks[1].customer,

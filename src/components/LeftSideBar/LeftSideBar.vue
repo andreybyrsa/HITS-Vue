@@ -46,9 +46,14 @@ const userRoles = getUserRolesInfo()
 const leftSideBarRef = ref<VueElement | null>(null)
 const LeftSideBarClassName = ref<string[]>()
 
+const activeProjects = ref<Project[]>([])
+
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
 })
+
+// Роутер биржи
+onMounted(getActiveMarkets)
 
 watch(
   markets,
@@ -59,21 +64,6 @@ watch(
   },
   { deep: true },
 )
-
-watch(
-  myActiveProjects,
-  () => {
-    const currentProjects = myActiveProjects.value.filter(
-      ({ status }) => status === 'ACTIVE',
-    )
-    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
-    if (projectIndex !== -1) updateActiveProjectRoute(currentProjects, projectIndex)
-  },
-  { deep: true },
-)
-
-onMounted(getActiveProjects)
-onMounted(getActiveMarkets)
 
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const initialMarketRoutes: LeftSideBarTabType[] =
@@ -115,6 +105,46 @@ async function getActiveMarkets() {
   }
 }
 
+// Роутер проектов
+onMounted(getActiveProjects)
+
+function updateRolesByTabProject() {
+  const currentRole = user.value?.role
+
+  if (currentRole !== 'ADMIN' && currentRole !== 'PROJECT_OFFICE') {
+    tabs.value.forEach(
+      (tab) =>
+        tab.name === 'projects' &&
+        (tab.roles = tab.roles.filter(
+          (role) => role === 'ADMIN' || role === 'PROJECT_OFFICE',
+        )),
+    )
+  } else if (myActiveProjects.value.length === 0) {
+    tabs.value.forEach(
+      (tab) =>
+        tab.name === 'projects' &&
+        tab.roles.push('INITIATOR', 'MEMBER', 'TEAM_LEADER', 'TEAM_OWNER'),
+    )
+  }
+}
+
+watch(
+  myActiveProjects,
+  (projects) => {
+    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
+    if (projectIndex !== -1) updateActiveProjectRoute(projects, projectIndex)
+  },
+  { deep: true },
+)
+
+watch(
+  () => user.value?.role,
+  () => {
+    if (activeProjects.value.length === 0) updateRolesByTabProject()
+  },
+  { deep: true },
+)
+
 function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const initialProjectRoutes: LeftSideBarTabType[] =
     LeftSideBarTabs[index].routes ?? []
@@ -133,7 +163,7 @@ async function getActiveProjects() {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser.role !== 'EXPERT') {
-    const { token, id, role } = currentUser
+    const { token, id } = currentUser
     const projectsIndex = tabs.value.findIndex(({ name }) => name === 'projects')
 
     const spliceMarketsTab = () => {
@@ -147,12 +177,12 @@ async function getActiveProjects() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (response.length === 0 && role !== 'ADMIN' && role !== 'PROJECT_OFFICE') {
-      updateActiveProjectRoute(response, projectsIndex)
+    activeProjects.value = response
 
-      spliceMarketsTab()
+    if (activeProjects.value.length === 0) {
+      updateRolesByTabProject()
     } else if (projectsIndex !== -1) {
-      updateActiveProjectRoute(response, projectsIndex)
+      updateActiveProjectRoute(activeProjects.value, projectsIndex)
     }
   }
 }

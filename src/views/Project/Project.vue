@@ -119,7 +119,7 @@ async function getProject() {
 
     <template #content>
       <div
-        class="p-4 h-100"
+        class="px-4 py-3 h-100"
         v-if="!isLoading && project"
       >
         <ProjectHeader :project="project" />

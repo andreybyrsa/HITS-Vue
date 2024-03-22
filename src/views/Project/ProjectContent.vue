@@ -129,9 +129,3 @@ function getNavLinkStyle(isCurrentTab: boolean) {
     <ActiveSprint v-if="isTabActiveSprint" />
   </div>
 </template>
-
-<style lang="scss" scoped>
-// .content {
-//   height: 90%;
-// }
-</style>
