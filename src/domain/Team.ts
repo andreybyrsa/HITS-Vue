@@ -11,6 +11,18 @@ interface TeamMember {
   skills: Skill[]
 }
 
+enum courseEnum {
+  first = '1',
+  second = '2',
+  third = '3',
+  fourth = '4',
+}
+
+interface TeamTags {
+  studyGroups: string[]
+  studyCourses: courseEnum[]
+}
+
 interface Team {
   id: string
   createdAt: string
@@ -26,6 +38,7 @@ interface Team {
   members: TeamMember[]
   skills: Skill[]
   wantedSkills: Skill[]
+  tags: TeamTags
 
   hasActiveProject: boolean
 }
@@ -76,10 +89,12 @@ interface TeamInvitation {
 }
 
 export {
+  courseEnum,
   Team,
   TeamMember,
   TeamSkills,
   TeamInvitation,
+  TeamTags,
   RequestToTeam,
   JoinStatus,
   TeamExperience,

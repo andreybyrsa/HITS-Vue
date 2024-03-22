@@ -8,11 +8,13 @@ import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Comment from '@Domain/Comment'
 import {
   RequestToTeam,
+  courseEnum,
   Team,
   TeamExperience,
   TeamInvitation,
   TeamMember,
   TeamSkills,
+  TeamTags,
 } from '@Domain/Team'
 import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
@@ -260,9 +262,24 @@ export const teamMembersMocks: TeamMember[] = [
   },
 ]
 
+export const teamTagsMocks: TeamTags[] = [
+  {
+    studyGroups: ['ИИП-22-1', 'ИСТНб-21'],
+    studyCourses: [courseEnum.first, courseEnum.second],
+  },
+  {
+    studyGroups: ['ИИПб-23-1', 'АСОИУ-22-1'],
+    studyCourses: [courseEnum.second],
+  },
+  {
+    studyGroups: ['ИСТНб-21-2', 'АСОИУ-20-1'],
+    studyCourses: [courseEnum.third, courseEnum.fourth],
+  },
+]
+
 export const teamsMocks: Team[] = [
   {
-    id: '01',
+    id: '1',
     name: 'Визитка',
     closed: true,
     createdAt: '2023-10-20T11:02:17Z',
@@ -278,12 +295,13 @@ export const teamsMocks: Team[] = [
       teamMembersMocks[3],
     ],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
+    tags: teamTagsMocks[0],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
     hasActiveProject: true,
   },
   {
-    id: '1',
+    id: '2',
     name: 'Кактус',
     closed: false,
     createdAt: '2023-10-20T11:02:17Z',
@@ -294,12 +312,15 @@ export const teamsMocks: Team[] = [
     leader: teamMembersMocks[0],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
+
+    tags: teamTagsMocks[1],
+
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
     hasActiveProject: false,
   },
   {
-    id: '2',
+    id: '3',
     name: 'Карасики',
     closed: false,
     createdAt: '2023-10-20T11:02:17Z',
@@ -310,6 +331,9 @@ export const teamsMocks: Team[] = [
     leader: teamMembersMocks[0],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
+
+    tags: teamTagsMocks[2],
+
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
     hasActiveProject: false,

@@ -4,9 +4,10 @@
     :header="teamsTableHeader"
     :columns="teamTableColumns"
     :data="teams"
-    :search-by="['name', 'description']"
+    :search-by="['name', 'description', 'tags']"
     :filters="teamsFilters"
     :dropdown-actions-menu="dropdownTeamsActions"
+    :is-checkbox="true"
   />
 
   <DeleteModal
@@ -51,7 +52,7 @@ import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
 import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 
-import { Team } from '@Domain/Team'
+import { Team, courseEnum } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 import { Profile } from '@Domain/Profile'
 
@@ -381,6 +382,18 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     searchValue: searchBySkills,
     checkFilter: () => true,
   },
+  // {
+  //   category: 'Номер курса',
+  //   choices: teams.value.map(({ studyCourses }, index) => ({
+  //     label: studyCourses[index],
+  //     value: studyCourses[index],
+  //   })),
+
+  //   refValue: filterBySkills,
+  //   isUniqueChoice: false,
+  //   searchValue: searchBySkills,
+  //   checkFilter: () => true,
+  // },
 ])
 
 function getAccessInvitationsInIdeaMarket(team: Team, idea: IdeaMarket) {
