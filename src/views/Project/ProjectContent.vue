@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
@@ -14,7 +14,11 @@ import useUserStore from '@Store/user/userStore'
 import BacklogPage from './BacklogPage.vue'
 
 const sprintsStore = useSprintsStore()
-const { sprints, activeSprint } = storeToRefs(sprintsStore)
+const { sprints } = storeToRefs(sprintsStore)
+
+const sprintWithStatusActive = computed(() =>
+  sprints.value.find(({ status }) => status === 'ACTIVE'),
+)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -32,7 +36,7 @@ watchImmediate(
     if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
       return switchToTabAboutProject()
     } else if (sprints.value.find(({ status }) => status === 'ACTIVE')) {
-      return switchToTabBacklog()
+      return switchToTabSprint()
     } else return switchToTabSprints()
   },
 )
@@ -76,41 +80,33 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 
 <template>
   <div class="content">
-    <div class="px-3">
-      <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <div
-            :class="getNavLinkStyle(isTabAboutProject)"
-            @click="switchToTabAboutProject"
-          >
-            О проекте
-          </div>
-        </li>
-        <li class="nav-item">
-          <div
-            :class="getNavLinkStyle(isTabBacklog)"
-            @click="switchToTabBacklog"
-          >
-            Бэклог
-          </div>
-        </li>
-        <li class="nav-item">
-          <div
-            :class="getNavLinkStyle(isTabSprints)"
-            @click="switchToTabSprints"
-          >
-            Спринты
-          </div>
-        </li>
-        <li class="nav-item">
-          <div
-            v-if="activeSprint"
-            :class="getNavLinkStyle(isTabActiveSprint)"
-            @click="switchToTabSprint"
-          >
-            Активный спринт
-          </div>
-        </li>
+    <div class="border-bottom px-3">
+      <ul class="nav nav-underline">
+        <div
+          :class="getNavLinkStyle(isTabAboutProject)"
+          @click="switchToTabAboutProject"
+        >
+          О проекте
+        </div>
+        <div
+          :class="getNavLinkStyle(isTabBacklog)"
+          @click="switchToTabBacklog"
+        >
+          Бэклог
+        </div>
+        <div
+          :class="getNavLinkStyle(isTabSprints)"
+          @click="switchToTabSprints"
+        >
+          Спринты
+        </div>
+        <div
+          v-if="sprintWithStatusActive"
+          :class="getNavLinkStyle(isTabActiveSprint)"
+          @click="switchToTabSprint"
+        >
+          Активный спринт
+        </div>
       </ul>
     </div>
 
@@ -130,9 +126,6 @@ function getNavLinkStyle(isCurrentTab: boolean) {
       :sprints="sprint"
     />
 
-    <ActiveSprint
-      v-if="activeSprint && isTabActiveSprint"
-      :sprint="activeSprint"
-    />
+    <ActiveSprint v-if="isTabActiveSprint" />
   </div>
 </template>

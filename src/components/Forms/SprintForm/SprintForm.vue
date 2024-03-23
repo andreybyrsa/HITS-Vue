@@ -141,7 +141,7 @@ function clearTooltips() {
 const CreateSprint = handleSubmit(async (sprint) => {
   const currentUser = user.value
 
-  if (currentUser?.token && sprint && newSprintTasks.value.length !== 0) {
+  if (currentUser?.token && sprint) {
     const { token } = currentUser
     isLoading.value = true
 
@@ -157,7 +157,7 @@ const CreateSprint = handleSubmit(async (sprint) => {
 const UpdateSprint = handleSubmit(async (sprint) => {
   const currentUser = user.value
 
-  if (currentUser?.token && newSprintTasks.value.length !== 0 && props.sprint) {
+  if (currentUser?.token && props.sprint) {
     const { token } = currentUser
     isLoading.value = true
 

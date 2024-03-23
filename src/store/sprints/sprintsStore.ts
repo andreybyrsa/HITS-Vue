@@ -4,6 +4,8 @@ import SprintService from '@Services/SprintService'
 
 import InitialState from '@Store/sprints/initialState'
 import { Sprint, SprintStatus, SprintMarks } from '@Domain/Project'
+import { tasksMocks } from '@Utils/getMocks'
+import { MODE } from '@Main'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
 
@@ -53,10 +55,19 @@ const useSprintsStore = defineStore('sprints', {
       } else {
         this.sprints.push(response)
 
+        if (MODE === 'DEVELOPMENT') {
+          tasksMocks.forEach((task) => {
+            if (sprint.tasks.find(({ id }) => id === task.id)) {
+              task.sprintId = response.id
+              task.status = 'NewTask'
+            }
+          })
+        }
+
         useTasksStore().tasks.forEach((task) => {
           if (task.status === 'InBackLog' && sprint.tasks.includes(task)) {
             task.sprintId = response.id
-            task.status = 'inProgress'
+            task.status = 'NewTask'
           }
         })
       }
@@ -122,10 +133,19 @@ const useSprintsStore = defineStore('sprints', {
           this.sprints[index] = { ...sprint, id: sprintId }
         }
 
+        if (MODE === 'DEVELOPMENT') {
+          tasksMocks.forEach((task) => {
+            if (sprint.tasks.find(({ id }) => id === task.id)) {
+              task.sprintId = sprintId
+              task.status = 'NewTask'
+            }
+          })
+        }
+
         useTasksStore().tasks.forEach((task) => {
           if (task.status === 'InBackLog' && sprint.tasks.includes(task)) {
             task.sprintId = sprintId
-            task.status = 'inProgress'
+            task.status = 'NewTask'
           }
         })
       }

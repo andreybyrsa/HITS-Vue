@@ -1707,15 +1707,15 @@ export const sprintMocks: Sprint[] = [
   // {
   //   id: '3',
   //   projectId: projectMocks[0].id,
-  //   name: 'Спринт 4',
+  //   name: 'Проектировка скрама',
   //   goal: 'Цель 4',
-  //   marks: [sprintMarksMocks[2]],
+  //   marks: [sprintMarksMocks[1]],
   //   report: 'Отчет 4',
-  //   startDate: '2024-01-19T11:02:17Z',
-  //   finishDate: '2024-01-29T11:02:17Z',
-  //   workingHours: '15',
+  //   startDate: '2024-01-20T11:02:17Z',
+  //   finishDate: '2024-01-27T11:02:17Z',
+  //   workingHours: '20',
   //   status: 'ACTIVE',
-  //   tasks: [],
+  //   tasks: tasksMocks,
   // },
 ]
 

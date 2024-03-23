@@ -26,18 +26,6 @@ const useTasksStore = defineStore('tasks', {
         return this.tasks
       }
     },
-    // getTaskLogs() {
-    //   return async (taskId: string, token: string) => {
-    //     const response = await TaskService.getTaskMovementLog(taskId, token)
-
-    //     if (response instanceof Error) {
-    //       return response
-    //     }
-
-    //     this.logs = response
-    //     return this.logs
-    //   }
-    // },
   },
   actions: {
     async changePosition(
@@ -95,32 +83,47 @@ const useTasksStore = defineStore('tasks', {
     },
 
     async changeTaskStatusInBackLog(
-      taskId: string,
-      status: 'InBackLog',
+      tasks: Task[],
+      status: TaskStatus,
       token: string,
     ) {
-      const curTask = this.tasks.find(({ id }) => id === taskId)
+      tasks.forEach((task) => {
+        const changeTask = this.tasks.find((element) => task.id === element.id)
 
-      if (curTask) {
-        const response = await TaskService.changeTaskStatusInBackLog(
-          taskId,
-          status,
-          token,
-        )
-
-        if (response instanceof Error) {
-          useNotificationsStore().createSystemNotification(
-            'Система',
-            response.message,
-          )
-        } else {
-          const currentTask = this.tasks.find(({ id }) => id === taskId)
-          if (currentTask) {
-            currentTask.status = status
-          }
+        if (changeTask) {
+          changeTask.status = status
         }
+      })
+
+      const response = await TaskService.changeTaskStatusInBackLog(
+        this.tasks,
+        status,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
       }
     },
+
+    // async changeTaskMovementLog(changeTaskMovementLog: Task[], token: string) {
+    //   changeTaskMovementLog.forEach((task) => {
+    //     const changetaskMovementLog = this.tasks.find(
+    //       (element) => task.id === element.id,
+    //     )
+
+    //     if (changetaskMovementLog) {
+    //       changetaskMovementLog.taskMovementLog = ['InBackLog', 'NewTask']
+    //     }
+    //   })
+
+    //   const response = TaskService.changeTaskMovementLog(this.tasks, token)
+
+    //   if (response instanceof Error) {
+    //     useNotificationsStore().createSystemNotification('Система', response.message)
+    //   }
+    // },
+
     async createTask(task: Task, token: string) {
       const response = await TaskService.createTask(task, token)
 

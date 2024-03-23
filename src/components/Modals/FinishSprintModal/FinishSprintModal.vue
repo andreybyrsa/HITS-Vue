@@ -74,6 +74,10 @@ const getValidations = ref<any>({
     Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
 })
 
+const noDoneTasks = reactiveComputed<Task[]>(() =>
+  tasks.value.filter(({ status }) => status !== 'Done'),
+)
+
 onMounted(async () => {
   if (props.isFinishSprint) {
     const currentUser = user.value
@@ -137,10 +141,17 @@ const FinishSprint = handleSubmit(async () => {
         refValue: refValue,
         onErrorFunc: openErrorNotification,
       },
+      {
+        request: () =>
+          tasksStore.changeTaskStatusInBackLog(noDoneTasks, 'InBackLog', token),
+        refValue: refValue,
+        onErrorFunc: openErrorNotification,
+      },
     ]
 
     await sendParallelRequests(fiinishSprintParallelRequests)
   }
+
   isLoading.value = false
   emit('close-modal')
 })

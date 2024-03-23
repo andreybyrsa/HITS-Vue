@@ -87,18 +87,27 @@ const changeSprintStatus = async (
   status: SprintStatus,
   token: string,
 ): Promise<Success | Error> => {
-  return sprintMocksAxios
-    .putNoRequestBody<Success>(
-      `/sprint/status/update/${sprintId}/${status}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      {
-        params: { id: sprintId },
-        requestData: { status: status },
-      },
-    )
+  if (MODE === 'DEVELOPMENT') {
+    return sprintMocksAxios
+      .putNoRequestBody<Success>(
+        `/sprint/status/update/${sprintId}/${status}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+        },
+        {
+          params: { id: sprintId },
+          requestData: { status: status },
+        },
+      )
+      .then((response) => response.data)
+      .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
+  }
+  return axios
+    .put<Success>(`/sprint/status/change/${sprintId}`, status, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
 }

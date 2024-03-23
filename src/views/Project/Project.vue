@@ -88,6 +88,7 @@ async function getProject() {
       //   request: () => sprintsStore.getActiveSprint(projectId, token),
       //   refValue: activeSprint,
       //   onErrorFunc: openErrorNotification,
+      //   statement: Boolean(sprints.value?.find(({ status }) => status === 'ACTIVE')),
       // },
     ]
 

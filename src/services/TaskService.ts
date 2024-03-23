@@ -157,9 +157,9 @@ const changeTaskStatus = async (
   taskId: string,
   status: TaskStatus,
   token: string,
-): Promise<Task[] | Error> => {
+): Promise<Task | Error> => {
   return tasksMocksAxios
-    .putNoRequestBody<Task[]>(
+    .putNoRequestBody<Task>(
       '/scrum-service/task/status/change',
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -175,10 +175,20 @@ const changeTaskStatus = async (
 }
 
 const changeTaskStatusInBackLog = async (
-  taskId: string,
-  status: 'InBackLog',
+  tasks: Task[],
+  status: TaskStatus,
   token: string,
 ): Promise<Task[] | Error> => {
+  if (MODE == 'DEVELOPMENT') {
+    const mockTasks = tasksMocksAxios.getReactiveMocks()
+    mockTasks.value.forEach((task) =>
+      tasks.find((newTask) => {
+        if (newTask.id === task.id) {
+          task.status = newTask.status
+        }
+      }),
+    )
+  }
   return tasksMocksAxios
     .putNoRequestBody<Task[]>(
       '/ТУТ-БУДЕТ-ЧТО-ТО',
@@ -187,13 +197,30 @@ const changeTaskStatusInBackLog = async (
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       {
-        params: { id: taskId },
         requestData: { status: status },
       },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
 }
+
+// const changeTaskMovementLog = async (
+//   tasks: Task[],
+//   newStatusLog: TaskStatus[],
+//   token: string,
+// ): Promise<Task[] | Error> => {
+//   if (MODE == 'DEVELOPMENT') {
+//     const mockTasks = tasksMocksAxios.getReactiveMocks()
+//     console.log(mockTasks)
+//   }
+//   return axios
+//     .put(`/task/update/}`, tasks, {
+//       headers: { Authorization: `Bearer ${token}` },
+//       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//     })
+//     .then((response) => response.data)
+//     .catch((error) => handleAxiosError(error, 'Ошибка редактирования задач'))
+// }
 
 const changeLeaderComment = async (
   taskId: string,
