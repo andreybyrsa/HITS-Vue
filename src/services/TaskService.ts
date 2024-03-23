@@ -31,7 +31,7 @@ const getAllTasksProject = async (
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
     .get<Task[]>(
-      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      `/scrum-service/task/project/all/${projectId}`,
       {
         // FIX ROUTE
         headers: { Authorization: `Bearer ${token}` },
@@ -80,7 +80,7 @@ const createTaskLog = async (
 
 const createTask = async (task: Task, token: string): Promise<Task | Error> => {
   return tasksMocksAxios
-    .post('/task/add', task, {
+    .post(`/scrum-service/task/add`, task, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -106,7 +106,7 @@ const updateTasks = async (
     console.log(mockTasks)
   }
   return axios
-    .put(`/task/update/}`, tasks, {
+    .put(`/scrum-service/task`, tasks, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -120,7 +120,7 @@ const updateTask = async (
 ): Promise<Task | Error> => {
   return tasksAxios
     .put(
-      `/task/update/${id}`,
+      `/scrum-service/task/update/${task.id}`,
       task,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -139,7 +139,7 @@ const changeExecutorTask = async (
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
     .putNoRequestBody<Task[]>(
-      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      '`/scrum-service/task',
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -156,19 +156,18 @@ const changeExecutorTask = async (
 const changeTaskStatus = async (
   taskId: string,
   status: TaskStatus,
-  newStatusLog: TaskStatus[],
   token: string,
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
     .putNoRequestBody<Task[]>(
-      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      '/scrum-service/task/status/change',
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
       {
         params: { id: taskId },
-        requestData: { status: status, taskMovementLog: newStatusLog },
+        requestData: { status: status },
       },
     )
     .then((response) => response.data)
@@ -178,7 +177,6 @@ const changeTaskStatus = async (
 const changeTaskStatusInBackLog = async (
   taskId: string,
   status: 'InBackLog',
-  newStatusLog: TaskStatus[],
   token: string,
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
@@ -190,7 +188,7 @@ const changeTaskStatusInBackLog = async (
       },
       {
         params: { id: taskId },
-        requestData: { status: status, taskMovementLog: newStatusLog },
+        requestData: { status: status },
       },
     )
     .then((response) => response.data)

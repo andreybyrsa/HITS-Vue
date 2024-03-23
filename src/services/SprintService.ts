@@ -27,7 +27,7 @@ const getAllSprintsProject = async (
 ): Promise<Sprint[] | Error> => {
   return sprintMocksAxios
     .get<Sprint[]>(
-      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      `/scrum-service/sprint/${projectId}/all`,
       {
         // FIX ROUTE
         headers: { Authorization: `Bearer ${token}` },

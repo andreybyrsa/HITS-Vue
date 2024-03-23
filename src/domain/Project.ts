@@ -49,7 +49,7 @@ interface TaskMovementLog {
   user: User
   startDate: string
   endDate: string
-  taskStatus: TaskStatus
+  status: TaskStatus
 }
 
 interface Task {
@@ -63,12 +63,11 @@ interface Task {
 
   initiator: User
   executor: User | null
-  workHour: string
+  workHour: number
   startDate: string
   finishDate?: string
 
-  tag: Tag[]
-  taskMovementLog: TaskStatus[]
+  tags: Tag[]
   status: TaskStatus
 }
 

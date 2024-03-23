@@ -89,11 +89,6 @@ async function getProject() {
       //   refValue: activeSprint,
       //   onErrorFunc: openErrorNotification,
       // },
-      {
-        request: () => tagsStore.getAllTags(token),
-        refValue: tags,
-        onErrorFunc: openErrorNotification,
-      },
     ]
 
     await sendParallelRequests(ideasMarketParallelRequests)

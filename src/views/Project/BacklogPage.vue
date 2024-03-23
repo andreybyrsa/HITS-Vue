@@ -166,7 +166,7 @@ function checkMove(evt: any) {
 function filtertTasks(tasks: Task[], filters: string[]): Task[] {
   if (filterByTags.value.length > 0) {
     return tasks.filter((task) =>
-      filters.some((filter) => task.tag.find(({ name }) => name === filter)),
+      filters.some((filter) => task.tags.find(({ name }) => name === filter)),
     )
   } else {
     return sortedInBackLogTasks.value
@@ -183,7 +183,7 @@ function sortOtherTasks(tasks: Task[], filters: string[]): Task[] {
 
   if (filterByTags.value.length > 0) {
     const filteredByTags = filteredTasks.filter((task) =>
-      filters.some((filter) => task.tag.find(({ name }) => name === filter)),
+      filters.some((filter) => task.tags.find(({ name }) => name === filter)),
     )
     return filteredByTags.sort((a, b) => {
       if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {

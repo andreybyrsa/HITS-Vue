@@ -78,18 +78,7 @@ const useTasksStore = defineStore('tasks', {
       const curTask = this.tasks.find(({ id }) => id === taskId)
 
       if (curTask) {
-        const lastStatus = curTask.status
-        const newStatusLog = curTask.taskMovementLog.concat(lastStatus)
-
-        if (lastStatus && newStatusLog) {
-          curTask?.taskMovementLog.push(lastStatus)
-        }
-        const response = await TaskService.changeTaskStatus(
-          taskId,
-          status,
-          newStatusLog,
-          token,
-        )
+        const response = await TaskService.changeTaskStatus(taskId, status, token)
 
         if (response instanceof Error) {
           useNotificationsStore().createSystemNotification(
@@ -113,16 +102,9 @@ const useTasksStore = defineStore('tasks', {
       const curTask = this.tasks.find(({ id }) => id === taskId)
 
       if (curTask) {
-        const lastStatus = curTask.status
-        const newStatusLog = curTask.taskMovementLog.concat(lastStatus)
-
-        if (lastStatus && newStatusLog) {
-          curTask?.taskMovementLog.push(lastStatus)
-        }
         const response = await TaskService.changeTaskStatusInBackLog(
           taskId,
           status,
-          newStatusLog,
           token,
         )
 
@@ -170,7 +152,7 @@ const useTasksStore = defineStore('tasks', {
           user: user,
           startDate: new Date().toJSON().toString(),
           endDate: '',
-          taskStatus: newStatus,
+          status: newStatus,
         }
 
         const response = await TaskService.createTaskLog(log, token)

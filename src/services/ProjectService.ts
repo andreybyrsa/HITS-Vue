@@ -64,7 +64,7 @@ const getAllProjects = async (token: string): Promise<Project[] | Error> => {
 const getProject = async (id: string, token: string): Promise<Project | Error> => {
   return projectMocksAxios
     .get(
-      '/ТУТ-БУДЕТ-ЧТО-ТО', // FIX ROUTE
+      `/scrum-service/project/${id}`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -100,7 +100,7 @@ const getAverageMarkProject = async (
 ): Promise<AverageMark[] | Error> => {
   return averageMarkMocksAxios
     .get<AverageMark[]>(
-      '/mark', // FIX ROUTE
+      `/scrum-service/project/marks/${projectId}/all`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

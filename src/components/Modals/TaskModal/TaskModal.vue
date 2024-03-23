@@ -49,7 +49,7 @@ const notificationsStore = useNotificationsStore()
 
 const nameTask = ref('')
 const descriptionTask = ref('')
-const workHourTask = ref('')
+const workHourTask = ref(0)
 
 const choosenTags = ref<Tag[]>([])
 function confirmedTags(tagsValue: Tag[]) {
@@ -130,8 +130,7 @@ const handleCreateTask = handleSubmit(async () => {
       workHour: workHourTask.value,
       position: position,
       startDate: currentDate,
-      tag: choosenTags.value,
-      taskMovementLog: props.isActiveSprint ? ['NewTask'] : ['InBackLog'],
+      tags: choosenTags.value,
       status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
     }
     await tasksStore.createTask(currentTask, token)
@@ -230,6 +229,7 @@ const handleUpdateTask = handleSubmit(async (values) => {
       <div class="d-flex gap-2 w-100">
         <Typography class-name="text-primary pt-1">Трудоёмкость*</Typography>
         <Input
+          type="number"
           v-model="workHourTask"
           name="workHour"
           placeholder="Часы"

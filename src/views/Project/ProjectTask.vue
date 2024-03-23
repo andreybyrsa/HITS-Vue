@@ -64,7 +64,7 @@
           v-if="size !== 'SMALL'"
         >
           <div
-            v-for="tag in task.tag"
+            v-for="tag in task.tags"
             :key="tag.id"
             class="d-flex gap-1 p-1 rounded-2 text-center align-items-center"
             :style="{
@@ -85,7 +85,7 @@
         v-if="size == 'SMALL'"
       >
         <div
-          v-for="tag in task.tag"
+          v-for="tag in task.tags"
           :key="tag.id"
           class="d-flex gap-1 p-1 rounded-2 text-center align-items-center"
           :style="{
