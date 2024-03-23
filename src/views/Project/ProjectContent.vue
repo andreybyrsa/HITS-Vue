@@ -34,7 +34,7 @@ watchImmediate(
   () => user.value?.role,
   (role) => {
     if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
-      return switchToTabBacklog()
+      return switchToTabAboutProject()
     } else if (sprints.value.find(({ status }) => status === 'ACTIVE')) {
       return switchToTabSprint()
     } else return switchToTabSprints()

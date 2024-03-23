@@ -71,7 +71,10 @@ function closeUpdateNewTask() {
 </script>
 
 <template>
-  <div class="bg-white overflow-hidden rounded border mb-2">
+  <div
+    :class="small && 'cursor-pointer'"
+    class="bg-white overflow-hidden rounded border mb-2"
+  >
     <div class="task">
       <div class="d-flex gap-2 task__left">
         <div
@@ -92,8 +95,8 @@ function closeUpdateNewTask() {
       </div>
 
       <div
-        class="d-flex"
         v-if="small"
+        class="d-flex gap-1 me-2"
       >
         <Icon
           v-for="tag in task.tag"
@@ -109,7 +112,7 @@ function closeUpdateNewTask() {
 
       <div
         v-else
-        class="task__left-icon w-100 cursor-pointer"
+        class="task__left-icon w-100 cursor-pointer me-2"
         v-collapse="task.id"
       >
         <Icon
@@ -123,7 +126,7 @@ function closeUpdateNewTask() {
           v-tooltip="tag.name"
         />
 
-        <Icon class-name="bi bi-chevron-down fs-5 me-2" />
+        <Icon class-name="bi bi-chevron-down fs-5" />
       </div>
     </div>
 
