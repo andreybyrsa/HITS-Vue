@@ -21,21 +21,10 @@ const { tasks } = storeToRefs(tasksStore)
 const isOpenedUpdateNewTask = ref(false)
 const updatingTask = ref<Task>()
 
-function getFormattedDate(date: string) {
-  if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
-    return formattedDate.value
-  }
-}
-
 function getClassBgColor(status: TaskStatus) {
   if (status === 'InBackLog') return 'bg-primary'
   if (status === 'Done') return 'bg-secondary'
   return 'bg-warning'
-}
-
-function checkTaskInSprint(sprintId?: string) {
-  return !sprintId
 }
 
 function getTooltipByBlock(status: TaskStatus) {
@@ -48,15 +37,15 @@ function getStyleByProps() {
   if (!props.small) return { width: 'max-content' }
 }
 
-function openUpdateNewTask(task: Task) {
-  if (!props.small) {
-    updatingTask.value = task
-    isOpenedUpdateNewTask.value = true
+function getFormattedDate(date: string) {
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
   }
 }
 
-function closeUpdateNewTask() {
-  isOpenedUpdateNewTask.value = false
+function checkTaskInSprint(sprintId?: string) {
+  return !sprintId
 }
 
 function hexToRgb(hex: string) {
@@ -67,6 +56,17 @@ function hexToRgb(hex: string) {
         ${parseInt(result[2], 16)},
         ${parseInt(result[3], 16)}`
   )
+}
+
+function openUpdateNewTask(task: Task) {
+  if (!props.small) {
+    updatingTask.value = task
+    isOpenedUpdateNewTask.value = true
+  }
+}
+
+function closeUpdateNewTask() {
+  isOpenedUpdateNewTask.value = false
 }
 </script>
 
