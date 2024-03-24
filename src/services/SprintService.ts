@@ -201,7 +201,7 @@ const postSprint = async (
 ): Promise<Sprint | Error> => {
   return sprintMocksAxios
     .post(
-      'some-address', // FIX ROUTE
+      `/scrum-service/sprint/add`, // FIX ROUTE
       sprint,
       {
         headers: { Authorization: `Bearer ${token}` },

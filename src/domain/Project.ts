@@ -82,7 +82,7 @@ interface Sprint {
   report: string
   startDate: string
   finishDate: string
-  workingHours: string
+  workingHours: number
   status: SprintStatus
   tasks: Task[]
 }
