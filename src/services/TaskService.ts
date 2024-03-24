@@ -5,10 +5,11 @@ import { tasksMocks, taskMovementLogMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import axios from 'axios'
-import { develop } from '@Assets/images'
 import { MODE } from '@Main'
 import { Task, TaskMovementLog, TaskStatus } from '@Domain/Project'
 import { User } from '@Domain/User'
+import useTasksStore from '@Store/tasks/tasksStore'
+import Success from '@Domain/ResponseMessage'
 
 const tasksMocksAxios = defineAxios(tasksMocks)
 const taskMovementLogMocksAxios = defineAxios(taskMovementLogMocks)
@@ -79,7 +80,40 @@ const createTaskLog = async (
 }
 
 const createTask = async (task: Task, token: string): Promise<Task | Error> => {
-  return tasksMocksAxios
+  if (MODE === 'DEVELOPMENT') {
+    const { name, description, workHour, tags, projectId } = task
+    const currentUser = useUserStore().user
+    const position =
+      useTasksStore().tasks.filter(({ status }) => status === 'InBackLog').length + 1
+    const currentDate = new Date().toJSON().toString()
+
+    if (currentUser) {
+      const currentTask: Task = {
+        id: '',
+        projectId,
+        name,
+        description,
+        initiator: currentUser,
+        executor: null,
+        workHour,
+        position,
+        startDate: currentDate,
+        tags,
+        taskMovementLog: ['InBackLog'],
+        status: 'InBackLog',
+      }
+
+      return tasksMocksAxios
+        .post('/task/add', currentTask, {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+        })
+        .then((response) => response.data)
+        .catch((error) => handleAxiosError(error, 'Ошибка добавления тега'))
+    }
+  }
+
+  return axios
     .post('/task/add', task, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -113,20 +147,16 @@ const updateTasks = async (
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка редактирования задач'))
 }
-const updateTask = async (
-  task: Task,
-  id: string,
-  token: string,
-): Promise<Task | Error> => {
+const updateTask = async (task: Task, token: string): Promise<Success | Error> => {
   return tasksAxios
-    .put(
-      `/task/update/${id}`,
+    .put<Success>(
+      `/task/update/${task.id}`,
       task,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { id } },
+      { params: { id: task.id } },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка редактирования задачи'))

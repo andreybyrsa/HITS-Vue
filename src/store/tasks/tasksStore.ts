@@ -118,24 +118,6 @@ const useTasksStore = defineStore('tasks', {
       }
     },
 
-    // async changeTaskMovementLog(changeTaskMovementLog: Task[], token: string) {
-    //   changeTaskMovementLog.forEach((task) => {
-    //     const changetaskMovementLog = this.tasks.find(
-    //       (element) => task.id === element.id,
-    //     )
-
-    //     if (changetaskMovementLog) {
-    //       changetaskMovementLog.taskMovementLog = ['InBackLog', 'NewTask']
-    //     }
-    //   })
-
-    //   const response = TaskService.changeTaskMovementLog(this.tasks, token)
-
-    //   if (response instanceof Error) {
-    //     useNotificationsStore().createSystemNotification('Система', response.message)
-    //   }
-    // },
-
     async createTask(task: Task, token: string) {
       const response = await TaskService.createTask(task, token)
 
@@ -143,6 +125,18 @@ const useTasksStore = defineStore('tasks', {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         this.tasks.push(response)
+      }
+    },
+
+    async updateTask(task: Task, token: string) {
+      const response = await TaskService.updateTask(task, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        this.tasks = this.tasks.map((currentTask) =>
+          currentTask.id === task.id ? task : currentTask,
+        )
       }
     },
 

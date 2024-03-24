@@ -67,7 +67,7 @@ interface Task {
   startDate: string
   finishDate?: string
 
-  tag: Tag[]
+  tags: Tag[]
   taskMovementLog: TaskStatus[]
   status: TaskStatus
 }

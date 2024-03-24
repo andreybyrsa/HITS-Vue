@@ -2,8 +2,7 @@ import { Task } from '@Domain/Project'
 
 interface CreateNewTaskProps {
   isOpened: boolean
-  isActiveSprint?: boolean
-  task?: Task | null
+  task?: Task
 }
 
 interface CreateTaskModalEmits {

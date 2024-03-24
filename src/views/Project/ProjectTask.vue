@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useDateFormat } from '@vueuse/core'
-import { storeToRefs } from 'pinia'
 
 import Icon from '@Components/Icon/Icon.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
@@ -11,12 +10,7 @@ import { TaskProps } from '@Views/Project/Project.types'
 
 import { Task, TaskStatus } from '@Domain/Project'
 
-import useTasksStore from '@Store/tasks/tasksStore'
-
 const props = defineProps<TaskProps>()
-
-const tasksStore = useTasksStore()
-const { tasks } = storeToRefs(tasksStore)
 
 const isOpenedUpdateNewTask = ref(false)
 const updatingTask = ref<Task>()
@@ -99,7 +93,7 @@ function closeUpdateNewTask() {
         class="d-flex gap-1 me-2"
       >
         <Icon
-          v-for="tag in task.tag"
+          v-for="tag in task.tags"
           :key="tag.id"
           :style="{
             backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
@@ -116,7 +110,7 @@ function closeUpdateNewTask() {
         v-collapse="task.id"
       >
         <Icon
-          v-for="tag in task.tag"
+          v-for="tag in task.tags"
           :key="tag.id"
           :style="{
             backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
@@ -147,7 +141,6 @@ function closeUpdateNewTask() {
 
     <TaskModal
       :is-opened="isOpenedUpdateNewTask"
-      v-model="tasks"
       :task="updatingTask"
       @close-modal="closeUpdateNewTask"
     />

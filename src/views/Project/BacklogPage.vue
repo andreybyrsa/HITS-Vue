@@ -13,34 +13,31 @@
         </template>
       </draggable>
 
-      <div>
-        <div
-          v-for="(task, index) in otherTasks"
-          :key="index"
-        >
-          <ProjectTask :task="task" />
-        </div>
-      </div>
+      <ProjectTask
+        v-for="(task, index) in otherTasks"
+        :key="index"
+        :task="task"
+      />
     </div>
 
     <div class="d-flex flex-column gap-3 w-25">
       <Button
         @click="openCreateNewTask"
         class-name="btn btn-primary text-nowrap p-2 px-5"
-        >Создать задачу</Button
       >
+        Создать задачу
+      </Button>
       <FilterBar
         class-name=" border-start w-100"
         :filters="filters"
       />
     </div>
-
-    <TaskModal
-      :is-opened="isOpenedCreateNewTask"
-      v-model="tasks"
-      @close-modal="closeCreateNewTask"
-    />
   </div>
+
+  <TaskModal
+    :is-opened="isOpenedCreateNewTask"
+    @close-modal="closeCreateNewTask"
+  />
 </template>
 
 <script setup lang="ts">
@@ -149,7 +146,7 @@ function checkMove(evt: any) {
 function filtertTasks(tasks: Task[], filters: string[]): Task[] {
   if (filterByTags.value.length > 0) {
     return tasks.filter((task) =>
-      filters.some((filter) => task.tag.find(({ name }) => name === filter)),
+      filters.some((filter) => task.tags.find(({ name }) => name === filter)),
     )
   } else {
     return sortedInBackLogTasks.value
@@ -166,7 +163,7 @@ function sortOtherTasks(tasks: Task[], filters: string[]): Task[] {
 
   if (filterByTags.value.length > 0) {
     const filteredByTags = filteredTasks.filter((task) =>
-      filters.some((filter) => task.tag.find(({ name }) => name === filter)),
+      filters.some((filter) => task.tags.find(({ name }) => name === filter)),
     )
     return filteredByTags.sort((a, b) => {
       if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {
