@@ -1,7 +1,5 @@
 import { Project, Sprint, Task, TaskStatus } from '@Domain/Project'
 
-type SizeType = 'STANDART' | 'SMALL'
-
 interface ProjectProps {
   project: Project
   sprint?: Sprint[]
@@ -14,7 +12,7 @@ interface SprintListProps {
 
 interface TaskProps {
   task: Task
-  size?: SizeType
+  small?: boolean
 }
 
 interface ActiveSprintTaskProps {
@@ -30,7 +28,6 @@ export {
   ProjectProps,
   SprintListProps,
   TaskProps,
-  SizeType,
   ActiveSprintTaskProps,
   ColumnTask,
 }

@@ -60,7 +60,6 @@ const recommendedLoad = computed<number>(() => {
 
   return daysDifference * props.project.team.membersCount
 })
-// const recommendedLoad = computed<number>(() => 8)
 
 watch(
   () => tasks,
@@ -227,8 +226,8 @@ function checkDisabledButton() {
               v-for="task in backlogTasks"
               :key="task.id"
               @click="moveTaskToNewTasks(task)"
-              size="SMALL"
               :task="task"
+              small
             />
           </div>
         </div>
@@ -245,8 +244,8 @@ function checkDisabledButton() {
               @click="moveTaskToBacklog(task)"
               v-for="task in newSprintTasks"
               :key="task.id"
-              size="SMALL"
               :task="task"
+              small
             />
           </div>
         </div>

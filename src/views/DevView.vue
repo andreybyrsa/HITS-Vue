@@ -176,7 +176,7 @@ const b = ref()
         Открыть окно
       </Button> -->
 
-      <pre class="sss">Пользователь из userStore - {{ user }}</pre>
+      <!-- <pre class="sss">Пользователь из userStore - {{ user }}</pre> -->
     </template>
   </PageLayout>
 </template>

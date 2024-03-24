@@ -80,8 +80,8 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 
 <template>
   <div class="content">
-    <div class="border-bottom px-3">
-      <ul class="nav nav-underline">
+    <div class="px-3">
+      <ul class="nav nav-tabs">
         <div
           :class="getNavLinkStyle(isTabAboutProject)"
           @click="switchToTabAboutProject"
