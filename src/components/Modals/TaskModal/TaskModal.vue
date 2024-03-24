@@ -27,6 +27,8 @@ import Validation from '@Utils/Validation'
 import { useForm } from 'vee-validate'
 import TaskService from '@Services/TaskService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import ActiveSprint from '@Views/Project/ActiveSprint.vue'
+import useSprintsStore from '@Store/sprints/sprintsStore'
 
 const props = defineProps<CreateNewTaskProps>()
 
@@ -42,6 +44,9 @@ const { user } = storeToRefs(userStore)
 
 const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
+
+const sprintStore = useSprintsStore()
+const { activeSprint } = storeToRefs(sprintStore)
 
 const route = useRoute()
 
@@ -122,6 +127,7 @@ const handleCreateTask = handleSubmit(async () => {
 
     const currentTask: Task = {
       id: '',
+      sprintId: props.isActiveSprint ? activeSprint?.value?.id : undefined,
       projectId: projectId,
       name: nameTask.value,
       description: descriptionTask.value,
@@ -134,6 +140,7 @@ const handleCreateTask = handleSubmit(async () => {
       status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
     }
     await tasksStore.createTask(currentTask, token)
+
     isCreating.value = false
     emit('close-modal')
   }

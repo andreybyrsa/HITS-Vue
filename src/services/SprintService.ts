@@ -47,7 +47,7 @@ const getActiveSprintsProject = async (
 ): Promise<Sprint | Error> => {
   return sprintMocksAxios
     .get(
-      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      `/scrum-service/sprint/${projectId}/active`,
       {
         // FIX ROUTE
         headers: { Authorization: `Bearer ${token}` },
@@ -67,7 +67,7 @@ const getMarkSprint = async (
 ): Promise<SprintMarks[] | Error> => {
   return sprintMarksMocksAxios
     .get<SprintMarks[]>(
-      '/sprint/mark', // FIX ROUTE
+      `/scrum-service/sprint/marks/${sprintId}/all`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

@@ -342,6 +342,7 @@ function closeCreateNewTask() {
   <TaskModal
     :is-opened="isOpenedCreateNewTask"
     @close-modal="closeCreateNewTask"
+    :is-active-sprint="true"
   />
 </template>
 
