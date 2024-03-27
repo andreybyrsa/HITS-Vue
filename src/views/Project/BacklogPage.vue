@@ -41,8 +41,8 @@ import draggable from 'vuedraggable'
 
 import Button from '@Components/Button/Button.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
-import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import { Filter } from '@Components/FilterBar/FilterBar.types'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import ProjectTask from '@Views/Project/ProjectTask.vue'
 
 import { Task } from '@Domain/Project'
