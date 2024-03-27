@@ -20,6 +20,10 @@ function formatGetMarksSprint(sprintMarksMocks: SprintMarks[], sprintId: string)
   return sprintMarksMocks.filter((mark) => mark.sprintId === sprintId)
 }
 
+function formatGetSprintById(sprints: Sprint[], currentSprintId: string) {
+  return sprints.filter(({ id }) => id === currentSprintId)
+}
+
 // --- GET --- //
 const getAllSprintsProject = async (
   projectId: string,
@@ -55,6 +59,23 @@ const getActiveSprintsProject = async (
       },
       {
         params: { projectId, status: 'ACTIVE' },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения спринтов'))
+}
+
+const getSprintById = async (id: string, token: string): Promise<Sprint | Error> => {
+  return sprintMocksAxios
+    .get(
+      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      {
+        // FIX ROUTE
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (sprints) => formatGetSprintById(sprints, id),
       },
     )
     .then((response) => response.data)
@@ -228,14 +249,15 @@ const saveMarkSprint = async (
 
 const ProfileService = {
   getAllSprintsProject,
+  getActiveSprintsProject,
+  getSprintById,
+  getMarkSprint,
   changeSprintStatus,
+  updateSprint,
   reportSprint,
   finishSprintDate,
-  getActiveSprintsProject,
   postSprint,
-  updateSprint,
   saveMarkSprint,
-  getMarkSprint,
 }
 
 export default ProfileService

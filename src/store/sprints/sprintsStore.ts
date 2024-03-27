@@ -13,6 +13,7 @@ const useSprintsStore = defineStore('sprints', {
   state: (): InitialState => ({
     sprints: [],
     activeSprint: undefined,
+    sprintById: undefined,
   }),
 
   getters: {
@@ -42,6 +43,19 @@ const useSprintsStore = defineStore('sprints', {
 
         this.activeSprint = response
         return this.activeSprint
+      }
+    },
+
+    getDoneSprints() {
+      return async (id: string, token: string) => {
+        const response = await SprintService.getSprintById(id, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        this.sprintById = response
+        return this.sprintById
       }
     },
   },

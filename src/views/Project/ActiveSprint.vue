@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import { computed, ref, onBeforeMount, onMounted } from 'vue'
 import draggable from 'vuedraggable'
 import FinishSprintModal from '@Components/Modals/FinishSprintModal/FinishSprintModal.vue'
+import SprintChartModal from '@Components/Modals/SprintChartModal/SprintChartModal.vue'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
@@ -351,14 +352,13 @@ const changeName = useDebounceFn((input: string) => {
         >
           <Typography class-name="fs-5 fw-semibold cursor-pointer">
             {{ activeSprint.name }}
-            {{ activeSprint.status }}
           </Typography>
         </div>
-        <!-- <FinishSprintModal
+        <SprintChartModal
           :is-opened="isOpenedSprinttModal"
-          :sprint="(currentSprint as Sprint)"
+          :sprint="activeSprint"
           @close-modal="closeSprintModal"
-        /> -->
+        />
         <Typography>(до {{ getFormattedDate(activeSprint.finishDate) }})</Typography>
       </div>
       <div class="d-flex gap-2">

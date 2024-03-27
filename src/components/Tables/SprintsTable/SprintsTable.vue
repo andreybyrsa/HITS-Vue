@@ -13,6 +13,13 @@
     :project="project"
     @close-modal="closeSprintModal"
   />
+  <SprintInfoModal
+    :is-opened="isOpenedSprintInfoModal"
+    :isSprinInfoModal="isOpenedSprintInfoModal"
+    :sprint="sprint"
+    :project="project"
+    @close-modal="closeSprintInfoModal"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -25,6 +32,8 @@ import {
 } from '@Components/Table/Table.types'
 
 import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
+import SprintInfoModal from '@Components/Modals/SprintInfoModal/SprintInfoModal.vue'
+
 import SprintsTableProps from '@Components/Tables/SprintsTable/StprintsTable.types'
 import Table from '@Components/Table/Table.vue'
 import { useDateFormat } from '@vueuse/core'
@@ -41,6 +50,7 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedSprintModal = ref(false)
+const isOpenedSprintInfoModal = ref(false)
 const sprint = ref<Sprint>()
 
 const sprintsTableHeader = computed<TableHeader>(() => ({
@@ -64,7 +74,8 @@ const usersTableColumns: TableColumn<Sprint>[] = [
     key: 'name',
     size: 'col-3',
     label: 'Название',
-    rowCellClick: OpenEditSprintModal,
+
+    rowCellClick: OpenEditSprintModalOrSprintInfoModal,
   },
   {
     key: 'status',
@@ -127,15 +138,23 @@ function openSprintModal() {
   isOpenedSprintModal.value = true
 }
 
-function OpenEditSprintModal(currentSprint: Sprint) {
+function OpenEditSprintModalOrSprintInfoModal(currentSprint: Sprint) {
   if (currentSprint.status === 'ACTIVE') {
     sprint.value = currentSprint
     isOpenedSprintModal.value = true
+  } else {
+    sprint.value = currentSprint
+    isOpenedSprintInfoModal.value = true
   }
 }
 
 function closeSprintModal() {
   sprint.value = undefined
   isOpenedSprintModal.value = false
+}
+
+function closeSprintInfoModal() {
+  sprint.value = undefined
+  isOpenedSprintInfoModal.value = false
 }
 </script>

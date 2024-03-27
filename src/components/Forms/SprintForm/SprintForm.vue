@@ -195,7 +195,7 @@ function checkDisabledButton() {
 </script>
 
 <template>
-  <div class="sprint-form w-100 mb-1">
+  <div class="sprint-form w-100 mb-1 bg-white">
     <!-- header -->
     <div class="sprint-form__header w-100">
       <Typography class-name="fs-3 text-primary">
