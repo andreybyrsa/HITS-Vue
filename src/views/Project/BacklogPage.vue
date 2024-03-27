@@ -1,34 +1,28 @@
 <template>
   <div class="d-flex gap-3 mt-4">
-    <div class="w-100">
-      <draggable
-        class="list-group"
-        :list="filteredAndSortedTasks"
-        :animation="200"
-        @change="checkMove"
-        group="tasks"
-      >
-        <template #item="{ element }">
-          <ProjectTask :task="element" />
-        </template>
-      </draggable>
-
-      <ProjectTask
-        v-for="(task, index) in otherTasks"
-        :key="index"
-        :task="task"
-      />
-    </div>
+    <draggable
+      class="w-100"
+      :list="sortTasks"
+      :animation="200"
+      :move="move"
+      @change="checkMove"
+      group="tasks"
+    >
+      <template #item="{ element }">
+        <ProjectTask :task="element" />
+      </template>
+    </draggable>
 
     <div class="d-flex flex-column gap-3 w-25">
       <Button
+        variant="primary"
         @click="openCreateNewTask"
-        class-name="btn btn-primary text-nowrap p-2 px-5"
+        class-name="p-2"
       >
         Создать задачу
       </Button>
       <FilterBar
-        class-name=" border-start w-100"
+        class-name="border-start w-100"
         :filters="filters"
       />
     </div>
@@ -47,17 +41,16 @@ import draggable from 'vuedraggable'
 
 import Button from '@Components/Button/Button.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
-import ProjectTask from '@Views/Project/ProjectTask.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
-
 import { Filter } from '@Components/FilterBar/FilterBar.types'
+import ProjectTask from '@Views/Project/ProjectTask.vue'
+
 import { Task } from '@Domain/Project'
 import { Tag } from '@Domain/Tag'
 
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import useTagsStore from '@Store/tags/tagsStore'
-import { watchImmediate } from '@vueuse/core'
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
@@ -70,24 +63,37 @@ const { user } = storeToRefs(userStore)
 const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
-const inBackLogTasks = computed<Task[]>(() => {
-  return tasks.value.filter((task) => task.status === 'InBackLog')
-})
-
-const otherTasks = computed<Task[]>(() => {
-  return sortOtherTasks(tasks.value, filterByTags.value)
-})
-
-const sortedInBackLogTasks = computed<Task[]>(() => {
-  const currentSortedTasks = [...inBackLogTasks.value].sort(
-    (a, b) => a.position - b.position,
-  )
-
-  return currentSortedTasks
-})
+const inBackLogTasks = computed<Task[]>(() =>
+  tasks.value.filter((task) => task.status === 'InBackLog'),
+)
 
 const filterByTags = ref<string[]>([])
 const searchByTags = ref('')
+
+const statusOrder = {
+  InBackLog: 1,
+  OnModification: 2,
+  NewTask: 2,
+  inProgress: 2,
+  OnVerification: 2,
+  Done: 3,
+}
+
+const sortTasks = computed<Task[]>(() => {
+  let arrayTask = [...tasks.value]
+
+  if (filterByTags.value.length) {
+    arrayTask = arrayTask.filter(({ tags }) =>
+      tags.find((tag) => filterByTags.value.includes(tag.name)),
+    )
+  }
+
+  return arrayTask.sort((a, b) =>
+    a.status === 'InBackLog' && b.status === 'InBackLog'
+      ? a.position - b.position
+      : statusOrder[a.status] - statusOrder[b.status],
+  )
+})
 
 const filters: Filter<Task>[] = [
   {
@@ -112,121 +118,24 @@ function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
 }
 
-const filteredAndSortedTasks = ref<Task[]>([...sortedInBackLogTasks.value])
-
-const compfilteredAndSortedTasks = computed(() => {
-  const tasks = filtertTasks(sortedInBackLogTasks.value, filterByTags.value)
-
-  return tasks
-})
-
-watchImmediate(
-  compfilteredAndSortedTasks,
-  () => (filteredAndSortedTasks.value = compfilteredAndSortedTasks.value),
-)
-
-function checkMove(evt: any) {
+async function checkMove() {
   const currentUser = user.value
 
-  if (currentUser && filterByTags.value.length <= 0) {
+  if (currentUser?.token) {
     const { token } = currentUser
-    const { newIndex, oldIndex } = evt.moved
-
-    if (token) {
-      tasksStore.changePosition(
-        filteredAndSortedTasks.value,
-        newIndex,
-        oldIndex,
-        token,
-      )
-    }
-  }
-}
-
-function filtertTasks(tasks: Task[], filters: string[]): Task[] {
-  if (filterByTags.value.length > 0) {
-    return tasks.filter((task) =>
-      filters.some((filter) => task.tags.find(({ name }) => name === filter)),
+    const changeTasks = sortTasks.value.filter(
+      ({ status }) => status === 'InBackLog',
     )
-  } else {
-    return sortedInBackLogTasks.value
+
+    await tasksStore.changePosition(changeTasks, token)
   }
 }
 
-function sortOtherTasks(tasks: Task[], filters: string[]): Task[] {
-  const excludedStatuses = ['InBackLog']
-  const firstStatuses = ['OnModification', 'NewTask', 'inProgress', 'OnVerification']
-
-  const filteredTasks = tasks.filter(
-    (task) => !excludedStatuses.includes(task.status),
+function move(evt: any) {
+  return (
+    evt.draggedContext.element.status === 'InBackLog' &&
+    filterByTags.value.length === 0 &&
+    evt.draggedContext.futureIndex < inBackLogTasks.value.length
   )
-
-  if (filterByTags.value.length > 0) {
-    const filteredByTags = filteredTasks.filter((task) =>
-      filters.some((filter) => task.tags.find(({ name }) => name === filter)),
-    )
-    return filteredByTags.sort((a, b) => {
-      if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {
-        return -1
-      }
-      if (!firstStatuses.includes(a.status) && firstStatuses.includes(b.status)) {
-        return 1
-      }
-      if (a.status === 'Done' && b.status !== 'Done') {
-        return 1
-      }
-      if (a.status !== 'Done' && b.status === 'Done') {
-        return -1
-      }
-      return 0
-    })
-  } else {
-    return filteredTasks.sort((a, b) => {
-      if (firstStatuses.includes(a.status) && !firstStatuses.includes(b.status)) {
-        return -1
-      }
-      if (!firstStatuses.includes(a.status) && firstStatuses.includes(b.status)) {
-        return 1
-      }
-      if (a.status === 'Done' && b.status !== 'Done') {
-        return 1
-      }
-      if (a.status !== 'Done' && b.status === 'Done') {
-        return -1
-      }
-      return 0
-    })
-  }
 }
 </script>
-
-<style scoped lang="scss">
-.collapse-controller {
-  border-radius: 0;
-  border-bottom: 0;
-  background-color: $white-color;
-
-  @include flexible(center, flex-start, $gap: 24px);
-}
-
-.header {
-  width: 100%;
-  @include flexible(center, space-between);
-
-  &__block {
-    @include flexible(center, start, $gap: 12px);
-  }
-}
-
-.collapce {
-  @include flexible(start, space-between);
-
-  &__block {
-    @include flexible(start, start);
-
-    &-right {
-      width: 17%;
-    }
-  }
-}
-</style>

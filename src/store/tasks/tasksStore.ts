@@ -28,25 +28,23 @@ const useTasksStore = defineStore('tasks', {
     },
   },
   actions: {
-    async changePosition(
-      changeTasks: Task[],
-      newIndex: number,
-      oldIndex: number,
-      token: string,
-    ) {
-      changeTasks.forEach((task, index) => {
-        const changeTask = this.tasks.find((element) => task.id === element.id)
+    async changePosition(changeTasks: Task[], token: string) {
+      changeTasks.forEach((task, index) => (task.position = index + 1))
 
-        if (changeTask) {
-          changeTask.position = index + 1
-        }
-      })
-
-      const response = TaskService.updateTasks(this.tasks, token)
+      const response = await TaskService.updateTasks(changeTasks, token)
 
       if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
+
+      this.tasks.forEach((task) => {
+        const currentTask = changeTasks.find(({ id }) => id === task.id)
+
+        if (currentTask) task = currentTask
+      })
     },
 
     async changeExecutorTask(taskId: string, user: User | null, token: string) {

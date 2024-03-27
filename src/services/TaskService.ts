@@ -127,17 +127,10 @@ const updateTasks = async (
   token: string,
 ): Promise<Task[] | Error> => {
   if (MODE == 'DEVELOPMENT') {
-    const mockTasks = tasksMocksAxios.getReactiveMocks()
-    console.log(mockTasks)
-
-    mockTasks.value.forEach((task) =>
-      tasks.find((newTask) => {
-        if (newTask.id === task.id) {
-          task.position = newTask.position
-        }
-      }),
+    tasksMocks.forEach((task) =>
+      tasks.find(({ id, position }) => id === task.id && (task.position = position)),
     )
-    console.log(mockTasks)
+    return tasksMocks
   }
   return axios
     .put(`/task/update/}`, tasks, {
