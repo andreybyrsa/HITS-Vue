@@ -63,7 +63,7 @@ onMounted(async () => {
 
 const taskHistoryTableColumns: TableColumn<TaskMovementLog>[] = [
   {
-    key: 'taskStatus',
+    key: 'status',
     label: 'Статус',
     size: 'col-4',
     getRowCellStyle: getTaskHistoryStatusStyle,

@@ -51,7 +51,7 @@ const getTaskMovementLog = async (
 ): Promise<TaskMovementLog[] | Error> => {
   return taskMovementLogMocksAxios
     .get<TaskMovementLog[]>(
-      '/ТУТ-БУДЕТ-ЧТО-ТО',
+      `/scrum-service/log/all/${taskId}`,
       {
         // FIX ROUTE
         headers: { Authorization: `Bearer ${token}` },
