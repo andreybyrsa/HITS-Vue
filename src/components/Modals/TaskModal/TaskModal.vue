@@ -1,5 +1,13 @@
 <script lang="ts" setup>
-import { onUpdated, ref } from 'vue'
+import { ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useForm } from 'vee-validate'
+import { useRoute } from 'vue-router'
+
+import {
+  CreateNewTaskProps,
+  CreateTaskModalEmits,
+} from '@Components/Modals/TaskModal/TaskModal.types'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
@@ -9,32 +17,19 @@ import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 
-// import defineAxios from '@Utils/defineAxios'
-// import { tagsMocks } from '@Utils/getMocks'
 import useTagsStore from '@Store/tags/tagsStore'
-import { storeToRefs } from 'pinia'
-import { Tag } from '@Domain/Tag'
-
-import {
-  CreateNewTaskProps,
-  CreateTaskModalEmits,
-} from '@Components/Modals/TaskModal/TaskModal.types'
 import useUserStore from '@Store/user/userStore'
-import { useRoute } from 'vue-router'
 import useTasksStore from '@Store/tasks/tasksStore'
+
+import { Tag } from '@Domain/Tag'
 import { Task } from '@Domain/Project'
+
 import Validation from '@Utils/Validation'
-import { useForm } from 'vee-validate'
-import TaskService from '@Services/TaskService'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import ActiveSprint from '@Views/Project/ActiveSprint.vue'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 
 const props = defineProps<CreateNewTaskProps>()
 
 const emit = defineEmits<CreateTaskModalEmits>()
-
-// const tagsAxios = defineAxios(tagsMocks)
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
@@ -43,131 +38,78 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const tasksStore = useTasksStore()
-const { tasks } = storeToRefs(tasksStore)
 
 const sprintStore = useSprintsStore()
 const { activeSprint } = storeToRefs(sprintStore)
 
 const route = useRoute()
 
-const notificationsStore = useNotificationsStore()
-
-const nameTask = ref('')
-const descriptionTask = ref('')
-const workHourTask = ref(0)
-
 const choosenTags = ref<Tag[]>([])
 function confirmedTags(tagsValue: Tag[]) {
   return tagsValue.filter(({ confirmed }) => confirmed)
 }
-// async function createTask() {
-//   const currentUser = user.value
-//   if (currentUser?.token) {
-//     const { token } = currentUser
-//     const projectId = route.params.id.toString()
-//     const position = tasks.value.length + 1
-//     const currentDate = new Date().toJSON().toString()
-//     console.log(descriptionTask.value, choosenTags.value)
-//     const currentTask: Task = {
-//       id: '',
-//       projectId: projectId,
-//       name: nameTask.value,
-//       description: descriptionTask.value,
-//       initiator: currentUser,
-//       executor: null,
-//       workHour: workHourTask.value,
-//       position: position,
-//       startDate: currentDate,
-//       tag: choosenTags.value,
-//       taskMovementLog: props.isActiveSprint ? ['NewTask'] : ['InBackLog'],
-//       status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
-//     }
-//     await tasksStore.createTask(currentTask, token)
-//     emit('close-modal')
-//   }
-// }
 
-const taskModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
-const isCreating = ref(false)
-const isUpdating = ref(false)
+const isLoading = ref(false)
 
 const { handleSubmit, setValues } = useForm<Task>({
   validationSchema: {
     name: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Неверно название задачи',
+      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
     description: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Неверно описисание задачи',
+      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
     workHour: (value: string) =>
-      Validation.checkNumber(value) || 'Неверно введено  число',
-    tags: (value: Tag) =>
-      Validation.checkIsEmptyValue(value) || 'Неверно выбраны теги',
+      Validation.checkNumber(value) || 'Неверно введено число',
+    tags: (value: Tag[]) => Validation.checkIsEmptyValue(value) || 'Не выбраны теги',
   },
 })
 
-onUpdated(async () => {
-  if (props.isOpened && props.task) {
-    taskModalMode.value = 'UPDATE'
-    setValues({ ...props.task })
-  } else if (props.isOpened && !props.task) {
-    taskModalMode.value = 'CREATE'
-  }
-})
+watch(
+  () => props.task,
+  (task) => {
+    choosenTags.value = task?.tags ?? []
+    setValues({ ...task })
+  },
+)
 
-const handleCreateTask = handleSubmit(async () => {
+const handleCreateTask = handleSubmit(async (task) => {
   const currentUser = user.value
+
   if (currentUser?.token) {
+    isLoading.value = true
     const { token } = currentUser
-
-    isCreating.value = true
-
     const projectId = route.params.id.toString()
-    const position =
-      tasks.value.filter(({ status }) => status === 'InBackLog').length + 1
-    const currentDate = new Date().toJSON().toString()
+    task.projectId = projectId
 
-    const currentTask: Task = {
-      id: '',
-      sprintId: props.isActiveSprint ? activeSprint?.value?.id : undefined,
-      projectId: projectId,
-      name: nameTask.value,
-      description: descriptionTask.value,
-      initiator: currentUser,
-      executor: null,
-      workHour: workHourTask.value,
-      position: position,
-      startDate: currentDate,
-      tags: choosenTags.value,
-      status: props.isActiveSprint ? 'NewTask' : 'InBackLog',
-    }
-    await tasksStore.createTask(currentTask, token)
+    await tasksStore.createTask(task, token)
 
-    isCreating.value = false
+    isLoading.value = false
     emit('close-modal')
   }
 })
 
-const handleUpdateTask = handleSubmit(async (values) => {
+const handleUpdateTask = handleSubmit(async (task) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
+    isLoading.value = true
     const { token } = currentUser
 
-    isUpdating.value = true
-    const response = await TaskService.updateTask(values, values.id, token)
-    isUpdating.value = false
+    await tasksStore.updateTask(task, token)
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', response.message)
-    }
-
-    const taskIndex = tasks.value.findIndex((task) => task.id === values.id)
-    if (taskIndex !== -1) {
-      tasks.value.splice(taskIndex, 1, values)
-    }
-
+    isLoading.value = false
     emit('close-modal')
   }
 })
+
+function hexToRgb(hex: string) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return (
+    result &&
+    `${parseInt(result[1], 16)},
+        ${parseInt(result[2], 16)},
+        ${parseInt(result[3], 16)}`
+  )
+}
 </script>
 
 <template>
@@ -175,115 +117,114 @@ const handleUpdateTask = handleSubmit(async (values) => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div
-      class="add-task-modal border rounded-4 bg-white ps-4 pe-4 d-flex flex-column gap-2"
-    >
-      <div class="add-task-modal__header pt-2 w-100">
-        <Typography class-name="fs-4 text-primary w-100">{{
-          taskModalMode === 'CREATE' ? 'Создание задачи' : 'Редактирование задачи'
-        }}</Typography>
+    <div class="add-task-modal border rounded-3 bg-white px-3 py-2">
+      <div class="add-task-modal__header w-100">
+        <Typography class-name="fs-4 text-primary">
+          {{ task ? 'Редактирование задачи' : 'Создание задачи' }}
+        </Typography>
         <Button
           @click="emit('close-modal')"
-          class-name="fs-5"
           variant="close"
         />
       </div>
-      <div class="">
-        <Typography class-name="text-primary">Название задачи*</Typography>
-      </div>
-      <div class="w-100">
-        <Input
-          v-model="nameTask"
-          name="name"
-          placeholder="Название"
-          validate-on-update
-        />
-      </div>
-      <div class="">
-        <Typography class-name="text-primary">Описание задачи*</Typography>
-      </div>
-      <div class="w-100">
-        <Textarea
-          v-model="descriptionTask"
-          placeholder="Описание"
-          name="description"
-          validate-on-update
-        ></Textarea>
-      </div>
-      <div class="w-100">
-        <ComboBox
-          name="tags"
-          :options="confirmedTags(tags)"
-          :display-by="['name']"
-          v-model="choosenTags"
-          placeholder="Выберите теги"
-          validate-on-update
-        ></ComboBox>
-      </div>
-      <div class="d-flex gap-2">
+
+      <Input
+        label="Название задачи*"
+        class-name="rounded"
+        name="name"
+        placeholder="Название"
+        validate-on-update
+      />
+
+      <Textarea
+        label="Описание задачи*"
+        class-name="add-task-modal__description rounded"
+        placeholder="Описание"
+        name="description"
+        validate-on-update
+      />
+
+      <ComboBox
+        :options="confirmedTags(tags)"
+        :display-by="['name']"
+        v-model="choosenTags"
+        placeholder="Теги"
+        name="tags"
+        validate-on-update
+      />
+
+      <div class="d-flex flex-wrap gap-2">
         <div
-          class="d-flex gap-1 py-1"
-          v-for="tag in choosenTags"
-          :key="tag.id"
+          class="d-flex gap-1"
+          v-for="(tag, index) in choosenTags"
+          :key="index"
         >
           <Icon
-            class-name="bi bi-circle-fill"
-            :style="{ color: tag.color }"
+            class-name="bi bi-circle-fill p-1 rounded-2"
+            :style="{
+              color: tag.color,
+              backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
+            }"
           />
-          <div>{{ tag.name }}</div>
+          {{ tag.name }}
         </div>
       </div>
-      <div class="d-flex gap-2 w-100">
-        <Typography class-name="text-primary pt-1">Трудоёмкость*</Typography>
+
+      <div class="d-flex align-items-center gap-2 w-100">
+        <Typography class-name="text-primary">Трудоёмкость*</Typography>
         <Input
-          type="number"
-          v-model="workHourTask"
+          class-name="rounded"
           name="workHour"
           placeholder="Часы"
           validate-on-update
         />
       </div>
-      <div class="py-3 w-100">
-        <Button
-          v-if="taskModalMode === 'CREATE'"
-          type="submit"
-          variant="primary"
-          class-name="w-100"
-          :is-loading="isCreating"
-          @click="handleCreateTask"
-        >
-          Создать задачу
-        </Button>
-        <Button
-          v-if="taskModalMode === 'UPDATE'"
-          type="submit"
-          variant="primary"
-          class-name="w-100"
-          :is-loading="isUpdating"
-          @click="handleUpdateTask"
-        >
-          Обновить задачу
-        </Button>
-      </div>
+
+      <Button
+        v-if="task"
+        variant="primary"
+        class-name="w-100 mb-1"
+        :is-loading="isLoading"
+        @click="handleUpdateTask"
+      >
+        Обновить задачу
+      </Button>
+      <Button
+        v-else
+        variant="primary"
+        class-name="w-100 mb-1"
+        :is-loading="isLoading"
+        @click="handleCreateTask"
+      >
+        Создать задачу
+      </Button>
     </div>
   </ModalLayout>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .add-task-modal {
   width: 450px;
-  height: fit-content;
+
   @include flexible(
     flex-start,
     flex-start,
     column,
     $align-self: center,
-    $justify-self: center
+    $justify-self: center,
+    $gap: 12px
   );
+
   &__header {
     @include flexible(center, space-between);
   }
+
+  &__description {
+    resize: none;
+    height: 100px;
+  }
 }
+
 .modal-layout-enter-from .add-tag-modal,
 .modal-layout-leave-to .add-tag-modal {
   transform: scale(0.9);
