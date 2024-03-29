@@ -117,7 +117,7 @@ function getTaskHistoryStatusStyle(status: TaskStatus) {
     return initialClass
   }
 
-  if (status === 'inProgress') {
+  if (status === 'InProgress') {
     initialClass.push('bg-warning-subtle', 'text-warning')
     return initialClass
   }

@@ -31,7 +31,7 @@ const useTasksStore = defineStore('tasks', {
     async changePosition(changeTasks: Task[], token: string) {
       changeTasks.forEach((task, index) => (task.position = index + 1))
 
-      const response = await TaskService.updateTasks(changeTasks, token)
+      const response = await TaskService.moveTask(changeTasks, token)
 
       if (response instanceof Error) {
         return useNotificationsStore().createSystemNotification(
@@ -157,6 +157,8 @@ const useTasksStore = defineStore('tasks', {
             'Система',
             response.message,
           )
+        } else {
+          currentTask.status = newStatus
         }
       }
     },

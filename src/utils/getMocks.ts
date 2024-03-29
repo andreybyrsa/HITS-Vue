@@ -1309,7 +1309,7 @@ export const tasksMocks: Task[] = [
     position: 1,
     startDate: '2023-09-25T11:02:17Z',
     tags: [tagsMocks[0], tagsMocks[1], tagsMocks[6]],
-    status: 'inProgress',
+    status: 'InProgress',
   },
   {
     id: '7',
@@ -1324,7 +1324,7 @@ export const tasksMocks: Task[] = [
     position: 3,
     startDate: '2023-09-25T11:02:17Z',
     tags: [tagsMocks[0], tagsMocks[7]],
-    status: 'inProgress',
+    status: 'InProgress',
   },
   {
     id: '8',
@@ -2072,7 +2072,7 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     user: usersMocks[1],
     startDate: '2023-09-25T17:02:17Z',
     endDate: '2023-09-30T10:11:17Z',
-    status: 'inProgress',
+    status: 'InProgress',
   },
   {
     id: '2',

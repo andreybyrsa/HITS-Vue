@@ -90,7 +90,7 @@ const changeSprintStatus = async (
   if (MODE === 'DEVELOPMENT') {
     return sprintMocksAxios
       .putNoRequestBody<Success>(
-        `/sprint/status/update/${sprintId}/${status}`,
+        `/scrum-service/sprint/${sprintId}/status/${status}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -104,7 +104,7 @@ const changeSprintStatus = async (
       .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
   }
   return axios
-    .put<Success>(`/sprint/status/change/${sprintId}`, status, {
+    .put<Success>(`/scrum-service/sprint/${sprintId}/status/${status}`, status, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -119,7 +119,7 @@ const updateSprint = async (
 ): Promise<Success | Error> => {
   return sprintMocksAxios
     .put<Success>(
-      `/sprint`, //  FIX
+      `/scrum-service/sprint/${sprintId}/update`, //  FIX
       sprint,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -171,7 +171,7 @@ const finishSprintDate = async (
   if (MODE === 'DEVELOPMENT') {
     return sprintMocksAxios
       .putNoRequestBody<Success>(
-        `/sprint/finish/change/${sprintId}`,
+        `/scrum-service/sprint/${sprintId}/finish`,
         {
           headers: { Authorization: `Bearer ${token}` },
           signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -218,7 +218,7 @@ const saveMarkSprint = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .post<Success>(`/sprint/marks/${sprintId}`, marks, {
+    .post<Success>(`/scrum-service/sprint/${sprintId}/add/marks`, marks, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

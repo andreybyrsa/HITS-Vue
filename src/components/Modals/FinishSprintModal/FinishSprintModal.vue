@@ -229,7 +229,7 @@ const FinishSprint = handleSubmit(async () => {
                           <div>{{ task.name }}</div>
                           <div class="d-flex gap-3 overflow-auto w-100">
                             <div
-                              v-for="(tag, index) in task.tag"
+                              v-for="(tag, index) in task.tags"
                               :key="index"
                               class="d-flex gap-1"
                             >

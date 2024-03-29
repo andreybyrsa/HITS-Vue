@@ -255,7 +255,7 @@ const FinishProject = handleSubmit(async () => {
                         class="w-50 d-flex justify-content-start gap-2 overflow-y-auto p-1"
                       >
                         <div
-                          v-for="(tag, index) in task.tag"
+                          v-for="(tag, index) in task.tags"
                           :key="index"
                           class="d-flex gap-1"
                         >

@@ -9,7 +9,7 @@ type TaskStatus =
   | 'InBackLog'
   | 'OnModification'
   | 'NewTask'
-  | 'inProgress'
+  | 'InProgress'
   | 'OnVerification'
   | 'Done'
 

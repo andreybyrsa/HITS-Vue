@@ -13,7 +13,7 @@ function getTaskStatus(): GetTaskStatusType {
       'InBackLog',
       'OnModification',
       'NewTask',
-      'inProgress',
+      'InProgress',
       'OnVerification',
       'Done',
     ],
@@ -21,7 +21,7 @@ function getTaskStatus(): GetTaskStatusType {
       InBackLog: 'В бэклоге',
       OnModification: 'На доработке',
       NewTask: 'Новая',
-      inProgress: 'Выполняется',
+      InProgress: 'Выполняется',
       OnVerification: 'На проверке',
       Done: 'Выполнена',
     },
@@ -31,7 +31,7 @@ function getTaskStatus(): GetTaskStatusType {
 function getTaskStatusStyle(status: TaskStatus) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
 
-  if (status === 'inProgress') {
+  if (status === 'InProgress') {
     initialClass.push('bg-success-subtle', 'text-success')
     return initialClass
   }
