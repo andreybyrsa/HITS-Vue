@@ -35,8 +35,9 @@
     @close-modal="closeConfirmModalCanceled"
     @action="currentInvitation && handleRevokeTeam(currentInvitation)"
   />
-  <Send360SurveyModal
+  <Send360SQuestModal
     :isOpened="isOpenSendFormModal"
+    :teams="sendingTeams"
     @close-modal="closeSendFormModal"
   />
 </template>
@@ -56,9 +57,9 @@ import {
 } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import Send360SurveyModal from '@Components/Modals/Send360SurveyModal/Send360SurveyModal.vue'
+import Send360SQuestModal from '@Components/Modals/Send360QuestModal/Send360QuestModal.vue'
 
-import { Team, courseEnum } from '@Domain/Team'
+import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
 import { Profile } from '@Domain/Profile'
 
@@ -107,6 +108,7 @@ const filterByIsFree = ref<boolean>()
 const filterByOwnerTeams = ref<string>()
 const filterByVacancies = ref<boolean>(false)
 const filterBySkills = ref<string[]>([])
+const filterByStatusQuest = ref<boolean>()
 
 const searchBySkills = ref('')
 
@@ -131,11 +133,12 @@ const checkedTeamsActions = computed<CheckedDataAction<Team>[]>(() => [
     label: 'Создать опрос для выбранных команд',
     className: 'btn-primary',
     statement: user.value?.role == 'PROJECT_OFFICE',
-    click: openSendFormModal,
+    click: (teams) => openSendFormModal(teams),
   },
 ])
-const sendingFormToTeams = ref<Team[]>([])
-const isOpenSendFormModal = ref<boolean>(true)
+
+const sendingTeams = ref<Team[]>([])
+const isOpenSendFormModal = ref<boolean>(false)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -366,9 +369,19 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
       { label: 'Открытая команда', value: false },
       { label: 'Закрытая команда', value: true },
     ],
-    refValue: filterByIsClosed,
+    refValue: filterByStatusQuest,
     isUniqueChoice: true,
     checkFilter: checkTeamStatus,
+  },
+  {
+    category: 'Опросы',
+    choices: [
+      { label: 'Опрос не пройден', value: false },
+      { label: 'Опрос пройден', value: true },
+    ],
+    refValue: filterByIsClosed,
+    isUniqueChoice: true,
+    checkFilter: checkStatusQuest,
   },
   {
     category: 'Статус',
@@ -676,6 +689,9 @@ function checkDeleteTeamAction(team: Team) {
 function checkTeamStatus(team: Team, status: FilterValue) {
   return team.closed === status
 }
+function checkStatusQuest(team: Team, status: FilterValue) {
+  return team.StatusQuest === status
+}
 
 function checkTeamHasActiveProject(team: Team, status: FilterValue) {
   return team.hasActiveProject === status
@@ -693,7 +709,8 @@ function checkOwnerTeams(team: Team, userId: FilterValue) {
   return team.owner.id === userId
 }
 
-function openSendFormModal() {
+function openSendFormModal(teams: Team[]) {
+  sendingTeams.value = [...teams]
   isOpenSendFormModal.value = true
 }
 function closeSendFormModal() {

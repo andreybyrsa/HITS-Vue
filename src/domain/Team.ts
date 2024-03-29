@@ -39,6 +39,7 @@ interface Team {
   skills: Skill[]
   wantedSkills: Skill[]
   tags: TeamTags
+  StatusQuest?: boolean
 
   hasActiveProject: boolean
 }
