@@ -63,9 +63,7 @@ watchImmediate(
 )
 
 watchImmediate(filtersRefs, (filters) => filterData(filters), { deep: true })
-
 watchImmediate(searchedValue, () => searchDataByKeys())
-
 watchImmediate(checkedData, () => {
   if (
     searchedData.value.length &&
@@ -98,6 +96,21 @@ function searchDataByKeys() {
   return data.value
 }
 
+function intersection<T>(array1: T[], array2: T[]): T[] {
+  const set1 = new Set(array1)
+  const set2 = new Set(array2)
+
+  const intersectingArray: T[] = []
+
+  for (const item of set1) {
+    if (set2.has(item)) {
+      intersectingArray.push(item)
+    }
+  }
+
+  return intersectingArray
+}
+
 function filterData(filters: Ref<FilterValue | FilterValue[] | undefined>[]) {
   if (filters.length) {
     const isSelectedFilters = filters.some((filter) => {
@@ -123,9 +136,14 @@ function filterData(filters: Ref<FilterValue | FilterValue[] | undefined>[]) {
             : true
         })
       })
-    } else {
-      data.value = props.data
+
+      const filtredCheckData = intersection(checkedData.value, data.value)
+      if (filtredCheckData) {
+        checkedData.value = filtredCheckData
+      }
     }
+  } else {
+    data.value = props.data
   }
 }
 

@@ -285,7 +285,7 @@ export const teamsMocks: Team[] = [
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    membersCount: 4,
+    membersCount: 2,
     owner: teamMembersMocks[1],
     leader: teamMembersMocks[1],
     members: [
@@ -304,10 +304,10 @@ export const teamsMocks: Team[] = [
     id: '2',
     name: 'Кактус',
     closed: false,
-    createdAt: '2023-10-20T11:02:17Z',
+    createdAt: '2023-10-30T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    membersCount: 4,
+    membersCount: 5,
     owner: teamMembersMocks[0],
     leader: teamMembersMocks[0],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
@@ -323,10 +323,10 @@ export const teamsMocks: Team[] = [
     id: '3',
     name: 'Карасики',
     closed: false,
-    createdAt: '2023-10-20T11:02:17Z',
+    createdAt: '2023-10-10T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    membersCount: 4,
+    membersCount: 6,
     owner: teamMembersMocks[0],
     leader: teamMembersMocks[0],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],

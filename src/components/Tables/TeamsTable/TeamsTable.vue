@@ -3,11 +3,12 @@
     class-name="p-3"
     :header="teamsTableHeader"
     :columns="teamTableColumns"
+    :checked-data-actions="checkedTeamsActions"
     :data="teams"
     :search-by="['name', 'description', 'tags']"
     :filters="teamsFilters"
     :dropdown-actions-menu="dropdownTeamsActions"
-    :is-checkbox="true"
+    :is-checkbox="user?.role === 'PROJECT_OFFICE'"
   />
 
   <DeleteModal
@@ -34,6 +35,10 @@
     @close-modal="closeConfirmModalCanceled"
     @action="currentInvitation && handleRevokeTeam(currentInvitation)"
   />
+  <Send360SurveyModal
+    :isOpened="isOpenSendFormModal"
+    @close-modal="closeSendFormModal"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -47,10 +52,11 @@ import {
   TableColumn,
   DropdownMenuAction,
   TableHeader,
+  CheckedDataAction,
 } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
+import Send360SurveyModal from '@Components/Modals/Send360SurveyModal/Send360SurveyModal.vue'
 
 import { Team, courseEnum } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
@@ -106,6 +112,9 @@ const searchBySkills = ref('')
 
 const isSortedByMembersCount = ref(false)
 const isSortedByCreatedAt = ref(false)
+const isSortByPrivacy = ref(false)
+const isSortByStatus = ref(false)
+const isSortByName = ref(false)
 const isOpenedTeamDeleteModal = ref(false)
 
 const isOpenedConfirmModalAccepted = ref(false)
@@ -116,6 +125,17 @@ const currentIdea = ref<IdeaMarket>()
 const currentInvitation = ref<InvitationTeamToIdea>()
 
 const computedIsInitiator = computed<boolean>(() => user.value?.role == 'INITIATOR')
+
+const checkedTeamsActions = computed<CheckedDataAction<Team>[]>(() => [
+  {
+    label: 'Создать опрос для выбранных команд',
+    className: 'btn-primary',
+    statement: user.value?.role == 'PROJECT_OFFICE',
+    click: openSendFormModal,
+  },
+])
+const sendingFormToTeams = ref<Team[]>([])
+const isOpenSendFormModal = ref<boolean>(true)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -288,12 +308,14 @@ const teamTableColumns: TableColumn<Team>[] = [
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusStyle,
     getRowCellFormat: getTranslatedStatus,
+    headerCellClick: sortByPrivacy,
   },
   {
     key: 'name',
     label: 'Название',
     size: 'col-3',
     rowCellClick: navigateToTeamModal,
+    headerCellClick: sortByName,
   },
   {
     key: 'hasActiveProject',
@@ -301,6 +323,7 @@ const teamTableColumns: TableColumn<Team>[] = [
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusWorkStyle,
     getRowCellFormat: getTranslatedWorkStatus,
+    headerCellClick: sortByStatus,
   },
   {
     key: 'membersCount',
@@ -495,6 +518,48 @@ function sortByMembersCount() {
   isSortedByMembersCount.value = !isSortedByMembersCount.value
 }
 
+function sortByPrivacy() {
+  teams.value.sort((team1, team2) => {
+    const booleanValue1 = team1.membersCount
+    const booleanValue2 = team2.membersCount
+
+    if (isSortByPrivacy.value) {
+      return booleanValue1 - booleanValue2
+    } else {
+      return booleanValue2 - booleanValue1
+    }
+  })
+  isSortByPrivacy.value = !isSortByPrivacy.value
+}
+
+function sortByStatus() {
+  teams.value.sort((team1, team2) => {
+    const booleanValue1 = team1.membersCount
+    const booleanValue2 = team2.membersCount
+
+    if (isSortByStatus.value) {
+      return booleanValue1 - booleanValue2
+    } else {
+      return booleanValue2 - booleanValue1
+    }
+  })
+  isSortByStatus.value = !isSortByStatus.value
+}
+
+function sortByName() {
+  teams.value.sort((team1, team2) => {
+    const string1 = team1.name.toLowerCase()
+    const string2 = team2.name.toLowerCase()
+
+    if (isSortByName.value) {
+      return string1.localeCompare(string2)
+    } else {
+      return string2.localeCompare(string1)
+    }
+  })
+  isSortByName.value = !isSortByName.value
+}
+
 function getStatusStyle(closed: boolean) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
   if (closed) {
@@ -628,6 +693,12 @@ function checkOwnerTeams(team: Team, userId: FilterValue) {
   return team.owner.id === userId
 }
 
+function openSendFormModal() {
+  isOpenSendFormModal.value = true
+}
+function closeSendFormModal() {
+  isOpenSendFormModal.value = false
+}
 // Ошибка фильтрации команд
 
 // function checkTeamVacancies(team: Team, isFilteringByVacancies: FilterValue) {
