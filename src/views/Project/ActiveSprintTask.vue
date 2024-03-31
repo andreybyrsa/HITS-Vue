@@ -29,7 +29,7 @@
         </div>
         <div class="d-flex flex-wrap gap-2 w-100 mt-2">
           <div
-            v-for="(tag, index) in task.tag"
+            v-for="(tag, index) in task.tags"
             :key="index"
             :style="{
               backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,

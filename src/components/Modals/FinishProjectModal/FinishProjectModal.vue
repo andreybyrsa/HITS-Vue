@@ -152,34 +152,6 @@ const FinishProject = handleSubmit(async () => {
           </div>
         </div>
       </div>
-      <!-- <div class="d-flex flex-column gap-2 w-100">
-        <div class="d-flex gap-3 text-primary w-100">
-          <Typography class-name="w-25">Средняя оценка</Typography>
-          <Typography class-name="w-75">Участник</Typography>
-        </div>
-        <div
-          class="d-flex gap-3 w-100 justify-content-between"
-          v-for="(member, index) in averageMark"
-          :key="index"
-        >
-          <div class="w-25">
-            <Input
-              :name="member.userId"
-              class-name="rounded"
-              placeholder="Оценка"
-              v-model="member.mark"
-              disabled
-            />
-          </div>
-
-          <div class="finish-project__member border rounded px-2 w-75">
-            <div>{{ member.firstName }} {{ member.lastName }}</div>
-            <div :class="getRoleProjectMemberStyle(member.projectRole)">
-              {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
-            </div>
-          </div>
-        </div>
-      </div> -->
 
       <div class="w-100">
         <div class="mb-2 text-primary">Отчет*</div>

@@ -64,11 +64,11 @@ const newTask = reactiveComputed<ColumnTask>(() => {
 })
 const inProgressTask = reactiveComputed<ColumnTask>(() => {
   return {
-    name: 'inProgress',
+    name: 'InProgress',
     tasks:
       tasks.value.filter(
         ({ status, sprintId }) =>
-          status === 'inProgress' && sprintId === activeSprint?.value?.id,
+          status === 'InProgress' && sprintId === activeSprint?.value?.id,
       ) ?? [],
   }
 })
@@ -130,17 +130,12 @@ async function taskParallelRequests(
       request: () =>
         taskStore.changeExecutorTask(
           taskId,
-          status === 'inProgress' ? user.value : null,
+          status === 'InProgress' ? user.value : null,
           token,
         ),
       refValue: ref(),
       onErrorFunc: openErrorNotification,
-      statement: status === 'NewTask' || status === 'inProgress',
-    },
-    {
-      request: () => taskStore.changeTaskStatus(taskId, status, token),
-      refValue: ref(),
-      onErrorFunc: openErrorNotification,
+      statement: status === 'NewTask' || status === 'InProgress',
     },
     {
       request: () => taskStore.createTaskLog(taskId, user.value, status, token),
@@ -180,7 +175,7 @@ function checkOnModificationTask(evt: any) {
   const isCheckMyTask = evt.draggedContext.element.executor.id === user.value?.id
   const inProgressTask = tasks.value.find(
     ({ status, executor }) =>
-      status === 'inProgress' && executor?.id === user.value?.id,
+      status === 'InProgress' && executor?.id === user.value?.id,
   )
 
   return inProgressTask ? false : isCheckMyTask
@@ -342,6 +337,7 @@ function closeCreateNewTask() {
   <TaskModal
     :is-opened="isOpenedCreateNewTask"
     @close-modal="closeCreateNewTask"
+    :is-active-sprint="true"
   />
 </template>
 

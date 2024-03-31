@@ -74,7 +74,7 @@ const statusOrder = {
   InBackLog: 1,
   OnModification: 2,
   NewTask: 2,
-  inProgress: 2,
+  InProgress: 2,
   OnVerification: 2,
   Done: 3,
 }

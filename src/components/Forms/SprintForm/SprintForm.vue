@@ -145,7 +145,7 @@ const CreateSprint = handleSubmit(async (sprint) => {
     isLoading.value = true
 
     sprint.tasks = newSprintTasks.value
-    sprint.workingHours = workingHours.value.toString()
+    sprint.workingHours = workingHours.value
 
     await sprintsStore.postSprint(sprint, token)
     isLoading.value = false
@@ -161,7 +161,7 @@ const UpdateSprint = handleSubmit(async (sprint) => {
     isLoading.value = true
 
     sprint.tasks = newSprintTasks.value
-    sprint.workingHours = workingHours.value.toString()
+    sprint.workingHours = workingHours.value
 
     await sprintsStore.updateSprint(sprint, props.sprint.id, token)
     isLoading.value = false

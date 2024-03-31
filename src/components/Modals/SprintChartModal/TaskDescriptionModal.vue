@@ -255,7 +255,7 @@ function hexToRgb(hex: string) {
 
                 <div class="d-flex flex-wrap gap-2 w-100 my-2">
                   <div
-                    v-for="(tag, index) in props.task.tag"
+                    v-for="(tag, index) in props.task.tags"
                     :key="index"
                     :style="{
                       backgroundColor: `rgb(${hexToRgb(tag.color)}, 0.3)`,
