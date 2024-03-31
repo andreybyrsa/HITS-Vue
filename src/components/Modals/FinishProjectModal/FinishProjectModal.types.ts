@@ -1,7 +1,9 @@
+import { Project } from '@Domain/Project'
+
 interface FinishProjectModalProps {
   isOpened: boolean
   isFinishProject?: boolean
-  status: 'PROJECT' | 'PROJECTINFO'
+  project: Project
 }
 
 interface FinishProjectModalEmits {

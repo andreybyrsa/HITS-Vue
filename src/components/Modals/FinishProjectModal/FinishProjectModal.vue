@@ -6,18 +6,14 @@ import { useForm } from 'vee-validate'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
-import Radio from '@Components/Inputs/Radio/Radio.vue'
-import Icon from '@Components/Icon/Icon.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 
 import Typography from '@Components/Typography/Typography.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
-import Collapse from '@Components/Collapse/Collapse.vue'
 
 import useUserStore from '@Store/user/userStore'
 import ProjectService from '@Services/ProjectService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { AverageMark, ReportProject } from '@Domain/ReportProjectMembers'
+import { AverageMark } from '@Domain/ReportProjectMembers'
 
 import {
   getRoleProjectMember,
@@ -28,11 +24,8 @@ import {
   FinishProjectModalEmits,
   FinishProjectModalProps,
 } from '@Components/Modals/FinishProjectModal/FinishProjectModal.types'
-import useTasksStore from '@Store/tasks/tasksStore'
-import { Task } from '@Domain/Project'
 import useProjectsStore from '@Store/projects/projectsStore'
 import Validation from '@Utils/Validation'
-import useSprintsStore from '@Store/sprints/sprintsStore'
 import {
   RequestConfig,
   openErrorNotification,
@@ -43,12 +36,9 @@ const isLoading = ref(false)
 const refValue = ref()
 const report = ref('')
 
-const props = defineProps<FinishProjectModalProps>()
+defineProps<FinishProjectModalProps>()
 
 const emit = defineEmits<FinishProjectModalEmits>()
-
-const tasksStore = useTasksStore()
-const { tasks } = storeToRefs(tasksStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -58,20 +48,8 @@ const route = useRoute()
 const averageMark = ref<AverageMark[]>([])
 
 const projectStore = useProjectsStore()
-const { projects } = storeToRefs(projectStore)
 
-const sprintStore = useSprintsStore()
-const { sprints } = storeToRefs(sprintStore)
-
-onMounted(() => {
-  if (props.isFinishProject) getAverageMark()
-})
-
-onMounted(() => {
-  if (props.isFinishProject) getProject()
-})
-
-async function getAverageMark() {
+onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
@@ -88,28 +66,7 @@ async function getAverageMark() {
 
     averageMark.value = response
   }
-}
-
-async function getProject() {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const projectId = route.params.id.toString()
-
-    const response = await ProjectService.getProject(projectId, token)
-
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
-    }
-  }
-}
-
-function filterTasksByStatus(tasksAll: Task[]) {
-  return tasksAll.filter((value: Task) => value.status !== 'Done')
-}
+})
 
 const validationSchemaProject = {
   report: (value: string) =>
@@ -121,8 +78,6 @@ const { handleSubmit } = useForm({
 })
 
 const FinishProject = handleSubmit(async () => {
-  isLoading.value = true
-
   const currentUser = user.value
 
   if (currentUser?.token) {
@@ -130,6 +85,8 @@ const FinishProject = handleSubmit(async () => {
 
     const projectId = route.params.id.toString()
     const finishDate = new Date().toJSON().toString()
+
+    isLoading.value = true
 
     const finishProjectParallelRequests: RequestConfig[] = [
       {
@@ -161,168 +118,96 @@ const FinishProject = handleSubmit(async () => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="finish-project-modal bg-white rounded p-3 w-1">
-      <div class="finish-project-modal__header fs-2 w-100 border-2">
-        <Typography
-          v-if="status === 'PROJECT'"
-          class-name="border-bottom text-primary fs-3 w-100"
-        >
-          {{ 'Завершение проекта' }}
-        </Typography>
-
-        <Typography
-          v-if="status === 'PROJECTINFO'"
-          class-name="border-bottom text-primary fs-3 w-100"
-        >
-          {{ 'Информация о проекте' }}
+    <div class="finish-project bg-white rounded p-3 w-1">
+      <div class="finish-project__header w-100">
+        <Typography class-name="border-bottom text-primary fs-4 w-100">
+          Завершение проекта
         </Typography>
         <Button
           @click="emit('close-modal')"
-          class-name="fs-5"
           variant="close"
         />
       </div>
-      <div class="d-flex w-100 gap-2 flex-column overflow-scroll">
-        <div class="d-flex gap-3 text-primary w-100">
-          <Typography class-name="w-25">{{ 'Средняя оценка' }}</Typography>
 
-          <Typography class-name="w-75">{{ 'Участник' }}</Typography>
-        </div>
+      <div class="d-flex flex-column gap-2 w-100">
         <div
-          class="d-flex gap-3 w-100 justify-content-between h-100"
+          class="d-flex gap-2 w-100"
           v-for="(member, index) in averageMark"
           :key="index"
         >
-          <div class="w-25 h-100">
+          <div
+            class="p-2 bg-primary text-white rounded"
+            v-tooltip="'Средняя оценка за проект'"
+          >
+            {{ member.mark }}
+          </div>
+
+          <div class="finish-project__member border rounded px-2 w-100">
+            <div class="finish-project__member-name">
+              {{ member.firstName }} {{ member.lastName }}
+            </div>
+            <div :class="getRoleProjectMemberStyle(member.projectRole)">
+              {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="d-flex flex-column gap-2 w-100">
+        <div class="d-flex gap-3 text-primary w-100">
+          <Typography class-name="w-25">Средняя оценка</Typography>
+          <Typography class-name="w-75">Участник</Typography>
+        </div>
+        <div
+          class="d-flex gap-3 w-100 justify-content-between"
+          v-for="(member, index) in averageMark"
+          :key="index"
+        >
+          <div class="w-25">
             <Input
-              v-if="status === 'PROJECT'"
               :name="member.userId"
-              class-name="rounded finish-project-modal__input bg-transparent"
-              placeholder="Оценка"
-              v-model="member.mark"
-              disabled
-            />
-            <Input
-              v-if="status === 'PROJECTINFO'"
-              :name="member.userId"
-              class-name="rounded finish-project-modal__input bg-transparent"
+              class-name="rounded"
               placeholder="Оценка"
               v-model="member.mark"
               disabled
             />
           </div>
 
-          <ul class="list-group rounded-3 w-75">
-            <li
-              class="list-group-item p-0 overflow-hidden w-100 w-100 finish-project-modal__input"
-            >
-              <div
-                variant="light"
-                class="d-flex w-100 justify-content-between finish-project-modal__member p-2"
-              >
-                {{ member.firstName }} {{ member.lastName }}
-                <div :class="getRoleProjectMemberStyle(member.projectRole)">
-                  {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
-                </div>
-              </div>
-            </li>
-          </ul>
+          <div class="finish-project__member border rounded px-2 w-75">
+            <div>{{ member.firstName }} {{ member.lastName }}</div>
+            <div :class="getRoleProjectMemberStyle(member.projectRole)">
+              {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
+            </div>
+          </div>
         </div>
-        <div
-          v-if="status === 'PROJECT'"
-          class="w-100"
-        >
-          <ul class="list-group rounded-3">
-            <li class="list-group-item p-0 overflow-hidden">
-              <Button
-                variant="light"
-                class-name="collapse-controller w-100 justify-content-between"
-                v-collapse="123"
-              >
-                <div class="text-primary">Незавершенные задачи*</div>
-              </Button>
-              <Collapse id="123">
-                <div class="flex-column d-flex justify-content-between fp-2 m-2">
-                  <div
-                    v-for="(task, index) in filterTasksByStatus(tasks)"
-                    :key="index"
-                  >
-                    <div
-                      class="d-flex gap-1 justify-content-between border rounded-3 m-1 p-2"
-                    >
-                      <div class="w-50">{{ task.name }}</div>
-                      <div
-                        class="w-50 d-flex justify-content-start gap-2 overflow-y-auto p-1"
-                      >
-                        <div
-                          v-for="(tag, index) in task.tag"
-                          :key="index"
-                          class="d-flex gap-1"
-                        >
-                          <Icon
-                            :style="{ color: tag.color }"
-                            class="bi bi-circle-fill"
-                          >
-                          </Icon>
-
-                          <Typography class-name="finish-project-modal__tag"
-                            >{{ tag.name }}
-                          </Typography>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Collapse>
-            </li>
-          </ul>
-        </div>
-      </div>
+      </div> -->
 
       <div class="w-100">
         <div class="mb-2 text-primary">Отчет*</div>
         <Textarea
-          v-if="status === 'PROJECT'"
           name="report"
-          class-name="finish-project-modal__report rounded w-100"
+          class-name="finish-project__report rounded w-100"
           placeholder="Отчет"
           v-model="report"
           validate-on-update
         >
           Отчет
         </Textarea>
-        <div
-          v-for="(project, index) in projects"
-          :key="index"
-        >
-          <Textarea
-            v-if="status === 'PROJECTINFO'"
-            name="report"
-            class-name="finish-project-modal__report rounded w-100 bg-transparent"
-            v-model="project.report.report"
-            validate-on-update
-            disabled
-          >
-            Отчет
-          </Textarea>
-        </div>
       </div>
 
       <Button
-        v-if="status === 'PROJECT'"
         @click="FinishProject"
         :is-loading="isLoading"
         :disabled="isLoading"
         variant="primary"
       >
-        {{ 'Завершить проект' }}
+        Завершить проект
       </Button>
     </div>
   </ModalLayout>
 </template>
 
 <style lang="scss">
-.finish-project-modal {
+.finish-project {
   width: 600px;
   height: fit-content;
   max-height: 800px;
@@ -343,16 +228,15 @@ const FinishProject = handleSubmit(async () => {
 
   &__member {
     @include flexible(center, space-between);
-    height: 5vh;
+
+    &-name {
+      @include textEllipsis(1);
+    }
   }
 
   &__report {
     resize: none;
     height: 200px;
-  }
-
-  &__input {
-    height: 5vh;
   }
 
   &__tag {
@@ -367,8 +251,8 @@ const FinishProject = handleSubmit(async () => {
   @include flexible(center, flex-start);
 }
 
-.modal-layout-enter-from .finish-project-modal,
-.modal-layout-leave-to .finish-project-modal {
+.modal-layout-enter-from .finish-project,
+.modal-layout-leave-to .finish-project {
   transform: scale(0.9);
 }
 </style>
