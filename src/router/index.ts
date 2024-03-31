@@ -34,6 +34,7 @@ import ErrorView from '@Views/ErrorView.vue'
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import DevView from '@Views/DevView.vue'
+import QuestsView from '@Views/QuestsView.vue'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -238,6 +239,11 @@ const routes: RouteRecordRaw[] = [
     path: '/error',
     name: 'error',
     component: ErrorView,
+  },
+  {
+    path: '/quests',
+    name: 'quests',
+    component: QuestsView,
   },
   {
     path: '/:pathMatch(.*)*',

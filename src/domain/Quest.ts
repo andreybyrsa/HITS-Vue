@@ -1,37 +1,41 @@
+import RolesTypes from '@Domain/Roles'
+
 export interface Category {
-  idCategory?: string
+  idCategory: string
   category: string
 }
 
 export interface Indicator {
-  idIndicator?: string
+  idIndicator: string
   value: string
-  description: string
-  type: string
-  role: string
-  visible: string
+  description?: string
+  type: 'TEAM' | 'INITIATOR' | 'MEMBER' | 'TEAMLEAD'
+  role: RolesTypes
+  visible: boolean
   category: string
 }
 
-export interface Quest {
-  idQuest?: string
+export interface QuestShort {
+  idQuest: string
   available: boolean
   name: string
-  description: string
 }
 
-export interface LaunchQuest {
-  idLaunchQuest?: string
-  idQuest: string
-  idTeam: string
-  available: boolean
-  startAt: string
-  endAt: string
-  name: string
+export interface Quest extends QuestShort {
   description: string
   indicators: Indicator[]
-  passingResult?: string
-  passed?: boolean
+}
+
+export interface LauchQuest {
+  idLaunchQuest: string
+  idQuest: string
+  idTeam: string
+  name: string
+  startAt: string
+  endAt: string
+  available: boolean
+  passingResult?: string // процент прохождения командой (можно всем а можно только проектному офису, по усмотрению)
+  passed?: boolean // пройдено ли (для членов команды, не для проектного офиса)
 }
 
 export interface Result {
@@ -39,11 +43,6 @@ export interface Result {
   idIndicator: string
   idLaunchQuest: string
   idFromUser: string
-  idToUser: string
+  idToUser?: string
   value: string
-}
-
-export interface PassedQuest {
-  idLaunchQuest?: string
-  results: Result[]
 }

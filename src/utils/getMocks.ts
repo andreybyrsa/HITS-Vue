@@ -22,6 +22,14 @@ import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember } from '@Domain/Project'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
+import {
+  Indicator,
+  LauchQuest,
+  PassedQuest,
+  Quest,
+  QuestShort,
+  Result,
+} from '@Domain/Quest'
 
 export const usersMocks: User[] = [
   {
@@ -1514,4 +1522,195 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
     teamMembersCount: teamsMocks[1].membersCount,
     skills: ideasMarketMocks[1].stack,
   },
+]
+
+export const questsShortMocks: QuestShort[] = [
+  {
+    idQuest: '1',
+    available: true,
+    name: 'Весенний опрос 2024',
+  },
+  {
+    idQuest: '2',
+    available: true,
+    name: 'Осенний опрос 2023',
+  },
+  {
+    idQuest: '3',
+    available: true,
+    name: 'Весенний опрос 2023',
+  },
+  {
+    idQuest: '4',
+    available: true,
+    name: 'Осенний опрос 2022',
+  },
+]
+
+export const indicatorsMocks: Indicator[] = [
+  {
+    idIndicator: '1',
+    value: 'Как вам отношения в команде',
+    type: 'TEAM',
+    role: 'MEMBER',
+    visible: true,
+    category: 'soft',
+  },
+  {
+    idIndicator: '2',
+    value: 'Как вам профессионализм команды',
+    type: 'TEAM',
+    role: 'MEMBER',
+    visible: true,
+    category: 'hard',
+  },
+  {
+    idIndicator: '3',
+    value: 'Как вам общение с этим членом команды',
+    type: 'MEMBER',
+    role: 'MEMBER',
+    visible: true,
+    category: 'soft',
+  },
+]
+
+export const questsMocks: Quest[] = [
+  {
+    idQuest: questsShortMocks[0].idQuest,
+    available: questsShortMocks[0].available,
+    name: questsShortMocks[0].name,
+    description: 'Весенний опрос 2024 посвящен весне и птичкам',
+    indicators: indicatorsMocks,
+  },
+  {
+    idQuest: questsShortMocks[1].idQuest,
+    available: questsShortMocks[1].available,
+    name: questsShortMocks[1].name,
+    description: 'Осенний опрос 2023 посвящен осени и птичкам',
+    indicators: indicatorsMocks,
+  },
+  {
+    idQuest: questsShortMocks[2].idQuest,
+    available: questsShortMocks[2].available,
+    name: questsShortMocks[2].name,
+    description: 'Весенний опрос 2023 посвящен весне и птичкам',
+    indicators: indicatorsMocks,
+  },
+  {
+    idQuest: questsShortMocks[3].idQuest,
+    available: questsShortMocks[3].available,
+    name: questsShortMocks[3].name,
+    description: 'Осенний опрос 2022 посвящен осени и птичкам',
+    indicators: indicatorsMocks,
+  },
+]
+
+export const launchQuestsMocks: LauchQuest[] = [
+  {
+    idLaunchQuest: '1',
+    idQuest: questsMocks[0].idQuest,
+    idTeam: teamsMocks[0].id,
+    name: questsMocks[0].name,
+    startAt: '31.04.2024',
+    endAt: '31.05.2024',
+    available: true,
+    passingResult: '1 / ' + teamsMocks[0].membersCount.toString(),
+    passed: false,
+  },
+  {
+    idLaunchQuest: '1',
+    idQuest: questsMocks[1].idQuest,
+    idTeam: teamsMocks[0].id,
+    name: questsMocks[1].name,
+    startAt: '31.11.2023',
+    endAt: '31.12.2023',
+    available: true,
+    passingResult:
+      Math.floor(teamsMocks[0].membersCount / 2).toString() +
+      ' / ' +
+      teamsMocks[0].membersCount.toString(),
+    passed: true,
+  },
+  {
+    idLaunchQuest: '1',
+    idQuest: questsMocks[2].idQuest,
+    idTeam: teamsMocks[0].id,
+    name: questsMocks[2].name,
+    startAt: '31.04.2023',
+    endAt: '31.05.2023',
+    available: true,
+    passingResult:
+      Math.floor(teamsMocks[0].membersCount / 2).toString() +
+      ' / ' +
+      teamsMocks[0].membersCount.toString(),
+    passed: true,
+  },
+  {
+    idLaunchQuest: '1',
+    idQuest: questsMocks[3].idQuest,
+    idTeam: teamsMocks[0].id,
+    name: questsMocks[3].name,
+    startAt: '31.11.2022',
+    endAt: '31.12.2022',
+    available: true,
+    passingResult:
+      Math.floor(teamsMocks[0].membersCount / 2).toString() +
+      ' / ' +
+      teamsMocks[0].membersCount.toString(),
+    passed: false,
+  },
+]
+
+export const resultsMocks: Result[] = [
+  {
+    idResult: '8',
+    idIndicator: indicatorsMocks[0].idIndicator,
+    idLaunchQuest: '2',
+    idFromUser: usersMocks[0].id,
+    value: '4',
+  },
+  {
+    idResult: '7',
+    idIndicator: indicatorsMocks[1].idIndicator,
+    idLaunchQuest: '2',
+    idFromUser: usersMocks[0].id,
+    idToUser: '',
+    value: '',
+  },
+  ...teamsMocks[0].members.map((member): Result => {
+    return {
+      idResult: '33' + member.userId,
+      idIndicator: indicatorsMocks[2].idIndicator,
+      idLaunchQuest: '2',
+      idFromUser: usersMocks[0].id,
+      idToUser: member.userId,
+      value: '',
+    }
+  }),
+  {
+    idResult: '4',
+    idIndicator: indicatorsMocks[0].idIndicator,
+    idLaunchQuest: '3',
+    idFromUser: usersMocks[0].id,
+    idToUser: '',
+    value: '',
+  },
+  {
+    idResult: '3',
+    idIndicator: indicatorsMocks[1].idIndicator,
+    idLaunchQuest: '3',
+    idFromUser: usersMocks[0].id,
+    idToUser: '',
+    value: '',
+  },
+  ...teamsMocks[0].members.map((member): Result => {
+    return {
+      idResult: '22' + member.userId,
+      idIndicator: indicatorsMocks[2].idIndicator,
+      idLaunchQuest: '2',
+      idFromUser: usersMocks[0].id,
+      idToUser: member.userId,
+      value: '',
+    }
+  }),
 ]
