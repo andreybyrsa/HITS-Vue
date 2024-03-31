@@ -5,7 +5,7 @@ import { tasksMocks, taskMovementLogMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import axios from 'axios'
-import { MODE } from '@Main'
+import { MODE, API_URL } from '@Main'
 import { Task, TaskMovementLog, TaskStatus } from '@Domain/Project'
 import { User } from '@Domain/User'
 import useTasksStore from '@Store/tasks/tasksStore'
@@ -121,20 +121,30 @@ const createTask = async (task: Task, token: string): Promise<Task | Error> => {
     .catch((error) => handleAxiosError(error, 'Ошибка добавления тега'))
 }
 
-const moveTask = async (tasks: Task[], token: string): Promise<Task[] | Error> => {
+const moveTask = async (
+  tasks: Task[],
+  taskId: string,
+  position: number,
+  token: string,
+): Promise<Task[] | Error> => {
   if (MODE == 'DEVELOPMENT') {
     tasksMocks.forEach((task) =>
       tasks.find(({ id, position }) => id === task.id && (task.position = position)),
     )
     return tasksMocks
   }
+
   return axios
-    .put(`/scrum-service/task/beb`, tasks, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .put(
+      `${API_URL}/scrum-service/task/move/${taskId}/${position}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка редактирования задач'))
+    .catch((error) => handleAxiosError(error, 'Ошибка перемещения задачи'))
 }
 const updateTask = async (task: Task, token: string): Promise<Success | Error> => {
   return tasksAxios

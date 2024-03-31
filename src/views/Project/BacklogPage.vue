@@ -5,7 +5,7 @@
       :list="sortTasks"
       :animation="200"
       :move="move"
-      @change="checkMove"
+      @end="checkMove($event.oldDraggableIndex, $event.newDraggableIndex)"
       group="tasks"
     >
       <template #item="{ element }">
@@ -51,6 +51,7 @@ import { Tag } from '@Domain/Tag'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import useTagsStore from '@Store/tags/tagsStore'
+import BackLogTask from '@Components/Tasks/Task/BackLogTask/BackLogTask.vue'
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
@@ -118,16 +119,18 @@ function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
 }
 
-async function checkMove() {
+async function checkMove(oldIndex: number, newIndex: number) {
   const currentUser = user.value
+  const currentTask = sortTasks.value[newIndex]
 
   if (currentUser?.token) {
     const { token } = currentUser
     const changeTasks = sortTasks.value.filter(
       ({ status }) => status === 'InBackLog',
     )
+    console.log(currentTask.name)
 
-    await tasksStore.changePosition(changeTasks, token)
+    await tasksStore.changePosition(changeTasks, currentTask, newIndex + 1, token)
   }
 }
 

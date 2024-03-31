@@ -28,10 +28,20 @@ const useTasksStore = defineStore('tasks', {
     },
   },
   actions: {
-    async changePosition(changeTasks: Task[], token: string) {
+    async changePosition(
+      changeTasks: Task[],
+      task: Task,
+      position: number,
+      token: string,
+    ) {
       changeTasks.forEach((task, index) => (task.position = index + 1))
 
-      const response = await TaskService.moveTask(changeTasks, token)
+      const response = await TaskService.moveTask(
+        changeTasks,
+        task.id,
+        position,
+        token,
+      )
 
       if (response instanceof Error) {
         return useNotificationsStore().createSystemNotification(
