@@ -253,12 +253,14 @@ const changeTaskStatusInBackLog = async (
 
 const changeLeaderComment = async (
   taskId: string,
+  task: Task,
   leaderComment: string,
   token: string,
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
-    .putNoRequestBody<Task[]>(
-      `/scrum-service/task`,
+    .put<Task[]>(
+      `/scrum-service/task/comment/${taskId}`,
+      task,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -269,17 +271,21 @@ const changeLeaderComment = async (
       },
     )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка изменения комментария лидера задачи'),
+    )
 }
 
 const changeDescription = async (
   taskId: string,
+  task: Task,
   description: string,
   token: string,
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
-    .putNoRequestBody<Task[]>(
-      `/scrum-service/task`,
+    .put<Task[]>(
+      `/scrum-service/task/description/${taskId}`,
+      task,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -290,17 +296,19 @@ const changeDescription = async (
       },
     )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения описания задачи'))
 }
 
 const changeName = async (
   taskId: string,
+  task: Task,
   name: string,
   token: string,
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
-    .putNoRequestBody<Task[]>(
-      `/scrum-service/task`,
+    .put<Task[]>(
+      `/scrum-service/task/name/${taskId}`,
+      task,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -311,7 +319,7 @@ const changeName = async (
       },
     )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения названия задачи'))
 }
 
 const TaskService = {

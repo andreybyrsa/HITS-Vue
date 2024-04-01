@@ -184,6 +184,7 @@ const useTasksStore = defineStore('tasks', {
 
       const response = await TaskService.changeLeaderComment(
         taskId,
+        currentTask,
         leaderComment,
         token,
       )
@@ -205,6 +206,7 @@ const useTasksStore = defineStore('tasks', {
 
       const response = await TaskService.changeDescription(
         taskId,
+        currentTask,
         description,
         token,
       )
@@ -224,7 +226,7 @@ const useTasksStore = defineStore('tasks', {
 
       currentTask.name = name
 
-      const response = await TaskService.changeName(taskId, name, token)
+      const response = await TaskService.changeName(taskId, currentTask, name, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
