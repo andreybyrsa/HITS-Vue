@@ -26,7 +26,7 @@ export interface Quest extends QuestShort {
   indicators: Indicator[]
 }
 
-export interface LauchQuest {
+export interface LaunchQuest {
   idLaunchQuest: string
   idQuest: string
   idTeam: string

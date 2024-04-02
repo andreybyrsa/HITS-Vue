@@ -34,7 +34,7 @@ import ErrorView from '@Views/ErrorView.vue'
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import DevView from '@Views/DevView.vue'
-import QuestsView from '@Views/QuestsView.vue'
+import QuestsView from '@Views/Quest/QuestsView.vue'
 
 import useUserStore from '@Store/user/userStore'
 

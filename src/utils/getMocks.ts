@@ -22,14 +22,7 @@ import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Project, ProjectMember } from '@Domain/Project'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
-import {
-  Indicator,
-  LauchQuest,
-  PassedQuest,
-  Quest,
-  QuestShort,
-  Result,
-} from '@Domain/Quest'
+import { Indicator, LaunchQuest, Quest, QuestShort, Result } from '@Domain/Quest'
 
 export const usersMocks: User[] = [
   {
@@ -1528,22 +1521,7 @@ export const questsShortMocks: QuestShort[] = [
   {
     idQuest: '1',
     available: true,
-    name: 'Весенний опрос 2024',
-  },
-  {
-    idQuest: '2',
-    available: true,
-    name: 'Осенний опрос 2023',
-  },
-  {
-    idQuest: '3',
-    available: true,
-    name: 'Весенний опрос 2023',
-  },
-  {
-    idQuest: '4',
-    available: true,
-    name: 'Осенний опрос 2022',
+    name: 'Опрос компетенций',
   },
 ]
 
@@ -1582,35 +1560,14 @@ export const questsMocks: Quest[] = [
     description: 'Весенний опрос 2024 посвящен весне и птичкам',
     indicators: indicatorsMocks,
   },
-  {
-    idQuest: questsShortMocks[1].idQuest,
-    available: questsShortMocks[1].available,
-    name: questsShortMocks[1].name,
-    description: 'Осенний опрос 2023 посвящен осени и птичкам',
-    indicators: indicatorsMocks,
-  },
-  {
-    idQuest: questsShortMocks[2].idQuest,
-    available: questsShortMocks[2].available,
-    name: questsShortMocks[2].name,
-    description: 'Весенний опрос 2023 посвящен весне и птичкам',
-    indicators: indicatorsMocks,
-  },
-  {
-    idQuest: questsShortMocks[3].idQuest,
-    available: questsShortMocks[3].available,
-    name: questsShortMocks[3].name,
-    description: 'Осенний опрос 2022 посвящен осени и птичкам',
-    indicators: indicatorsMocks,
-  },
 ]
 
-export const launchQuestsMocks: LauchQuest[] = [
+export const launchQuestsMocks: LaunchQuest[] = [
   {
     idLaunchQuest: '1',
     idQuest: questsMocks[0].idQuest,
     idTeam: teamsMocks[0].id,
-    name: questsMocks[0].name,
+    name: 'Весенний опрос 4',
     startAt: '31.04.2024',
     endAt: '31.05.2024',
     available: true,
@@ -1619,9 +1576,9 @@ export const launchQuestsMocks: LauchQuest[] = [
   },
   {
     idLaunchQuest: '1',
-    idQuest: questsMocks[1].idQuest,
+    idQuest: questsMocks[0].idQuest,
     idTeam: teamsMocks[0].id,
-    name: questsMocks[1].name,
+    name: 'Осенний опрос 3',
     startAt: '31.11.2023',
     endAt: '31.12.2023',
     available: true,
@@ -1633,9 +1590,9 @@ export const launchQuestsMocks: LauchQuest[] = [
   },
   {
     idLaunchQuest: '1',
-    idQuest: questsMocks[2].idQuest,
+    idQuest: questsMocks[0].idQuest,
     idTeam: teamsMocks[0].id,
-    name: questsMocks[2].name,
+    name: 'Весенний опрос 2',
     startAt: '31.04.2023',
     endAt: '31.05.2023',
     available: true,
@@ -1647,9 +1604,9 @@ export const launchQuestsMocks: LauchQuest[] = [
   },
   {
     idLaunchQuest: '1',
-    idQuest: questsMocks[3].idQuest,
+    idQuest: questsMocks[0].idQuest,
     idTeam: teamsMocks[0].id,
-    name: questsMocks[3].name,
+    name: 'Осенний опрос 1',
     startAt: '31.11.2022',
     endAt: '31.12.2022',
     available: true,
