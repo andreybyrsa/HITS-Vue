@@ -1,4 +1,4 @@
-import { Project, Sprint, Task, TaskStatus } from '@Domain/Project'
+import { Project, ProjectMember, Sprint, Task, TaskStatus } from '@Domain/Project'
 
 interface ProjectProps {
   project: Project
@@ -24,10 +24,15 @@ interface ColumnTask {
   tasks: Task[]
 }
 
+interface ActiveSprintProps {
+  members: ProjectMember[]
+}
+
 export {
   ProjectProps,
   SprintListProps,
   TaskProps,
   ActiveSprintTaskProps,
   ColumnTask,
+  ActiveSprintProps,
 }

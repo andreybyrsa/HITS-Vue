@@ -118,9 +118,7 @@ const getContentTab: {
   </div>
 
   <FinishProjectModal
-    isFinishProject
     :is-opened="isOpenedFinishProjectModal"
-    :project="project"
     @close-modal="closeFinishProjectModal"
   />
 </template>

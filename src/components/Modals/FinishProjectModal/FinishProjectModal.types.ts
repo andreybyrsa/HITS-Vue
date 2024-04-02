@@ -1,9 +1,9 @@
-import { Project } from '@Domain/Project'
+import { ProjectMember, Sprint } from '@Domain/Project'
 
 interface FinishProjectModalProps {
   isOpened: boolean
-  isFinishProject?: boolean
-  project: Project
+  members: ProjectMember[]
+  sprint?: Sprint
 }
 
 interface FinishProjectModalEmits {

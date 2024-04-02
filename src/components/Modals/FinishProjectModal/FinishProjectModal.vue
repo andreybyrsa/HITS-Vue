@@ -1,30 +1,34 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import Button from '@Components/Button/Button.vue'
-import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
-
-import Typography from '@Components/Typography/Typography.vue'
-
-import useUserStore from '@Store/user/userStore'
-import ProjectService from '@Services/ProjectService'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { AverageMark } from '@Domain/ReportProjectMembers'
-
-import {
-  getRoleProjectMember,
-  getRoleProjectMemberStyle,
-} from '@Utils/getRoleProjectMember'
+import { watchImmediate } from '@vueuse/core'
 
 import {
   FinishProjectModalEmits,
   FinishProjectModalProps,
 } from '@Components/Modals/FinishProjectModal/FinishProjectModal.types'
+
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import Button from '@Components/Button/Button.vue'
+import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
+import Input from '@Components/Inputs/Input/Input.vue'
+import Typography from '@Components/Typography/Typography.vue'
+import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
+import Radio from '@Components/Inputs/Radio/Radio.vue'
+
+import ProjectService from '@Services/ProjectService'
+import SprintService from '@Services/SprintService'
+
+import useUserStore from '@Store/user/userStore'
 import useProjectsStore from '@Store/projects/projectsStore'
+import useSprintsStore from '@Store/sprints/sprintsStore'
+
+import {
+  getRoleProjectMember,
+  getRoleProjectMemberStyle,
+} from '@Utils/getRoleProjectMember'
 import Validation from '@Utils/Validation'
 import {
   RequestConfig,
@@ -32,49 +36,89 @@ import {
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
 
+import { SprintMarks, Task } from '@Domain/Project'
+import { AverageMark } from '@Domain/ReportProjectMembers'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
 const isLoading = ref(false)
-const refValue = ref()
+const isLoadingRequest = ref(false)
 const report = ref('')
 
-defineProps<FinishProjectModalProps>()
+const props = defineProps<FinishProjectModalProps>()
 
 const emit = defineEmits<FinishProjectModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const projectStore = useProjectsStore()
+const sprintStore = useSprintsStore()
+
 const route = useRoute()
 
 const averageMark = ref<AverageMark[]>([])
+const unfinishedTasks = ref<Task[]>()
 
-const projectStore = useProjectsStore()
+watchImmediate(
+  () => props.isOpened,
+  async (open) => {
+    if (open) {
+      const currentUser = user.value
 
-onMounted(async () => {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const projectId = route.params.id.toString()
+      if (currentUser?.token) {
+        const { token } = currentUser
+        const projectId = route.params.id.toString()
+        isLoadingRequest.value = true
 
-    const response = await ProjectService.getAverageMarkProject(projectId, token)
+        if (!props.sprint) {
+          const response = await ProjectService.getAverageMarkProject(
+            projectId,
+            token,
+          )
 
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
+          if (response instanceof Error) {
+            useNotificationsStore().createSystemNotification(
+              'Система',
+              response.message,
+            )
+          } else {
+            averageMark.value = response
+          }
+        }
+
+        isLoadingRequest.value = false
+
+        if (props.sprint) {
+          unfinishedTasks.value = props.sprint?.tasks.filter(
+            ({ status }) => status !== 'Done',
+          )
+
+          const arrayUserId = props.members
+            .filter(({ projectRole }) => projectRole !== 'INITIATOR')
+            .map(({ userId }) => userId)
+          arrayUserId.forEach((userId) => {
+            validationSchemaModal.value[userId] = (value: string) =>
+              Validation.checkNumber(value) || 'Неправильно заполнена форма'
+          })
+          validationSchemaModal.value['radio'] = (value: string) =>
+            Validation.checkIsEmptyValue(value) || 'Это обязательное поле'
+        }
+      }
     }
+  },
+)
 
-    averageMark.value = response
-  }
-})
-
-const validationSchemaProject = {
-  report: (value: string) =>
-    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+interface ValidationSchema {
+  [key: string]: (value: string) => string | boolean
 }
 
+const validationSchemaModal = ref<ValidationSchema>({
+  report: (value: string) =>
+    Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+})
+
 const { handleSubmit } = useForm({
-  validationSchema: validationSchemaProject,
+  validationSchema: validationSchemaModal,
 })
 
 const FinishProject = handleSubmit(async () => {
@@ -91,25 +135,90 @@ const FinishProject = handleSubmit(async () => {
     const finishProjectParallelRequests: RequestConfig[] = [
       {
         request: () => projectStore.changeProjectStatus(projectId, 'DONE', token),
-        refValue: refValue,
+        refValue: ref(),
         onErrorFunc: openErrorNotification,
       },
       {
         request: () => projectStore.finishProject(projectId, finishDate, token),
-        refValue: refValue,
+        refValue: ref(),
         onErrorFunc: openErrorNotification,
       },
       {
         request: () => projectStore.reportProject(projectId, report.value, token),
-        refValue: refValue,
+        refValue: ref(),
         onErrorFunc: openErrorNotification,
       },
     ]
 
     await sendParallelRequests(finishProjectParallelRequests)
+
     isLoading.value = false
     emit('close-modal')
   }
+})
+
+const FinishSprint = handleSubmit(async (values) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token, id } = currentUser
+    const sprintId = props.sprint?.id
+    const finishDate = new Date().toJSON().toString()
+    isLoading.value = true
+
+    const sprintMarks = props.members.map(
+      ({ projectRole, userId, firstName, lastName }) => {
+        if (projectRole !== 'INITIATOR') {
+          return {
+            sprintId,
+            userId,
+            firstName,
+            lastName,
+            projectRole,
+            mark: values[userId],
+            tasks: props.sprint?.tasks.filter(
+              ({ executor, status }) => executor?.id === id && status === 'Done',
+            ),
+          }
+        }
+      },
+    ) as SprintMarks[]
+
+    if (sprintId) {
+      const finishSprintParallelRequests: RequestConfig[] = [
+        {
+          request: () => sprintStore.changeSprintStatus(sprintId, 'DONE', token),
+          refValue: ref(),
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => sprintStore.finishSprint(sprintId, finishDate, token),
+          refValue: ref(),
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => sprintStore.reportSprint(sprintId, report.value, token),
+          refValue: ref(),
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => SprintService.postSprintMarks(sprintMarks, token),
+          refValue: ref(),
+          onErrorFunc: openErrorNotification,
+        },
+        // {
+        //   request: () =>
+        //     tasksStore.changeTaskStatusInBackLog(noDoneTasks, 'InBackLog', token),
+        //   refValue: ref(),
+        //   onErrorFunc: openErrorNotification,
+        // },
+      ]
+      await sendParallelRequests(finishSprintParallelRequests)
+    }
+  }
+
+  isLoading.value = false
+  emit('close-modal')
 })
 </script>
 
@@ -121,7 +230,7 @@ const FinishProject = handleSubmit(async () => {
     <div class="finish-project bg-white rounded p-3 w-1">
       <div class="finish-project__header w-100">
         <Typography class-name="border-bottom text-primary fs-4 w-100">
-          Завершение проекта
+          {{ sprint ? 'Завершение спринта' : 'Завершение проекта' }}
         </Typography>
         <Button
           @click="emit('close-modal')"
@@ -129,28 +238,88 @@ const FinishProject = handleSubmit(async () => {
         />
       </div>
 
-      <div class="d-flex flex-column gap-2 w-100">
+      <div
+        v-if="!isLoadingRequest"
+        class="d-flex flex-column gap-2 w-100"
+      >
+        <div class="d-flex gap-3 text-primary">
+          <div class="w-25">
+            {{ sprint ? 'Оценка за спринт' : 'Оценка за проект' }}
+          </div>
+          <div class="w-75">Учасник</div>
+        </div>
+
         <div
-          class="d-flex gap-2 w-100"
-          v-for="(member, index) in averageMark"
-          :key="index"
+          v-if="sprint"
+          class="d-flex flex-column gap-2"
         >
           <div
-            class="p-2 bg-primary text-white rounded"
-            v-tooltip="'Средняя оценка за проект'"
+            class="d-flex gap-3"
+            v-for="(member, index) in members.filter(
+              ({ projectRole }) => projectRole !== 'INITIATOR',
+            )"
+            :key="index"
           >
-            {{ member.mark }}
-          </div>
-
-          <div class="finish-project__member border rounded px-2 w-100">
-            <div class="finish-project__member-name">
-              {{ member.firstName }} {{ member.lastName }}
+            <div class="w-25">
+              <Input
+                :name="member.userId"
+                placeholder="Оценка"
+                class-name="rounded"
+                :disabled="!Boolean(sprint)"
+                validate-on-update
+              />
             </div>
-            <div :class="getRoleProjectMemberStyle(member.projectRole)">
-              {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
+
+            <div class="finish-project__member border rounded px-2 w-75">
+              <div class="finish-project__member-name">
+                {{ member.firstName }} {{ member.lastName }}
+              </div>
+              <div :class="getRoleProjectMemberStyle(member.projectRole)">
+                {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
+              </div>
             </div>
           </div>
         </div>
+
+        <div
+          v-else
+          class="d-flex flex-column gap-2"
+        >
+          <div
+            class="d-flex gap-3"
+            v-for="(member, index) in averageMark"
+            :key="index"
+          >
+            <div class="w-25">
+              <Input
+                :name="member.userId"
+                placeholder="Оценка"
+                class-name="rounded"
+                v-model="member.mark"
+                :disabled="!Boolean(sprint)"
+                validate-on-update
+              />
+            </div>
+
+            <div class="finish-project__member border rounded px-2 w-75">
+              <div class="finish-project__member-name">
+                {{ member.firstName }} {{ member.lastName }}
+              </div>
+              <div :class="getRoleProjectMemberStyle(member.projectRole)">
+                {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        v-else
+        class="d-flex flex-column gap-2 w-100"
+      >
+        <LoadingPlaceholder height="small" />
+        <LoadingPlaceholder height="small" />
+        <LoadingPlaceholder height="small" />
       </div>
 
       <div class="w-100">
@@ -166,7 +335,33 @@ const FinishProject = handleSubmit(async () => {
         </Textarea>
       </div>
 
+      <div v-if="unfinishedTasks?.length">
+        <div class="text-primary">Перенос незавершенных задач*</div>
+        <Radio
+          name="radio"
+          label="Перенести в новый спринт"
+          :value="true"
+          validate-on-update
+        />
+        <Radio
+          name="radio"
+          label="Перенести в Бэклог"
+          :value="false"
+          validate-on-update
+        />
+      </div>
+
       <Button
+        v-if="props.sprint"
+        @click="FinishSprint"
+        :is-loading="isLoading"
+        :disabled="isLoading"
+        variant="primary"
+      >
+        Завершить спринт
+      </Button>
+      <Button
+        v-else
         @click="FinishProject"
         :is-loading="isLoading"
         :disabled="isLoading"

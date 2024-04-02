@@ -2,7 +2,6 @@
 import {
   FinishSprintModalEmits,
   FinishSprintModalProps,
-  sprintValidationProps,
 } from '@Components/Modals/FinishSprintModal/FinishSprintModal.types'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
@@ -16,7 +15,6 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 
 import { SprintMarks, Task } from '@Domain/Project'
-import useProjectsStore from '@Store/projects/projectsStore'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
@@ -34,7 +32,7 @@ import {
 
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { AverageMark } from '@Domain/ReportProjectMembers'
 import ProjectService from '@Services/ProjectService'
@@ -47,11 +45,7 @@ const emit = defineEmits<FinishSprintModalEmits>()
 const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
-const projectStore = useProjectsStore()
-const { projects } = storeToRefs(projectStore)
-
 const sprintStore = useSprintsStore()
-const { sprints } = storeToRefs(sprintStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -61,8 +55,6 @@ const isLoading = ref(false)
 const route = useRoute()
 const refValue = ref()
 const report = ref('')
-const radio1 = ref()
-const radio2 = ref()
 
 const averageMark = ref<AverageMark[]>([])
 const sprintMarks = ref<SprintMarks[]>([])
@@ -162,95 +154,36 @@ const FinishSprint = handleSubmit(async () => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="finish-project-modal bg-white rounded p-3 w-1">
-      <div class="finish-project-modal__header fs-2 w-100 border-2">
-        <Typography class-name="border-bottom text-primary fs-3 w-100">
-          {{ 'Завершение спринта' }}
+    <div class="finish-sprint bg-white rounded p-3 w-1">
+      <div class="finish-sprint__header w-100">
+        <Typography class-name="border-bottom text-primary fs-4 w-100">
+          Завершение спринта
         </Typography>
-
         <Button
           @click="emit('close-modal')"
-          class-name="fs-5"
           variant="close"
         />
       </div>
 
-      <div class="d-flex w-100 gap-2 flex-column overflow-scroll">
-        <div class="d-flex gap-3 text-primary w-100">
-          <Typography class-name="w-25">{{ 'Оценка' }}</Typography>
-
-          <Typography class-name="w-75">{{ 'Статистика участника' }}</Typography>
-        </div>
+      <div class="d-flex flex-column gap-2 w-100">
         <div
-          class="d-flex w-100 gap-2 flex-column"
-          v-for="(sprint, index) in sprintMarks"
+          class="d-flex gap-2 w-100"
+          v-for="(member, index) in sprintMarks"
           :key="index"
         >
-          <div class="d-flex gap-3 w-100 justify-content-between h-100">
-            <div class="w-25 h-100">
-              <Input
-                :name="sprint.userId"
-                class-name="rounded finish-project-modal__input"
-                placeholder="Оценка"
-                v-model="sprint.mark"
-                validate-on-update
-              />
+          <Input
+            name="s"
+            class-name="rounded w-25"
+            placeholder="Оценка"
+          />
+
+          <div class="finish-sprint__member border rounded px-2 w-100">
+            <div class="finish-sprint__member-name">
+              {{ member.firstName }} {{ member.lastName }}
             </div>
-
-            <ul class="list-group rounded-3 w-75 flex-column">
-              <li class="list-group-item p-0 overflow-hidden w-100">
-                <Button
-                  variant="light"
-                  class-name="collapse-controller w-100 justify-content-between"
-                  v-collapse="sprint.userId"
-                >
-                  {{ sprint.firstName }} {{ sprint.lastName }}
-                  <div :class="getRoleProjectMemberStyle(sprint.projectRole)">
-                    {{ getRoleProjectMember().translatedRoles[sprint.projectRole] }}
-                  </div>
-                </Button>
-
-                <Collapse :id="sprint.userId">
-                  <div
-                    v-if="sprint.tasks"
-                    class="fp-2 m-2"
-                  >
-                    <div class="text-primary">Выполненные задачи*</div>
-
-                    <div
-                      v-for="(task, index) in sprint.tasks"
-                      :key="index"
-                    >
-                      <div
-                        v-if="task.status === 'Done'"
-                        class="rounded-3 border p-2 mb-1 gap-2 justify-content-between w-100"
-                      >
-                        <div class="w-100">
-                          <div>{{ task.name }}</div>
-                          <div class="d-flex gap-3 overflow-auto w-100">
-                            <div
-                              v-for="(tag, index) in task.tags"
-                              :key="index"
-                              class="d-flex gap-1"
-                            >
-                              <Icon
-                                :style="{ color: tag.color }"
-                                class="bi bi-circle-fill"
-                              >
-                              </Icon>
-
-                              <Typography class-name="finish-project-modal__tag"
-                                >{{ tag.name }}
-                              </Typography>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Collapse>
-              </li>
-            </ul>
+            <div :class="getRoleProjectMemberStyle(member.projectRole)">
+              {{ getRoleProjectMember().translatedRoles[member.projectRole] }}
+            </div>
           </div>
         </div>
       </div>
@@ -259,7 +192,7 @@ const FinishSprint = handleSubmit(async () => {
         <div class="mb-2 text-primary">Отчет*</div>
         <Textarea
           name="report"
-          class-name="finish-project-modal__report rounded w-100"
+          class-name="finish-sprint__report rounded w-100"
           placeholder="Отчет"
           v-model="report"
           validate-on-update
@@ -271,8 +204,6 @@ const FinishSprint = handleSubmit(async () => {
       <div>
         <div class="text-primary">Перенос незавершенных задач*</div>
 
-        {{ radio1 }}
-        {{ radio2 }}
         <Radio
           class-name=""
           name="radio"
@@ -296,14 +227,14 @@ const FinishSprint = handleSubmit(async () => {
         :disabled="isLoading"
         variant="primary"
       >
-        {{ 'Завершить спринт' }}
+        Завершить спринт
       </Button>
     </div>
   </ModalLayout>
 </template>
 
 <style lang="scss">
-.finish-project-modal {
+.finish-sprint {
   width: 600px;
   height: fit-content;
   max-height: 800px;
@@ -348,8 +279,8 @@ const FinishSprint = handleSubmit(async () => {
   @include flexible(center, flex-start);
 }
 
-.modal-layout-enter-from .finish-project-modal,
-.modal-layout-leave-to .finish-project-modal {
+.modal-layout-enter-from .finish-sprint,
+.modal-layout-leave-to .finish-sprint {
   transform: scale(0.9);
 }
 </style>

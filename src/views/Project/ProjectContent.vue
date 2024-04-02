@@ -37,7 +37,7 @@ watchImmediate(
       return switchToTabAboutProject()
     } else if (sprints.value.find(({ status }) => status === 'ACTIVE')) {
       return switchToTabSprint()
-    } else return switchToTabAboutProject()
+    } else return switchToTabBacklog()
   },
 )
 
@@ -126,6 +126,9 @@ function getNavLinkStyle(isCurrentTab: boolean) {
       :sprints="sprint"
     />
 
-    <ActiveSprint v-if="isTabActiveSprint" />
+    <ActiveSprint
+      v-if="isTabActiveSprint"
+      :members="project.members"
+    />
   </div>
 </template>

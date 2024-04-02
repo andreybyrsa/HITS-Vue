@@ -16,7 +16,7 @@ function formatterAllSprintsProject(sprints: Sprint[], currentProjectId: string)
   return sprints.filter(({ projectId }) => projectId === currentProjectId)
 }
 
-function formatGetMarksSprint(sprintMarksMocks: SprintMarks[], sprintId: string) {
+function formatGetMarksSprint(sprintMarksMocks: SprintMarks[], sprintId?: string) {
   return sprintMarksMocks.filter((mark) => mark.sprintId === sprintId)
 }
 
@@ -62,7 +62,7 @@ const getActiveSprintsProject = async (
 }
 
 const getMarkSprint = async (
-  sprintId: string,
+  sprintId: string | undefined,
   token: string,
 ): Promise<SprintMarks[] | Error> => {
   return sprintMarksMocksAxios
@@ -212,6 +212,23 @@ const postSprint = async (
     .catch((error) => handleAxiosError(error, 'Ошибка создания спринта'))
 }
 
+const postSprintMarks = async (
+  sprintMarks: SprintMarks[],
+  token: string,
+): Promise<SprintMarks[] | Error> => {
+  return sprintMarksMocksAxios
+    .post(
+      `/scrum-service/sprint/marks/add`, // FIX ROUTE
+      sprintMarks,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка создания спринта'))
+}
+
 const saveMarkSprint = async (
   sprintId: string,
   marks: SprintMarks[],
@@ -233,6 +250,7 @@ const ProfileService = {
   finishSprintDate,
   getActiveSprintsProject,
   postSprint,
+  postSprintMarks,
   updateSprint,
   saveMarkSprint,
   getMarkSprint,

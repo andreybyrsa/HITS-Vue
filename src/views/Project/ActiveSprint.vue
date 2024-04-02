@@ -5,9 +5,9 @@ import draggable from 'vuedraggable'
 import { reactiveComputed, useDateFormat } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 
-import { ColumnTask } from '@Views/Project/Project.types'
+import { ColumnTask, ActiveSprintProps } from '@Views/Project/Project.types'
 
-import FinishSprintModal from '@Components/Modals/FinishSprintModal/FinishSprintModal.vue'
+import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
@@ -25,6 +25,8 @@ import {
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
+
+defineProps<ActiveSprintProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -327,13 +329,19 @@ function closeCreateNewTask() {
     </div>
   </div>
 
-  <FinishSprintModal
+  <FinishProjectModal
+    :is-opened="isOpenedFinishSprintModal"
+    :members="members"
+    :sprint="activeSprint"
+    @close-modal="closeFinishSprintModal"
+  />
+  <!-- <FinishSprintModal
     v-if="activeSprint"
     isFinishSprint
     :is-opened="isOpenedFinishSprintModal"
     :active-sprint="activeSprint"
     @close-modal="closeFinishSprintModal"
-  />
+  /> -->
   <TaskModal
     :is-opened="isOpenedCreateNewTask"
     @close-modal="closeCreateNewTask"
