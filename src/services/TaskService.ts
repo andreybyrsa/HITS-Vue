@@ -81,7 +81,7 @@ const createTaskLog = async (
 
 const createTask = async (task: Task, token: string): Promise<Task | Error> => {
   if (MODE === 'DEVELOPMENT') {
-    const { name, description, workHour, tags, projectId } = task
+    const { name, description, workHour, tags, projectId, sprintId, status } = task
     const currentUser = useUserStore().user
     const position =
       useTasksStore().tasks.filter(({ status }) => status === 'InBackLog').length + 1
@@ -90,16 +90,17 @@ const createTask = async (task: Task, token: string): Promise<Task | Error> => {
     if (currentUser) {
       const currentTask: Task = {
         id: '',
+        sprintId,
         projectId,
         name,
         description,
         initiator: currentUser,
         executor: null,
         workHour,
-        position,
+        position: sprintId ? undefined : position,
         startDate: currentDate,
         tags,
-        status: 'InBackLog',
+        status: status ?? 'InBackLog',
       }
 
       return tasksMocksAxios

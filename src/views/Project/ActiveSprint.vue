@@ -13,6 +13,7 @@ import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import ActiveSprintTask from '@Views/Project/ActiveSprintTask.vue'
+import BurndownModal from '@Components/Modals/BurndownModal/BurndownModal.vue'
 
 import useUserStore from '@Store/user/userStore'
 import useTasksStore from '@Store/tasks/tasksStore'
@@ -343,8 +344,12 @@ function closeCreateNewTask() {
   <TaskModal
     :is-opened="isOpenedCreateNewTask"
     @close-modal="closeCreateNewTask"
-    :is-active-sprint="true"
+    :sprint="activeSprint"
   />
+  <!-- <BurndownModal
+    v-if="activeSprint"
+    :sprint="activeSprint"
+  /> -->
 </template>
 
 <style lang="scss" scoped>

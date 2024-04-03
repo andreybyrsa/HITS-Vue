@@ -25,7 +25,6 @@ import { Tag } from '@Domain/Tag'
 import { Task } from '@Domain/Project'
 
 import Validation from '@Utils/Validation'
-import useSprintsStore from '@Store/sprints/sprintsStore'
 
 const props = defineProps<CreateNewTaskProps>()
 
@@ -38,9 +37,6 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const tasksStore = useTasksStore()
-
-const sprintStore = useSprintsStore()
-const { activeSprint } = storeToRefs(sprintStore)
 
 const route = useRoute()
 
@@ -79,6 +75,12 @@ const handleCreateTask = handleSubmit(async (task) => {
     const { token } = currentUser
     const projectId = route.params.id.toString()
     task.projectId = projectId
+
+    if (props.sprint) {
+      task.position = undefined
+      task.status = 'NewTask'
+      task.sprintId = props.sprint.id
+    }
 
     await tasksStore.createTask(task, token)
 
