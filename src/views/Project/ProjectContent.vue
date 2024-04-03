@@ -12,11 +12,12 @@ import ActiveSprint from '@Views/Project/ActiveSprint.vue'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 import useUserStore from '@Store/user/userStore'
 import BacklogPage from './BacklogPage.vue'
+import RolesTypes from '@Domain/Roles'
 
 const sprintsStore = useSprintsStore()
 const { sprints } = storeToRefs(sprintsStore)
 
-const sprintWithStatusActive = computed(() =>
+const activeSprint = computed(() =>
   sprints.value.find(({ status }) => status === 'ACTIVE'),
 )
 
@@ -30,14 +31,25 @@ const isTabBacklog = ref(false)
 const isTabSprints = ref(false)
 const isTabActiveSprint = ref(false)
 
+function moveThroughTabs(role?: RolesTypes) {
+  if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
+    switchToTabAboutProject()
+  } else if (activeSprint.value) {
+    switchToTabSprint()
+  } else switchToTabBacklog()
+}
+
 watchImmediate(
   () => user.value?.role,
   (role) => {
-    if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
-      return switchToTabAboutProject()
-    } else if (sprints.value.find(({ status }) => status === 'ACTIVE')) {
-      return switchToTabSprint()
-    } else return switchToTabBacklog()
+    moveThroughTabs(role)
+  },
+)
+
+watchImmediate(
+  () => activeSprint.value,
+  () => {
+    moveThroughTabs(user.value?.role)
   },
 )
 
@@ -101,7 +113,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
           Спринты
         </div>
         <div
-          v-if="sprintWithStatusActive"
+          v-if="activeSprint"
           :class="getNavLinkStyle(isTabActiveSprint)"
           @click="switchToTabSprint"
         >

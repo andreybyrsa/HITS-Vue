@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router'
 
 import { ColumnTask, ActiveSprintProps } from '@Views/Project/Project.types'
 
-import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
+import FinishProjectOrSprintModal from '@Components/Modals/FinishProjectOrSprintModal/FinishProjectOrSprintModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
@@ -43,6 +43,10 @@ const isLoadingTaskData = ref(false)
 const isOpenedCreateNewTask = ref(false)
 const isOpenedFinishSprintModal = ref(false)
 const isLoading = ref(false)
+
+const unfinishedTasks = computed<Task[]>(
+  () => activeSprint?.value?.tasks.filter(({ status }) => status !== 'Done') ?? [],
+)
 
 const onModificationTask = reactiveComputed<ColumnTask>(() => {
   return {
@@ -329,19 +333,13 @@ function closeCreateNewTask() {
     </div>
   </div>
 
-  <FinishProjectModal
+  <FinishProjectOrSprintModal
     :is-opened="isOpenedFinishSprintModal"
     :members="members"
     :sprint="activeSprint"
+    :unfinishedTasks="unfinishedTasks"
     @close-modal="closeFinishSprintModal"
   />
-  <!-- <FinishSprintModal
-    v-if="activeSprint"
-    isFinishSprint
-    :is-opened="isOpenedFinishSprintModal"
-    :active-sprint="activeSprint"
-    @close-modal="closeFinishSprintModal"
-  /> -->
   <TaskModal
     :is-opened="isOpenedCreateNewTask"
     @close-modal="closeCreateNewTask"

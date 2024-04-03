@@ -80,27 +80,23 @@ const useTasksStore = defineStore('tasks', {
       }
     },
 
-    async changeTaskStatusInBackLog(
-      tasks: Task[],
-      status: TaskStatus,
-      token: string,
-    ) {
-      tasks.forEach((task) => {
-        const changeTask = this.tasks.find((element) => task.id === element.id)
-
-        if (changeTask) {
-          changeTask.status = status
-        }
-      })
-
-      const response = await TaskService.changeTaskStatusInBackLog(
-        this.tasks,
-        status,
-        token,
-      )
+    async moveTasksInBacklog(tasks: Task[], token: string) {
+      const response = await TaskService.moveTasksInBacklog(tasks, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const tasksStore = useTasksStore().tasks
+
+        tasksStore.forEach((task) => {
+          if (tasks.find(({ id }) => id === task.id)) {
+            task.sprintId = undefined
+            task.position =
+              tasksStore.filter(({ status }) => status === 'InBackLog').length + 1
+            task.executor = null
+            task.status = 'InBackLog'
+          }
+        })
       }
     },
 

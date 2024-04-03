@@ -193,32 +193,30 @@ const changeTaskStatus = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
 }
 
-const changeTaskStatusInBackLog = async (
+const moveTasksInBacklog = async (
   tasks: Task[],
-  status: TaskStatus,
   token: string,
-): Promise<Task[] | Error> => {
+): Promise<Success | Error> => {
   if (MODE == 'DEVELOPMENT') {
-    const mockTasks = tasksMocksAxios.getReactiveMocks()
-    mockTasks.value.forEach((task) =>
-      tasks.find((newTask) => {
-        if (newTask.id === task.id) {
-          task.status = newTask.status
+    return new Promise((resolve) => {
+      tasksMocks.forEach((task) => {
+        if (tasks.find(({ id }) => id === task.id)) {
+          task.sprintId = undefined
+          task.position =
+            tasksMocks.filter(({ status }) => status === 'InBackLog').length + 1
+          task.executor = null
+          task.status = 'InBackLog'
         }
-      }),
-    )
+      })
+
+      resolve({ success: 'OK' })
+    })
   }
-  return tasksMocksAxios
-    .putNoRequestBody<Task[]>(
-      '/ТУТ-БУДЕТ-ЧТО-ТО',
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      {
-        requestData: { status: status },
-      },
-    )
+  return axios
+    .put('/ТУТ-БУДЕТ-ЧТО-ТО', {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
 }
@@ -315,7 +313,7 @@ const TaskService = {
 
   changeExecutorTask,
   changeTaskStatus,
-  changeTaskStatusInBackLog,
+  moveTasksInBacklog,
   changeLeaderComment,
   changeDescription,
   changeName,

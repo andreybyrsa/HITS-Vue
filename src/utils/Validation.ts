@@ -60,6 +60,10 @@ class Validation {
     const numbersRegExp = /^[0-9 ,]{1,}$/g
     return numbersRegExp.test(hours)
   }
+  validateFloatNumber(hours: string) {
+    const numberRegExp = /^(10(\.0+)?|[0-9](\.\d+)?|10)$/
+    return numberRegExp.test(hours)
+  }
   validateDates(startDateString: string, finishDateString: string) {
     if (!startDateString || !finishDateString) return 'Введите даты'
     const startDate = new Date(startDateString)
