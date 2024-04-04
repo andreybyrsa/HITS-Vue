@@ -1,7 +1,12 @@
 import { Sprint } from '@Domain/Project'
 
-interface SprintChartProps {
+interface BurndownModalProps {
+  isOpened: boolean
   sprint: Sprint
 }
 
-export { SprintChartProps }
+interface BurndownModalEmits {
+  (event: 'close-modal'): void
+}
+
+export { BurndownModalProps, BurndownModalEmits }

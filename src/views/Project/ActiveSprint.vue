@@ -43,6 +43,7 @@ const route = useRoute()
 const isLoadingTaskData = ref(false)
 const isOpenedCreateNewTask = ref(false)
 const isOpenedFinishSprintModal = ref(false)
+const isOpenedBurndownModal = ref(false)
 const isLoading = ref(false)
 
 const unfinishedTasks = computed<Task[]>(
@@ -253,6 +254,14 @@ function openCreateNewTask() {
 function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
 }
+
+function openBurndownModal() {
+  isOpenedBurndownModal.value = true
+}
+
+function closeBurndownModal() {
+  isOpenedBurndownModal.value = false
+}
 </script>
 
 <template>
@@ -263,9 +272,12 @@ function closeCreateNewTask() {
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div class="bs-link mb-1 fw-semibold text-primary">
-          <Typography class-name="fs-5 fw-semibold cursor-pointer">
+          <div
+            @click="openBurndownModal"
+            class="fs-5 fw-semibold cursor-pointer"
+          >
             {{ activeSprint.name }}
-          </Typography>
+          </div>
         </div>
         <Typography>(до {{ getFormattedDate(activeSprint.finishDate) }})</Typography>
       </div>
@@ -346,10 +358,12 @@ function closeCreateNewTask() {
     @close-modal="closeCreateNewTask"
     :sprint="activeSprint"
   />
-  <!-- <BurndownModal
+  <BurndownModal
     v-if="activeSprint"
+    :is-opened="isOpenedBurndownModal"
+    @close-modal="closeBurndownModal"
     :sprint="activeSprint"
-  /> -->
+  />
 </template>
 
 <style lang="scss" scoped>
