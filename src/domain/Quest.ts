@@ -5,11 +5,13 @@ export interface Category {
   category: string
 }
 
+export type IndicatorType = 'TEAM' | 'INITIATOR' | 'MEMBER' | 'TEAMLEAD'
+
 export interface Indicator {
   idIndicator: string
   value: string
   description?: string
-  type: 'TEAM' | 'INITIATOR' | 'MEMBER' | 'TEAMLEAD'
+  type: IndicatorType
   role: RolesTypes
   visible: boolean
   category: string

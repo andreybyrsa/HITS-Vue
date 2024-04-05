@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { Filter } from '@Components/FilterBar/FilterBar.types'
-import { TableColumn, TableHeader } from '@Components/Table/Table.types'
+import {
+  DropdownMenuAction,
+  TableColumn,
+  TableHeader,
+} from '@Components/Table/Table.types'
 import Table from '@Components/Table/Table.vue'
 import useUserStore from '@Store/user/userStore'
 import useLaunchQuestStore from '@Store/launchQuests/launchQuestsStore'
@@ -33,8 +37,6 @@ const launchQuestsTableColumns: TableColumn<LaunchQuest>[] = [
   {
     key: 'name',
     label: 'Название',
-    // getRowCellStyle: getUserEmailStyle,
-    // rowCellClick: handleOpenUpdatingModal,
   },
   {
     key: 'startAt',
@@ -59,43 +61,12 @@ const launchQuestsTableColumns: TableColumn<LaunchQuest>[] = [
   },
 ]
 
-const dropdownUsersActions: DropdownMenuAction<LaunchQuest>[] = [
-  // {
-  //   label: 'Просмотреть опрос',
-  //   click: navigateToUserProfile,
-  // },
-  // {
-  //   label: 'Завершить',
-  //   click: handleOpenUpdatingModal,
-  // },
-  // {
-  //   label: 'Удалить',
-  //   className: 'text-danger',
-  //   click: openConfirmModal,
-  // },
-]
-
-const launchQuestsFilters: Filter<LaunchQuest>[] = [
-  // {
-  //   category: 'Роли',
-  //   choices: availableRoles.roles.map((role) => ({
-  //     label: availableRoles.translatedRoles[role],
-  //     value: role,
-  //   })),
-  //   refValue: rolesFilter,
-  //   isUniqueChoice: false,
-  //   checkFilter: checkUserRoles,
-  // },
-  // {
-  //   category: 'Студенты',
-  //   choices: [
-  //     { label: 'В команде', value: true },
-  //     { label: 'Не в команде', value: false },
-  //   ],
-  //   refValue: usersInTeamsFilter,
-  //   isUniqueChoice: true,
-  //   checkFilter: checkUsersInTeams,
-  // },
+const launchQuestsTableDropdownMenuAction: DropdownMenuAction<LaunchQuest>[] = [
+  {
+    label: 'Просмотреть',
+    statement: () => true,
+    click: () => 1,
+  },
 ]
 </script>
 
@@ -104,8 +75,8 @@ const launchQuestsFilters: Filter<LaunchQuest>[] = [
     class-name="p-3"
     :header="launchQuestsTableHeader"
     :columns="launchQuestsTableColumns"
+    :dropdown-actions-menu="launchQuestsTableDropdownMenuAction"
     :data="launchQuests"
     :search-by="['name']"
-    :filters="launchQuestsFilters"
   />
 </template>

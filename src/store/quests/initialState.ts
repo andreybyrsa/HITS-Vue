@@ -1,8 +1,8 @@
-import { QuestShort, Quest } from '@Domain/Quest'
+import { Quest, QuestShort } from '@Domain/Quest'
 
 interface InitialState {
-  questsShort: QuestShort[]
-  questsLong: Quest[]
+  quests: QuestShort[]
+  quest: Quest | null
 }
 
 export default InitialState

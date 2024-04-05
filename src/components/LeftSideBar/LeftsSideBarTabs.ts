@@ -107,6 +107,13 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN'],
   },
+  {
+    name: 'quests',
+    text: 'Управление опросами',
+    to: '/quests',
+    iconName: 'bi bi-patch-question',
+    roles: ['PROJECT_OFFICE'],
+  },
 ]
 
 export default leftSideBarTabs

@@ -1,23 +1,26 @@
 <script lang="ts" setup>
-import { Filter } from '@Components/FilterBar/FilterBar.types'
 import {
   TableColumn,
   TableHeader,
-  CheckedDataAction,
   DropdownMenuAction,
 } from '@Components/Table/Table.types'
 import Table from '@Components/Table/Table.vue'
 import useUserStore from '@Store/user/userStore'
-import useQuestStore from '@Store/quests/questsStore'
+import useQuestsStore from '@Store/quests/questsStore'
 import { storeToRefs } from 'pinia'
 import { QuestShort } from '@Domain/Quest'
-import { computed, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
+import CreateQuestModal from '@Components/Modals/CreateQuestModal/CreateQuestModal.vue'
 
 const userStore = useUserStore()
-const questStore = useQuestStore()
+const questStore = useQuestsStore()
 
 const { user } = storeToRefs(userStore)
 const { questsShort: quests } = storeToRefs(questStore)
+
+const questIdRef = ref<string | null>(null)
+
+const isQuestModalOpen = ref(false)
 
 onMounted(async () => {
   const token = user.value?.token
@@ -35,7 +38,7 @@ const questsTableHeader: TableHeader = {
       label: 'Создать шаблон опроса',
       variant: 'primary',
       statement: true,
-      click: () => true,
+      click: () => createQuest(),
     },
   ],
 }
@@ -56,44 +59,32 @@ const questsTableColumns: TableColumn<QuestShort>[] = [
   },
 ]
 
-const dropdownUsersActions: DropdownMenuAction<QuestShort>[] = [
-  // {
-  //   label: 'Просмотреть опрос',
-  //   click: navigateToUserProfile,
-  // },
-  // {
-  //   label: 'Завершить',
-  //   click: handleOpenUpdatingModal,
-  // },
-  // {
-  //   label: 'Удалить',
-  //   className: 'text-danger',
-  //   click: openConfirmModal,
-  // },
+const questsTableDropdownMenuAction: DropdownMenuAction<QuestShort>[] = [
+  {
+    label: 'Просмотреть',
+    statement: () => true,
+    click: (value: QuestShort) => value,
+  },
+  {
+    label: 'Создать копию',
+    statement: () => true,
+    click: (quest: QuestShort) => createCopyQuest(quest),
+  },
 ]
 
-const questsFilters: Filter<QuestShort>[] = [
-  // {
-  //   category: 'Роли',
-  //   choices: availableRoles.roles.map((role) => ({
-  //     label: availableRoles.translatedRoles[role],
-  //     value: role,
-  //   })),
-  //   refValue: rolesFilter,
-  //   isUniqueChoice: false,
-  //   checkFilter: checkUserRoles,
-  // },
-  // {
-  //   category: 'Студенты',
-  //   choices: [
-  //     { label: 'В команде', value: true },
-  //     { label: 'Не в команде', value: false },
-  //   ],
-  //   refValue: usersInTeamsFilter,
-  //   isUniqueChoice: true,
-  //   checkFilter: checkUsersInTeams,
-  // },
-]
+const createCopyQuest = (quest: QuestShort) => {
+  questIdRef.value = quest.idQuest
+  isQuestModalOpen.value = true
+}
+
+const createQuest = () => {
+  questIdRef.value = null
+  isQuestModalOpen.value = true
+}
+
+const closeQuestModal = () => {
+  isQuestModalOpen.value = false
+}
 </script>
 
 <template>
@@ -101,8 +92,14 @@ const questsFilters: Filter<QuestShort>[] = [
     class-name="p-3"
     :header="questsTableHeader"
     :columns="questsTableColumns"
+    :dropdown-actions-menu="questsTableDropdownMenuAction"
     :data="quests"
     :search-by="['name']"
-    :filters="questsFilters"
   />
+  <CreateQuestModal
+    v-if="isQuestModalOpen"
+    :idQuest="questIdRef"
+    :isOpened="isQuestModalOpen"
+    @close-modal="closeQuestModal"
+  ></CreateQuestModal>
 </template>
