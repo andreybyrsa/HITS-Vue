@@ -50,7 +50,9 @@ watchImmediate(
 
 const selectedTemplateName = ref<string>()
 
-const selectedTemplateQuest = ref(() => {})
+const selectedTemplateQuest = ref(() => {
+  1
+})
 
 const questions = computed(() => {
   if (selectedTemplateName.value) {
@@ -114,7 +116,7 @@ function setExampleName(value: any) {
                   placeholder="Выберите шаблон опроса"
                   :on-on-select="setExampleName"
                 />
-
+                <!-- displayBy -->
                 <Checkbox
                   name="showHidden"
                   label="Показать скрытые"
@@ -246,7 +248,7 @@ function setExampleName(value: any) {
 <style lang="scss" scoped>
 .modal-360-quest {
   width: 80%;
-  height: 65%;
+  height: 85%;
   @include flexible(
     stretch,
     flex-start,

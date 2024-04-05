@@ -16,11 +16,15 @@ import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import Validation from '@Utils/Validation'
 import { OptionType } from '@Components/Inputs/Select/Select.types'
+import useIndicatorStore from '@Store/indicators/indicatorsStore'
 
 const props = defineProps<IndicatorModalProps>()
 const emit = defineEmits<IndicatorModalEmits>()
 
 const questStore = useQuestsStore()
+
+const indicatorStore = useIndicatorStore()
+const { indicators } = storeToRefs(indicatorStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -30,6 +34,7 @@ const { handleSubmit } = useForm<Indicator>({
     value: (value: string) => Validation.checkIsEmptyValue(value),
     description: (value: string) => Validation.checkIsEmptyValue(value),
     category: (value: string) => Validation.checkIsEmptyValue(value),
+    type: (value: string) => Validation.checkIsEmptyValue(value),
   },
 })
 
@@ -41,7 +46,20 @@ const indicatorSelectOptions: OptionType[] = [
 ]
 
 const createIndicator = () => {
-  handleSubmit(() => {
+  handleSubmit(async (values) => {
+    const indicator: Indicator = {
+      idIndicator: (Math.random() * 1000).toString(),
+      value: values.value,
+      description: values.description,
+      type: values.type,
+      role: 'MEMBER',
+      visible: true,
+      category: 'soft',
+    }
+    const token = user.value?.token
+    if (!token) return
+
+    await indicatorStore.postIndicator(indicator, token)
     emit('close-modal')
   })()
 }
@@ -87,7 +105,7 @@ const createIndicator = () => {
             <Select
               label="Тип вопроса"
               label-class-name="mt-3"
-              name="indicator-type"
+              name="type"
               :options="indicatorSelectOptions"
             ></Select>
           </div>

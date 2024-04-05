@@ -39,8 +39,10 @@ const { user } = storeToRefs(userStore)
 onMounted(async () => {
   const token = user.value?.token
   const idQuest = props.idQuest
+
   if (!token) return
   await indicatorStore.getIndicators(token)
+
   if (idQuest) {
     await questStore.getQuest(idQuest, token)
 
@@ -61,20 +63,20 @@ const { handleSubmit, setValues } = useForm<Quest>({
   },
 })
 
-const delQuestion = (id: string) => {
-  const indexToRemove = selectedQuestions.value.findIndex(
-    (question) => question.idIndicator === id,
-  )
+// const delQuestion = (id: string) => {
+//   const indexToRemove = selectedQuestions.value.findIndex(
+//     (question) => question.idIndicator === id,
+//   )
 
-  if (indexToRemove !== -1) {
-    selectedQuestions.value.splice(indexToRemove, 1)
-  }
-}
+//   if (indexToRemove !== -1) {
+//     selectedQuestions.value.splice(indexToRemove, 1)
+//   }
+// }
 
 const sendQuest = () => {
   handleSubmit(() => {
     emit('close-modal')
-  })()
+  })
 }
 
 const openIndicatorModal = () => {
