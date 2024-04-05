@@ -5,14 +5,15 @@ import draggable from 'vuedraggable'
 import { reactiveComputed, useDateFormat } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 
-import { ColumnTask } from '@Views/Project/Project.types'
+import { ColumnTask, ActiveSprintProps } from '@Views/Project/Project.types'
 
-import FinishSprintModal from '@Components/Modals/FinishSprintModal/FinishSprintModal.vue'
+import FinishProjectOrSprintModal from '@Components/Modals/FinishProjectOrSprintModal/FinishProjectOrSprintModal.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Button from '@Components/Button/Button.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import ActiveSprintTask from '@Views/Project/ActiveSprintTask.vue'
+import BurndownModal from '@Components/Modals/BurndownModal/BurndownModal.vue'
 
 import useUserStore from '@Store/user/userStore'
 import useTasksStore from '@Store/tasks/tasksStore'
@@ -25,6 +26,8 @@ import {
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
+
+defineProps<ActiveSprintProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -40,7 +43,12 @@ const route = useRoute()
 const isLoadingTaskData = ref(false)
 const isOpenedCreateNewTask = ref(false)
 const isOpenedFinishSprintModal = ref(false)
+const isOpenedBurndownModal = ref(false)
 const isLoading = ref(false)
+
+const unfinishedTasks = computed<Task[]>(
+  () => activeSprint?.value?.tasks.filter(({ status }) => status !== 'Done') ?? [],
+)
 
 const onModificationTask = reactiveComputed<ColumnTask>(() => {
   return {
@@ -246,6 +254,14 @@ function openCreateNewTask() {
 function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
 }
+
+function openBurndownModal() {
+  isOpenedBurndownModal.value = true
+}
+
+function closeBurndownModal() {
+  isOpenedBurndownModal.value = false
+}
 </script>
 
 <template>
@@ -256,9 +272,12 @@ function closeCreateNewTask() {
     <div class="active-sprint__header my-4 p-2 border rounded w-100">
       <div class="d-flex gap-2 align-items-center">
         <div class="bs-link mb-1 fw-semibold text-primary">
-          <Typography class-name="fs-5 fw-semibold cursor-pointer">
+          <div
+            @click="openBurndownModal"
+            class="fs-5 fw-semibold cursor-pointer"
+          >
             {{ activeSprint.name }}
-          </Typography>
+          </div>
         </div>
         <Typography>(до {{ getFormattedDate(activeSprint.finishDate) }})</Typography>
       </div>
@@ -327,17 +346,23 @@ function closeCreateNewTask() {
     </div>
   </div>
 
-  <FinishSprintModal
-    v-if="activeSprint"
-    isFinishSprint
+  <FinishProjectOrSprintModal
     :is-opened="isOpenedFinishSprintModal"
-    :active-sprint="activeSprint"
+    :members="members"
+    :sprint="activeSprint"
+    :unfinishedTasks="unfinishedTasks"
     @close-modal="closeFinishSprintModal"
   />
   <TaskModal
     :is-opened="isOpenedCreateNewTask"
     @close-modal="closeCreateNewTask"
-    :is-active-sprint="true"
+    :sprint="activeSprint"
+  />
+  <BurndownModal
+    v-if="activeSprint"
+    :is-opened="isOpenedBurndownModal"
+    @close-modal="closeBurndownModal"
+    :sprint="activeSprint"
   />
 </template>
 

@@ -16,7 +16,7 @@ import ProjectMembersTableProps from '@Components/Tables/ProjectMembersTable/Pro
 import Table from '@Components/Table/Table.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
-import { Project, ProjectMember, ProjectMemberRole } from '@Domain/Project'
+import { ProjectMember, ProjectMemberRole } from '@Domain/Project'
 import {
   getRoleProjectMember,
   getRoleProjectMemberStyle,

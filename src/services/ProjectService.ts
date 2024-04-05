@@ -5,7 +5,7 @@ import { averageMarkMocks, projectMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { Project, ProjectStatus } from '@Domain/Project'
-import { AverageMark, ReportProject } from '@Domain/ReportProjectMembers'
+import { AverageMark } from '@Domain/ReportProjectMembers'
 import Success from '@Domain/ResponseMessage'
 import axios from 'axios'
 import { API_URL, MODE } from '@Main'
@@ -40,13 +40,6 @@ function formatGetAverageMarkProject(
   projectId: string,
 ) {
   return averageMarkMocks.filter((mark) => mark.projectId === projectId)
-}
-
-function formatGetReportProject(
-  reportProjectMocks: ReportProject[],
-  projectId: string,
-) {
-  return reportProjectMocks.filter((report) => report.projectId === projectId)
 }
 
 // --- GET --- //
@@ -98,8 +91,8 @@ const getAverageMarkProject = async (
   projectId: string,
   token: string,
 ): Promise<AverageMark[] | Error> => {
-  return averageMarkMocksAxios
-    .get<AverageMark[]>(
+  return averageMarkMocksAxios // Подгружаем сразу сформированный массив оценок за все спринты
+    .get<AverageMark[]>( // БЭК считает среднюю арифмечискую
       `/scrum-service/project/marks/${projectId}/all`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },

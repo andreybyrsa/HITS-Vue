@@ -100,10 +100,11 @@ const b = ref()
 
       <Input name="component"> </Input>
       <Button
-        variant="primary"
+        variant="danger"
         @click="click"
-        >Валидация</Button
       >
+        Валидация
+      </Button>
 
       <Button
         @click="router.push('/teams/list/1')"
