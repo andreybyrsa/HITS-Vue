@@ -25,7 +25,7 @@ const userStore = useUserStore()
 const questStore = useQuestStore()
 
 const { user } = storeToRefs(userStore)
-const { questsLong: quests } = storeToRefs(questStore)
+const { quests, quest } = storeToRefs(questStore)
 
 const props = defineProps<Send360QuestProps>()
 const emit = defineEmits<Send360QuestEmits>()
@@ -33,7 +33,7 @@ const emit = defineEmits<Send360QuestEmits>()
 onMounted(async () => {
   const token = user.value?.token
   if (token) {
-    await questStore.getQuestsLong(token)
+    await questStore.getQuests(token)
     templatesNames.value = quests.value.map((quest) => quest.name)
   }
 })
@@ -48,18 +48,21 @@ watchImmediate(
   { deep: true },
 )
 
-const selectedTemplate = ref<string>()
+const selectedTemplateName = ref<string>()
+
+const selectedTemplateQuest = ref(() => {})
 
 const questions = computed(() => {
-  if (selectedTemplate.value) {
-    const choiseQuest = quests.value.filter(
-      (quest) => selectedTemplate.value === quest.name,
-    )[0]
-
-    return choiseQuest.indicators
-  } else {
-    return []
+  if (selectedTemplateName.value) {
+    const token = user.value?.token
+    const idQuest = quests.value.filter(
+      (quest) => selectedTemplateName.value === quest.name,
+    )[0].idQuest
+    if (!token) return
+    questStore.getQuest(idQuest, token)
+    return quest.value?.indicators
   }
+  return []
 })
 
 const templatesNames = ref<any[]>([])
@@ -77,7 +80,7 @@ function resetTeam(ideaId: string) {
 }
 
 function setExampleName(value: any) {
-  selectedTemplate.value = value
+  selectedTemplateName.value = value
 }
 </script>
 
@@ -104,13 +107,14 @@ function setExampleName(value: any) {
             <div class="p-4">
               <div class="w-100">
                 <Combobox
-                  v-model="selectedTemplate"
+                  v-model="selectedTemplateName"
                   name="customer"
                   label="Шаблон опроса"
                   :options="templatesNames"
                   placeholder="Выберите шаблон опроса"
                   :on-on-select="setExampleName"
                 />
+
                 <Checkbox
                   name="showHidden"
                   label="Показать скрытые"
@@ -162,13 +166,13 @@ function setExampleName(value: any) {
           </div>
           <div class="col-sm-4">
             <div class="p-4">
-              <Typography class-name="fs-6 text-primary">Вопросы:</Typography>
+              <Typography class-name="fs-6 text-primary ">Вопросы:</Typography>
               <div
                 class="mt-3"
-                v-if="questions"
+                v-if="questions?.length"
               >
                 <div
-                  class="overflow-scroll"
+                  class="overflow-scroll fixed-size-questions"
                   style="flex-grow: 1"
                 >
                   <div
@@ -176,7 +180,7 @@ function setExampleName(value: any) {
                     :key="index"
                     class="p-2 mb-2 border rounded col-sm-12 d-flex align-items-center justify-content-between"
                   >
-                    <div class="text-question text-center">
+                    <div class="">
                       <Typography class-name="">{{ question.value }}</Typography>
                     </div>
                   </div>
@@ -262,11 +266,10 @@ function setExampleName(value: any) {
   resize: none !important;
 }
 
-.fixed-size-del-but {
-  min-width: 5% !important; /* ширину */
+.fixed-size-questions {
+  max-height: 47vh !important; /* ширину */
 }
 .text-question {
-  max-width: 95% !important; /* ширину */
   word-break: break-word !important;
 }
 </style>

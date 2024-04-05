@@ -16,7 +16,7 @@ const userStore = useUserStore()
 const questStore = useQuestsStore()
 
 const { user } = storeToRefs(userStore)
-const { questsShort: quests } = storeToRefs(questStore)
+const { quests } = storeToRefs(questStore)
 
 const questIdRef = ref<string | null>(null)
 
