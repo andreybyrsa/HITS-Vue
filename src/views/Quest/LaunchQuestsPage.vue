@@ -2,8 +2,6 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import Header from '@Components/Header/Header.vue'
-
 import { Team } from '@Domain/Team'
 
 import useUserStore from '@Store/user/userStore'
