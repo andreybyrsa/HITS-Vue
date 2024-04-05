@@ -2,7 +2,6 @@
 import {
   FinishSprintModalEmits,
   FinishSprintModalProps,
-  sprintValidationProps,
 } from '@Components/Modals/FinishSprintModal/FinishSprintModal.types'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
@@ -16,7 +15,6 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 
 import { SprintMarks, Task } from '@Domain/Project'
-import useProjectsStore from '@Store/projects/projectsStore'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
@@ -34,7 +32,7 @@ import {
 
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { AverageMark } from '@Domain/ReportProjectMembers'
 import ProjectService from '@Services/ProjectService'
@@ -47,11 +45,7 @@ const emit = defineEmits<FinishSprintModalEmits>()
 const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
-const projectStore = useProjectsStore()
-const { projects } = storeToRefs(projectStore)
-
 const sprintStore = useSprintsStore()
-const { sprints } = storeToRefs(sprintStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

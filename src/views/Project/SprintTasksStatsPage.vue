@@ -2,6 +2,13 @@
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import {
+  SprintInfoModalProps,
+  SprintInfoModalEmits,
+} from '@Components/Modals/SprintInfoModal/SprintInfoModal.types'
+
+const props = defineProps<SprintInfoModalProps>()
+const emit = defineEmits<SprintInfoModalEmits>()
 </script>
 
 <template>
@@ -19,9 +26,7 @@ import Typography from '@Components/Typography/Typography.vue'
         </Button>
         <Collapse id="321">
           <div class="p-2">
-            {{
-              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!'
-            }}
+            {{ props.task?.name }}
           </div>
         </Collapse>
       </li>

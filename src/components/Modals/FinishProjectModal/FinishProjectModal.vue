@@ -6,7 +6,6 @@ import { useForm } from 'vee-validate'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
-import Radio from '@Components/Inputs/Radio/Radio.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 
@@ -17,7 +16,7 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import useUserStore from '@Store/user/userStore'
 import ProjectService from '@Services/ProjectService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { AverageMark, ReportProject } from '@Domain/ReportProjectMembers'
+import { AverageMark } from '@Domain/ReportProjectMembers'
 
 import {
   getRoleProjectMember,
@@ -32,7 +31,6 @@ import useTasksStore from '@Store/tasks/tasksStore'
 import { Task } from '@Domain/Project'
 import useProjectsStore from '@Store/projects/projectsStore'
 import Validation from '@Utils/Validation'
-import useSprintsStore from '@Store/sprints/sprintsStore'
 import {
   RequestConfig,
   openErrorNotification,
@@ -59,9 +57,6 @@ const averageMark = ref<AverageMark[]>([])
 
 const projectStore = useProjectsStore()
 const { projects } = storeToRefs(projectStore)
-
-const sprintStore = useSprintsStore()
-const { sprints } = storeToRefs(sprintStore)
 
 onMounted(() => {
   if (props.isFinishProject) getAverageMark()

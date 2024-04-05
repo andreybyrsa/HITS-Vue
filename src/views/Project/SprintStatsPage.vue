@@ -1,7 +1,20 @@
 <script lang="ts" setup>
 import Button from '@Components/Button/Button.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
+import { SprintInfoModalProps } from '@Components/Modals/SprintInfoModal/SprintInfoModal.types'
 import Typography from '@Components/Typography/Typography.vue'
+import { useDateFormat } from '@vueuse/core'
+import SprintChartModal from '@Components/Modals/SprintChartModal/SprintChartModal.vue'
+import { ref } from 'vue'
+const props = defineProps<SprintInfoModalProps>()
+
+const isOpenedSprintChartModal = ref(false)
+function closeSprintChartModal() {
+  isOpenedSprintChartModal.value = false
+}
+function openSprintChartModal() {
+  isOpenedSprintChartModal.value = true
+}
 </script>
 
 <template>
@@ -10,9 +23,10 @@ import Typography from '@Components/Typography/Typography.vue'
   >
     <Button
       variant="outline-dark"
-      class-name=" w-100 p-5"
+      class-name=" w-100 p-4"
+      @click="openSprintChartModal"
     >
-      Диаграмма сгорания
+      Открыть диаграмму сгорания
     </Button>
 
     <ul class="list-group rounded-3 w-100">
@@ -25,11 +39,7 @@ import Typography from '@Components/Typography/Typography.vue'
           Цель
         </Button>
         <Collapse id="321">
-          <div class="p-2">
-            {{
-              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!'
-            }}
-          </div>
+          <div class="p-2">{{ props.sprint?.goal }}</div>
         </Collapse>
       </li>
     </ul>
@@ -46,9 +56,7 @@ import Typography from '@Components/Typography/Typography.vue'
         <!-- Сделать чтобы колапс не выходил за рамки при обширном тексте -->
         <Collapse id="333">
           <div class="p-2">
-            {{
-              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat! '
-            }}
+            {{ props.sprint?.report }}
           </div>
         </Collapse>
       </li>
@@ -64,10 +72,13 @@ import Typography from '@Components/Typography/Typography.vue'
           Оценки участников
         </Button>
         <Collapse id="125">
-          <div class="p-2">
-            {{
-              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!'
-            }}
+          <div
+            v-for="(sprint, index) in props.sprint.marks"
+            :key="index"
+            class="d-flex"
+          >
+            <div class="p-2">{{ sprint.firstName }} {{ sprint.lastName }}</div>
+            <div class="text-primary py-2">{{ 'Оцнека: ' }} {{ sprint.mark }}</div>
           </div>
         </Collapse>
       </li>
@@ -75,24 +86,34 @@ import Typography from '@Components/Typography/Typography.vue'
     <div>
       <div class="d-flex gap-1">
         <Typography class-name="text-primary"> {{ 'Начало спринта:' }} </Typography>
-        <Typography> {{ '13.03.2024' }} </Typography>
+        <Typography>
+          {{ useDateFormat(props.sprint?.startDate, 'DD.MM.YYYY') }}
+        </Typography>
       </div>
 
       <div class="d-flex gap-1">
         <Typography class-name="text-primary"> {{ 'Конец спринта:' }} </Typography>
-        <Typography> {{ '25.03.2024' }} </Typography>
+        <Typography>
+          {{ useDateFormat(props.sprint?.finishDate, 'DD.MM.YYYY') }}
+        </Typography>
       </div>
 
       <div class="d-flex gap-1">
         <Typography class-name="text-primary"> {{ 'Выполнено задач:' }} </Typography>
-        <Typography> {{ '10' }} </Typography>
+        <Typography> {{ props.sprint?.tasks.length }} </Typography>
       </div>
 
       <div class="d-flex gap-1">
         <Typography class-name="text-primary"> {{ 'Потрачено часов:' }} </Typography>
-        <Typography> {{ '24' }} </Typography>
+        <Typography> {{ props.sprint?.workingHours }} </Typography>
       </div>
     </div>
+
+    <SprintChartModal
+      :is-opened="isOpenedSprintChartModal"
+      :sprint="sprint"
+      @close-modal="closeSprintChartModal"
+    />
   </div>
 </template>
 
