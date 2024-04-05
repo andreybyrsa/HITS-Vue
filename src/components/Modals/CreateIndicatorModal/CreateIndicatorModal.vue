@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-
 import Input from '@Components/Inputs/Input/Input.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Button from '@Components/Button/Button.vue'
@@ -108,7 +106,7 @@ const createIndicator = () => {
 
 <style lang="scss" scoped>
 .modal-360-indicator {
-  width: 30%;
+  width: 400px;
   height: 600px;
   @include flexible(
     stretch,

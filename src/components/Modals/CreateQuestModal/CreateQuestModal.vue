@@ -19,6 +19,7 @@ import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import Validation from '@Utils/Validation'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
+import useIndicatorStore from '@Store/indicators/indicatorsStore'
 
 const props = defineProps<QuestModalProps>()
 const emit = defineEmits<QuestModalEmits>()
@@ -29,20 +30,25 @@ const isIndicatorModalOpen = ref(false)
 const questStore = useQuestsStore()
 const { quest } = storeToRefs(questStore)
 
+const indicatorStore = useIndicatorStore()
+const { indicators } = storeToRefs(indicatorStore)
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 onMounted(async () => {
   const token = user.value?.token
   const idQuest = props.idQuest
-  if (token && idQuest) {
+  if (!token) return
+  await indicatorStore.getIndicators(token)
+  if (idQuest) {
     await questStore.getQuest(idQuest, token)
 
-    setValues({
+    await setValues({
       name: quest.value?.name + ' - копия',
       description: quest.value?.description,
     })
-    if (quest.value) selectedQuestions.value = quest.value.indicators
+    // if (quest.value) selectedQuestions.value = quest.value.indicators
   } else {
     setValues({ name: '', description: '' })
   }
@@ -96,7 +102,7 @@ const closeIndicatorModal = () => {
             @click="emit('close-modal')"
           ></Button>
         </div>
-        <div class="row mt-3">
+        <div class="row mt-3 h-75">
           <div class="col-sm-6">
             <Input
               name="name"
@@ -114,7 +120,7 @@ const closeIndicatorModal = () => {
             ></Textarea>
           </div>
 
-          <div class="col-sm-6">
+          <div class="col-sm-6 h-100">
             <div class="d-flex justify-content-start gap-3">
               <Typography class-name="fs-6 text-primary"
                 >Выбранные вопросы:</Typography
@@ -129,9 +135,9 @@ const closeIndicatorModal = () => {
               ></CreateIndicatorModal>
             </div>
 
-            <div class="overflow-auto">
+            <div class="overflow-scroll p-2 h-100">
               <div
-                v-for="(question, index) in selectedQuestions"
+                v-for="(question, index) in indicators"
                 :key="index"
                 class="p-2 mb-2 border rounded col-sm-12 d-flex align-items-center justify-content-between"
                 style="width: 100%"
@@ -141,7 +147,10 @@ const closeIndicatorModal = () => {
                   style="overflow-wrap: break-word"
                   >{{ question.value }}</Typography
                 >
-                <Checkbox :name="question.idIndicator"></Checkbox>
+                <Checkbox
+                  class-name=""
+                  :name="question.idIndicator"
+                ></Checkbox>
               </div>
             </div>
           </div>
@@ -188,4 +197,3 @@ const closeIndicatorModal = () => {
   height: 2vh; /* Задать желаемую высоту */
 }
 </style>
-@Components/Modals/QuestModal/QuestModal.type
