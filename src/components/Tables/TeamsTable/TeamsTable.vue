@@ -138,7 +138,7 @@ const checkedTeamsActions = computed<CheckedDataAction<Team>[]>(() => [
 ])
 
 const sendingTeams = ref<Team[]>([])
-const isOpenSendFormModal = ref<boolean>(false)
+const isOpenSendFormModal = ref<boolean>(true)
 
 onMounted(async () => {
   const currentUser = user.value

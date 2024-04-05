@@ -35,9 +35,23 @@ const getQuest = async (idQuest: string, token: string): Promise<Quest | Error> 
     .catch((error) => handleAxiosError(error, 'Ошибка получения опроса.'))
 }
 
+const getQuestsLong = async (token: string): Promise<Quest[] | Error> => {
+  return questsLongAxios
+    .get('/quests', {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки запущенных опросов.'))
+}
+
 const QuestService = {
   getQuests,
+<<<<<<< HEAD
+  getQuestsLong,
+=======
   getQuest,
+>>>>>>> f84baac5ac19e286d1422a07e4be88485e60443e
 }
 
 export default QuestService

@@ -16,7 +16,7 @@ const userStore = useUserStore()
 const questStore = useQuestsStore()
 
 const { user } = storeToRefs(userStore)
-const { quests } = storeToRefs(questStore)
+const { questsShort: quests } = storeToRefs(questStore)
 
 const questIdRef = ref<string | null>(null)
 
@@ -26,6 +26,7 @@ onMounted(async () => {
   const token = user.value?.token
   if (token) {
     await questStore.getQuests(token)
+    console.log(questStore.getQuests(token))
   }
 })
 
