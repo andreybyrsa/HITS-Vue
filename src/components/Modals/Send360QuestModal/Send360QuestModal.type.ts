@@ -1,3 +1,4 @@
+import { Quest } from '@Domain/Quest'
 import { Team } from '@Domain/Team'
 
 interface Send360QuestProps {

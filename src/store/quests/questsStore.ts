@@ -6,7 +6,8 @@ import QuestService from '@Services/QuestService'
 
 const useLaunchQuestStore = defineStore('questStore', {
   state: (): InitialState => ({
-    quests: [],
+    questsShort: [],
+    questsLong: [],
   }),
   getters: {
     getQuests() {
@@ -21,8 +22,24 @@ const useLaunchQuestStore = defineStore('questStore', {
           return response
         }
 
-        this.quests = response
-        return this.quests
+        this.questsShort = response
+        return this.questsShort
+      }
+    },
+    getQuestsLong() {
+      return async (token: string) => {
+        const response = await QuestService.getQuestsLong(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        }
+
+        this.questsLong = response
+        return this.questsLong
       }
     },
   },
