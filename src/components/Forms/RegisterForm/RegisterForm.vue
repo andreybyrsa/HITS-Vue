@@ -57,7 +57,6 @@ const { setFieldValue, handleSubmit } = useForm<RegisterUser>({
 
 const handleRegister = handleSubmit(async (values) => {
   const slug = route.params.slug.toString()
-  console.log(values)
 
   isLoading.value = true
   await userStore.registerUser(values, slug)

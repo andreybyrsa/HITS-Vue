@@ -10,7 +10,13 @@ import useQuestsStore from '@Store/quests/questsStore'
 import { storeToRefs } from 'pinia'
 import { QuestShort } from '@Domain/Quest'
 import { onMounted, ref } from 'vue'
-import CreateQuestModal from '@Components/Modals/CreateQuestModal/CreateQuestModal.vue'
+import CreateQuestModal from '@Components/Modals/QuestModal/CreateQuestModal.vue'
+import { RouteRecordRaw, useRouter, useRoute } from 'vue-router'
+import QuestModal from '@Components/Modals/QuestModal/QuestModal.vue'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+
+const router = useRouter()
+const route = useRoute()
 
 const userStore = useUserStore()
 const questStore = useQuestsStore()
@@ -26,7 +32,6 @@ onMounted(async () => {
   const token = user.value?.token
   if (token) {
     await questStore.getQuests(token)
-    console.log(questStore.getQuests(token))
   }
 })
 
@@ -51,6 +56,7 @@ const questsTableColumns: TableColumn<QuestShort>[] = [
   {
     key: 'name',
     label: 'Название',
+    rowCellClick: (value: QuestShort) => navigateToQuestModal(value),
   },
   {
     key: 'available',
@@ -63,7 +69,7 @@ const questsTableDropdownMenuAction: DropdownMenuAction<QuestShort>[] = [
   {
     label: 'Просмотреть',
     statement: () => true,
-    click: (value: QuestShort) => value,
+    click: (value: QuestShort) => navigateToQuestModal(value),
   },
   {
     label: 'Создать копию',
@@ -84,6 +90,21 @@ const createQuest = () => {
 
 const closeQuestModal = () => {
   isQuestModalOpen.value = false
+}
+
+const navigateToQuestModal = (quest: QuestShort) => {
+  const { idQuest, name } = quest
+  const questRoute: RouteRecordRaw = {
+    name: 'quest',
+    path: '/quests/:idQuest',
+    alias: '/quests/:idQuest',
+    component: QuestModal,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  navigateToAliasRoute(name, `/quests/${idQuest}`, questRoute)
 }
 </script>
 

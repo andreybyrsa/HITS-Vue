@@ -4,16 +4,17 @@ import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import CreateIndicatorModal from '@Components/Modals/CreateIndicatorModal/CreateIndicatorModal.vue'
+import IndicatorItem from '@Components/IndicatorItem/IndicatorItem.vue'
+import CreateIndicatorModal from '@Components/Modals/IndicatorModal/CreateIndicatorModal.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Button from '@Components/Button/Button.vue'
 import {
-  QuestModalProps,
-  QuestModalEmits,
-} from '@Components/Modals/CreateQuestModal/CreateQuestModal.type'
+  CreateQuestModalProps,
+  CreateQuestModalEmits,
+} from '@Components/Modals/QuestModal/CreateQuestModal.type'
 
 import Validation from '@Utils/Validation'
 
@@ -23,8 +24,8 @@ import useIndicatorStore from '@Store/indicators/indicatorsStore'
 import { Indicator, Quest } from '@Domain/Quest'
 import useQuestsStore from '@Store/quests/questsStore'
 
-const props = defineProps<QuestModalProps>()
-const emit = defineEmits<QuestModalEmits>()
+const props = defineProps<CreateQuestModalProps>()
+const emit = defineEmits<CreateQuestModalEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -174,14 +175,13 @@ const closeCreateNewIndicator = () => {
                 ></CreateIndicatorModal>
               </div>
               <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
-                <div
+                <IndicatorItem
+                  class-name="cursor-pointer"
                   v-for="indicator in backlogIndicators"
                   :key="indicator.idIndicator"
                   @click="moveIndicatorToNew(indicator)"
-                  class="border rounded p-1 cursor-pointer"
-                >
-                  {{ indicator.value }}
-                </div>
+                  :indicator="indicator"
+                />
               </div>
             </div>
 
@@ -193,14 +193,13 @@ const closeCreateNewIndicator = () => {
                 </Typography>
               </div>
               <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
-                <div
+                <IndicatorItem
+                  class-name="cursor-pointer"
                   v-for="indicator in newQuestIndicators"
                   :key="indicator.idIndicator"
                   @click="moveIndicatorToBacklog(indicator)"
-                  class="border rounded p-1 cursor-pointer"
-                >
-                  {{ indicator.value }}
-                </div>
+                  :indicator="indicator"
+                />
               </div>
             </div>
           </div>

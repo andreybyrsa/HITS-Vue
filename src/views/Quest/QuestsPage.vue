@@ -1,10 +1,5 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia'
-import useUserStore from '@Store/user/userStore'
 import QuestsTable from '@Components/Tables/QuestsTable/QuestsTable.vue'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 </script>
 
 <template>

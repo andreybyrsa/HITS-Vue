@@ -35,7 +35,7 @@
     @close-modal="closeConfirmModalCanceled"
     @action="currentInvitation && handleRevokeTeam(currentInvitation)"
   />
-  <Send360SQuestModal
+  <CreateLaunchQuestModal
     :isOpened="isOpenSendFormModal"
     :teams="sendingTeams"
     @close-modal="closeSendFormModal"
@@ -57,7 +57,7 @@ import {
 } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import Send360SQuestModal from '@Components/Modals/Send360QuestModal/Send360QuestModal.vue'
+import CreateLaunchQuestModal from '@Components/Modals/LaunchQuestModal/CreateLaunchQuestModal.vue'
 
 import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'

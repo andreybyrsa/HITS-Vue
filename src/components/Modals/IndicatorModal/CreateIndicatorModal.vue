@@ -8,7 +8,7 @@ import Select from '@Components/Inputs/Select/Select.vue'
 import {
   IndicatorModalProps,
   IndicatorModalEmits,
-} from '@Components/Modals/CreateIndicatorModal/CreateIndicatorModal.type'
+} from '@Components/Modals/IndicatorModal/CreateIndicatorModal.type'
 import { Indicator } from '@Domain/Quest'
 import useQuestsStore from '@Store/quests/questsStore'
 import useUserStore from '@Store/user/userStore'

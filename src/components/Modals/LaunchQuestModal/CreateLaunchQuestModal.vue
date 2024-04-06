@@ -13,7 +13,7 @@ import Typography from '@Components/Typography/Typography.vue'
 import {
   Send360QuestProps,
   Send360QuestEmits,
-} from '@Components/Modals/Send360QuestModal/Send360QuestModal.type'
+} from '@Components/Modals/LaunchQuestModal/CreateLaunchQuestModal.type'
 import { Team } from '@Domain/Team'
 import { Quest, Indicator } from '@Domain/Quest'
 import useQuestStore from '@Store/quests/questsStore'

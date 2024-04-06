@@ -40,6 +40,8 @@ import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 import { getRouteByUserRole } from '@Utils/userRolesInfo'
+import QuestModal from '@Components/Modals/QuestModal/QuestModal.vue'
+import LaunchQuestModal from '@Components/Modals/LaunchQuestModal/LaunchQuestModal.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -244,6 +246,26 @@ const routes: RouteRecordRaw[] = [
     path: '/quests',
     name: 'quests',
     component: QuestsView,
+    children: [
+      {
+        name: 'profile',
+        path: 'profile/:id',
+        alias: '/profile/:id',
+        component: ProfileModal,
+      },
+      {
+        name: 'quest',
+        path: 'quests/:idQuest',
+        alias: '/quests/:idQuest',
+        component: QuestModal,
+      },
+      {
+        name: 'launch-quest',
+        path: 'launch-quests/:idLaunchQuest',
+        alias: '/launch-quests/:idLaunchQuest',
+        component: LaunchQuestModal,
+      },
+    ],
   },
   {
     path: '/:pathMatch(.*)*',

@@ -11,6 +11,9 @@ import useLaunchQuestStore from '@Store/launchQuests/launchQuestsStore'
 import { storeToRefs } from 'pinia'
 import { LaunchQuest } from '@Domain/Quest'
 import { onMounted } from 'vue'
+import { RouteRecordRaw } from 'vue-router'
+import LaunchQuestModal from '@Components/Modals/LaunchQuestModal/LaunchQuestModal.vue'
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 const userStore = useUserStore()
 const launchQuestStore = useLaunchQuestStore()
@@ -37,6 +40,7 @@ const launchQuestsTableColumns: TableColumn<LaunchQuest>[] = [
   {
     key: 'name',
     label: 'Название',
+    rowCellClick: (value: LaunchQuest) => navigateToLaunchQuestModal(value),
   },
   {
     key: 'startAt',
@@ -65,9 +69,24 @@ const launchQuestsTableDropdownMenuAction: DropdownMenuAction<LaunchQuest>[] = [
   {
     label: 'Просмотреть',
     statement: () => true,
-    click: () => 1,
+    click: (value: LaunchQuest) => navigateToLaunchQuestModal(value),
   },
 ]
+
+const navigateToLaunchQuestModal = (quest: LaunchQuest) => {
+  const { idLaunchQuest, name } = quest
+  const questRoute: RouteRecordRaw = {
+    name: 'launch-quest',
+    path: '/launch-quests/:idLaunchQuest',
+    alias: '/launch-quests/:idLaunchQuest',
+    component: LaunchQuestModal,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  navigateToAliasRoute(name, `/launch-quests/${idLaunchQuest}`, questRoute)
+}
 </script>
 
 <template>
