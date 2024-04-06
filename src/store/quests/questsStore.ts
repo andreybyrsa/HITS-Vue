@@ -34,6 +34,18 @@ const useQuestsStore = defineStore('questsStore', {
       this.quest = response
       return this.quest
     },
+
+    async postQuest(quest: Quest, token: string): Promise<Quest | Error> {
+      const response = await QuestService.postQuest(quest, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return response
+      }
+
+      this.quests.push(response)
+      return response
+    },
   },
 })
 

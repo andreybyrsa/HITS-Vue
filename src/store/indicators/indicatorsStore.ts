@@ -30,9 +30,9 @@ const useIndicatorStore = defineStore('indicatorsStore', {
         return response
       }
 
-      this.indicators.push(indicator)
+      this.indicators.push(response)
 
-      return
+      return response
     },
   },
 })

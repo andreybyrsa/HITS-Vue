@@ -1686,7 +1686,7 @@ export const questsMocks: Quest[] = [
     available: questsShortMocks[0].available,
     name: questsShortMocks[0].name,
     description: 'Весенний опрос 2024 посвящен весне и птичкам',
-    indicators: indicatorsMocks,
+    indicators: indicatorsMocks.slice(0, 7),
   },
 ]
 

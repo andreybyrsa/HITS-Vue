@@ -1,90 +1,136 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useForm } from 'vee-validate'
 
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import CreateIndicatorModal from '@Components/Modals/CreateIndicatorModal/CreateIndicatorModal.vue'
+import Icon from '@Components/Icon/Icon.vue'
+import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Button from '@Components/Button/Button.vue'
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import CreateIndicatorModal from '@Components/Modals/CreateIndicatorModal/CreateIndicatorModal.vue'
-import Typography from '@Components/Typography/Typography.vue'
-import Icon from '@Components/Icon/Icon.vue'
 import {
   QuestModalProps,
   QuestModalEmits,
 } from '@Components/Modals/CreateQuestModal/CreateQuestModal.type'
+
+import Validation from '@Utils/Validation'
+
+import useUserStore from '@Store/user/userStore'
+
+import useIndicatorStore from '@Store/indicators/indicatorsStore'
 import { Indicator, Quest } from '@Domain/Quest'
 import useQuestsStore from '@Store/quests/questsStore'
-import useUserStore from '@Store/user/userStore'
-import { storeToRefs } from 'pinia'
-import { useForm } from 'vee-validate'
-import Validation from '@Utils/Validation'
-import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
-import useIndicatorStore from '@Store/indicators/indicatorsStore'
 
 const props = defineProps<QuestModalProps>()
 const emit = defineEmits<QuestModalEmits>()
 
-const selectedQuestions = ref<Indicator[]>([])
-const isIndicatorModalOpen = ref(false)
-
-const questStore = useQuestsStore()
-const { quest } = storeToRefs(questStore)
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const indicatorStore = useIndicatorStore()
 const { indicators } = storeToRefs(indicatorStore)
 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
+const questStore = useQuestsStore()
+const { quest } = storeToRefs(questStore)
 
-onMounted(async () => {
-  const token = user.value?.token
-  const idQuest = props.idQuest
+const backlogIndicators = ref<Indicator[]>(indicators.value.slice())
+const newQuestIndicators = ref<Indicator[]>(quest.value?.indicators ?? [])
 
-  if (!token) return
-  await indicatorStore.getIndicators(token)
-
-  if (idQuest) {
-    await questStore.getQuest(idQuest, token)
-
-    await setValues({
-      name: quest.value?.name + ' - копия',
-      description: quest.value?.description,
-    })
-    // if (quest.value) selectedQuestions.value = quest.value.indicators
-  } else {
-    setValues({ name: '', description: '' })
-  }
-})
+const isOpenedCreateNewIndicator = ref(false)
+const isLoading = ref<boolean>(false)
 
 const { handleSubmit, setValues } = useForm<Quest>({
   validationSchema: {
-    name: (value: string) => Validation.checkIsEmptyValue(value),
-    description: (value: string) => Validation.checkIsEmptyValue(value),
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    description: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
   },
 })
 
-// const delQuestion = (id: string) => {
-//   const indexToRemove = selectedQuestions.value.findIndex(
-//     (question) => question.idIndicator === id,
-//   )
+onMounted(async () => {
+  const token = user.value?.token
+  if (!token) return
+  const idQuest = props.idQuest
+  await indicatorStore.getIndicators(token)
+  if (idQuest) {
+    await questStore.getQuest(idQuest, token)
+    const questIndicators = quest.value?.indicators
+    if (questIndicators) {
+      newQuestIndicators.value = questIndicators
+      backlogIndicators.value = indicators.value.filter((item) =>
+        questIndicators.find((indicator) => indicator == item) ? true : false,
+      )
+    }
+  } else {
+    backlogIndicators.value = indicators.value
+    newQuestIndicators.value = []
+  }
+})
 
-//   if (indexToRemove !== -1) {
-//     selectedQuestions.value.splice(indexToRemove, 1)
-//   }
-// }
+watch(
+  () => props.idQuest,
+  async (idQuest) => {
+    const token = user.value?.token
+    if (!token || !idQuest) return
+    await questStore.getQuest(idQuest, token)
+    quest.value ? setValues({ ...quest.value }) : 1
 
-const sendQuest = () => {
-  handleSubmit(() => {
+    newQuestIndicators.value = indicators.value
+
+    backlogIndicators.value.filter((newItem) => {
+      return newQuestIndicators.value.indexOf(newItem) == -1
+    })
+  },
+  { deep: true },
+)
+
+watch(
+  () => indicators,
+  (indicators) => {
+    const newIndicators = indicators.value.filter((indicator) => {
+      if (newQuestIndicators.value.find((item) => item == indicator)) return false
+      if (backlogIndicators.value.find((item) => item == indicator)) return false
+      return true
+    })
+    if (newIndicators) backlogIndicators.value.push(...newIndicators)
+  },
+  { deep: true },
+)
+
+const moveIndicatorToNew = (currentIndicator: Indicator) => {
+  backlogIndicators.value = backlogIndicators.value.filter(
+    (task) => task !== currentIndicator,
+  )
+  newQuestIndicators.value.push(currentIndicator)
+}
+
+const moveIndicatorToBacklog = (currentIndicator: Indicator) => {
+  newQuestIndicators.value = newQuestIndicators.value.filter(
+    (task) => task !== currentIndicator,
+  )
+  backlogIndicators.value.push(currentIndicator)
+}
+
+const CreateQuest = handleSubmit(async (quest) => {
+  const currentUser = user.value
+
+  if (currentUser?.token && quest) {
+    const { token } = currentUser
+    quest.indicators = newQuestIndicators.value
+    await questStore.postQuest(quest, token)
     emit('close-modal')
-  })
+  }
+})
+
+const openCreateNewIndicator = () => {
+  isOpenedCreateNewIndicator.value = true
 }
 
-const openIndicatorModal = () => {
-  isIndicatorModalOpen.value = true
-}
-
-const closeIndicatorModal = () => {
-  isIndicatorModalOpen.value = false
+const closeCreateNewIndicator = () => {
+  isOpenedCreateNewIndicator.value = false
 }
 </script>
 
@@ -92,110 +138,164 @@ const closeIndicatorModal = () => {
   <ModalLayout
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
-    class="modal-360-quest"
   >
-    <div class="modal-360-quest bg-white rounded p-3">
-      <div class="container-fluid d-flex flex-column">
-        <div class="col-sm-12 d-flex align-items-center justify-content-between">
-          <Typography class-name="fs-3 text-primary">Создание опроса</Typography>
+    <div class="modal-360-quest bg-white rounded px-4 py-3">
+      <div class="sprint-form w-100 mb-1 h-100">
+        <!-- header -->
+        <div class="sprint-form__header w-100">
+          <Typography class-name="fs-3 text-primary">
+            Создание шаблона опроса
+          </Typography>
+
           <Button
             variant="close"
             class="close"
             @click="emit('close-modal')"
-          ></Button>
+          />
         </div>
-        <div class="row mt-3 h-75">
-          <div class="col-sm-6">
-            <Input
-              name="name"
-              class-name="rounded-end"
-              class=""
-              label="Название опроса"
-              placeholder="Введите название опроса"
-            />
-            <Textarea
-              name="description"
-              class-name="rounded-end"
-              label="Описание опроса"
-              placeholder=""
-              class="mt-3 max-height-textarea"
-            ></Textarea>
-          </div>
 
-          <div class="col-sm-6 h-100">
-            <div class="d-flex justify-content-start gap-3">
-              <Typography class-name="fs-6 text-primary"
-                >Выбранные вопросы:</Typography
-              >
-              <Icon
-                @click="openIndicatorModal"
-                className="bi bi-plus-circle cursor-pointer text-secondary"
-              />
-              <CreateIndicatorModal
-                @close-modal="closeIndicatorModal"
-                :isOpened="isIndicatorModalOpen"
-              ></CreateIndicatorModal>
+        <!-- content -->
+        <div class="d-flex gap-3 mt-1 w-100 h-75">
+          <!-- tasks -->
+          <div class="sprint-form__content-tasks d-flex gap-4">
+            <!-- backlog -->
+            <div class="d-flex flex-column w-100">
+              <div class="sprint-form__backlog-name border-bottom">
+                <Typography class-name="fs-5 text-secondary"
+                  >Список вопросов</Typography
+                >
+                <Icon
+                  class-name="bi bi-plus sprint-form__backlog-add p-1 rounded"
+                  @click="openCreateNewIndicator"
+                />
+                <CreateIndicatorModal
+                  @close-modal="closeCreateNewIndicator"
+                  :isOpened="isOpenedCreateNewIndicator"
+                ></CreateIndicatorModal>
+              </div>
+              <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
+                <div
+                  v-for="indicator in backlogIndicators"
+                  :key="indicator.idIndicator"
+                  @click="moveIndicatorToNew(indicator)"
+                  class="border rounded p-1 cursor-pointer"
+                >
+                  {{ indicator.value }}
+                </div>
+              </div>
             </div>
 
-            <div class="overflow-scroll p-2 h-100">
-              <div
-                v-for="(question, index) in indicators"
-                :key="index"
-                class="p-2 mb-2 border rounded col-sm-12 d-flex align-items-center justify-content-between"
-                style="width: 100%"
-              >
-                <Typography
-                  class-name="fs-6 "
-                  style="overflow-wrap: break-word"
-                  >{{ question.value }}</Typography
+            <!-- new-sprint -->
+            <div class="d-flex flex-column w-100">
+              <div class="border-bottom">
+                <Typography class-name="fs-5 text-secondary">
+                  Выбранные вопросы
+                </Typography>
+              </div>
+              <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
+                <div
+                  v-for="indicator in newQuestIndicators"
+                  :key="indicator.idIndicator"
+                  @click="moveIndicatorToBacklog(indicator)"
+                  class="border rounded p-1 cursor-pointer"
                 >
-                <Checkbox
-                  class-name=""
-                  :name="question.idIndicator"
-                ></Checkbox>
+                  {{ indicator.value }}
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- form -->
+          <div class="sprint-form__form d-flex flex-column gap-3 h-100">
+            <!-- inputs -->
+            <div class="d-flex flex-column gap-3 h-100">
+              <Input
+                name="name"
+                class-name="rounded-end"
+                label="Название опроса"
+                validate-on-update
+                placeholder="Введите название опроса"
+              />
+              <Textarea
+                name="description"
+                class-name="textarea rounded-end"
+                label="Описание опроса"
+                validate-on-update
+                placeholder="Введите описание опроса"
+              />
+            </div>
+
+            <!-- Кнопки -->
+          </div>
         </div>
-        <div class="col-sm-12 d-flex justify-content-end mt-auto">
+        <div class="align-self-end mt-auto">
           <Button
             variant="primary"
-            @click="sendQuest()"
-            >Создать опрос</Button
+            @click="CreateQuest"
+            :isLoading="isLoading"
           >
+            Создать опрос
+          </Button>
         </div>
       </div>
     </div>
   </ModalLayout>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .modal-360-quest {
-  width: 90%;
+  width: 85%;
   height: 900px;
   @include flexible(
     stretch,
-    flex-start,
+    center,
     $align-self: center,
     $justify-self: center,
     $gap: 16px
   );
 
   transition: all $default-transition-settings;
+}
+
+.textarea {
+  resize: none;
+  height: 100px;
+}
+
+.sprint-form {
+  @include flexible(flex-start, flex-start, column);
+  overflow-y: scroll;
 
   &__header {
     @include flexible(center, space-between);
   }
-}
 
-.max-height-textarea {
-  max-height: 43vh;
-  resize: none !important;
-  overflow: auto;
-}
+  &__content {
+    &-tasks {
+      width: 70%;
+      overflow-y: scroll;
+    }
+  }
 
-.fixed-size-del-but {
-  width: 3vh; /* Задать желаемую ширину */
-  height: 2vh; /* Задать желаемую высоту */
+  &__backlog {
+    &-name {
+      @include flexible(center, space-between);
+    }
+
+    &-add {
+      transition: all linear 0.15s;
+      -webkit-transition: all linear 0.15s;
+
+      &:hover {
+        cursor: pointer;
+        color: white;
+        background-color: rgb(13, 110, 253);
+      }
+    }
+  }
+
+  &__form {
+    width: 30%;
+  }
 }
 </style>

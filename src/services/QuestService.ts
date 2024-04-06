@@ -35,9 +35,20 @@ const getQuest = async (idQuest: string, token: string): Promise<Quest | Error> 
     .catch((error) => handleAxiosError(error, 'Ошибка получения опроса.'))
 }
 
+const postQuest = async (quest: Quest, token: string): Promise<Quest | Error> => {
+  return questAxios
+    .post(`/quest`, quest, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения опроса.'))
+}
+
 const QuestService = {
   getQuests,
   getQuest,
+  postQuest,
 }
 
 export default QuestService
