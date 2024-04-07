@@ -243,6 +243,7 @@ function openBurndownModal() {
 function closeBurndownModal() {
   isOpenedBurndownModal.value = false
 }
+console.log(activeSprint)
 </script>
 
 <template>
@@ -339,12 +340,12 @@ function closeBurndownModal() {
     @close-modal="closeCreateNewTask"
     :sprint="activeSprint"
   />
-  <BurndownModal
+  <!-- <BurndownModal
     v-if="activeSprint"
     :is-opened="isOpenedBurndownModal"
     @close-modal="closeBurndownModal"
     :sprint="activeSprint"
-  />
+  /> -->
 </template>
 
 <style lang="scss" scoped>

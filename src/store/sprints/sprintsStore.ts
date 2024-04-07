@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import SprintService from '@Services/SprintService'
 
 import InitialState from '@Store/sprints/initialState'
-import { Sprint, SprintStatus, SprintMarks } from '@Domain/Project'
+import { Sprint, SprintStatus, SprintMarks, Task } from '@Domain/Project'
 import { tasksMocks } from '@Utils/getMocks'
 import { MODE } from '@Main'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -73,10 +73,52 @@ const useSprintsStore = defineStore('sprints', {
       }
     },
 
-    async changeSprintStatus(sprintId: string, status: SprintStatus, token: string) {
-      const response = await SprintService.changeSprintStatus(
+    // async changeSprintStatus(sprintId: string, status: SprintStatus, token: string) {
+    //   const response = await SprintService.changeSprintStatus(
+    //     sprintId,
+    //     status,
+    //     token,
+    //   )
+
+    //   if (response instanceof Error) {
+    //     useNotificationsStore().createSystemNotification('Система', response.message)
+    //   } else {
+    //     const currentSprint = this.sprints.find(({ id }) => id === sprintId)
+    //     if (currentSprint) {
+    //       currentSprint.status = status
+    //     }
+    //     this.activeSprint = undefined
+    //   }
+    // },
+
+    // async reportSprint(sprintId: string, report: string, token: string) {
+    //   const response = await SprintService.reportSprint(sprintId, report, token)
+
+    //   if (response instanceof Error) {
+    //     useNotificationsStore().createSystemNotification('Система', response.message)
+    //   } else {
+    //     const currentSprint = this.sprints.find(({ id }) => id === sprintId)
+
+    //     if (currentSprint) {
+    //       currentSprint.report = report
+    //     }
+    //   }
+    // },
+
+    async finishSprint(
+      sprintId: string,
+      finishDate: string,
+      status: SprintStatus,
+      report: string,
+      tasks: Task[],
+      token: string,
+    ) {
+      const response = await SprintService.finishSprint(
         sprintId,
+        finishDate,
         status,
+        report,
+        tasks,
         token,
       )
 
@@ -84,42 +126,24 @@ const useSprintsStore = defineStore('sprints', {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         const currentSprint = this.sprints.find(({ id }) => id === sprintId)
-        if (currentSprint) {
-          currentSprint.status = status
-        }
-        this.activeSprint = undefined
-      }
-    },
+        const tasksStore = useTasksStore().tasks
 
-    async reportSprint(sprintId: string, report: string, token: string) {
-      const response = await SprintService.reportSprint(sprintId, report, token)
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentSprint = this.sprints.find(({ id }) => id === sprintId)
+        tasksStore.forEach((task) => {
+          if (tasks.find(({ id }) => id === task.id)) {
+            task.sprintId = undefined
+            task.position =
+              tasksStore.filter(({ status }) => status === 'InBackLog').length + 1
+            task.executor = null
+            task.status = 'InBackLog'
+          }
+        })
 
         if (currentSprint) {
           currentSprint.report = report
-        }
-      }
-    },
-
-    async finishSprint(sprintId: string, finishDate: string, token: string) {
-      const response = await SprintService.finishSprintDate(
-        sprintId,
-        finishDate,
-        token,
-      )
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentSprint = this.sprints.find(({ id }) => id === sprintId)
-
-        if (currentSprint) {
+          currentSprint.status = status
           currentSprint.finishDate = finishDate
         }
+        this.activeSprint = undefined
       }
     },
 

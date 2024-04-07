@@ -171,33 +171,41 @@ const FinishSprint = handleSubmit(async (values) => {
     if (sprintId) {
       isLoading.value = true
       const finishSprintParallelRequests: RequestConfig[] = [
-        {
-          request: () => sprintStore.changeSprintStatus(sprintId, 'DONE', token),
-          refValue: ref(),
-          onErrorFunc: openErrorNotification,
-        },
-        {
-          request: () => sprintStore.finishSprint(sprintId, finishDate, token),
-          refValue: ref(),
-          onErrorFunc: openErrorNotification,
-        },
-        {
-          request: () => sprintStore.reportSprint(sprintId, report.value, token),
-          refValue: ref(),
-          onErrorFunc: openErrorNotification,
-        },
-        {
-          request: () => SprintService.postSprintMarks(sprintMarks, token),
-          refValue: ref(),
-          onErrorFunc: openErrorNotification,
-        },
+        // {
+        //   request: () => sprintStore.changeSprintStatus(sprintId, 'DONE', token),
+        //   refValue: ref(),
+        //   onErrorFunc: openErrorNotification,
+        // },
+        // {
+        //   request: () => sprintStore.reportSprint(sprintId, report.value, token),
+        //   refValue: ref(),
+        //   onErrorFunc: openErrorNotification,
+        // },
         {
           request: () =>
-            tasksStore.moveTasksInBacklog(props.unfinishedTasks ?? [], token),
+            sprintStore.finishSprint(
+              sprintId,
+              finishDate,
+              'DONE',
+              report.value,
+              props.unfinishedTasks ?? [],
+              token,
+            ),
           refValue: ref(),
           onErrorFunc: openErrorNotification,
-          statement: Boolean(props.unfinishedTasks?.length),
         },
+        {
+          request: () => SprintService.postSprintMarks(sprintId, sprintMarks, token),
+          refValue: ref(),
+          onErrorFunc: openErrorNotification,
+        },
+        // {
+        //   request: () =>
+        //     tasksStore.moveTasksInBacklog(props.unfinishedTasks ?? [], token),
+        //   refValue: ref(),
+        //   onErrorFunc: openErrorNotification,
+        //   statement: Boolean(props.unfinishedTasks?.length),
+        // },
       ]
 
       await sendParallelRequests(finishSprintParallelRequests)
