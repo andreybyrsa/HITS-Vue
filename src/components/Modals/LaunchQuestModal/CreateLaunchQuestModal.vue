@@ -11,8 +11,8 @@ import Button from '@Components/Button/Button.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import {
-  Send360QuestProps,
-  Send360QuestEmits,
+  CreateLaunchQuestProps,
+  CreateLaunchQuestEmits,
 } from '@Components/Modals/LaunchQuestModal/CreateLaunchQuestModal.type'
 import { Team } from '@Domain/Team'
 import { Quest, Indicator } from '@Domain/Quest'
@@ -23,21 +23,24 @@ import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const questStore = useQuestStore()
-
 const { user } = storeToRefs(userStore)
 const { quests, quest } = storeToRefs(questStore)
+const props = defineProps<CreateLaunchQuestProps>()
+const emit = defineEmits<CreateLaunchQuestEmits>()
 
-const props = defineProps<Send360QuestProps>()
-const emit = defineEmits<Send360QuestEmits>()
+const questTemplates = ref<any[]>([])
+const checkedTeams = ref<Team[]>([])
+const selectedQuestTemplate = ref()
+
+const showHidden = ref(false)
 
 onMounted(async () => {
   const token = user.value?.token
   if (token) {
     await questStore.getQuests(token)
-    templatesNames.value = quests.value.map((quest) => quest.name)
+    questTemplates.value = quests.value
   }
 })
-const checkedTeams = ref<Team[]>([])
 watchImmediate(
   () => props.teams,
   (value) => {
@@ -48,28 +51,16 @@ watchImmediate(
   { deep: true },
 )
 
-const selectedTemplateName = ref<string>()
-
-const selectedTemplateQuest = ref(() => {
-  1
-})
-
 const questions = computed(() => {
-  if (selectedTemplateName.value) {
+  if (selectedQuestTemplate.value) {
     const token = user.value?.token
-    const idQuest = quests.value.filter(
-      (quest) => selectedTemplateName.value === quest.name,
-    )[0].idQuest
+    const idQuest = selectedQuestTemplate.value.idQuest
     if (!token) return
     questStore.getQuest(idQuest, token)
     return quest.value?.indicators
   }
   return []
 })
-
-const templatesNames = ref<any[]>([])
-
-const showHidden = ref(false)
 
 function resetTeam(ideaId: string) {
   const ideaIndex = checkedTeams.value.findIndex(({ id }) => id === ideaId)
@@ -82,7 +73,7 @@ function resetTeam(ideaId: string) {
 }
 
 function setExampleName(value: any) {
-  selectedTemplateName.value = value
+  selectedQuestTemplate.value = value
 }
 </script>
 
@@ -109,14 +100,14 @@ function setExampleName(value: any) {
             <div class="p-4">
               <div class="w-100">
                 <Combobox
-                  v-model="selectedTemplateName"
+                  v-model="selectedQuestTemplate"
                   name="customer"
                   label="Шаблон опроса"
-                  :options="templatesNames"
+                  :options="questTemplates"
+                  :displayBy="['name']"
                   placeholder="Выберите шаблон опроса"
                   :on-on-select="setExampleName"
                 />
-                <!-- displayBy -->
                 <Checkbox
                   name="showHidden"
                   label="Показать скрытые"

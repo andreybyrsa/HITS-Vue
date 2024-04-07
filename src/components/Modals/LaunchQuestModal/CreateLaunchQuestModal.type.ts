@@ -1,13 +1,13 @@
 import { Quest } from '@Domain/Quest'
 import { Team } from '@Domain/Team'
 
-interface Send360QuestProps {
+interface CreateLaunchQuestProps {
   isOpened: boolean
   teams: Team[]
 }
 
-interface Send360QuestEmits {
+interface CreateLaunchQuestEmits {
   (event: 'close-modal'): void
 }
 
-export { Send360QuestProps, Send360QuestEmits }
+export { CreateLaunchQuestProps, CreateLaunchQuestEmits }
