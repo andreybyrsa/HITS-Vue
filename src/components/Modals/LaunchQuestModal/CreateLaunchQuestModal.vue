@@ -260,7 +260,7 @@ function setExampleName(value: any) {
 }
 
 .fixed-size-questions {
-  max-height: 47vh !important; /* ширину */
+  max-height: 55vh !important; /* ширину */
 }
 .text-question {
   word-break: break-word !important;
