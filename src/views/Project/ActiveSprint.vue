@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import draggable from 'vuedraggable'
 import { reactiveComputed, useDateFormat } from '@vueuse/core'
-import { useRoute } from 'vue-router'
 
 import { ColumnTask, ActiveSprintProps } from '@Views/Project/Project.types'
 
@@ -38,13 +37,10 @@ const { tasks } = storeToRefs(taskStore)
 const sprintStore = useSprintsStore()
 const { activeSprint } = storeToRefs(sprintStore)
 
-const route = useRoute()
-
 const isLoadingTaskData = ref(false)
 const isOpenedCreateNewTask = ref(false)
 const isOpenedFinishSprintModal = ref(false)
 const isOpenedBurndownModal = ref(false)
-const isLoading = ref(false)
 
 const unfinishedTasks = computed<Task[]>(
   () => activeSprint?.value?.tasks.filter(({ status }) => status !== 'Done') ?? [],
@@ -110,21 +106,6 @@ const checkMyInProgressTask = computed(() =>
     inProgressTask.tasks.find(({ executor }) => executor?.id === user.value?.id),
   ),
 )
-
-onMounted(async () => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const projectId = route.params.id.toString()
-
-    isLoading.value = true
-
-    await sprintStore.getActiveSprint(projectId, token)
-
-    isLoading.value = false
-  }
-})
 
 async function taskParallelRequests(
   taskId: string,

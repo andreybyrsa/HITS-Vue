@@ -19,11 +19,15 @@ defineModel<string>({
   required: false,
 })
 
-const { value, errorMessage, meta } = useField(props.name, props.validation, {
-  validateOnValueUpdate: props.validateOnUpdate ?? false,
-  validateOnMount: false,
-  syncVModel: true,
-})
+const { value, errorMessage, meta } = useField<string>(
+  props.name,
+  props.validation?.name,
+  {
+    validateOnValueUpdate: props.validateOnUpdate ?? false,
+    validateOnMount: false,
+    syncVModel: true,
+  },
+)
 
 const TextareaClassName = computed(() => [
   'form-control',

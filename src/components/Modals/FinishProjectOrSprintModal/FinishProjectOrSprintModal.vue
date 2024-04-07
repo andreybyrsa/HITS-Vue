@@ -168,8 +168,6 @@ const FinishSprint = handleSubmit(async (values) => {
       },
     ) as SprintMarks[]
 
-    console.log(props.sprint?.tasks)
-
     if (sprintId) {
       isLoading.value = true
       const finishSprintParallelRequests: RequestConfig[] = [
@@ -336,7 +334,7 @@ const FinishSprint = handleSubmit(async (values) => {
           Завершить спринт
         </Button>
         <div
-          v-if="props.unfinishedTasks?.length"
+          v-if="props.unfinishedTasks?.length && !isLoading"
           class="text-danger"
         >
           Незавершенные задачи будут перенесены в бэклог*

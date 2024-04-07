@@ -90,7 +90,7 @@ const sortTasks = computed<Task[]>(() => {
   }
 
   return arrayTask.sort((a, b) =>
-    a.status === 'InBackLog' && b.status === 'InBackLog'
+    a.status === 'InBackLog' && b.status === 'InBackLog' && a.position && b.position
       ? a.position - b.position
       : statusOrder[a.status] - statusOrder[b.status],
   )
