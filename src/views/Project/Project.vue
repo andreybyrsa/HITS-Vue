@@ -37,7 +37,6 @@ const { user } = storeToRefs(userStore)
 const route = useRoute()
 
 const project = ref<Project>()
-const sprints = ref<Sprint[]>()
 const activeSprint = ref<Sprint>()
 const tasks = ref<Task[]>()
 const tags = ref<Tag[]>()
@@ -63,15 +62,15 @@ async function getProject() {
 
     isLoading.value = true
 
-    const ideasMarketParallelRequests: RequestConfig[] = [
+    const projectParallelRequests: RequestConfig[] = [
       {
         request: () => ProjectStore.getProject(projectId, token),
         refValue: project,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => sprintsStore.getAllSprints(projectId, token),
-        refValue: sprints,
+        request: () => sprintsStore.getActiveSprint(projectId, token),
+        refValue: activeSprint,
         onErrorFunc: openErrorNotification,
       },
       {
@@ -84,15 +83,9 @@ async function getProject() {
         refValue: tags,
         onErrorFunc: openErrorNotification,
       },
-      {
-        request: () => sprintsStore.getActiveSprint(projectId, token),
-        refValue: activeSprint,
-        onErrorFunc: openErrorNotification,
-        statement: Boolean(sprints.value?.find(({ status }) => status === 'ACTIVE')),
-      },
     ]
 
-    await sendParallelRequests(ideasMarketParallelRequests)
+    await sendParallelRequests(projectParallelRequests)
 
     isLoading.value = false
   }

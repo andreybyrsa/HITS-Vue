@@ -87,6 +87,7 @@ const useSprintsStore = defineStore('sprints', {
         if (currentSprint) {
           currentSprint.status = status
         }
+        this.activeSprint = undefined
       }
     },
 
