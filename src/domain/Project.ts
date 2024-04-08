@@ -9,7 +9,7 @@ type TaskStatus =
   | 'InBackLog'
   | 'OnModification'
   | 'NewTask'
-  | 'inProgress'
+  | 'InProgress'
   | 'OnVerification'
   | 'Done'
 
@@ -49,26 +49,25 @@ interface TaskMovementLog {
   user: User
   startDate: string
   endDate: string
-  taskStatus: TaskStatus
+  status: TaskStatus
 }
 
 interface Task {
   id: string
   sprintId?: string
   projectId: string
-  position: number
+  position?: number
   name: string
   description: string
   leaderComment?: string
 
   initiator: User
   executor: User | null
-  workHour: string
+  workHour: number
   startDate: string
   finishDate?: string
 
-  tag: Tag[]
-  taskMovementLog: TaskStatus[]
+  tags: Tag[]
   status: TaskStatus
 }
 
@@ -83,7 +82,7 @@ interface Sprint {
   report: string
   startDate: string
   finishDate: string
-  workingHours: string
+  workingHours: number
   status: SprintStatus
   tasks: Task[]
 }

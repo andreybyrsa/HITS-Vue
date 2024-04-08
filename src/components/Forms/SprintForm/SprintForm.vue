@@ -60,7 +60,6 @@ const recommendedLoad = computed<number>(() => {
 
   return daysDifference * props.project.team.membersCount
 })
-// const recommendedLoad = computed<number>(() => 8)
 
 watch(
   () => tasks,
@@ -146,7 +145,7 @@ const CreateSprint = handleSubmit(async (sprint) => {
     isLoading.value = true
 
     sprint.tasks = newSprintTasks.value
-    sprint.workingHours = workingHours.value.toString()
+    sprint.workingHours = workingHours.value
 
     await sprintsStore.postSprint(sprint, token)
     isLoading.value = false
@@ -162,7 +161,7 @@ const UpdateSprint = handleSubmit(async (sprint) => {
     isLoading.value = true
 
     sprint.tasks = newSprintTasks.value
-    sprint.workingHours = workingHours.value.toString()
+    sprint.workingHours = workingHours.value
 
     await sprintsStore.updateSprint(sprint, props.sprint.id, token)
     isLoading.value = false
@@ -227,8 +226,8 @@ function checkDisabledButton() {
               v-for="task in backlogTasks"
               :key="task.id"
               @click="moveTaskToNewTasks(task)"
-              size="SMALL"
               :task="task"
+              small
             />
           </div>
         </div>
@@ -245,8 +244,8 @@ function checkDisabledButton() {
               @click="moveTaskToBacklog(task)"
               v-for="task in newSprintTasks"
               :key="task.id"
-              size="SMALL"
               :task="task"
+              small
             />
           </div>
         </div>

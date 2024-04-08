@@ -28,25 +28,23 @@ const useTasksStore = defineStore('tasks', {
     },
   },
   actions: {
-    async changePosition(
-      changeTasks: Task[],
-      newIndex: number,
-      oldIndex: number,
-      token: string,
-    ) {
-      changeTasks.forEach((task, index) => {
-        const changeTask = this.tasks.find((element) => task.id === element.id)
+    async changePosition(changeTasks: Task[], token: string) {
+      changeTasks.forEach((task, index) => (task.position = index + 1))
 
-        if (changeTask) {
-          changeTask.position = index + 1
-        }
-      })
-
-      const response = TaskService.updateTasks(this.tasks, token)
+      const response = await TaskService.moveTask(changeTasks, token)
 
       if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
+        return useNotificationsStore().createSystemNotification(
+          'Система',
+          response.message,
+        )
       }
+
+      this.tasks.forEach((task) => {
+        const currentTask = changeTasks.find(({ id }) => id === task.id)
+
+        if (currentTask) task = currentTask
+      })
     },
 
     async changeExecutorTask(taskId: string, user: User | null, token: string) {
@@ -66,19 +64,7 @@ const useTasksStore = defineStore('tasks', {
       const curTask = this.tasks.find(({ id }) => id === taskId)
 
       if (curTask) {
-        const lastStatus = curTask.status
-        const newStatusLog = curTask.taskMovementLog.concat(lastStatus)
-
-        if (lastStatus && newStatusLog) {
-          curTask?.taskMovementLog.push(lastStatus)
-        }
-
-        const response = await TaskService.changeTaskStatus(
-          taskId,
-          status,
-          newStatusLog,
-          token,
-        )
+        const response = await TaskService.changeTaskStatus(taskId, status, token)
 
         if (response instanceof Error) {
           useNotificationsStore().createSystemNotification(
@@ -94,47 +80,25 @@ const useTasksStore = defineStore('tasks', {
       }
     },
 
-    async changeTaskStatusInBackLog(
-      tasks: Task[],
-      status: TaskStatus,
-      token: string,
-    ) {
-      tasks.forEach((task) => {
-        const changeTask = this.tasks.find((element) => task.id === element.id)
-
-        if (changeTask) {
-          changeTask.status = status
-        }
-      })
-
-      const response = await TaskService.changeTaskStatusInBackLog(
-        this.tasks,
-        status,
-        token,
-      )
+    async moveTasksInBacklog(tasks: Task[], token: string) {
+      const response = await TaskService.moveTasksInBacklog(tasks, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        const tasksStore = useTasksStore().tasks
+
+        tasksStore.forEach((task) => {
+          if (tasks.find(({ id }) => id === task.id)) {
+            task.sprintId = undefined
+            task.position =
+              tasksStore.filter(({ status }) => status === 'InBackLog').length + 1
+            task.executor = null
+            task.status = 'InBackLog'
+          }
+        })
       }
     },
-
-    // async changeTaskMovementLog(changeTaskMovementLog: Task[], token: string) {
-    //   changeTaskMovementLog.forEach((task) => {
-    //     const changetaskMovementLog = this.tasks.find(
-    //       (element) => task.id === element.id,
-    //     )
-
-    //     if (changetaskMovementLog) {
-    //       changetaskMovementLog.taskMovementLog = ['InBackLog', 'NewTask']
-    //     }
-    //   })
-
-    //   const response = TaskService.changeTaskMovementLog(this.tasks, token)
-
-    //   if (response instanceof Error) {
-    //     useNotificationsStore().createSystemNotification('Система', response.message)
-    //   }
-    // },
 
     async createTask(task: Task, token: string) {
       const response = await TaskService.createTask(task, token)
@@ -143,6 +107,18 @@ const useTasksStore = defineStore('tasks', {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         this.tasks.push(response)
+      }
+    },
+
+    async updateTask(task: Task, token: string) {
+      const response = await TaskService.updateTask(task, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+      } else {
+        this.tasks = this.tasks.map((currentTask) =>
+          currentTask.id === task.id ? task : currentTask,
+        )
       }
     },
 
@@ -167,7 +143,7 @@ const useTasksStore = defineStore('tasks', {
           user: user,
           startDate: new Date().toJSON().toString(),
           endDate: '',
-          taskStatus: newStatus,
+          status: newStatus,
         }
 
         const response = await TaskService.createTaskLog(log, token)
@@ -177,6 +153,8 @@ const useTasksStore = defineStore('tasks', {
             'Система',
             response.message,
           )
+        } else {
+          currentTask.status = newStatus
         }
       }
     },

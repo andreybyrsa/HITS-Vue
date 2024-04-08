@@ -5,7 +5,7 @@ import { averageMarkMocks, projectMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { Project, ProjectStatus } from '@Domain/Project'
-import { AverageMark, ReportProject } from '@Domain/ReportProjectMembers'
+import { AverageMark } from '@Domain/ReportProjectMembers'
 import Success from '@Domain/ResponseMessage'
 import axios from 'axios'
 import { API_URL, MODE } from '@Main'
@@ -42,13 +42,6 @@ function formatGetAverageMarkProject(
   return averageMarkMocks.filter((mark) => mark.projectId === projectId)
 }
 
-function formatGetReportProject(
-  reportProjectMocks: ReportProject[],
-  projectId: string,
-) {
-  return reportProjectMocks.filter((report) => report.projectId === projectId)
-}
-
 // --- GET --- //
 const getAllProjects = async (token: string): Promise<Project[] | Error> => {
   return projectMocksAxios
@@ -64,7 +57,7 @@ const getAllProjects = async (token: string): Promise<Project[] | Error> => {
 const getProject = async (id: string, token: string): Promise<Project | Error> => {
   return projectMocksAxios
     .get(
-      '/ТУТ-БУДЕТ-ЧТО-ТО', // FIX ROUTE
+      `/scrum-service/project/${id}`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -98,9 +91,9 @@ const getAverageMarkProject = async (
   projectId: string,
   token: string,
 ): Promise<AverageMark[] | Error> => {
-  return averageMarkMocksAxios
-    .get<AverageMark[]>(
-      '/mark', // FIX ROUTE
+  return averageMarkMocksAxios // Подгружаем сразу сформированный массив оценок за все спринты
+    .get<AverageMark[]>( // БЭК считает среднюю арифмечискую
+      `/scrum-service/project/marks/${projectId}/all`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

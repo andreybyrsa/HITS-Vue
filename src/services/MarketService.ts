@@ -17,7 +17,7 @@ function formatMarketsByActiveStatus(markets: Market[]) {
 // --- GET --- //
 const getAllMarkets = async (token: string): Promise<Market[] | Error> => {
   return marketAxios
-    .get('/market/all', {
+    .get('/ideas-service/market/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

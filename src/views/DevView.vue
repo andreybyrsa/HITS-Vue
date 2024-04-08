@@ -100,10 +100,11 @@ const b = ref()
 
       <Input name="component"> </Input>
       <Button
-        variant="primary"
+        variant="danger"
         @click="click"
-        >Валидация</Button
       >
+        Валидация
+      </Button>
 
       <Button
         @click="router.push('/teams/list/1')"
@@ -176,7 +177,7 @@ const b = ref()
         Открыть окно
       </Button> -->
 
-      <pre class="sss">Пользователь из userStore - {{ user }}</pre>
+      <!-- <pre class="sss">Пользователь из userStore - {{ user }}</pre> -->
     </template>
   </PageLayout>
 </template>

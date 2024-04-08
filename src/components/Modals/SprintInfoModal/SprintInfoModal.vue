@@ -7,11 +7,18 @@ import {
   SprintInfoModalProps,
   SprintInfoModalEmits,
 } from '@Components/Modals/SprintInfoModal/SprintInfoModal.types'
+import SprintTaskStatsPage from '@Views/Project/SprintTaskStatsPage.vue'
 
 import { ref } from 'vue'
 import SprintStatsPage from '@Views/Project/SprintStatsPage.vue'
-import SprintTasksStatsPage from '@Views/Project/SprintTasksStatsPage.vue'
+import SprintTaskStats from '@Views/Project/SprintTaskStats.vue'
 import { Task } from '@Domain/Project'
+import { User } from '@Domain/User'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const props = defineProps<SprintInfoModalProps>()
 const emit = defineEmits<SprintInfoModalEmits>()
@@ -35,44 +42,21 @@ const currentTask = ref<Task>()
 function openTabAboutTask(task: Task) {
   if (task) {
     currentTask.value = task
-    isTabAboutSprint.value = false
-    isTabAboutTask.value = true
   }
+
+  isTabAboutSprint.value = false
+  isTabAboutTask.value = true
+}
+
+function undefinedTask() {
+  currentTask.value = undefined
 }
 
 function switchToTabAboutSprint() {
   isTabAboutSprint.value = true
   isTabAboutTask.value = false
+  currentTask.value = undefined
 }
-function switchToTabAboutTask() {
-  isTabAboutSprint.value = false
-  isTabAboutTask.value = true
-}
-
-// const sprintById = ref<Sprint>()
-
-// onBeforeMount(getSprintById)
-
-// async function getSprintById() {
-//   if (props.isSprinInfoModal) {
-//     const currentUser = user.value
-//     if (currentUser?.token) {
-//       const { token } = currentUser
-//       const sprintId = props.sprint?.id
-
-//       const response = await SprintService.getSprintById(sprintId, token)
-
-//       if (response instanceof Error) {
-//         return useNotificationsStore().createSystemNotification(
-//           'Система',
-//           response.message,
-//         )
-//       }
-
-//       sprintById.value = response
-//     }
-//   }
-// }
 </script>
 <template>
   <ModalLayout
@@ -92,8 +76,8 @@ function switchToTabAboutTask() {
       </div>
 
       <div class="d-flex w-100 h-100 gap-3">
-        <div class="sprint-info-modal__tasks d-flex flex-column gap-2 h-100">
-          <Typography class-name="fs-4 text-primary border-bottom w-75"
+        <div class="flex-column gap-2 h-100">
+          <Typography class-name="fs-4 text-primary border-bottom w-100"
             >{{ 'Задачи: ' }} {{ props.sprint?.tasks.length }}
           </Typography>
           <div class="w-100 rounded-3">
@@ -104,19 +88,22 @@ function switchToTabAboutTask() {
               validate-on-update
             />
           </div>
-          <div class="overflow-y-auto w-100">
+          <div class="sprint-info-modal__tasks overflow-scroll w-100">
             <div
-              v-for="(task, index) in props.sprint?.tasks"
+              v-for="(task, index) in props.sprint.tasks"
               :key="index"
               class="w-100 p-1"
             >
-              <Button
+              {{ console.log(task) }}
+              <div
                 variant="outline-secondary"
-                class="w-100 justify-content-between rounded-3"
-                @click="openTabAboutTask"
+                class="w-100 justify-content-between rounded-3 h-100"
               >
-                <div class="text-dark">{{ task.name }}</div>
-              </Button>
+                <SprintTaskStats
+                  @click="openTabAboutTask(task)"
+                  :task="task"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -125,12 +112,12 @@ function switchToTabAboutTask() {
           <div class="px-3 w-100 border-bottom">
             <ul class="nav nav-underline">
               <div
-                :class="getNavLinkStyle(isTabAboutSprint)"
                 @click="switchToTabAboutSprint"
+                :class="getNavLinkStyle(isTabAboutSprint)"
               >
-                Общая статистика
+                Cтатистика спринта
               </div>
-              <div :class="getNavLinkStyle(isTabAboutTask)">Статистика задачи</div>
+              <div :class="getNavLinkStyle(isTabAboutTask)">Cтатистика задачи</div>
             </ul>
           </div>
 
@@ -140,12 +127,11 @@ function switchToTabAboutTask() {
             :project="project"
             :sprint="sprint"
           />
-          <SprintTasksStatsPage
+          <SprintTaskStatsPage
             :is-opened="isTabAboutTask"
             v-if="isTabAboutTask"
-            :project="project"
             :task="(currentTask as Task)"
-            :sprint="sprint"
+            :user="(user as User)"
           />
         </div>
       </div>
@@ -156,25 +142,11 @@ function switchToTabAboutTask() {
 <style lang="scss">
 .sprint-info-modal {
   width: 65%;
-  height: 70%;
-  max-height: 70%;
-  @include flexible(
-    flex-start,
-    column,
-    $align-self: center,
-    $justify-self: center,
-    $gap: 16px
-  );
-  @include flexible(column, $align-self: center, $justify-self: center, $gap: 16px);
+  height: fit-content;
+  max-height: 80%;
+  @include flexible(column, $align-self: center, $justify-self: center);
 
   transition: all $default-transition-settings;
-
-  &__tasks {
-    @include flexible(flex-start);
-    width: 50%;
-    height: 92%;
-    max-height: 92%;
-  }
 
   &__header {
     @include flexible(center, space-between);
@@ -183,6 +155,12 @@ function switchToTabAboutTask() {
   &__stats {
     @include flexible(flex-start);
     width: 100%;
+    max-height: 100%;
+  }
+
+  &__tasks {
+    height: fit-content;
+    max-height: 600px;
   }
 }
 

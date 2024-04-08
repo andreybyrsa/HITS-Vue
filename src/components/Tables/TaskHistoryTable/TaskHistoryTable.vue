@@ -63,7 +63,7 @@ onMounted(async () => {
 
 const taskHistoryTableColumns: TableColumn<TaskMovementLog>[] = [
   {
-    key: 'taskStatus',
+    key: 'status',
     label: 'Статус',
     size: 'col-4',
     getRowCellStyle: getTaskHistoryStatusStyle,
@@ -117,7 +117,7 @@ function getTaskHistoryStatusStyle(status: TaskStatus) {
     return initialClass
   }
 
-  if (status === 'inProgress') {
+  if (status === 'InProgress') {
     initialClass.push('bg-warning-subtle', 'text-warning')
     return initialClass
   }

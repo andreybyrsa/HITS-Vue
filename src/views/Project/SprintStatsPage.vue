@@ -19,7 +19,7 @@ function openSprintChartModal() {
 
 <template>
   <div
-    class="d-flex mt-2 w-100 h-100 flex-column gap-3 overflow-scroll sprint-list-page"
+    class="d-flex mt-2 w-100 flex-column gap-3 overflow-y-scroll sprint-list-page"
   >
     <Button
       variant="outline-dark"
@@ -129,7 +129,7 @@ function openSprintChartModal() {
 
 .sprint-list-page {
   @include flexible(flex-start);
-  height: 85%;
-  max-height: 85%;
+  height: fit-content;
+  max-height: 600px;
 }
 </style>

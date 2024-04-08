@@ -1,6 +1,4 @@
-import { Project, Sprint, Task } from '@Domain/Project'
-
-type SizeType = 'STANDART' | 'SMALL'
+import { Project, ProjectMember, Sprint, Task, TaskStatus } from '@Domain/Project'
 
 interface ProjectProps {
   project: Project
@@ -14,7 +12,27 @@ interface SprintListProps {
 
 interface TaskProps {
   task: Task
-  size?: SizeType
+  small?: boolean
 }
 
-export { ProjectProps, SprintListProps, TaskProps, SizeType }
+interface ActiveSprintTaskProps {
+  task: Task
+}
+
+interface ColumnTask {
+  name: TaskStatus
+  tasks: Task[]
+}
+
+interface ActiveSprintProps {
+  members: ProjectMember[]
+}
+
+export {
+  ProjectProps,
+  SprintListProps,
+  TaskProps,
+  ActiveSprintTaskProps,
+  ColumnTask,
+  ActiveSprintProps,
+}

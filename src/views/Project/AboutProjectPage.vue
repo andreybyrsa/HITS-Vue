@@ -11,13 +11,13 @@ defineProps<ProjectProps>()
 
 <template>
   <div class="d-flex gap-3 mt-4">
-    <div class="w-100">
+    <div class="w-75">
       <ul class="list-group rounded-3">
         <li class="list-group-item p-0 overflow-hidden">
           <Button
             variant="light"
             class-name="collapse-controller w-100"
-            v-collapse:openOnMount="project.id"
+            v-collapse="project.id"
           >
             Описание
           </Button>
