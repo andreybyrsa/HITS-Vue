@@ -1,4 +1,5 @@
 import { Indicator } from '@Domain/Quest'
+import { QUEST_SERVICE_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -17,7 +18,7 @@ function formatIndicators(indicators: Indicator[]): Indicator[] {
 const getIndicators = async (token: string): Promise<Indicator[] | Error> => {
   return indicatorAxios
     .get<Indicator[] | Error>(
-      '/indicators/all',
+      `${QUEST_SERVICE_URL}/indicator/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -34,7 +35,7 @@ const postIndicator = async (
   token: string,
 ): Promise<Indicator | Error> => {
   return indicatorAxios
-    .post('/indicator', indicator, {
+    .post(`${QUEST_SERVICE_URL}/indicator/create`, indicator, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

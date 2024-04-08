@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
+import Select from '@Components/Inputs/Select/Select.vue'
 
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -12,6 +13,8 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import useUserStore from '@Store/user/userStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import IndicatorItem from '@Components/IndicatorItem/IndicatorItem.vue'
+import { OptionType } from '@Components/Inputs/Select/Select.types'
+import { useForm } from 'vee-validate'
 
 const props = defineProps<QuestModalProps>()
 
@@ -26,6 +29,22 @@ const route = useRoute()
 
 const isOpenedProfileModal = ref(true)
 
+const { handleSubmit, setValues, setFieldError } = useForm<{ available: boolean }>(
+  {},
+)
+
+const changeAvailability = handleSubmit(async (model) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const available = model.available
+    if (available == quest.value?.available) {
+      setFieldError('available', 'Значение должно отличаться от предыдущего')
+    }
+  }
+})
+
 onMounted(async () => {
   const currentUser = user.value
   const idQuest = route.params.idQuest.toString()
@@ -33,12 +52,24 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
     await questStore.getQuest(idQuest, token)
+    setValues({ available: quest.value?.available })
   }
 })
 
-function handleCloseProfileModal() {
+const handleCloseProfileModal = () => {
   return router.go(-1)
 }
+
+const availableOptions: OptionType[] = [
+  {
+    value: true,
+    label: 'Доступен',
+  },
+  {
+    value: false,
+    label: 'Не доступен',
+  },
+]
 </script>
 
 <template>
@@ -83,8 +114,18 @@ function handleCloseProfileModal() {
                 <Typography class-name="fs-5 text-primary">Доступность:</Typography>
               </div>
 
-              <div class="d-flex flex-column gap-3 mt-3">
-                <p>{{ quest?.available ? 'Доступен' : 'Не доуступен' }}</p>
+              <div class="d-flex gap-3 mt-3">
+                <Select
+                  name="available"
+                  :options="availableOptions"
+                ></Select>
+
+                <Button
+                  @click="changeAvailability"
+                  variant="primary"
+                  class-name="w-fit"
+                  >Изменить</Button
+                >
               </div>
             </div>
           </div>

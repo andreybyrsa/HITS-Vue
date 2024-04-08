@@ -30,6 +30,25 @@ const useTeamStore = defineStore('teams', {
       }
     },
 
+    getTeamsByIds() {
+      return async (ids: string[], token: string) => {
+        const response = await TeamService.getTeams(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        }
+        this.teams = response.filter((team) => {
+          return ids.find((id) => id == team.id) != undefined
+        })
+
+        return this.teams
+      }
+    },
+
     getTeam() {
       return async (id: string, token: string) => {
         const team = await TeamService.getTeam(id, token)

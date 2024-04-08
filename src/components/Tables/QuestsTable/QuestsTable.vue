@@ -118,7 +118,6 @@ const navigateToQuestModal = (quest: QuestShort) => {
     :search-by="['name']"
   />
   <CreateQuestModal
-    v-if="isQuestModalOpen"
     :idQuest="questIdRef"
     :isOpened="isQuestModalOpen"
     @close-modal="closeQuestModal"
