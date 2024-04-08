@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { RouteRecordRaw } from 'vue-router'
 import { useDateFormat } from '@vueuse/core'
@@ -16,11 +17,23 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Profile from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import TaskHistoryTable from '@Components/Tables/TaskHistoryTable/TaskHistoryTable.vue'
-import Input from '@Components/Inputs/Input/Input.vue'
+import EditTaskModal from './EditTaskModal.vue'
+
+import useUserStore from '@Store/user/userStore'
 
 import { getTaskStatus } from '@Utils/getTaskStatus'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
-import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
+
+import { Task } from '@Domain/Project'
+
+const props = defineProps<TaskDescriptionModalProps>()
+const emit = defineEmits<TaskDescriptionModalEmits>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const isOpenedEditTask = ref(false)
+const updatingTask = ref<Task>()
 
 function getFormattedDate(date: string) {
   if (date) {
@@ -30,13 +43,6 @@ function getFormattedDate(date: string) {
     return 'Реализуется'
   }
 }
-
-const props = defineProps<TaskDescriptionModalProps>()
-const emit = defineEmits<TaskDescriptionModalEmits>()
-
-const isLeader = props.user.role === 'TEAM_LEADER'
-
-const isNameChange = ref(false)
 
 function navigateToProfileModal(id: string) {
   const profileModalRoute: RouteRecordRaw = {
@@ -65,6 +71,42 @@ function hexToRgb(hex: string) {
         ${parseInt(result[3], 16)}`
   )
 }
+
+function getBackgroundColor(status: string) {
+  switch (status) {
+    case 'NewTask':
+      return '#0d6efd'
+    case 'InProgress':
+      return '#f5ec0a'
+    case 'OnVerification':
+      return '#ffa800'
+    case 'Done':
+      return '#13c63a'
+    default:
+      return 'blueviolet'
+  }
+}
+
+function getTextColor(status: string) {
+  switch (status) {
+    case 'NewTask':
+    case 'OnModification':
+    case 'Done':
+      return '#FFFFFF'
+    default:
+      return '#212529'
+  }
+}
+
+function openEditTaskModal(task: Task) {
+  updatingTask.value = task
+  isOpenedEditTask.value = true
+  emit('close-modal')
+}
+
+function closeUpdateNewTask() {
+  isOpenedEditTask.value = false
+}
 </script>
 
 <template>
@@ -72,188 +114,160 @@ function hexToRgb(hex: string) {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="task-modal-wrapper">
-      <div class="task-modal bg-white rounded p-3 d-flex flex-column">
+    <div class="edit-task-model border rounded-3 bg-white px-3 py-2">
+      <div class="edit-task-model__header w-100">
         <div
-          class="d-flex justify-content-between align-items-start border-bottom align-items-center"
+          class="d-flex justify-content-between align-items-start border-bottom align-items-center w-100"
         >
-          <Typography
-            v-if="isNameChange === false"
-            class-name="fs-3 text-primary d-flex align-items-center "
-          >
+          <Typography class-name="fs-3 text-primary d-flex mx-1">
             {{ props.task.name }}
-            <Button
-              @click="isNameChange = true"
-              class-name="border-0"
-            >
-              <Icon
-                v-if="isLeader || props.user === props.task.executor"
-                class-name="bi bi-pencil-square fs-5 mt-2 text-primary"
-              />
-            </Button>
           </Typography>
-
-          <div
-            v-else
-            class="rounded-end w-75"
-          >
-            <Input
-              ref="name"
-              name="name"
-              class-name="rounded-end"
-              :model-value="props.task.name"
-              @keyup.enter="isNameChange = false"
-              @input="(event: HTMLTargetEvent)=>emit('update-name', event.target.value)"
-            />
-          </div>
 
           <Button
             variant="close"
             @click="emit('close-modal')"
           />
         </div>
-        <div class="d-flex">
-          <div class="task-modal__left-side flex-grow-1">
-            <ul class="list-group rounded-3 me-3 mb-3">
-              <li class="list-group-item p-0 overflow-hidden">
-                <Button
-                  variant="light"
-                  class-name="collapse-controller w-100"
-                  v-collapse:openOnMount="props.task.id"
-                >
-                  Описание
-                </Button>
-                <Collapse :id="props.task.id">
-                  <div v-if="isLeader || props.user === props.task.executor">
-                    <Input
-                      ref="description"
-                      name="description"
-                      :model-value="props.task.description"
-                      @input="(event: HTMLTargetEvent)=>emit('update-description', event.target.value)"
-                    />
-                  </div>
+      </div>
 
-                  <div
-                    v-if="
-                      !isLeader &&
-                      props.user != props.task.executor &&
-                      props.task.description
-                    "
-                  >
-                    <div class="p-2">{{ props.task.description }}</div>
-                  </div>
-                </Collapse>
-              </li>
-              <li
-                class="list-group-item p-0 overflow-hidden"
-                v-if="props.task.status === 'OnModification'"
+      <div class="d-flex w-100">
+        <div
+          class="edit-task-model__left-side"
+          :style="{
+            maxHeight:
+              user.role === 'TEAM_LEADER' || user.id === props.task.executor?.id
+                ? '410.21px'
+                : '372.44px',
+          }"
+        >
+          <ul class="list-group rounded-3 me-3 mb-3 w-100">
+            <li class="list-group-item p-0 overflow-hidden">
+              <Button
+                variant="light"
+                class-name="collapse-controller w-100"
+                v-collapse:openOnMount="props.task.id"
               >
-                <Button
-                  variant="light"
-                  class-name="collapse-controller w-100"
-                  v-if="isLeader || props.task.leaderComment"
-                >
-                  Комментарий лидера
-                </Button>
-                <div v-if="isLeader">
-                  <Input
-                    ref="leaderComment"
-                    name="leaderComment"
-                    :model-value="props.task.leaderComment"
-                    @input="(event: HTMLTargetEvent)=>emit('update-leader-comment', event.target.value)"
-                  />
-                </div>
-                <div v-if="!isLeader && props.task.leaderComment">
-                  <div class="p-2">
-                    {{ props.task.leaderComment }}
-                  </div>
-                </div>
-              </li>
-            </ul>
+                Описание
+              </Button>
+              <Collapse :id="props.task.id">
+                <div class="p-2">{{ props.task.description }}</div>
+              </Collapse>
+            </li>
 
-            <div>
-              <Typography class-name="text-primary"
-                >История перемещений*:</Typography
+            <li
+              class="list-group-item p-0 overflow-hidden"
+              v-if="
+                props.task.status === 'OnModification' && props.task.leaderComment
+              "
+            >
+              <Button
+                variant="light"
+                class-name="collapse-controller w-100"
+                v-collapse:openOnMount="'leaderComment_' + props.task.id"
               >
-              <div class="task-history">
-                <TaskHistoryTable :task-id="props.task.id" />
-              </div>
+                Комментарий лидера
+              </Button>
+              <Collapse :id="'leaderComment_' + props.task.id">
+                <div class="p-2">
+                  {{ props.task.leaderComment }}
+                </div>
+              </Collapse>
+            </li>
+          </ul>
+
+          <div style="padding-left: 8px">
+            <Typography class-name="text-primary">История перемещений*:</Typography>
+            <div class="task-history">
+              <TaskHistoryTable :task-id="props.task.id" />
             </div>
           </div>
-          <div class="idea-modal__right-side bg-white rounded">
-            <div
-              class="status-header bg-primary text-white text-center p-2 rounded-top"
-            >
-              <Typography
-                class-name="p-2 bg-primary rounded-top fs-4 text-center text-white"
-              >
-                {{ getTaskStatus().translatedStatus[props.task.status] }}
-              </Typography>
+        </div>
 
-              <div>
-                <Typography class-name="text-light">{{
-                  getFormattedDate(props.task.startDate)
-                }}</Typography>
+        <div class="edit-task-model__right-side">
+          <div
+            class="mb-2 border-start rounded-top border-end border-bottom rounded-bottom"
+          >
+            <div
+              class="task-information__header text-center rounded-top"
+              :style="{
+                backgroundColor: getBackgroundColor(props.task.status),
+              }"
+            >
+              <div
+                class="d-flex row"
+                :style="{ color: getTextColor(props.task.status) }"
+              >
+                <Typography class-name="py-2 px-0 fs-4">
+                  {{ getTaskStatus().translatedStatus[props.task.status] }}
+                </Typography>
+                <Typography class-name="pb-2 px-0 border-bottom">
+                  {{ getFormattedDate(props.task.startDate) }}
+                </Typography>
               </div>
             </div>
-            <div class="idea-modal__mid-side">
-              <div class="d-flex align-items-center gap-1">
-                <Icon class-name="bi bi-person-fill opacity-75" />
-                <Typography
-                  class-name="border-bottom text-secondary d-block mb-1 my-1"
-                  >Постановщик:</Typography
-                >
-              </div>
-              <div
-                class="task-info__link text-primary"
-                @click="navigateToProfileModal(props.task.initiator.id)"
-              >
-                <Typography class-name="text-primary d-block mb-1 my-1"
-                  >{{ props.task.initiator?.firstName }}
-                  {{ props.task.initiator?.lastName }}</Typography
-                >
-              </div>
-              <div class="d-flex align-items-center gap-1">
-                <Icon class-name="bi bi-person-check-fill opacity-75" />
-                <Typography
-                  class-name="border-bottom text-secondary d-block mb-1 my-1"
-                  >Исполнитель:</Typography
-                >
-              </div>
-              <div
-                v-if="props.task.executor"
-                class="task-info__link text-primary"
-                @click="navigateToProfileModal(props.task.initiator.id)"
-              >
-                <Typography class-name="text-primary d-block mb-1 my-1"
-                  >{{ props.task.executor?.firstName }}
-                  {{ props.task.executor?.lastName }}</Typography
-                >
-              </div>
-              <div v-else>Исполнитель не назначен</div>
 
-              <div>
-                <div class="d-flex align-items-center gap-1">
-                  <Icon class-name="bi bi-alarm opacity-75" />
-                  <Typography
-                    class-name="border-bottom text-secondary d-block mb-1 my-1"
-                    >Трудоемкость:</Typography
-                  >
+            <div class="task-information__middle-side p-3 d-flex flex-column gap-2">
+              <div class="px-2">
+                <div class="d-flex align-items-center mb-2 pb-1 border-bottom gap-1">
+                  <Icon class-name="bi bi-person-fill opacity-75" />
+                  <Typography class-name="text-secondary d-block">
+                    Постановщик:
+                  </Typography>
                 </div>
-                <div>
+
+                <div class="d-flex align-items-center gap-1">
+                  <div @click="navigateToProfileModal(props.task.initiator.id)">
+                    <Typography class-name="text-primary d-block">
+                      {{ props.task.initiator?.firstName }}
+                      {{ props.task.initiator?.lastName }}
+                    </Typography>
+                  </div>
+                </div>
+              </div>
+
+              <div class="px-2">
+                <div class="d-flex align-items-center mb-2 pb-1 border-bottom gap-1">
+                  <Icon class-name="bi bi-person-check-fill opacity-75" />
+                  <Typography class-name="text-secondary d-block">
+                    Исполнитель:
+                  </Typography>
+                </div>
+
+                <div class="d-flex align-items-center gap-1">
+                  <div
+                    v-if="props.task.executor"
+                    @click="navigateToProfileModal(props.task.initiator.id)"
+                  >
+                    <Typography class-name="text-primary d-block"
+                      >{{ props.task.executor?.firstName }}
+                      {{ props.task.executor?.lastName }}</Typography
+                    >
+                  </div>
+                  <div v-else>Исполнитель не назначен</div>
+                </div>
+              </div>
+
+              <div class="px-2">
+                <div class="d-flex align-items-center mb-2 pb-1 border-bottom gap-1">
+                  <Icon class-name="bi bi-alarm opacity-75" />
+                  <Typography class-name="text-secondary d-block">
+                    Трудоемкость:
+                  </Typography>
                   <Typography class-name="d-block mb-1 my-1"
                     >{{ props.task.workHour }}ч</Typography
                   >
                 </div>
-                <div class="d-flex align-items-center gap-1">
+              </div>
+
+              <div class="px-2">
+                <div class="d-flex align-items-center mb-2 pb-1 border-bottom gap-1">
                   <Icon class-name="bi bi-tag opacity-75" />
-                  <Typography
-                    class-name="border-bottom text-secondary d-block mb-1 my-1"
-                    >Теги:</Typography
-                  >
+                  <Typography class-name="text-secondary d-block">
+                    Теги:
+                  </Typography>
                 </div>
 
-                <div class="d-flex flex-wrap gap-2 w-100 my-2">
+                <div class="d-flex flex-wrap gap-2 w-100 my-2 mb-1">
                   <div
                     v-for="(tag, index) in props.task.tags"
                     :key="index"
@@ -267,32 +281,72 @@ function hexToRgb(hex: string) {
                   </div>
                 </div>
               </div>
+
+              <div
+                class="px-2 mt-2"
+                v-if="
+                  user.id === props.task.executor?.id || user.role === 'TEAM_LEADER'
+                "
+              >
+                <Button
+                  variant="primary"
+                  class-name="w-100"
+                  @click="openEditTaskModal(task)"
+                >
+                  Редактировать задачу
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </ModalLayout>
+  <EditTaskModal
+    :is-opened="isOpenedEditTask"
+    :task="updatingTask"
+    @close-modal="closeUpdateNewTask"
+  />
 </template>
 
 <style lang="scss" scoped>
-.task-modal-wrapper {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-}
-
-.task-modal {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 700px;
-  gap: 10px;
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
+.edit-task-model {
   width: 1000px;
-  max-height: fit-content;
+  display: flex;
+
+  @include flexible(
+    flex-start,
+    flex-start,
+    column,
+    $align-self: center,
+    $justify-self: center,
+    $gap: 12px
+  );
+
+  &__header {
+    @include flexible(center, space-between);
+  }
+
+  &__left-side {
+    flex: 70%;
+    margin-right: 8px;
+    max-height: 410.22px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  &__right-side {
+    flex: 30%;
+    margin-left: 8px;
+  }
+}
+.task-information {
+  font-size: 1.5rem;
+
+  &__header {
+    width: 100%;
+    overflow: hidden;
+  }
 }
 
 .collapse-controller {
@@ -302,67 +356,5 @@ function hexToRgb(hex: string) {
   color: $primary-color;
 
   @include flexible(center, flex-start);
-}
-
-.status-header {
-  font-size: 1.5rem;
-}
-.idea-modal__right-side {
-  border: 1px solid rgba(121, 120, 120, 0.5);
-  flex-shrink: 0;
-  width: 230px;
-  height: fit-content;
-}
-.idea-modal__mid-side {
-  padding-left: 10px;
-}
-
-.tag-button {
-  display: inline-block;
-  background-color: rgb(122, 204, 241);
-  border-radius: 3px;
-  padding: 2px 5px;
-  margin-right: 2px;
-}
-
-.status-history {
-  display: flex;
-  gap: 10px;
-}
-
-.status {
-  border-radius: 3px;
-  padding: 2px 5px;
-  margin-right: 2px;
-}
-
-.description-box {
-  width: 90%;
-  height: 120px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  background-color: #fffcfc;
-  color: black;
-  border-radius: 10px;
-  overflow-y: auto;
-  line-height: 1.5;
-}
-.task-history {
-  max-height: 350px !important;
-  overflow-y: scroll;
-}
-
-.task-info {
-  &__link {
-    cursor: pointer;
-
-    &:hover {
-      text-decoration: underline;
-      text-underline-offset: 4px;
-      text-decoration-thickness: 1px;
-    }
-  }
 }
 </style>
