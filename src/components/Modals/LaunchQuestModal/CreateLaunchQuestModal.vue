@@ -182,7 +182,7 @@ const handleCreateCompany = handleSubmit(async (values) => {
                     class="ms-2"
                   />
                 </div>
-                {{ descriptionQuest }}
+
                 <Textarea
                   :v-model="descriptionQuest"
                   name="description"
