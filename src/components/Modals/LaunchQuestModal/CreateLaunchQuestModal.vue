@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, toValue, watch } from 'vue'
 import { useMagicKeys, watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
@@ -15,11 +15,13 @@ import {
   CreateLaunchQuestEmits,
 } from '@Components/Modals/LaunchQuestModal/CreateLaunchQuestModal.type'
 import { Team } from '@Domain/Team'
-import { Quest, Indicator } from '@Domain/Quest'
+import { Quest, Indicator, QuestShort } from '@Domain/Quest'
 import useQuestStore from '@Store/quests/questsStore'
 import profilesStore from '@Store/profiles/profilesStore'
 import { CheckedDataAction } from '@Components/Table/Table.types'
 import useUserStore from '@Store/user/userStore'
+import Validation from '@Utils/Validation'
+import { useForm } from 'vee-validate'
 
 const userStore = useUserStore()
 const questStore = useQuestStore()
@@ -28,7 +30,7 @@ const { quests, quest } = storeToRefs(questStore)
 const props = defineProps<CreateLaunchQuestProps>()
 const emit = defineEmits<CreateLaunchQuestEmits>()
 
-const questTemplates = ref<any[]>([])
+const questTemplates = ref<QuestShort[]>([])
 const checkedTeams = ref<Team[]>([])
 const selectedQuestTemplate = ref()
 
@@ -46,11 +48,20 @@ watchImmediate(
   (value) => {
     if (value) {
       checkedTeams.value = value
+      selectedQuestTemplate.value = null
     }
   },
   { deep: true },
 )
-
+watchImmediate(
+  () => quest.value,
+  (value) => {
+    if (value) {
+      descriptionQuest.value = quest.value?.description
+    }
+    quest.value ? setValues({ ...quest.value }) : 1
+  },
+)
 const questions = computed(() => {
   if (selectedQuestTemplate.value) {
     const token = user.value?.token
@@ -61,7 +72,7 @@ const questions = computed(() => {
   }
   return []
 })
-
+const descriptionQuest = ref()
 function resetTeam(ideaId: string) {
   const ideaIndex = checkedTeams.value.findIndex(({ id }) => id === ideaId)
 
@@ -72,9 +83,34 @@ function resetTeam(ideaId: string) {
   }
 }
 
-function setExampleName(value: any) {
+function setExample(value: any) {
   selectedQuestTemplate.value = value
 }
+
+const { setValues, handleSubmit } = useForm<Quest>({
+  validationSchema: {
+    example: (value: QuestShort) =>
+      Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    description: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    startDate: (value: Date) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    finishDate: (value: Date) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+  },
+})
+
+const handleCreateCompany = handleSubmit(async (values) => {
+  const currentUser = user.value
+
+  if (currentUser?.token && quest) {
+    const { token } = currentUser
+    console.log(1)
+    emit('close-modal')
+  }
+})
 </script>
 
 <template>
@@ -101,12 +137,13 @@ function setExampleName(value: any) {
               <div class="w-100">
                 <Combobox
                   v-model="selectedQuestTemplate"
-                  name="customer"
+                  name="example"
                   label="Шаблон опроса"
                   :options="questTemplates"
                   :displayBy="['name']"
                   placeholder="Выберите шаблон опроса"
-                  :on-on-select="setExampleName"
+                  :on-on-select="setExample"
+                  validate-on-update
                 />
                 <Checkbox
                   name="showHidden"
@@ -145,9 +182,10 @@ function setExampleName(value: any) {
                     class="ms-2"
                   />
                 </div>
-
+                {{ descriptionQuest }}
                 <Textarea
-                  name="deskruptionQuest"
+                  :v-model="descriptionQuest"
+                  name="description"
                   class-name="rounded-end max-height-textarea"
                   label="Описание опроса"
                   validate-on-update
@@ -165,7 +203,7 @@ function setExampleName(value: any) {
                 v-if="questions?.length"
               >
                 <div
-                  class="overflow-scroll fixed-size-questions"
+                  class="overflow-scroll fixed-size-scroll-div"
                   style="flex-grow: 1"
                 >
                   <div
@@ -205,7 +243,7 @@ function setExampleName(value: any) {
                 <div
                   v-for="(team, index) in teams"
                   :key="index"
-                  class="d-flex gap-2 w-100"
+                  class="d-flex gap-2 w-100 fixed-size-scroll-div"
                 >
                   <Typography
                     class-name="send-ideas-on-market-modal__idea-name w-100 border rounded p-2"
@@ -226,7 +264,7 @@ function setExampleName(value: any) {
           <div class="col-sm-12 d-flex justify-content-end">
             <Button
               variant="primary"
-              @click="emit('close-modal')"
+              @click="handleCreateCompany"
               >Создать опрос</Button
             >
           </div>
@@ -256,10 +294,10 @@ function setExampleName(value: any) {
 }
 
 .max-height-textarea {
-  resize: none !important;
+  resize: none;
 }
 
-.fixed-size-questions {
+.fixed-size-scroll-div {
   max-height: 55vh !important; /* ширину */
 }
 .text-question {

@@ -37,7 +37,7 @@ const getQuest = async (idQuest: string, token: string): Promise<Quest | Error> 
 
 const postQuest = async (quest: Quest, token: string): Promise<Quest | Error> => {
   return questAxios
-    .post(`/quest`, quest, {
+    .post(`/template/create`, quest, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
