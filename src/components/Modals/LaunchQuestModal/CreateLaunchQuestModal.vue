@@ -91,9 +91,9 @@ const { setValues, handleSubmit } = useForm<Quest>({
   validationSchema: {
     example: (value: QuestShort) =>
       Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
-    name: (value: string) =>
+    questName: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    description: (value: string) =>
+    questDescription: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     startDate: (value: Date) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
@@ -152,7 +152,7 @@ const handleCreateCompany = handleSubmit(async (values) => {
                 />
                 <div>
                   <Input
-                    name="name"
+                    name="questName"
                     class-name="rounded-end"
                     class="mt-3"
                     label="Название опроса"
@@ -185,7 +185,7 @@ const handleCreateCompany = handleSubmit(async (values) => {
 
                 <Textarea
                   :v-model="descriptionQuest"
-                  name="description"
+                  name="questDescription"
                   class-name="rounded-end max-height-textarea"
                   label="Описание опроса"
                   validate-on-update
