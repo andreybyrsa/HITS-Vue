@@ -52,38 +52,14 @@ const { handleSubmit, setValues } = useForm<Quest>({
 })
 
 onMounted(async () => {
-  const token = user.value?.token
-  if (!token) return
-  const idQuest = props.idQuest
-  await indicatorStore.getIndicators(token)
-  if (idQuest) {
-    await questStore.getQuest(idQuest, token)
-    const questIndicators = quest.value?.indicators
-    if (questIndicators) {
-      newQuestIndicators.value = questIndicators
-      backlogIndicators.value = indicators.value.filter((item) =>
-        questIndicators.find((indicator) => indicator == item) ? true : false,
-      )
-    }
-  } else {
-    backlogIndicators.value = indicators.value
-    newQuestIndicators.value = []
-  }
+  await orderIndicatorsToLists()
+  setValues({ available: quest.value?.available })
 })
 
 watch(
   () => props.idQuest,
-  async (idQuest) => {
-    const token = user.value?.token
-    if (!token || !idQuest) return
-    await questStore.getQuest(idQuest, token)
-    quest.value ? setValues({ ...quest.value }) : 1
-
-    newQuestIndicators.value = indicators.value
-
-    backlogIndicators.value.filter((newItem) => {
-      return newQuestIndicators.value.indexOf(newItem) == -1
-    })
+  async () => {
+    await orderIndicatorsToLists()
   },
   { deep: true },
 )
@@ -101,6 +77,29 @@ watch(
   { deep: true },
 )
 
+const orderIndicatorsToLists = async () => {
+  const token = user.value?.token
+  if (!token) return
+  await indicatorStore.getIndicators(token)
+  const idQuest = props.idQuest
+  if (idQuest) {
+    await questStore.getQuest(idQuest, token)
+    if (!quest.value) return
+    setValues({ ...quest.value })
+    const copiedIndicators = quest.value.indicators
+    newQuestIndicators.value = copiedIndicators
+
+    backlogIndicators.value = indicators.value.filter((indicator) =>
+      copiedIndicators.find((copy) => indicator.idIndicator == copy.idIndicator)
+        ? false
+        : true,
+    )
+  } else {
+    backlogIndicators.value = indicators.value
+    newQuestIndicators.value = []
+  }
+}
+
 const moveIndicatorToNew = (currentIndicator: Indicator) => {
   backlogIndicators.value = backlogIndicators.value.filter(
     (task) => task !== currentIndicator,
@@ -115,12 +114,13 @@ const moveIndicatorToBacklog = (currentIndicator: Indicator) => {
   backlogIndicators.value.push(currentIndicator)
 }
 
-const CreateQuest = handleSubmit(async (quest) => {
+const createQuest = handleSubmit(async (quest) => {
   const currentUser = user.value
 
-  if (currentUser?.token && quest) {
+  if (currentUser?.token) {
     const { token } = currentUser
     quest.indicators = newQuestIndicators.value
+
     await questStore.postQuest(quest, token)
     emit('close-modal')
   }
@@ -230,7 +230,7 @@ const closeCreateNewIndicator = () => {
         <div class="align-self-end mt-auto">
           <Button
             variant="primary"
-            @click="CreateQuest"
+            @click="createQuest"
             :isLoading="isLoading"
           >
             Создать опрос

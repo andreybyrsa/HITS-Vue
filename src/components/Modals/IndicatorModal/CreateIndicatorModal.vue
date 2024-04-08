@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import Input from '@Components/Inputs/Input/Input.vue'
-import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Button from '@Components/Button/Button.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -38,24 +37,22 @@ const { handleSubmit } = useForm<Indicator>({
   },
 })
 
-const indicatorSelectOptions: OptionType[] = [
+const indicatorTypeSelectOptions: OptionType[] = [
   { value: 'TEAM', label: 'Оценка команды' },
   { value: 'INITIATOR', label: 'Оценка инициатора' },
   { value: 'MEMBER', label: 'Оценка членов команды' },
   { value: 'TEAMLEAD', label: 'Оценка тимлида' },
 ]
 
+const indicatorRoleSelectOptions: OptionType[] = [
+  { value: 'TEAM', label: 'Команда' },
+  { value: 'INITIATOR', label: 'Инициатор' },
+  { value: 'TEAMLEAD', label: 'Тимлид' },
+]
+
 const createIndicator = () => {
-  handleSubmit(async (values) => {
-    const indicator: Indicator = {
-      idIndicator: (Math.random() * 1000).toString(),
-      value: values.value,
-      description: values.description,
-      type: values.type,
-      role: 'MEMBER',
-      visible: true,
-      category: 'soft',
-    }
+  handleSubmit(async (indicator) => {
+    indicator.idCategory = '1'
     const token = user.value?.token
     if (!token) return
 
@@ -84,7 +81,7 @@ const createIndicator = () => {
         <div class="row mt-3">
           <div class="col-sm-12">
             <Input
-              name="value"
+              name="name"
               class-name="rounded"
               label="Название вопроса"
               placeholder="Введите название опроса"
@@ -95,18 +92,17 @@ const createIndicator = () => {
               label="Категория вопроса"
               placeholder="Введите категорию опроса"
             />
-            <Textarea
-              name="description"
-              class-name="rounded-end"
-              label="Описание вопроса"
-              placeholder=""
-              class="mt-3 max-height-textarea"
-            ></Textarea>
             <Select
-              label="Тип вопроса"
+              label="Для кого предназначен вопрос"
+              label-class-name="mt-3"
+              name="role"
+              :options="indicatorRoleSelectOptions"
+            ></Select>
+            <Select
+              label="Что нужно оценить"
               label-class-name="mt-3"
               name="type"
-              :options="indicatorSelectOptions"
+              :options="indicatorTypeSelectOptions"
             ></Select>
           </div>
         </div>

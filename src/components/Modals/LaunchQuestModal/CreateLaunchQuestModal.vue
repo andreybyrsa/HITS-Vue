@@ -212,7 +212,7 @@ const handleCreateCompany = handleSubmit(async (values) => {
                     class="p-2 mb-2 border rounded col-sm-12 d-flex align-items-center justify-content-between"
                   >
                     <div class="">
-                      <Typography class-name="">{{ question.value }}</Typography>
+                      <Typography class-name="">{{ question.name }}</Typography>
                     </div>
                   </div>
                 </div>

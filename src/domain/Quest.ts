@@ -9,17 +9,18 @@ export type IndicatorType = 'TEAM' | 'INITIATOR' | 'MEMBER' | 'TEAMLEAD'
 
 export interface Indicator {
   idIndicator: string
-  value: string
+  name: string
   description?: string
   type: IndicatorType
   role: RolesTypes
   visible: boolean
-  category: string
+  nameCategory?: string
+  idCategory?: string
 }
 
 export interface QuestShort {
   idQuest: string
-  available: boolean
+  available?: boolean
   name: string
 }
 
@@ -31,7 +32,7 @@ export interface Quest extends QuestShort {
 export interface LaunchQuest {
   idLaunchQuest: string
   idQuest: string
-  idTeam: string
+  idTeams: string[]
   name: string
   startAt: string
   endAt: string
@@ -40,7 +41,7 @@ export interface LaunchQuest {
   passed?: boolean // пройдено ли (для членов команды, не для проектного офиса)
 }
 
-export interface Result {
+export interface QuestResult {
   idResult?: string
   idIndicator: string
   idLaunchQuest: string

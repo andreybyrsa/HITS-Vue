@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 
 import Button from '@Components/Button/Button.vue'
+import Select from '@Components/Inputs/Select/Select.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import { LaunchQuestModalProps } from '@Components/Modals/LaunchQuestModal/LaunchQuestModal.type'
 
@@ -13,6 +14,10 @@ import useUserStore from '@Store/user/userStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import IndicatorItem from '@Components/IndicatorItem/IndicatorItem.vue'
 import useLaunchQuestStore from '@Store/launchQuests/launchQuestsStore'
+import { LaunchQuest } from '@Domain/Quest'
+import useTeamStore from '@Store/teams/teamsStore'
+import { OptionType } from '@Components/Inputs/Select/Select.types'
+import { useForm } from 'vee-validate'
 
 const props = defineProps<LaunchQuestModalProps>()
 
@@ -24,11 +29,31 @@ const { quest } = storeToRefs(questsStore)
 
 const launchQuestsStore = useLaunchQuestStore()
 const { launchQuests } = storeToRefs(launchQuestsStore)
+const launchQuest = ref<LaunchQuest>()
+
+const teamsStore = useTeamStore()
+const { teams } = storeToRefs(teamsStore)
 
 const router = useRouter()
 const route = useRoute()
 
 const isOpenedProfileModal = ref(true)
+
+const { handleSubmit, setValues, setFieldError } = useForm<{ available: boolean }>(
+  {},
+)
+
+const changeAvailability = handleSubmit(async (model) => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const available = model.available
+    if (available == quest.value?.available) {
+      setFieldError('available', 'Значение должно отличаться от предыдущего')
+    }
+  }
+})
 
 onMounted(async () => {
   const currentUser = user.value
@@ -36,17 +61,30 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const launchQuest = launchQuests.value.find(
+    launchQuest.value = launchQuests.value.find(
       (item) => item.idLaunchQuest == idLaunchQuest,
     )
-    if (!launchQuest) return
-    await questsStore.getQuest(launchQuest.idQuest, token)
+    if (!launchQuest.value) return
+    await questsStore.getQuest(launchQuest.value.idQuest, token)
+    setValues({ available: launchQuest.value?.available })
+    await teamsStore.getTeamsByIds(launchQuest.value.idTeams, token)
   }
 })
 
-function handleCloseProfileModal() {
+const handleCloseProfileModal = () => {
   return router.go(-1)
 }
+
+const availableOptions: OptionType[] = [
+  {
+    value: true,
+    label: 'Доступен',
+  },
+  {
+    value: false,
+    label: 'Не доступен',
+  },
+]
 </script>
 
 <template>
@@ -76,6 +114,18 @@ function handleCloseProfileModal() {
           <div class="profile-modal__info mb-3">
             <div class="bg-white rounded-3 border p-3 gap-3 w-100">
               <div class="w-100 border-bottom pb-1">
+                <Typography class-name="fs-5 text-primary"
+                  >Дата начала и окончания:</Typography
+                >
+              </div>
+
+              <div class="d-flex flex-column gap-3 mt-3">
+                <p>{{ launchQuest?.startAt + ' - ' + launchQuest?.endAt }}</p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-3 border p-3 gap-3 w-100">
+              <div class="w-100 border-bottom pb-1">
                 <Typography class-name="fs-5 text-primary">Описание:</Typography>
               </div>
 
@@ -88,16 +138,52 @@ function handleCloseProfileModal() {
           <div class="profile-modal__info mb-3">
             <div class="bg-white rounded-3 border p-3 gap-3 w-100">
               <div class="w-100 border-bottom pb-1">
-                <Typography class-name="fs-5 text-primary">Доступность:</Typography>
+                <Typography class-name="fs-5 text-primary"
+                  >Название шаблона опроса:</Typography
+                >
               </div>
 
               <div class="d-flex flex-column gap-3 mt-3">
-                <p>{{ quest?.available ? 'Доступен' : 'Не доуступен' }}</p>
+                <p>{{ quest?.name }}</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-3 border p-3 gap-3 w-100">
+              <div class="w-100 border-bottom pb-1">
+                <Typography class-name="fs-5 text-primary">Доступность:</Typography>
+              </div>
+
+              <div class="d-flex gap-3 mt-3">
+                <Select
+                  name="available"
+                  :options="availableOptions"
+                ></Select>
+
+                <Button
+                  @click="changeAvailability"
+                  variant="primary"
+                  class-name="w-fit"
+                  >Изменить</Button
+                >
               </div>
             </div>
           </div>
         </div>
         <div class="bg-white rounded-3 border p-3 gap-3 w-100">
+          <div class="w-100 border-bottom pb-1">
+            <Typography class-name="fs-5 text-primary">Список команд:</Typography>
+          </div>
+
+          <div class="d-flex flex-wrap gap-3 mt-3 justify-content-between">
+            <div
+              class="w-49"
+              v-for="team in teams"
+              :key="team.id"
+            >
+              <p>{{ team.name }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-3 border p-3 gap-3 w-100 mt-3">
           <div class="w-100 border-bottom pb-1">
             <Typography class-name="fs-5 text-primary">Список вопросов:</Typography>
           </div>

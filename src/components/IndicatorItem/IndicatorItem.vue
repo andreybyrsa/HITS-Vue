@@ -16,14 +16,14 @@ const getIndicatorTranslatedStatus = () => {
 
 <template>
   <div :class="indicatorItemStyle">
-    <p class="text-primary border-b p-1 m-0">{{ indicator.value }}</p>
+    <p class="text-primary border-b p-1 m-0">{{ indicator.name }}</p>
     <div class="d-flex gap-2 m-1">
       <p class="w-fit m-0">Тип:</p>
       <p class="w-fit m-0">{{ getIndicatorTranslatedStatus() }}</p>
     </div>
     <div class="d-flex gap-2 m-1">
       <p class="w-fit m-0">Категория:</p>
-      <p class="w-fit m-0">{{ indicator.category }}</p>
+      <p class="w-fit m-0">{{ indicator.nameCategory }}</p>
     </div>
   </div>
 </template>
