@@ -43,7 +43,9 @@ const isOpenedFinishSprintModal = ref(false)
 const isOpenedBurndownModal = ref(false)
 
 const unfinishedTasks = computed<Task[]>(
-  () => activeSprint?.value?.tasks.filter(({ status }) => status !== 'Done') ?? [],
+  // () => activeSprint?.value?.tasks.filter(({ status }) => status !== 'Done') ?? [],
+  () =>
+    tasks.value.filter(({ status }) => status !== 'Done' && status !== 'InBackLog'),
 )
 
 const onModificationTask = reactiveComputed<ColumnTask>(() => {

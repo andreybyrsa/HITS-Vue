@@ -23,7 +23,6 @@ import SprintService from '@Services/SprintService'
 import useUserStore from '@Store/user/userStore'
 import useProjectsStore from '@Store/projects/projectsStore'
 import useSprintsStore from '@Store/sprints/sprintsStore'
-import useTasksStore from '@Store/tasks/tasksStore'
 
 import {
   getRoleProjectMember,
@@ -48,7 +47,6 @@ const { user } = storeToRefs(userStore)
 
 const projectStore = useProjectsStore()
 const sprintStore = useSprintsStore()
-const tasksStore = useTasksStore()
 
 const route = useRoute()
 
@@ -171,23 +169,13 @@ const FinishSprint = handleSubmit(async (values) => {
     if (sprintId) {
       isLoading.value = true
       const finishSprintParallelRequests: RequestConfig[] = [
-        // {
-        //   request: () => sprintStore.changeSprintStatus(sprintId, 'DONE', token),
-        //   refValue: ref(),
-        //   onErrorFunc: openErrorNotification,
-        // },
-        // {
-        //   request: () => sprintStore.reportSprint(sprintId, report.value, token),
-        //   refValue: ref(),
-        //   onErrorFunc: openErrorNotification,
-        // },
         {
           request: () =>
             sprintStore.finishSprint(
               sprintId,
               finishDate,
               'DONE',
-              report.value,
+              values.report,
               props.unfinishedTasks ?? [],
               token,
             ),
@@ -199,13 +187,6 @@ const FinishSprint = handleSubmit(async (values) => {
           refValue: ref(),
           onErrorFunc: openErrorNotification,
         },
-        // {
-        //   request: () =>
-        //     tasksStore.moveTasksInBacklog(props.unfinishedTasks ?? [], token),
-        //   refValue: ref(),
-        //   onErrorFunc: openErrorNotification,
-        //   statement: Boolean(props.unfinishedTasks?.length),
-        // },
       ]
 
       await sendParallelRequests(finishSprintParallelRequests)
