@@ -9,6 +9,11 @@ import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import { TaskProps } from '@Views/Project/Project.types'
 
 import { Task, TaskStatus } from '@Domain/Project'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const props = defineProps<TaskProps>()
 
@@ -53,7 +58,11 @@ function hexToRgb(hex: string) {
 }
 
 function openUpdateNewTask(task: Task) {
-  if (!props.small) {
+  if (
+    !props.small &&
+    user.value?.role !== 'TEACHER' &&
+    user.value?.role !== 'PROJECT_OFFICE'
+  ) {
     updatingTask.value = task
     isOpenedUpdateNewTask.value = true
   }

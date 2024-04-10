@@ -21,6 +21,7 @@ function getUserRolesInfo(): GetUserRolesType {
       'PROJECT_OFFICE',
       'EXPERT',
       'ADMIN',
+      'TEACHER',
     ],
     translatedRoles: {
       INITIATOR: 'Инициатор',
@@ -30,6 +31,7 @@ function getUserRolesInfo(): GetUserRolesType {
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперт',
       ADMIN: 'Админ',
+      TEACHER: 'Преподаватель',
     },
     translatedGroups: {
       INITIATOR: 'Инициаторы',
@@ -39,6 +41,7 @@ function getUserRolesInfo(): GetUserRolesType {
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперты',
       ADMIN: 'Админы',
+      TEACHER: 'Преподаватели',
     },
   }
 }
@@ -62,7 +65,11 @@ function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
     return initialClass
   }
 
-  if (currentRole === 'PROJECT_OFFICE' || currentRole === 'EXPERT') {
+  if (
+    currentRole === 'PROJECT_OFFICE' ||
+    currentRole === 'EXPERT' ||
+    currentRole === 'TEACHER'
+  ) {
     initialClass.push('bg-success-subtle', 'text-success')
     return initialClass
   }

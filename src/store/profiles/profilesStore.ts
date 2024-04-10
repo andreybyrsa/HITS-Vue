@@ -129,7 +129,7 @@ const useProfilesStore = defineStore('profiles', {
       LocalStorageTelegramTag.set(tag)
     },
 
-    async updateUserFullName(user: User, token: string) {
+    async updateUserFullName(user: User, token: string, id: string) {
       const userStore = useUserStore()
       const { id: userId, lastName, firstName, studyGroup, telephone } = user
 
@@ -141,7 +141,7 @@ const useProfilesStore = defineStore('profiles', {
         id: userId,
       }
 
-      const response = await ProfileService.updateUserFullName(fullName, token)
+      const response = await ProfileService.updateUserFullName(fullName, token, id)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)

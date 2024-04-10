@@ -20,6 +20,7 @@ function GetFiltersByRoles(): GetFiltersByRolesType {
       ADMIN: [],
       TEAM_OWNER: [],
       TEAM_LEADER: [],
+      TEACHER: [],
     },
     filterByExpert: {
       INITIATOR: false,
@@ -29,6 +30,7 @@ function GetFiltersByRoles(): GetFiltersByRolesType {
       ADMIN: false,
       TEAM_OWNER: false,
       TEAM_LEADER: false,
+      TEACHER: false,
     },
   }
 }

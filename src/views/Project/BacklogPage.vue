@@ -15,6 +15,7 @@
 
     <div class="d-flex flex-column gap-3 w-25">
       <Button
+        v-if="user?.role !== 'TEACHER' && user?.role !== 'PROJECT_OFFICE'"
         variant="primary"
         @click="openCreateNewTask"
         class-name="p-2"
