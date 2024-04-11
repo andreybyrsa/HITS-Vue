@@ -7,7 +7,10 @@ interface Profile extends User {
   skills: Skill[]
   ideas: Idea[]
 
-  teams: TeamExperience[]
+  teamsExperience: TeamExperience[]
+
+  userTag?: string
+  isUserTagVisible?: boolean
 }
 
 interface ProfileFullName {
@@ -15,6 +18,7 @@ interface ProfileFullName {
   firstName: string
   studyGroup: string
   telephone: string
+  id: string
 }
 
 export { Profile, ProfileFullName }

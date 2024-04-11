@@ -15,13 +15,13 @@ import NotificationModalWindow from '@Components/Modals/NotificationModalWindow/
 import RolesTypes from '@Domain/Roles'
 import { Market } from '@Domain/Market'
 
-import MarketService from '@Services/MarketService'
-
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useMarketsStore from '@Store/markets/marketsStore'
+import useProjectStore from '@Store/projects/projectsStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
+import { Project } from '@Domain/Project'
 
 const notificationsStore = useNotificationsStore()
 
@@ -30,6 +30,9 @@ const { user } = storeToRefs(userStore)
 
 const marketsStore = useMarketsStore()
 const { markets } = storeToRefs(marketsStore)
+
+const projectStore = useProjectStore()
+const { myActiveProjects } = storeToRefs(projectStore)
 
 const router = useRouter()
 
@@ -43,21 +46,24 @@ const userRoles = getUserRolesInfo()
 const leftSideBarRef = ref<VueElement | null>(null)
 const LeftSideBarClassName = ref<string[]>()
 
+const activeProjects = ref<Project[]>([])
+
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
 })
+
+// Роутер биржи
+onMounted(getActiveMarkets)
 
 watch(
   markets,
   () => {
     const currentMarkets = markets.value.filter(({ status }) => status === 'ACTIVE')
-    const index = tabs.value.findIndex(({ name }) => name === 'markets')
-    if (index !== -1) updateActiveMarketRoute(currentMarkets, index)
+    const marketIndex = tabs.value.findIndex(({ name }) => name === 'markets')
+    if (marketIndex !== -1) updateActiveMarketRoute(currentMarkets, marketIndex)
   },
   { deep: true },
 )
-
-onMounted(getActiveMarkets)
 
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const initialMarketRoutes: LeftSideBarTabType[] =
@@ -91,7 +97,7 @@ async function getActiveMarkets() {
       if (index !== -1) tabs.value.splice(index, 1)
     }
 
-    const response = await MarketService.getAllActiveMarkets(token)
+    const response = await marketsStore.getAllActiveMarkets(token)
 
     if (response instanceof Error) {
       spliceMarketsTab()
@@ -107,6 +113,93 @@ async function getActiveMarkets() {
       spliceMarketsTab()
     } else if (index !== -1) {
       updateActiveMarketRoute(response, index)
+    }
+  }
+}
+
+// Роутер проектов
+onMounted(getActiveProjects)
+
+function updateRolesByTabProject() {
+  const currentRole = user.value?.role
+
+  if (currentRole !== 'ADMIN' && currentRole !== 'PROJECT_OFFICE') {
+    tabs.value.forEach(
+      (tab) =>
+        tab.name === 'projects' &&
+        (tab.roles = tab.roles.filter(
+          (role) => role === 'ADMIN' || role === 'PROJECT_OFFICE',
+        )),
+    )
+  } else if (myActiveProjects.value.length === 0) {
+    tabs.value.forEach(
+      (tab) =>
+        tab.name === 'projects' &&
+        tab.roles.push('INITIATOR', 'MEMBER', 'TEAM_LEADER', 'TEAM_OWNER'),
+    )
+  }
+}
+
+watch(
+  myActiveProjects,
+  (projects) => {
+    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
+    if (projectIndex !== -1) updateActiveProjectRoute(projects, projectIndex)
+  },
+  { deep: true },
+)
+
+watch(
+  () => user.value?.role,
+  () => {
+    if (activeProjects.value.length === 0) updateRolesByTabProject()
+  },
+  { deep: true },
+)
+
+function updateActiveProjectRoute(activeProjects: Project[], index: number) {
+  const initialProjectRoutes: LeftSideBarTabType[] =
+    LeftSideBarTabs[index].routes ?? []
+  const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
+    name: `project-${id}`,
+    text: name,
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER'],
+    iconName: 'bi bi-kanban',
+    to: `/projects/${id}`,
+  }))
+
+  tabs.value[index].routes = [...initialProjectRoutes, ...projectRoutes]
+}
+
+async function getActiveProjects() {
+  const currentUser = user.value
+
+  if (currentUser?.token && currentUser.role !== 'EXPERT') {
+    const { token, id } = currentUser
+    const projectsIndex = tabs.value.findIndex(({ name }) => name === 'projects')
+
+    const spliceMarketsTab = () => {
+      if (projectsIndex !== -1) tabs.value.splice(projectsIndex, 1)
+    }
+
+    const response = await projectStore.getMyProjects(id, token)
+
+    if (response instanceof Error) {
+      spliceMarketsTab()
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+
+    console.log(activeProjects.value)
+    console.log(response)
+
+    activeProjects.value = response
+
+    console.log(activeProjects.value)
+
+    if (activeProjects.value.length === 0) {
+      updateRolesByTabProject()
+    } else if (projectsIndex !== -1) {
+      updateActiveProjectRoute(activeProjects.value, projectsIndex)
     }
   }
 }

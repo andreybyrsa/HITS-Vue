@@ -17,6 +17,13 @@ interface User {
   studyGroup: string
 }
 
+interface UserTelegram {
+  userId: string
+  userTag: string
+  chatId: string | null
+  isVisible: boolean
+}
+
 interface LoginUser {
   email: string
   password: string
@@ -32,4 +39,4 @@ interface RegisterUser {
   studyGroup: string
 }
 
-export { User, LoginUser, RegisterUser }
+export { User, UserTelegram, LoginUser, RegisterUser }

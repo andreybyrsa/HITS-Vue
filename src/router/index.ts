@@ -12,6 +12,7 @@ import AddUsersView from '@Views/Admin/AddUsersView.vue'
 import UsersGroupsView from '@Views/Admin/UsersGroupsView.vue'
 import SkillsView from '@Views/Admin/SkillsView.vue'
 import CompaniesView from '@Views/Admin/CompaniesView.vue'
+import TagsView from '@Views/Admin/TagsView.vue'
 
 import IdeasView from '@Views/Ideas/IdeasView.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
@@ -23,9 +24,11 @@ import TeamsView from '@Views/Teams/TeamsView.vue'
 import NewTeamView from '@Views/Teams/NewTeamView.vue'
 import EditTeamView from '@Views/Teams/EditTeamView.vue'
 import TeamModal from '@Components/Modals/TeamModal/TeamModal.vue'
+import ProjectList from '@Views/ProjectList/ProjectList.vue'
 
 import MarketsView from '@Views/Markets/MarketsView.vue'
 import IdeasMarketView from '@Views/IdeasMarket/IdeasMarketView.vue'
+import Project from '@Views/Project/Project.vue'
 
 import HomeView from '@Views/HomeView.vue'
 
@@ -37,6 +40,8 @@ import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 import { getRouteByUserRole } from '@Utils/userRolesInfo'
+import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
+import useProfilesStore from '@Store/profiles/profilesStore'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -110,6 +115,7 @@ const routes: RouteRecordRaw[] = [
             'ADMIN',
             'PROJECT_OFFICE',
             'TEACHER',
+            'TEAM_LEADER',
           ],
         },
         children: [
@@ -125,6 +131,7 @@ const routes: RouteRecordRaw[] = [
                 'ADMIN',
                 'PROJECT_OFFICE',
                 'TEACHER',
+                'TEAM_LEADER',
               ],
             },
           },
@@ -205,6 +212,46 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/projects',
+    redirect: { name: 'projects-list' },
+    name: 'projects',
+    meta: {
+      roles: [
+        'INITIATOR',
+        'MEMBER',
+        'TEAM_OWNER',
+        'PROJECT_OFFICE',
+        'ADMIN',
+        'TEAM_LEADER',
+        'TEACHER',
+      ],
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'projects-list',
+        component: ProjectList,
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER'] },
+      },
+      {
+        path: ':id',
+        name: 'project',
+        component: Project,
+        meta: {
+          roles: [
+            'INITIATOR',
+            'MEMBER',
+            'TEAM_OWNER',
+            'TEAM_LEADER',
+            'ADMIN',
+            'PROJECT_OFFICE',
+            'TEACHER',
+          ],
+        },
+      },
+    ],
+  },
+  {
     path: '/admin',
     redirect: { path: '/admin/users' },
     meta: { roles: ['ADMIN'] },
@@ -237,6 +284,12 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-companies',
         path: 'companies',
         component: CompaniesView,
+        meta: { roles: ['ADMIN'] },
+      },
+      {
+        name: 'admin-tags',
+        path: 'tags',
+        component: TagsView,
         meta: { roles: ['ADMIN'] },
       },
     ],
@@ -286,7 +339,10 @@ router.beforeEach((to) => {
 
   const { user } = storeToRefs(userStore)
   const localStorageUser = LocalStorageUser.getLocalStorageUser()
-
+  const telegramTag = LocalStorageTelegramTag.get()
+  if (telegramTag && localStorageUser?.id) {
+    useProfilesStore().setProfileTag(telegramTag, localStorageUser.id)
+  }
   if (localStorageUser?.token && !user.value?.token) {
     useUserStore().setUser(localStorageUser)
   }

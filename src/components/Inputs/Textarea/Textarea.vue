@@ -19,15 +19,19 @@ defineModel<string>({
   required: false,
 })
 
-const { value, errorMessage } = useField(props.name, props.validation, {
-  validateOnValueUpdate: props.validateOnUpdate ?? false,
-  validateOnMount: false,
-  syncVModel: true,
-})
+const { value, errorMessage, meta } = useField<string>(
+  props.name,
+  props.validation?.name,
+  {
+    validateOnValueUpdate: props.validateOnUpdate ?? false,
+    validateOnMount: false,
+    syncVModel: true,
+  },
+)
 
 const TextareaClassName = computed(() => [
   'form-control',
-  { 'is-invalid': props.error || errorMessage.value },
+  { 'is-invalid': meta.touched && (props.error || errorMessage.value) },
   props.className,
 ])
 const LabelClassName = computed(() => [
@@ -71,7 +75,7 @@ const LabelClassName = computed(() => [
         :disabled="disabled"
       ></textarea>
       <span class="invalid-feedback">
-        {{ error || errorMessage }}
+        {{ meta.touched && (error || errorMessage) }}
       </span>
 
       <span

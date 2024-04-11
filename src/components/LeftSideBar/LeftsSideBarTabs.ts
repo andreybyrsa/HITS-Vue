@@ -48,6 +48,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
           'ADMIN',
           'PROJECT_OFFICE',
           'TEACHER',
+          'TEAM_LEADER',
         ],
       },
       {
@@ -66,6 +67,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       'ADMIN',
       'PROJECT_OFFICE',
       'TEACHER',
+      'TEAM_LEADER',
     ],
   },
   {
@@ -131,9 +133,40 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         iconName: 'bi bi-person-badge',
         roles: ['ADMIN'],
       },
+      {
+        name: 'admin-tags',
+        to: '/admin/tags',
+        text: 'Справочник тегов',
+        iconName: 'bi bi-tags',
+        roles: ['ADMIN'],
+      },
     ],
     iconName: 'bi bi-ui-checks-grid',
     roles: ['ADMIN', 'TEACHER'],
+  },
+  {
+    name: 'projects',
+    text: 'Реестр проектов',
+    to: '/projects',
+    routes: [
+      {
+        name: 'list',
+        text: 'Список проектов',
+        to: '/projects/list',
+        iconName: 'bi bi-list',
+        roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER'],
+      },
+    ],
+    iconName: 'bi bi-briefcase',
+    roles: [
+      'INITIATOR',
+      'MEMBER',
+      'TEAM_OWNER',
+      'PROJECT_OFFICE',
+      'ADMIN',
+      'TEAM_LEADER',
+      'TEACHER',
+    ],
   },
 ]
 

@@ -6,6 +6,7 @@
     :search-by="['name']"
     :dropdown-actions-menu="dropdownRequestActions"
     v-model="selectedRequest"
+    is-checkbox
   />
 
   <LetterModal
@@ -115,7 +116,7 @@ const requestToIdeaColumns: TableColumn<RequestTeamToIdea>[] = [
   },
   {
     key: 'skills',
-    label: 'Кометенции',
+    label: 'Компетенции',
     size: 'col-4',
     contentClassName: 'justify-content-center align-items-center',
     getRowCellStyle: getSkillsStyle,

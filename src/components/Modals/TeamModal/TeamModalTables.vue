@@ -155,7 +155,6 @@ function getAccessToRequestsToTeam() {
         v-if="isRequestTeamToIdeaTable && requestsTeamsToIdea"
         :requests="requestsTeamsToIdea"
       />
-
       <InvitationsToIdeaForTeam
         v-if="isInvitationTeamToIdeaTable && invitationsForTeam"
         :invitations="invitationsForTeam"

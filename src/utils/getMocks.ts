@@ -1,4 +1,4 @@
-import { User } from '@Domain/User'
+import { User, UserTelegram } from '@Domain/User'
 import { Profile } from '@Domain/Profile'
 import UsersGroup from '@Domain/UsersGroup'
 import Company from '@Domain/Company'
@@ -18,8 +18,17 @@ import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
 import { Market } from '@Domain/Market'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
-import { Project, ProjectMember } from '@Domain/Project'
+import {
+  TaskMovementLog,
+  Project,
+  ProjectMember,
+  Sprint,
+  SprintMarks,
+  Task,
+} from '@Domain/Project'
+import { Tag } from '@Domain/Tag'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
+import { AverageMark } from '@Domain/ReportProjectMembers'
 
 export const usersMocks: User[] = [
   {
@@ -28,13 +37,20 @@ export const usersMocks: User[] = [
     email: 'kirill.vlasov.05@inbox.ru',
     firstName: 'Кирилл',
     lastName: 'Власов',
-    roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'MEMBER', 'TEACHER'],
+    roles: [
+      'INITIATOR',
+      'PROJECT_OFFICE',
+      'EXPERT',
+      'ADMIN',
+      'MEMBER',
+      'TEAM_LEADER',
+    ],
     createdAt: '2023-10-20T11:02:17Z',
     telephone: '1111111111',
     studyGroup: 'AAAA-22-1',
   },
   {
-    id: '1',
+    id: '126288eb-9d4d-4074-9c87-6e4a566ef8f9',
     token: '1',
     email: '1@mail.com',
     firstName: 'Иван',
@@ -88,14 +104,102 @@ export const usersMocks: User[] = [
     telephone: '66666666666',
     studyGroup: 'FFFF-22-1',
   },
-  // {
-  //   id: '6',
-  //   token: '6745354',
-  //   email: '6@mail.com',
-  //   firstName: 'Дмитрий',
-  //   lastName: 'Амонов',
-  //   roles: ['INITIATOR', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
-  // },
+]
+
+export const usersTelegramMocks: UserTelegram[] = [
+  {
+    userId: usersMocks[0].id,
+    userTag: 'baobao',
+    chatId: '0',
+    isVisible: true,
+  },
+  {
+    userId: usersMocks[1].id,
+    userTag: '@chipichipi',
+    chatId: '5',
+    isVisible: false,
+  },
+  {
+    userId: usersMocks[1].id,
+    userTag: '@chapachapa',
+    chatId: null,
+    isVisible: true,
+  },
+]
+
+export const tagsMocks: Tag[] = [
+  {
+    id: '0',
+    name: 'Фронтенд',
+    color: '#0D6EFD',
+    confirmed: true,
+  },
+  {
+    id: '1',
+    name: 'Бекенд',
+    color: '#FFA800',
+    confirmed: true,
+  },
+  {
+    id: '2',
+    name: 'Рефактор',
+    color: '#AEA709',
+    confirmed: true,
+  },
+  {
+    id: '3',
+    name: 'Изучения',
+    color: '#13C63A',
+    confirmed: true,
+  },
+  {
+    id: '4',
+    name: 'Бегать',
+    color: '#BB2D3B',
+    confirmed: false,
+  },
+  {
+    id: '5',
+    name: 'UI/UX',
+    color: '#6fa8dc',
+    confirmed: true,
+  },
+  {
+    id: '6',
+    name: 'Уведомления',
+    color: '#6aa84f',
+    confirmed: true,
+  },
+  {
+    id: '7',
+    name: 'Интеграция',
+    color: '#674ea7',
+    confirmed: true,
+  },
+  {
+    id: '8',
+    name: 'Оптимизация',
+    color: '#cc0000',
+    confirmed: true,
+  },
+  {
+    id: '9',
+    name: 'Статистика',
+    color: '#76a5af',
+    confirmed: true,
+  },
+  {
+    id: '10',
+    name: 'Безопасность',
+    color: '#660000',
+    confirmed: true,
+  },
+  {
+    id: '11',
+    name: 'Дизайн',
+    color: '#8fce00',
+    confirmed: true,
+  },
 ]
 
 export const skillsMocks: Skill[] = [
@@ -286,6 +390,7 @@ export const teamsMocks: Team[] = [
     id: '1',
     name: 'Кактус',
     closed: false,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -296,12 +401,12 @@ export const teamsMocks: Team[] = [
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
-    hasActiveProject: false,
   },
   {
     id: '2',
     name: 'Карасики',
     closed: false,
+    hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
@@ -312,7 +417,6 @@ export const teamsMocks: Team[] = [
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
-    hasActiveProject: false,
   },
 ]
 
@@ -1100,41 +1204,353 @@ export const ideasSkillsMocks: IdeaSkills[] = [
   },
 ]
 
+export const tasksMocks: Task[] = [
+  {
+    id: '0',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Разработка административной панели управления задачами',
+    description:
+      'Необходимо создать административную панель для управления задачами, включая просмотр, создание, редактирование и удаление задач',
+    initiator: usersMocks[0],
+    executor: null,
+    workHour: 3,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[0], tagsMocks[1], tagsMocks[5]],
+    status: 'NewTask',
+  },
+  {
+    id: '1',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Добавление функционала перетаскивания',
+    description:
+      'Расширить функционал системы задач, добавив возможность перетаскивать задачи для изменения их приоритета или порядка выполнения',
+    initiator: usersMocks[1],
+    executor: null,
+    workHour: 1,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[0], tagsMocks[5]],
+    status: 'NewTask',
+  },
+  {
+    id: '2',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Интеграция с системой уведомлений',
+    description:
+      'Настроить интеграцию с системой уведомлений для отправки уведомлений о новых задачах, изменении статусов и прочих событиях',
+    initiator: usersMocks[2],
+    executor: null,
+    workHour: 3,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[1], tagsMocks[6]],
+    status: 'NewTask',
+  },
+  {
+    id: '3',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Улучшение производительности',
+    description:
+      'Провести оптимизацию работы с базой данных и алгоритмов для обеспечения быстрой работы системы даже при большом объеме задач',
+    initiator: usersMocks[0],
+    executor: null,
+    workHour: 3,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[1], tagsMocks[8]],
+    status: 'NewTask',
+  },
+  {
+    id: '4',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Внедрение системы фильтрации и поиска задач',
+    description:
+      'Добавить возможность фильтрации и поиска задач по различным критериям для удобства работы пользователей',
+    initiator: usersMocks[1],
+    executor: usersMocks[3],
+    workHour: 1,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[0], tagsMocks[1], tagsMocks[5]],
+    status: 'OnModification',
+    leaderComment: 'Котята, нужно прибраться!',
+  },
+  {
+    id: '5',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Создание отчетности и статистики по выполненным задачам',
+    description:
+      'Разработать модуль для формирования отчетов и статистики по выполненным задачам в удобном для анализа формате',
+    initiator: usersMocks[4],
+    executor: usersMocks[0],
+    workHour: 3,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[1], tagsMocks[9]],
+    status: 'OnModification',
+  },
+  {
+    id: '6',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Разработка механизма повторяющихся задач и напоминаний',
+    description:
+      'Добавить возможность создания повторяющихся задач и настройки напоминаний о них',
+    initiator: usersMocks[0],
+    executor: usersMocks[2],
+    workHour: 3,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[0], tagsMocks[1], tagsMocks[6]],
+    status: 'InProgress',
+  },
+  {
+    id: '7',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Интеграция с календарем',
+    description:
+      'Настроить интеграцию с календарем для отображения задач в виде событий и синхронизации данных',
+    initiator: usersMocks[0],
+    executor: usersMocks[1],
+    workHour: 3,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[0], tagsMocks[7]],
+    status: 'InProgress',
+  },
+  {
+    id: '8',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Добавление комментариев к задачам',
+    description:
+      'Расширить функционал задач путем добавления комментариев, обсуждений и возможности прикрепления файлов',
+    initiator: usersMocks[1],
+    executor: usersMocks[1],
+    workHour: 1,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[0], tagsMocks[1]],
+    status: 'OnVerification',
+  },
+  {
+    id: '9',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Интеграция с системой аутентификации и авторизации',
+    description:
+      'Настроить интеграцию с системой аутентификации и авторизации пользователей для защиты данных и контроля доступа',
+    initiator: usersMocks[0],
+    executor: usersMocks[0],
+    workHour: 3,
+    startDate: '2023-09-25T11:02:17Z',
+    finishDate: '2024-01-25T11:02:17Z',
+    tags: [tagsMocks[1], tagsMocks[7], tagsMocks[10]],
+    status: 'Done',
+  },
+  {
+    id: '10',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Разработка темной темы интерфейса',
+    description:
+      'Создать альтернативную темную тему интерфейса для удобства пользователей',
+    initiator: usersMocks[1],
+    executor: usersMocks[1],
+    workHour: 1,
+    startDate: '2023-09-25T11:02:17Z',
+    finishDate: '2024-01-22T11:02:17Z',
+    tags: [tagsMocks[0], tagsMocks[11], tagsMocks[5]],
+    status: 'Done',
+  },
+  {
+    id: '11',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Добавление возможности прикрепления файлов',
+    description:
+      'Расширить функционал задач с возможностью прикрепления файлов, изображений и документов',
+    initiator: usersMocks[0],
+    executor: usersMocks[2],
+    workHour: 3,
+    startDate: '2023-09-25T11:02:17Z',
+    finishDate: '2024-01-21T11:02:17Z',
+    tags: [tagsMocks[1]],
+    status: 'Done',
+  },
+  {
+    id: '12',
+    sprintId: '3',
+    projectId: '0',
+    name: 'Разработка системы шаблонов задач',
+    description:
+      'Создать возможность создания и использования шаблонов задач для быстрого добавления типовых задач',
+    initiator: usersMocks[2],
+    executor: usersMocks[0],
+    workHour: 3,
+    startDate: '2023-09-25T11:02:17Z',
+    finishDate: '2024-01-25T11:02:17Z',
+    tags: [tagsMocks[1]],
+    status: 'Done',
+  },
+  {
+    id: '14',
+    sprintId: undefined,
+    projectId: '0',
+    position: 1,
+    name: 'Разработка мобильного приложения для работы с задачами',
+    description:
+      'Создание мобильного приложения для удобной работы с задачами на мобильных устройствах',
+    initiator: usersMocks[1],
+    executor: null,
+    workHour: 8,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[0], tagsMocks[5]],
+    status: 'InBackLog',
+  },
+  {
+    id: '15',
+    sprintId: undefined,
+    projectId: '0',
+    position: 2,
+    name: 'Интеграция с системой управления версиями',
+    description:
+      'Настроить интеграцию с системой управления версиями для контроля изменений и хранения истории задач',
+    initiator: usersMocks[2],
+    executor: null,
+    workHour: 4,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[1], tagsMocks[7]],
+    status: 'InBackLog',
+  },
+  {
+    id: '16',
+    sprintId: undefined,
+    projectId: '0',
+    position: 3,
+    name: 'Внедрение системы контроля доступа ',
+    description:
+      'Настройка системы контроля доступа и ролевой модели для управления правами пользователей и доступом к функционалу',
+    initiator: usersMocks[4],
+    executor: null,
+    workHour: 2,
+    startDate: '2023-09-25T11:02:17Z',
+    tags: [tagsMocks[1], tagsMocks[10]],
+    status: 'InBackLog',
+  },
+]
+
+export const averageMarkMocks: AverageMark[] = [
+  {
+    projectId: '0',
+    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    firstName: 'Кирилл',
+    lastName: 'Власов',
+    projectRole: 'TEAM_LEADER',
+    mark: 9.9,
+    tasks: [tasksMocks[9], tasksMocks[12]],
+  },
+  {
+    projectId: '0',
+    userId: '1',
+    firstName: 'Иван',
+    lastName: 'Иванович',
+    projectRole: 'MEMBER',
+    mark: 6.7,
+    tasks: [tasksMocks[10]],
+  },
+  {
+    projectId: '0',
+    userId: '2',
+    firstName: 'Менеджер',
+    lastName: 'Менеджер',
+    projectRole: 'MEMBER',
+    mark: 7.8,
+    tasks: [tasksMocks[11]],
+  },
+]
+
 export const projectMocks: Project[] = [
   {
     id: '0',
-
-    idea: ideasMocks[1],
-    initiator: usersMocks[1],
-    team: teamsMocks[5],
+    name: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    description: ideasMocks[1].description,
+    customer: ideasMocks[1].customer,
+    initiator: ideasMocks[1].initiator,
+    team: teamsMocks[2],
     members: [
       {
-        projectId: '0',
-        projectName: 'Моя новая идея',
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+        teamId: '0',
+        teamName: 'Визитка',
+        userId: '2',
+        email: 'alex@inbox.ru',
+        firstName: 'Алексей',
+        lastName: 'Князев',
+        startDate: '2023-10-25T11:02:17Z',
+        finishDate: '2023-10-25T11:02:17Z',
+        projectRole: 'INITIATOR',
+      },
+      {
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
         teamId: '0',
         teamName: 'Визитка',
         userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
         email: 'kirill.vlasov.05@inbox.ru',
-        firstName: 'Кирилл',
-        lastName: 'Власов',
+        firstName: 'Артем',
+        lastName: 'Иванов',
         startDate: '2023-10-25T11:02:17Z',
         finishDate: '2023-10-25T11:02:17Z',
-        role: 'DEVELOPER',
+        projectRole: 'TEAM_LEADER',
+      },
+      {
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+        teamId: '0',
+        teamName: 'Визитка',
+        userId: '0',
+        email: 'timyr@mail.com',
+        firstName: 'Иван',
+        lastName: 'Кузнецов',
+        startDate: '2023-10-25T11:02:17Z',
+        finishDate: '2023-10-25T11:02:17Z',
+        projectRole: 'MEMBER',
+      },
+      {
+        projectName:
+          'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+        teamId: '0',
+        teamName: 'Визитка',
+        userId: '1',
+        email: 'admin@mail.com',
+        firstName: 'Данил',
+        lastName: 'Сафонов',
+        startDate: '2023-10-25T11:02:17Z',
+        finishDate: '2023-10-25T11:02:17Z',
+        projectRole: 'MEMBER',
       },
     ],
+
+    report: {
+      projectId: '0',
+      marks: [averageMarkMocks[0], averageMarkMocks[1], averageMarkMocks[2]],
+      report: 'Это отчет',
+    },
     startDate: '2023-10-25T11:02:17Z',
-    finisDate: '2023-10-25T11:02:17Z',
-    status: 'DONE',
+    finishDate: '',
+    status: 'ACTIVE',
   },
   {
     id: '1',
 
-    idea: ideasMocks[1],
-    initiator: usersMocks[1],
-    team: teamsMocks[5],
+    name: 'Прогнозирование закупок арматуры на основе исторических данных и обогащением доп. критериями',
+    description: ideasMocks[1].description,
+    customer: ideasMocks[1].customer,
+    initiator: ideasMocks[1].initiator,
+    team: teamsMocks[2],
     members: [
       {
-        projectId: '1',
         projectName: 'Табуретка',
         teamId: '0',
         teamName: 'Визитка',
@@ -1144,11 +1560,17 @@ export const projectMocks: Project[] = [
         lastName: 'Власов',
         startDate: '2023-10-25T11:02:17Z',
         finishDate: '2023-10-25T11:02:17Z',
-        role: 'DEVELOPER',
+        projectRole: 'MEMBER',
       },
     ],
+
+    report: {
+      projectId: '1',
+      marks: [],
+      report: '',
+    },
     startDate: '2023-10-25T11:02:17Z',
-    finisDate: '2023-10-25T11:02:17Z',
+    finishDate: '2024-01-18T11:02:17Z',
     status: 'DONE',
   },
 ]
@@ -1197,6 +1619,91 @@ export const notificationsMocks: Notification[] = [
     isReaded: true,
     isFavourite: true,
     createdAt: '2023-10-30T11:02:17Z',
+  },
+]
+
+export const sprintMarksMocks: SprintMarks[] = [
+  {
+    sprintId: '3',
+    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    firstName: 'Кирилл',
+    lastName: 'Власов',
+    mark: undefined,
+    projectRole: 'TEAM_LEADER',
+    tasks: [tasksMocks[9], tasksMocks[12]],
+  },
+  {
+    sprintId: '3',
+    userId: '123714',
+    firstName: 'Иван',
+    lastName: 'Иванович',
+    mark: undefined,
+    projectRole: 'MEMBER',
+    tasks: [tasksMocks[10]],
+  },
+  {
+    sprintId: '3',
+    userId: '1231231',
+    firstName: 'Менеджер',
+    lastName: 'Менеджер',
+    projectRole: 'MEMBER',
+    mark: undefined,
+    tasks: [tasksMocks[11]],
+  },
+]
+
+export const sprintMocks: Sprint[] = [
+  {
+    id: '0',
+    projectId: projectMocks[0].id,
+    name: 'Спринт 1',
+    goal: 'Цель 1',
+    marks: [sprintMarksMocks[0]],
+    report: 'Отчет 1',
+    startDate: '2023-12-26T11:02:17Z',
+    finishDate: '2024-01-02T11:02:17Z',
+    workingHours: 15,
+    status: 'DONE',
+    tasks: [],
+  },
+  {
+    id: '1',
+    projectId: projectMocks[0].id,
+    name: 'Спринт 2',
+    goal: 'Цель 2',
+    marks: [sprintMarksMocks[1]],
+    report: 'Отчет 2',
+    startDate: '2024-01-03T11:02:17Z',
+    finishDate: '2024-01-11T11:02:17Z',
+    workingHours: 15,
+    status: 'DONE',
+    tasks: [],
+  },
+  {
+    id: '2',
+    projectId: projectMocks[0].id,
+    name: 'Спринт 3',
+    goal: 'Цель 3',
+    marks: [sprintMarksMocks[2]],
+    report: 'Отчет 3',
+    startDate: '2024-01-12T11:02:17Z',
+    finishDate: '2024-01-19T11:02:17Z',
+    workingHours: 15,
+    status: 'DONE',
+    tasks: [],
+  },
+  {
+    id: '3',
+    projectId: projectMocks[0].id,
+    name: 'Проектировка скрама',
+    goal: 'Цель 4',
+    marks: [sprintMarksMocks[1]],
+    report: 'Отчет 4',
+    startDate: '2024-01-20T11:02:17Z',
+    finishDate: '2024-01-27T11:02:17Z',
+    workingHours: 20,
+    status: 'ACTIVE',
+    tasks: tasksMocks.filter(({ status }) => status !== 'InBackLog'),
   },
 ]
 
@@ -1415,7 +1922,6 @@ export const teamsExperienceMocks: TeamExperience[] = [
 
 export const teamsProjectsMocks: ProjectMember[] = [
   {
-    projectId: '0',
     projectName: 'Моя новая идея',
     teamId: '0',
     teamName: 'Визитка',
@@ -1425,10 +1931,9 @@ export const teamsProjectsMocks: ProjectMember[] = [
     lastName: 'Власов',
     startDate: '2023-09-25T11:02:17Z',
     finishDate: '2023-09-25T11:02:17Z',
-    role: 'DEVELOPER',
+    projectRole: 'MEMBER',
   },
   {
-    projectId: '0',
     projectName: 'Табуретка',
     teamId: '0',
     teamName: 'Визитка',
@@ -1438,10 +1943,9 @@ export const teamsProjectsMocks: ProjectMember[] = [
     lastName: 'Власов',
     startDate: '2023-09-25T11:02:17Z',
     finishDate: '2023-09-25T11:02:17Z',
-    role: 'DEVELOPER',
+    projectRole: 'MEMBER',
   },
   {
-    projectId: '0',
     projectName: 'Катер',
     teamId: '2',
     teamName: 'Карасики',
@@ -1450,8 +1954,56 @@ export const teamsProjectsMocks: ProjectMember[] = [
     firstName: 'Кирилл',
     lastName: 'Власов',
     startDate: '2023-09-25T11:02:17Z',
-    finishDate: null,
-    role: 'DEVELOPER',
+    finishDate: '',
+    projectRole: 'MEMBER',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: '2',
+    email: 'alex@inbox.ru',
+    firstName: 'Алексей',
+    lastName: 'Князев',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'INITIATOR',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
+    email: 'kirill.vlasov.05@inbox.ru',
+    firstName: 'Артем',
+    lastName: 'Иванов',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'TEAM_LEADER',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: '0',
+    email: 'timyr@mail.com',
+    firstName: 'Иван',
+    lastName: 'Кузнецов',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'MEMBER',
+  },
+  {
+    projectName: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
+    teamId: '0',
+    teamName: 'Визитка',
+    userId: '1',
+    email: 'admin@mail.com',
+    firstName: 'Данил',
+    lastName: 'Сафонов',
+    startDate: '2023-10-25T11:02:17Z',
+    finishDate: '2023-10-25T11:02:17Z',
+    projectRole: 'MEMBER',
   },
 ]
 
@@ -1460,7 +2012,9 @@ export const profilesMocks: Profile[] = [
     ...usersMocks[0],
     skills: [...skillsMocks],
     ideas: [ideasMocks[0], ideasMocks[1]],
-    teams: teamsExperienceMocks,
+    teamsExperience: teamsExperienceMocks,
+    userTag: usersTelegramMocks[0].userTag,
+    isUserTagVisible: true,
   },
 ]
 
@@ -1486,5 +2040,44 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
     teamName: teamsMocks[1].name,
     teamMembersCount: teamsMocks[1].membersCount,
     skills: ideasMarketMocks[1].stack,
+  },
+]
+
+export const taskMovementLogMocks: TaskMovementLog[] = [
+  {
+    id: '0',
+    task: tasksMocks[0],
+    executor: null,
+    user: usersMocks[0],
+    startDate: '2023-09-24T11:02:17Z',
+    endDate: '2023-09-25T17:02:17Z',
+    status: 'NewTask',
+  },
+  {
+    id: '1',
+    task: tasksMocks[0],
+    executor: usersMocks[1],
+    user: usersMocks[1],
+    startDate: '2023-09-25T17:02:17Z',
+    endDate: '2023-09-30T10:11:17Z',
+    status: 'InProgress',
+  },
+  {
+    id: '2',
+    task: tasksMocks[0],
+    executor: usersMocks[1],
+    user: usersMocks[1],
+    startDate: '2023-09-30T10:11:17Z',
+    endDate: '2023-10-02T18:00:17Z',
+    status: 'OnVerification',
+  },
+  {
+    id: '3',
+    task: tasksMocks[0],
+    executor: usersMocks[1],
+    user: usersMocks[0],
+    startDate: '2023-10-02T18:31:17Z',
+    endDate: '',
+    status: 'Done',
   },
 ]

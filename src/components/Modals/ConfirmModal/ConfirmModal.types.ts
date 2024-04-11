@@ -2,6 +2,7 @@ interface ConfirmModalProps {
   isOpened: boolean
   textQuestion: string
   textButton: string
+  textNotDanger?: boolean
 }
 
 interface ConfirmModalEmits {

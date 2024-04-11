@@ -1,0 +1,380 @@
+<script lang="ts" setup>
+import { storeToRefs } from 'pinia'
+import { computed, ref } from 'vue'
+import draggable from 'vuedraggable'
+import { reactiveComputed, useDateFormat } from '@vueuse/core'
+
+import { ColumnTask, ActiveSprintProps } from '@Views/Project/Project.types'
+
+import FinishProjectOrSprintModal from '@Components/Modals/FinishProjectOrSprintModal/FinishProjectOrSprintModal.vue'
+import Typography from '@Components/Typography/Typography.vue'
+import Icon from '@Components/Icon/Icon.vue'
+import Button from '@Components/Button/Button.vue'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+import ActiveSprintTask from '@Views/Project/ActiveSprintTask.vue'
+import BurndownModal from '@Components/Modals/BurndownModal/BurndownModal.vue'
+
+import useUserStore from '@Store/user/userStore'
+import useTasksStore from '@Store/tasks/tasksStore'
+import useSprintsStore from '@Store/sprints/sprintsStore'
+
+import { Task } from '@Domain/Project'
+
+import {
+  RequestConfig,
+  openErrorNotification,
+  sendParallelRequests,
+} from '@Utils/sendParallelRequests'
+
+defineProps<ActiveSprintProps>()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const taskStore = useTasksStore()
+const { tasks } = storeToRefs(taskStore)
+
+const sprintStore = useSprintsStore()
+const { activeSprint } = storeToRefs(sprintStore)
+
+const isLoadingTaskData = ref(false)
+const isOpenedCreateNewTask = ref(false)
+const isOpenedFinishSprintModal = ref(false)
+const isOpenedBurndownModal = ref(false)
+
+const unfinishedTasks = computed<Task[]>(
+  // () => activeSprint?.value?.tasks.filter(({ status }) => status !== 'Done') ?? [],
+  () =>
+    tasks.value.filter(({ status }) => status !== 'Done' && status !== 'InBackLog'),
+)
+
+const onModificationTask = reactiveComputed<ColumnTask>(() => {
+  return {
+    name: 'OnModification',
+    tasks:
+      tasks.value.filter(
+        ({ status, sprintId }) =>
+          status === 'OnModification' && sprintId === activeSprint?.value?.id,
+      ) ?? [],
+  }
+})
+const newTask = reactiveComputed<ColumnTask>(() => {
+  return {
+    name: 'NewTask',
+    tasks:
+      tasks.value.filter(
+        ({ status, sprintId }) =>
+          status === 'NewTask' && sprintId === activeSprint?.value?.id,
+      ) ?? [],
+  }
+})
+const inProgressTask = reactiveComputed<ColumnTask>(() => {
+  return {
+    name: 'InProgress',
+    tasks:
+      tasks.value.filter(
+        ({ status, sprintId }) =>
+          status === 'InProgress' && sprintId === activeSprint?.value?.id,
+      ) ?? [],
+  }
+})
+const onVerificationTask = reactiveComputed<ColumnTask>(() => {
+  return {
+    name: 'OnVerification',
+    tasks:
+      tasks.value.filter(
+        ({ status, sprintId }) =>
+          status === 'OnVerification' && sprintId === activeSprint?.value?.id,
+      ) ?? [],
+  }
+})
+const doneTask = reactiveComputed<ColumnTask>(() => {
+  return {
+    name: 'Done',
+    tasks:
+      tasks.value.filter(
+        ({ status, sprintId }) =>
+          status === 'Done' && sprintId === activeSprint?.value?.id,
+      ) ?? [],
+  }
+})
+
+const columnsTasksArray = computed<ColumnTask[]>(() => {
+  return [onModificationTask, newTask, inProgressTask, onVerificationTask, doneTask]
+})
+
+const checkMyInProgressTask = computed(() =>
+  Boolean(
+    inProgressTask.tasks.find(({ executor }) => executor?.id === user.value?.id),
+  ),
+)
+
+async function taskParallelRequests(
+  taskId: string,
+  currentArrayTask: ColumnTask,
+  token: string,
+) {
+  const status = currentArrayTask.name
+
+  const inTaskParallelRequests: RequestConfig[] = [
+    {
+      request: () =>
+        taskStore.changeExecutorTask(
+          taskId,
+          status === 'InProgress' ? user.value : null,
+          token,
+        ),
+      refValue: ref(),
+      onErrorFunc: openErrorNotification,
+      statement: status === 'NewTask' || status === 'InProgress',
+    },
+    {
+      request: () => taskStore.createTaskLog(taskId, user.value, status, token),
+      refValue: ref(),
+      onErrorFunc: openErrorNotification,
+    },
+  ]
+  await sendParallelRequests(inTaskParallelRequests)
+}
+
+async function moveTask(evt: any) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    if (evt.added) {
+      const task: Task = evt.added.element
+      const { id: taskId } = task
+      const currentArrayTask = columnsTasksArray.value.find((arrayTasks) =>
+        arrayTasks.tasks.includes(task),
+      )
+
+      if (currentArrayTask)
+        await taskParallelRequests(taskId, currentArrayTask, token)
+
+      isLoadingTaskData.value = false
+    }
+  }
+}
+
+function checkUserTask(evt: any) {
+  return evt.draggedContext.element.executor.id === user.value?.id
+}
+
+function checkOnModificationTask(evt: any) {
+  const isCheckMyTask = evt.draggedContext.element.executor.id === user.value?.id
+  const inProgressTask = tasks.value.find(
+    ({ status, executor }) =>
+      status === 'InProgress' && executor?.id === user.value?.id,
+  )
+
+  return inProgressTask ? false : isCheckMyTask
+}
+
+function getFormattedDate(date: string) {
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+    return formattedDate.value
+  }
+}
+
+const columns = computed(() => [
+  {
+    name: 'На доработке',
+    color: 'blueviolet',
+    list: onModificationTask.tasks,
+    move: checkOnModificationTask,
+    handle: undefined,
+    disabled: isLoadingTaskData.value,
+  },
+  {
+    name: 'Новые',
+    color: '#0d6efd',
+    list: newTask.tasks,
+    move: undefined,
+    handle: checkMyInProgressTask.value,
+    disabled: isLoadingTaskData.value,
+  },
+  {
+    name: 'На выполнении',
+    color: '#f5ec0a',
+    list: inProgressTask.tasks,
+    move: checkUserTask,
+    handle: undefined,
+    disabled: isLoadingTaskData.value,
+  },
+  {
+    name: 'На проверке',
+    color: '#ffa800',
+    list: onVerificationTask.tasks,
+    move: undefined,
+    handle: user.value?.role !== 'TEAM_LEADER',
+    disabled: isLoadingTaskData.value,
+  },
+  {
+    name: 'Выполненные',
+    color: '#13c63a',
+    list: doneTask.tasks,
+    move: undefined,
+    handle: undefined,
+    disabled: isLoadingTaskData.value || user.value?.role !== 'TEAM_LEADER',
+  },
+])
+
+function closeFinishSprintModal() {
+  isOpenedFinishSprintModal.value = false
+}
+
+function openFinishSprintModal() {
+  isOpenedFinishSprintModal.value = true
+}
+
+function openCreateNewTask() {
+  isOpenedCreateNewTask.value = true
+}
+
+function closeCreateNewTask() {
+  isOpenedCreateNewTask.value = false
+}
+
+function openBurndownModal() {
+  isOpenedBurndownModal.value = true
+}
+
+function closeBurndownModal() {
+  isOpenedBurndownModal.value = false
+}
+console.log(activeSprint)
+</script>
+
+<template>
+  <div
+    v-if="activeSprint"
+    class="active-sprint"
+  >
+    <div class="active-sprint__header my-4 p-2 border rounded w-100">
+      <div class="d-flex gap-2 align-items-center">
+        <div class="bs-link mb-1 fw-semibold text-primary">
+          <div
+            @click="openBurndownModal"
+            class="fs-5 fw-semibold cursor-pointer"
+          >
+            {{ activeSprint.name }}
+          </div>
+        </div>
+        <Typography>(до {{ getFormattedDate(activeSprint.finishDate) }})</Typography>
+      </div>
+
+      <Button
+        v-if="user?.role === 'TEAM_LEADER'"
+        @click="openFinishSprintModal"
+        variant="danger"
+      >
+        Завершить спринт
+      </Button>
+    </div>
+
+    <div class="active-sprint__columns w-100">
+      <div
+        v-for="(column, index) in columns"
+        :key="index"
+        class="w-100"
+      >
+        <div class="mb-1">
+          <div
+            :style="{ height: '6px', 'background-color': column.color }"
+            class="rounded-top"
+          />
+          <div
+            class="active-sprint__header p-2 border-start border-end border-bottom rounded-bottom"
+          >
+            <div class="d-flex gap-2">
+              <Icon
+                :style="{ color: column.color }"
+                class-name="bi bi-flag-fill fs-6"
+              />
+              <Typography>{{ column.name }}</Typography>
+            </div>
+            <div class="d-flex gap-2">
+              <Icon
+                v-if="column.name === 'Новые'"
+                class-name="bi bi-plus active-sprint__add-task p-1 rounded"
+                @click="openCreateNewTask"
+              />
+              <Icon
+                class-name="bi bi-patch-question"
+                v-tooltip="
+                  'Здесь находятся задачи, которые еще не были назначены команде или отдельному разработчику. Эти задачи можно выбирать по своему усмотрению, учитывая приоритеты и сложность.'
+                "
+              />
+            </div>
+          </div>
+        </div>
+
+        <draggable
+          class="list-group active-sprint"
+          :list="column.list"
+          group="people"
+          :move="column.move"
+          :handle="column.handle"
+          @change="moveTask"
+          :disabled="column.disabled"
+          :animation="200"
+        >
+          <template #item="{ element }">
+            <ActiveSprintTask :task="element" />
+          </template>
+        </draggable>
+      </div>
+    </div>
+  </div>
+
+  <FinishProjectOrSprintModal
+    :is-opened="isOpenedFinishSprintModal"
+    :members="members"
+    :sprint="activeSprint"
+    :unfinishedTasks="unfinishedTasks"
+    @close-modal="closeFinishSprintModal"
+  />
+  <TaskModal
+    :is-opened="isOpenedCreateNewTask"
+    @close-modal="closeCreateNewTask"
+    :sprint="activeSprint"
+  />
+  <!-- <BurndownModal
+    v-if="activeSprint"
+    :is-opened="isOpenedBurndownModal"
+    @close-modal="closeBurndownModal"
+    :sprint="activeSprint"
+  /> -->
+</template>
+
+<style lang="scss" scoped>
+.active-sprint {
+  min-height: 70vh;
+
+  &__header {
+    @include flexible(center, space-between);
+  }
+
+  &__columns {
+    @include flexible(flex-start, space-between, $gap: 16px);
+  }
+
+  &__task {
+    @include textEllipsis(2);
+  }
+
+  &__add-task {
+    transition: all linear 0.15s;
+    -webkit-transition: all linear 0.15s;
+
+    &:hover {
+      cursor: pointer;
+      color: white;
+      background-color: rgb(13, 110, 253);
+    }
+  }
+}
+</style>

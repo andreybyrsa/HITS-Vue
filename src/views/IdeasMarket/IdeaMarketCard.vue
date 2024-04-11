@@ -20,6 +20,7 @@ import IdeasMarketService from '@Services/IdeasMarketService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useProjectsStore from '@Store/projects/projectsStore'
 
 const props = defineProps<IdeaMarketCardProps>()
 const emit = defineEmits<IdeaMarketCardEmits>()
@@ -29,6 +30,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const notificationsStore = useNotificationsStore()
+
+const projectsStore = useProjectsStore()
 
 const availableStatus = getIdeaMarketStatus()
 
@@ -83,10 +86,29 @@ const handleRemoveIdeaFromFavorites = async () => {
   }
 }
 
+const handleConvertIdeaToProject = async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token && props.ideaMarket) {
+    const { token } = currentUser
+
+    await projectsStore.postProject(props.ideaMarket, token)
+  }
+}
+
 function checkIdeaOwned() {
   return (
     user.value?.role === 'TEAM_OWNER' &&
     props.ideaMarket.status === 'RECRUITMENT_IS_OPEN'
+  )
+}
+
+function checkIdeaDone() {
+  const currentRole = user.value?.role
+  const { status } = props.ideaMarket
+  return (
+    (currentRole === 'ADMIN' || currentRole === 'PROJECT_OFFICE') &&
+    status === 'RECRUITMENT_IS_CLOSED'
   )
 }
 
@@ -102,6 +124,9 @@ function getIdeaMarketStatusStyle() {
 
   if (status === 'RECRUITMENT_IS_OPEN') {
     initialClass.push('text-success')
+    return initialClass
+  } else if (status === 'PROJECT') {
+    initialClass.push('text-warning')
     return initialClass
   }
 
@@ -187,6 +212,16 @@ function getIdeaMarketStatusStyle() {
         >
           Подать заявку
         </Button>
+
+        <Button
+          v-if="checkIdeaDone()"
+          class-name="idea-market__send-idea-button blink btn-sm"
+          variant="success"
+          prepend-icon-name="bi bi-plus-lg fs-6"
+          @click="handleConvertIdeaToProject"
+        >
+          Перевести в проект
+        </Button>
       </div>
     </div>
   </div>
@@ -204,6 +239,30 @@ function getIdeaMarketStatusStyle() {
 
   &__send-request-button {
     @include fixedWidth(135px);
+  }
+
+  &__send-idea-button {
+    @include fixedWidth(170px);
+  }
+
+  .blink {
+    animation: blink 0.8s infinite;
+  }
+
+  @keyframes blink {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      box-shadow: 0px 0px 15px 5px rgba(146, 255, 155, 0.877);
+      transform: scale(1.02);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 }
 </style>

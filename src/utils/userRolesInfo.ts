@@ -16,6 +16,7 @@ function getUserRolesInfo(): GetUserRolesType {
     roles: [
       'INITIATOR',
       'TEAM_OWNER',
+      'TEAM_LEADER',
       'MEMBER',
       'PROJECT_OFFICE',
       'EXPERT',
@@ -25,6 +26,7 @@ function getUserRolesInfo(): GetUserRolesType {
     translatedRoles: {
       INITIATOR: 'Инициатор',
       TEAM_OWNER: 'Владелец команды',
+      TEAM_LEADER: 'Лидер команды',
       MEMBER: 'Студент',
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперт',
@@ -34,6 +36,7 @@ function getUserRolesInfo(): GetUserRolesType {
     translatedGroups: {
       INITIATOR: 'Инициаторы',
       TEAM_OWNER: 'Владелец команды',
+      TEAM_LEADER: 'Лидеры команд',
       MEMBER: 'Студенты',
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперты',

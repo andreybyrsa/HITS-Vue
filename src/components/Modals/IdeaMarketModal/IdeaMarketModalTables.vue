@@ -102,7 +102,6 @@ function getNavLinkStyle(isCurrentTable: boolean) {
         v-model="invitedTeamsToIdea"
       />
     </div>
-
     <Button
       @click="redirectToInviteTeamsToIdea"
       class-name="btn-invite-teams"

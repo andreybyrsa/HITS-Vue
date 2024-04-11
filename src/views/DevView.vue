@@ -11,6 +11,7 @@ import NavTab from '@Components/NavTab/NavTab.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import Radio from '@Components/Inputs/Radio/Radio.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 
@@ -18,6 +19,16 @@ import TeamService from '@Services/TeamService'
 
 import useUserStore from '@Store/user/userStore'
 import MarketModal from '@Components/Modals/MarketModal/MarketModal.vue'
+import ProjectInfo from './Project/ProjectInfo.vue'
+import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
+
+import useTagsStore from '@Store/tags/tagsStore'
+import TagsService from '@Services/TagsService'
+
+const tagsStore = useTagsStore()
+const { tags } = storeToRefs(tagsStore)
+
+import Collapse from '@Components/Collapse/Collapse.vue'
 import Validation from '@Utils/Validation'
 const router = useRouter()
 
@@ -28,6 +39,7 @@ onMounted(async () => {
     const { token } = currentUser
 
     await TeamService.getTeams(token)
+    const currentTags = await TagsService.getAllTags(token)
   }
 })
 
@@ -66,12 +78,18 @@ function handleLogin() {
 }
 
 const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
+
+const b = ref()
 </script>
 
 <template>
   <PageLayout content-class-name="dev-page__content p-3">
     <template #leftSideBar>
       <LeftSideBar />
+      <!-- <MarketModal
+        :isOpened="true"
+        :market="null"
+      ></MarketModal> -->
     </template>
 
     <template #content>
@@ -82,10 +100,11 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
 
       <Input name="component"> </Input>
       <Button
-        variant="primary"
+        variant="danger"
         @click="click"
-        >Валидация</Button
       >
+        Валидация
+      </Button>
 
       <Button
         @click="router.push('/teams/list/1')"
@@ -98,8 +117,8 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
       <Typography class-name="fs-2 text-primary">Dev Page</Typography>
       <div class="table-responsive"></div>
 
-      <Select
-        name="1"
+      <!-- <Select
+        name="component"
         :options="[
           { value: '123', label: '1' },
           { value: '231', label: '1' },
@@ -115,9 +134,9 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
         Submit
       </Button>
 
-      {{ values }}
+      {{ values }} -->
 
-      <Combobox
+      <!-- <Combobox
         name="1"
         :options="[
           { id: '0', lang: 'Java', name: 'Джава' },
@@ -156,9 +175,9 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
         @click="isOpenedModal = true"
       >
         Открыть окно
-      </Button>
+      </Button> -->
 
-      <pre class="sss">Пользователь из userStore - {{ user }}</pre>
+      <!-- <pre class="sss">Пользователь из userStore - {{ user }}</pre> -->
     </template>
   </PageLayout>
 </template>
@@ -168,5 +187,14 @@ const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
   &__content {
     @include flexible(flex-start, flex-start, column, $gap: 16px);
   }
+}
+
+.collapse-controller {
+  border-radius: 0;
+  background-color: $white-color;
+
+  color: $primary-color;
+
+  @include flexible(center, flex-start);
 }
 </style>

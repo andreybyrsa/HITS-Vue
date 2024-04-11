@@ -7,7 +7,7 @@
     :search-by="['name']"
     :filters="usersGroupsFilters"
     :dropdown-actions-menu="dropdownUsersGroupsActions"
-  ></Table>
+  />
 
   <UsersGroupModal
     :isOpened="isOpenedCreatingGroupModal"
@@ -87,13 +87,14 @@ const usersGroupsTableColumns: TableColumn<UsersGroup>[] = [
   {
     key: 'name',
     label: 'Название',
+    size: 'col-6',
     rowCellClick: openUpdatingGroupModal,
     getRowCellStyle: getGroupNameStyle,
   },
   {
     key: 'roles',
     label: 'Роли',
-    size: 'col-5',
+    size: 'col-6',
     getRowCellStyle: getUserRoleInfoStyle,
     getRowCellFormat: getGroupRolesFormat,
   },

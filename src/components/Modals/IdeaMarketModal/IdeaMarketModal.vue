@@ -51,10 +51,10 @@ const router = useRouter()
 
 const ideaMarket = ref<IdeaMarket>()
 const requestTeams = ref<RequestTeamToIdea[]>([])
+const invitationTeamToIdea = ref<InvitationTeamToIdea[]>([])
 const ownerTeams = ref<Team[]>([])
 const market = ref<Market>()
 const ideaMarketAdvertisements = ref<IdeaMarketAdvertisement[]>()
-const invitationTeamToIdea = ref<InvitationTeamToIdea[]>([])
 
 const skillsRequestTeam = ref<RequestTeamToIdea[]>([])
 const skillsAcceptedTeam = ref<Team>()
@@ -79,6 +79,13 @@ onMounted(async () => {
         request: () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId, token),
         refValue: requestTeams,
         statement: role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () =>
+          invitationTeamsToIdeaStore.getIdeaInvitations(ideaMarketId, token),
+        refValue: invitationTeamToIdea,
+        statement: role === 'INITIATOR',
         onErrorFunc: openErrorNotification,
       },
       {
