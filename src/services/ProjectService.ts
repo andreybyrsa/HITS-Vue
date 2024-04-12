@@ -46,7 +46,6 @@ function formatGetAverageMarkProject(
 const getAllProjects = async (token: string): Promise<Project[] | Error> => {
   return projectMocksAxios
     .get('/scrum-service/project/all', {
-      // FIX ROUTE
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -57,7 +56,7 @@ const getAllProjects = async (token: string): Promise<Project[] | Error> => {
 const getProject = async (id: string, token: string): Promise<Project | Error> => {
   return projectMocksAxios
     .get(
-      `/scrum-service/project/${id}`, // FIX ROUTE
+      `/scrum-service/project/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -93,7 +92,7 @@ const getAverageMarkProject = async (
 ): Promise<AverageMark[] | Error> => {
   return averageMarkMocksAxios // Подгружаем сразу сформированный массив оценок за все спринты
     .get<AverageMark[]>( // БЭК считает среднюю арифмечискую
-      `/scrum-service/project/marks/${projectId}/all`, // FIX ROUTE
+      `/scrum-service/project/marks/${projectId}/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

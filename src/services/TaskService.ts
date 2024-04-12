@@ -34,7 +34,6 @@ const getAllTasksProject = async (
     .get<Task[]>(
       `/scrum-service/task/project/all/${projectId}`,
       {
-        // FIX ROUTE
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
@@ -54,7 +53,6 @@ const getTaskMovementLog = async (
     .get<TaskMovementLog[]>(
       `/scrum-service/log/all/${taskId}`,
       {
-        // FIX ROUTE
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
