@@ -131,7 +131,7 @@ const updateUserFullName = async (
 ): Promise<Profile[] | Error> => {
   return profileUserAxios
     .put<Profile[]>(
-      `/ideas-service/profile/update`,
+      `/ideas-service/profile/update/${fullName.id}`,
       fullName,
       {
         headers: { Authorization: `Bearer ${token}` },

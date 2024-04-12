@@ -118,21 +118,28 @@ const FinishProject = handleSubmit(async () => {
     isLoading.value = true
 
     const finishProjectParallelRequests: RequestConfig[] = [
+      // {
+      //   request: () => projectStore.changeProjectStatus(projectId, 'DONE', token),
+      //   refValue: ref(),
+      //   onErrorFunc: openErrorNotification,
+      // },
       {
-        request: () => projectStore.changeProjectStatus(projectId, 'DONE', token),
+        request: () =>
+          projectStore.finishProject(
+            projectId,
+            finishDate,
+            'DONE',
+            report.value,
+            token,
+          ),
         refValue: ref(),
         onErrorFunc: openErrorNotification,
       },
-      {
-        request: () => projectStore.finishProject(projectId, finishDate, token),
-        refValue: ref(),
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => projectStore.reportProject(projectId, report.value, token),
-        refValue: ref(),
-        onErrorFunc: openErrorNotification,
-      },
+      // {
+      //   request: () => projectStore.reportProject(projectId, report.value, token),
+      //   refValue: ref(),
+      //   onErrorFunc: openErrorNotification,
+      // },
     ]
 
     await sendParallelRequests(finishProjectParallelRequests)

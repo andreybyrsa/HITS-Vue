@@ -195,83 +195,89 @@ const convertIdeaToProject = async (
 }
 
 // --- PUT --- //
-const changeProjectStatus = async (
-  projectId: string,
-  status: ProjectStatus,
-  token: string,
-): Promise<Success | Error> => {
-  return projectMocksAxios
-    .putNoRequestBody<Success>(
-      `/project/status/change/${projectId}/${status}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      {
-        params: { id: projectId },
-        requestData: { status: status },
-      },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
-}
+// const changeProjectStatus = async (
+//   projectId: string,
+//   status: ProjectStatus,
+//   token: string,
+// ): Promise<Success | Error> => {
+//   return projectMocksAxios
+//     .putNoRequestBody<Success>(
+//       `/project/status/change/${projectId}/${status}`,
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//       },
+//       {
+//         params: { id: projectId },
+//         requestData: { status: status },
+//       },
+//     )
+//     .then((response) => response.data)
+//     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
+// }
 
-const reportProject = async (
+// const reportProject = async (
+//   projectId: string,
+//   report: string,
+//   token: string,
+// ): Promise<Success | Error> => {
+//   if (MODE === 'DEVELOPMENT') {
+//     return projectMocksAxios
+//       .putNoRequestBody<Success>(
+//         `/project/report/change/${projectId}`,
+//         {
+//           headers: { Authorization: `Bearer ${token}` },
+//           signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//         },
+//         {
+//           params: { id: projectId },
+//           requestData: { report: report },
+//         },
+//       )
+//       .then((response) => response.data)
+//       .catch((error) => handleAxiosError(error, 'Ошибка заполнения отчета проекта'))
+//   }
+//   return axios
+//     .put<Success>(`/project/report/change/${projectId}`, report, {
+//       headers: { Authorization: `Bearer ${token}` },
+//       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//     })
+//     .then((response) => response.data)
+//     .catch((error) => handleAxiosError(error, 'Ошибка заполнения отчета проекта'))
+// }
+
+const finishProject = async (
   projectId: string,
+  finishDate: string,
+  status: ProjectStatus,
   report: string,
   token: string,
 ): Promise<Success | Error> => {
   if (MODE === 'DEVELOPMENT') {
     return projectMocksAxios
       .putNoRequestBody<Success>(
-        `/project/report/change/${projectId}`,
+        `/scrum-service/project/finish/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
         },
         {
           params: { id: projectId },
-          requestData: { report: report },
-        },
-      )
-      .then((response) => response.data)
-      .catch((error) => handleAxiosError(error, 'Ошибка заполнения отчета проекта'))
-  }
-  return axios
-    .put<Success>(`/project/report/change/${projectId}`, report, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка заполнения отчета проекта'))
-}
-
-const finishProject = async (
-  projectId: string,
-  finishDate: string,
-  token: string,
-): Promise<Success | Error> => {
-  if (MODE === 'DEVELOPMENT') {
-    return projectMocksAxios
-      .putNoRequestBody<Success>(
-        `/project/finish/change/${projectId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-        },
-        {
-          params: { id: projectId },
-          requestData: { finishDate: finishDate },
+          requestData: { finishDate: finishDate, status: status, report: report },
         },
       )
       .then((response) => response.data)
       .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
   }
   return axios
-    .put<Success>(`/project/finish/change/${projectId}`, finishDate, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .put<Success>(
+      `${API_URL}/scrum-service/project/finish/${projectId}`,
+      { report },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
 }
@@ -283,9 +289,7 @@ const ProfileService = {
   getAverageMarkProject,
 
   convertIdeaToProject,
-  changeProjectStatus,
   finishProject,
-  reportProject,
 }
 
 export default ProfileService
