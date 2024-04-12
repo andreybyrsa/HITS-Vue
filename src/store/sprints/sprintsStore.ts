@@ -53,6 +53,7 @@ const useSprintsStore = defineStore('sprints', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
+        this.activeSprint = response
         this.sprints.push(response)
 
         if (MODE === 'DEVELOPMENT') {
