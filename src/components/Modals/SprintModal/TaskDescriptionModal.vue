@@ -70,7 +70,7 @@ function hexToRgb(hex: string) {
 <template>
   <ModalLayout
     :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
+    @on-outside-close="emit('close-modal'), (isNameChange = false)"
   >
     <div class="task-modal-wrapper">
       <div class="task-modal bg-white rounded p-3 d-flex flex-column">
@@ -95,7 +95,7 @@ function hexToRgb(hex: string) {
 
           <div
             v-else
-            class="rounded-end w-75"
+            class="rounded-end w-75 d-flex gap-3 py-1"
           >
             <Input
               ref="name"
@@ -103,8 +103,15 @@ function hexToRgb(hex: string) {
               class-name="rounded-end"
               :model-value="props.task.name"
               @keyup.enter="isNameChange = false"
+              @blur="isNameChange = false"
               @input="(event: HTMLTargetEvent)=>emit('update-name', event.target.value)"
             />
+
+            <Button
+              class-name="btn btn-primary"
+              @click="isNameChange = false"
+              >Сохранить</Button
+            >
           </div>
 
           <Button
