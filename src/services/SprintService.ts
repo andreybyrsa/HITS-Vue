@@ -216,11 +216,12 @@ const postSprint = async (
 
 const postSprintMarks = async (
   sprintId: string,
+  projectId: string,
   sprintMarks: SprintMarks[],
   token: string,
 ): Promise<SprintMarks[] | Error> => {
   return sprintMarksMocksAxios
-    .post(`/scrum-service/sprint/${sprintId}/add/marks`, sprintMarks, {
+    .post(`/scrum-service/sprint/marks/${projectId}/${sprintId}/add`, sprintMarks, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

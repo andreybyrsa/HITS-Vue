@@ -50,6 +50,8 @@ const sprintStore = useSprintsStore()
 
 const route = useRoute()
 
+const projectId: string = route.params.id as string
+
 const averageMark = ref<AverageMark[]>([])
 const isLoading = ref(false)
 const isLoadingRequest = ref(false)
@@ -190,7 +192,8 @@ const FinishSprint = handleSubmit(async (values) => {
           onErrorFunc: openErrorNotification,
         },
         {
-          request: () => SprintService.postSprintMarks(sprintId, sprintMarks, token),
+          request: () =>
+            SprintService.postSprintMarks(sprintId, projectId, sprintMarks, token),
           refValue: ref(),
           onErrorFunc: openErrorNotification,
         },
