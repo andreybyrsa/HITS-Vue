@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -19,7 +19,7 @@ import useTeamStore from '@Store/teams/teamsStore'
 import { OptionType } from '@Components/Inputs/Select/Select.types'
 import { useForm } from 'vee-validate'
 
-const props = defineProps<LaunchQuestModalProps>()
+defineProps<LaunchQuestModalProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -85,6 +85,14 @@ const availableOptions: OptionType[] = [
     label: 'Не доступен',
   },
 ]
+
+const computedRole = computed(() => {
+  return user.value?.role
+})
+
+const computedQuestAvailability = computed(() => {
+  return launchQuest.value?.available ? 'Открыт' : 'Завершен'
+})
 </script>
 
 <template>
@@ -153,22 +161,34 @@ const availableOptions: OptionType[] = [
               </div>
 
               <div class="d-flex gap-3 mt-3">
-                <Select
-                  name="available"
-                  :options="availableOptions"
-                ></Select>
-
-                <Button
-                  @click="changeAvailability"
-                  variant="primary"
-                  class-name="w-fit"
-                  >Изменить</Button
+                <p v-if="computedRole != 'PROJECT_OFFICE'">
+                  {{ computedQuestAvailability }}
+                </p>
+                <div
+                  class="d-flex justify-content-between w-100 gap-3"
+                  v-else
                 >
+                  <Select
+                    class-name="w-100"
+                    name="available"
+                    :options="availableOptions"
+                  ></Select>
+
+                  <Button
+                    @click="changeAvailability"
+                    variant="primary"
+                    class-name="w-fit"
+                    >Изменить</Button
+                  >
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-3 border p-3 gap-3 w-100">
+        <div
+          v-if="computedRole == 'PROJECT_OFFICE'"
+          class="bg-white rounded-3 border p-3 gap-3 w-100"
+        >
           <div class="w-100 border-bottom pb-1">
             <Typography class-name="fs-5 text-primary">Список команд:</Typography>
           </div>
@@ -183,7 +203,10 @@ const availableOptions: OptionType[] = [
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-3 border p-3 gap-3 w-100 mt-3">
+        <div
+          v-if="computedRole == 'PROJECT_OFFICE'"
+          class="bg-white rounded-3 border p-3 gap-3 w-100 mt-3"
+        >
           <div class="w-100 border-bottom pb-1">
             <Typography class-name="fs-5 text-primary">Список вопросов:</Typography>
           </div>

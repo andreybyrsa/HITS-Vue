@@ -11,11 +11,10 @@ import { storeToRefs } from 'pinia'
 import { QuestShort } from '@Domain/Quest'
 import { onMounted, ref } from 'vue'
 import CreateQuestModal from '@Components/Modals/QuestModal/CreateQuestModal.vue'
-import { RouteRecordRaw, useRouter, useRoute } from 'vue-router'
+import { RouteRecordRaw, useRoute } from 'vue-router'
 import QuestModal from '@Components/Modals/QuestModal/QuestModal.vue'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
-const router = useRouter()
 const route = useRoute()
 
 const userStore = useUserStore()
@@ -93,7 +92,9 @@ const closeQuestModal = () => {
 }
 
 const navigateToQuestModal = (quest: QuestShort) => {
-  const { idQuest, name } = quest
+  const routeName = route.name
+  if (!routeName) return
+  const { idQuest } = quest
   const questRoute: RouteRecordRaw = {
     name: 'quest',
     path: '/quests/:idQuest',
@@ -104,7 +105,7 @@ const navigateToQuestModal = (quest: QuestShort) => {
     },
   }
 
-  navigateToAliasRoute(name, `/quests/${idQuest}`, questRoute)
+  navigateToAliasRoute(routeName?.toString(), `/quests/${idQuest}`, questRoute)
 }
 </script>
 

@@ -108,11 +108,11 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     roles: ['ADMIN'],
   },
   {
-    name: 'quests',
+    name: 'questionnaire',
     text: 'Управление опросами',
-    to: '/quests',
+    to: '/questionnaire',
     iconName: 'bi bi-patch-question',
-    roles: ['PROJECT_OFFICE'],
+    roles: ['PROJECT_OFFICE', 'INITIATOR', 'MEMBER'],
   },
 ]
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, toValue, watch } from 'vue'
-import { useMagicKeys, watchImmediate } from '@vueuse/core'
+import { computed, onMounted, ref } from 'vue'
+import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
 import Input from '@Components/Inputs/Input/Input.vue'
@@ -15,10 +15,8 @@ import {
   CreateLaunchQuestEmits,
 } from '@Components/Modals/LaunchQuestModal/CreateLaunchQuestModal.type'
 import { Team } from '@Domain/Team'
-import { Quest, Indicator, QuestShort } from '@Domain/Quest'
+import { Quest, QuestShort } from '@Domain/Quest'
 import useQuestStore from '@Store/quests/questsStore'
-import profilesStore from '@Store/profiles/profilesStore'
-import { CheckedDataAction } from '@Components/Table/Table.types'
 import useUserStore from '@Store/user/userStore'
 import Validation from '@Utils/Validation'
 import { useForm } from 'vee-validate'
@@ -34,8 +32,6 @@ const questTemplates = ref<QuestShort[]>([])
 const checkedTeams = ref<Team[]>([])
 const selectedQuestTemplate = ref()
 
-const showHidden = ref(false)
-
 onMounted(async () => {
   const token = user.value?.token
   if (token) {
@@ -43,6 +39,7 @@ onMounted(async () => {
     questTemplates.value = quests.value
   }
 })
+
 watchImmediate(
   () => props.teams,
   (value) => {
@@ -62,6 +59,7 @@ watchImmediate(
     quest.value ? setValues({ ...quest.value }) : 1
   },
 )
+
 const questions = computed(() => {
   if (selectedQuestTemplate.value) {
     const token = user.value?.token
@@ -72,7 +70,9 @@ const questions = computed(() => {
   }
   return []
 })
+
 const descriptionQuest = ref()
+
 function resetTeam(ideaId: string) {
   const ideaIndex = checkedTeams.value.findIndex(({ id }) => id === ideaId)
 
