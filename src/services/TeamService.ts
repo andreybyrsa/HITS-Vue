@@ -187,48 +187,6 @@ const getAllUsersInTeams = async (token: string): Promise<TeamMember[] | Error> 
 
 // --- POST --- //
 
-const sendTeamOnMarket = async (
-  marketId: string,
-  teams: Team[],
-  token: string,
-): Promise<Team[] | Error> => {
-  if (MODE === 'DEVELOPMENT') {
-    const teamsMarket = teams.map((team) => {
-      return {
-        id: '',
-        name: team.name,
-        closed: team.closed,
-        createdAt: team.createdAt,
-        description: team.description,
-        membersCount: team.membersCount,
-        owner: team.owner,
-        leader: team.leader,
-        members: team.members,
-        skills: team.skills,
-        wantedSkills: team.wantedSkills,
-        isRefused: team.isRefused,
-        hasActiveProject: team.hasActiveProject,
-      }
-    }) as Team[]
-
-    return teamsAxios
-      .post(`/team/market/${marketId}`, teamsMarket, {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      })
-      .then((response) => response.data)
-      .catch((error) => handleAxiosError(error, 'Ошибка отправки команд на биржу'))
-  }
-
-  return axios
-    .post(`${API_URL}/team/market/${marketId}`, teams, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка отправки команд на биржу'))
-}
-
 const createTeam = async (team: Team, token: string): Promise<Team | Error> => {
   return teamsAxios
     .post(`/team/add`, team, {
@@ -345,6 +303,54 @@ const updateTeam = async (
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка обновления команды'))
+}
+
+const sendTeamOnMarket = async (
+  marketId: string,
+  id: string,
+  teams: Team[],
+  token: string,
+): Promise<Team[] | Error> => {
+  if (MODE === 'DEVELOPMENT') {
+    const teamsMarket = teams.map((team) => {
+      return {
+        id: '',
+        name: team.name,
+        closed: team.closed,
+        createdAt: team.createdAt,
+        description: team.description,
+        membersCount: team.membersCount,
+        owner: team.owner,
+        leader: team.leader,
+        members: team.members,
+        skills: team.skills,
+        wantedSkills: team.wantedSkills,
+        isRefused: team.isRefused,
+        hasActiveProject: team.hasActiveProject,
+      }
+    }) as Team[]
+
+    return teamsAxios
+      .put(
+        `/team/market/${marketId}`,
+        teamsMarket,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+        },
+        { params: { id } },
+      )
+      .then((response) => response.data)
+      .catch((error) => handleAxiosError(error, 'Ошибка отправки команд на биржу'))
+  }
+
+  return axios
+    .put(`${API_URL}/team/market/${marketId}`, teams, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка отправки команд на биржу'))
 }
 
 // const updateTeamSkills = async (

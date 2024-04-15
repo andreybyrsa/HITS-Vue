@@ -12,24 +12,7 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка авторизации'
-      return {
-        id: 'ffc1b25e-8a65-4cb2-8808-6eba443acec8',
-        token: '11110',
-        firstName: 'Кирилл',
-        lastName: 'Власов',
-        telephone: '1111111111',
-        studyGroup: 'AAAA-22-1',
-        ...user,
-        roles: [
-          'ADMIN',
-          'EXPERT',
-          'INITIATOR',
-          'MEMBER',
-          'TEAM_OWNER',
-          'PROJECT_OFFICE',
-          'TEACHER',
-        ],
-      }
+      return new Error(error)
     })
 }
 const registerUser = async (user: RegisterUser): Promise<User | Error> => {
