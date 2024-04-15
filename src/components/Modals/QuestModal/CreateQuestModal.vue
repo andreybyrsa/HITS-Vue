@@ -53,11 +53,11 @@ const { handleSubmit, setValues } = useForm<Quest>({
 
 onMounted(async () => {
   await orderIndicatorsToLists()
-  setValues({ available: quest.value?.available })
+  // setValues({ available: quest.value?.available })
 })
 
 watch(
-  () => props.idQuest,
+  () => props.isOpened,
   async () => {
     await orderIndicatorsToLists()
   },
@@ -86,6 +86,7 @@ const orderIndicatorsToLists = async () => {
     await questStore.getQuest(idQuest, token)
     if (!quest.value) return
     setValues({ ...quest.value })
+    setValues({ name: quest.value.name + ' - копия' })
     const copiedIndicators = quest.value.indicators
     newQuestIndicators.value = copiedIndicators
 

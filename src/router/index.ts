@@ -34,7 +34,7 @@ import ErrorView from '@Views/ErrorView.vue'
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
 import DevView from '@Views/DevView.vue'
-import QuestsView from '@Views/Quest/QuestsView.vue'
+import QuestionnaireView from '@Views/Questionnaire/QuestionnaireView.vue'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -243,9 +243,9 @@ const routes: RouteRecordRaw[] = [
     component: ErrorView,
   },
   {
-    path: '/quests',
-    name: 'quests',
-    component: QuestsView,
+    path: '/questionnaire',
+    name: 'questionnaire',
+    component: QuestionnaireView,
     children: [
       {
         name: 'profile',
@@ -254,13 +254,13 @@ const routes: RouteRecordRaw[] = [
         component: ProfileModal,
       },
       {
-        name: 'quest',
+        name: 'quests',
         path: 'quests/:idQuest',
         alias: '/quests/:idQuest',
         component: QuestModal,
       },
       {
-        name: 'launch-quest',
+        name: 'launch-quests',
         path: 'launch-quests/:idLaunchQuest',
         alias: '/launch-quests/:idLaunchQuest',
         component: LaunchQuestModal,

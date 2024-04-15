@@ -1,16 +1,19 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { watchImmediate } from '@vueuse/core'
 import useUserStore from '@Store/user/userStore'
-import { getRouteByUserRole } from '@Utils/userRolesInfo'
-import LaunchQuestsPage from '@Views/Quest/LaunchQuestsPage.vue'
-import QuestsPage from '@Views/Quest/QuestsPage.vue'
+import LaunchQuestsPage from '@Views/Questionnaire/LaunchQuestsPage.vue'
+import QuestsPage from '@Views/Questionnaire/QuestsPage.vue'
+
+type QuestPages = 'LaunchQuest' | 'Quest'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-type QuestPages = 'LaunchQuest' | 'Quest'
+const computedRole = computed(() => {
+  const role = user.value?.role
+  return role
+})
 
 const currentPage = ref<QuestPages>('LaunchQuest')
 
@@ -18,7 +21,7 @@ const switchPage = (pageName: QuestPages): void => {
   currentPage.value = pageName
 }
 
-function getNavLinkStyle(page: QuestPages) {
+const getNavLinkStyle = (page: QuestPages) => {
   return [
     'nav-link',
     'fw-normal',
@@ -34,18 +37,19 @@ function getNavLinkStyle(page: QuestPages) {
   <div class="content">
     <div class="border-bottom px-3">
       <ul class="nav nav-underline">
-        <div
+        <li
           :class="getNavLinkStyle('LaunchQuest')"
           @click="switchPage('LaunchQuest')"
         >
           Запущенные опросы
-        </div>
-        <div
+        </li>
+        <li
+          v-if="computedRole == 'PROJECT_OFFICE'"
           :class="getNavLinkStyle('Quest')"
           @click="switchPage('Quest')"
         >
           Шаблоны опросов
-        </div>
+        </li>
       </ul>
     </div>
 

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import QuestHeader from '@Views/Quest/QuestHeader.vue'
+import QuestionnaireHeader from '@Views/Questionnaire/QuestionnaireHeader.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Header from '@Components/Header/Header.vue'
-import QuestContent from '@Views/Quest/QuestContent.vue'
+import QuestionnaireContent from '@Views/Questionnaire/QuestionnaireContent.vue'
 </script>
 
 <template>
@@ -21,14 +21,10 @@ import QuestContent from '@Views/Quest/QuestContent.vue'
     </template>
 
     <template #content>
-      <div
-        class="p-4 h-100"
-        v-if="true"
-      >
-        <QuestHeader />
-        <QuestContent />
+      <div class="p-4 h-100">
+        <QuestionnaireHeader />
+        <QuestionnaireContent />
       </div>
-      <!-- <div v-else><ProjectPlaceHolder /></div> -->
       <router-view />
     </template>
   </PageLayout>
