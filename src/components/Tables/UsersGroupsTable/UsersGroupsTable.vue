@@ -6,6 +6,7 @@
     :data="usersGroups"
     :search-by="['name']"
     :dropdown-actions-menu="dropdownUsersGroupsActions"
+    :filters="usersGroupsFilters"
   ></Table>
 
   <UsersGroupModal
@@ -89,13 +90,13 @@ const usersGroupsTableColumns: TableColumn<UsersGroup>[] = [
     rowCellClick: openUpdatingGroupModal,
     getRowCellStyle: getGroupNameStyle,
   },
-  // {
-  //   key: 'roles',
-  //   label: 'Роли',
-  //   size: 'col-5',
-  //   getRowCellStyle: getUserRoleInfoStyle,
-  //   getRowCellFormat: getGroupRolesFormat,
-  // },
+  {
+    key: 'roles',
+    label: 'Роли',
+    size: 'col-5',
+    getRowCellStyle: getUserRoleInfoStyle,
+    getRowCellFormat: getGroupRolesFormat,
+  },
 ]
 
 const dropdownUsersGroupsActions: DropdownMenuAction<UsersGroup>[] = [
@@ -110,23 +111,23 @@ const dropdownUsersGroupsActions: DropdownMenuAction<UsersGroup>[] = [
   },
 ]
 
-// const usersGroupsFilters: Filter<UsersGroup>[] = [
-//   {
-//     category: 'Роли',
-//     choices: [
-//       { label: 'Инициаторы', value: 'INITIATOR' },
-//       { label: 'Проектный офис', value: 'PROJECT_OFFICE' },
-//       { label: 'Эксперты', value: 'EXPERT' },
-//       { label: 'Админы', value: 'ADMIN' },
-//       { label: 'Студенты', value: 'MEMBER' },
-//       { label: 'Преподаватели', value: 'TEACHER' },
-//       { label: 'Владельцы команд', value: 'TEAM_OWNER' },
-//     ],
-//     refValue: rolesFilter,
-//     isUniqueChoice: false,
-//     checkFilter: checkUsersGroupRoles,
-//   },
-// ]
+const usersGroupsFilters: Filter<UsersGroup>[] = [
+  {
+    category: 'Роли',
+    choices: [
+      { label: 'Инициаторы', value: 'INITIATOR' },
+      { label: 'Проектный офис', value: 'PROJECT_OFFICE' },
+      { label: 'Эксперты', value: 'EXPERT' },
+      { label: 'Админы', value: 'ADMIN' },
+      { label: 'Студенты', value: 'MEMBER' },
+      { label: 'Преподаватели', value: 'TEACHER' },
+      { label: 'Владельцы команд', value: 'TEAM_OWNER' },
+    ],
+    refValue: rolesFilter,
+    isUniqueChoice: false,
+    checkFilter: checkUsersGroupRoles,
+  },
+]
 
 function getGroupNameStyle() {
   return 'text-primary'

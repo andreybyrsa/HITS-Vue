@@ -11,11 +11,15 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+
 import UsersColumns from '@Components/UserColumns/UsersColumns.vue'
 import UsersGroupModalPlaceholder from '@Components/Modals/UsersGroupModal/UsersGroupModalPlaceholder.vue'
 
 import { User } from '@Domain/User'
 import UsersGroup from '@Domain/UsersGroup'
+import RolesTypes from '@Domain/Roles'
+import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 import UsersGroupsService from '@Services/UsersGroupsService'
 import ManageUsersService from '@Services/ManageUsersService'
@@ -29,6 +33,8 @@ const notificationsStore = useNotificationsStore()
 
 const props = defineProps<UsersGroupModalProps>()
 const emit = defineEmits<UsersGroupModalEmits>()
+
+const groupRoles = getUserRolesInfo().roles
 
 const usersGroups = defineModel<UsersGroup[]>({
   required: true,
@@ -226,6 +232,14 @@ const handleUpdateGroup = handleSubmit(async (values) => {
               validate-on-update
               placeholder="Введите название группы"
             />
+            <Combobox
+              name="roles"
+              label="Выберите тип группы:"
+              :options="groupRoles"
+              placeholder="Тип группы"
+              multiselect-placeholder="Выбрано"
+            />
+
             <Button
               class="right-content-item"
               v-if="usersGroupModalMode === 'CREATE'"
