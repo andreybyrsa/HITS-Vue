@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, VueElement } from 'vue'
+import { onMounted, ref, VueElement } from 'vue'
 import { useFieldArray, useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
@@ -14,8 +14,12 @@ import FormLayout from '@Layouts/FormLayout/FormLayout.vue'
 
 import { InviteUsersForm } from '@Domain/Invitation'
 import RolesTypes from '@Domain/Roles'
+import UsersGroup from '@Domain/UsersGroup'
+
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 
 import InvitationService from '@Services/InvitationService'
+import UsersGroupsService from '@Services/UsersGroupsService'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -67,6 +71,20 @@ const handleInvite = handleSubmit(async (values) => {
     )
   }
 })
+
+const groups = ref<UsersGroup[]>([])
+
+onMounted(async () => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await UsersGroupsService.getUsersGroups(token)
+    if (response instanceof Error) {
+      return notificationsStore.createSystemNotification('Система', response.message)
+    }
+    groups.value = response
+  }
+})
 </script>
 
 <template>
@@ -83,6 +101,12 @@ const handleInvite = handleSubmit(async (values) => {
         @push-email="push"
         @move-email="move"
         @remove-email="remove"
+      />
+      <Combobox
+        name="groupName"
+        label="Выберите группу:"
+        placeholder="Выберите группу"
+        :options="groups.map((group) => group.name)"
       />
 
       <FormControllers

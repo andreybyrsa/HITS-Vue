@@ -33,7 +33,7 @@ function getUserRolesInfo(): GetUserRolesType {
     },
     translatedGroups: {
       INITIATOR: 'Инициаторы',
-      TEAM_OWNER: 'Владелец команды',
+      TEAM_OWNER: 'Владельцы команд',
       MEMBER: 'Студенты',
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперты',

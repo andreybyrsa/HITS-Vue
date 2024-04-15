@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { TeamMember } from '@Domain/Team'
+import { Team, TeamMember } from '@Domain/Team'
 
 import InitialState from '@Store/teams/initialState'
 import TeamService from '@Services/TeamService'
@@ -88,6 +88,16 @@ const useTeamStore = defineStore('teams', {
           currentTeam.leader = newLeader
         }
       }
+    },
+
+    changeTeamsStatusOnMarket(marketTeams: Team[]) {
+      marketTeams.forEach((marketTeam) => {
+        const teamStore = this.teams.find(({ id }) => id === marketTeam.id)
+
+        if (teamStore) {
+          teamStore.closed = true
+        }
+      })
     },
 
     async kickTeamMember(teamId: string, teamMemberId: string, token: string) {

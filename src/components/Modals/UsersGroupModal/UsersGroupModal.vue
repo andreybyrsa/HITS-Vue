@@ -11,20 +11,16 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import UsersColumns from '@Components/UserColumns/UsersColumns.vue'
 import UsersGroupModalPlaceholder from '@Components/Modals/UsersGroupModal/UsersGroupModalPlaceholder.vue'
 
 import { User } from '@Domain/User'
 import UsersGroup from '@Domain/UsersGroup'
-import RolesTypes from '@Domain/Roles'
 
 import UsersGroupsService from '@Services/UsersGroupsService'
 import ManageUsersService from '@Services/ManageUsersService'
 
 import useUserStore from '@Store/user/userStore'
-
-import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import Validation from '@Utils/Validation'
@@ -50,8 +46,6 @@ const isUpdating = ref(false)
 
 const selectedUsersCount = computed(() => fields.value.length)
 
-const groupRoles = getUserRolesInfo().roles
-
 const usersGroupModalMode = ref<'CREATE' | 'UPDATE'>('CREATE')
 
 onMounted(async () => {
@@ -76,10 +70,6 @@ const { setValues, handleSubmit } = useForm<UsersGroup>({
   validationSchema: {
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    users: (value: User[]) =>
-      Validation.checkIsEmptyValue(value) || 'Выберите пользователей',
-    roles: (value: RolesTypes[]) =>
-      Validation.checkIsEmptyValue(value) || 'Выберите тип группы',
   },
   initialValues: { roles: [] },
 })
@@ -203,7 +193,7 @@ const handleUpdateGroup = handleSubmit(async (values) => {
 
       <template v-else>
         <div class="users-group-modal__header">
-          <Typography class-name="fs-2 text-primary">
+          <Typography class-name="fs-2 text-primary border-bottom">
             {{
               usersGroupModalMode === 'CREATE'
                 ? 'Создание группы'
@@ -216,47 +206,46 @@ const handleUpdateGroup = handleSubmit(async (values) => {
           ></Button>
         </div>
 
-        <Input
-          name="name"
-          class-name="h-50 rounded-end"
-          label="Название группы:"
-          validate-on-update
-          placeholder="Введите название группы"
-        />
-
-        <UsersColumns
-          :users="fields"
-          :unselected-users="unselectedUsers"
-          unselected-users-label="Пользователи:"
-          :selected-users-label="'Пользователи в группе: ' + selectedUsersCount"
-          @selectUser="selectUser"
-          @unselect-user="unselectUser"
-        />
-
-        <Combobox
-          name="roles"
-          label="Выберите тип группы:"
-          :options="groupRoles"
-          placeholder="Тип группы"
-          multiselect-placeholder="Выбрано"
-        />
-
-        <Button
-          v-if="usersGroupModalMode === 'CREATE'"
-          variant="primary"
-          :is-loading="isCreating"
-          @click="handleCreateGroup"
-        >
-          Добавить
-        </Button>
-        <Button
-          v-else
-          variant="primary"
-          :is-loading="isUpdating"
-          @click="handleUpdateGroup"
-        >
-          Сохранить изменения
-        </Button>
+        <div class="users-group-modal__content">
+          <div class="left-content">
+            <UsersColumns
+              :users="fields"
+              :unselected-users="unselectedUsers"
+              unselected-users-label="Пользователи:"
+              :selected-users-label="'Выбранных: ' + selectedUsersCount"
+              @selectUser="selectUser"
+              @unselect-user="unselectUser"
+            />
+          </div>
+          <div class="right-content">
+            <Input
+              class="right-content-item"
+              name="name"
+              class-name="h-50 rounded-end"
+              label="Название группы:"
+              validate-on-update
+              placeholder="Введите название группы"
+            />
+            <Button
+              class="right-content-item"
+              v-if="usersGroupModalMode === 'CREATE'"
+              variant="primary"
+              :is-loading="isCreating"
+              @click="handleCreateGroup"
+            >
+              Добавить группу
+            </Button>
+            <Button
+              class="right-content-item"
+              v-else
+              variant="primary"
+              :is-loading="isUpdating"
+              @click="handleUpdateGroup"
+            >
+              Сохранить изменения
+            </Button>
+          </div>
+        </div>
       </template>
     </div>
   </ModalLayout>
@@ -264,7 +253,8 @@ const handleUpdateGroup = handleSubmit(async (values) => {
 
 <style lang="scss" scoped>
 .users-group-modal {
-  width: 600px;
+  width: 1000px;
+  height: 550px;
 
   @include flexible(
     stretch,
@@ -280,10 +270,44 @@ const handleUpdateGroup = handleSubmit(async (values) => {
   &__header {
     @include flexible(center, space-between);
   }
+
+  &__content {
+    @include flexible;
+    justify-content: space-between;
+
+    .left-content {
+      flex: 1;
+      padding-bottom: 10px;
+    }
+
+    .right-content {
+      flex: 1;
+      margin-left: 20px;
+      width: 100px;
+      display: grid;
+    }
+  }
+}
+.right-content-item {
+  margin-bottom: 20px;
 }
 
 .modal-layout-enter-from .users-group-modal,
 .modal-layout-leave-to .users-group-modal {
   transform: scale(0.9);
+}
+
+.selected-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.selected-roles > div {
+  padding: 5px;
+  border-radius: 20px;
+  background-color: rgb(177, 204, 255);
+  color: #0d6efd;
 }
 </style>

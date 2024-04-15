@@ -7,6 +7,7 @@ import {
   UsersColumnsEmits,
 } from '@Components/UserColumns/UsersColumns.types'
 import Input from '@Components/Inputs/Input/Input.vue'
+import Icon from '@Components/Icon/Icon.vue'
 
 const props = defineProps<UsersColumnsProps>()
 const emit = defineEmits<UsersColumnsEmits>()
@@ -49,7 +50,7 @@ const searchedSelectedUsers = computed(() => {
     <div class="users-column w-50">
       <Input
         name="searchByUnselectedUsers"
-        class-name="rounded-end"
+        class-name="rounded-end border"
         :label="unselectedUsersLabel"
         placeholder="Найти"
         v-model="searchValueByUnselectedUsers"
@@ -59,12 +60,16 @@ const searchedSelectedUsers = computed(() => {
         class="users-column__unselected-users p-2 h-100 overflow-scroll border rounded-3"
       >
         <div
-          class="users-column__user px-1 rounded border"
+          class="users-column__user px-1 rounded border d-flex justify-content-between align-items-center"
           v-for="(user, index) in searchedUnselectedUsers"
           :key="index"
           @click="emit('selectUser', user)"
         >
-          <Typography>{{ user.firstName }} {{ user.lastName }}</Typography>
+          <Typography> {{ user.firstName }} {{ user.lastName }} </Typography>
+          <Icon
+            class="bi bi-arrow-right fs-5"
+            style="color: green"
+          />
         </div>
       </div>
     </div>
@@ -82,11 +87,15 @@ const searchedSelectedUsers = computed(() => {
         class="users-column__selected-users p-2 h-100 overflow-scroll border rounded-3"
       >
         <div
-          class="users-column__user px-1 rounded border"
+          class="users-column__user px-1 rounded border selected d-flex justify-content-between align-items-center"
           v-for="(user, index) in searchedSelectedUsers"
           :key="index"
           @click="emit('unselectUser', user.value, index)"
         >
+          <Icon
+            class="bi bi-arrow-left fs-5"
+            style="color: red"
+          />
           <Typography>
             {{ user.value.firstName }} {{ user.value.lastName }}
           </Typography>
@@ -98,7 +107,7 @@ const searchedSelectedUsers = computed(() => {
 
 <style lang="scss" scoped>
 .users-column {
-  height: 220px;
+  height: 420px;
 
   @include flexible(stretch, stretch, column, $gap: 8px);
 

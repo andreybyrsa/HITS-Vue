@@ -6,7 +6,10 @@
     :data="teams"
     :search-by="['name', 'description']"
     :filters="teamsFilters"
+    :checked-data-actions="checkedTeamsActions"
+    v-model="checkedTeams"
     :dropdown-actions-menu="dropdownTeamsActions"
+    :isCheckbox="user?.role === 'PROJECT_OFFICE'"
   />
 
   <DeleteModal
@@ -33,6 +36,11 @@
     @close-modal="closeConfirmModalCanceled"
     @action="currentInvitation && handleRevokeTeam(currentInvitation)"
   />
+  <SendTeamsOnMarketModal
+    :is-opened="isOpenSendTeamsModal"
+    :teams="sendingTeamsOnMarket"
+    @close-modal="closeSendTeamsModal"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -46,6 +54,7 @@ import {
   TableColumn,
   DropdownMenuAction,
   TableHeader,
+  CheckedDataAction,
 } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
@@ -71,6 +80,7 @@ import {
 } from '@Utils/sendParallelRequests'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import { IdeaMarket } from '@Domain/IdeaMarket'
+import SendTeamsOnMarketModal from '@Components/Modals/SendTeamsOnMarketModal/SendTeamsOnMarketModal.vue'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -87,6 +97,10 @@ const teams = defineModel<Team[]>({ required: true })
 const ideas = ref<IdeaMarket[]>([])
 const skills = ref<Skill[]>([])
 const profile = ref<Profile>()
+
+const checkedTeams = ref<Team[]>([])
+const sendingTeamsOnMarket = ref<Team[]>([])
+const isOpenSendTeamsModal = ref<boolean>(false)
 
 const invitationsTeamToIdeaStore = useInvitationsTeamToIdeaStore()
 const { ideaInvitations } = storeToRefs(invitationsTeamToIdeaStore)
@@ -264,6 +278,17 @@ const dropdownTeamsActions = computed<DropdownMenuAction<Team>[]>(() => [
   //         : openConfirmModalAccepted(),
   //   }
   // }),
+])
+
+const checkedTeamsActions = computed<CheckedDataAction<Team>[]>(() => [
+  {
+    label: 'Отправить на биржу',
+    className: 'btn-primary',
+    statement:
+      user.value?.role == 'PROJECT_OFFICE' &&
+      checkedTeams.value.every((team) => team.closed || !team.closed),
+    click: openSendTeamsModal,
+  },
 ])
 
 const teamsTableHeader = computed<TableHeader>(() => ({
@@ -539,6 +564,15 @@ function handleOpenDeleteModal(team: Team) {
 
 function handleCloseDeleteModal() {
   isOpenedTeamDeleteModal.value = false
+}
+
+function openSendTeamsModal(teams: Team[]) {
+  sendingTeamsOnMarket.value = [...teams]
+  isOpenSendTeamsModal.value = true
+}
+
+function closeSendTeamsModal() {
+  isOpenSendTeamsModal.value = false
 }
 
 function openConfirmModalAccepted() {
