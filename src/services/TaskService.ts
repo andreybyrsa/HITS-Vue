@@ -332,6 +332,27 @@ const changeName = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения названия задачи'))
 }
 
+const changeExecutorComment = async (
+  taskId: string,
+  executorComment: string,
+  token: string,
+): Promise<Task[] | Error> => {
+  return tasksMocksAxios
+    .putNoRequestBody<Task[]>(
+      `/scrum-service/task`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+        requestData: { executorComment },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
 const TaskService = {
   getAllTasksProject,
   getTaskMovementLog,
@@ -348,6 +369,7 @@ const TaskService = {
   changeLeaderComment,
   changeDescription,
   changeName,
+  changeExecutorComment,
 }
 
 export default TaskService

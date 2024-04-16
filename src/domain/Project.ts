@@ -61,6 +61,7 @@ interface Task {
   name: string
   description: string
   leaderComment?: string
+  executorComment?: string
 
   initiator: User
   executor: User | null

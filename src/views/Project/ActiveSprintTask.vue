@@ -19,10 +19,27 @@
             {{ task.executor?.firstName }} {{ task.executor?.lastName }}
           </div>
           <div
-            v-if="task.leaderComment"
-            class="text-ellipsis text-info"
+            class="d-flex gap-1 text-secondary text-info"
+            v-if="task.status === 'OnModification' && task.leaderComment"
           >
             {{ task.leaderComment }}
+          </div>
+          <div
+            class="d-flex gap-1 text-secondary text-info"
+            v-if="task.status === 'OnVerification' && task.executorComment"
+          >
+            <Typography>{{ task.executorComment }}</Typography>
+          </div>
+          <div
+            class="d-flex gap-1 text-secondary text-info"
+            v-if="
+              task.status === 'OnVerification' &&
+              user?.id === task.executor?.id &&
+              !task.executorComment &&
+              user?.role !== 'TEAM_LEADER'
+            "
+          >
+            <Typography>Добавьте комментарий</Typography>
           </div>
         </div>
         <div class="d-flex flex-wrap gap-2 w-100 mt-2">
@@ -40,6 +57,17 @@
         </div>
       </div>
     </div>
+
+    <TaskDescriptionModal
+      :is-opened="isOpenedTaskModal"
+      :task="(currentTask as Task)"
+      :user="(user as User)"
+      @close-modal="closeTaskModal"
+      @update-leader-comment="changeLeaderComment"
+      @update-description="changeDescription"
+      @update-name="changeName"
+      @update-executor-comment="changeExecutorComment"
+    />
   </div>
 </template>
 
@@ -57,6 +85,7 @@ import { User } from '@Domain/User'
 import TaskDescriptionModal from '@Components/Modals/SprintModal/TaskDescriptionModal.vue'
 import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.vue'
 import { useDebounceFn } from '@vueuse/core'
+import Typography from '@Components/Typography/Typography.vue'
 
 defineProps<ActiveSprintTaskProps>()
 
@@ -125,6 +154,18 @@ const changeName = useDebounceFn((input: string) => {
     const { id } = task
 
     tasksStore.changeName(id, input, token)
+  }
+}, 450)
+
+const changeExecutorComment = useDebounceFn((input: string) => {
+  const currentUser = user.value
+  const task = currentTask.value
+
+  if (currentUser?.token && task) {
+    const { token } = currentUser
+    const { id } = task
+
+    tasksStore.changeExecutorComment(id, input, token)
   }
 }, 450)
 </script>
