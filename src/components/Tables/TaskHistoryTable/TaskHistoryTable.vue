@@ -35,6 +35,8 @@ import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import TaskHistoryModal from '@Components/Modals/TaskHistoryModal/TaskHistoryModal.vue'
 
+import { getTaskStatus, getTaskStatusStyle } from '@Utils/getTaskStatus'
+
 const props = defineProps<TaskHistoryTableProps>()
 
 const userStore = useUserStore()
@@ -66,7 +68,9 @@ const taskHistoryTableColumns: TableColumn<TaskMovementLog>[] = [
     key: 'status',
     label: 'Статус',
     size: 'col-4',
-    getRowCellStyle: getTaskHistoryStatusStyle,
+    getRowCellStyle: getTaskStatusStyle,
+    getRowCellFormat: (status: TaskStatus) =>
+      getTaskStatus().translatedStatus[status],
   },
   {
     key: 'startDate',
@@ -102,34 +106,6 @@ function openTaskHistoryModal(log: TaskMovementLog) {
 }
 function closeTaskHistoryModal() {
   isOpenetTaskHistoryModal.value = false
-}
-
-function getTaskHistoryStatusStyle(status: TaskStatus) {
-  const initialClass = ['px-2', 'py-1', 'rounded-4']
-
-  if (status === 'OnModification') {
-    initialClass.push('bg-blueviolet-subtle', 'text-blueviolet')
-    return initialClass
-  }
-
-  if (status === 'NewTask') {
-    initialClass.push('bg-primary-subtle', 'text-primary')
-    return initialClass
-  }
-
-  if (status === 'InProgress') {
-    initialClass.push('bg-warning-subtle', 'text-warning')
-    return initialClass
-  }
-
-  if (status === 'OnVerification') {
-    initialClass.push('bg-warning-subtle', 'text-warning')
-    return initialClass
-  }
-  if (status === 'Done' || status === 'InBackLog') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
 }
 </script>
 
