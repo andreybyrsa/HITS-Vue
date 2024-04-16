@@ -6,12 +6,12 @@
     :dropdown-actions-menu="dropdownTaskHistoryActions"
   />
 
-  <TaskHistoryModal
+  <!-- <TaskHistoryModal
     v-if="currentLog"
     :is-opened="isOpenetTaskHistoryModal"
     :log="currentLog"
     @close-modal="closeTaskHistoryModal"
-  />
+  /> -->
 </template>
 
 <script setup lang="ts">

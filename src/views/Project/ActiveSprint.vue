@@ -25,6 +25,7 @@ import {
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
+import Project from './Project.vue'
 
 defineProps<ActiveSprintProps>()
 

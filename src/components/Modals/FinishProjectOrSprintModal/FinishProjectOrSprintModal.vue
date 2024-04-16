@@ -50,6 +50,8 @@ const sprintStore = useSprintsStore()
 
 const route = useRoute()
 
+const projectId: string = route.params.id as string
+
 const averageMark = ref<AverageMark[]>([])
 const isLoading = ref(false)
 const isLoadingRequest = ref(false)
@@ -116,21 +118,28 @@ const FinishProject = handleSubmit(async () => {
     isLoading.value = true
 
     const finishProjectParallelRequests: RequestConfig[] = [
+      // {
+      //   request: () => projectStore.changeProjectStatus(projectId, 'DONE', token),
+      //   refValue: ref(),
+      //   onErrorFunc: openErrorNotification,
+      // },
       {
-        request: () => projectStore.changeProjectStatus(projectId, 'DONE', token),
+        request: () =>
+          projectStore.finishProject(
+            projectId,
+            finishDate,
+            'DONE',
+            report.value,
+            token,
+          ),
         refValue: ref(),
         onErrorFunc: openErrorNotification,
       },
-      {
-        request: () => projectStore.finishProject(projectId, finishDate, token),
-        refValue: ref(),
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => projectStore.reportProject(projectId, report.value, token),
-        refValue: ref(),
-        onErrorFunc: openErrorNotification,
-      },
+      // {
+      //   request: () => projectStore.reportProject(projectId, report.value, token),
+      //   refValue: ref(),
+      //   onErrorFunc: openErrorNotification,
+      // },
     ]
 
     await sendParallelRequests(finishProjectParallelRequests)
@@ -183,7 +192,8 @@ const FinishSprint = handleSubmit(async (values) => {
           onErrorFunc: openErrorNotification,
         },
         {
-          request: () => SprintService.postSprintMarks(sprintId, sprintMarks, token),
+          request: () =>
+            SprintService.postSprintMarks(sprintId, projectId, sprintMarks, token),
           refValue: ref(),
           onErrorFunc: openErrorNotification,
         },
