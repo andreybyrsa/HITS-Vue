@@ -217,7 +217,7 @@ watch(
                   <Textarea
                     name="leaderComment"
                     placeholder="Комментарий"
-                    class-name="rounded"
+                    class-name="edit-task-model__comment rounded"
                     :model-value="props.task.leaderComment"
                     @blur="inputModeLeader = false"
                     @keyup.enter="inputModeLeader = false"
@@ -263,7 +263,7 @@ watch(
                   <Textarea
                     placeholder="Комментарий"
                     name="executorComment"
-                    class-name="rounded"
+                    class-name="edit-task-model__comment rounded"
                     :model-value="$props.task?.executorComment"
                     @input="(event: HTMLTargetEvent)=>emit('update-executor-comment', event.target.value)"
                     @blur="inputMode = false"
@@ -413,7 +413,7 @@ watch(
   />
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .edit-task-model {
   width: 1000px;
   display: flex;
@@ -434,19 +434,19 @@ watch(
   &__left-side {
     flex: 70%;
     margin-right: 8px;
-    max-height: 410.22px;
+    min-height: 422.4px;
     overflow-y: auto;
     overflow-x: hidden;
-
-    &__comment {
-      resize: none;
-      height: 100px;
-    }
   }
 
   &__right-side {
     flex: 30%;
     margin-left: 8px;
+  }
+
+  &__comment {
+    resize: none;
+    height: 90px;
   }
 }
 
@@ -460,11 +460,10 @@ watch(
 }
 
 .collapse-controller {
-  border-radius: 0;
-  background-color: $white-color;
+  border-radius: 0 !important;
+  background-color: $white-color !important;
+  justify-content: flex-start !important;
 
-  color: $primary-color;
-
-  @include flexible(center, flex-start);
+  color: $primary-color !important;
 }
 </style>
