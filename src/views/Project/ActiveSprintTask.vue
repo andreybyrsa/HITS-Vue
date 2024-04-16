@@ -22,21 +22,24 @@
             class="d-flex gap-1 text-secondary text-info"
             v-if="task.status === 'OnModification' && task.leaderComment"
           >
-            {{ task.leaderComment }}
+            <Typography>
+              <div class="comment">{{ task.leaderComment }}</div>
+            </Typography>
           </div>
           <div
             class="d-flex gap-1 text-secondary text-info"
             v-if="task.status === 'OnVerification' && task.executorComment"
           >
-            <Typography>{{ task.executorComment }}</Typography>
+            <Typography
+              ><div class="comment">{{ task.executorComment }}</div></Typography
+            >
           </div>
           <div
             class="d-flex gap-1 text-secondary text-info"
             v-if="
               task.status === 'OnVerification' &&
               user?.id === task.executor?.id &&
-              !task.executorComment &&
-              user?.role !== 'TEAM_LEADER'
+              !task.executorComment
             "
           >
             <Typography>Добавьте комментарий</Typography>
@@ -171,7 +174,7 @@ const changeExecutorComment = useDebounceFn((input: string) => {
 </script>
 
 <style lang="scss" scoped>
-.text-ellipsis {
-  @include textEllipsis(3);
+.comment {
+  @include textEllipsis(2);
 }
 </style>
