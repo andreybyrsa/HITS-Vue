@@ -223,7 +223,9 @@ function checkDisabledButton() {
           </div>
           <div class="d-flex flex-column mt-3">
             <ProjectTask
-              v-for="task in backlogTasks"
+              v-for="task in backlogTasks.sort((a, b) =>
+                a.position && b.position ? a.position - b.position : 0,
+              )"
               :key="task.id"
               @click="moveTaskToNewTasks(task)"
               :task="task"

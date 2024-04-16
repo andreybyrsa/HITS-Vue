@@ -129,7 +129,6 @@ async function checkMove(oldIndex: number, newIndex: number) {
     const changeTasks = sortTasks.value.filter(
       ({ status }) => status === 'InBackLog',
     )
-    console.log(currentTask.name)
 
     await tasksStore.changePosition(changeTasks, currentTask, newIndex + 1, token)
   }

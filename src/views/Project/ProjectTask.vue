@@ -85,7 +85,7 @@ function closeUpdateNewTask() {
           :class="getClassBgColor(task.status)"
           v-tooltip="getTooltipByBlock(task.status)"
         >
-          {{ !task.sprintId ? task.position : undefined }}
+          {{ task.sprintId ? undefined : task.position }}
         </div>
         <div
           class="task__left-name"

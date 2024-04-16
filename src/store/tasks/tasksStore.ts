@@ -7,6 +7,7 @@ import { User } from '@Domain/User'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 import { TaskStatus, Task, TaskMovementLog } from '@Domain/Project'
+import useSprintsStore from '@Store/sprints/sprintsStore'
 
 const useTasksStore = defineStore('tasks', {
   state: (): InitialState => ({
@@ -58,12 +59,19 @@ const useTasksStore = defineStore('tasks', {
     },
 
     async changeExecutorTask(taskId: string, user: User | null, token: string) {
+      console.log(taskId, user)
       const response = await TaskService.changeExecutorTask(taskId, user, token)
+      console.log(response)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const currentTask = this.tasks.find(({ id }) => id === taskId)
+        const sprintStore = useSprintsStore()
+
+        const currentTask = sprintStore.activeSprint?.tasks.find(
+          ({ id }) => id === taskId,
+        )
+
         if (currentTask) {
           currentTask.executor = user
         }
@@ -117,6 +125,9 @@ const useTasksStore = defineStore('tasks', {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         this.tasks.push(response)
+
+        const sprintsStore = useSprintsStore()
+        if (task.sprintId) sprintsStore.activeSprint?.tasks.push(response)
       }
     },
 
@@ -135,28 +146,25 @@ const useTasksStore = defineStore('tasks', {
     async createTaskLog(
       taskId: string,
       user: User | null,
-      newStatus: TaskStatus,
+      status: TaskStatus,
       token: string,
     ) {
-      const currentTask = this.tasks.find(({ id }) => id === taskId)
-      const taskLogs = await TaskService.getTaskMovementLog(taskId, token)
+      const sprintsStore = useSprintsStore()
+      const task = sprintsStore.activeSprint?.tasks.find(({ id }) => id === taskId)
+      const startDate = new Date().toJSON().toString()
 
-      if (taskLogs instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', taskLogs.message)
-      }
-
-      if (currentTask && user) {
+      if (task && user) {
         const log: TaskMovementLog = {
           id: '',
-          task: currentTask,
-          executor: currentTask.executor,
-          user: user,
-          startDate: new Date().toJSON().toString(),
+          task,
+          executor: task.executor,
+          user,
+          startDate,
           endDate: '',
-          status: newStatus,
+          status,
         }
 
-        const response = await TaskService.createTaskLog(log, token)
+        const response = await TaskService.createTaskLog(log, taskId, token)
 
         if (response instanceof Error) {
           useNotificationsStore().createSystemNotification(
@@ -164,7 +172,7 @@ const useTasksStore = defineStore('tasks', {
             response.message,
           )
         } else {
-          currentTask.status = newStatus
+          task.status = status
         }
       }
     },

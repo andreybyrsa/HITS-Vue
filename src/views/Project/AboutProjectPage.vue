@@ -17,7 +17,7 @@ defineProps<ProjectProps>()
           <Button
             variant="light"
             class-name="collapse-controller w-100"
-            v-collapse="project.id"
+            v-collapse:openOnMount="project.id"
           >
             Описание
           </Button>

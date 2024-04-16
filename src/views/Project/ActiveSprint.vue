@@ -52,9 +52,8 @@ const onModificationTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'OnModification',
     tasks:
-      tasks.value.filter(
-        ({ status, sprintId }) =>
-          status === 'OnModification' && sprintId === activeSprint?.value?.id,
+      activeSprint?.value?.tasks.filter(
+        ({ status }) => status === 'OnModification',
       ) ?? [],
   }
 })
@@ -62,29 +61,23 @@ const newTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'NewTask',
     tasks:
-      tasks.value.filter(
-        ({ status, sprintId }) =>
-          status === 'NewTask' && sprintId === activeSprint?.value?.id,
-      ) ?? [],
+      activeSprint?.value?.tasks.filter(({ status }) => status === 'NewTask') ?? [],
   }
 })
 const inProgressTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'InProgress',
     tasks:
-      tasks.value.filter(
-        ({ status, sprintId }) =>
-          status === 'InProgress' && sprintId === activeSprint?.value?.id,
-      ) ?? [],
+      activeSprint?.value?.tasks.filter(({ status }) => status === 'InProgress') ??
+      [],
   }
 })
 const onVerificationTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'OnVerification',
     tasks:
-      tasks.value.filter(
-        ({ status, sprintId }) =>
-          status === 'OnVerification' && sprintId === activeSprint?.value?.id,
+      activeSprint?.value?.tasks.filter(
+        ({ status }) => status === 'OnVerification',
       ) ?? [],
   }
 })
@@ -92,10 +85,7 @@ const doneTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'Done',
     tasks:
-      tasks.value.filter(
-        ({ status, sprintId }) =>
-          status === 'Done' && sprintId === activeSprint?.value?.id,
-      ) ?? [],
+      activeSprint?.value?.tasks.filter(({ status }) => status === 'Done') ?? [],
   }
 })
 
@@ -245,7 +235,6 @@ function openBurndownModal() {
 function closeBurndownModal() {
   isOpenedBurndownModal.value = false
 }
-console.log(activeSprint)
 </script>
 
 <template>
@@ -342,12 +331,12 @@ console.log(activeSprint)
     @close-modal="closeCreateNewTask"
     :sprint="activeSprint"
   />
-  <!-- <BurndownModal
+  <BurndownModal
     v-if="activeSprint"
     :is-opened="isOpenedBurndownModal"
     @close-modal="closeBurndownModal"
     :sprint="activeSprint"
-  /> -->
+  />
 </template>
 
 <style lang="scss" scoped>
