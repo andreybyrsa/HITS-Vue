@@ -90,8 +90,8 @@ const getAverageMarkProject = async (
   projectId: string,
   token: string,
 ): Promise<AverageMark[] | Error> => {
-  return averageMarkMocksAxios // Подгружаем сразу сформированный массив оценок за все спринты
-    .get<AverageMark[]>( // БЭК считает среднюю арифмечискую
+  return averageMarkMocksAxios
+    .get<AverageMark[]>(
       `/scrum-service/project/marks/${projectId}/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -108,39 +108,20 @@ const getAverageMarkProject = async (
     )
 }
 
-// const getReportProject = async (
-//   projectId: string,
-//   token: string,
-// ): Promise<ReportProject[] | Error> => {
-//   return reportProjectMocksAxios
-//     .get<ReportProject[]>(
-//       '/reportProject', // FIX ROUTE
-//       {
-//         headers: { Authorization: `Bearer ${token}` },
-//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-//       },
-//       {
-//         formatter: (reportProject) =>
-//           formatGetReportProject(reportProject, projectId),
-//       },
-//     )
-//     .then((response) => response.data)
-//     .catch((error) => handleAxiosError(error, 'Ошибка получения отчета за проект'))
-// }
-
 // --- POST --- //
 const convertIdeaToProject = async (
   ideaMarket: IdeaMarket,
   token: string,
 ): Promise<Project | Error> => {
   if (MODE === 'DEVELOPMENT') {
-    const { team, name, description, customer, initiator } = ideaMarket
+    const { team, name, description, customer, initiator, ideaId } = ideaMarket
     const currentDate = new Date().toJSON().toString()
     if (team) {
       const { members, name: teamName, id: teamId } = team
 
       const project: Project = {
-        id: '0000000',
+        id: '00000',
+        ideaId,
         name,
         description,
         customer,

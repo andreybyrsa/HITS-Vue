@@ -1472,6 +1472,7 @@ export const averageMarkMocks: AverageMark[] = [
 export const projectMocks: Project[] = [
   {
     id: '0',
+    ideaId: '0',
     name: 'Чат-бот в telegram для запросов и обращений к HR вне системы 1С',
     description: ideasMocks[1].description,
     customer: ideasMocks[1].customer,
@@ -1543,7 +1544,7 @@ export const projectMocks: Project[] = [
   },
   {
     id: '1',
-
+    ideaId: '1',
     name: 'Прогнозирование закупок арматуры на основе исторических данных и обогащением доп. критериями',
     description: ideasMocks[1].description,
     customer: ideasMocks[1].customer,

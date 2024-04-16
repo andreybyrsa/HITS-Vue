@@ -15,6 +15,7 @@ type TaskStatus =
 
 interface Project {
   id: string
+  ideaId: string
 
   name: string
   description: string

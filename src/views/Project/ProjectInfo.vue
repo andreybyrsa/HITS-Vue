@@ -42,7 +42,7 @@ function navigateToIdea(project: Project) {
       canGoBack: true,
     },
   }
-  navigateToAliasRoute('project', `/idea-project/${project.id}`, ideaRoute)
+  navigateToAliasRoute('project', `/idea-project/${project.ideaId}`, ideaRoute)
 }
 
 function closeFinishProjectModal() {

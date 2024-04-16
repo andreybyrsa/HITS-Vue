@@ -38,7 +38,7 @@ const tasksStore = useTasksStore()
 const { tasks } = storeToRefs(tasksStore)
 
 const route = useRoute()
-const projectId = route.params.id.toString()
+const projectId = route.params.projectId.toString()
 
 const initialBackLogTasks = computed<Task[]>(() =>
   tasks.value.filter((task) => task.status === 'InBackLog'),
@@ -101,9 +101,10 @@ const { handleSubmit, setValues, values } = useForm<Sprint>({
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     goal: () => true,
-    startDate: (value: string) => Validation.checkDate(value) || 'Поле не заполнено',
+    startDate: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     finishDate: (value: string) =>
-      Validation.validateDates(values.startDate, value) || 'Поле не заполнено',
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
   },
   initialValues: {
     name: props.sprint?.name ?? `Спринт ${sprints.value.length + 1}`,
@@ -125,6 +126,7 @@ function moveTaskToNewTasks(currentTask: Task) {
 }
 
 function moveTaskToBacklog(currentTask: Task) {
+  if (currentTask.status !== 'InBackLog') return
   newSprintTasks.value = newSprintTasks.value.filter((task) => task !== currentTask)
   backlogTasks.value.push(currentTask)
   clearTooltips()

@@ -62,7 +62,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const projectId = route.params.id.toString()
+    const projectId = route.params.projectId.toString()
 
     if (!props.sprint) {
       isLoadingRequest.value = true
@@ -112,17 +112,12 @@ const FinishProject = handleSubmit(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const projectId = route.params.id.toString()
+    const projectId = route.params.projectId.toString()
     const finishDate = new Date().toJSON().toString()
 
     isLoading.value = true
 
     const finishProjectParallelRequests: RequestConfig[] = [
-      // {
-      //   request: () => projectStore.changeProjectStatus(projectId, 'DONE', token),
-      //   refValue: ref(),
-      //   onErrorFunc: openErrorNotification,
-      // },
       {
         request: () =>
           projectStore.finishProject(
@@ -135,11 +130,6 @@ const FinishProject = handleSubmit(async () => {
         refValue: ref(),
         onErrorFunc: openErrorNotification,
       },
-      // {
-      //   request: () => projectStore.reportProject(projectId, report.value, token),
-      //   refValue: ref(),
-      //   onErrorFunc: openErrorNotification,
-      // },
     ]
 
     await sendParallelRequests(finishProjectParallelRequests)

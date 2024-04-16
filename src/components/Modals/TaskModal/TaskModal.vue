@@ -73,7 +73,7 @@ const handleCreateTask = handleSubmit(async (task) => {
   if (currentUser?.token) {
     isLoading.value = true
     const { token } = currentUser
-    const projectId = route.params.id.toString()
+    const projectId = route.params.projectId.toString()
     task.projectId = projectId
 
     if (props.sprint) {

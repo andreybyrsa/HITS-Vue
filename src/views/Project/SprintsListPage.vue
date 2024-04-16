@@ -25,7 +25,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const projectId = route.params.id.toString()
+    const projectId = route.params.projectId.toString()
 
     await sprintsStore.getAllSprints(projectId, token)
   }

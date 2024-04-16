@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
@@ -45,49 +45,49 @@ const isLoading = ref(false)
 const ProjectStore = useProjectsStore()
 
 watchImmediate(
-  () => route.params.id,
+  () => route.params.projectId,
   async () => {
-    return await getProject()
+    await getProject()
   },
 )
-
-onMounted(getProject)
 
 async function getProject() {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const projectId = route.params.id.toString()
+    if (route.params.projectId) {
+      const projectId = route.params.projectId.toString()
 
-    isLoading.value = true
+      isLoading.value = true
 
-    const projectParallelRequests: RequestConfig[] = [
-      {
-        request: () => ProjectStore.getProject(projectId, token),
-        refValue: project,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => sprintsStore.getActiveSprint(projectId, token),
-        refValue: activeSprint,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => tasksStore.getAllTasks(projectId, token),
-        refValue: tasks,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => tagsStore.getAllTags(token),
-        refValue: tags,
-        onErrorFunc: openErrorNotification,
-      },
-    ]
+      const projectParallelRequests: RequestConfig[] = [
+        {
+          request: () => ProjectStore.getProject(projectId, token),
+          refValue: project,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => sprintsStore.getActiveSprint(projectId, token),
+          refValue: activeSprint,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => tasksStore.getAllTasks(projectId, token),
+          refValue: tasks,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => tagsStore.getAllTags(token),
+          refValue: tags,
+          onErrorFunc: openErrorNotification,
+        },
+      ]
 
-    await sendParallelRequests(projectParallelRequests)
+      await sendParallelRequests(projectParallelRequests)
 
-    isLoading.value = false
+      isLoading.value = false
+    }
   }
 }
 </script>
