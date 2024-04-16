@@ -1467,6 +1467,33 @@ export const averageMarkMocks: AverageMark[] = [
     mark: 7.8,
     tasks: [tasksMocks[11]],
   },
+  {
+    projectId: '0',
+    userId: '2',
+    firstName: 'Менеджер',
+    lastName: 'Менеджер',
+    projectRole: 'MEMBER',
+    mark: 7.8,
+    tasks: [tasksMocks[11]],
+  },
+  {
+    projectId: '0',
+    userId: '2',
+    firstName: 'Менеджер',
+    lastName: 'Менеджер',
+    projectRole: 'MEMBER',
+    mark: 7.8,
+    tasks: [tasksMocks[11]],
+  },
+  {
+    projectId: '0',
+    userId: '2',
+    firstName: 'Менеджер',
+    lastName: 'Менеджер',
+    projectRole: 'MEMBER',
+    mark: 7.8,
+    tasks: [tasksMocks[11]],
+  },
 ]
 
 export const projectMocks: Project[] = [

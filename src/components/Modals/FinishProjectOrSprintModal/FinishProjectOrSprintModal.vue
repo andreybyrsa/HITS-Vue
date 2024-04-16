@@ -227,7 +227,7 @@ const FinishSprint = handleSubmit(async (values) => {
 
         <div
           v-if="sprint"
-          class="d-flex flex-column gap-2"
+          class="finish-project__mark d-flex flex-column gap-2"
         >
           <div
             class="d-flex gap-3"
@@ -258,7 +258,7 @@ const FinishSprint = handleSubmit(async (values) => {
 
         <div
           v-else
-          class="d-flex flex-column gap-2"
+          class="finish-project__mark d-flex flex-column gap-2"
         >
           <div
             class="d-flex gap-3"
@@ -370,6 +370,12 @@ const FinishSprint = handleSubmit(async (values) => {
     &-name {
       @include textEllipsis(1);
     }
+  }
+
+  &__mark {
+    height: 100%;
+    max-height: 220px;
+    overflow-y: scroll;
   }
 
   &__report {
