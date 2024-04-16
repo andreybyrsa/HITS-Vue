@@ -41,6 +41,7 @@ const tasksStore = useTasksStore()
 const route = useRoute()
 
 const choosenTags = ref<Tag[]>([])
+
 function confirmedTags(tagsValue: Tag[]) {
   return tagsValue.filter(({ confirmed }) => confirmed)
 }
@@ -60,10 +61,12 @@ const { handleSubmit, setValues } = useForm<Task>({
 })
 
 watch(
-  () => props.task,
-  (task) => {
-    choosenTags.value = task?.tags ?? []
-    setValues({ ...task })
+  () => props.isOpened,
+  () => {
+    if (props.task) {
+      choosenTags.value = props.task.tags
+      setValues(props.task)
+    }
   },
 )
 
