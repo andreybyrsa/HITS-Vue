@@ -107,11 +107,29 @@ const handleUpdateTask = handleSubmit(async (task) => {
             "
           >
             <Textarea
-              label="Комментарий лидера*"
+              label="Комментарий лидера"
               class-name="add-task-modal__description rounded"
               placeholder="Комментарий"
               name="leaderComment"
               :model-value="$props.task?.leaderComment"
+              validate-on-update
+            />
+          </div>
+
+          <div
+            class="pb-3"
+            v-if="
+              props.task?.status === 'OnVerification' &&
+              user?.role !== 'TEAM_LEADER' &&
+              user?.id === props.task.executor?.id
+            "
+          >
+            <Textarea
+              label="Комментарий к задаче"
+              class-name="add-task-modal__description rounded"
+              placeholder="Комментарий"
+              name="executorComment"
+              :model-value="$props.task?.executorComment"
               validate-on-update
             />
           </div>

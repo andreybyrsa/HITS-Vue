@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useForm } from 'vee-validate'
 
 import { RouteRecordRaw } from 'vue-router'
 import { useDateFormat } from '@vueuse/core'
@@ -11,18 +12,23 @@ import {
 } from '@Components/Modals/SprintModal/TaskDescriptionModal.types'
 
 import Button from '@Components/Button/Button.vue'
+import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
+
+import Validation from '@Utils/Validation'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Profile from '@Components/Modals/ProfileModal/ProfileModal.vue'
 import TaskHistoryTable from '@Components/Tables/TaskHistoryTable/TaskHistoryTable.vue'
 import EditTaskModal from './EditTaskModal.vue'
 
 import useUserStore from '@Store/user/userStore'
+import useTasksStore from '@Store/tasks/tasksStore'
 
 import { getTaskStatus } from '@Utils/getTaskStatus'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 import { Task } from '@Domain/Project'
 
@@ -30,10 +36,25 @@ const props = defineProps<TaskDescriptionModalProps>()
 const emit = defineEmits<TaskDescriptionModalEmits>()
 
 const userStore = useUserStore()
+const tasksStore = useTasksStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedEditTask = ref(false)
 const updatingTask = ref<Task>()
+const inputMode = ref(false)
+const inputModeLeader = ref(false)
+
+function convertToInput(comment: string) {
+  if (comment === 'leader' && user.value?.role === 'TEAM_LEADER') {
+    inputModeLeader.value = true
+  } else if (
+    comment === 'executor' &&
+    user.value?.id === props.task.executor?.id &&
+    user.value?.role !== 'TEAM_LEADER'
+  ) {
+    inputMode.value = true
+  } else return
+}
 
 function getFormattedDate(date: string) {
   if (date) {
@@ -107,6 +128,22 @@ function openEditTaskModal(task: Task) {
 function closeUpdateNewTask() {
   isOpenedEditTask.value = false
 }
+
+const { handleSubmit, setValues } = useForm<Task>({
+  validationSchema: {
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+    description: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Это обязательное поле',
+  },
+})
+
+watch(
+  () => props.task,
+  (task) => {
+    setValues({ ...task })
+  },
+)
 </script>
 
 <template>
@@ -156,9 +193,7 @@ function closeUpdateNewTask() {
 
             <li
               class="list-group-item p-0 overflow-hidden"
-              v-if="
-                props.task.status === 'OnModification' && props.task.leaderComment
-              "
+              v-if="props.task.status === 'OnModification'"
             >
               <Button
                 variant="light"
@@ -168,8 +203,77 @@ function closeUpdateNewTask() {
                 Комментарий лидера
               </Button>
               <Collapse :id="'leaderComment_' + props.task.id">
-                <div class="p-2">
+                <div
+                  class="p-2"
+                  v-if="props.task.leaderComment && !inputModeLeader"
+                  @click="convertToInput('leader')"
+                >
                   {{ props.task.leaderComment }}
+                </div>
+                <div
+                  class="p-2"
+                  v-else-if="!$props.task.leaderComment && !inputModeLeader"
+                  @click="convertToInput('leader')"
+                >
+                  Комментарий не добавлен
+                </div>
+                <div v-if="inputModeLeader">
+                  <Textarea
+                    name="leaderComment"
+                    placeholder="Комментарий"
+                    class-name="rounded"
+                    :model-value="props.task.leaderComment"
+                    @blur="inputModeLeader = false"
+                    @keyup.enter="inputModeLeader = false"
+                    @input="(event: HTMLTargetEvent)=>emit('update-leader-comment', event.target.value)"
+                  />
+                </div>
+              </Collapse>
+            </li>
+
+            <li
+              class="list-group-item p-0 overflow-hidden"
+              v-if="
+                props.task.status === 'OnVerification' ||
+                props.task.status === 'OnModification'
+              "
+            >
+              <Button
+                variant="light"
+                class-name="collapse-controller w-100"
+                v-collapse:openOnMount="'executorComment_' + props.task.id"
+              >
+                Комментарий к задаче
+              </Button>
+              <Collapse :id="'executorComment_' + props.task.id">
+                <div v-if="props.task.executorComment && !inputMode">
+                  <div
+                    class="p-2"
+                    @click="convertToInput('executor')"
+                  >
+                    {{ props.task.executorComment }}
+                  </div>
+                </div>
+
+                <div v-else-if="!props.task.executorComment && !inputMode">
+                  <div
+                    class="p-2"
+                    @click="convertToInput('executor')"
+                  >
+                    Комментарий не добавлен
+                  </div>
+                </div>
+                <div v-if="inputMode">
+                  <Textarea
+                    placeholder="Комментарий"
+                    name="executorComment"
+                    class-name="rounded"
+                    :model-value="$props.task?.executorComment"
+                    @input="(event: HTMLTargetEvent)=>emit('update-executor-comment', event.target.value)"
+                    @blur="inputMode = false"
+                    @keyup.enter="inputMode = false"
+                    validate-on-update
+                  />
                 </div>
               </Collapse>
             </li>
@@ -340,6 +444,7 @@ function closeUpdateNewTask() {
     margin-left: 8px;
   }
 }
+
 .task-information {
   font-size: 1.5rem;
 
