@@ -16,7 +16,7 @@
             <Typography>{{ task.name }}</Typography>
           </div>
           <div class="d-flex gap-1 text-secondary">
-            {{ getExecutorTask(task.id) }}
+            {{ task.executor?.firstName }} {{ task.executor?.lastName }}
           </div>
           <div
             class="d-flex gap-1 text-secondary text-info"
@@ -74,19 +74,12 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const tasksStore = useTasksStore()
-const { tasks } = storeToRefs(tasksStore)
 
 const currentTask = ref<Task>()
 const isOpenedTaskModal = ref(false)
 
 function getColorBand(task: Task) {
   return task.executor?.id === user.value?.id ? '#0D6EFD' : '#9E9E9E'
-}
-
-function getExecutorTask(taskId: string) {
-  const currentTask = tasks.value.find(({ id }) => id === taskId)
-  if (currentTask?.executor)
-    return `${currentTask.executor.firstName} ${currentTask.executor.lastName}`
 }
 
 function hexToRgb(hex: string) {

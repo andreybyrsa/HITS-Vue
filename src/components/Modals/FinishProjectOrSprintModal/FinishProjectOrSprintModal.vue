@@ -50,6 +50,8 @@ const sprintStore = useSprintsStore()
 
 const route = useRoute()
 
+const projectId: string = route.params.id as string
+
 const averageMark = ref<AverageMark[]>([])
 const isLoading = ref(false)
 const isLoadingRequest = ref(false)
@@ -60,7 +62,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    const projectId = route.params.id.toString()
+    const projectId = route.params.projectId.toString()
 
     if (!props.sprint) {
       isLoadingRequest.value = true
@@ -110,24 +112,21 @@ const FinishProject = handleSubmit(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const projectId = route.params.id.toString()
+    const projectId = route.params.projectId.toString()
     const finishDate = new Date().toJSON().toString()
 
     isLoading.value = true
 
     const finishProjectParallelRequests: RequestConfig[] = [
       {
-        request: () => projectStore.changeProjectStatus(projectId, 'DONE', token),
-        refValue: ref(),
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => projectStore.finishProject(projectId, finishDate, token),
-        refValue: ref(),
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => projectStore.reportProject(projectId, report.value, token),
+        request: () =>
+          projectStore.finishProject(
+            projectId,
+            finishDate,
+            'DONE',
+            report.value,
+            token,
+          ),
         refValue: ref(),
         onErrorFunc: openErrorNotification,
       },
@@ -183,7 +182,8 @@ const FinishSprint = handleSubmit(async (values) => {
           onErrorFunc: openErrorNotification,
         },
         {
-          request: () => SprintService.postSprintMarks(sprintId, sprintMarks, token),
+          request: () =>
+            SprintService.postSprintMarks(sprintId, projectId, sprintMarks, token),
           refValue: ref(),
           onErrorFunc: openErrorNotification,
         },
@@ -227,7 +227,7 @@ const FinishSprint = handleSubmit(async (values) => {
 
         <div
           v-if="sprint"
-          class="d-flex flex-column gap-2"
+          class="finish-project__mark d-flex flex-column gap-2"
         >
           <div
             class="d-flex gap-3"
@@ -258,7 +258,7 @@ const FinishSprint = handleSubmit(async (values) => {
 
         <div
           v-else
-          class="d-flex flex-column gap-2"
+          class="finish-project__mark d-flex flex-column gap-2"
         >
           <div
             class="d-flex gap-3"
@@ -370,6 +370,12 @@ const FinishSprint = handleSubmit(async (values) => {
     &-name {
       @include textEllipsis(1);
     }
+  }
+
+  &__mark {
+    height: 100%;
+    max-height: 220px;
+    overflow-y: scroll;
   }
 
   &__report {

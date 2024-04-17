@@ -189,12 +189,7 @@ async function getActiveProjects() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    console.log(activeProjects.value)
-    console.log(response)
-
     activeProjects.value = response
-
-    console.log(activeProjects.value)
 
     if (activeProjects.value.length === 0) {
       updateRolesByTabProject()

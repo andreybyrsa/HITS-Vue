@@ -31,32 +31,23 @@ function getTaskStatus(): GetTaskStatusType {
 function getTaskStatusStyle(status: TaskStatus) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
 
-  if (status === 'InProgress') {
-    initialClass.push('bg-success-subtle', 'text-success')
+  if (status === 'OnModification') {
+    initialClass.push('bg-info-subtle', 'text-info')
     return initialClass
   }
-
-  if (status === 'Done') {
+  if (status === 'NewTask') {
+    initialClass.push('bg-primary-subtle', 'text-primary')
+    return initialClass
+  }
+  if (status === 'InProgress') {
     initialClass.push('bg-warning-subtle', 'text-warning')
     return initialClass
   }
-
-  if (status === 'OnModification') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
-
   if (status === 'OnVerification') {
-    initialClass.push('bg-success-subtle', 'text-success')
+    initialClass.push('bg-warning-subtle', 'text-warning')
     return initialClass
   }
-
-  if (status === 'InBackLog') {
-    initialClass.push('bg-success-subtle', 'text-success')
-    return initialClass
-  }
-
-  if (status === 'NewTask') {
+  if (status === 'Done' || status === 'InBackLog') {
     initialClass.push('bg-success-subtle', 'text-success')
     return initialClass
   }
