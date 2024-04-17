@@ -32,7 +32,7 @@ function getTaskStatusStyle(status: TaskStatus) {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
 
   if (status === 'OnModification') {
-    initialClass.push('bg-blueviolet-subtle', 'text-blueviolet')
+    initialClass.push('bg-info-subtle', 'text-info')
     return initialClass
   }
   if (status === 'NewTask') {
