@@ -34,8 +34,12 @@ import { Sprint, SprintStatus } from '@Domain/Project'
 import { getSprintStatus, getSprintStatusStyle } from '@Utils/getSprintStatus'
 
 import useUserStore from '@Store/user/userStore'
+import useSprintsStore from '@Store/sprints/sprintsStore'
 
 const props = defineProps<SprintsTableProps>()
+
+const sprintsStore = useSprintsStore()
+const { activeSprint } = storeToRefs(sprintsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -129,7 +133,7 @@ function openSprintModal() {
 
 function OpenEditSprintModal(currentSprint: Sprint) {
   if (currentSprint.status === 'ACTIVE') {
-    sprint.value = currentSprint
+    sprint.value = activeSprint?.value
     isOpenedSprintModal.value = true
   }
 }
