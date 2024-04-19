@@ -3,18 +3,28 @@ import axios from 'axios'
 import { API_URL } from '@Main'
 
 import { Profile, ProfileFullName } from '@Domain/Profile'
-import { User, UserTelegram } from '@Domain/User'
+import { UserTelegram } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
 
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
-import { profilesMocks, usersTelegramMocks } from '@Utils/getMocks'
+import {
+  profilesMocks,
+  teamsExperienceMocks,
+  usersTelegramMocks,
+} from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
+import { TeamExperience } from '@Domain/Team'
 
 const profileUserAxios = defineAxios(profilesMocks)
+const teamExperienceAxios = defineAxios(teamsExperienceMocks)
+
+function filterTeamExperienceByUserId(teamExperience: TeamExperience[], id: string) {
+  return teamExperience.filter(({ userId }) => userId == id)
+}
 const usersTelegramAxios = defineAxios(usersTelegramMocks)
 
 // --- GET --- //
@@ -24,7 +34,7 @@ const getUserProfile = async (
 ): Promise<Profile | Error> => {
   return profileUserAxios
     .get(
-      `/profile/${id}`,
+      `/ideas-service/profile/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -40,10 +50,30 @@ const getProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return axios
-    .get(`${API_URL}/profile/avatar/get/${id}`, {
+    .get(`${API_URL}/ideas-service/profile/avatar/get/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
+}
+
+const getTeamExperience = async (
+  userId: string,
+  token: string,
+): Promise<TeamExperience[] | Error> => {
+  return teamExperienceAxios
+    .get<TeamExperience[]>(
+      `${API_URL}/ideas-service/profile/avatar/get`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (teamExperience) =>
+          filterTeamExperienceByUserId(teamExperience, userId),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
 }
@@ -52,14 +82,14 @@ const getUserTelegram = async (
   userId: string,
   token: string,
 ): Promise<UserTelegram | Error> => {
-  return usersTelegramAxios
+  return axios
     .get(
-      `/profile/telegram/${userId}`, // fix
+      `${API_URL}/ideas-service/profile/telegram/${userId}`, // fix
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { userId } },
+      // { params: { userId } },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки телеграмма'))
@@ -71,7 +101,7 @@ const saveProfileSkills = async (
   token: string,
 ): Promise<Skill[] | Error> => {
   return axios
-    .post(`${API_URL}/profile/skills/save`, skills, {
+    .post(`${API_URL}/ideas-service/profile/skills/save`, skills, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -84,7 +114,7 @@ const uploadProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return axios
-    .post(`${API_URL}/profile/avatar/upload`, formData, {
+    .post(`${API_URL}/ideas-service/profile/avatar/upload`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
@@ -98,9 +128,10 @@ const uploadProfileAvatar = async (
 const updateUserFullName = async (
   fullName: ProfileFullName,
   token: string,
+  id: string,
 ): Promise<Success | Error> => {
   return axios
-    .put(`${API_URL}/profile/fullname/update`, fullName, {
+    .put(`${API_URL}/profile/update/${id}`, fullName, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -114,7 +145,7 @@ const createUserTelegram = async (
 ): Promise<UserTelegram | Error> => {
   return usersTelegramAxios
     .postNoRequestBody<UserTelegram>(
-      `${API_URL}/profile/telegram/add-tag`,
+      `${API_URL}/ideas-service/profile/telegram/add-tag`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -137,7 +168,7 @@ const updateTelegramTag = async (
 ): Promise<Success | Error> => {
   return usersTelegramAxios
     .put<Success>(
-      `${API_URL}/profile/telegram/update/`,
+      `${API_URL}/ideas-service/profile/telegram/update/`,
       userTelegram,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -158,7 +189,7 @@ const updateVisibilityOfTag = async (
 ): Promise<Success | Error> => {
   return usersTelegramAxios
     .putNoRequestBody<Success>(
-      `${API_URL}/profile/telegram/visibility/${userTag}`,
+      `${API_URL}/ideas-service/profile/telegram/visibility/${userTag}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -181,7 +212,7 @@ const deleteUserTelegram = async (
 ): Promise<Success | Error> => {
   return usersTelegramAxios
     .delete(
-      `${API_URL}/profile/telegram/delete/${userTag}`,
+      `${API_URL}/ideas-service/profile/telegram/delete/${userTag}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -197,6 +228,7 @@ const deleteUserTelegram = async (
 const ProfileService = {
   getUserProfile,
   getProfileAvatar,
+  getTeamExperience,
   getUserTelegram,
 
   saveProfileSkills,

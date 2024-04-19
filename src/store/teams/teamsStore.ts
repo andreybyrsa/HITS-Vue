@@ -112,7 +112,6 @@ const useTeamStore = defineStore('teams', {
         }
 
         await profileStore.finishTeamExperience(teamMemberId, teamId, token)
-        await profileStore.finishTeamProject(teamMemberId, teamId, token)
       }
     },
 
@@ -137,7 +136,6 @@ const useTeamStore = defineStore('teams', {
         }
 
         await profileStore.finishTeamExperience(teamMemberId, teamId, token)
-        await profileStore.finishTeamProject(teamMemberId, teamId, token)
       }
     },
 

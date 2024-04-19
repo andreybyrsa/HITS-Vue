@@ -89,7 +89,7 @@ const handleRemoveIdeaFromFavorites = async () => {
 const handleConvertIdeaToProject = async () => {
   const currentUser = user.value
 
-  if (currentUser?.token && props.ideaMarket && props.ideaMarket.team) {
+  if (currentUser?.token && props.ideaMarket) {
     const { token } = currentUser
 
     await projectsStore.postProject(props.ideaMarket, token)
@@ -194,7 +194,7 @@ function getIdeaMarketStatusStyle() {
 
           <div class="text-secondary d-flex align-items-center gap-1">
             <Icon class-name="bi bi-people-fill opacity-75" />
-            <Typography>Команда из {{ ideaMarket.maxTeamSize }} человек</Typography>
+            <Typography>Команда до {{ ideaMarket.maxTeamSize }} человек</Typography>
           </div>
 
           <div class="text-secondary d-flex align-items-center gap-1">

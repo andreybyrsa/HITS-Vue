@@ -289,7 +289,10 @@ function checkHeaderButtonStatement(statement?: boolean) {
         <table class="table table-hover mb-0">
           <thead>
             <tr class="table__lables">
-              <th class="py-3 col">
+              <th
+                v-if="isCheckbox"
+                class="py-3 col"
+              >
                 <div @click="checkAllRows">
                   <Checkbox
                     name="checkAll"
@@ -324,7 +327,10 @@ function checkHeaderButtonStatement(statement?: boolean) {
               v-for="(row, index) in searchedData"
               :key="index"
             >
-              <td class="py-3 col">
+              <td
+                v-if="isCheckbox"
+                class="py-3 col"
+              >
                 <Checkbox
                   :name="`checkAll-${index}`"
                   class-name="mb-1"
@@ -397,7 +403,14 @@ function checkHeaderButtonStatement(statement?: boolean) {
                           :class="getDropdownActionStyle(button.className)"
                           @click="button.click(row)"
                         >
-                          {{ button.label }}
+                          {{
+                            checkDropdownActionStatement(
+                              row,
+                              button.statementLabel,
+                            ) && button.statementLabel
+                              ? button.beforeLabel
+                              : button.label
+                          }}
                         </li>
                       </template>
                     </ul>

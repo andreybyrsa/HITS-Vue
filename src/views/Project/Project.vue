@@ -1,22 +1,35 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Header from '@Components/Header/Header.vue'
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
+import ProjectPlaceHolder from '@Views/Project/ProjectPlaceHolder.vue'
 
 import ProjectHeader from '@Views/Project/ProjectHeader.vue'
 import ProjectContent from '@Views/Project/ProjectContent.vue'
 
 import useUserStore from '@Store/user/userStore'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import ProjectService from '@Services/ProjectService'
 
 import { useRoute } from 'vue-router'
 
-import { Project } from '@Domain/Project'
+import { Project, Sprint, Task } from '@Domain/Project'
+import {
+  RequestConfig,
+  openErrorNotification,
+  sendParallelRequests,
+} from '@Utils/sendParallelRequests'
+import useSprintsStore from '@Store/sprints/sprintsStore'
+import useTasksStore from '@Store/tasks/tasksStore'
+import useTagsStore from '@Store/tags/tagsStore'
+import { Tag } from '@Domain/Tag'
+import useProjectsStore from '@Store/projects/projectsStore'
+
+const sprintsStore = useSprintsStore()
+const tasksStore = useTasksStore()
+const tagsStore = useTagsStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -24,37 +37,57 @@ const { user } = storeToRefs(userStore)
 const route = useRoute()
 
 const project = ref<Project>()
+const activeSprint = ref<Sprint>()
+const tasks = ref<Task[]>()
+const tags = ref<Tag[]>()
 const isLoading = ref(false)
 
+const ProjectStore = useProjectsStore()
+
 watchImmediate(
-  () => route.params.id,
+  () => route.params.projectId,
   async () => {
-    return await getProject()
+    await getProject()
   },
 )
 
-onMounted(getProject)
-
 async function getProject() {
   const currentUser = user.value
-
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const projectId = route.params.id.toString()
+    if (route.params.projectId) {
+      const projectId = route.params.projectId.toString()
 
-    isLoading.value = true
-    const response = await ProjectService.getProject(projectId, token)
+      isLoading.value = true
 
-    if (response instanceof Error) {
-      return useNotificationsStore().createSystemNotification(
-        'Система',
-        response.message,
-      )
+      const projectParallelRequests: RequestConfig[] = [
+        {
+          request: () => ProjectStore.getProject(projectId, token),
+          refValue: project,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => sprintsStore.getActiveSprint(projectId, token),
+          refValue: activeSprint,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => tasksStore.getAllTasks(projectId, token),
+          refValue: tasks,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => tagsStore.getAllTags(token),
+          refValue: tags,
+          onErrorFunc: openErrorNotification,
+        },
+      ]
+
+      await sendParallelRequests(projectParallelRequests)
+
+      isLoading.value = false
     }
-
-    project.value = response
-    isLoading.value = false
   }
 }
 </script>
@@ -74,13 +107,14 @@ async function getProject() {
 
     <template #content>
       <div
-        class="p-4"
+        class="px-4 py-3 h-100"
         v-if="!isLoading && project"
       >
         <ProjectHeader :project="project" />
 
         <ProjectContent :project="project" />
       </div>
+      <div v-else><ProjectPlaceHolder /></div>
       <router-view />
     </template>
   </PageLayout>

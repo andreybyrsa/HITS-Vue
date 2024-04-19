@@ -24,7 +24,6 @@ import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import { Project } from '@Domain/Project'
 
 const notificationsStore = useNotificationsStore()
-const { getUnreadedNotifications } = storeToRefs(notificationsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -47,9 +46,14 @@ const userRoles = getUserRolesInfo()
 const leftSideBarRef = ref<VueElement | null>(null)
 const LeftSideBarClassName = ref<string[]>()
 
+const activeProjects = ref<Project[]>([])
+
 const isHovered = useElementHover(leftSideBarRef, {
   delayEnter: 400,
 })
+
+// Роутер биржи
+onMounted(getActiveMarkets)
 
 watch(
   markets,
@@ -61,28 +65,20 @@ watch(
   { deep: true },
 )
 
-watch(
-  myActiveProjects,
-  () => {
-    const currentProjects = myActiveProjects.value.filter(
-      ({ status }) => status === 'ACTIVE',
-    )
-    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
-    if (projectIndex !== -1) updateActiveProjectRoute(currentProjects, projectIndex)
-  },
-  { deep: true },
-)
-
-onMounted(getActiveProjects)
-onMounted(getActiveMarkets)
-
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const initialMarketRoutes: LeftSideBarTabType[] =
     LeftSideBarTabs[index].routes ?? []
   const marketRoutes: LeftSideBarTabType[] = activeMarkets.map(({ id, name }) => ({
     name: `market-${id}`,
     text: name,
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    roles: [
+      'INITIATOR',
+      'MEMBER',
+      'TEAM_OWNER',
+      'PROJECT_OFFICE',
+      'ADMIN',
+      'TEACHER',
+    ],
     iconName: 'bi bi-basket3',
     to: `/market/${id}`,
   }))
@@ -108,13 +104,58 @@ async function getActiveMarkets() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (response.length === 0) {
+    if (
+      response.length === 0 &&
+      user.value?.role !== 'ADMIN' &&
+      user.value?.role !== 'PROJECT_OFFICE' &&
+      user.value?.role !== 'TEACHER'
+    ) {
       spliceMarketsTab()
     } else if (index !== -1) {
       updateActiveMarketRoute(response, index)
     }
   }
 }
+
+// Роутер проектов
+onMounted(getActiveProjects)
+
+function updateRolesByTabProject() {
+  const currentRole = user.value?.role
+
+  if (currentRole !== 'ADMIN' && currentRole !== 'PROJECT_OFFICE') {
+    tabs.value.forEach(
+      (tab) =>
+        tab.name === 'projects' &&
+        (tab.roles = tab.roles.filter(
+          (role) => role === 'ADMIN' || role === 'PROJECT_OFFICE',
+        )),
+    )
+  } else if (myActiveProjects.value.length === 0) {
+    tabs.value.forEach(
+      (tab) =>
+        tab.name === 'projects' &&
+        tab.roles.push('INITIATOR', 'MEMBER', 'TEAM_LEADER', 'TEAM_OWNER'),
+    )
+  }
+}
+
+watch(
+  myActiveProjects,
+  (projects) => {
+    const projectIndex = tabs.value.findIndex(({ name }) => name === 'projects')
+    if (projectIndex !== -1) updateActiveProjectRoute(projects, projectIndex)
+  },
+  { deep: true },
+)
+
+watch(
+  () => user.value?.role,
+  () => {
+    if (activeProjects.value.length === 0) updateRolesByTabProject()
+  },
+  { deep: true },
+)
 
 function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const initialProjectRoutes: LeftSideBarTabType[] =
@@ -148,12 +189,12 @@ async function getActiveProjects() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (response.length === 0) {
-      updateActiveProjectRoute(response, projectsIndex)
+    activeProjects.value = response
 
-      spliceMarketsTab()
+    if (activeProjects.value.length === 0) {
+      updateRolesByTabProject()
     } else if (projectsIndex !== -1) {
-      updateActiveProjectRoute(response, projectsIndex)
+      updateActiveProjectRoute(activeProjects.value, projectsIndex)
     }
   }
 }
@@ -189,10 +230,6 @@ function handleOpenRoleModal() {
 
 function handleCloseRoleModal() {
   isOpenedRoleModal.value = false
-}
-
-function handleOpenNotificationModal() {
-  isOpenedNotificationsModal.value = true
 }
 
 function handleCloseNotificationModal() {
@@ -231,21 +268,6 @@ function handleCloseNotificationModal() {
         :disabled="user?.roles.length === 1"
       >
         {{ isHovered ? getTranslatedRole(user.role) : '' }}
-      </Button>
-
-      <Button
-        variant="light"
-        class-name="left-side-bar__button btn-light w-100 position-relative"
-        @click="handleOpenNotificationModal"
-        prepend-icon-name="bi bi-bell"
-      >
-        {{ isHovered ? 'Уведомления' : '' }}
-        <span
-          v-if="getUnreadedNotifications.length"
-          class="position-absolute top-0 start-100 px-2 translate-middle badge rounded-pill bg-danger"
-        >
-          {{ getUnreadedNotifications.length }}
-        </span>
       </Button>
 
       <Button

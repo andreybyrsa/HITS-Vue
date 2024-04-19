@@ -9,7 +9,7 @@ defineProps<ProjectProps>()
 </script>
 
 <template>
-  <div class="d-flex gap-3 align-items-center mt-1">
+  <div class="d-flex gap-3 align-items-center mb-2">
     <Typography class-name="fs-4 text-primary">{{ project.name }}</Typography>
     <div :class="getProjectStatusStyle(project.status)">
       {{ getProjectStatus().translatedStatus[project.status] }}
@@ -17,4 +17,4 @@ defineProps<ProjectProps>()
   </div>
 </template>
 
-<style lasg="scss"></style>
+<style lasg="scss" scoped></style>

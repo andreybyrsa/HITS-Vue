@@ -6,6 +6,7 @@
     :search-by="['name']"
     :dropdown-actions-menu="dropdownIdeaMarketTeamActions"
     v-model="selectedTeam"
+    is-checkbox
   />
 </template>
 
@@ -69,7 +70,7 @@ const ideaMarketTeamColumns: TableColumn<Team>[] = [
   },
   {
     key: 'skills',
-    label: 'Кометенции',
+    label: 'Компетенции',
     size: 'col-4',
     contentClassName: 'justify-content-center align-items-center',
     getRowCellStyle: getSkillsStyle,
@@ -117,14 +118,15 @@ function sortByMembersCount() {
 
 function navigateToTeamModal(team: Team) {
   const teamModalRoute: RouteRecordRaw = {
-    name: 'teams',
-    path: 'teams/:id',
-    alias: '/teams/:id',
+    name: 'team-modal',
+    path: 'team/:teamId',
+    alias: '/team/:teamId',
+    meta: { from: 'market-ideas' },
     component: TeamModal,
   }
 
-  router.addRoute('market', teamModalRoute)
-  router.push({ path: `/market/${team.id}` })
+  router.addRoute('market-ideas', teamModalRoute)
+  router.push({ path: `/team/${team.id}` })
 }
 
 function navigateToLeaderProfile(team: Team) {
@@ -132,17 +134,17 @@ function navigateToLeaderProfile(team: Team) {
 
   if (teamLeader) {
     const leaderModalRoute: RouteRecordRaw = {
-      name: 'teams',
-      path: 'teams/:id',
-      alias: '/teams/:id',
+      name: 'profile',
+      path: 'profile/:id',
+      alias: '/profile/:id',
       component: ProfileModal,
       props: {
         canGoBack: true,
       },
     }
 
-    router.addRoute('market', leaderModalRoute)
-    router.push({ path: `/market/${teamLeader.id}` })
+    router.addRoute('market-ideas', leaderModalRoute)
+    router.push({ path: `/profile/${teamLeader.id}` })
   }
 }
 </script>

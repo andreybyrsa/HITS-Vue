@@ -73,7 +73,7 @@ const usersTableColumns: TableColumn<TeamExperience>[] = [
   },
   {
     key: 'finishDate',
-    label: 'Дата исключения',
+    label: 'Дата выхода',
     getRowCellFormat: getFormattedDate,
     getRowCellStyle: getFinishDateStyle,
     contentClassName: 'justify-content-center align-items-center text-center',

@@ -30,6 +30,8 @@ interface CheckedDataAction<DataType> {
 
 interface DropdownMenuAction<DataType> {
   label: string
+  beforeLabel?: string
+  statementLabel?: (data: DataType) => boolean
   className?: string
   statement?: (data: DataType) => boolean
   click: (value: DataType) => void
@@ -68,6 +70,7 @@ interface TableProps<DataType> {
   filters?: Filter<DataType>[]
   checkedDataActions?: CheckedDataAction<DataType>[]
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]
+  isCheckbox?: boolean
 }
 
 export {

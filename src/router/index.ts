@@ -60,7 +60,14 @@ const routes: RouteRecordRaw[] = [
         name: 'ideas-list',
         component: IdeasView,
         meta: {
-          roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+          roles: [
+            'INITIATOR',
+            'MEMBER',
+            'PROJECT_OFFICE',
+            'EXPERT',
+            'ADMIN',
+            'TEACHER',
+          ],
         },
         children: [
           {
@@ -68,7 +75,14 @@ const routes: RouteRecordRaw[] = [
             name: 'idea-modal',
             component: IdeaModal,
             meta: {
-              roles: ['INITIATOR', 'MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN'],
+              roles: [
+                'INITIATOR',
+                'MEMBER',
+                'PROJECT_OFFICE',
+                'EXPERT',
+                'ADMIN',
+                'TEACHER',
+              ],
             },
           },
         ],
@@ -96,7 +110,15 @@ const routes: RouteRecordRaw[] = [
         name: 'teams-list',
         component: TeamsView,
         meta: {
-          roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+          roles: [
+            'INITIATOR',
+            'TEAM_OWNER',
+            'MEMBER',
+            'ADMIN',
+            'PROJECT_OFFICE',
+            'TEACHER',
+            'TEAM_LEADER',
+          ],
         },
         children: [
           {
@@ -104,7 +126,15 @@ const routes: RouteRecordRaw[] = [
             name: 'team',
             component: TeamModal,
             meta: {
-              roles: ['INITIATOR', 'TEAM_OWNER', 'TEAM_LEADER', 'MEMBER', 'ADMIN'],
+              roles: [
+                'INITIATOR',
+                'TEAM_OWNER',
+                'MEMBER',
+                'ADMIN',
+                'PROJECT_OFFICE',
+                'TEACHER',
+                'TEAM_LEADER',
+              ],
             },
           },
           {
@@ -133,21 +163,35 @@ const routes: RouteRecordRaw[] = [
     path: '/market',
     name: 'market',
     meta: {
-      roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+      roles: [
+        'INITIATOR',
+        'MEMBER',
+        'TEAM_OWNER',
+        'PROJECT_OFFICE',
+        'ADMIN',
+        'TEACHER',
+      ],
     },
     children: [
       {
         path: 'list',
         name: 'markets-list',
         component: MarketsView,
-        meta: { roles: ['PROJECT_OFFICE', 'ADMIN'] },
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER'] },
       },
       {
         path: ':marketId',
         name: 'market-ideas',
         component: IdeasMarketView,
         meta: {
-          roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+          roles: [
+            'INITIATOR',
+            'MEMBER',
+            'TEAM_OWNER',
+            'PROJECT_OFFICE',
+            'ADMIN',
+            'TEACHER',
+          ],
         },
         children: [
           {
@@ -161,6 +205,7 @@ const routes: RouteRecordRaw[] = [
                 'TEAM_OWNER',
                 'PROJECT_OFFICE',
                 'ADMIN',
+                'TEACHER',
               ],
             },
           },
@@ -180,6 +225,7 @@ const routes: RouteRecordRaw[] = [
         'PROJECT_OFFICE',
         'ADMIN',
         'TEAM_LEADER',
+        'TEACHER',
       ],
     },
     children: [
@@ -187,10 +233,10 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'projects-list',
         component: ProjectList,
-        meta: { roles: ['PROJECT_OFFICE', 'ADMIN'] },
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER'] },
       },
       {
-        path: ':id',
+        path: ':projectId',
         name: 'project',
         component: Project,
         meta: {
@@ -201,6 +247,7 @@ const routes: RouteRecordRaw[] = [
             'TEAM_LEADER',
             'ADMIN',
             'PROJECT_OFFICE',
+            'TEACHER',
           ],
         },
       },
@@ -215,7 +262,7 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-users',
         path: 'users',
         component: UsersView,
-        meta: { roles: ['ADMIN'] },
+        meta: { roles: ['ADMIN', 'TEACHER'] },
       },
       {
         name: 'admin-add-users',
@@ -313,6 +360,7 @@ router.beforeEach((to) => {
   if (!user.value && !authRouteNames.includes(currentRouteName)) {
     return { name: 'login' }
   }
+
   if (
     user.value?.role &&
     (authRouteNames.includes(currentRouteName) || currentRouteName === 'home')
@@ -321,6 +369,7 @@ router.beforeEach((to) => {
 
     return getRouteByUserRole(role)
   }
+
   if (requiredRouteRoles.length && user.value?.role) {
     const { role } = user.value
 

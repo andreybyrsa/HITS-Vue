@@ -21,6 +21,7 @@ function getUserRolesInfo(): GetUserRolesType {
       'PROJECT_OFFICE',
       'EXPERT',
       'ADMIN',
+      'TEACHER',
     ],
     translatedRoles: {
       INITIATOR: 'Инициатор',
@@ -30,6 +31,7 @@ function getUserRolesInfo(): GetUserRolesType {
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперт',
       ADMIN: 'Админ',
+      TEACHER: 'Преподаватель',
     },
     translatedGroups: {
       INITIATOR: 'Инициаторы',
@@ -39,6 +41,7 @@ function getUserRolesInfo(): GetUserRolesType {
       PROJECT_OFFICE: 'Проектный офис',
       EXPERT: 'Эксперты',
       ADMIN: 'Админы',
+      TEACHER: 'Преподаватели',
     },
   }
 }
@@ -56,13 +59,18 @@ function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
   if (
     currentRole === 'INITIATOR' ||
     currentRole === 'TEAM_OWNER' ||
-    currentRole === 'MEMBER'
+    currentRole === 'MEMBER' ||
+    currentRole === 'TEAM_LEADER'
   ) {
     initialClass.push('bg-primary-subtle', 'text-primary')
     return initialClass
   }
 
-  if (currentRole === 'PROJECT_OFFICE' || currentRole === 'EXPERT') {
+  if (
+    currentRole === 'PROJECT_OFFICE' ||
+    currentRole === 'EXPERT' ||
+    currentRole === 'TEACHER'
+  ) {
     initialClass.push('bg-success-subtle', 'text-success')
     return initialClass
   }
@@ -73,6 +81,7 @@ function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
   }
 }
 
+// !котятки, не забываем следить за этой функцией, при добовлении новых ролей, чтобы нормально редиректило, иначе будет критический баг, спасибо))
 function getRouteByUserRole(
   currentRole: RolesTypes | RolesTypes[],
 ): RouteLocationRaw {

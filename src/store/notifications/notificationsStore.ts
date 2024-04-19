@@ -17,10 +17,10 @@ const useNotificationsStore = defineStore('notification', {
         const response = await NotificatonsService.getNotifications(token)
 
         if (response instanceof Error) {
-          useNotificationsStore().createSystemNotification(
-            'Система',
-            response.message,
-          )
+          // useNotificationsStore().createSystemNotification(
+          //   'Система',
+          //   response.message,
+          // )
           return response
         } else {
           this.notifications = response

@@ -17,7 +17,7 @@ const tagsAxios = defineAxios(tagsMocks)
 
 const getAllTags = async (token: string): Promise<Tag[] | Error> => {
   return tagsAxios
-    .get('/tags/all', {
+    .get('/scrum-service/tag/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -37,7 +37,7 @@ const getAllTags = async (token: string): Promise<Tag[] | Error> => {
 
 const createTag = async (tag: Tag, token: string): Promise<Tag | Error> => {
   return tagsAxios
-    .post('/tag/add', tag, {
+    .post('/scrum-service/tag/add', tag, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -50,7 +50,7 @@ const createNoConfirmedTag = async (
   token: string,
 ): Promise<Tag | Error> => {
   return tagsAxios
-    .post('/tag/add/no-confirmed', tag, {
+    .post('/scrum-service/tag/add/no-confirmed', tag, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -65,7 +65,7 @@ const confirmTag = async (
 ): Promise<Tag | Error> => {
   return tagsAxios
     .put(
-      `/tag/confirm/${id}`,
+      `/scrum-service/tag/confirm/${id}`,
       tag,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -84,7 +84,7 @@ const updateTag = async (
 ): Promise<Tag | Error> => {
   return tagsAxios
     .put(
-      `/tag/update/${id}`,
+      `/scrum-service/tag/update/${id}`,
       tag,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -99,7 +99,7 @@ const updateTag = async (
 const deleteTag = async (id: string, token: string): Promise<Success | Error> => {
   return tagsAxios
     .delete(
-      `/tag/delete/${id}`,
+      `/scrum-service/tag/delete/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

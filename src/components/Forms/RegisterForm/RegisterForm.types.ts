@@ -1,7 +1,7 @@
 interface RegisterInputType {
-  key: 'email' | 'firstName' | 'lastName' | 'password'
+  key: 'email' | 'firstName' | 'lastName' | 'password' | 'telephone' | 'studyGroup'
   type?: string
-  name: 'email' | 'firstName' | 'lastName' | 'password'
+  name: 'email' | 'firstName' | 'lastName' | 'password' | 'telephone' | 'studyGroup'
   placeholder: string
   prepend?: string
   prependIcon?: string

@@ -8,7 +8,7 @@ import handleAxiosError from '@Utils/handleAxiosError'
 
 const loginUser = async (user: LoginUser): Promise<User | Error> => {
   return axios
-    .post(`${API_URL}/auth/login`, user)
+    .post(`${API_URL}/ideas-service/auth/login`, user)
     .then((response) => response.data)
     .catch(({ response }) => {
       const error = response?.data?.error ?? 'Ошибка авторизации'
@@ -17,6 +17,8 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
         token: '11110',
         firstName: 'Кирилл',
         lastName: 'Власов',
+        telephone: '1111111111',
+        studyGroup: 'AAAA-22-1',
         ...user,
         roles: [
           'ADMIN',
@@ -26,13 +28,14 @@ const loginUser = async (user: LoginUser): Promise<User | Error> => {
           'TEAM_OWNER',
           'TEAM_LEADER',
           'PROJECT_OFFICE',
+          'TEACHER',
         ],
       }
     })
 }
 const registerUser = async (user: RegisterUser): Promise<User | Error> => {
   return axios
-    .post(`${API_URL}/auth/register`, user)
+    .post(`${API_URL}/ideas-service/auth/register`, user)
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка регистрации'))
 }

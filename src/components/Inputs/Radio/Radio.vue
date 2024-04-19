@@ -10,7 +10,7 @@ defineModel({
   required: false,
 })
 
-const { value, errorMessage } = useField(() => props.name, undefined, {
+const { value, errorMessage, meta } = useField(() => props.name, undefined, {
   type: 'radio',
   checkedValue: props.value,
   validateOnValueUpdate: props.validateOnUpdate ?? false,
@@ -21,7 +21,7 @@ const { value, errorMessage } = useField(() => props.name, undefined, {
 
 const RadioInputClassName = computed(() => [
   'form-check-input',
-  { 'is-invalid': errorMessage.value || props.error },
+  { 'is-invalid': meta.touched && (props.error || errorMessage.value) },
   props.className,
 ])
 

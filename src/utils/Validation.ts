@@ -29,7 +29,7 @@ class Validation {
   }
 
   checkName(name: string) {
-    const nameRegExp = /^[а-я a-z ,.'-]+$/i
+    const nameRegExp = /^[а-я a-z ё ,.'-]+$/i
     return name && nameRegExp.test(name) && name.length > 0
   }
 
@@ -44,18 +44,37 @@ class Validation {
   }
 
   checkDate(date: string) {
+    if (!date) return 'Введите дату'
     const currentDate = new Date()
+    currentDate.setHours(0)
+    currentDate.setSeconds(0)
+    currentDate.setMinutes(0)
+    currentDate.setMilliseconds(0)
+
     const checkedDate = new Date(date)
-    if (currentDate <= checkedDate) {
-      return true
-    }
+
+    if (currentDate <= checkedDate) return true
     return 'Дата не может быть раньше текущей'
   }
-
+  checkNumber(hours: string) {
+    const numbersRegExp = /^[0-9 ,]{1,}$/g
+    return numbersRegExp.test(hours)
+  }
+  validateFloatNumber(hours: string) {
+    const numberRegExp = /^(10(\.0+)?|[0-9](\.\d+)?|10)$/
+    return numberRegExp.test(hours)
+  }
   validateDates(startDateString: string, finishDateString: string) {
+    if (!startDateString || !finishDateString) return 'Введите даты'
     const startDate = new Date(startDateString)
     const finishDate = new Date(finishDateString)
+
     const currentDate = new Date()
+    currentDate.setHours(0)
+    currentDate.setSeconds(0)
+    currentDate.setMinutes(0)
+    currentDate.setMilliseconds(0)
+
     if (finishDate < currentDate) {
       return 'Дата не может быть раньше текущей'
     }
@@ -63,6 +82,13 @@ class Validation {
       return 'Начальная дата должна быть раньше конечной'
     }
     return true
+  }
+
+  checkMarks(marks: number[]) {
+    if (marks instanceof Array) {
+      return marks.every((mark) => mark >= 0 && mark <= 10)
+    }
+    return 'Оценка должна быть от 0 до 10'
   }
 }
 

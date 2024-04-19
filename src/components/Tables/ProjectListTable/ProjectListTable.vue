@@ -42,7 +42,7 @@ const projectListTableColumns: TableColumn<Project>[] = [
   {
     key: 'name',
     label: 'Название',
-    size: 'col-4',
+    size: 'col-5',
     rowCellClick: navigateToUpdateIdeaForm,
   },
   {

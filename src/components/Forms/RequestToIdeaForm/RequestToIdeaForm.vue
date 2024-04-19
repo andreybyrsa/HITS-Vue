@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
 import { RequestToIdeaFormProps } from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.types.'
@@ -8,13 +7,9 @@ import Typography from '@Components/Typography/Typography.vue'
 import RequestTeamCollapse from '@Components/Forms/RequestToIdeaForm/RequestTeamCollapse.vue'
 
 import useUserStore from '@Store/user/userStore'
-import useRequestsToIdeaStore from '@Store/requestsToIdea/requestsToIdeaStore'
 import { Team } from '@Domain/Team'
 
 const userStore = useUserStore()
-
-const requestsToIdeaStore = useRequestsToIdeaStore()
-const { requests } = storeToRefs(requestsToIdeaStore)
 
 const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
@@ -53,9 +48,8 @@ function navigateToTeamForm() {
         :key="index"
         :team="team"
         :idea="ideaMarket"
-        v-model:requestTeams="requests"
         v-model:skillsAcceptedTeam="skillsAcceptedTeam"
-        :isDisabledButtonSkills="$route.name === 'market'"
+        :isDisabledButtonSkills="$route.name === 'market-idea-modal'"
       />
     </div>
   </div>

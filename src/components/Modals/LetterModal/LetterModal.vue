@@ -7,8 +7,13 @@ import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import useUserStore from '@Store/user/userStore'
+import { storeToRefs } from 'pinia'
 
-defineProps<LetterModalProps>()
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const props = defineProps<LetterModalProps>()
 const emit = defineEmits<LetterModalEmits>()
 
 function closeModal() {
@@ -42,7 +47,11 @@ function acceptRequest() {
       </Typography>
 
       <Button
-        v-if="$route.name === 'market-idea-modal'"
+        v-if="
+          $route.name === 'market-idea-modal' &&
+          user?.role !== 'ADMIN' &&
+          props.ideaMarket?.status !== 'RECRUITMENT_IS_CLOSED'
+        "
         class-name="btn-success"
         @click="acceptRequest"
       >

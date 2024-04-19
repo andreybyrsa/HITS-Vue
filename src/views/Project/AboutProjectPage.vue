@@ -10,8 +10,8 @@ defineProps<ProjectProps>()
 </script>
 
 <template>
-  <div class="d-flex gap-3">
-    <div class="w-100">
+  <div class="d-flex gap-3 mt-4">
+    <div class="w-75">
       <ul class="list-group rounded-3">
         <li class="list-group-item p-0 overflow-hidden">
           <Button
@@ -30,7 +30,7 @@ defineProps<ProjectProps>()
       <ProjectMembersTable :projectMembers="project.members" />
     </div>
 
-    <ProjectInfo :project.="project" />
+    <ProjectInfo :project="project" />
   </div>
 </template>
 

@@ -22,7 +22,7 @@ const getIdeaRequests = async (
 ): Promise<RequestTeamToIdea[] | Error> => {
   return requestTeamsAxios
     .get<RequestTeamToIdea[]>(
-      `/market/idea/requests/${ideaId}`,
+      `/ideas-service/market/idea/requests/${ideaId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -41,7 +41,7 @@ const postRequest = async (
   token: string,
 ): Promise<RequestTeamToIdea | Error> => {
   return requestTeamsAxios
-    .post(`/market/idea/declare`, team, {
+    .post(`/ideas-service/market/idea/declare`, team, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -56,7 +56,7 @@ const updateRequestToIdeaStatus = async (
 ): Promise<Success | Error> => {
   return requestTeamsAxios
     .put<Success>(
-      `/market/idea/change-status/request/${id}/${status}`,
+      `/ideas-service/market/idea/change-status/request/${id}/${status}`,
       { status: status },
       { headers: { Authorization: `Bearer ${token}` } },
       {
@@ -74,16 +74,15 @@ const acceptRequestToIdeaStatus = async (
   token: string,
 ): Promise<Team | Error> => {
   return requestTeamsAxios
-    .put<Team>(
-      `/market/idea/accept/request/${id}/${teamId}`,
-      { status: status },
+    .putNoRequestBody<Team>(
+      `/ideas-service/market/idea/accept/request/${id}/${teamId}`,
       { headers: { Authorization: `Bearer ${token}` } },
       {
         params: { id },
       },
     )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса заявки'))
+    .catch((error) => handleAxiosError(error, 'Ошибка принятия заявки'))
 }
 
 // --- DELETE --- //
@@ -93,7 +92,7 @@ const deleteRequestTeams = async (
 ): Promise<Success | Error> => {
   return requestTeamsAxios
     .delete(
-      `/market/delete/request/${id}`,
+      `/ideas-service/market/delete/request/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

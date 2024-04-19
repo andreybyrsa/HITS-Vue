@@ -20,7 +20,7 @@ const getComments = async (
 ): Promise<Comment[] | Error> => {
   return commentAxios
     .get<Comment[]>(
-      `/comment/all/${ideaId}`,
+      `/ideas-service/comment/all/${ideaId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -36,7 +36,7 @@ const createComment = async (
   token: string,
 ): Promise<Comment | Error> => {
   return commentAxios
-    .post('/comment/send', comment, {
+    .post('/ideas-service/comment/send', comment, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -51,7 +51,7 @@ const checkComment = async (
 ): Promise<void | Error> => {
   return commentAxios
     .putNoRequestBody<void>(
-      `/comment/check/${id}`,
+      `/ideas-service/comment/check/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -68,7 +68,7 @@ const deleteComment = async (
 ): Promise<Success | Error> => {
   return commentAxios
     .delete(
-      `/comment/delete/${id}`,
+      `/ideas-service/comment/delete/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

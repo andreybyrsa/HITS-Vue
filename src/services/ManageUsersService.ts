@@ -19,7 +19,7 @@ const usersEmailsAxios = defineAxios(usersEmailsMocks)
 
 const getUsers = async (token: string): Promise<User[] | Error> => {
   return usersAxios
-    .get('/profile/get/users', {
+    .get('/ideas-service/profile/get/users', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -29,7 +29,7 @@ const getUsers = async (token: string): Promise<User[] | Error> => {
 
 const getUsersEmails = async (token: string): Promise<string[] | Error> => {
   return usersEmailsAxios
-    .get(`/profile/get/emails`, {
+    .get(`/ideas-service/profile/get/emails`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -43,7 +43,7 @@ const updateUserInfo = async (
 ): Promise<User | Error> => {
   return usersAxios
     .put(
-      '/profile/change/info',
+      '/ideas-service/profile/change/info',
       newUserData,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -59,7 +59,7 @@ const updateUserPassword = async (
   newPasswordData: UpdateUserPassword,
 ): Promise<Success | Error> => {
   return axios
-    .put(`${API_URL}/profile/change/password`, newPasswordData)
+    .put(`${API_URL}/ideas-service/profile/change/password`, newPasswordData)
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка обновления пароля'))
 }
@@ -69,9 +69,25 @@ const updateUserEmail = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .put(`${API_URL}/profile/change/email`, newEmailData, {
+    .put(`${API_URL}/ideas-service/profile/change/email`, newEmailData, {
       headers: { Authorization: `Bearer ${token}` },
     })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка обновления почты'))
+}
+
+const deleteUser = async (
+  userId: string,
+  token: string,
+): Promise<Success | Error> => {
+  return usersAxios
+    .delete(
+      `/ideas-service/profile/delete/user/${userId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      { params: { id: userId } },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка обновления почты'))
 }
@@ -83,6 +99,8 @@ const ManageUsersService = {
   updateUserInfo,
   updateUserPassword,
   updateUserEmail,
+
+  deleteUser,
 }
 
 export default ManageUsersService

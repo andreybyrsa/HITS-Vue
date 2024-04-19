@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router'
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import RequestToIdeaModal from '@Components/Modals/RequestToIdeaModal/RequestToIdeaModal.vue'
 import FilterBar from '@Components/FilterBar/FilterBar.vue'
-import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
+import { Filter } from '@Components/FilterBar/FilterBar.types'
 import Header from '@Components/Header/Header.vue'
 
 import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
@@ -31,6 +31,12 @@ import {
   RequestConfig,
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
+import { Skill } from '@Domain/Skill'
+import useProfilesStore from '@Store/profiles/profilesStore'
+import { Profile } from '@Domain/Profile'
+import SkillsService from '@Services/SkillsService'
+
+const profilesStore = useProfilesStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -44,11 +50,15 @@ const route = useRoute()
 const ideasMarket = ref<IdeaMarket[] | null>(null)
 const market = ref<Market | null>(null)
 const ideaMarket = ref<IdeaMarket | null>(null)
+const profile = ref<Profile>()
+const skills = ref<Skill[]>()
 
 const availableStatus = getIdeaMarketStatus()
 
 const searchedValue = ref('')
 const filterByIdeaMarketStatus = ref<IdeaMarketStatusType>()
+const filterByIdeaMarketSkill = ref<string[]>([])
+const searchBySkills = ref('')
 
 const isAllIdeas = ref(true)
 const isOpenedRequestToIdeaModal = ref(false)
@@ -68,7 +78,7 @@ async function getIdeasMarket() {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser?.role) {
-    const { token, role } = currentUser
+    const { token, role, id } = currentUser
     const marketId = route.params.marketId.toString()
 
     ideasMarket.value = null
@@ -81,8 +91,18 @@ async function getIdeasMarket() {
         onErrorFunc: openErrorNotification,
       },
       {
+        request: () => SkillsService.getAllSkills(token),
+        refValue: skills,
+        onErrorFunc: openErrorNotification,
+      },
+      {
         request: () => MarketService.getMarket(marketId, token),
         refValue: market,
+        onErrorFunc: openErrorNotification,
+      },
+      {
+        request: () => profilesStore.fetchUserProfile(id, token),
+        refValue: profile,
         onErrorFunc: openErrorNotification,
       },
     ]
@@ -110,9 +130,23 @@ async function getFavoriteIdeasMarket() {
 }
 
 const searchedIdeas = computed(() => {
-  if (filterByIdeaMarketStatus.value) {
+  if (filterByIdeaMarketSkill.value.length && filterByIdeaMarketStatus.value) {
     return ideasMarket.value?.filter(
-      (idea) => idea.status === filterByIdeaMarketStatus.value,
+      ({ status, stack }) =>
+        filterByIdeaMarketStatus.value?.includes(status) &&
+        stack.find(({ name }) => filterByIdeaMarketSkill.value.includes(name)),
+    )
+  }
+
+  if (filterByIdeaMarketStatus.value) {
+    return ideasMarket.value?.filter(({ status }) =>
+      filterByIdeaMarketStatus.value?.includes(status),
+    )
+  }
+
+  if (filterByIdeaMarketSkill.value.length) {
+    return ideasMarket.value?.filter(({ stack }) =>
+      stack.find(({ name }) => filterByIdeaMarketSkill.value.includes(name)),
     )
   }
 
@@ -121,19 +155,21 @@ const searchedIdeas = computed(() => {
 
     return ideasMarket.value?.filter((idea) => {
       const ideaName = idea.name.toLowerCase().trim()
+      const ideaInitiatorFirstName = idea.initiator.firstName.toLowerCase().trim()
+      const ideaInitiatorLastName = idea.initiator.lastName.toLowerCase().trim()
 
-      const isMatchedToFilter = filterByIdeaMarketStatus.value
-        ? checkIdeaMarketStatus(idea, filterByIdeaMarketStatus.value)
-        : true
-
-      return ideaName.includes(lowercaseSearch) && isMatchedToFilter
+      return (
+        ideaName.includes(lowercaseSearch) ||
+        ideaInitiatorFirstName.includes(lowercaseSearch) ||
+        ideaInitiatorLastName.includes(lowercaseSearch)
+      )
     })
   }
 
   return ideasMarket.value
 })
 
-const ideasMarketFilters: Filter<IdeaMarket>[] = [
+const ideasMarketFilters = computed<Filter<IdeaMarket>[]>(() => [
   {
     category: 'Статус идеи',
     choices: availableStatus.status.map((IdeasMarketStatus) => ({
@@ -142,12 +178,28 @@ const ideasMarketFilters: Filter<IdeaMarket>[] = [
     })),
     refValue: filterByIdeaMarketStatus,
     isUniqueChoice: true,
-    checkFilter: checkIdeaMarketStatus,
+    checkFilter: () => null,
   },
-]
+  {
+    category: 'Компетенции',
+    searchValue: searchBySkills,
+    choices: getFilterSkills(),
+    refValue: filterByIdeaMarketSkill,
+    isUniqueChoice: false,
+    checkFilter: () => null,
+  },
+])
 
-function checkIdeaMarketStatus(ideaMarket: IdeaMarket, status: FilterValue) {
-  return ideaMarket.status === status
+function getFilterSkills() {
+  return skills.value
+    ? skills.value
+        .map(({ name }) => ({
+          label: name,
+          value: name,
+          isMarked: !!profile.value?.skills.find((skill) => skill.name === name),
+        }))
+        .sort((a, b) => +b.isMarked - +a.isMarked)
+    : []
 }
 
 async function switchNavTab(value: boolean, callback: () => Promise<void>) {

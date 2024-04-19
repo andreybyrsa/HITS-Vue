@@ -4,6 +4,7 @@ import { IdeaMarket } from '@Domain/IdeaMarket'
 import { RequestTeamToIdea } from '@Domain/RequestTeamToIdea'
 import { Skill } from '@Domain/Skill'
 import { Market } from '@Domain/Market'
+import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 
 interface IdeaMarketModalProps {
   isOpened: boolean
@@ -17,6 +18,7 @@ interface IdeaMarketDescriptionProps {
 interface IdeaMarketTablesProps {
   ideaMarket: IdeaMarket
   requestTeams?: RequestTeamToIdea[]
+  invitationsToTeams?: InvitationTeamToIdea[]
 }
 
 interface IdeaMarketInfoProps {

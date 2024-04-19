@@ -57,7 +57,6 @@ const { values, setFieldValue, setValues, validateField, handleSubmit } =
         (value && value >= 3 && value <= 7) || 'Значение должно быть от 3 до 7',
       minTeamSize: (value: number) =>
         (value && value >= 3 && value <= 7) || 'Значение должно быть от 3 до 7',
-
       customer: (value: string) =>
         Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
       contactPerson: (value: string) =>

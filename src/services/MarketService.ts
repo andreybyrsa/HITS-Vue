@@ -17,7 +17,7 @@ function formatMarketsByActiveStatus(markets: Market[]) {
 // --- GET --- //
 const getAllMarkets = async (token: string): Promise<Market[] | Error> => {
   return marketAxios
-    .get('/market/all', {
+    .get('/ideas-service/market/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -28,7 +28,7 @@ const getAllMarkets = async (token: string): Promise<Market[] | Error> => {
 const getAllActiveMarkets = async (token: string): Promise<Market[] | Error> => {
   return marketAxios
     .get<Market[]>(
-      '/market/active',
+      '/ideas-service/market/active',
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -44,7 +44,7 @@ const getAllActiveMarkets = async (token: string): Promise<Market[] | Error> => 
 const getMarket = async (id: string, token: string): Promise<Market | Error> => {
   return marketAxios
     .get(
-      `/market/${id}`,
+      `/ideas-service/market/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -61,7 +61,7 @@ const createMarket = async (
   token: string,
 ): Promise<Market | Error> => {
   return marketAxios
-    .post('/market/create', market, {
+    .post('/ideas-service/market/create', market, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -77,7 +77,7 @@ const updateMarket = async (
 ): Promise<Market | Error> => {
   return marketAxios
     .put(
-      `/market/update/${id}`,
+      `/ideas-service/market/update/${id}`,
       market,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -96,7 +96,7 @@ const updateMarketStatus = async (
 ): Promise<Success | Error> => {
   return marketAxios
     .putNoRequestBody<Success>(
-      `/market/status/${id}/${status}`,
+      `/ideas-service/market/status/${id}/${status}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -111,7 +111,7 @@ const updateMarketStatus = async (
 const deleteMarket = async (id: string, token: string): Promise<Success | Error> => {
   return marketAxios
     .delete(
-      `/market/delete/${id}`,
+      `/ideas-service/market/delete/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

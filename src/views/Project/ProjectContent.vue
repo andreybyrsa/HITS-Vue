@@ -6,8 +6,16 @@ import { watchImmediate } from '@vueuse/core'
 import { ProjectProps } from '@Views/Project/Project.types'
 
 import AboutProjectPage from '@Views/Project/AboutProjectPage.vue'
+import SprintsListPage from '@Views/Project/SprintsListPage.vue'
+import ActiveSprint from '@Views/Project/ActiveSprint.vue'
 
+import useSprintsStore from '@Store/sprints/sprintsStore'
 import useUserStore from '@Store/user/userStore'
+import BacklogPage from './BacklogPage.vue'
+import RolesTypes from '@Domain/Roles'
+
+const sprintsStore = useSprintsStore()
+const { activeSprint } = storeToRefs(sprintsStore)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -19,12 +27,25 @@ const isTabBacklog = ref(false)
 const isTabSprints = ref(false)
 const isTabActiveSprint = ref(false)
 
+function moveThroughTabs(role?: RolesTypes) {
+  if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
+    switchToTabAboutProject()
+  } else if (activeSprint?.value) {
+    switchToTabSprint()
+  } else switchToTabBacklog()
+}
+
 watchImmediate(
   () => user.value?.role,
   (role) => {
-    if (role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'INITIATOR') {
-      return switchToTabAboutProject()
-    } else return switchToTabSprints()
+    moveThroughTabs(role)
+  },
+)
+
+watchImmediate(
+  () => activeSprint?.value,
+  () => {
+    moveThroughTabs(user.value?.role)
   },
 )
 
@@ -66,68 +87,55 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 </script>
 
 <template>
-  <div class="border-bottom px-3">
-    <ul class="nav nav-underline">
-      <div
-        :class="getNavLinkStyle(isTabAboutProject)"
-        @click="switchToTabAboutProject"
-      >
-        О проекте
-      </div>
-      <div
-        :class="getNavLinkStyle(isTabBacklog)"
-        @click="switchToTabBacklog"
-      >
-        Бэклог
-      </div>
-      <div
-        :class="getNavLinkStyle(isTabSprints)"
-        @click="switchToTabSprints"
-      >
-        Спринты
-      </div>
-      <div
-        :class="getNavLinkStyle(isTabActiveSprint)"
-        @click="switchToTabSprint"
-      >
-        Активный спринт
-      </div>
-    </ul>
-  </div>
+  <div class="content">
+    <div class="px-3">
+      <ul class="nav nav-tabs">
+        <div
+          :class="getNavLinkStyle(isTabAboutProject)"
+          @click="switchToTabAboutProject"
+        >
+          О проекте
+        </div>
+        <div
+          :class="getNavLinkStyle(isTabBacklog)"
+          @click="switchToTabBacklog"
+        >
+          Бэклог
+        </div>
+        <div
+          :class="getNavLinkStyle(isTabSprints)"
+          @click="switchToTabSprints"
+        >
+          Спринты
+        </div>
+        <div
+          v-if="activeSprint"
+          :class="getNavLinkStyle(isTabActiveSprint)"
+          @click="switchToTabSprint"
+        >
+          Активный спринт
+        </div>
+      </ul>
+    </div>
 
-  <div>
-    <div
+    <AboutProjectPage
       v-if="isTabAboutProject"
-      class="mt-4"
-    >
-      <AboutProjectPage :project="project" />
-    </div>
-    <div
+      :project="project"
+    />
+
+    <BacklogPage
       v-if="isTabBacklog"
-      class="content-dev"
-    >
-      Бэклог
-    </div>
-    <div
+      :tasks="tasks"
+    />
+
+    <SprintsListPage
       v-if="isTabSprints"
-      class="content-dev"
-    >
-      Спринты
-    </div>
-    <div
+      :project="project"
+    />
+
+    <ActiveSprint
       v-if="isTabActiveSprint"
-      class="content-dev"
-    >
-      Активный спринт
-    </div>
+      :members="project.members"
+    />
   </div>
 </template>
-
-<style lang="scss">
-.content-dev {
-  width: 100%;
-  height: 60vh;
-
-  @include flexible(center, center);
-}
-</style>

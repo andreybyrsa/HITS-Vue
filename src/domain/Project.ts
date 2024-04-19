@@ -1,5 +1,7 @@
 import { User } from '@Domain/User'
 import { Team } from '@Domain/Team'
+import { Tag } from '@Domain/Tag'
+import { ReportProject } from './ReportProjectMembers'
 
 type ProjectStatus = 'ACTIVE' | 'DONE'
 type ProjectMemberRole = 'INITIATOR' | 'TEAM_LEADER' | 'MEMBER'
@@ -7,12 +9,13 @@ type TaskStatus =
   | 'InBackLog'
   | 'OnModification'
   | 'NewTask'
-  | 'inProgress'
+  | 'InProgress'
   | 'OnVerification'
   | 'Done'
 
 interface Project {
   id: string
+  ideaId: string
 
   name: string
   description: string
@@ -21,8 +24,7 @@ interface Project {
   team: Team
   members: ProjectMember[]
 
-  logs: TaskMovementLog[]
-  report: string
+  report: ReportProject
   startDate: string
   finishDate: string
   status: ProjectStatus
@@ -43,33 +45,68 @@ interface ProjectMember {
 
 interface TaskMovementLog {
   id: string
-  projectId: string
-  taskId: string
-  taskName: Task
-  taskDescription: Task
-  executor: User
-  initiator: User
-  editDate: string
-  tag: Task
-  currentPosition: Task
+  task: Task
+  executor: User | null
+  user: User
+  startDate: string
+  endDate: string
+  status: TaskStatus
 }
 
 interface Task {
   id: string
-  sprintId: string
+  sprintId?: string
   projectId: string
+  position?: number
   name: string
   description: string
+  leaderComment?: string
 
   initiator: User
-  executor: User
-  workHour: string
+  executor: User | null
+  workHour: number
   startDate: string
-  finishDate: string
+  finishDate?: string
 
-  tag: string
-  taskMovementLog: TaskStatus[]
+  tags: Tag[]
   status: TaskStatus
 }
 
-export { Project, ProjectMember, ProjectStatus, ProjectMemberRole }
+type SprintStatus = 'ACTIVE' | 'DONE'
+
+interface Sprint {
+  id: string
+  projectId: string
+  name: string
+  goal?: string
+  marks: SprintMarks[]
+  report: string
+  startDate: string
+  finishDate: string
+  workingHours: number
+  status: SprintStatus
+  tasks: Task[]
+}
+
+interface SprintMarks {
+  sprintId: string
+  userId: string
+  firstName: string
+  lastName: string
+  projectRole: ProjectMemberRole
+  mark: number | undefined
+  tasks?: Task[]
+}
+
+export {
+  Project,
+  ProjectMember,
+  ProjectStatus,
+  ProjectMemberRole,
+  SprintStatus,
+  Sprint,
+  SprintMarks,
+  Task,
+  TaskStatus,
+  TaskMovementLog,
+}

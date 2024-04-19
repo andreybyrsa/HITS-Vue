@@ -13,6 +13,8 @@ import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
+import { defProfile } from '@Assets/images'
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -54,7 +56,9 @@ async function handleFileUpload(event: HTMLTargetEvent) {
 </script>
 
 <template>
-  <div class="profile-avatar bg-white border p-3 rounded-3 d-flex flex-column gap-3">
+  <div
+    class="profile-avatar w-100 bg-white border p-3 rounded-3 d-flex flex-column gap-3"
+  >
     <input
       ref="fileInputRef"
       type="file"
@@ -76,9 +80,12 @@ async function handleFileUpload(event: HTMLTargetEvent) {
           width="150"
           height="150"
         />
-        <Icon
+        <img
           v-else
-          class-name="profile-avatar__placeholder-icon bi bi-person-circle"
+          class="text-secondary"
+          :src="defProfile"
+          width="150"
+          height="150"
         />
 
         <LoadingWrapper

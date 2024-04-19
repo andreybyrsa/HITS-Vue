@@ -11,11 +11,11 @@ const props = defineProps<InputProps>()
 
 const emit = defineEmits<InputEmits>()
 
-defineModel<string>({
+defineModel<string | number>({
   required: false,
 })
 
-const { value, errorMessage } = useField(props.name, props.validation, {
+const { value, errorMessage } = useField(props.name, props.validation?.name, {
   validateOnValueUpdate: props.validateOnUpdate ?? false,
   validateOnMount: false,
   controlled: props.noFormControlled ? false : true,

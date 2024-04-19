@@ -44,6 +44,7 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
       status: JoinStatus,
       token: string,
     ) {
+      const profileStore = useProfilesStore()
       const { id, userId, teamId } = requestToTeam
 
       const response = await TeamService.updateRequestToTeamStatus(

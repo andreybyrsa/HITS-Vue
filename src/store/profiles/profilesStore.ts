@@ -127,27 +127,38 @@ const useProfilesStore = defineStore('profiles', {
       currentUserTelegram.userTag = tag
     },
 
-    async updateUserFullName(user: User, token: string) {
+    async updateUserFullName(user: User, token: string, id: string) {
       const userStore = useUserStore()
-      const { id: userId, lastName, firstName } = user
+      const { id: userId, lastName, firstName, studyGroup, telephone } = user
 
-      const fullName: ProfileFullName = { lastName, firstName }
+      const fullName: ProfileFullName = {
+        lastName,
+        firstName,
+        studyGroup,
+        telephone,
+        id: userId,
+      }
 
-      const response = await ProfileService.updateUserFullName(fullName, token)
+      const response = await ProfileService.updateUserFullName(fullName, token, id)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
-        return
-      }
+      } else {
+        const currentProfile = this.profiles.find(({ id }) => id === userId)
+        const currentUser = userStore.user
 
-      const currentProfile = this.profiles.find(({ id }) => id === userId)
-      const currentUser = userStore.user
+        if (currentProfile && currentUser) {
+          currentProfile.firstName = firstName
+          currentProfile.lastName = lastName
 
-      if (currentProfile && currentUser) {
-        currentProfile.firstName = firstName
-        currentProfile.lastName = lastName
-
-        userStore.setUser({ ...currentUser, firstName, lastName })
+          userStore.setUser({
+            ...currentUser,
+            firstName,
+            lastName,
+            studyGroup,
+            telephone,
+          })
+        }
       }
     },
 
@@ -259,28 +270,6 @@ const useProfilesStore = defineStore('profiles', {
             const currentDate = new Date().toJSON().toString()
             currentTeamExperience.finishDate = currentDate
             currentTeamExperience.hasActiveProject = false
-          }
-        }
-      }
-    },
-
-    async finishTeamProject(userId: string, teamId: string, token: string) {
-      const response = await TeamService.finishTeamProject(teamId, token)
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentProfile = this.profiles.find((profile) => profile.id === userId)
-
-        if (currentProfile) {
-          const currentTeamProject = currentProfile.teamsProjects.find(
-            (team) =>
-              team.teamId === teamId && team.userId === userId && !team.finishDate,
-          )
-
-          if (currentTeamProject) {
-            const currentDate = new Date().toJSON().toString()
-            currentTeamProject.finishDate = currentDate
           }
         }
       }
