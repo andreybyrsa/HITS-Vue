@@ -50,7 +50,7 @@ const sprintStore = useSprintsStore()
 
 const route = useRoute()
 
-const projectId: string = route.params.id as string
+const projectId = route.params.projectId.toString()
 
 const averageMark = ref<AverageMark[]>([])
 const isLoading = ref(false)
@@ -146,6 +146,7 @@ const FinishSprint = handleSubmit(async (values) => {
     const { token, id } = currentUser
     const sprintId = props.sprint?.id
     const finishDate = new Date().toJSON().toString()
+    const sprintTasks = props.sprint?.tasks
 
     const sprintMarks = props.members?.map(
       ({ projectRole, userId, firstName, lastName }) => {
@@ -165,7 +166,7 @@ const FinishSprint = handleSubmit(async (values) => {
       },
     ) as SprintMarks[]
 
-    if (sprintId) {
+    if (sprintId && sprintTasks) {
       isLoading.value = true
       const finishSprintParallelRequests: RequestConfig[] = [
         {
@@ -175,7 +176,7 @@ const FinishSprint = handleSubmit(async (values) => {
               finishDate,
               'DONE',
               values.report,
-              props.unfinishedTasks ?? [],
+              sprintTasks,
               token,
             ),
           refValue: ref(),
