@@ -22,7 +22,7 @@ import useUserStore from '@Store/user/userStore'
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-onBeforeMount(async () => {
+onBeforeMount(() => {
   userTelegramRef.value = (await profilesStore.fetchUserTelegram(
     profileId ?? '',
     profile.value?.token ?? '',
@@ -32,12 +32,7 @@ onBeforeMount(async () => {
   profile.value = profilesStore.getProfileByUserId(profileId)
   if (!profile.value) return
   const { firstName, lastName, email } = profile.value
-  setValues({
-    firstName,
-    lastName,
-    email,
-    userTag: userTelegramRef.value.userTag,
-  })
+  setValues({ ...profile.value, userTag: userTelegramRef.value.userTag })
 })
 
 const route = useRoute()
@@ -124,8 +119,26 @@ async function setUserValues() {
       profile.value?.token ?? '',
     )) as UserTelegram
     if (userTelegram.userTag === null) return
-    const { email, firstName, lastName } = computedProfile.value
-    setValues({ email, firstName, lastName, userTag: userTelegram.userTag })
+    // const { email, firstName, lastName } = computedProfile.value
+    // setValues({ email, firstName, lastName, userTag: userTelegram.userTag })
+    const { email, firstName, lastName, studyGroup, telephone, userTag } = {
+      ...profile.value,
+    }
+    setValues({
+      email,
+      firstName,
+      lastName,
+      studyGroup,
+      telephone,
+      userTag: userTelegram.userTag,
+    })
+    // if (computedProfile.value?.email === user.value?.email) {
+    //   setValues({ ...user.value })
+    // } else if (profile.value) {
+    //   const { email, firstName, lastName, studyGroup, telephone, userTag } =
+    //     profile.value
+    //   setValues({ email, firstName, lastName, studyGroup, telephone, userTag })
+    // }
   }
 }
 
@@ -228,7 +241,7 @@ function getFormattedDate(date: string) {
         <Button
           v-if="isUpdatingUserTelephone"
           variant="danger"
-          @click="toogleUpdateTelegram(false)"
+          @click="toogleUpdatingUserTelephone(false)"
         >
           Отменить
         </Button>
