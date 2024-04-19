@@ -119,7 +119,6 @@ const useSprintsStore = defineStore('sprints', {
         finishDate,
         status,
         report,
-        tasks,
         token,
       )
 
@@ -130,12 +129,17 @@ const useSprintsStore = defineStore('sprints', {
         const tasksStore = useTasksStore().tasks
 
         tasksStore.forEach((task) => {
-          if (tasks.find(({ id }) => id === task.id)) {
+          const currentTask = tasks.find(({ id }) => id === task.id)
+
+          if (currentTask) {
             task.sprintId = undefined
             task.position =
-              tasksStore.filter(({ status }) => status === 'InBackLog').length + 1
+              currentTask.status !== 'Done'
+                ? tasksStore.filter(({ status }) => status === 'InBackLog').length +
+                  1
+                : undefined
             task.executor = null
-            task.status = 'InBackLog'
+            task.status = currentTask.status !== 'Done' ? 'InBackLog' : 'Done'
           }
         })
 

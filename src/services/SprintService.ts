@@ -166,7 +166,6 @@ const finishSprint = async (
   finishDate: string,
   status: SprintStatus,
   report: string,
-  tasks: Task[],
   token: string,
 ): Promise<Success | Error> => {
   if (MODE === 'DEVELOPMENT') {
