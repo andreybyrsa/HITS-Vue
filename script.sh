@@ -6,7 +6,7 @@ fi
 cd "$($dirname "$0")"
 git add .
 git commit -m "$1"
-current_branch=$(git rev-parse -- addrev-ref HEAD)
+current_branch=$(git rev-parse --abbrev-ref HEAD)
 git checkout task-information-tab
 git merge $current_branch
 git push origin task-information-tab
