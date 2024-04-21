@@ -18,14 +18,13 @@ import useUserStore from '@Store/user/userStore'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useSprintsStore from '@Store/sprints/sprintsStore'
 
-import { Task } from '@Domain/Project'
+import { Task, TaskStatus } from '@Domain/Project'
 
 import {
   RequestConfig,
   openErrorNotification,
   sendParallelRequests,
 } from '@Utils/sendParallelRequests'
-import Project from './Project.vue'
 
 defineProps<ActiveSprintProps>()
 
@@ -47,44 +46,40 @@ const unfinishedTasks = computed<Task[]>(
   () => activeSprint?.value?.tasks.filter(({ status }) => status !== 'Done') ?? [],
 )
 
+function getTasksByStatus(currentStatus: TaskStatus) {
+  return activeSprint?.value?.tasks
+    .filter(({ status }) => status === currentStatus)
+    .sort((a: Task) => (a.executor?.id === user.value?.id ? -1 : 1))
+}
+
 const onModificationTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'OnModification',
-    tasks:
-      activeSprint?.value?.tasks.filter(
-        ({ status }) => status === 'OnModification',
-      ) ?? [],
+    tasks: getTasksByStatus('OnModification'),
   }
 })
 const newTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'NewTask',
-    tasks:
-      activeSprint?.value?.tasks.filter(({ status }) => status === 'NewTask') ?? [],
+    tasks: getTasksByStatus('NewTask'),
   }
 })
 const inProgressTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'InProgress',
-    tasks:
-      activeSprint?.value?.tasks.filter(({ status }) => status === 'InProgress') ??
-      [],
+    tasks: getTasksByStatus('InProgress'),
   }
 })
 const onVerificationTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'OnVerification',
-    tasks:
-      activeSprint?.value?.tasks.filter(
-        ({ status }) => status === 'OnVerification',
-      ) ?? [],
+    tasks: getTasksByStatus('OnVerification'),
   }
 })
 const doneTask = reactiveComputed<ColumnTask>(() => {
   return {
     name: 'Done',
-    tasks:
-      activeSprint?.value?.tasks.filter(({ status }) => status === 'Done') ?? [],
+    tasks: getTasksByStatus('Done'),
   }
 })
 
@@ -94,7 +89,7 @@ const columnsTasksArray = computed<ColumnTask[]>(() => {
 
 const checkMyInProgressTask = computed(() =>
   Boolean(
-    inProgressTask.tasks.find(({ executor }) => executor?.id === user.value?.id),
+    inProgressTask.tasks?.find(({ executor }) => executor?.id === user.value?.id),
   ),
 )
 
@@ -136,7 +131,7 @@ async function moveTask(evt: any) {
       const task: Task = evt.added.element
       const { id: taskId } = task
       const currentArrayTask = columnsTasksArray.value.find((arrayTasks) =>
-        arrayTasks.tasks.includes(task),
+        arrayTasks.tasks?.includes(task),
       )
 
       if (currentArrayTask)
@@ -241,12 +236,12 @@ function closeBurndownModal() {
     v-if="activeSprint"
     class="active-sprint"
   >
-    <div class="active-sprint__header my-4 p-2 border rounded w-100">
-      <div class="d-flex gap-2 align-items-center">
-        <div class="bs-link mb-1 fw-semibold text-primary">
+    <div class="active-sprint__header mt-4 mb-2 w-100">
+      <div class="active-sprint__header-name border-bottom w-100">
+        <div class="bs-link">
           <div
             @click="openBurndownModal"
-            class="fs-5 fw-semibold cursor-pointer"
+            class="fs-5 fw-semibold cursor-pointer text-primary"
           >
             {{ activeSprint.name }}
           </div>
@@ -257,6 +252,7 @@ function closeBurndownModal() {
       <Button
         v-if="user?.role === 'TEAM_LEADER'"
         @click="openFinishSprintModal"
+        class-name="active-sprint__header-button"
         variant="danger"
       >
         Завершить спринт
@@ -301,7 +297,7 @@ function closeBurndownModal() {
         </div>
 
         <draggable
-          class="list-group active-sprint"
+          class="list-group active-sprint__column"
           :list="column.list"
           group="people"
           :move="column.move"
@@ -340,10 +336,18 @@ function closeBurndownModal() {
 
 <style lang="scss" scoped>
 .active-sprint {
-  min-height: 70vh;
-
   &__header {
     @include flexible(center, space-between);
+
+    &-name {
+      @include flexible(center, flex-start, $gap: 12px);
+    }
+
+    &-button {
+      width: 100%;
+      margin-left: 16px;
+      max-width: fit-content;
+    }
   }
 
   &__columns {
@@ -363,6 +367,11 @@ function closeBurndownModal() {
       color: white;
       background-color: rgb(13, 110, 253);
     }
+  }
+
+  &__column {
+    height: calc(100vh - 320px);
+    overflow-y: scroll;
   }
 }
 </style>

@@ -12,11 +12,6 @@ const ButtonClassName = computed(() => [
   { [`btn-${props.variant}`]: props.variant },
   props.className,
 ])
-
-const ButtonSlotClassName = computed(() => [
-  { ['btn-maxWidth']: props.maxWidth },
-  ['w-100 d-flex '],
-])
 </script>
 
 <template>
