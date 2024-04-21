@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 
@@ -23,6 +23,7 @@ import useUserStore from '@Store/user/userStore'
 import useIndicatorStore from '@Store/indicators/indicatorsStore'
 import { Indicator, Quest } from '@Domain/Quest'
 import useQuestsStore from '@Store/quests/questsStore'
+import { findStatusesByTranslatedStatus } from '@Utils/indicatorStatus'
 
 const props = defineProps<CreateQuestModalProps>()
 const emit = defineEmits<CreateQuestModalEmits>()
@@ -42,13 +43,42 @@ const newQuestIndicators = ref<Indicator[]>(quest.value?.indicators ?? [])
 const isOpenedCreateNewIndicator = ref(false)
 const isLoading = ref<boolean>(false)
 
-const { handleSubmit, setValues } = useForm<Quest>({
+const { handleSubmit, setValues, values } = useForm<{
+  name: string
+  description: string
+  backlogSearchValue: string
+  newQuestSearchValue: string
+}>({
   validationSchema: {
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     description: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
   },
+})
+
+const filteredBacklogIndicators = computed(() => {
+  const searchValue = values.backlogSearchValue
+  if (!searchValue) return backlogIndicators.value
+  searchValue.toLowerCase()
+
+  return backlogIndicators.value.filter(
+    (indicator) =>
+      indicator.name.toLowerCase().includes(searchValue) ||
+      findStatusesByTranslatedStatus(searchValue).includes(indicator.type),
+  )
+})
+
+const filteredNewQuestIndicators = computed(() => {
+  const searchValue = values.newQuestSearchValue
+  if (!searchValue) return newQuestIndicators.value
+  searchValue.toLowerCase()
+
+  return newQuestIndicators.value.filter(
+    (indicator) =>
+      indicator.name.toLowerCase().includes(searchValue) ||
+      findStatusesByTranslatedStatus(searchValue).includes(indicator.type),
+  )
 })
 
 onMounted(async () => {
@@ -115,14 +145,19 @@ const moveIndicatorToBacklog = (currentIndicator: Indicator) => {
   backlogIndicators.value.push(currentIndicator)
 }
 
-const createQuest = handleSubmit(async (quest) => {
+const createQuest = handleSubmit(async (values) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
-    quest.indicators = newQuestIndicators.value
 
-    await questStore.postQuest(quest, token)
+    const newQuest: Quest = {
+      name: values.name,
+      description: values.description,
+      indicators: newQuestIndicators.value,
+    }
+
+    await questStore.postQuest(newQuest, token)
     emit('close-modal')
   }
 })
@@ -175,10 +210,15 @@ const closeCreateNewIndicator = () => {
                   :isOpened="isOpenedCreateNewIndicator"
                 ></CreateIndicatorModal>
               </div>
+              <Input
+                placeholder="Введите название вопроса или его тип"
+                class-name="rounded m-1 mt-3 mb-2"
+                name="backlogSearchValue"
+              />
               <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
                 <IndicatorItem
                   class-name="cursor-pointer"
-                  v-for="indicator in backlogIndicators"
+                  v-for="indicator in filteredBacklogIndicators"
                   :key="indicator.idIndicator"
                   @click="moveIndicatorToNew(indicator)"
                   :indicator="indicator"
@@ -193,10 +233,15 @@ const closeCreateNewIndicator = () => {
                   Выбранные вопросы
                 </Typography>
               </div>
+              <Input
+                placeholder="Введите название вопроса или его тип"
+                class-name="rounded m-1 mt-3 mb-2"
+                name="newQuestSearchValue"
+              />
               <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
                 <IndicatorItem
                   class-name="cursor-pointer"
-                  v-for="indicator in newQuestIndicators"
+                  v-for="indicator in filteredNewQuestIndicators"
                   :key="indicator.idIndicator"
                   @click="moveIndicatorToBacklog(indicator)"
                   :indicator="indicator"

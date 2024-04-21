@@ -5,8 +5,8 @@ export interface Category {
   category: string
 }
 
-// export type IndicatorType = 'TEAM' | 'INITIATOR' | 'MEMBER' | 'TEAMLEAD'
-export type IndicatorType = 'SCORE' | 'TEAM-MEMBERS'
+export type IndicatorType = 'TEAM' | 'INITIATOR' | 'TEAM-MEMBER' | 'TEAMLEAD'
+// export type IndicatorType = 'SCORE' | 'TEAM-MEMBERS'
 
 export interface Indicator {
   idIndicator: string
@@ -22,7 +22,7 @@ export interface Indicator {
 }
 
 export interface QuestShort {
-  idQuest: string
+  idQuest?: string
   available?: boolean
   name: string
 }

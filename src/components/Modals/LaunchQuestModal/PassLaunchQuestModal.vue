@@ -78,7 +78,7 @@ const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
     const userRole = user.value?.role
     // if (indicator.role != userRole) return // потом разкомментировать
 
-    if (indicator.type == 'SCORE') {
+    if (indicator.type != 'TEAM-MEMBER') {
       personalIndicators.push(indicator)
       return
     }

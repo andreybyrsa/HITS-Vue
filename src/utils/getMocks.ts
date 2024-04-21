@@ -1535,7 +1535,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '1',
     name: 'Как вам отношения в команде?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1543,7 +1543,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '2',
     name: 'Как вам профессионализм команды?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1551,7 +1551,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '3',
     name: 'Каков ваш взгляд на коммуникацию с этим членом команды?',
-    type: 'TEAM-MEMBERS',
+    type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1559,7 +1559,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '4',
     name: 'Как оцениваете общение в команде?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1567,7 +1567,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '5',
     name: 'Какие ваши мысли о навыках команды?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1575,7 +1575,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '6',
     name: 'Как оценить атмосферу в коллективе?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1583,7 +1583,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '7',
     name: 'Что вы думаете о взаимодействии с этим коллегой?',
-    type: 'TEAM-MEMBERS',
+    type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1591,7 +1591,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '8',
     name: 'Ваше мнение о компетентности команды?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1599,7 +1599,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '9',
     name: 'Что вы думаете о взаимодействии внутри группы?',
-    type: 'TEAM-MEMBERS',
+    type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1607,7 +1607,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '10',
     name: 'Как воспринимаете атмосферу в команде?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1615,7 +1615,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '11',
     name: 'Как вы оцениваете профессионализм коллег?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1623,7 +1623,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '12',
     name: 'Ваш взгляд на взаимодействие с коллегами?',
-    type: 'TEAM-MEMBERS',
+    type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1631,7 +1631,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '13',
     name: 'Что вы думаете о внутренних отношениях в команде?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1639,7 +1639,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '14',
     name: 'Как вы оцениваете профессиональные навыки команды?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1647,7 +1647,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '15',
     name: 'Ваше мнение о взаимодействии с коллегами?',
-    type: 'TEAM-MEMBERS',
+    type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1655,7 +1655,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '16',
     name: 'Что вы думаете о взаимодействии в команде?',
-    type: 'TEAM-MEMBERS',
+    type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1663,7 +1663,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '17',
     name: 'Как вы оцениваете атмосферу в команде?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1671,7 +1671,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '18',
     name: 'Что вы думаете о профессионализме команды?',
-    type: 'SCORE',
+    type: 'TEAM',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1679,7 +1679,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '19',
     name: 'Ваш взгляд на взаимодействие с коллегой?',
-    type: 'TEAM-MEMBERS',
+    type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1699,7 +1699,7 @@ export const questsMocks: Quest[] = [
 export const launchQuestsMocks: LaunchQuest[] = [
   {
     idLaunchQuest: '1',
-    idQuest: questsMocks[0].idQuest,
+    idQuest: questsMocks[0].idQuest!,
     idTeams: [teamsMocks[0].id],
     name: 'Весенний опрос 2024',
     startAt: '28.04.2024',
@@ -1710,7 +1710,7 @@ export const launchQuestsMocks: LaunchQuest[] = [
   },
   {
     idLaunchQuest: '1',
-    idQuest: questsMocks[0].idQuest,
+    idQuest: questsMocks[0].idQuest!,
     idTeams: [teamsMocks[0].id],
     name: 'Осенний опрос 2023',
     startAt: '28.11.2023',
@@ -1724,7 +1724,7 @@ export const launchQuestsMocks: LaunchQuest[] = [
   },
   {
     idLaunchQuest: '1',
-    idQuest: questsMocks[0].idQuest,
+    idQuest: questsMocks[0].idQuest!,
     idTeams: [teamsMocks[0].id],
     name: 'Весенний опрос 2023',
     startAt: '28.04.2023',
@@ -1738,7 +1738,7 @@ export const launchQuestsMocks: LaunchQuest[] = [
   },
   {
     idLaunchQuest: '1',
-    idQuest: questsMocks[0].idQuest,
+    idQuest: questsMocks[0].idQuest!,
     idTeams: [teamsMocks[0].id],
     name: 'Осенний опрос 2022',
     startAt: '28.11.2022',
