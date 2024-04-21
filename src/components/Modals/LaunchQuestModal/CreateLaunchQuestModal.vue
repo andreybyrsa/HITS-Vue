@@ -20,6 +20,7 @@ import useQuestStore from '@Store/quests/questsStore'
 import useUserStore from '@Store/user/userStore'
 import Validation from '@Utils/Validation'
 import { useForm } from 'vee-validate'
+import { string } from 'yup'
 
 const userStore = useUserStore()
 const questStore = useQuestStore()
@@ -53,10 +54,13 @@ watchImmediate(
 watchImmediate(
   () => quest.value,
   (value) => {
-    if (value) {
-      descriptionQuest.value = quest.value?.description
+    if (quest.value) {
+      if (value) {
+        descriptionQuest.value = quest.value.description
+      }
+      const { description } = quest.value
+      setValues({ description })
     }
-    quest.value ? setValues({ ...quest.value }) : 1
   },
 )
 
