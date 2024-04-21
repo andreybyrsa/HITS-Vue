@@ -22,12 +22,12 @@ const getQuestResults = async (token: string): Promise<QuestResult[] | Error> =>
     )
 }
 
-const postQuestResult = async (
-  questResult: QuestResult,
+const postQuestResults = async (
+  questResults: QuestResult[],
   token: string,
-): Promise<QuestResult | Error> => {
+): Promise<QuestResult[] | Error> => {
   return questResultsAxios
-    .post(`/quest-result`, questResult, {
+    .post(`/quest-result`, questResults, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -37,7 +37,7 @@ const postQuestResult = async (
 
 const QuestResultService = {
   getQuestResults,
-  postQuestResult,
+  postQuestResults,
 }
 
 export default QuestResultService

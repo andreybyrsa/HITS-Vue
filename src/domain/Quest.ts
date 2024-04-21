@@ -5,7 +5,8 @@ export interface Category {
   category: string
 }
 
-export type IndicatorType = 'TEAM' | 'INITIATOR' | 'MEMBER' | 'TEAMLEAD'
+// export type IndicatorType = 'TEAM' | 'INITIATOR' | 'MEMBER' | 'TEAMLEAD'
+export type IndicatorType = 'SCORE' | 'TEAM-MEMBERS'
 
 export interface Indicator {
   idIndicator: string
@@ -16,6 +17,8 @@ export interface Indicator {
   visible: boolean
   nameCategory?: string
   idCategory?: string
+  // idToUser нужен только на этапе прохождения опроса, при создании indicator его не надо передавать
+  idToUser?: string
 }
 
 export interface QuestShort {

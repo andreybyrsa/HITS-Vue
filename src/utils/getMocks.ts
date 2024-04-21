@@ -1535,7 +1535,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '1',
     name: 'Как вам отношения в команде?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1543,15 +1543,15 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '2',
     name: 'Как вам профессионализм команды?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
   },
   {
     idIndicator: '3',
-    name: 'Каков ваш взгляд на коммуникацию в команде?',
-    type: 'MEMBER',
+    name: 'Каков ваш взгляд на коммуникацию с этим членом команды?',
+    type: 'TEAM-MEMBERS',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1559,7 +1559,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '4',
     name: 'Как оцениваете общение в команде?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1567,23 +1567,23 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '5',
     name: 'Какие ваши мысли о навыках команды?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
   },
   {
     idIndicator: '6',
-    name: 'Что вы думаете о взаимодействии с коллегами?',
-    type: 'MEMBER',
+    name: 'Как оценить атмосферу в коллективе?',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
   },
   {
     idIndicator: '7',
-    name: 'Как оценить атмосферу в коллективе?',
-    type: 'TEAM',
+    name: 'Что вы думаете о взаимодействии с этим коллегой?',
+    type: 'TEAM-MEMBERS',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1591,7 +1591,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '8',
     name: 'Ваше мнение о компетентности команды?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1599,7 +1599,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '9',
     name: 'Что вы думаете о взаимодействии внутри группы?',
-    type: 'MEMBER',
+    type: 'TEAM-MEMBERS',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1607,7 +1607,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '10',
     name: 'Как воспринимаете атмосферу в команде?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1615,7 +1615,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '11',
     name: 'Как вы оцениваете профессионализм коллег?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1623,7 +1623,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '12',
     name: 'Ваш взгляд на взаимодействие с коллегами?',
-    type: 'MEMBER',
+    type: 'TEAM-MEMBERS',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1631,7 +1631,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '13',
     name: 'Что вы думаете о внутренних отношениях в команде?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1639,7 +1639,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '14',
     name: 'Как вы оцениваете профессиональные навыки команды?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1647,7 +1647,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '15',
     name: 'Ваше мнение о взаимодействии с коллегами?',
-    type: 'MEMBER',
+    type: 'TEAM-MEMBERS',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1655,7 +1655,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '16',
     name: 'Что вы думаете о взаимодействии в команде?',
-    type: 'MEMBER',
+    type: 'TEAM-MEMBERS',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1663,7 +1663,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '17',
     name: 'Как вы оцениваете атмосферу в команде?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1671,7 +1671,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '18',
     name: 'Что вы думаете о профессионализме команды?',
-    type: 'TEAM',
+    type: 'SCORE',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1679,7 +1679,7 @@ export const indicatorsMocks: Indicator[] = [
   {
     idIndicator: '19',
     name: 'Ваш взгляд на взаимодействие с коллегой?',
-    type: 'MEMBER',
+    type: 'TEAM-MEMBERS',
     role: 'MEMBER',
     visible: true,
     nameCategory: 'soft',
@@ -1701,9 +1701,9 @@ export const launchQuestsMocks: LaunchQuest[] = [
     idLaunchQuest: '1',
     idQuest: questsMocks[0].idQuest,
     idTeams: [teamsMocks[0].id],
-    name: 'Весенний опрос 4',
-    startAt: '31.04.2024',
-    endAt: '31.05.2024',
+    name: 'Весенний опрос 2024',
+    startAt: '28.04.2024',
+    endAt: '28.05.2024',
     available: true,
     passingResult: '1 / ' + teamsMocks[0].membersCount.toString(),
     passed: false,
@@ -1712,9 +1712,9 @@ export const launchQuestsMocks: LaunchQuest[] = [
     idLaunchQuest: '1',
     idQuest: questsMocks[0].idQuest,
     idTeams: [teamsMocks[0].id],
-    name: 'Осенний опрос 3',
-    startAt: '31.11.2023',
-    endAt: '31.12.2023',
+    name: 'Осенний опрос 2023',
+    startAt: '28.11.2023',
+    endAt: '28.12.2023',
     available: true,
     passingResult:
       Math.floor(teamsMocks[0].membersCount / 2).toString() +
@@ -1726,9 +1726,9 @@ export const launchQuestsMocks: LaunchQuest[] = [
     idLaunchQuest: '1',
     idQuest: questsMocks[0].idQuest,
     idTeams: [teamsMocks[0].id],
-    name: 'Весенний опрос 2',
-    startAt: '31.04.2023',
-    endAt: '31.05.2023',
+    name: 'Весенний опрос 2023',
+    startAt: '28.04.2023',
+    endAt: '28.05.2023',
     available: true,
     passingResult:
       Math.floor(teamsMocks[0].membersCount / 2).toString() +
@@ -1740,9 +1740,9 @@ export const launchQuestsMocks: LaunchQuest[] = [
     idLaunchQuest: '1',
     idQuest: questsMocks[0].idQuest,
     idTeams: [teamsMocks[0].id],
-    name: 'Осенний опрос 1',
-    startAt: '31.11.2022',
-    endAt: '31.12.2022',
+    name: 'Осенний опрос 2022',
+    startAt: '28.11.2022',
+    endAt: '28.12.2022',
     available: false,
     passingResult:
       Math.floor(teamsMocks[0].membersCount / 2).toString() +

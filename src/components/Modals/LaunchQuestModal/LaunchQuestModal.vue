@@ -61,6 +61,7 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+    await launchQuestsStore.getLaunchQuests(token)
     launchQuest.value = launchQuests.value.find(
       (item) => item.idLaunchQuest == idLaunchQuest,
     )
