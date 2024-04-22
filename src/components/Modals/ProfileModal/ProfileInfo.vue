@@ -22,7 +22,7 @@ import useUserStore from '@Store/user/userStore'
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   userTelegramRef.value = (await profilesStore.fetchUserTelegram(
     profileId ?? '',
     profile.value?.token ?? '',
