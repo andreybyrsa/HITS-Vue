@@ -15,7 +15,7 @@ import { RouteRecordRaw, useRoute } from 'vue-router'
 import LaunchQuestModal from '@Components/Modals/LaunchQuestModal/LaunchQuestModal.vue'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 import { bool } from 'yup'
-import collapseData from './LaunchQuestTableCollapse.vue'
+import LaunchQuestTableCollapse from '@Components/Tables/LaunchQuestsTable/LaunchQuestTableCollapse.vue'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -158,7 +158,7 @@ function handleEditCollapseTable() {
     :dropdown-actions-menu="launchQuestsTableDropdownMenuAction"
     :data="launchQuests"
     :search-by="['name']"
-    :collapseChildComponent="collapseData"
+    :collapseChildComponent="LaunchQuestTableCollapse"
     :isOpenCollapse="isOpenCollapseTable"
   />
   <PassLaunchQuestModal

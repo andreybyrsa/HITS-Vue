@@ -402,20 +402,14 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   </div>
                 </div>
               </td>
-
-              <td
-                v-if="!collapseChildComponent"
-                class="py-3"
-              >
+              <td class="py-3">
                 <div
                   class="table__row-icon ms-1 bi bi-chevron-down"
                   type="button"
+                  v-collapse="`tableCollapse.${index}`"
                 ></div>
               </td>
-              <td
-                v-else
-                class="py-3"
-              >
+              <td class="py-3">
                 <div class="table__row-icon">
                   <Icon
                     class-name="bi bi-three-dots fs-5"
@@ -449,14 +443,20 @@ function checkHeaderButtonStatement(statement?: boolean) {
               </td>
             </tr>
             <tr v-if="collapseChildComponent">
-              <Collapse :id="index">
-                <td
-                  class="col-12"
-                  colspan="6"
+              <td
+                class="col-12 p-0 border-0"
+                colspan="6"
+              >
+                <Collapse
+                  :className="`border-bottom py-2`"
+                  :id="`tableCollapse.${index}`"
                 >
-                  <component :is="collapseChildComponent" />
-                </td>
-              </Collapse>
+                  <component
+                    :is="collapseChildComponent"
+                    :data="row"
+                  />
+                </Collapse>
+              </td>
             </tr>
           </tbody>
         </table>

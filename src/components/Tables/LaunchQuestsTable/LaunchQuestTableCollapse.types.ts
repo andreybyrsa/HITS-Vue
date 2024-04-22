@@ -1,6 +1,3 @@
-interface TableCollapse {
-
+export interface TableCollapse {
+  data: any
 }
-export {
-    TableCollapse
-} 

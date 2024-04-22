@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import useLaunchQuestStore from '@Store/launchQuests/launchQuestsStore'
-import { storeToRefs } from 'pinia'
+import { defineProps } from 'vue'
+import { TableCollapse } from '@Components/Tables/LaunchQuestsTable/LaunchQuestTableCollapse.types'
 
-const launchQuestStore = useLaunchQuestStore()
-const { launchQuests } = storeToRefs(launchQuestStore)
+defineProps<TableCollapse>()
 </script>
 
-<template>{{ launchQuests[1] }}</template>
+<template>
+  <div>{{ data }}</div>
+</template>
