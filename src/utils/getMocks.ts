@@ -1698,7 +1698,7 @@ export const questsMocks: Quest[] = [
 
 export const launchQuestsMocks: LaunchQuest[] = [
   {
-    idLaunchQuest: '1',
+    idLaunchQuest: '4',
     idQuest: questsMocks[0].idQuest!,
     idTeams: [teamsMocks[0].id],
     name: 'Весенний опрос 2024',
@@ -1709,7 +1709,7 @@ export const launchQuestsMocks: LaunchQuest[] = [
     passed: false,
   },
   {
-    idLaunchQuest: '1',
+    idLaunchQuest: '3',
     idQuest: questsMocks[0].idQuest!,
     idTeams: [teamsMocks[0].id],
     name: 'Осенний опрос 2023',
@@ -1723,7 +1723,7 @@ export const launchQuestsMocks: LaunchQuest[] = [
     passed: true,
   },
   {
-    idLaunchQuest: '1',
+    idLaunchQuest: '2',
     idQuest: questsMocks[0].idQuest!,
     idTeams: [teamsMocks[0].id],
     name: 'Весенний опрос 2023',
