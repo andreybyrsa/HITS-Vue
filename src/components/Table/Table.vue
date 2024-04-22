@@ -15,6 +15,8 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import TableCollapse from '@Components/Tables/LaunchQuestsTable/LaunchQuestTableCollapse.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
 
 const props = defineProps<TableProps<DataType>>()
 
@@ -339,12 +341,11 @@ function checkHeaderButtonStatement(statement?: boolean) {
               <th></th>
             </tr>
           </thead>
-
-          <tbody>
-            <tr
-              v-for="(row, index) in searchedData"
-              :key="index"
-            >
+          <tbody
+            v-for="(row, index) in searchedData"
+            :key="index"
+          >
+            <tr>
               <td
                 v-if="isCheckbox"
                 class="py-3 col"
@@ -357,7 +358,6 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   :value="row"
                 />
               </td>
-
               <td
                 v-for="column in columns"
                 :key="column.key"
@@ -403,7 +403,19 @@ function checkHeaderButtonStatement(statement?: boolean) {
                 </div>
               </td>
 
-              <td class="py-3">
+              <td
+                v-if="!collapseChildComponent"
+                class="py-3"
+              >
+                <div
+                  class="table__row-icon ms-1 bi bi-chevron-down"
+                  type="button"
+                ></div>
+              </td>
+              <td
+                v-else
+                class="py-3"
+              >
                 <div class="table__row-icon">
                   <Icon
                     class-name="bi bi-three-dots fs-5"
@@ -435,6 +447,16 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   </DropDown>
                 </div>
               </td>
+            </tr>
+            <tr v-if="collapseChildComponent">
+              <Collapse :id="index">
+                <td
+                  class="col-12"
+                  colspan="6"
+                >
+                  <component :is="collapseChildComponent" />
+                </td>
+              </Collapse>
             </tr>
           </tbody>
         </table>

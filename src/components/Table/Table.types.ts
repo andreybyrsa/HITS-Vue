@@ -71,6 +71,7 @@ interface TableProps<DataType> {
   checkedDataActions?: CheckedDataAction<DataType>[]
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]
   isCheckbox?: boolean
+  collapseChildComponent?: object
 }
 
 export {

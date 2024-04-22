@@ -14,6 +14,8 @@ import { computed, onMounted, ref } from 'vue'
 import { RouteRecordRaw, useRoute } from 'vue-router'
 import LaunchQuestModal from '@Components/Modals/LaunchQuestModal/LaunchQuestModal.vue'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import { bool } from 'yup'
+import collapseData from './LaunchQuestTableCollapse.vue'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -108,7 +110,8 @@ const launchQuestsTableDropdownMenuAction: DropdownMenuAction<LaunchQuest>[] = [
   {
     label: 'Просмотреть',
     statement: () => true,
-    click: (value: LaunchQuest) => navigateToLaunchQuestModal(value),
+    // click: (value: LaunchQuest) => navigateToLaunchQuestModal(value),
+    click: () => handleEditCollapseTable,
   },
   {
     label: 'Пройти опрос',
@@ -137,6 +140,14 @@ const navigateToLaunchQuestModal = (quest: LaunchQuest) => {
     questRoute,
   )
 }
+
+const isOpenCollapseTable = ref(true)
+
+function handleEditCollapseTable() {
+  if (isOpenCollapseTable.value) isOpenCollapseTable.value = false
+  isOpenCollapseTable.value = true
+  console.log(isOpenCollapseTable)
+}
 </script>
 
 <template>
@@ -147,6 +158,8 @@ const navigateToLaunchQuestModal = (quest: LaunchQuest) => {
     :dropdown-actions-menu="launchQuestsTableDropdownMenuAction"
     :data="launchQuests"
     :search-by="['name']"
+    :collapseChildComponent="collapseData"
+    :isOpenCollapse="isOpenCollapseTable"
   />
   <PassLaunchQuestModal
     :launch-quest="passLaunchQuest"

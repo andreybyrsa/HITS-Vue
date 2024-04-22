@@ -1,0 +1,6 @@
+interface TableCollapse {
+
+}
+export {
+    TableCollapse
+} 
