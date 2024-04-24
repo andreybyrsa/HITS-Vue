@@ -74,38 +74,6 @@ const useSprintsStore = defineStore('sprints', {
       }
     },
 
-    // async changeSprintStatus(sprintId: string, status: SprintStatus, token: string) {
-    //   const response = await SprintService.changeSprintStatus(
-    //     sprintId,
-    //     status,
-    //     token,
-    //   )
-
-    //   if (response instanceof Error) {
-    //     useNotificationsStore().createSystemNotification('Система', response.message)
-    //   } else {
-    //     const currentSprint = this.sprints.find(({ id }) => id === sprintId)
-    //     if (currentSprint) {
-    //       currentSprint.status = status
-    //     }
-    //     this.activeSprint = undefined
-    //   }
-    // },
-
-    // async reportSprint(sprintId: string, report: string, token: string) {
-    //   const response = await SprintService.reportSprint(sprintId, report, token)
-
-    //   if (response instanceof Error) {
-    //     useNotificationsStore().createSystemNotification('Система', response.message)
-    //   } else {
-    //     const currentSprint = this.sprints.find(({ id }) => id === sprintId)
-
-    //     if (currentSprint) {
-    //       currentSprint.report = report
-    //     }
-    //   }
-    // },
-
     async finishSprint(
       sprintId: string,
       finishDate: string,
