@@ -118,10 +118,7 @@ function hexToRgb(hex: string) {
 </script>
 
 <template>
-  <ModalLayout
-    :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
-  >
+  <ModalLayout :is-opened="isOpened">
     <div class="add-task-modal border rounded-3 bg-white px-3 py-2">
       <div class="add-task-modal__header w-100">
         <Typography class-name="fs-4 text-primary">
@@ -144,8 +141,8 @@ function hexToRgb(hex: string) {
       <Textarea
         label="Описание задачи*"
         class-name="add-task-modal__description rounded"
-        placeholder="Описание"
         name="description"
+        placeholder="Описание"
         validate-on-update
       />
 
@@ -209,7 +206,7 @@ function hexToRgb(hex: string) {
 
 <style lang="scss">
 .add-task-modal {
-  width: 450px;
+  width: 500px;
 
   @include flexible(
     flex-start,
