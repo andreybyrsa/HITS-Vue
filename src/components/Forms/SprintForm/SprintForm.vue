@@ -121,7 +121,7 @@ watch(values, () => {
 
 function moveTaskToNewTasks(currentTask: Task) {
   backlogTasks.value = backlogTasks.value.filter((task) => task !== currentTask)
-  newSprintTasks.value.push(currentTask)
+  newSprintTasks.value.unshift(currentTask)
   clearTooltips()
 }
 
@@ -191,7 +191,9 @@ function checkworkingHoursTask() {
 }
 
 function checkDisabledButton() {
-  return newSprintTasks.value.length === 0 || !checkworkingHoursTask()
+  return (
+    !props.sprint && (newSprintTasks.value.length === 0 || !checkworkingHoursTask())
+  )
 }
 </script>
 
@@ -211,7 +213,7 @@ function checkDisabledButton() {
     </div>
 
     <!-- content -->
-    <div class="d-flex gap-3 mt-1 w-100">
+    <div class="sprint-form__content d-flex gap-3 mt-1 w-100">
       <!-- tasks -->
       <div class="sprint-form__content-tasks d-flex gap-4">
         <!-- backlog -->
@@ -256,9 +258,9 @@ function checkDisabledButton() {
       </div>
 
       <!-- form -->
-      <div class="sprint-form__form d-flex flex-column gap-3">
+      <div class="sprint-form__form">
         <!-- inputs -->
-        <div class="d-flex flex-column gap-3">
+        <div class="d-flex flex-column gap-3 w-100">
           <Input
             name="name"
             class-name="rounded-end"
@@ -290,7 +292,10 @@ function checkDisabledButton() {
             placeholder=".. | .. | .."
           />
           <div>
-            <div class="d-flex gap-1">
+            <div
+              v-if="!props.sprint"
+              class="d-flex gap-1"
+            >
               <div
                 class="d-flex gap-1"
                 :class="checkworkingHoursTask() ? 'text-primary' : 'text-danger'"
@@ -315,6 +320,7 @@ function checkDisabledButton() {
         <Button
           v-if="props.sprint"
           variant="primary"
+          class-name="w-100"
           @click="UpdateSprint"
           :isLoading="isLoading"
           :disabled="checkDisabledButton()"
@@ -324,6 +330,7 @@ function checkDisabledButton() {
         <Button
           v-else
           variant="primary"
+          class-name="w-100"
           @click="CreateSprint"
           :isLoading="isLoading"
           :disabled="checkDisabledButton()"
@@ -348,13 +355,14 @@ function checkDisabledButton() {
 
 .sprint-form {
   @include flexible(flex-start, flex-start, column);
-  overflow-y: scroll;
 
   &__header {
     @include flexible(center, space-between);
   }
 
   &__content {
+    height: 70vh;
+
     &-tasks {
       width: 70%;
       overflow-y: scroll;
@@ -379,6 +387,7 @@ function checkDisabledButton() {
   }
 
   &__form {
+    @include flexible(flex-start, space-between, column);
     width: 30%;
   }
 }

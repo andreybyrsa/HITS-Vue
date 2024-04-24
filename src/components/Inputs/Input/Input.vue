@@ -15,7 +15,7 @@ defineModel<string | number>({
   required: false,
 })
 
-const { value, errorMessage } = useField(props.name, props.validation?.name, {
+const { value, errorMessage, meta } = useField(props.name, props.validation?.name, {
   validateOnValueUpdate: props.validateOnUpdate ?? false,
   validateOnMount: false,
   controlled: props.noFormControlled ? false : true,
@@ -24,7 +24,7 @@ const { value, errorMessage } = useField(props.name, props.validation?.name, {
 
 const InputClassName = computed(() => [
   'form-control',
-  { 'is-invalid': props.error || errorMessage.value },
+  { 'is-invalid': meta.touched && (props.error || errorMessage.value) },
   props.className,
 ])
 const LabelClassName = computed(() => [
@@ -71,7 +71,7 @@ const LabelClassName = computed(() => [
         :disabled="disabled"
       />
       <div class="invalid-feedback">
-        {{ error || errorMessage }}
+        {{ meta.touched && (error || errorMessage) }}
       </div>
 
       <span

@@ -143,12 +143,31 @@ async function moveTask(evt: any) {
 }
 
 function checkUserTask(evt: any) {
-  return evt.draggedContext.element.executor.id === user.value?.id
+  return (
+    evt.draggedContext.element.executor.id === user.value?.id && accessDragTask(evt)
+  )
+}
+
+function accessDragTask(evt: any) {
+  const draggedStatus: TaskStatus = evt.draggedContext.element.status
+  const relatedStatus: TaskStatus = evt.relatedContext.element.status
+
+  const accessStatus: { [key in TaskStatus]: TaskStatus[] } = {
+    NewTask: ['InProgress', 'NewTask'],
+    InProgress: ['InProgress', 'OnVerification'],
+    OnVerification: ['OnVerification', 'OnModification', 'Done'],
+    OnModification: ['InProgress', 'OnModification'],
+    Done: ['NewTask', 'InProgress', 'OnVerification', 'OnModification', 'Done'],
+    InBackLog: [],
+  }
+
+  return accessStatus[draggedStatus].includes(relatedStatus)
 }
 
 function checkOnModificationTask(evt: any) {
-  const isCheckMyTask = evt.draggedContext.element.executor.id === user.value?.id
-  const inProgressTask = tasks.value.find(
+  const isCheckMyTask =
+    evt.draggedContext.element.executor.id === user.value?.id && accessDragTask(evt)
+  const inProgressTask = activeSprint?.value?.tasks.find(
     ({ status, executor }) =>
       status === 'InProgress' && executor?.id === user.value?.id,
   )
@@ -157,10 +176,8 @@ function checkOnModificationTask(evt: any) {
 }
 
 function getFormattedDate(date: string) {
-  if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
-    return formattedDate.value
-  }
+  const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+  return formattedDate.value
 }
 
 const columns = computed(() => [
@@ -176,7 +193,7 @@ const columns = computed(() => [
     name: 'Новые',
     color: '#0d6efd',
     list: newTask.tasks,
-    move: undefined,
+    move: accessDragTask,
     handle: checkMyInProgressTask.value,
     disabled: isLoadingTaskData.value,
   },
@@ -192,7 +209,7 @@ const columns = computed(() => [
     name: 'На проверке',
     color: '#ffa800',
     list: onVerificationTask.tasks,
-    move: undefined,
+    move: accessDragTask,
     handle: user.value?.role !== 'TEAM_LEADER',
     disabled: isLoadingTaskData.value,
   },
@@ -200,7 +217,7 @@ const columns = computed(() => [
     name: 'Выполненные',
     color: '#13c63a',
     list: doneTask.tasks,
-    move: undefined,
+    move: accessDragTask,
     handle: undefined,
     disabled: isLoadingTaskData.value || user.value?.role !== 'TEAM_LEADER',
   },
@@ -299,7 +316,7 @@ function closeBurndownModal() {
         <draggable
           class="list-group active-sprint__column"
           :list="column.list"
-          group="people"
+          group="active-sprint"
           :move="column.move"
           :handle="column.handle"
           @change="moveTask"

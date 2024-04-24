@@ -59,9 +59,7 @@ const useTasksStore = defineStore('tasks', {
     },
 
     async changeExecutorTask(taskId: string, user: User | null, token: string) {
-      console.log(taskId, user)
       const response = await TaskService.changeExecutorTask(taskId, user, token)
-      console.log(response)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -126,8 +124,7 @@ const useTasksStore = defineStore('tasks', {
       } else {
         this.tasks.push(response)
 
-        const sprintsStore = useSprintsStore()
-        if (task.sprintId) sprintsStore.activeSprint?.tasks.push(response)
+        if (task.sprintId) useSprintsStore().activeSprint?.tasks.push(response)
       }
     },
 

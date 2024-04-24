@@ -34,8 +34,7 @@ function close() {
 <style lang="scss" scoped>
 .sprint-modal {
   width: 85%;
-  height: min-content;
-  max-height: 80%;
+
   @include flexible(
     stretch,
     flex-start,
