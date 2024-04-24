@@ -330,11 +330,11 @@ function checkHeaderButtonStatement(statement?: boolean) {
               >
                 <div :class="`${column.contentClassName ?? ''} d-flex`">
                   {{ column.label }}
-                  <Icon
+                  <!-- <Icon
                     v-if="column.headerCellClick"
                     class-name="table__row-icon ms-1 bi bi-chevron-down text-secondary"
                     @click="column.headerCellClick"
-                  />
+                  /> -->
                 </div>
               </th>
 
@@ -403,7 +403,10 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   </div>
                 </div>
               </td>
-              <td class="py-3">
+              <td
+                class="py-3"
+                v-if="collapseChildComponent"
+              >
                 <Icon
                   class="table__row-icon ms-1 bi bi-chevron-down"
                   type="button"
