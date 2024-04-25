@@ -35,7 +35,7 @@ const postIndicator = async (
   indicator: Indicator,
   token: string,
 ): Promise<Indicator | Error> => {
-  return axios
+  return indicatorAxios
     .post(`${QUEST_SERVICE_URL}/indicator/create`, indicator, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
