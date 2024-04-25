@@ -23,8 +23,8 @@ const useQuestsStore = defineStore('questsStore', {
       return this.quests
     },
 
-    async getQuest(idQuest: string, token: string): Promise<Quest | Error> {
-      const response = await QuestService.getQuest(idQuest, token)
+    async getQuest(id: string, token: string): Promise<Quest | Error> {
+      const response = await QuestService.getQuest(id, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)

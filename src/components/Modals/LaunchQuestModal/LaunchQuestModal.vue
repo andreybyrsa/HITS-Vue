@@ -66,7 +66,7 @@ onMounted(async () => {
       (item) => item.idLaunchQuest == idLaunchQuest,
     )
     if (!launchQuest.value) return
-    await questsStore.getQuest(launchQuest.value.idQuest, token)
+    await questsStore.getQuest(launchQuest.value.id, token)
     setValues({ available: launchQuest.value?.available })
     await teamsStore.getTeamsByIds(launchQuest.value.idTeams, token)
   }

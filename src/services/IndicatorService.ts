@@ -17,14 +17,14 @@ function formatIndicators(indicators: Indicator[]): Indicator[] {
 
 // --- GET --- //
 const getIndicators = async (token: string): Promise<Indicator[] | Error> => {
-  return axios
+  return indicatorAxios
     .get<Indicator[] | Error>(
       `${QUEST_SERVICE_URL}/indicator/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      //   { formatter: formatIndicators },
+      { formatter: formatIndicators },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки вопросов.'))

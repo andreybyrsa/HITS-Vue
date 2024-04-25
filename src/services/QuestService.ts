@@ -14,7 +14,7 @@ const questAxios = defineAxios(questsMocks)
 
 // --- GET --- //
 const getQuests = async (token: string): Promise<QuestShort[] | Error> => {
-  return axios
+  return questsShortAxios
     .get(`${QUEST_SERVICE_URL}/template/all`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -23,22 +23,22 @@ const getQuests = async (token: string): Promise<QuestShort[] | Error> => {
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки опросов.'))
 }
 
-const getQuest = async (idQuest: string, token: string): Promise<Quest | Error> => {
-  return axios
+const getQuest = async (id: string, token: string): Promise<Quest | Error> => {
+  return questAxios
     .get(
-      `${QUEST_SERVICE_URL}/template/${idQuest}`,
+      `${QUEST_SERVICE_URL}/template/with-indicators/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      //   { params: { idQuest } },
+      { params: { id } },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка получения опроса.'))
 }
 
 const postQuest = async (quest: Quest, token: string): Promise<Quest | Error> => {
-  return axios
+  return questAxios
     .post(`${QUEST_SERVICE_URL}/template/create`, quest, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

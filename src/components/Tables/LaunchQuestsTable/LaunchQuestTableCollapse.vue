@@ -36,8 +36,8 @@ const { teams } = storeToRefs(teamsStore)
 
 const computedQuest = computed(() => {
   if (!user.value?.token) return
-  if (!LaunchQuestData.idQuest) return
-  questsStore.getQuest(LaunchQuestData.idQuest, user.value.token)
+  if (!LaunchQuestData.id) return
+  questsStore.getQuest(LaunchQuestData.id, user.value.token)
   return quest
 })
 const computedRole = computed(() => {

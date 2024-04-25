@@ -13,7 +13,7 @@ const launchQuestAxios = defineAxios(launchQuestsMocks)
 
 // --- GET --- //
 const getLaunchQuests = async (token: string): Promise<LaunchQuest[] | Error> => {
-  return axios
+  return launchQuestAxios
     .get(`${QUEST_SERVICE_URL}/quest/all`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
