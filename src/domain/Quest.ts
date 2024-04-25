@@ -22,7 +22,7 @@ export interface Indicator {
 }
 
 export interface QuestShort {
-  idQuest?: string
+  idQuest: string
   available?: boolean
   name: string
 }
@@ -40,7 +40,7 @@ export interface LaunchQuest {
   startAt: string
   endAt: string
   available: boolean
-  passingResult?: string // процент прохождения командой (можно всем а можно только проектному офису, по усмотрению)
+  percent?: string // процент прохождения командой (можно всем а можно только проектному офису, по усмотрению)
   passed?: boolean // пройдено ли (для членов команды, не для проектного офиса)
 }
 

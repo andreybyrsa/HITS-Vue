@@ -48,7 +48,7 @@ const questsTableHeader: TableHeader = {
 }
 
 const getTranslatedWorkStatus = (available: boolean) => {
-  return available ? 'Открыт' : 'Завершен'
+  return available ? 'Открыт' : 'Скрыт'
 }
 
 const questsTableColumns: TableColumn<QuestShort>[] = [

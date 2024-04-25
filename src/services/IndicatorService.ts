@@ -7,6 +7,7 @@ import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import { indicatorsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
+import axios from 'axios'
 
 const indicatorAxios = defineAxios(indicatorsMocks)
 
@@ -16,14 +17,14 @@ function formatIndicators(indicators: Indicator[]): Indicator[] {
 
 // --- GET --- //
 const getIndicators = async (token: string): Promise<Indicator[] | Error> => {
-  return indicatorAxios
+  return axios
     .get<Indicator[] | Error>(
       `${QUEST_SERVICE_URL}/indicator/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { formatter: formatIndicators },
+      //   { formatter: formatIndicators },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки вопросов.'))
@@ -34,7 +35,7 @@ const postIndicator = async (
   indicator: Indicator,
   token: string,
 ): Promise<Indicator | Error> => {
-  return indicatorAxios
+  return axios
     .post(`${QUEST_SERVICE_URL}/indicator/create`, indicator, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

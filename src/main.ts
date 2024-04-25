@@ -21,7 +21,7 @@ const API_URL:
   | 'https://hits.tyuiu.ru/api/v1/ideas-service' =
   'http://localhost:80/api/v1/ideas-service'
 
-const QUEST_SERVICE_URL = 'http://localhost:5000'
+const QUEST_SERVICE_URL = 'http://localhost:5000/quest-service'
 
 const pinia = createPinia()
 pinia.use(({ store }) => {

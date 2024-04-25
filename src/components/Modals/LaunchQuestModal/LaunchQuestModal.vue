@@ -92,7 +92,7 @@ const computedRole = computed(() => {
 })
 
 const computedQuestAvailability = computed(() => {
-  return launchQuest.value?.available ? 'Открыт' : 'Завершен'
+  return launchQuest.value?.available ? 'Открыт' : 'Скрыт'
 })
 </script>
 

@@ -1705,7 +1705,7 @@ export const launchQuestsMocks: LaunchQuest[] = [
     startAt: '28.04.2024',
     endAt: '28.05.2024',
     available: true,
-    passingResult: '1 / ' + teamsMocks[0].membersCount.toString(),
+    percent: '1 / ' + teamsMocks[0].membersCount.toString(),
     passed: false,
   },
   {
@@ -1716,7 +1716,7 @@ export const launchQuestsMocks: LaunchQuest[] = [
     startAt: '28.11.2023',
     endAt: '28.12.2023',
     available: true,
-    passingResult:
+    percent:
       Math.floor(teamsMocks[0].membersCount / 2).toString() +
       ' / ' +
       teamsMocks[0].membersCount.toString(),
@@ -1730,7 +1730,7 @@ export const launchQuestsMocks: LaunchQuest[] = [
     startAt: '28.04.2023',
     endAt: '28.05.2023',
     available: true,
-    passingResult:
+    percent:
       Math.floor(teamsMocks[0].membersCount / 2).toString() +
       ' / ' +
       teamsMocks[0].membersCount.toString(),
@@ -1744,7 +1744,7 @@ export const launchQuestsMocks: LaunchQuest[] = [
     startAt: '28.11.2022',
     endAt: '28.12.2022',
     available: false,
-    passingResult:
+    percent:
       Math.floor(teamsMocks[0].membersCount / 2).toString() +
       ' / ' +
       teamsMocks[0].membersCount.toString(),
