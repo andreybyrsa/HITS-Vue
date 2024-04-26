@@ -7,6 +7,7 @@ import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import { indicatorsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
+import axios from 'axios'
 
 const indicatorAxios = defineAxios(indicatorsMocks)
 

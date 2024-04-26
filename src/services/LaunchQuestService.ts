@@ -7,13 +7,14 @@ import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import { launchQuestsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
+import axios from 'axios'
 
 const launchQuestAxios = defineAxios(launchQuestsMocks)
 
 // --- GET --- //
 const getLaunchQuests = async (token: string): Promise<LaunchQuest[] | Error> => {
   return launchQuestAxios
-    .get(`${QUEST_SERVICE_URL}/launch-quests`, {
+    .get(`${QUEST_SERVICE_URL}/quest/all`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

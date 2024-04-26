@@ -1,6 +1,6 @@
 interface CreateQuestModalProps {
   isOpened: boolean
-  idQuest: string | null
+  id: string | null
 }
 
 interface CreateQuestModalEmits {

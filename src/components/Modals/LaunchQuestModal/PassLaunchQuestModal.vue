@@ -111,9 +111,9 @@ watch(
   async () => {
     const token = user.value?.token
     if (token) {
-      const idQuest = props.launchQuest?.idQuest
-      if (!idQuest) return
-      await questStore.getQuest(idQuest, token)
+      const id = props.launchQuest?.id
+      if (!id) return
+      await questStore.getQuest(id, token)
     }
   },
   { deep: true },

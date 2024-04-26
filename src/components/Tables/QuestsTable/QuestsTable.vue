@@ -48,7 +48,7 @@ const questsTableHeader: TableHeader = {
 }
 
 const getTranslatedWorkStatus = (available: boolean) => {
-  return available ? 'Открыт' : 'Завершен'
+  return available ? 'Открыт' : 'Скрыт'
 }
 
 const questsTableColumns: TableColumn<QuestShort>[] = [
@@ -78,7 +78,7 @@ const questsTableDropdownMenuAction: DropdownMenuAction<QuestShort>[] = [
 ]
 
 const createCopyQuest = (quest: QuestShort) => {
-  questIdRef.value = quest.idQuest
+  questIdRef.value = quest.id
   isQuestModalOpen.value = true
 }
 
@@ -94,18 +94,18 @@ const closeQuestModal = () => {
 const navigateToQuestModal = (quest: QuestShort) => {
   const routeName = route.name
   if (!routeName) return
-  const { idQuest } = quest
+  const { id } = quest
   const questRoute: RouteRecordRaw = {
     name: 'quest',
-    path: '/quests/:idQuest',
-    alias: '/quests/:idQuest',
+    path: '/quests/:id',
+    alias: '/quests/:id',
     component: QuestModal,
     props: {
       canGoBack: true,
     },
   }
 
-  navigateToAliasRoute(routeName?.toString(), `/quests/${idQuest}`, questRoute)
+  navigateToAliasRoute(routeName?.toString(), `/quests/${id}`, questRoute)
 }
 </script>
 
@@ -119,7 +119,7 @@ const navigateToQuestModal = (quest: QuestShort) => {
     :search-by="['name']"
   />
   <CreateQuestModal
-    :idQuest="questIdRef"
+    :id="questIdRef"
     :isOpened="isQuestModalOpen"
     @close-modal="closeQuestModal"
   ></CreateQuestModal>

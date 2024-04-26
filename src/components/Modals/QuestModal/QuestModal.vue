@@ -47,11 +47,11 @@ const changeAvailability = handleSubmit(async (model) => {
 
 onMounted(async () => {
   const currentUser = user.value
-  const idQuest = route.params.idQuest.toString()
+  const id = route.params.id.toString()
 
   if (currentUser?.token) {
     const { token } = currentUser
-    await questStore.getQuest(idQuest, token)
+    await questStore.getQuest(id, token)
     setValues({ available: quest.value?.available })
   }
 })

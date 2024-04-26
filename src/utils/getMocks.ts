@@ -1525,7 +1525,7 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
 
 export const questsShortMocks: QuestShort[] = [
   {
-    idQuest: '1',
+    id: '1',
     available: true,
     name: 'Опрос компетенций',
   },
@@ -1538,7 +1538,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '2',
@@ -1546,7 +1546,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '3',
@@ -1554,7 +1554,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '4',
@@ -1562,7 +1562,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '5',
@@ -1570,7 +1570,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '6',
@@ -1578,7 +1578,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '7',
@@ -1586,7 +1586,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '8',
@@ -1594,7 +1594,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '9',
@@ -1602,7 +1602,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '10',
@@ -1610,7 +1610,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '11',
@@ -1618,7 +1618,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '12',
@@ -1626,7 +1626,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '13',
@@ -1634,7 +1634,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '14',
@@ -1642,7 +1642,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '15',
@@ -1650,7 +1650,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '16',
@@ -1658,7 +1658,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '17',
@@ -1666,7 +1666,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '18',
@@ -1674,7 +1674,7 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
   {
     idIndicator: '19',
@@ -1682,13 +1682,13 @@ export const indicatorsMocks: Indicator[] = [
     type: 'TEAM-MEMBER',
     role: 'MEMBER',
     visible: true,
-    nameCategory: 'soft',
+    categoryName: 'soft',
   },
 ]
 
 export const questsMocks: Quest[] = [
   {
-    idQuest: questsShortMocks[0].idQuest,
+    id: questsShortMocks[0].id,
     available: questsShortMocks[0].available,
     name: questsShortMocks[0].name,
     description: 'Весенний опрос 2024 посвящен весне и птичкам',
@@ -1699,24 +1699,24 @@ export const questsMocks: Quest[] = [
 export const launchQuestsMocks: LaunchQuest[] = [
   {
     idLaunchQuest: '4',
-    idQuest: questsMocks[0].idQuest!,
+    id: questsMocks[0].id!,
     idTeams: [teamsMocks[0].id],
     name: 'Весенний опрос 2024',
     startAt: '28.04.2024',
     endAt: '28.05.2024',
     available: true,
-    passingResult: '1 / ' + teamsMocks[0].membersCount.toString(),
+    percent: '1 / ' + teamsMocks[0].membersCount.toString(),
     passed: false,
   },
   {
     idLaunchQuest: '3',
-    idQuest: questsMocks[0].idQuest!,
+    id: questsMocks[0].id!,
     idTeams: [teamsMocks[0].id],
     name: 'Осенний опрос 2023',
     startAt: '28.11.2023',
     endAt: '28.12.2023',
     available: true,
-    passingResult:
+    percent:
       Math.floor(teamsMocks[0].membersCount / 2).toString() +
       ' / ' +
       teamsMocks[0].membersCount.toString(),
@@ -1724,13 +1724,13 @@ export const launchQuestsMocks: LaunchQuest[] = [
   },
   {
     idLaunchQuest: '2',
-    idQuest: questsMocks[0].idQuest!,
+    id: questsMocks[0].id!,
     idTeams: [teamsMocks[0].id],
     name: 'Весенний опрос 2023',
     startAt: '28.04.2023',
     endAt: '28.05.2023',
     available: true,
-    passingResult:
+    percent:
       Math.floor(teamsMocks[0].membersCount / 2).toString() +
       ' / ' +
       teamsMocks[0].membersCount.toString(),
@@ -1738,13 +1738,13 @@ export const launchQuestsMocks: LaunchQuest[] = [
   },
   {
     idLaunchQuest: '1',
-    idQuest: questsMocks[0].idQuest!,
+    id: questsMocks[0].id!,
     idTeams: [teamsMocks[0].id],
     name: 'Осенний опрос 2022',
     startAt: '28.11.2022',
     endAt: '28.12.2022',
     available: false,
-    passingResult:
+    percent:
       Math.floor(teamsMocks[0].membersCount / 2).toString() +
       ' / ' +
       teamsMocks[0].membersCount.toString(),

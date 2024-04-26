@@ -16,7 +16,7 @@ const indicatorItemStyle = ['border rounded d-flex flex-column', props.className
     </div>
     <div class="d-flex gap-2 m-1">
       <p class="w-fit m-0">Категория:</p>
-      <p class="w-fit m-0">{{ indicator.nameCategory }}</p>
+      <p class="w-fit m-0">{{ indicator.categoryName }}</p>
     </div>
   </div>
 </template>

@@ -74,7 +74,7 @@ const launchQuestsTableColumns = computed((): TableColumn<LaunchQuest>[] => {
       label: 'Дата окончания',
     },
     {
-      key: 'passingResult',
+      key: 'percent',
       contentClassName: 'justify-content-center align-items-center text-center',
       label: 'Результат прохождения',
     },
