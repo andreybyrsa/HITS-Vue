@@ -189,7 +189,12 @@ watch(
 
             <li
               class="list-group-item p-0 overflow-hidden"
-              v-if="props.task.status === 'OnModification'"
+              v-if="
+                props.task.status === 'OnModification' ||
+                (props.task.status === 'OnVerification' &&
+                  props.task.leaderComment) ||
+                (props.task.status === 'InProgress' && props.task.leaderComment)
+              "
             >
               <Button
                 variant="light"
@@ -220,7 +225,8 @@ watch(
                     class-name="edit-task-model__comment rounded"
                     :model-value="props.task.leaderComment"
                     @blur="inputModeLeader = false"
-                    @keyup.enter="(event: HTMLTargetEvent)=>emit('update-leader-comment', event.target.value)"
+                    @keyup.enter="(event: HTMLTargetEvent)=> {
+                      emit('update-leader-comment', event.target.value); inputModeLeader = false}"
                   />
                 </div>
               </Collapse>
@@ -230,7 +236,8 @@ watch(
               class="list-group-item p-0 overflow-hidden"
               v-if="
                 props.task.status === 'OnVerification' ||
-                props.task.status === 'OnModification'
+                props.task.status === 'OnModification' ||
+                (props.task.status === 'InProgress' && props.task.executorComment)
               "
             >
               <Button
@@ -265,7 +272,9 @@ watch(
                     class-name="edit-task-model__comment rounded"
                     :model-value="$props.task?.executorComment"
                     @blur="inputMode = false"
-                    @keyup.enter="(event: HTMLTargetEvent)=>emit('update-executor-comment', event.target.value)"
+                    @keyup.enter="(event: HTMLTargetEvent)=>{
+                      emit('update-executor-comment', event.target.value);
+                      inputMode = false }"
                     validate-on-update
                   />
                 </div>
