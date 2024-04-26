@@ -26,7 +26,7 @@ const postLaunchQuest = async (
   token: string,
 ): Promise<LaunchQuest | Error> => {
   return launchQuestAxios
-    .post(`${QUEST_SERVICE_URL}/launch-quest`, launchQuest, {
+    .post(`${QUEST_SERVICE_URL}/quest/create`, launchQuest, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
