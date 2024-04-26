@@ -146,7 +146,6 @@ const isOpenCollapseTable = ref(true)
 function handleEditCollapseTable() {
   if (isOpenCollapseTable.value) isOpenCollapseTable.value = false
   isOpenCollapseTable.value = true
-  console.log(isOpenCollapseTable)
 }
 </script>
 

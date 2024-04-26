@@ -4,7 +4,6 @@ import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
 import Input from '@Components/Inputs/Input/Input.vue'
-import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
 import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Button from '@Components/Button/Button.vue'
@@ -15,106 +14,102 @@ import {
   CreateLaunchQuestEmits,
 } from '@Components/Modals/LaunchQuestModal/CreateLaunchQuestModal.type'
 import { Team } from '@Domain/Team'
-import { Quest, QuestShort } from '@Domain/Quest'
+import { LaunchQuest, Quest, QuestShort } from '@Domain/Quest'
 import useQuestStore from '@Store/quests/questsStore'
 import useUserStore from '@Store/user/userStore'
 import Validation from '@Utils/Validation'
 import { useForm } from 'vee-validate'
-import { string } from 'yup'
+import useLaunchQuestStore from '@Store/launchQuests/launchQuestsStore'
 
-const userStore = useUserStore()
-const questStore = useQuestStore()
-const { user } = storeToRefs(userStore)
-const { quests, quest } = storeToRefs(questStore)
 const props = defineProps<CreateLaunchQuestProps>()
 const emit = defineEmits<CreateLaunchQuestEmits>()
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const questStore = useQuestStore()
+const { quests, quest } = storeToRefs(questStore)
+
+const launchQuestStore = useLaunchQuestStore()
+
 const questTemplates = ref<QuestShort[]>([])
-const checkedTeams = ref<Team[]>([])
-const selectedQuestTemplate = ref()
+const selectedTeams = ref<Team[]>([])
+const selectedQuestTemplate = ref<null | Quest>(null)
+
+const { setValues, handleSubmit, values } = useForm<LaunchQuest>({
+  validationSchema: {
+    example: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
+    idQuest: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
+    idTeams: (value: string[]) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    name: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    startAt: (value: string) => Validation.checkDate(value) || 'Поле не заполнено',
+    endAt: (value: string) =>
+      Validation.validateDates(values.startAt, value) || 'Поле не заполнено',
+  },
+})
+
+const handleCreateCompany = handleSubmit(async (values) => {
+  const token = user.value?.token
+  if (!token) return
+  delete values.example
+
+  await launchQuestStore.postLaunchQuest(values, token)
+  emit('close-modal')
+})
 
 onMounted(async () => {
   const token = user.value?.token
-  if (token) {
-    await questStore.getQuests(token)
-    questTemplates.value = quests.value
-  }
+  if (!token) return
+
+  await questStore.getQuests(token)
+  questTemplates.value = quests.value
 })
 
 watchImmediate(
   () => props.teams,
   (value) => {
     if (value) {
-      checkedTeams.value = value
+      selectedTeams.value = value
       selectedQuestTemplate.value = null
     }
   },
   { deep: true },
 )
-watchImmediate(
-  () => quest.value,
-  (value) => {
-    if (quest.value) {
-      if (value) {
-        descriptionQuest.value = quest.value.description
-      }
-      const { description } = quest.value
-      setValues({ description })
-    }
-  },
-)
 
 const questions = computed(() => {
   if (selectedQuestTemplate.value) {
-    const token = user.value?.token
-    const idQuest = selectedQuestTemplate.value.idQuest
-    if (!token) return
-    questStore.getQuest(idQuest, token)
     return quest.value?.indicators
   }
   return []
 })
 
-const descriptionQuest = ref()
-
-function resetTeam(ideaId: string) {
-  const ideaIndex = checkedTeams.value.findIndex(({ id }) => id === ideaId)
+const resetTeam = (ideaId: string) => {
+  const ideaIndex = selectedTeams.value.findIndex(({ id }) => id === ideaId)
 
   if (ideaIndex !== -1) {
-    checkedTeams.value.splice(ideaIndex, 1)
+    selectedTeams.value.splice(ideaIndex, 1)
 
-    if (checkedTeams.value.length === 0) emit('close-modal')
+    if (selectedTeams.value.length === 0) emit('close-modal')
   }
 }
 
-function setExample(value: any) {
-  selectedQuestTemplate.value = value
+const setQuestTemplate = async (shortQuest: QuestShort) => {
+  const token = user.value?.id
+  const questId = shortQuest.idQuest
+  if (!token || !questId) return
+
+  const selectedQuest = await questStore.getQuest(questId, token)
+  if (selectedQuest instanceof Error) return
+
+  selectedQuestTemplate.value = selectedQuest
+
+  const teamsId = selectedTeams.value.map((team) => team.id)
+  setValues({ idQuest: selectedQuest.idQuest, idTeams: teamsId })
 }
-
-const { setValues, handleSubmit } = useForm<Quest>({
-  validationSchema: {
-    example: (value: QuestShort) =>
-      Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
-    questName: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    questDescription: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    startDate: (value: Date) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    finishDate: (value: Date) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-  },
-})
-
-const handleCreateCompany = handleSubmit(async (values) => {
-  const currentUser = user.value
-
-  if (currentUser?.token && quest) {
-    const { token } = currentUser
-    console.log(1)
-    emit('close-modal')
-  }
-})
 </script>
 
 <template>
@@ -140,13 +135,12 @@ const handleCreateCompany = handleSubmit(async (values) => {
             <div class="p-4">
               <div class="w-100">
                 <Combobox
-                  v-model="selectedQuestTemplate"
                   name="example"
                   label="Шаблон опроса"
                   :options="questTemplates"
                   :displayBy="['name']"
                   placeholder="Выберите шаблон опроса"
-                  :on-on-select="setExample"
+                  @on-select="setQuestTemplate"
                   validate-on-update
                 />
                 <Checkbox
@@ -156,7 +150,7 @@ const handleCreateCompany = handleSubmit(async (values) => {
                 />
                 <div>
                   <Input
-                    name="questName"
+                    name="name"
                     class-name="rounded-end"
                     class="mt-3"
                     label="Название опроса"
@@ -168,7 +162,7 @@ const handleCreateCompany = handleSubmit(async (values) => {
                   class="classcol-sm-12 d-flex align-items-center justify-content-between mt-3"
                 >
                   <Input
-                    name="startDate"
+                    name="startAt"
                     class-name="rounded-end "
                     class="me-2"
                     label="Дата начала"
@@ -177,7 +171,7 @@ const handleCreateCompany = handleSubmit(async (values) => {
                     placeholder=".. | .. | .."
                   />
                   <Input
-                    name="finishDate"
+                    name="endAt"
                     class-name="rounded-end "
                     label="Дата окончания"
                     type="date"
@@ -186,16 +180,6 @@ const handleCreateCompany = handleSubmit(async (values) => {
                     class="ms-2"
                   />
                 </div>
-
-                <Textarea
-                  :v-model="descriptionQuest"
-                  name="questDescription"
-                  class-name="rounded-end max-height-textarea"
-                  label="Описание опроса"
-                  validate-on-update
-                  placeholder="Введите описание опроса"
-                  class="mt-3"
-                />
               </div>
             </div>
           </div>
@@ -239,7 +223,7 @@ const handleCreateCompany = handleSubmit(async (values) => {
               <div class="d-flex flex-column gap-2 w-100 p-4">
                 <Typography class-name="fs-6 text-primary">
                   {{
-                    checkedTeams.length === 1
+                    selectedTeams.length === 1
                       ? 'Выбранная команда'
                       : 'Выбранные команды'
                   }}

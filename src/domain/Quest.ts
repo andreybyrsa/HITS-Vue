@@ -39,7 +39,7 @@ export interface LaunchQuest {
   name: string
   startAt: string
   endAt: string
-  available: boolean
+  available?: boolean
   passingResult?: string // процент прохождения командой (можно всем а можно только проектному офису, по усмотрению)
   passed?: boolean // пройдено ли (для членов команды, не для проектного офиса)
 }

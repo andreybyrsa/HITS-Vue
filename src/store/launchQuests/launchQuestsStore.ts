@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/launchQuests/initialState'
 import LaunchQuestService from '@Services/LaunchQuestService'
+import { LaunchQuest } from '@Domain/Quest'
 
 const useLaunchQuestStore = defineStore('lauchQuestStore', {
   state: (): InitialState => ({
@@ -24,6 +25,18 @@ const useLaunchQuestStore = defineStore('lauchQuestStore', {
         this.launchQuests = response
         return this.launchQuests
       }
+    },
+  },
+  actions: {
+    async postLaunchQuest(launchQuest: LaunchQuest, token: string) {
+      const response = await LaunchQuestService.postLaunchQuest(launchQuest, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return response
+      }
+
+      return this.launchQuests
     },
   },
 })
