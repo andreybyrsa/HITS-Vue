@@ -81,41 +81,6 @@ const useProjectsStore = defineStore('projects', {
       }
     },
 
-    // async changeProjectStatus(
-    //   projectId: string,
-    //   status: ProjectStatus,
-    //   token: string,
-    // ) {
-    //   const response = await ProjectService.changeProjectStatus(
-    //     projectId,
-    //     status,
-    //     token,
-    //   )
-
-    //   if (response instanceof Error) {
-    //     useNotificationsStore().createSystemNotification('Система', response.message)
-    //   } else {
-    //     const currentProject = this.projects.find(({ id }) => id === projectId)
-    //     if (currentProject) {
-    //       currentProject.status = status
-    //     }
-    //   }
-    // },
-
-    // async reportProject(projectId: string, report: string, token: string) {
-    //   const response = await ProjectService.reportProject(projectId, report, token)
-
-    //   if (response instanceof Error) {
-    //     useNotificationsStore().createSystemNotification('Система', response.message)
-    //   } else {
-    //     const currentProject = this.projects.find(({ id }) => id === projectId)
-
-    //     if (currentProject && currentProject.report) {
-    //       currentProject.report.report = report
-    //     }
-    //   }
-    // },
-
     async finishProject(
       projectId: string,
       finishDate: string,
