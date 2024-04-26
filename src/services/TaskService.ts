@@ -266,19 +266,16 @@ const changeLeaderComment = async (
   task: Task,
   leaderComment: string,
   token: string,
-): Promise<Task[] | Error> => {
+): Promise<Success | Error> => {
   return tasksMocksAxios
-    .put<Task[]>(
+    .put<Success>(
       `/scrum-service/task/comment/${taskId}`,
-      task,
+      { leaderComment },
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      {
-        params: { id: taskId },
-        requestData: { leaderComment },
-      },
+      { params: { id: taskId } },
     )
     .then((response) => response.data)
     .catch((error) =>
@@ -336,18 +333,16 @@ const changeExecutorComment = async (
   taskId: string,
   executorComment: string,
   token: string,
-): Promise<Task[] | Error> => {
+): Promise<Success | Error> => {
   return tasksMocksAxios
-    .putNoRequestBody<Task[]>(
-      `/scrum-service/task`,
+    .put<Success>(
+      `будет строка`,
+      { executorComment },
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      {
-        params: { id: taskId },
-        requestData: { executorComment },
-      },
+      { params: { id: taskId } },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))

@@ -220,8 +220,7 @@ watch(
                     class-name="edit-task-model__comment rounded"
                     :model-value="props.task.leaderComment"
                     @blur="inputModeLeader = false"
-                    @keyup.enter="inputModeLeader = false"
-                    @input="(event: HTMLTargetEvent)=>emit('update-leader-comment', event.target.value)"
+                    @keyup.enter="(event: HTMLTargetEvent)=>emit('update-leader-comment', event.target.value)"
                   />
                 </div>
               </Collapse>
@@ -265,9 +264,8 @@ watch(
                     name="executorComment"
                     class-name="edit-task-model__comment rounded"
                     :model-value="$props.task?.executorComment"
-                    @input="(event: HTMLTargetEvent)=>emit('update-executor-comment', event.target.value)"
                     @blur="inputMode = false"
-                    @keyup.enter="inputMode = false"
+                    @keyup.enter="(event: HTMLTargetEvent)=>emit('update-executor-comment', event.target.value)"
                     validate-on-update
                   />
                 </div>
@@ -347,7 +345,9 @@ watch(
                     v-else
                     class="fs-6 text-primary"
                   >
-                    Исполнитель не назначен
+                    <Typography class-name="fs-6 text-primary d-block"
+                      >Исполнитель не назначен</Typography
+                    >
                   </div>
                 </div>
               </div>
