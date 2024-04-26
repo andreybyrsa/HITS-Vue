@@ -75,91 +75,73 @@ const changeAvailability = handleSubmit(async (model) => {
 
 <template>
   <div class="w-100 m-0 p-0">
-    <div class="mb-3">
+    <div>
       <Typography
-        class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-scroll-hidden"
         >{{ computedQuest?.value?.name ? computedQuest?.value.name : 'Опрос' }}
       </Typography>
     </div>
 
-    <div class="">
-      <div class="mb-3">
-        <div class="bg-white rounded-3 border p-3 gap-3 w-100">
-          <div class="w-100 border-bottom pb-1">
-            <Typography class-name="fs-5 text-primary"
-              >Дата начала и окончания:</Typography
-            >
-          </div>
-
-          <div class="d-flex flex-column gap-3 mt-3">
-            <p>{{ data?.startAt + ' - ' + data?.endAt }}</p>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-3 border p-3 gap-3 w-100">
-          <div class="w-100 border-bottom pb-1">
-            <Typography class-name="fs-5 text-primary">Описание:</Typography>
-          </div>
-
-          <div class="d-flex flex-column gap-3">
-            <p>{{ computedQuest?.value?.description }}</p>
-          </div>
-        </div>
+    <div>
+      <div>
+        <Typography>Дата начала и окончания:</Typography>
       </div>
 
-      <div class="">
-        <div class="bg-white rounded-3 border p-3 gap-3 w-100">
-          <div class="w-100 border-bottom pb-1">
-            <Typography class-name="fs-5 text-primary"
-              >Название шаблона опроса:</Typography
-            >
-          </div>
+      <div>
+        <p>{{ data?.startAt + ' - ' + data?.endAt }}</p>
+      </div>
+    </div>
 
-          <div class="d-flex flex-column gap-3 mt-3">
-            <p>{{ quest?.name }}</p>
-          </div>
-        </div>
-        <div class="bg-white rounded-3 border p-3 gap-3 w-100">
-          <div class="w-100 border-bottom pb-1">
-            <Typography class-name="fs-5 text-primary">Доступность:</Typography>
-          </div>
+    <div>
+      <div>
+        <Typography>Описание:</Typography>
+      </div>
 
-          <div class="d-flex gap-3 mt-3">
-            <p v-if="computedRole != 'PROJECT_OFFICE'">
-              {{ computedQuestAvailability }}
-            </p>
-            <div
-              class="d-flex justify-content-between w-100 gap-3"
-              v-else
-            >
-              <Select
-                class-name="w-100"
-                name="available"
-                :options="availableOptions"
-              ></Select>
+      <div>
+        <p>{{ computedQuest?.value?.description }}</p>
+      </div>
+    </div>
 
-              <Button
-                @click="changeAvailability"
-                variant="primary"
-                class-name="w-fit"
-                >Изменить</Button
-              >
-            </div>
-          </div>
+    <div>
+      <div>
+        <Typography>Название шаблона опроса:</Typography>
+      </div>
+
+      <div>
+        <p>{{ quest?.name }}</p>
+      </div>
+    </div>
+
+    <div>
+      <div>
+        <Typography>Доступность:</Typography>
+      </div>
+
+      <div>
+        <p v-if="computedRole != 'PROJECT_OFFICE'">
+          {{ computedQuestAvailability }}
+        </p>
+        <div v-else>
+          <Select
+            name="available"
+            :options="availableOptions"
+          ></Select>
+
+          <Button
+            @click="changeAvailability"
+            variant="primary"
+            >Изменить</Button
+          >
         </div>
       </div>
     </div>
-    <div
-      v-if="computedRole == 'PROJECT_OFFICE'"
-      class="bg-white rounded-3 border p-3 gap-3 w-100"
-    >
-      <div class="w-100 border-bottom pb-1">
-        <Typography class-name="fs-5 text-primary">Список команд:</Typography>
+
+    <div v-if="computedRole == 'PROJECT_OFFICE'">
+      <div>
+        <Typography>Общий список команд:</Typography>
       </div>
 
-      <div class="d-flex flex-wrap gap-3 mt-3 justify-content-between">
+      <div>
         <div
-          class="w-49"
           v-for="team in teams"
           :key="team.id"
         >
@@ -167,20 +149,14 @@ const changeAvailability = handleSubmit(async (model) => {
         </div>
       </div>
     </div>
-    <div
-      v-if="computedRole == 'PROJECT_OFFICE'"
-      class="bg-white rounded-3 border p-3 gap-3 w-100 mt-3"
-    >
-      <div class="w-100 border-bottom pb-1">
-        <Typography class-name="fs-5 text-primary">Список вопросов:</Typography>
+
+    <div v-if="computedRole == 'PROJECT_OFFICE'">
+      <div>
+        <Typography>Список вопросов:</Typography>
       </div>
 
-      <div
-        class="d-flex flex-wrap gap-3 mt-3 justify-content-between"
-        v-if="computedQuest?.value"
-      >
+      <div v-if="computedQuest?.value">
         <div
-          class="w-49"
           v-for="indicator in computedQuest?.value.indicators"
           :key="indicator.idIndicator"
         >
