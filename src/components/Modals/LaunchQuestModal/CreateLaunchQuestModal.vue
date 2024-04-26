@@ -40,7 +40,7 @@ const { setValues, handleSubmit, values } = useForm<LaunchQuest>({
   validationSchema: {
     example: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
-    idQuest: (value: string) =>
+    id: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
     idTeams: (value: string[]) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
@@ -54,6 +54,7 @@ const { setValues, handleSubmit, values } = useForm<LaunchQuest>({
 
 const handleCreateCompany = handleSubmit(async (values) => {
   const token = user.value?.token
+
   if (!token) return
   delete values.example
 
@@ -99,7 +100,7 @@ const resetTeam = (ideaId: string) => {
 
 const setQuestTemplate = async (shortQuest: QuestShort) => {
   const token = user.value?.id
-  const questId = shortQuest.idQuest
+  const questId = shortQuest.id
   if (!token || !questId) return
 
   const selectedQuest = await questStore.getQuest(questId, token)
@@ -108,7 +109,7 @@ const setQuestTemplate = async (shortQuest: QuestShort) => {
   selectedQuestTemplate.value = selectedQuest
 
   const teamsId = selectedTeams.value.map((team) => team.id)
-  setValues({ idQuest: selectedQuest.idQuest, idTeams: teamsId })
+  setValues({ id: selectedQuest.id, idTeams: teamsId })
 }
 </script>
 

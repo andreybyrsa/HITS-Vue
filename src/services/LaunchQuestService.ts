@@ -7,7 +7,6 @@ import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import { launchQuestsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
-import axios from 'axios'
 
 const launchQuestAxios = defineAxios(launchQuestsMocks)
 
