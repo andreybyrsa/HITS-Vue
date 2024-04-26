@@ -255,8 +255,8 @@ const routes: RouteRecordRaw[] = [
       },
       {
         name: 'quests',
-        path: 'quests/:idQuest',
-        alias: '/quests/:idQuest',
+        path: 'quests/:id',
+        alias: '/quests/:id',
         component: QuestModal,
       },
       {

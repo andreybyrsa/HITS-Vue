@@ -15,14 +15,14 @@ export interface Indicator {
   type: IndicatorType
   role: RolesTypes
   visible: boolean
-  nameCategory?: string
+  categoryName?: string
   idCategory?: string
   // idToUser нужен только на этапе прохождения опроса, при создании indicator его не надо передавать
   idToUser?: string
 }
 
 export interface QuestShort {
-  idQuest?: string
+  id: string
   available?: boolean
   name: string
 }
@@ -34,13 +34,13 @@ export interface Quest extends QuestShort {
 
 export interface LaunchQuest {
   idLaunchQuest: string
-  idQuest: string
+  id: string
   idTeams: string[]
   name: string
   startAt: string
   endAt: string
   available: boolean
-  passingResult?: string // процент прохождения командой (можно всем а можно только проектному офису, по усмотрению)
+  percent?: string // процент прохождения командой (можно всем а можно только проектному офису, по усмотрению)
   passed?: boolean // пройдено ли (для членов команды, не для проектного офиса)
 }
 

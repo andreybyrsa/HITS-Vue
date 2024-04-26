@@ -67,9 +67,9 @@ watchImmediate(
 const questions = computed(() => {
   if (selectedQuestTemplate.value) {
     const token = user.value?.token
-    const idQuest = selectedQuestTemplate.value.idQuest
+    const id = selectedQuestTemplate.value.id
     if (!token) return
-    questStore.getQuest(idQuest, token)
+    questStore.getQuest(id, token)
     return quest.value?.indicators
   }
   return []

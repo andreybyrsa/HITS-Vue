@@ -7,6 +7,7 @@ import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import { questsMocks, questsShortMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
+import axios from 'axios'
 
 const questsShortAxios = defineAxios(questsShortMocks)
 const questAxios = defineAxios(questsMocks)
@@ -22,15 +23,15 @@ const getQuests = async (token: string): Promise<QuestShort[] | Error> => {
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки опросов.'))
 }
 
-const getQuest = async (idQuest: string, token: string): Promise<Quest | Error> => {
+const getQuest = async (id: string, token: string): Promise<Quest | Error> => {
   return questAxios
     .get(
-      `${QUEST_SERVICE_URL}/template/`,
+      `${QUEST_SERVICE_URL}/template/with-indicators/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { idQuest } },
+      { params: { id } },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка получения опроса.'))

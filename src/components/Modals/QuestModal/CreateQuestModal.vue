@@ -111,9 +111,9 @@ const orderIndicatorsToLists = async () => {
   const token = user.value?.token
   if (!token) return
   await indicatorStore.getIndicators(token)
-  const idQuest = props.idQuest
-  if (idQuest) {
-    await questStore.getQuest(idQuest, token)
+  const id = props.id
+  if (id) {
+    await questStore.getQuest(id, token)
     if (!quest.value) return
     setValues({ ...quest.value })
     setValues({ name: quest.value.name + ' - копия' })
