@@ -1,4 +1,4 @@
-import { LaunchQuest } from '@Domain/Quest'
+import { Quest } from '@Domain/Quest'
 import { QUEST_SERVICE_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
@@ -11,7 +11,7 @@ import handleAxiosError from '@Utils/handleAxiosError'
 const launchQuestAxios = defineAxios(launchQuestsMocks)
 
 // --- GET --- //
-const getLaunchQuests = async (token: string): Promise<LaunchQuest[] | Error> => {
+const getLaunchQuests = async (token: string): Promise<Quest[] | Error> => {
   return launchQuestAxios
     .get(`${QUEST_SERVICE_URL}/quest/all`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -22,9 +22,9 @@ const getLaunchQuests = async (token: string): Promise<LaunchQuest[] | Error> =>
 }
 
 const postLaunchQuest = async (
-  launchQuest: LaunchQuest,
+  launchQuest: Quest,
   token: string,
-): Promise<LaunchQuest | Error> => {
+): Promise<Quest | Error> => {
   return launchQuestAxios
     .post(`${QUEST_SERVICE_URL}/quest/create`, launchQuest, {
       headers: { Authorization: `Bearer ${token}` },

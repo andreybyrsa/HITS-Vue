@@ -2,49 +2,41 @@ import { defineStore } from 'pinia'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/quests/initialState'
-import QuestService from '@Services/QuestService'
-import { Quest, QuestShort } from '@Domain/Quest'
+import LaunchQuestService from '@Services/QuestService'
+import { Quest } from '@Domain/Quest'
 
 const useQuestsStore = defineStore('questsStore', {
   state: (): InitialState => ({
     quests: [],
-    quest: null,
   }),
+  getters: {
+    getQuests() {
+      return async (token: string) => {
+        const response = await LaunchQuestService.getQuests(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        }
+
+        this.quests = response
+        return this.quests
+      }
+    },
+  },
   actions: {
-    async getQuests(token: string): Promise<QuestShort[] | Error> {
-      const response = await QuestService.getQuests(token)
+    async postQuest(launchQuest: Quest, token: string) {
+      const response = await LaunchQuestService.postQuest(launchQuest, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
         return response
       }
 
-      this.quests = response
       return this.quests
-    },
-
-    async getQuest(id: string, token: string): Promise<Quest | Error> {
-      const response = await QuestService.getQuest(id, token)
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-        return response
-      }
-
-      this.quest = response
-      return this.quest
-    },
-
-    async postQuest(quest: Quest, token: string): Promise<Quest | Error> {
-      const response = await QuestService.postQuest(quest, token)
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-        return response
-      }
-
-      this.quests.push(response)
-      return response
     },
   },
 })

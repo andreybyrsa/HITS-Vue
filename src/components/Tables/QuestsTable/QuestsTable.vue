@@ -1,126 +1,167 @@
 <script lang="ts" setup>
 import {
+  DropdownMenuAction,
   TableColumn,
   TableHeader,
-  DropdownMenuAction,
 } from '@Components/Table/Table.types'
 import Table from '@Components/Table/Table.vue'
+import PassLaunchQuestModal from '@Components/Modals/QuestModal/PassQuestModal.vue'
 import useUserStore from '@Store/user/userStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import { storeToRefs } from 'pinia'
-import { QuestShort } from '@Domain/Quest'
-import { onMounted, ref } from 'vue'
-import CreateQuestModal from '@Components/Modals/QuestModal/CreateQuestModal.vue'
+import { Quest } from '@Domain/Quest'
+import { computed, onMounted, ref } from 'vue'
 import { RouteRecordRaw, useRoute } from 'vue-router'
-import QuestModal from '@Components/Modals/QuestModal/QuestModal.vue'
+import LaunchQuestModal from '@Components/Modals/QuestModal/QuestModal.vue'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+import QuestTableCollapse from '@Components/Tables/QuestsTable/QuestTableCollapse.vue'
 
 const route = useRoute()
-
 const userStore = useUserStore()
-const questStore = useQuestsStore()
+const launchQuestStore = useQuestsStore()
 
 const { user } = storeToRefs(userStore)
-const { quests } = storeToRefs(questStore)
+const { quests: launchQuests } = storeToRefs(launchQuestStore)
 
-const questIdRef = ref<string | null>(null)
-
-const isQuestModalOpen = ref(false)
+const isPassLaunchQuestModalOpen = ref(false)
+const passLaunchQuest = ref<Quest | null>(null)
 
 onMounted(async () => {
-  const token = user.value?.token
-  if (token) {
-    await questStore.getQuests(token)
+  if (user.value?.token) {
+    await launchQuestStore.getQuests(user.value.token)
   }
 })
 
-const questsTableHeader: TableHeader = {
-  label: 'Шаблоны опросов',
+const openPassLaunchQuestModal = (launchQuest: Quest) => {
+  passLaunchQuest.value = launchQuest
+  isPassLaunchQuestModalOpen.value = true
+}
+
+const closePassLaunchQuestModal = () => {
+  passLaunchQuest.value = null
+  isPassLaunchQuestModalOpen.value = false
+}
+
+const launchQuestsTableHeader: TableHeader = {
+  label: 'Запущенные опросы',
   countData: true,
-  buttons: [
+}
+
+const getTranslatedIsAvailableStatus = (available: boolean) => {
+  return available ? 'Открыт' : 'Завершен'
+}
+
+const getTranslatedIsPassedStatus = (passed: boolean) => {
+  return passed ? 'Пройден' : 'Не пройден'
+}
+
+const launchQuestsTableColumns = computed((): TableColumn<Quest>[] => {
+  const columns: TableColumn<Quest>[] = [
     {
-      label: 'Создать шаблон опроса',
-      variant: 'primary',
-      statement: true,
-      click: () => createQuest(),
+      key: 'name',
+      label: 'Название',
+      rowCellClick: (value: Quest) => navigateToLaunchQuestModal(value),
     },
-  ],
-}
+    {
+      key: 'startAt',
+      contentClassName: 'justify-content-center align-items-center text-center',
+      label: 'Дата начала',
+    },
+    {
+      key: 'endAt',
+      contentClassName: 'justify-content-center align-items-center text-center',
+      label: 'Дата окончания',
+    },
+    {
+      key: 'percent',
+      contentClassName: 'justify-content-center align-items-center text-center',
+      label: 'Результат прохождения',
+    },
+    {
+      key: 'available',
+      contentClassName: 'justify-content-center align-items-center text-center',
+      label: 'Доступ',
+      getRowCellFormat: getTranslatedIsAvailableStatus,
+    },
+  ]
 
-const getTranslatedWorkStatus = (available: boolean) => {
-  return available ? 'Открыт' : 'Скрыт'
-}
-
-const questsTableColumns: TableColumn<QuestShort>[] = [
-  {
-    key: 'name',
-    label: 'Название',
-    rowCellClick: (value: QuestShort) => navigateToQuestModal(value),
-  },
-  {
-    key: 'available',
+  if (user.value?.role == 'PROJECT_OFFICE') {
+    return columns
+  }
+  columns.push({
+    key: 'passed',
+    contentClassName: 'justify-content-center align-items-center text-center',
     label: 'Статус',
-    getRowCellFormat: getTranslatedWorkStatus,
-  },
-]
+    getRowCellFormat: getTranslatedIsPassedStatus,
+  })
+  return columns
+})
 
-const questsTableDropdownMenuAction: DropdownMenuAction<QuestShort>[] = [
+const launchQuestPassability = (launchQuest: Quest) => {
+  return (
+    user.value?.role != 'PROJECT_OFFICE' &&
+    !launchQuest.passed &&
+    launchQuest.available
+  )
+}
+
+const launchQuestsTableDropdownMenuAction: DropdownMenuAction<Quest>[] = [
   {
     label: 'Просмотреть',
     statement: () => true,
-    click: (value: QuestShort) => navigateToQuestModal(value),
+    // click: (value: LaunchQuest) => navigateToLaunchQuestModal(value),
+    click: () => handleEditCollapseTable,
   },
   {
-    label: 'Создать копию',
-    statement: () => true,
-    click: (quest: QuestShort) => createCopyQuest(quest),
+    label: 'Пройти опрос',
+    statement: (launchQuest: Quest) => launchQuestPassability(launchQuest),
+    click: (launchQuest: Quest) => openPassLaunchQuestModal(launchQuest),
   },
 ]
 
-const createCopyQuest = (quest: QuestShort) => {
-  questIdRef.value = quest.id
-  isQuestModalOpen.value = true
-}
-
-const createQuest = () => {
-  questIdRef.value = null
-  isQuestModalOpen.value = true
-}
-
-const closeQuestModal = () => {
-  isQuestModalOpen.value = false
-}
-
-const navigateToQuestModal = (quest: QuestShort) => {
+const navigateToLaunchQuestModal = (quest: Quest) => {
   const routeName = route.name
   if (!routeName) return
-  const { id } = quest
+  const { idQuest: idLaunchQuest } = quest
   const questRoute: RouteRecordRaw = {
-    name: 'quest',
-    path: '/quests/:id',
-    alias: '/quests/:id',
-    component: QuestModal,
+    name: 'launch-quest',
+    path: '/launch-quests/:idLaunchQuest',
+    alias: '/launch-quests/:idLaunchQuest',
+    component: LaunchQuestModal,
     props: {
       canGoBack: true,
     },
   }
 
-  navigateToAliasRoute(routeName?.toString(), `/quests/${id}`, questRoute)
+  navigateToAliasRoute(
+    routeName?.toString(),
+    `/launch-quests/${idLaunchQuest}`,
+    questRoute,
+  )
+}
+
+const isOpenCollapseTable = ref(true)
+
+function handleEditCollapseTable() {
+  if (isOpenCollapseTable.value) isOpenCollapseTable.value = false
+  isOpenCollapseTable.value = true
 }
 </script>
 
 <template>
   <Table
     class-name="p-3"
-    :header="questsTableHeader"
-    :columns="questsTableColumns"
-    :dropdown-actions-menu="questsTableDropdownMenuAction"
-    :data="quests"
+    :header="launchQuestsTableHeader"
+    :columns="launchQuestsTableColumns"
+    :dropdown-actions-menu="launchQuestsTableDropdownMenuAction"
+    :data="launchQuests"
     :search-by="['name']"
+    :collapseChildComponent="QuestTableCollapse"
+    :isOpenCollapse="isOpenCollapseTable"
   />
-  <CreateQuestModal
-    :id="questIdRef"
-    :isOpened="isQuestModalOpen"
-    @close-modal="closeQuestModal"
-  ></CreateQuestModal>
+  <PassLaunchQuestModal
+    :launch-quest="passLaunchQuest"
+    @close-modal="closePassLaunchQuestModal"
+    :is-opened="isPassLaunchQuestModalOpen"
+  ></PassLaunchQuestModal>
 </template>

@@ -1,5 +1,5 @@
-interface QuestModalProps {
+interface LaunchQuestModalProps {
   canGoBack?: boolean
 }
 
-export { QuestModalProps }
+export { LaunchQuestModalProps }

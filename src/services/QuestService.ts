@@ -1,56 +1,42 @@
-import { Quest, QuestShort } from '@Domain/Quest'
+import { Quest } from '@Domain/Quest'
 import { QUEST_SERVICE_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import { questsMocks, questsShortMocks } from '@Utils/getMocks'
+import { launchQuestsMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
-import axios from 'axios'
 
-const questsShortAxios = defineAxios(questsShortMocks)
-const questAxios = defineAxios(questsMocks)
+const launchQuestAxios = defineAxios(launchQuestsMocks)
 
 // --- GET --- //
-const getQuests = async (token: string): Promise<QuestShort[] | Error> => {
-  return questsShortAxios
-    .get(`${QUEST_SERVICE_URL}/template/all`, {
+const getQuests = async (token: string): Promise<Quest[] | Error> => {
+  return launchQuestAxios
+    .get(`${QUEST_SERVICE_URL}/quest/all`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка загрузки опросов.'))
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки запущенных опросов.'))
 }
 
-const getQuest = async (id: string, token: string): Promise<Quest | Error> => {
-  return questAxios
-    .get(
-      `${QUEST_SERVICE_URL}/template/with-indicators/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка получения опроса.'))
-}
-
-const postQuest = async (quest: Quest, token: string): Promise<Quest | Error> => {
-  return questAxios
-    .post(`${QUEST_SERVICE_URL}/template/create`, quest, {
+const postQuest = async (
+  launchQuest: Quest,
+  token: string,
+): Promise<Quest | Error> => {
+  return launchQuestAxios
+    .post(`${QUEST_SERVICE_URL}/launch-quest`, launchQuest, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка отправки опроса.'))
+    .catch((error) => handleAxiosError(error, 'Ошибка отправки запущенного опроса.'))
 }
 
-const QuestService = {
+const LaunchQuestService = {
   getQuests,
-  getQuest,
   postQuest,
 }
 
-export default QuestService
+export default LaunchQuestService

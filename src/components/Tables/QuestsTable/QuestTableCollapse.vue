@@ -10,7 +10,7 @@ import useTeamStore from '@Store/teams/teamsStore'
 
 import Button from '@Components/Button/Button.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
-import { TableCollapse } from '@Components/Tables/LaunchQuestsTable/LaunchQuestTableCollapse.types'
+import { TableCollapse } from '@Components/Tables/QuestsTable/QuestTableCollapse.types'
 import { Quest } from '@Domain/Quest'
 import { OptionType } from '@Components/Inputs/Select/Select.types'
 import IndicatorItem from '@Components/IndicatorItem/IndicatorItem.vue'

@@ -31,7 +31,7 @@ const useTeamStore = defineStore('teams', {
     },
 
     getTeamsByIds() {
-      return async (ids: string[], token: string) => {
+      return async (ids: { id: string }[], token: string) => {
         const response = await TeamService.getTeams(token)
 
         if (response instanceof Error) {
@@ -42,7 +42,7 @@ const useTeamStore = defineStore('teams', {
           return response
         }
         this.teams = response.filter((team) => {
-          return ids.find((id) => id == team.id) != undefined
+          return ids.find((objectId) => objectId.id == team.id) != undefined
         })
 
         return this.teams

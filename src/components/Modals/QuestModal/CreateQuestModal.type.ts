@@ -1,10 +1,12 @@
-interface CreateQuestModalProps {
+import { Team } from '@Domain/Team'
+
+interface CreateLaunchQuestProps {
   isOpened: boolean
-  id: string | null
+  teams: Team[]
 }
 
-interface CreateQuestModalEmits {
+interface CreateLaunchQuestEmits {
   (event: 'close-modal'): void
 }
 
-export { CreateQuestModalProps, CreateQuestModalEmits }
+export { CreateLaunchQuestProps, CreateLaunchQuestEmits }

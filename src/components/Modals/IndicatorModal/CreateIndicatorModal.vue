@@ -9,7 +9,7 @@ import {
   IndicatorModalEmits,
 } from '@Components/Modals/IndicatorModal/CreateIndicatorModal.type'
 import { Indicator } from '@Domain/Quest'
-import useQuestsStore from '@Store/quests/questsStore'
+import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
@@ -20,7 +20,7 @@ import useIndicatorStore from '@Store/indicators/indicatorsStore'
 const props = defineProps<IndicatorModalProps>()
 const emit = defineEmits<IndicatorModalEmits>()
 
-const questStore = useQuestsStore()
+const questTemplatesStore = useQuestTemplatesStore()
 
 const indicatorStore = useIndicatorStore()
 const { indicators } = storeToRefs(indicatorStore)

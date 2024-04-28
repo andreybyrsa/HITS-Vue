@@ -1,174 +1,118 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-import { useForm } from 'vee-validate'
 
-import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
-import IndicatorItem from '@Components/IndicatorItem/IndicatorItem.vue'
-import CreateIndicatorModal from '@Components/Modals/IndicatorModal/CreateIndicatorModal.vue'
-import Icon from '@Components/Icon/Icon.vue'
-import Typography from '@Components/Typography/Typography.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
-import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
+import Combobox from '@Components/Inputs/Combobox/Combobox.vue'
+import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Button from '@Components/Button/Button.vue'
+import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
+import Typography from '@Components/Typography/Typography.vue'
 import {
-  CreateQuestModalProps,
-  CreateQuestModalEmits,
+  CreateLaunchQuestProps,
+  CreateLaunchQuestEmits,
 } from '@Components/Modals/QuestModal/CreateQuestModal.type'
-
-import Validation from '@Utils/Validation'
-
+import { Team } from '@Domain/Team'
+import { Quest, QuestTemplate, QuestTemplateShort } from '@Domain/Quest'
+import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import useUserStore from '@Store/user/userStore'
-
-import useIndicatorStore from '@Store/indicators/indicatorsStore'
-import { Indicator, Quest } from '@Domain/Quest'
+import Validation from '@Utils/Validation'
+import { useForm } from 'vee-validate'
 import useQuestsStore from '@Store/quests/questsStore'
-import { findStatusesByTranslatedStatus } from '@Utils/indicatorStatus'
 
-const props = defineProps<CreateQuestModalProps>()
-const emit = defineEmits<CreateQuestModalEmits>()
+const props = defineProps<CreateLaunchQuestProps>()
+const emit = defineEmits<CreateLaunchQuestEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const indicatorStore = useIndicatorStore()
-const { indicators } = storeToRefs(indicatorStore)
+const questTemplatesStore = useQuestTemplatesStore()
+const { questTemplates, questTemplate } = storeToRefs(questTemplatesStore)
 
-const questStore = useQuestsStore()
-const { quest } = storeToRefs(questStore)
+const launchQuestStore = useQuestsStore()
 
-const backlogIndicators = ref<Indicator[]>(indicators.value.slice())
-const newQuestIndicators = ref<Indicator[]>(quest.value?.indicators ?? [])
+const questTemplatesRef = ref<QuestTemplateShort[]>([])
+const selectedTeams = ref<Team[]>([])
+const selectedQuestTemplate = ref<null | QuestTemplate>(null)
 
-const isOpenedCreateNewIndicator = ref(false)
-const isLoading = ref<boolean>(false)
-
-const { handleSubmit, setValues, values } = useForm<{
-  name: string
-  description: string
-  backlogSearchValue: string
-  newQuestSearchValue: string
-}>({
+const { setValues, handleSubmit, values } = useForm<Quest>({
   validationSchema: {
+    example: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
+    id: (value: string) =>
+      Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
+    idTeams: (value: string[]) =>
+      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    description: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    startAt: (value: string) => Validation.checkDate(value) || 'Поле не заполнено',
+    endAt: (value: string) =>
+      Validation.validateDates(values.startAt, value) || 'Поле не заполнено',
   },
 })
 
-const filteredBacklogIndicators = computed(() => {
-  const searchValue = values.backlogSearchValue
-  if (!searchValue) return backlogIndicators.value
-  searchValue.toLowerCase()
+const handleCreateCompany = handleSubmit(async (values) => {
+  const token = user.value?.token
 
-  return backlogIndicators.value.filter(
-    (indicator) =>
-      indicator.name.toLowerCase().includes(searchValue) ||
-      findStatusesByTranslatedStatus(searchValue).includes(indicator.type),
-  )
+  if (!token) return
+  delete values.example
+
+  await launchQuestStore.postQuest(values, token)
+  emit('close-modal')
 })
 
-const filteredNewQuestIndicators = computed(() => {
-  const searchValue = values.newQuestSearchValue
-  if (!searchValue) return newQuestIndicators.value
-  searchValue.toLowerCase()
-
-  return newQuestIndicators.value.filter(
-    (indicator) =>
-      indicator.name.toLowerCase().includes(searchValue) ||
-      findStatusesByTranslatedStatus(searchValue).includes(indicator.type),
-  )
+const questions = computed(() => {
+  if (selectedQuestTemplate.value) {
+    return questTemplate.value?.indicators
+  }
+  return []
 })
+
+const resetTeam = (ideaId: string) => {
+  const ideaIndex = selectedTeams.value.findIndex(({ id }) => id === ideaId)
+
+  if (ideaIndex !== -1) {
+    selectedTeams.value.splice(ideaIndex, 1)
+
+    if (selectedTeams.value.length === 0) emit('close-modal')
+  }
+}
+
+const setQuestTemplate = async (shortQuest: QuestTemplateShort) => {
+  const token = user.value?.id
+  const questId = shortQuest.idQuestTemplate
+  if (!token || !questId) return
+
+  const selectedQuest = await questTemplatesStore.getQuestTemplate(questId, token)
+  if (selectedQuest instanceof Error) return
+
+  selectedQuestTemplate.value = selectedQuest
+
+  const teamsId = selectedTeams.value.map((team) => {
+    return { id: team.id }
+  })
+  setValues({ idQuestTemplate: selectedQuest.idQuestTemplate, idTeams: teamsId })
+}
 
 onMounted(async () => {
-  await orderIndicatorsToLists()
-  // setValues({ available: quest.value?.available })
-})
-
-watch(
-  () => props.isOpened,
-  async () => {
-    await orderIndicatorsToLists()
-  },
-  { deep: true },
-)
-
-watch(
-  () => indicators,
-  (indicators) => {
-    const newIndicators = indicators.value.filter((indicator) => {
-      if (newQuestIndicators.value.find((item) => item == indicator)) return false
-      if (backlogIndicators.value.find((item) => item == indicator)) return false
-      return true
-    })
-    if (newIndicators) backlogIndicators.value.push(...newIndicators)
-  },
-  { deep: true },
-)
-
-const orderIndicatorsToLists = async () => {
   const token = user.value?.token
   if (!token) return
-  await indicatorStore.getIndicators(token)
-  const id = props.id
-  if (id) {
-    await questStore.getQuest(id, token)
-    if (!quest.value) return
-    setValues({ ...quest.value })
-    setValues({ name: quest.value.name + ' - копия' })
-    const copiedIndicators = quest.value.indicators
-    newQuestIndicators.value = copiedIndicators
 
-    backlogIndicators.value = indicators.value.filter((indicator) =>
-      copiedIndicators.find((copy) => indicator.idIndicator == copy.idIndicator)
-        ? false
-        : true,
-    )
-  } else {
-    backlogIndicators.value = indicators.value
-    newQuestIndicators.value = []
-  }
-}
-
-const moveIndicatorToNew = (currentIndicator: Indicator) => {
-  backlogIndicators.value = backlogIndicators.value.filter(
-    (task) => task !== currentIndicator,
-  )
-  newQuestIndicators.value.push(currentIndicator)
-}
-
-const moveIndicatorToBacklog = (currentIndicator: Indicator) => {
-  newQuestIndicators.value = newQuestIndicators.value.filter(
-    (task) => task !== currentIndicator,
-  )
-  backlogIndicators.value.push(currentIndicator)
-}
-
-const createQuest = handleSubmit(async (values) => {
-  const currentUser = user.value
-
-  if (currentUser?.token) {
-    const { token } = currentUser
-
-    const newQuest: Quest = {
-      name: values.name,
-      description: values.description,
-      indicators: newQuestIndicators.value,
-    }
-
-    await questStore.postQuest(newQuest, token)
-    emit('close-modal')
-  }
+  await questTemplatesStore.getQuestTemplates(token)
+  questTemplatesRef.value = questTemplates.value
 })
 
-const openCreateNewIndicator = () => {
-  isOpenedCreateNewIndicator.value = true
-}
-
-const closeCreateNewIndicator = () => {
-  isOpenedCreateNewIndicator.value = false
-}
+watchImmediate(
+  () => props.teams,
+  (value) => {
+    if (value) {
+      selectedTeams.value = value
+      selectedQuestTemplate.value = null
+    }
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -176,171 +120,178 @@ const closeCreateNewIndicator = () => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="modal-360-quest bg-white rounded px-4 py-3">
-      <div class="sprint-form w-100 mb-1 h-100">
-        <!-- header -->
-        <div class="sprint-form__header w-100">
-          <Typography class-name="fs-3 text-primary">
-            Создание шаблона опроса
-          </Typography>
+    <div class="modal-360-quest bg-white rounded p-3">
+      <div class="container-fluid d-flex flex-column">
+        <div class="row">
+          <div class="col-sm-12 d-flex align-items-center justify-content-between">
+            <Typography class-name="fs-3 text-primary">Создание опроса</Typography>
 
-          <Button
-            variant="close"
-            class="close"
-            @click="emit('close-modal')"
-          />
+            <Button
+              variant="close"
+              class="close"
+              @click="emit('close-modal')"
+            ></Button>
+          </div>
         </div>
-
-        <!-- content -->
-        <div class="d-flex gap-3 mt-1 w-100 h-75">
-          <!-- tasks -->
-          <div class="sprint-form__content-tasks d-flex gap-4">
-            <!-- backlog -->
-            <div class="d-flex flex-column w-100">
-              <div class="sprint-form__backlog-name border-bottom">
-                <Typography class-name="fs-5 text-secondary"
-                  >Список вопросов</Typography
+        <div class="row flex-grow-2">
+          <div class="col-sm-4">
+            <div class="p-4">
+              <div class="w-100">
+                <Combobox
+                  name="example"
+                  label="Шаблон опроса"
+                  :options="questTemplatesRef"
+                  :displayBy="['name']"
+                  placeholder="Выберите шаблон опроса"
+                  @on-select="setQuestTemplate"
+                  validate-on-update
+                />
+                <Checkbox
+                  name="showHidden"
+                  label="Показать скрытые"
+                  class="mt-1"
+                />
+                <div>
+                  <Input
+                    name="name"
+                    class-name="rounded-end"
+                    class="mt-3"
+                    label="Название опроса"
+                    validate-on-update
+                    placeholder="Введите название опроса"
+                  />
+                </div>
+                <div
+                  class="classcol-sm-12 d-flex align-items-center justify-content-between mt-3"
                 >
-                <Icon
-                  class-name="bi bi-plus sprint-form__backlog-add p-1 rounded"
-                  @click="openCreateNewIndicator"
-                />
-                <CreateIndicatorModal
-                  @close-modal="closeCreateNewIndicator"
-                  :isOpened="isOpenedCreateNewIndicator"
-                ></CreateIndicatorModal>
-              </div>
-              <Input
-                placeholder="Введите название вопроса или его тип"
-                class-name="rounded m-1 mt-3 mb-2"
-                name="backlogSearchValue"
-              />
-              <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
-                <IndicatorItem
-                  class-name="cursor-pointer"
-                  v-for="indicator in filteredBacklogIndicators"
-                  :key="indicator.idIndicator"
-                  @click="moveIndicatorToNew(indicator)"
-                  :indicator="indicator"
-                />
-              </div>
-            </div>
-
-            <!-- new-sprint -->
-            <div class="d-flex flex-column w-100">
-              <div class="border-bottom">
-                <Typography class-name="fs-5 text-secondary">
-                  Выбранные вопросы
-                </Typography>
-              </div>
-              <Input
-                placeholder="Введите название вопроса или его тип"
-                class-name="rounded m-1 mt-3 mb-2"
-                name="newQuestSearchValue"
-              />
-              <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
-                <IndicatorItem
-                  class-name="cursor-pointer"
-                  v-for="indicator in filteredNewQuestIndicators"
-                  :key="indicator.idIndicator"
-                  @click="moveIndicatorToBacklog(indicator)"
-                  :indicator="indicator"
-                />
+                  <Input
+                    name="startAt"
+                    class-name="rounded-end "
+                    class="me-2"
+                    label="Дата начала"
+                    type="date"
+                    validate-on-update
+                    placeholder=".. | .. | .."
+                  />
+                  <Input
+                    name="endAt"
+                    class-name="rounded-end "
+                    label="Дата окончания"
+                    type="date"
+                    validate-on-update
+                    placeholder=".. | .. | .."
+                    class="ms-2"
+                  />
+                </div>
               </div>
             </div>
           </div>
-
-          <!-- form -->
-          <div class="sprint-form__form d-flex flex-column gap-3 h-100">
-            <!-- inputs -->
-            <div class="d-flex flex-column gap-3 h-100">
-              <Input
-                name="name"
-                class-name="rounded-end"
-                label="Название опроса"
-                validate-on-update
-                placeholder="Введите название опроса"
-              />
-              <Textarea
-                name="description"
-                class-name="textarea rounded-end"
-                label="Описание опроса"
-                validate-on-update
-                placeholder="Введите описание опроса"
-              />
+          <div class="col-sm-4">
+            <div class="p-4">
+              <Typography class-name="fs-6 text-primary ">Вопросы:</Typography>
+              <div
+                class="mt-3"
+                v-if="questions?.length"
+              >
+                <div
+                  class="overflow-scroll fixed-size-scroll-div"
+                  style="flex-grow: 1"
+                >
+                  <div
+                    v-for="(question, index) in questions"
+                    :key="index"
+                    class="p-2 mb-2 border rounded col-sm-12 d-flex align-items-center justify-content-between"
+                  >
+                    <div class="">
+                      <Typography class-name="">{{ question.name }}</Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="mt-1"
+                v-else
+              >
+                <div class="text-center p-2 mb-2 border rounded col-sm-12">
+                  <Typography class-name="">Шаблон ещё не выбран</Typography>
+                </div>
+              </div>
             </div>
-
-            <!-- Кнопки -->
+          </div>
+          <div
+            data-bs-spy="scroll"
+            class="col-sm-4"
+          >
+            <div>
+              <div class="d-flex flex-column gap-2 w-100 p-4">
+                <Typography class-name="fs-6 text-primary">
+                  {{
+                    selectedTeams.length === 1
+                      ? 'Выбранная команда'
+                      : 'Выбранные команды'
+                  }}
+                </Typography>
+                <div
+                  v-for="(team, index) in teams"
+                  :key="index"
+                  class="d-flex gap-2 w-100 fixed-size-scroll-div"
+                >
+                  <Typography
+                    class-name="send-ideas-on-market-modal__idea-name w-100 border rounded p-2"
+                  >
+                    {{ team.name }}
+                  </Typography>
+                  <Button
+                    variant="outline-danger"
+                    append-icon-name="bi bi-x"
+                    @click="resetTeam(team.id)"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="align-self-end mt-auto">
-          <Button
-            variant="primary"
-            @click="createQuest"
-            :isLoading="isLoading"
-          >
-            Создать опрос
-          </Button>
+        <div class="row mt-auto justify-content-end">
+          <div class="col-sm-12 d-flex justify-content-end">
+            <Button
+              variant="primary"
+              @click="handleCreateCompany"
+              >Создать опрос</Button
+            >
+          </div>
         </div>
       </div>
     </div>
   </ModalLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .modal-360-quest {
-  width: 85%;
-  height: 900px;
+  width: 80%;
+  height: 85%;
   @include flexible(
     stretch,
-    center,
+    flex-start,
     $align-self: center,
     $justify-self: center,
     $gap: 16px
   );
 
   transition: all $default-transition-settings;
-}
-
-.textarea {
-  resize: none;
-  height: 100px;
-}
-
-.sprint-form {
-  @include flexible(flex-start, flex-start, column);
-  overflow-y: scroll;
 
   &__header {
     @include flexible(center, space-between);
   }
+}
 
-  &__content {
-    &-tasks {
-      width: 70%;
-      overflow-y: scroll;
-    }
-  }
+.max-height-textarea {
+  resize: none;
+}
 
-  &__backlog {
-    &-name {
-      @include flexible(center, space-between);
-    }
-
-    &-add {
-      transition: all linear 0.15s;
-      -webkit-transition: all linear 0.15s;
-
-      &:hover {
-        cursor: pointer;
-        color: white;
-        background-color: rgb(13, 110, 253);
-      }
-    }
-  }
-
-  &__form {
-    width: 30%;
-  }
+.fixed-size-scroll-div {
+  max-height: 55vh !important; /* ширину */
+}
+.text-question {
+  word-break: break-word !important;
 }
 </style>

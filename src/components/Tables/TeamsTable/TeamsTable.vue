@@ -57,7 +57,7 @@ import {
 } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import CreateLaunchQuestModal from '@Components/Modals/LaunchQuestModal/CreateLaunchQuestModal.vue'
+import CreateLaunchQuestModal from '@Components/Modals/QuestModal/CreateLaunchQuestModal.vue'
 
 import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'

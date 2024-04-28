@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import QuestsTable from '@Components/Tables/QuestsTable/QuestsTable.vue'
+import QuestTemplatesTable from '@Components/Tables/QuestTemplatesTable/QuestTemplatesTable.vue'
 </script>
 
 <template>
-  <QuestsTable />
+  <QuestTemplatesTable />
 
   <router-view />
 </template>

@@ -21,21 +21,21 @@ export interface Indicator {
   idToUser?: string
 }
 
-export interface QuestShort {
-  id: string
+export interface QuestTemplateShort {
+  idQuestTemplate: string
   available?: boolean
   name: string
 }
 
-export interface Quest extends QuestShort {
+export interface QuestTemplate extends QuestTemplateShort {
   description: string
   indicators: Indicator[]
 }
 
-export interface LaunchQuest {
-  idLaunchQuest: string
-  id: string
-  idTeams: string[]
+export interface Quest {
+  idQuest: string
+  idQuestTemplate: string
+  idTeams: { id: string }[]
   name: string
   startAt: string
   endAt: string
@@ -47,7 +47,7 @@ export interface LaunchQuest {
 export interface QuestResult {
   idResult?: string
   idIndicator: string
-  idLaunchQuest: string
+  idQuest: string
   idFromUser: string
   idToUser?: string
   value: string

@@ -24,9 +24,9 @@ import { Project, ProjectMember } from '@Domain/Project'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import {
   Indicator,
-  LaunchQuest,
   Quest,
-  QuestShort,
+  QuestTemplate,
+  QuestTemplateShort,
   QuestResult,
 } from '@Domain/Quest'
 
@@ -1523,9 +1523,9 @@ export const invitationTeamToIdeaMocks: InvitationTeamToIdea[] = [
   },
 ]
 
-export const questsShortMocks: QuestShort[] = [
+export const questsShortMocks: QuestTemplateShort[] = [
   {
-    id: '1',
+    idQuestTemplate: '1',
     available: true,
     name: 'Опрос компетенций',
   },
@@ -1686,9 +1686,9 @@ export const indicatorsMocks: Indicator[] = [
   },
 ]
 
-export const questsMocks: Quest[] = [
+export const questsMocks: QuestTemplate[] = [
   {
-    id: questsShortMocks[0].id,
+    idQuestTemplate: questsShortMocks[0].idQuestTemplate,
     available: questsShortMocks[0].available,
     name: questsShortMocks[0].name,
     description: 'Весенний опрос 2024 посвящен весне и птичкам',
@@ -1696,11 +1696,11 @@ export const questsMocks: Quest[] = [
   },
 ]
 
-export const launchQuestsMocks: LaunchQuest[] = [
+export const launchQuestsMocks: Quest[] = [
   {
-    idLaunchQuest: '4',
-    id: questsMocks[0].id!,
-    idTeams: [teamsMocks[0].id],
+    idQuest: '4',
+    idQuestTemplate: questsMocks[0].idQuestTemplate!,
+    idTeams: [{ id: teamsMocks[0].id }],
     name: 'Весенний опрос 2024',
     startAt: '28.04.2024',
     endAt: '28.05.2024',
@@ -1709,9 +1709,9 @@ export const launchQuestsMocks: LaunchQuest[] = [
     passed: false,
   },
   {
-    idLaunchQuest: '3',
-    id: questsMocks[0].id!,
-    idTeams: [teamsMocks[0].id],
+    idQuest: '3',
+    idQuestTemplate: questsMocks[0].idQuestTemplate!,
+    idTeams: [{ id: teamsMocks[0].id }],
     name: 'Осенний опрос 2023',
     startAt: '28.11.2023',
     endAt: '28.12.2023',
@@ -1723,9 +1723,9 @@ export const launchQuestsMocks: LaunchQuest[] = [
     passed: true,
   },
   {
-    idLaunchQuest: '2',
-    id: questsMocks[0].id!,
-    idTeams: [teamsMocks[0].id],
+    idQuest: '2',
+    idQuestTemplate: questsMocks[0].idQuestTemplate!,
+    idTeams: [{ id: teamsMocks[0].id }],
     name: 'Весенний опрос 2023',
     startAt: '28.04.2023',
     endAt: '28.05.2023',
@@ -1737,9 +1737,9 @@ export const launchQuestsMocks: LaunchQuest[] = [
     passed: true,
   },
   {
-    idLaunchQuest: '1',
-    id: questsMocks[0].id!,
-    idTeams: [teamsMocks[0].id],
+    idQuest: '1',
+    idQuestTemplate: questsMocks[0].idQuestTemplate!,
+    idTeams: [{ id: teamsMocks[0].id }],
     name: 'Осенний опрос 2022',
     startAt: '28.11.2022',
     endAt: '28.12.2022',
@@ -1756,14 +1756,14 @@ export const resultsMocks: QuestResult[] = [
   {
     idResult: '8',
     idIndicator: indicatorsMocks[0].idIndicator,
-    idLaunchQuest: launchQuestsMocks[0].idLaunchQuest,
+    idQuest: launchQuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     value: '4',
   },
   {
     idResult: '7',
     idIndicator: indicatorsMocks[1].idIndicator,
-    idLaunchQuest: launchQuestsMocks[0].idLaunchQuest,
+    idQuest: launchQuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     idToUser: '',
     value: '',
@@ -1772,7 +1772,7 @@ export const resultsMocks: QuestResult[] = [
     return {
       idResult: '33' + member.userId,
       idIndicator: indicatorsMocks[2].idIndicator,
-      idLaunchQuest: launchQuestsMocks[0].idLaunchQuest,
+      idQuest: launchQuestsMocks[0].idQuest,
       idFromUser: usersMocks[0].id,
       idToUser: member.userId,
       value: '',
@@ -1781,7 +1781,7 @@ export const resultsMocks: QuestResult[] = [
   {
     idResult: '4',
     idIndicator: indicatorsMocks[0].idIndicator,
-    idLaunchQuest: launchQuestsMocks[0].idLaunchQuest,
+    idQuest: launchQuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     idToUser: '',
     value: '',
@@ -1789,7 +1789,7 @@ export const resultsMocks: QuestResult[] = [
   {
     idResult: '3',
     idIndicator: indicatorsMocks[1].idIndicator,
-    idLaunchQuest: launchQuestsMocks[0].idLaunchQuest,
+    idQuest: launchQuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     idToUser: '',
     value: '',
@@ -1798,7 +1798,7 @@ export const resultsMocks: QuestResult[] = [
     return {
       idResult: '22' + member.userId,
       idIndicator: indicatorsMocks[2].idIndicator,
-      idLaunchQuest: launchQuestsMocks[0].idLaunchQuest,
+      idQuest: launchQuestsMocks[0].idQuest,
       idFromUser: usersMocks[0].id,
       idToUser: member.userId,
       value: '',

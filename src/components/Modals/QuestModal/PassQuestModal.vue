@@ -6,10 +6,10 @@ import Button from '@Components/Button/Button.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import {
-  PassLaunchQuestProps,
-  PassLaunchQuestEmits,
-} from '@Components/Modals/LaunchQuestModal/PassLaunchQuestModal.type'
-import useQuestStore from '@Store/quests/questsStore'
+  PassQuestProps,
+  PassQuestEmits,
+} from '@Components/Modals/QuestModal/PassQuestModal.type'
+import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import useUserStore from '@Store/user/userStore'
 import { Indicator, QuestResult } from '@Domain/Quest'
 import useTeamStore from '@Store/teams/teamsStore'
@@ -17,22 +17,22 @@ import useProfilesStore from '@Store/profiles/profilesStore'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 import { useForm } from 'vee-validate'
 import useQuestResultsStore from '@Store/questResults/questResultsStore'
-import useLaunchQuestStore from '@Store/launchQuests/launchQuestsStore'
+import useQuestsStore from '@Store/quests/questsStore'
 
-const props = defineProps<PassLaunchQuestProps>()
-const emit = defineEmits<PassLaunchQuestEmits>()
+const props = defineProps<PassQuestProps>()
+const emit = defineEmits<PassQuestEmits>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const questStore = useQuestStore()
-const { quest } = storeToRefs(questStore)
+const questTemplatesStore = useQuestTemplatesStore()
+const { questTemplate } = storeToRefs(questTemplatesStore)
 
 const teamStore = useTeamStore()
 const { teams } = storeToRefs(teamStore)
 
 const questResultsStore = useQuestResultsStore()
-const launchQuestsStore = useLaunchQuestStore()
+const launchQuestsStore = useQuestsStore()
 
 const profilesStore = useProfilesStore()
 
@@ -68,7 +68,7 @@ const teamOfUser = computed(() => {
 })
 
 const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
-  const questIndicators = quest.value?.indicators
+  const questIndicators = questTemplate.value?.indicators
   const token = user.value?.token
   if (!token) return
 
@@ -111,9 +111,9 @@ watch(
   async () => {
     const token = user.value?.token
     if (token) {
-      const id = props.launchQuest?.id
+      const id = props.launchQuest?.idQuestTemplate
       if (!id) return
-      await questStore.getQuest(id, token)
+      await questTemplatesStore.getQuestTemplate(id, token)
     }
   },
   { deep: true },
@@ -135,7 +135,7 @@ const nextQuestion = () => {
 
   if (
     !currentIndicator.value?.idIndicator ||
-    !props.launchQuest?.idLaunchQuest ||
+    !props.launchQuest?.idQuest ||
     !user.value?.id
   ) {
     return
@@ -143,9 +143,8 @@ const nextQuestion = () => {
 
   const newResult: QuestResult = {
     idIndicator: currentIndicator.value.idIndicator,
-    idLaunchQuest: props.launchQuest.idLaunchQuest,
+    idQuest: props.launchQuest.idQuest,
     idFromUser: user.value.id,
-    // idToUser: currentIndicator.value.,
     value: values.answer.toString(),
   }
   if (currentIndicator.value.idToUser) {
@@ -160,8 +159,8 @@ const sendResults = async () => {
   const token = user.value?.token
   if (!token) return
   await questResultsStore.postQuestResults(results.value, token)
-  const launchQuest = launchQuestsStore.launchQuests.find(
-    (lq) => lq.idLaunchQuest == props.launchQuest?.idLaunchQuest,
+  const launchQuest = launchQuestsStore.quests.find(
+    (lq) => lq.idQuest == props.launchQuest?.idQuest,
   )
   if (!launchQuest) return
   launchQuest.passed = true
@@ -194,8 +193,8 @@ const sendResults = async () => {
             class="h-fit text-start"
             v-if="currentIndicatorIndex == null"
           >
-            {{ quest?.description }}. <br />
-            В нем {{ quest?.indicators.length }} вопросов. <br />
+            {{ questTemplate?.description }}. <br />
+            В нем {{ questTemplate?.indicators.length }} вопросов. <br />
             Чтобы приступить к нему нажмите на кнопку ниже.
           </p>
           <div
@@ -235,7 +234,7 @@ const sendResults = async () => {
         <Button
           v-else-if="
             currentIndicatorIndex ==
-            (quest?.indicators && quest?.indicators.length - 1)
+            (questTemplate?.indicators && questTemplate?.indicators.length - 1)
           "
           class-name="w-fit h-auto align-self-end"
           variant="primary"
