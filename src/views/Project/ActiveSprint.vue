@@ -150,7 +150,7 @@ function checkUserTask(evt: any) {
 
 function accessDragTask(evt: any) {
   const draggedStatus: TaskStatus = evt.draggedContext.element.status
-  const relatedStatus: TaskStatus = evt.relatedContext.element.status
+  const relatedStatus: TaskStatus = evt.related.className.split(' ').pop()
 
   const accessStatus: { [key in TaskStatus]: TaskStatus[] } = {
     NewTask: ['InProgress', 'NewTask'],
@@ -183,6 +183,7 @@ function getFormattedDate(date: string) {
 const columns = computed(() => [
   {
     name: 'На доработке',
+    class: 'OnModification',
     color: 'blueviolet',
     list: onModificationTask.tasks,
     move: checkOnModificationTask,
@@ -191,6 +192,7 @@ const columns = computed(() => [
   },
   {
     name: 'Новые',
+    class: 'NewTask',
     color: '#0d6efd',
     list: newTask.tasks,
     move: accessDragTask,
@@ -199,6 +201,7 @@ const columns = computed(() => [
   },
   {
     name: 'На выполнении',
+    class: 'InProgress',
     color: '#f5ec0a',
     list: inProgressTask.tasks,
     move: checkUserTask,
@@ -207,6 +210,7 @@ const columns = computed(() => [
   },
   {
     name: 'На проверке',
+    class: 'OnVerification',
     color: '#ffa800',
     list: onVerificationTask.tasks,
     move: accessDragTask,
@@ -215,6 +219,7 @@ const columns = computed(() => [
   },
   {
     name: 'Выполненные',
+    class: 'Done',
     color: '#13c63a',
     list: doneTask.tasks,
     move: accessDragTask,
@@ -315,6 +320,7 @@ function closeBurndownModal() {
 
         <draggable
           class="list-group active-sprint__column"
+          :class="column.class"
           :list="column.list"
           group="active-sprint"
           :move="column.move"

@@ -43,7 +43,14 @@
       </div>
     </div>
 
-    <TaskDescriptionModal
+    <ActiveSprintTaskModal
+      v-if="currentTask"
+      :is-opened="isOpenedTaskModal"
+      @close-modal="closeTaskModal"
+      :task="currentTask"
+    />
+
+    <!-- <TaskDescriptionModal
       :is-opened="isOpenedTaskModal"
       :task="(currentTask as Task)"
       :user="(user as User)"
@@ -51,7 +58,7 @@
       @update-leader-comment="changeLeaderComment"
       @update-description="changeDescription"
       @update-name="changeName"
-    />
+    /> -->
   </div>
 </template>
 
@@ -66,6 +73,7 @@ import { ref } from 'vue'
 import { User } from '@Domain/User'
 
 import TaskDescriptionModal from '@Components/Modals/SprintModal/TaskDescriptionModal.vue'
+import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.vue'
 import { useDebounceFn } from '@vueuse/core'
 
 defineProps<ActiveSprintTaskProps>()

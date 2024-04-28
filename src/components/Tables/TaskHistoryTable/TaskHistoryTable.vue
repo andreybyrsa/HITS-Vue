@@ -1,17 +1,8 @@
 <template>
   <Table
-    class-name="pe-3"
     :columns="taskHistoryTableColumns"
     :data="logs"
-    :dropdown-actions-menu="dropdownTaskHistoryActions"
   />
-
-  <!-- <TaskHistoryModal
-    v-if="currentLog"
-    :is-opened="isOpenetTaskHistoryModal"
-    :log="currentLog"
-    @close-modal="closeTaskHistoryModal"
-  /> -->
 </template>
 
 <script setup lang="ts">
@@ -20,20 +11,14 @@ import { storeToRefs } from 'pinia'
 import { useDateFormat } from '@vueuse/core'
 
 import Table from '@Components/Table/Table.vue'
-import {
-  TableColumn,
-  DropdownMenuAction,
-  TableHeader,
-} from '@Components/Table/Table.types'
+import { TableColumn } from '@Components/Table/Table.types'
 
-import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import { TaskMovementLog, TaskStatus } from '@Domain/Project'
 import TaskService from '@Services/TaskService'
 import TaskHistoryTableProps from '@Components/Tables/TaskHistoryTable/TaskHistoryTable.types'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import TaskHistoryModal from '@Components/Modals/TaskHistoryModal/TaskHistoryModal.vue'
 
 import { getTaskStatus, getTaskStatusStyle } from '@Utils/getTaskStatus'
 
@@ -43,9 +28,6 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const logs = ref<TaskMovementLog[]>([])
-const currentLog = ref<TaskMovementLog>()
-
-const isOpenetTaskHistoryModal = ref(false)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -67,7 +49,8 @@ const taskHistoryTableColumns: TableColumn<TaskMovementLog>[] = [
   {
     key: 'status',
     label: 'Статус',
-    size: 'col-4',
+    size: 'col-3',
+    contentClassName: 'ms-2',
     getRowCellStyle: getTaskStatusStyle,
     getRowCellFormat: (status: TaskStatus) =>
       getTaskStatus().translatedStatus[status],
@@ -75,37 +58,31 @@ const taskHistoryTableColumns: TableColumn<TaskMovementLog>[] = [
   {
     key: 'startDate',
     label: 'Дата вступления',
-    size: 'col-4',
+    contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getFormattedDate,
   },
   {
     key: 'endDate',
     label: 'Дата окончания',
-    size: 'col-4',
+    contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellFormat: getFormattedDate,
   },
-]
-
-const dropdownTaskHistoryActions: DropdownMenuAction<TaskMovementLog>[] = [
   {
-    label: 'Подробнее',
-    click: openTaskHistoryModal,
+    key: 'endDate',
+    label: 'Дата окончания',
+    contentClassName: 'justify-content-center align-items-center text-center',
+    getRowCellFormat: getFormattedWastedTime,
   },
 ]
 
 function getFormattedDate(date: string) {
-  if (date) {
-    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY HH:mm')
-    return formattedDate.value
-  }
+  const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY HH:mm')
+  return formattedDate.value
 }
 
-function openTaskHistoryModal(log: TaskMovementLog) {
-  currentLog.value = log
-  isOpenetTaskHistoryModal.value = true
-}
-function closeTaskHistoryModal() {
-  isOpenetTaskHistoryModal.value = false
+function getFormattedWastedTime(date: string) {
+  const formattedDate = useDateFormat(new Date(date), 'HH:mm')
+  return formattedDate.value
 }
 </script>
 

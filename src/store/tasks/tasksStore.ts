@@ -129,6 +129,8 @@ const useTasksStore = defineStore('tasks', {
     },
 
     async updateTask(task: Task, token: string) {
+      const sprintsStore = useSprintsStore()
+
       const response = await TaskService.updateTask(task, token)
 
       if (response instanceof Error) {
@@ -137,6 +139,12 @@ const useTasksStore = defineStore('tasks', {
         this.tasks = this.tasks.map((currentTask) =>
           currentTask.id === task.id ? task : currentTask,
         )
+
+        if (task.sprintId && sprintsStore.activeSprint?.tasks) {
+          sprintsStore.activeSprint.tasks = sprintsStore.activeSprint.tasks.map(
+            (currentTask) => (currentTask.id === task.id ? task : currentTask),
+          )
+        }
       }
     },
 
