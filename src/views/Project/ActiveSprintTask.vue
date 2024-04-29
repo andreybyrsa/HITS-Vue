@@ -13,18 +13,16 @@
       >
         <div class="d-flex flex-column border-bottom pb-2">
           <div class="active-sprint__task">
-            <Typography>{{ task.name }}</Typography>
+            <div class="text-ellipsis">{{ task.name }}</div>
           </div>
           <div class="d-flex gap-1 text-secondary">
             {{ task.executor?.firstName }} {{ task.executor?.lastName }}
           </div>
           <div
-            class="d-flex gap-1 text-secondary text-info"
             v-if="task.leaderComment"
+            class="text-ellipsis text-info"
           >
-            <Typography>
-              {{ task.leaderComment }}
-            </Typography>
+            {{ task.leaderComment }}
           </div>
         </div>
         <div class="d-flex flex-wrap gap-2 w-100 mt-2">
@@ -42,23 +40,6 @@
         </div>
       </div>
     </div>
-
-    <!-- <ActiveSprintTaskModal
-      v-if="currentTask"
-      :is-opened="isOpenedTaskModal"
-      @close-modal="closeTaskModal"
-      :task="currentTask"
-    /> -->
-
-    <!-- <TaskDescriptionModal
-      :is-opened="isOpenedTaskModal"
-      :task="(currentTask as Task)"
-      :user="(user as User)"
-      @close-modal="closeTaskModal"
-      @update-leader-comment="changeLeaderComment"
-      @update-description="changeDescription"
-      @update-name="changeName"
-    /> -->
   </div>
 </template>
 
@@ -147,3 +128,9 @@ const changeName = useDebounceFn((input: string) => {
   }
 }, 450)
 </script>
+
+<style lang="scss" scoped>
+.text-ellipsis {
+  @include textEllipsis(3);
+}
+</style>
