@@ -13,7 +13,6 @@ import Button from '@Components/Button/Button.vue'
 import TaskModal from '@Components/Modals/TaskModal/TaskModal.vue'
 import ActiveSprintTask from '@Views/Project/ActiveSprintTask.vue'
 import BurndownModal from '@Components/Modals/BurndownModal/BurndownModal.vue'
-
 import useUserStore from '@Store/user/userStore'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useSprintsStore from '@Store/sprints/sprintsStore'
@@ -171,6 +170,8 @@ function getFormattedDate(date: string) {
 const columns = computed(() => [
   {
     name: 'На доработке',
+    tooltip:
+      'Здесь находятся задачи, которые были отправлены на доработку для исправления ошибок или улучшения качества. Эти задачи нужно выполнить в первую очередь, чтобы не затягивать сроки проекта.',
     color: 'blueviolet',
     list: onModificationTask.tasks,
     move: checkOnModificationTask,
@@ -179,6 +180,8 @@ const columns = computed(() => [
   },
   {
     name: 'Новые',
+    tooltip:
+      'Здесь находятся задачи, которые еще не были назначены команде или отдельному разработчику. Эти задачи можно выбирать по своему усмотрению, учитывая приоритеты и сложность.',
     color: '#0d6efd',
     list: newTask.tasks,
     move: undefined,
@@ -187,6 +190,8 @@ const columns = computed(() => [
   },
   {
     name: 'На выполнении',
+    tooltip:
+      'Здесь находятся задачи, которые в данный момент выполняются командой или отдельным разработчиком. Данные задачи нужно довести до конца и не переключаться на другие.',
     color: '#f5ec0a',
     list: inProgressTask.tasks,
     move: checkUserTask,
@@ -195,6 +200,8 @@ const columns = computed(() => [
   },
   {
     name: 'На проверке',
+    tooltip:
+      'Здесь находятся задачи, которые были выполнены и отправлены тимлиду на проверку качества, функциональности и соответствия требованиям.',
     color: '#ffa800',
     list: onVerificationTask.tasks,
     move: undefined,
@@ -203,6 +210,8 @@ const columns = computed(() => [
   },
   {
     name: 'Выполненные',
+    tooltip:
+      'Здесь находятся задачи, которые были успешно проверены и одобрены. Эти задачи можно считать завершенными и не требующими дальнейшего внимания.',
     color: '#13c63a',
     list: doneTask.tasks,
     move: undefined,
@@ -292,9 +301,7 @@ function closeBurndownModal() {
               />
               <Icon
                 class-name="bi bi-patch-question"
-                v-tooltip="
-                  'Здесь находятся задачи, которые еще не были назначены команде или отдельному разработчику. Эти задачи можно выбирать по своему усмотрению, учитывая приоритеты и сложность.'
-                "
+                v-tooltip="column.tooltip"
               />
             </div>
           </div>
