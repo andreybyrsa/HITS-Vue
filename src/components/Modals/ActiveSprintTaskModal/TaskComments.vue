@@ -38,8 +38,6 @@ import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
   flex-grow: 1;
 
   &__textarea {
-    height: 100%;
-    width: 100%;
     resize: none;
   }
 }

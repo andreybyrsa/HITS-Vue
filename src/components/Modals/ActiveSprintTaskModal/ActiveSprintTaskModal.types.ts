@@ -1,25 +1,13 @@
 import { Task } from '@Domain/Project'
 
-interface TaskStatisticsModalProps {
-  isOpened: boolean
+export interface TaskDataProps {
   task: Task
 }
 
-interface TaskHistoryProps {
+export interface TaskHistoryProps {
   taskId: string
 }
 
-interface TaskDataProps {
-  task: Task
-}
-
-interface TaskStatisticsModalEmits {
+export interface TaskHeaderEmits {
   (event: 'close-modal'): void
-}
-
-export {
-  TaskStatisticsModalProps,
-  TaskHistoryProps,
-  TaskDataProps,
-  TaskStatisticsModalEmits,
 }

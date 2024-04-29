@@ -43,12 +43,12 @@
       </div>
     </div>
 
-    <ActiveSprintTaskModal
+    <!-- <ActiveSprintTaskModal
       v-if="currentTask"
       :is-opened="isOpenedTaskModal"
       @close-modal="closeTaskModal"
       :task="currentTask"
-    />
+    /> -->
 
     <!-- <TaskDescriptionModal
       :is-opened="isOpenedTaskModal"
@@ -68,6 +68,7 @@ import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 
+import { useRouter } from 'vue-router'
 import { ActiveSprintTaskProps } from '@Views/Project/Project.types'
 import { ref } from 'vue'
 import { User } from '@Domain/User'
@@ -82,6 +83,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const tasksStore = useTasksStore()
+
+const router = useRouter()
 
 const currentTask = ref<Task>()
 const isOpenedTaskModal = ref(false)
@@ -101,8 +104,7 @@ function hexToRgb(hex: string) {
 }
 
 function openTaskModal(task: Task) {
-  currentTask.value = task
-  isOpenedTaskModal.value = true
+  router.push(`/projects/${task.projectId}/${task.id}`)
 }
 
 function closeTaskModal() {

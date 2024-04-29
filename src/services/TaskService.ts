@@ -44,6 +44,22 @@ const getAllTasksProject = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения задач'))
 }
 
+const getTask = async (taskId: string, token: string): Promise<Task | Error> => {
+  return tasksMocksAxios
+    .get<Task>(
+      `/scrum-service/task/${taskId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения задач'))
+}
+
 const getTaskMovementLog = async (
   taskId: string,
   token: string,
@@ -319,6 +335,7 @@ const changeName = async (
 const TaskService = {
   getAllTasksProject,
   getTaskMovementLog,
+  getTask,
 
   createTaskLog,
   createTask,

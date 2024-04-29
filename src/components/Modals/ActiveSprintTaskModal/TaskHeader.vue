@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { TaskStatisticsModalEmits } from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.types'
+import { TaskHeaderEmits } from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.types'
 
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
-const emit = defineEmits<TaskStatisticsModalEmits>()
+const emit = defineEmits<TaskHeaderEmits>()
 </script>
 
 <template>

@@ -44,6 +44,7 @@ import LocalStorageUser from '@Utils/LocalStorageUser'
 import { getRouteByUserRole } from '@Utils/userRolesInfo'
 import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 import useProfilesStore from '@Store/profiles/profilesStore'
+import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -250,6 +251,24 @@ const routes: RouteRecordRaw[] = [
             'TEACHER',
           ],
         },
+        children: [
+          {
+            path: ':taskId',
+            name: 'task-modal',
+            component: ActiveSprintTaskModal,
+            meta: {
+              roles: [
+                'INITIATOR',
+                'MEMBER',
+                'TEAM_OWNER',
+                'TEAM_LEADER',
+                'PROJECT_OFFICE',
+                'ADMIN',
+                'TEACHER',
+              ],
+            },
+          },
+        ],
       },
     ],
   },

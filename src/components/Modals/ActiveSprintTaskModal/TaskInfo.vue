@@ -1,22 +1,29 @@
 <script lang="ts" setup>
-import { TaskDataProps } from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.types'
-import TaskInfoTabs from '@Components/Modals/ActiveSprintTaskModal/TaskInfoTabs.types'
+import { RouteRecordRaw } from 'vue-router'
 
-import Typography from '@Components/Typography/Typography.vue'
+import { TaskDataProps } from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.types'
+
 import Icon from '@Components/Icon/Icon.vue'
+import Profile from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
 import { getTaskStatus } from '@Utils/getTaskStatus'
 
+import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+
 const props = defineProps<TaskDataProps>()
 
-const getContentTab: {
-  [key: string]: string
-} = {
-  initiator: `${props.task.initiator.firstName} ${props.task.initiator.lastName}`,
-  executor: props.task.executor?.id
-    ? `${props.task.executor.firstName} ${props.task.executor.lastName}`
-    : 'Не назначен',
-  workHour: `${props.task.workHour}ч`,
+function navigateToProfileModal(id?: string) {
+  const profileModalRoute: RouteRecordRaw = {
+    name: 'profile',
+    path: 'profile/:id',
+    alias: '/profile/:id',
+    component: Profile,
+    props: {
+      canGoBack: true,
+    },
+  }
+
+  navigateToAliasRoute('project', `/profile/${id}`, profileModalRoute)
 }
 </script>
 
@@ -31,20 +38,53 @@ const getContentTab: {
     <div
       class="d-flex flex-column gap-2 bg-white rounded-bottom p-3 border border-top-0"
     >
-      <div
-        v-for="(tab, index) in TaskInfoTabs"
-        :key="index"
-        class="px-2"
-      >
-        <div class="text-secondary border-bottom pb-1 mb-2">{{ tab.header }}</div>
-        <div class="content gap-1">
+      <div class="px-2">
+        <div class="text-secondary border-bottom pb-1 mb-2">Постановщик</div>
+        <div class="task-info gap-1">
           <Icon
             class-name="text-secondary fs-3 opacity-25"
-            :class="tab.icon"
+            class="bi bi-person-circle"
           />
-          <Typography class-name="text-primary">
-            {{ getContentTab[tab.content] }}
-          </Typography>
+          <div
+            class="task-info__link text-primary"
+            @click="navigateToProfileModal(task.initiator.id)"
+          >
+            {{ task.initiator.firstName }} {{ task.initiator.lastName }}
+          </div>
+        </div>
+      </div>
+
+      <div class="px-2">
+        <div class="text-secondary border-bottom pb-1 mb-2">Исполнитель</div>
+        <div class="task-info gap-1">
+          <Icon
+            class-name="text-secondary fs-3 opacity-25"
+            class="bi bi-person-circle"
+          />
+          <div
+            v-if="task.executor?.id"
+            class="task-info__link text-primary"
+            @click="navigateToProfileModal(task.executor?.id)"
+          >
+            {{ props.task.executor?.firstName }} {{ props.task.executor?.lastName }}
+          </div>
+          <div
+            v-else
+            class="text-primary"
+          >
+            Не назначен
+          </div>
+        </div>
+      </div>
+
+      <div class="px-2">
+        <div class="text-secondary border-bottom pb-1 mb-2">Трудоемкость</div>
+        <div class="task-info gap-1">
+          <Icon
+            class-name="text-secondary fs-3 opacity-25"
+            class="bi bi-clock"
+          />
+          <div class="text-primary">{{ task.workHour }}ч</div>
         </div>
       </div>
     </div>
@@ -52,7 +92,17 @@ const getContentTab: {
 </template>
 
 <style lang="scss" scoped>
-.content {
+.task-info {
   @include flexible(center, start);
+
+  &__link {
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
+    }
+  }
 }
 </style>

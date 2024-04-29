@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import {
-  TaskStatisticsModalProps,
-  TaskStatisticsModalEmits,
-} from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.types'
+import { onMounted, ref, VueElement } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useRoute, useRouter } from 'vue-router'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import TaskHeader from '@Components/Modals/ActiveSprintTaskModal/TaskHeader.vue'
@@ -11,24 +10,68 @@ import TaskHistory from '@Components/Modals/ActiveSprintTaskModal/TaskHistory.vu
 import TaskInfo from '@Components/Modals/ActiveSprintTaskModal/TaskInfo.vue'
 import TaskComments from '@Components/Modals/ActiveSprintTaskModal/TaskComments.vue'
 
-defineProps<TaskStatisticsModalProps>()
-const emit = defineEmits<TaskStatisticsModalEmits>()
+import useUserStore from '@Store/user/userStore'
+
+import { Task } from '@Domain/Project'
+
+import TaskService from '@Services/TaskService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const route = useRoute()
+const router = useRouter()
+
+const isOpened = ref<boolean>(false)
+const ActiveSprintTaskModalRef = ref<VueElement | null>(null)
+const task = ref<Task>()
+
+onMounted(async () => {
+  const currentUser = user.value
+
+  setTimeout(() => (isOpened.value = true), 10)
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const taskId = route.params.taskId.toString()
+
+    const response = await TaskService.getTask(taskId, token)
+
+    if (response instanceof Error) {
+      useNotificationsStore().createSystemNotification('Система', response.message)
+      return
+    }
+
+    task.value = response
+  }
+})
+
+function closeModal() {
+  isOpened.value = false
+  router.push({ name: 'project' })
+}
 </script>
 
 <template>
   <ModalLayout
     :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
+    appear-on-render
+    @on-outside-close="closeModal"
   >
-    <div class="task-statistic-modal p-3">
-      <div class="task-statistic-modal__left-side w-75">
-        <TaskHeader @close-modal="emit('close-modal')" />
+    <div
+      v-if="task"
+      ref="ActiveSprintTaskModalRef"
+      class="task-modal p-3"
+    >
+      <div class="task-modal__left-side w-75">
+        <TaskHeader @close-modal="closeModal" />
 
         <TaskData :task="task" />
 
         <TaskHistory :task-id="task.id" />
       </div>
-      <div class="task-statistic-modal__right-side w-25">
+      <div class="task-modal__right-side w-25">
         <TaskInfo :task="task" />
 
         <TaskComments />
@@ -38,7 +81,7 @@ const emit = defineEmits<TaskStatisticsModalEmits>()
 </template>
 
 <style lang="scss" scoped>
-.task-statistic-modal {
+.task-modal {
   width: 80%;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
@@ -68,8 +111,8 @@ const emit = defineEmits<TaskStatisticsModalEmits>()
   }
 }
 
-.modal-layout-enter-from .task-statistic-modal,
-.modal-layout-leave-to .task-statistic-modal {
+.modal-layout-enter-from .task-modal,
+.modal-layout-leave-to .task-modal {
   transform: translateX(100%);
 }
 </style>

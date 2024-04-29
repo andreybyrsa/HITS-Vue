@@ -39,7 +39,7 @@ function getFormattedDate(date: string) {
   return useDateFormat(new Date(date), 'DD.MM.YYYY').value
 }
 
-function navigateToUserProfile(id: string) {
+function navigateToUserProfile(id?: string) {
   const profileRoute: RouteRecordRaw = {
     name: 'profile',
     path: 'profile/:id',
@@ -126,7 +126,7 @@ function copyLink() {
 
         <div
           class="team-modal-info__link"
-          @click="navigateToUserProfile(team.leader.id)"
+          @click="navigateToUserProfile(team.leader?.id)"
         >
           <Typography>
             {{ `${team.leader.firstName} ${team.leader.lastName}` }}
