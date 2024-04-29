@@ -5,6 +5,7 @@ import { SprintInfoModalProps } from '@Components/Modals/SprintInfoModal/SprintI
 import Typography from '@Components/Typography/Typography.vue'
 import { useDateFormat } from '@vueuse/core'
 import SprintChartModal from '@Components/Modals/SprintChartModal/SprintChartModal.vue'
+import BurndownModal from '@Components/Modals/BurndownModal/BurndownModal.vue'
 import { ref } from 'vue'
 const props = defineProps<SprintInfoModalProps>()
 
@@ -53,7 +54,6 @@ function openSprintChartModal() {
         >
           Отчет
         </Button>
-        <!-- Сделать чтобы колапс не выходил за рамки при обширном тексте -->
         <Collapse id="333">
           <div class="p-2">
             {{ props.sprint?.report }}
@@ -75,10 +75,10 @@ function openSprintChartModal() {
           <div
             v-for="(sprint, index) in props.sprint.marks"
             :key="index"
-            class="d-flex"
+            class="d-flex p-1 gap-2"
           >
-            <div class="p-2">{{ sprint.firstName }} {{ sprint.lastName }}</div>
-            <div class="text-primary py-2">{{ 'Оцнека: ' }} {{ sprint.mark }}</div>
+            <div class="">{{ sprint.firstName }} {{ sprint.lastName }}</div>
+            <div class="text-primary">{{ 'Оцнека: ' }} {{ sprint.mark }}</div>
           </div>
         </Collapse>
       </li>
@@ -109,7 +109,7 @@ function openSprintChartModal() {
       </div>
     </div>
 
-    <SprintChartModal
+    <BurndownModal
       :is-opened="isOpenedSprintChartModal"
       :sprint="sprint"
       @close-modal="closeSprintChartModal"

@@ -1,10 +1,11 @@
-import { Task } from '@Domain/Project'
+import { Task, TaskMovementLog } from '@Domain/Project'
 import { User } from '@Domain/User'
 
 interface SprintTaskStatsPageProps {
   isOpened: boolean
   task: Task
   user: User
+  logs: TaskMovementLog[]
 }
 
 interface SprintTaskStatsPageEmits {

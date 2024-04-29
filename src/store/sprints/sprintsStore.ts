@@ -17,7 +17,7 @@ const useSprintsStore = defineStore('sprints', {
   }),
 
   getters: {
-    getAllSprints() {
+    getAllSprints(any) {
       return async (projectId: string, token: string) => {
         const response = await SprintService.getAllSprintsProject(projectId, token)
 

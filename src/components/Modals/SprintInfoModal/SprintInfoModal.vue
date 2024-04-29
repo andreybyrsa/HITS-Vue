@@ -9,13 +9,15 @@ import {
 } from '@Components/Modals/SprintInfoModal/SprintInfoModal.types'
 import SprintTaskStatsPage from '@Views/Project/SprintTaskStatsPage.vue'
 
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import SprintStatsPage from '@Views/Project/SprintStatsPage.vue'
 import SprintTaskStats from '@Views/Project/SprintTaskStats.vue'
-import { Task } from '@Domain/Project'
+import { Task, TaskMovementLog } from '@Domain/Project'
 import { User } from '@Domain/User'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
+import TaskService from '@Services/TaskService'
+import useNotificationsStore from '@Store/notifications/notificationsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -38,18 +40,41 @@ const isTabAboutSprint = ref(true)
 const isTabAboutTask = ref(false)
 
 const currentTask = ref<Task>()
+const taskId = ref<string>()
+const logs = ref<TaskMovementLog[]>([])
 
-function openTabAboutTask(task: Task) {
-  if (task) {
-    currentTask.value = task
-  }
+async function openTabAboutTask(task: Task) {
+  logs.value = []
+  currentTask.value = undefined
 
   isTabAboutSprint.value = false
   isTabAboutTask.value = true
+
+  if (task) {
+    currentTask.value = task
+    taskId.value = task.id
+
+    const currentUser = user.value
+
+    if (currentUser?.token) {
+      const { token } = currentUser
+
+      const taskLogs = await TaskService.getTaskMovementLog(task.id, token)
+
+      if (taskLogs instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', taskLogs.message)
+      } else {
+        logs.value = taskLogs
+      }
+    }
+  }
 }
 
-function undefinedTask() {
+function closeModal() {
+  isTabAboutSprint.value = true
+  isTabAboutTask.value = false
   currentTask.value = undefined
+  emit('close-modal')
 }
 
 function switchToTabAboutSprint() {
@@ -61,7 +86,7 @@ function switchToTabAboutSprint() {
 <template>
   <ModalLayout
     :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
+    @on-outside-close="closeModal"
     ><div class="sprint-info-modal bg-white rounded bg-white p-3 w-1 flex-column">
       <div class="sprint-info-modal__header fs-2 w-100 border-2">
         <Typography class-name="text-primary fs-3 w-100"
@@ -71,13 +96,13 @@ function switchToTabAboutSprint() {
         <Button
           variant="close"
           class="close"
-          @click="emit('close-modal')"
+          @click="closeModal"
         />
       </div>
 
       <div class="d-flex w-100 h-100 gap-3">
         <div class="flex-column gap-2 h-100">
-          <Typography class-name="fs-4 text-primary border-bottom w-100"
+          <Typography class-name="fs-4 text-primary  w-100"
             >{{ 'Задачи: ' }} {{ props.sprint?.tasks.length }}
           </Typography>
           <div class="w-100 rounded-3">
@@ -94,11 +119,7 @@ function switchToTabAboutSprint() {
               :key="index"
               class="w-100 p-1"
             >
-              {{ console.log(task) }}
-              <div
-                variant="outline-secondary"
-                class="w-100 justify-content-between rounded-3 h-100"
-              >
+              <div class="border border rounded-3">
                 <SprintTaskStats
                   @click="openTabAboutTask(task)"
                   :task="task"
@@ -127,11 +148,13 @@ function switchToTabAboutSprint() {
             :project="project"
             :sprint="sprint"
           />
+
           <SprintTaskStatsPage
             :is-opened="isTabAboutTask"
             v-if="isTabAboutTask"
             :task="(currentTask as Task)"
             :user="(user as User)"
+            :logs="(logs as TaskMovementLog[])"
           />
         </div>
       </div>

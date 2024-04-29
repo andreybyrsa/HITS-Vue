@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDateFormat } from '@vueuse/core'
 

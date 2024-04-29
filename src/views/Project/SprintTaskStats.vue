@@ -1,23 +1,13 @@
 <template>
   <div>
     <div class="d-flex my-1">
-      <div
-        class="bg-white p-2 border-top border-end border-bottom border-start w-100 rounded-end rounded-start"
-      >
+      <div class="bg-white p-2 w-100 rounded-end rounded-start">
         <div class="d-flex flex-column border-bottom pb-2">
           <div class="active-sprint__task">
             <Typography>{{ task.name }}</Typography>
           </div>
           <div class="d-flex gap-1 text-secondary">
             {{ getExecutorTask(task.id) }}
-          </div>
-          <div
-            class="d-flex gap-1 text-secondary text-info"
-            v-if="task.leaderComment"
-          >
-            <Typography>
-              {{ task.leaderComment }}
-            </Typography>
           </div>
         </div>
         <div class="d-flex flex-wrap gap-2 w-100 mt-2">
