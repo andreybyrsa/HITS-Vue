@@ -265,7 +265,10 @@ function checkHeaderButtonStatement(statement?: boolean) {
       </div>
     </div>
 
-    <div class="py-2 d-flex justify-content-between">
+    <div
+      class="py-2 d-flex justify-content-between"
+      v-if="!columns[0]"
+    >
       <div
         v-if="searchBy"
         class="w-50"
@@ -307,8 +310,9 @@ function checkHeaderButtonStatement(statement?: boolean) {
     <div class="w-100 d-flex">
       <div class="w-100">
         <table class="table table-hover mb-0">
-          <thead>
+          <thead v-if="columns[0].label">
             <tr class="table__lables">
+              <th v-if="collapseChildComponent"></th>
               <th
                 v-if="isCheckbox"
                 class="py-3 col"
@@ -322,7 +326,6 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   />
                 </div>
               </th>
-
               <th
                 v-for="column in columns"
                 :key="column.key"
@@ -330,16 +333,9 @@ function checkHeaderButtonStatement(statement?: boolean) {
               >
                 <div :class="`${column.contentClassName ?? ''} d-flex`">
                   {{ column.label }}
-                  <!-- <Icon
-                    v-if="column.headerCellClick"
-                    class-name="table__row-icon ms-1 bi bi-chevron-down text-secondary"
-                    @click="column.headerCellClick"
-                  /> -->
                 </div>
               </th>
-
               <th></th>
-              <th v-if="collapseChildComponent"></th>
             </tr>
           </thead>
           <tbody
@@ -347,6 +343,16 @@ function checkHeaderButtonStatement(statement?: boolean) {
             :key="index"
           >
             <tr>
+              <td
+                class="py-3"
+                v-if="collapseChildComponent"
+              >
+                <Icon
+                  class="table__row-icon ms-1 bi bi-chevron-down"
+                  type="button"
+                  v-collapse="`tableCollapse.${index}`"
+                />
+              </td>
               <td
                 v-if="isCheckbox"
                 class="py-3 col"
@@ -403,20 +409,11 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   </div>
                 </div>
               </td>
-              <td
-                class="py-3"
-                v-if="collapseChildComponent"
-              >
-                <Icon
-                  class="table__row-icon ms-1 bi bi-chevron-down"
-                  type="button"
-                  v-collapse="`tableCollapse.${index}`"
-                />
-              </td>
+
               <td class="py-3">
-                <div class="table__row-icon">
+                <div class="table__row-icon float-end">
                   <Icon
-                    class-name="bi bi-three-dots fs-5"
+                    class-name=" bi bi-three-dots fs-5"
                     v-dropdown="`dropdown-menu-${index}`"
                   />
 
@@ -448,7 +445,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
             </tr>
             <tr v-if="collapseChildComponent">
               <td
-                class="col-12 p-0 border-0"
+                class="noHover col-12 p-0 border-0"
                 colspan="100"
               >
                 <Collapse
@@ -533,5 +530,9 @@ function checkHeaderButtonStatement(statement?: boolean) {
   &-leave-to {
     opacity: 0;
   }
+}
+
+.noHover {
+  pointer-events: none;
 }
 </style>

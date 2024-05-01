@@ -18,17 +18,17 @@ import QuestTableCollapse from '@Components/Tables/QuestsTable/QuestTableCollaps
 
 const route = useRoute()
 const userStore = useUserStore()
-const launchQuestStore = useQuestsStore()
+const QuestStore = useQuestsStore()
 
 const { user } = storeToRefs(userStore)
-const { quests: launchQuests } = storeToRefs(launchQuestStore)
+const { Quests: Quests } = storeToRefs(QuestStore)
 
 const isPassLaunchQuestModalOpen = ref(false)
 const passLaunchQuest = ref<Quest | null>(null)
 
 onMounted(async () => {
   if (user.value?.token) {
-    await launchQuestStore.getQuests(user.value.token)
+    await QuestStore.getQuests(user.value.token)
   }
 })
 
@@ -62,27 +62,28 @@ const launchQuestsTableColumns = computed((): TableColumn<Quest>[] => {
       label: 'Название',
       rowCellClick: (value: Quest) => navigateToLaunchQuestModal(value),
     },
-    {
-      key: 'startAt',
-      contentClassName: 'justify-content-center align-items-center text-center',
-      label: 'Дата начала',
-    },
-    {
-      key: 'endAt',
-      contentClassName: 'justify-content-center align-items-center text-center',
-      label: 'Дата окончания',
-    },
+    // {
+    //   key: 'startAt',
+    //   contentClassName: 'justify-content-center align-items-center text-center',
+    //   label: 'Дата начала',
+    // },
+    // {
+    //   key: 'endAt',
+    //   contentClassName: 'justify-content-center align-items-center text-center',
+    //   label: 'Дата окончания',
+    // },
     {
       key: 'percent',
       contentClassName: 'justify-content-center align-items-center text-center',
       label: 'Результат прохождения',
+      getRowCellFormat: getPercentWithSign,
     },
-    {
-      key: 'available',
-      contentClassName: 'justify-content-center align-items-center text-center',
-      label: 'Доступ',
-      getRowCellFormat: getTranslatedIsAvailableStatus,
-    },
+    // {
+    //   key: 'available',
+    //   contentClassName: 'justify-content-center align-items-center text-center',
+    //   label: 'Доступ',
+    //   getRowCellFormat: getTranslatedIsAvailableStatus,
+    // },
   ]
 
   if (user.value?.role == 'PROJECT_OFFICE') {
@@ -90,7 +91,7 @@ const launchQuestsTableColumns = computed((): TableColumn<Quest>[] => {
   }
   columns.push({
     key: 'passed',
-    contentClassName: 'justify-content-center align-items-center text-center',
+    contentClassName: 'justify-content-center align-items-center text-center ',
     label: 'Статус',
     getRowCellFormat: getTranslatedIsPassedStatus,
   })
@@ -146,6 +147,10 @@ function handleEditCollapseTable() {
   if (isOpenCollapseTable.value) isOpenCollapseTable.value = false
   isOpenCollapseTable.value = true
 }
+
+const getPercentWithSign = (precent: string) => {
+  return precent + ' %'
+}
 </script>
 
 <template>
@@ -154,7 +159,7 @@ function handleEditCollapseTable() {
     :header="launchQuestsTableHeader"
     :columns="launchQuestsTableColumns"
     :dropdown-actions-menu="launchQuestsTableDropdownMenuAction"
-    :data="launchQuests"
+    :data="Quests"
     :search-by="['name']"
     :collapseChildComponent="QuestTableCollapse"
     :isOpenCollapse="isOpenCollapseTable"
@@ -165,3 +170,9 @@ function handleEditCollapseTable() {
     :is-opened="isPassLaunchQuestModalOpen"
   ></PassLaunchQuestModal>
 </template>
+
+<style>
+.percent::after {
+  content: '%';
+}
+</style>

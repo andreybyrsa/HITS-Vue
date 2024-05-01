@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, defineProps, onMounted } from 'vue'
+import { computed, defineProps, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 
@@ -7,20 +7,24 @@ import useUserStore from '@Store/user/userStore'
 import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import useTeamStore from '@Store/teams/teamsStore'
+import { Quest } from '@Domain/Quest'
+import { Team } from '@Domain/Team'
 
 import Button from '@Components/Button/Button.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
-import { TableCollapse } from '@Components/Tables/QuestsTable/QuestTableCollapse.types'
-import { Quest } from '@Domain/Quest'
-import { OptionType } from '@Components/Inputs/Select/Select.types'
 import IndicatorItem from '@Components/IndicatorItem/IndicatorItem.vue'
+import Table from '@Components/Table/Table.vue'
+import {
+  DropdownMenuAction,
+  TableColumn,
+  TableHeader,
+} from '@Components/Table/Table.types'
+import { TableCollapse } from '@Components/Tables/QuestsTable/QuestTableCollapse.types'
 
-onMounted(() => {
-  setValues({ available: LaunchQuestData.available })
-})
+import { OptionType } from '@Components/Inputs/Select/Select.types'
 
 const props = defineProps<TableCollapse>()
-const LaunchQuestData: Quest = props.data as Quest
+const QuestData = ref<Quest>(props.data)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -28,17 +32,18 @@ const { user } = storeToRefs(userStore)
 const questsTemplatesStore = useQuestTemplatesStore()
 const { questTemplate: quest } = storeToRefs(questsTemplatesStore)
 
-const launchQuestsStore = useQuestsStore()
-const { quests: launchQuests } = storeToRefs(launchQuestsStore)
+const questsStore = useQuestsStore()
+const { Quests: quests } = storeToRefs(questsStore)
 
 const teamsStore = useTeamStore()
 const { teams } = storeToRefs(teamsStore)
+// const currentTeam = teams.value.filter(QuestData.idTeams)
 
 const computedQuest = computed(() => {
   if (!user.value?.token) return
-  if (!LaunchQuestData.idQuestTemplate) return
+  if (!QuestData.value.idQuestTemplate) return
   questsTemplatesStore.getQuestTemplate(
-    LaunchQuestData.idQuestTemplate,
+    QuestData.value.idQuestTemplate,
     user.value.token,
   )
   return quest
@@ -47,7 +52,7 @@ const computedRole = computed(() => {
   return user.value?.role
 })
 const computedQuestAvailability = computed(() => {
-  return LaunchQuestData.available ? 'Открыт' : 'Завершен'
+  return QuestData.value.available ? 'Открыт' : 'Завершен'
 })
 
 const availableOptions: OptionType[] = [
@@ -74,10 +79,47 @@ const changeAvailability = handleSubmit(async (model) => {
     }
   }
 })
+//getQuestPercent
+const TeamTableColumns = computed((): TableColumn<Team>[] => {
+  const columns: TableColumn<Team>[] = [
+    {
+      key: 'name',
+    },
+  ]
+  return columns
+})
+
+onMounted(async () => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    setValues({ available: QuestData.value.available })
+    const teamsId = QuestData.value.idTeams
+    const resp = await teamsStore.getTeamsByIds(teamsId, token)
+    console.log(resp)
+  }
+})
 </script>
 
 <template>
-  <div class="w-100 m-0 p-0">
+  <div
+    style=""
+    class="ms-5 border"
+  >
+    <Table
+      :data="teams"
+      :columns="TeamTableColumns"
+    />
+  </div>
+
+  <!-- <template>
+    <Table
+      class-name="ms-5"
+      data
+    >
+    </Table>
+  </template> -->
+  <!-- <div class="w-100 m-0 p-0">
     <div>
       <Typography
         >{{ computedQuest?.value?.name ? computedQuest?.value.name : 'Опрос' }}
@@ -167,5 +209,7 @@ const changeAvailability = handleSubmit(async (model) => {
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
+
+<style></style>

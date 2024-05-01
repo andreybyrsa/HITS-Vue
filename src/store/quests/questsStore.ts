@@ -7,7 +7,7 @@ import { Quest } from '@Domain/Quest'
 
 const useQuestsStore = defineStore('questsStore', {
   state: (): InitialState => ({
-    quests: [],
+    Quests: [],
   }),
   getters: {
     getQuests() {
@@ -22,8 +22,8 @@ const useQuestsStore = defineStore('questsStore', {
           return response
         }
 
-        this.quests = response
-        return this.quests
+        this.Quests = response
+        return this.Quests
       }
     },
   },
@@ -36,7 +36,7 @@ const useQuestsStore = defineStore('questsStore', {
         return response
       }
 
-      return this.quests
+      return this.Quests
     },
   },
 })

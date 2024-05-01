@@ -51,7 +51,7 @@ interface TableHeader {
 
 interface TableColumn<DataType> {
   key: keyof DataType
-  label: string
+  label?: string
   size?: ColumnSize
   contentClassName?: string
   getRowCellStyleCSS?: (value: DataType[keyof DataType]) => StyleValue

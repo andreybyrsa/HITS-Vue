@@ -1700,12 +1700,17 @@ export const launchQuestsMocks: Quest[] = [
   {
     idQuest: '4',
     idQuestTemplate: questsMocks[0].idQuestTemplate!,
-    idTeams: [{ id: teamsMocks[0].id }],
+    idTeams: [
+      { id: teamsMocks[0].id },
+      { id: teamsMocks[1].id },
+      { id: teamsMocks[2].id },
+    ],
     name: 'Весенний опрос 2024',
     startAt: '28.04.2024',
     endAt: '28.05.2024',
     available: true,
-    percent: '1 / ' + teamsMocks[0].membersCount.toString(),
+    percent: '22',
+    // '1 / ' + teamsMocks[0].membersCount.toString(),
     passed: false,
   },
   {
@@ -1716,10 +1721,10 @@ export const launchQuestsMocks: Quest[] = [
     startAt: '28.11.2023',
     endAt: '28.12.2023',
     available: true,
-    percent:
-      Math.floor(teamsMocks[0].membersCount / 2).toString() +
-      ' / ' +
-      teamsMocks[0].membersCount.toString(),
+    percent: '77',
+    // Math.floor(teamsMocks[0].membersCount / 2).toString() +
+    // ' / ' +
+    // teamsMocks[0].membersCount.toString(),
     passed: true,
   },
   {
@@ -1730,10 +1735,10 @@ export const launchQuestsMocks: Quest[] = [
     startAt: '28.04.2023',
     endAt: '28.05.2023',
     available: true,
-    percent:
-      Math.floor(teamsMocks[0].membersCount / 2).toString() +
-      ' / ' +
-      teamsMocks[0].membersCount.toString(),
+    percent: '65',
+    // Math.floor(teamsMocks[0].membersCount / 2).toString() +
+    // ' / ' +
+    // teamsMocks[0].membersCount.toString(),
     passed: true,
   },
   {
@@ -1744,10 +1749,10 @@ export const launchQuestsMocks: Quest[] = [
     startAt: '28.11.2022',
     endAt: '28.12.2022',
     available: false,
-    percent:
-      Math.floor(teamsMocks[0].membersCount / 2).toString() +
-      ' / ' +
-      teamsMocks[0].membersCount.toString(),
+    percent: '50',
+    // Math.floor(teamsMocks[0].membersCount / 2).toString() +
+    // ' / ' +
+    // teamsMocks[0].membersCount.toString(),
     passed: false,
   },
 ]

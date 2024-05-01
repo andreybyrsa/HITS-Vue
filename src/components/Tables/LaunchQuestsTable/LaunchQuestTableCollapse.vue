@@ -29,7 +29,7 @@ const questsTemplatesStore = useQuestTemplatesStore()
 const { questTemplate: quest } = storeToRefs(questsTemplatesStore)
 
 const launchQuestsStore = useQuestsStore()
-const { quests: launchQuests } = storeToRefs(launchQuestsStore)
+const { Quests: launchQuests } = storeToRefs(launchQuestsStore)
 
 const teamsStore = useTeamStore()
 const { teams } = storeToRefs(teamsStore)

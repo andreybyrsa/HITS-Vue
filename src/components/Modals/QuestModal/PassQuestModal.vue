@@ -159,7 +159,7 @@ const sendResults = async () => {
   const token = user.value?.token
   if (!token) return
   await questResultsStore.postQuestResults(results.value, token)
-  const launchQuest = launchQuestsStore.quests.find(
+  const launchQuest = launchQuestsStore.Quests.find(
     (lq) => lq.idQuest == props.launchQuest?.idQuest,
   )
   if (!launchQuest) return
