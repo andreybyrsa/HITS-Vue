@@ -1,7 +1,7 @@
 import { Quest } from '@Domain/Quest'
 
 interface InitialState {
-  Quests: Quest[]
+  quests: Quest[]
 }
 
 export default InitialState

@@ -40,7 +40,7 @@ export interface Quest {
   startAt: string
   endAt: string
   available: boolean
-  percent?: string // процент прохождения командой (можно всем а можно только проектному офису, по усмотрению)
+  percent?: string // процент прохождения
   passed?: boolean // пройдено ли (для членов команды, не для проектного офиса)
 }
 

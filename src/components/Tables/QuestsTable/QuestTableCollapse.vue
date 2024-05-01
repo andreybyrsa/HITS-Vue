@@ -33,7 +33,7 @@ const questsTemplatesStore = useQuestTemplatesStore()
 const { questTemplate: quest } = storeToRefs(questsTemplatesStore)
 
 const questsStore = useQuestsStore()
-const { Quests: quests } = storeToRefs(questsStore)
+const { quests: quests } = storeToRefs(questsStore)
 
 const teamsStore = useTeamStore()
 const { teams } = storeToRefs(teamsStore)
@@ -89,6 +89,15 @@ const TeamTableColumns = computed((): TableColumn<Team>[] => {
   return columns
 })
 
+const dropdownActionsMenu: DropdownMenuAction<Team>[] = [
+  {
+    label: 'string',
+    click: (value) => {
+      1
+    },
+  },
+]
+
 onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
@@ -109,6 +118,7 @@ onMounted(async () => {
     <Table
       :data="teams"
       :columns="TeamTableColumns"
+      :dropdownActionsMenu="dropdownActionsMenu"
     />
   </div>
 

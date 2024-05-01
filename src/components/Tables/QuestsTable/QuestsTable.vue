@@ -21,7 +21,7 @@ const userStore = useUserStore()
 const QuestStore = useQuestsStore()
 
 const { user } = storeToRefs(userStore)
-const { Quests: Quests } = storeToRefs(QuestStore)
+const { quests: Quests } = storeToRefs(QuestStore)
 
 const isPassLaunchQuestModalOpen = ref(false)
 const passLaunchQuest = ref<Quest | null>(null)
@@ -47,10 +47,6 @@ const launchQuestsTableHeader: TableHeader = {
   countData: true,
 }
 
-const getTranslatedIsAvailableStatus = (available: boolean) => {
-  return available ? 'Открыт' : 'Завершен'
-}
-
 const getTranslatedIsPassedStatus = (passed: boolean) => {
   return passed ? 'Пройден' : 'Не пройден'
 }
@@ -60,6 +56,7 @@ const launchQuestsTableColumns = computed((): TableColumn<Quest>[] => {
     {
       key: 'name',
       label: 'Название',
+      contentClassName: 'align-self-start',
       rowCellClick: (value: Quest) => navigateToLaunchQuestModal(value),
     },
     // {

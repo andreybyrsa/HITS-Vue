@@ -21,7 +21,7 @@ import Validation from '@Utils/Validation'
 import useUserStore from '@Store/user/userStore'
 
 import useIndicatorStore from '@Store/indicators/indicatorsStore'
-import { Indicator, QuestTemplate } from '@Domain/Quest'
+import { Indicator, QuestTemplate } from '@Domain/questTemplate'
 import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import { findStatusesByTranslatedStatus } from '@Utils/indicatorStatus'
 
@@ -35,10 +35,10 @@ const indicatorStore = useIndicatorStore()
 const { indicators } = storeToRefs(indicatorStore)
 
 const questTemplatesStore = useQuestTemplatesStore()
-const { questTemplate: quest } = storeToRefs(questTemplatesStore)
+const { questTemplate } = storeToRefs(questTemplatesStore)
 
 const backlogIndicators = ref<Indicator[]>(indicators.value.slice())
-const newQuestIndicators = ref<Indicator[]>(quest.value?.indicators ?? [])
+const newQuestIndicators = ref<Indicator[]>(questTemplate.value?.indicators ?? [])
 
 const isOpenedCreateNewIndicator = ref(false)
 const isLoading = ref<boolean>(false)
@@ -113,10 +113,10 @@ const orderIndicatorsToLists = async () => {
   const id = props.id
   if (id) {
     await questTemplatesStore.getQuestTemplate(id, token)
-    if (!quest.value) return
-    setValues({ ...quest.value })
-    setValues({ name: quest.value.name + ' - копия' })
-    const copiedIndicators = quest.value.indicators
+    if (!questTemplate.value) return
+    setValues({ ...questTemplate.value })
+    setValues({ name: questTemplate.value.name + ' - копия' })
+    const copiedIndicators = questTemplate.value.indicators
     newQuestIndicators.value = copiedIndicators
 
     backlogIndicators.value = indicators.value.filter((indicator) =>
@@ -175,7 +175,7 @@ const closeCreateNewIndicator = () => {
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
-    <div class="modal-360-quest bg-white rounded px-4 py-3">
+    <div class="modal-360-questTemplate bg-white rounded px-4 py-3">
       <div class="sprint-form w-100 mb-1 h-100">
         <!-- header -->
         <div class="sprint-form__header w-100">
@@ -287,7 +287,7 @@ const closeCreateNewIndicator = () => {
 </template>
 
 <style lang="scss">
-.modal-360-quest {
+.modal-360-questTemplate {
   width: 85%;
   height: 900px;
   @include flexible(
