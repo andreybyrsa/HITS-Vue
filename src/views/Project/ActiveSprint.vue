@@ -150,7 +150,9 @@ function checkUserTask(evt: any) {
 
 function accessDragTask(evt: any) {
   const draggedStatus: TaskStatus = evt.draggedContext.element.status
-  const relatedStatus: TaskStatus = evt.related.className.split(' ').pop()
+  const relatedStatus: TaskStatus = evt.relatedContext.element
+    ? evt.relatedContext.element.status
+    : evt.related.className.split(' ').pop()
 
   const accessStatus: { [key in TaskStatus]: TaskStatus[] } = {
     NewTask: ['InProgress', 'NewTask'],
