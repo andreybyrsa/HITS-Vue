@@ -175,7 +175,7 @@ const FinishSprint = handleSubmit(async (values) => {
               sprintId,
               finishDate,
               'DONE',
-              values.report,
+              report.value,
               sprintTasks,
               token,
             ),

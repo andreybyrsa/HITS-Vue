@@ -1658,7 +1658,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     lastName: 'Власов',
     mark: undefined,
     projectRole: 'TEAM_LEADER',
-    tasks: [tasksMocks[9], tasksMocks[12]],
+    countCompletedTasks: '2',
   },
   {
     sprintId: '3',
@@ -1667,7 +1667,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     lastName: 'Иванович',
     mark: undefined,
     projectRole: 'MEMBER',
-    tasks: [tasksMocks[10]],
+    countCompletedTasks: '2',
   },
   {
     sprintId: '3',
@@ -1676,7 +1676,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     lastName: 'Менеджер',
     projectRole: 'MEMBER',
     mark: undefined,
-    tasks: [tasksMocks[11]],
+    countCompletedTasks: '2',
   },
 ]
 
@@ -1686,7 +1686,6 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Спринт 1',
     goal: 'Цель 1',
-    marks: [sprintMarksMocks[0]],
     report: 'Отчет 1',
     startDate: '2023-12-26T11:02:17Z',
     finishDate: '2024-01-02T11:02:17Z',
@@ -1699,7 +1698,6 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Спринт 2',
     goal: 'Цель 2',
-    marks: [sprintMarksMocks[1]],
     report: 'Отчет 2',
     startDate: '2024-01-03T11:02:17Z',
     finishDate: '2024-01-11T11:02:17Z',
@@ -1712,7 +1710,6 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Спринт 3',
     goal: 'Цель 3',
-    marks: [sprintMarksMocks[2]],
     report: 'Отчет 3',
     startDate: '2024-01-12T11:02:17Z',
     finishDate: '2024-01-19T11:02:17Z',
@@ -1725,7 +1722,6 @@ export const sprintMocks: Sprint[] = [
     projectId: projectMocks[0].id,
     name: 'Проектировка скрама',
     goal: 'Цель 4',
-    marks: [sprintMarksMocks[1]],
     report: 'Отчет 4',
     startDate: '2024-01-20T11:02:17Z',
     finishDate: '2024-01-27T11:02:17Z',
@@ -2079,6 +2075,7 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     user: usersMocks[0],
     startDate: '2023-09-24T11:02:17Z',
     endDate: '2023-09-25T17:02:17Z',
+    wastedTime: '02ч 31мин',
     status: 'NewTask',
   },
   {
@@ -2088,6 +2085,7 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     user: usersMocks[1],
     startDate: '2023-09-25T17:02:17Z',
     endDate: '2023-09-30T10:11:17Z',
+    wastedTime: '02ч 31мин',
     status: 'InProgress',
   },
   {
@@ -2097,6 +2095,7 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     user: usersMocks[1],
     startDate: '2023-09-30T10:11:17Z',
     endDate: '2023-10-02T18:00:17Z',
+    wastedTime: '02ч 31мин',
     status: 'OnVerification',
   },
   {
@@ -2106,6 +2105,7 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     user: usersMocks[0],
     startDate: '2023-10-02T18:31:17Z',
     endDate: '',
+    wastedTime: '',
     status: 'Done',
   },
 ]

@@ -167,6 +167,7 @@ const useTasksStore = defineStore('tasks', {
           startDate,
           endDate: '',
           status,
+          wastedTime: '',
         }
 
         const response = await TaskService.createTaskLog(log, taskId, token)

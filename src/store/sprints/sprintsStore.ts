@@ -154,12 +154,6 @@ const useSprintsStore = defineStore('sprints', {
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentSprint = this.sprints.find(({ id }) => id === sprintId)
-
-        if (currentSprint && currentSprint.marks) {
-          currentSprint.marks = marks
-        }
       }
     },
   },
