@@ -101,7 +101,7 @@ function cancelEdit() {
       class-name="rounded-end"
       label="Название*"
       validate-on-update
-      placeholder="Введите название спринта"
+      placeholder="Введите название задачи"
       :disabled="isEdit"
     />
 
@@ -110,7 +110,7 @@ function cancelEdit() {
       class-name="textarea rounded-end"
       label="Описание*"
       validate-on-update
-      placeholder="Введите цель спринта"
+      placeholder="Введите описание задачи"
       :disabled="isEdit"
     />
 

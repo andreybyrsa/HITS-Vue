@@ -185,22 +185,30 @@ const useTasksStore = defineStore('tasks', {
     async changeLeaderComment(taskId: string, leaderComment: string, token: string) {
       const currentTask = this.tasks.find(({ id }) => id === taskId)
 
-      if (!currentTask) {
-        return
-      }
+      if (currentTask) {
+        const response = await TaskService.changeLeaderComment(
+          taskId,
+          currentTask,
+          leaderComment,
+          token,
+        )
 
-      currentTask.leaderComment = leaderComment
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const sprintStore = useSprintsStore()
 
-      const response = await TaskService.changeLeaderComment(
-        taskId,
-        currentTask,
-        leaderComment,
-        token,
-      )
+          const curTask = sprintStore.activeSprint?.tasks.find(
+            ({ id }) => id === taskId,
+          )
 
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-        return
+          if (curTask) {
+            curTask.leaderComment = leaderComment
+          }
+        }
       }
     },
 
@@ -250,21 +258,29 @@ const useTasksStore = defineStore('tasks', {
     ) {
       const currentTask = this.tasks.find(({ id }) => id === taskId)
 
-      if (!currentTask) {
-        return
-      }
+      if (currentTask) {
+        const response = await TaskService.changeExecutorComment(
+          taskId,
+          executorComment,
+          token,
+        )
 
-      currentTask.executorComment = executorComment
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const sprintStore = useSprintsStore()
 
-      const response = await TaskService.changeExecutorComment(
-        taskId,
-        executorComment,
-        token,
-      )
+          const curTask = sprintStore.activeSprint?.tasks.find(
+            ({ id }) => id === taskId,
+          )
 
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-        return
+          if (curTask) {
+            curTask.executorComment = executorComment
+          }
+        }
       }
     },
   },
