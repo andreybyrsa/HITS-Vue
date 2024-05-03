@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="DataType">
-import { ref, Ref, onMounted, computed, StyleValue } from 'vue'
+import { ref, Ref, onMounted, computed, StyleValue, onBeforeMount } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 
 import {
@@ -17,6 +17,7 @@ import DropDown from '@Components/DropDown/DropDown.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import TableCollapse from '@Components/Tables/LaunchQuestsTable/LaunchQuestTableCollapse.vue'
 import Collapse from '@Components/Collapse/Collapse.vue'
+import { compileStyle } from 'vue/compiler-sfc'
 
 const props = defineProps<TableProps<DataType>>()
 
@@ -45,6 +46,8 @@ const searchedValue = ref('')
 const filtersRefs = ref<Ref<FilterValue | FilterValue[] | undefined>[]>([])
 
 const isCheckedAll = ref(false)
+
+// const isCollapsed = ref<boolean[]>(Array(data.value.length).fill(false))
 
 onMounted(() => {
   if (props.filters) {
@@ -234,6 +237,10 @@ function checkDropdownActionStatement(
 function checkHeaderButtonStatement(statement?: boolean) {
   return statement !== undefined ? statement : true
 }
+
+// function eventOfCollapse(index: number) {
+//   isCollapsed.value[index] = !isCollapsed.value[index]
+// }
 </script>
 
 <template>
@@ -352,6 +359,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   type="button"
                   v-collapse="`tableCollapse.${index}`"
                 />
+                <!-- @click="eventOfCollapse(index)" -->
               </td>
               <td
                 v-if="isCheckbox"
@@ -443,9 +451,10 @@ function checkHeaderButtonStatement(statement?: boolean) {
                 </div>
               </td>
             </tr>
+
             <tr v-if="collapseChildComponent">
               <td
-                class="noHover col-12 p-0 border-0"
+                class="col-12 p-0 border-0"
                 colspan="100"
               >
                 <Collapse
@@ -532,7 +541,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
   }
 }
 
-.noHover {
+.no-hover {
   pointer-events: none;
 }
 </style>

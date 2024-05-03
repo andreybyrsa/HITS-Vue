@@ -19,7 +19,11 @@ import {
   TableColumn,
   TableHeader,
 } from '@Components/Table/Table.types'
-import { TableCollapse } from '@Components/Tables/QuestsTable/QuestTableCollapse.types'
+import {
+  TableCollapse,
+  TeamlCollapseData,
+  MembersCollapseData,
+} from '@Components/Tables/QuestsTable/QuestTableCollapse.types'
 
 import { OptionType } from '@Components/Inputs/Select/Select.types'
 
@@ -37,7 +41,8 @@ const { quests: quests } = storeToRefs(questsStore)
 
 const teamsStore = useTeamStore()
 const { teams } = storeToRefs(teamsStore)
-// const currentTeam = teams.value.filter(QuestData.idTeams)
+
+const collapseData = ref<TeamlCollapseData[]>()
 
 const computedQuest = computed(() => {
   if (!user.value?.token) return
@@ -80,10 +85,13 @@ const changeAvailability = handleSubmit(async (model) => {
   }
 })
 //getQuestPercent
-const TeamTableColumns = computed((): TableColumn<Team>[] => {
-  const columns: TableColumn<Team>[] = [
+const TableColumns = computed((): TableColumn<TeamlCollapseData>[] => {
+  const columns: TableColumn<TeamlCollapseData>[] = [
     {
-      key: 'name',
+      key: 'teamName',
+    },
+    {
+      key: 'teamProgress',
     },
   ]
   return columns
@@ -100,26 +108,31 @@ const dropdownActionsMenu: DropdownMenuAction<Team>[] = [
 
 onMounted(async () => {
   const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    setValues({ available: QuestData.value.available })
-    const teamsId = QuestData.value.idTeams
-    const resp = await teamsStore.getTeamsByIds(teamsId, token)
-    console.log(resp)
-  }
+  if (!currentUser?.token) return
+
+  const { token } = currentUser
+  const idTeams = QuestData.value.idTeams
+  const response = await teamsStore.getTeamsByIds(idTeams, token)
+  if (response instanceof Error) return
+
+  const teamsNames = response.map((team) => team.name)
+
+  if (!collapseData.value) return
+
+  for (let i = 0; i < teamsNames.length; i++)
+    collapseData.value[i].teamName = teamsNames[i]
 })
 </script>
 
 <template>
-  <div
-    style=""
-    class="ms-5 border"
-  >
-    <Table
-      :data="teams"
-      :columns="TeamTableColumns"
+  <div class="ms-5 border">
+    <!-- <Table
+      v-if="collapseData"
+      :data="collapseData"
+      :columns="TableColumns"
       :dropdownActionsMenu="dropdownActionsMenu"
-    />
+    >
+    </Table> -->
   </div>
 
   <!-- <template>

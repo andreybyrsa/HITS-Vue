@@ -52,3 +52,8 @@ export interface QuestResult {
   idToUser?: string
   value: string
 }
+
+export interface QuestTeamsProgress {
+  teamName: string
+  teamProgress: number
+}
