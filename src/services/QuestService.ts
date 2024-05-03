@@ -1,14 +1,22 @@
-import { Quest } from '@Domain/Quest'
+import { Quest, QuestCollapseData } from '@Domain/Quest'
 import { QUEST_SERVICE_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import { launchQuestsMocks } from '@Utils/getMocks'
+import { launchQuestsMocks, questCollapseData } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
 const launchQuestAxios = defineAxios(launchQuestsMocks)
+const launchQuestCollapseAxios = defineAxios(questCollapseData)
+
+function formatTeamInvitationsByTeamId(
+  quests: QuestCollapseData[],
+  idQuest: string,
+) {
+  return quests.filter((quest) => quest.idQuest === idQuest)
+}
 
 // --- GET --- //
 const getQuests = async (token: string): Promise<Quest[] | Error> => {
@@ -19,6 +27,22 @@ const getQuests = async (token: string): Promise<Quest[] | Error> => {
     })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки запущенных опросов.'))
+}
+const getQuestsCollapseData = async (token: string, idQuest: string) => {
+  return launchQuestCollapseAxios
+    .get(
+      `${QUEST_SERVICE_URL}/quest/collapse/${idQuest}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        formatter: (invitations) =>
+          formatTeamInvitationsByTeamId(invitations, idQuest),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки данных опроса'))
 }
 
 const postQuest = async (
@@ -36,6 +60,7 @@ const postQuest = async (
 
 const LaunchQuestService = {
   getQuests,
+  getQuestsCollapseData,
   postQuest,
 }
 

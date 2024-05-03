@@ -70,6 +70,7 @@ interface TableProps<DataType> {
   filters?: Filter<DataType>[]
   checkedDataActions?: CheckedDataAction<DataType>[]
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]
+  chevronAction?: ($event?: undefined) => any
   isCheckbox?: boolean
   collapseChildComponent?: object // в этом компоненте должен быть СТРОГО ОДИН пропс "data"
 }

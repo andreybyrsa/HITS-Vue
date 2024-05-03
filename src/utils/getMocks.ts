@@ -28,7 +28,10 @@ import {
   QuestTemplate,
   QuestTemplateShort,
   QuestResult,
+  QuestCollapseData,
+  MembersCollapseData,
 } from '@Domain/Quest'
+import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
 
 export const usersMocks: User[] = [
   {
@@ -1809,4 +1812,108 @@ export const resultsMocks: QuestResult[] = [
       value: '',
     }
   }),
+]
+
+export const questMembersCollapse: MembersCollapseData[] = [
+  {
+    teamMembers: teamsMocks[0].members.map(
+      (members) => members.firstName + members.lastName,
+    ),
+    teamMemberProgress: [true, true, false, true],
+  },
+  {
+    teamMembers: teamsMocks[1].members.map(
+      (members) => members.firstName + members.lastName,
+    ),
+    teamMemberProgress: [true, true, false, true],
+  },
+  {
+    teamMembers: teamsMocks[2].members.map(
+      (members) => members.firstName + members.lastName,
+    ),
+    teamMemberProgress: [true, false, false, false],
+  },
+]
+
+export const questCollapseData: QuestCollapseData[] = [
+  {
+    idQuest: launchQuestsMocks[0].idQuest,
+    teams: [
+      {
+        teamName: teamsMocks[0].name,
+        teamProgress:
+          (questMembersCollapse[0].teamMemberProgress.filter(
+            (value) => value === true,
+          ).length /
+            questMembersCollapse[0].teamMemberProgress.length) *
+          100,
+        teamMembers: questMembersCollapse[0],
+      },
+      {
+        teamName: teamsMocks[1].name,
+        teamProgress:
+          (questMembersCollapse[1].teamMemberProgress.filter(
+            (value) => value === true,
+          ).length /
+            questMembersCollapse[1].teamMemberProgress.length) *
+          100,
+        teamMembers: questMembersCollapse[1],
+      },
+      {
+        teamName: teamsMocks[2].name,
+        teamProgress:
+          (questMembersCollapse[2].teamMemberProgress.filter(
+            (value) => value === true,
+          ).length /
+            questMembersCollapse[2].teamMemberProgress.length) *
+          100,
+        teamMembers: questMembersCollapse[2],
+      },
+    ],
+  },
+  {
+    idQuest: launchQuestsMocks[1].idQuest,
+    teams: [
+      {
+        teamName: teamsMocks[0].name,
+        teamProgress:
+          (questMembersCollapse[0].teamMemberProgress.filter(
+            (value) => value === true,
+          ).length /
+            questMembersCollapse[0].teamMemberProgress.length) *
+          100,
+        teamMembers: questMembersCollapse[0],
+      },
+    ],
+  },
+  {
+    idQuest: launchQuestsMocks[2].idQuest,
+    teams: [
+      {
+        teamName: teamsMocks[0].name,
+        teamProgress:
+          (questMembersCollapse[0].teamMemberProgress.filter(
+            (value) => value === true,
+          ).length /
+            questMembersCollapse[0].teamMemberProgress.length) *
+          100,
+        teamMembers: questMembersCollapse[0],
+      },
+    ],
+  },
+  {
+    idQuest: launchQuestsMocks[3].idQuest,
+    teams: [
+      {
+        teamName: teamsMocks[0].name,
+        teamProgress:
+          (questMembersCollapse[0].teamMemberProgress.filter(
+            (value) => value === true,
+          ).length /
+            questMembersCollapse[0].teamMemberProgress.length) *
+          100,
+        teamMembers: questMembersCollapse[0],
+      },
+    ],
+  },
 ]

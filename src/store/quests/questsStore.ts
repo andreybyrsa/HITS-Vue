@@ -8,6 +8,7 @@ import { Quest } from '@Domain/Quest'
 const useQuestsStore = defineStore('questsStore', {
   state: (): InitialState => ({
     quests: [],
+    questsColapseData: { idQuest: ' ', teams: [] },
   }),
   getters: {
     getQuests() {
@@ -24,6 +25,25 @@ const useQuestsStore = defineStore('questsStore', {
 
         this.quests = response
         return this.quests
+      }
+    },
+    getQuestCollapseData() {
+      return async (token: string, idQuest: string) => {
+        const response = await LaunchQuestService.getQuestsCollapseData(
+          token,
+          idQuest,
+        )
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+
+          return response
+        }
+
+        this.questsColapseData = response
+        return this.questsColapseData
       }
     },
   },

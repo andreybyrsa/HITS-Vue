@@ -57,3 +57,18 @@ export interface QuestTeamsProgress {
   teamName: string
   teamProgress: number
 }
+
+export interface QuestCollapseData {
+  idQuest: string
+  teams: TeamCollapseData[]
+}
+
+export interface TeamCollapseData {
+  teamName: string
+  teamProgress: number
+  teamMembers: MembersCollapseData
+}
+export interface MembersCollapseData {
+  teamMembers: string[]
+  teamMemberProgress: boolean[]
+}

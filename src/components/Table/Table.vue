@@ -358,6 +358,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   class="table__row-icon ms-1 bi bi-chevron-down"
                   type="button"
                   v-collapse="`tableCollapse.${index}`"
+                  @click="chevronAction"
                 />
                 <!-- @click="eventOfCollapse(index)" -->
               </td>

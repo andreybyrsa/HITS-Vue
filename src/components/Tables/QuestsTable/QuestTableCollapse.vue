@@ -7,8 +7,13 @@ import useUserStore from '@Store/user/userStore'
 import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import useTeamStore from '@Store/teams/teamsStore'
-import { Quest } from '@Domain/Quest'
-import { Team } from '@Domain/Team'
+import {
+  Quest,
+  QuestCollapseData,
+  TeamCollapseData,
+  MembersCollapseData,
+} from '@Domain/Quest'
+// import { Team } from '@Domain/Team'
 
 import Button from '@Components/Button/Button.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
@@ -19,16 +24,13 @@ import {
   TableColumn,
   TableHeader,
 } from '@Components/Table/Table.types'
-import {
-  TableCollapse,
-  TeamlCollapseData,
-  MembersCollapseData,
-} from '@Components/Tables/QuestsTable/QuestTableCollapse.types'
+import { TableCollapse } from '@Components/Tables/QuestsTable/QuestTableCollapse.types'
 
 import { OptionType } from '@Components/Inputs/Select/Select.types'
 
 const props = defineProps<TableCollapse>()
-const QuestData = ref<Quest>(props.data)
+const questData = ref<Quest>(props.data)
+const questCollapseData = ref<QuestCollapseData>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -42,13 +44,11 @@ const { quests: quests } = storeToRefs(questsStore)
 const teamsStore = useTeamStore()
 const { teams } = storeToRefs(teamsStore)
 
-const collapseData = ref<TeamlCollapseData[]>()
-
 const computedQuest = computed(() => {
   if (!user.value?.token) return
-  if (!QuestData.value.idQuestTemplate) return
+  if (!questData.value.idQuestTemplate) return
   questsTemplatesStore.getQuestTemplate(
-    QuestData.value.idQuestTemplate,
+    questData.value.idQuestTemplate,
     user.value.token,
   )
   return quest
@@ -57,7 +57,7 @@ const computedRole = computed(() => {
   return user.value?.role
 })
 const computedQuestAvailability = computed(() => {
-  return QuestData.value.available ? 'Открыт' : 'Завершен'
+  return questData.value.available ? 'Открыт' : 'Завершен'
 })
 
 const availableOptions: OptionType[] = [
@@ -84,9 +84,12 @@ const changeAvailability = handleSubmit(async (model) => {
     }
   }
 })
-//getQuestPercent
-const TableColumns = computed((): TableColumn<TeamlCollapseData>[] => {
-  const columns: TableColumn<TeamlCollapseData>[] = [
+// getQuestPercent
+const teamCollapseData = ref<TeamCollapseData[]>(
+  questCollapseData.value?.teams ?? [],
+)
+const TableColumns = computed((): TableColumn<TeamCollapseData>[] => {
+  const columns: TableColumn<TeamCollapseData>[] = [
     {
       key: 'teamName',
     },
@@ -97,42 +100,39 @@ const TableColumns = computed((): TableColumn<TeamlCollapseData>[] => {
   return columns
 })
 
-const dropdownActionsMenu: DropdownMenuAction<Team>[] = [
-  {
-    label: 'string',
-    click: (value) => {
-      1
-    },
-  },
-]
-
+// const dropdownActionsMenu: DropdownMenuAction<Team>[] = [
+//   {
+//     label: 'string',
+//     click: (value) => {
+//       1
+//     },
+//   },
+// ]
 onMounted(async () => {
   const currentUser = user.value
   if (!currentUser?.token) return
 
   const { token } = currentUser
-  const idTeams = QuestData.value.idTeams
-  const response = await teamsStore.getTeamsByIds(idTeams, token)
+  const response = await questsStore.getQuestCollapseData(
+    token,
+    questData.value.idQuest,
+  )
   if (response instanceof Error) return
-
-  const teamsNames = response.map((team) => team.name)
-
-  if (!collapseData.value) return
-
-  for (let i = 0; i < teamsNames.length; i++)
-    collapseData.value[i].teamName = teamsNames[i]
+  questCollapseData.value = response
+  console.log(questCollapseData.value)
 })
 </script>
 
 <template>
+  {{ questCollapseData }}
   <div class="ms-5 border">
-    <!-- <Table
-      v-if="collapseData"
-      :data="collapseData"
+    <Table
+      v-if="teamCollapseData"
+      :data="teamCollapseData"
       :columns="TableColumns"
-      :dropdownActionsMenu="dropdownActionsMenu"
     >
-    </Table> -->
+      <!-- :dropdownActionsMenu="dropdownActionsMenu" -->
+    </Table>
   </div>
 
   <!-- <template>
