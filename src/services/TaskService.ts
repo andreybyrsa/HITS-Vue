@@ -269,7 +269,7 @@ const changeLeaderComment = async (
 ): Promise<Success | Error> => {
   return tasksMocksAxios
     .put<Success>(
-      `/scrum-service/task/comment/${taskId}`,
+      `/scrum-service/task/leader/comment/${taskId}`,
       { leaderComment },
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -336,7 +336,7 @@ const changeExecutorComment = async (
 ): Promise<Success | Error> => {
   return tasksMocksAxios
     .put<Success>(
-      `будет строка`,
+      `/scrum-service/task/executor/comment/${taskId}`,
       { executorComment },
       {
         headers: { Authorization: `Bearer ${token}` },
