@@ -1,8 +1,8 @@
-import { ProjectMember, Sprint, Task } from '@Domain/Project'
+import { Project, Sprint, Task } from '@Domain/Project'
 
 interface FinishProjectOrSprintModalProps {
   isOpened: boolean
-  members?: ProjectMember[]
+  project?: Project
   sprint?: Sprint
   unfinishedTasks?: Task[]
 }

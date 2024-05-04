@@ -1658,7 +1658,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     lastName: 'Власов',
     mark: undefined,
     projectRole: 'TEAM_LEADER',
-    countCompletedTasks: '2',
+    countCompletedTasks: 2,
   },
   {
     sprintId: '3',
@@ -1667,7 +1667,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     lastName: 'Иванович',
     mark: undefined,
     projectRole: 'MEMBER',
-    countCompletedTasks: '2',
+    countCompletedTasks: 2,
   },
   {
     sprintId: '3',
@@ -1676,7 +1676,7 @@ export const sprintMarksMocks: SprintMarks[] = [
     lastName: 'Менеджер',
     projectRole: 'MEMBER',
     mark: undefined,
-    countCompletedTasks: '2',
+    countCompletedTasks: 2,
   },
 ]
 

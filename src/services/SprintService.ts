@@ -145,7 +145,10 @@ const finishSprint = async (
 
   return axios
     .put<Success>(`${API_URL}/scrum-service/sprint/finish/${sprintId}`, report, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'text/plain;charset=UTF-8',
+      },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)

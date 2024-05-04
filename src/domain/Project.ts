@@ -95,7 +95,7 @@ interface SprintMarks {
   lastName: string
   projectRole: ProjectMemberRole
   mark: number | undefined
-  countCompletedTasks?: string
+  countCompletedTasks?: number
 }
 
 export {

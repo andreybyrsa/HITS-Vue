@@ -185,7 +185,7 @@ const columns = computed(() => [
   {
     name: 'На доработке',
     class: 'OnModification',
-    color: 'blueviolet',
+    color: '#8A2BE2',
     list: onModificationTask.tasks,
     move: checkOnModificationTask,
     handle: undefined,

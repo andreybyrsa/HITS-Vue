@@ -28,7 +28,7 @@ defineProps<{ sprintMarks: SprintMarks[] }>()
           </div>
           <div class="d-flex gap-1">
             Кол-во задач:
-            <div class="text-primary">{{ member.countCompletedTasks }}</div>
+            <div class="text-primary">{{ member.countCompletedTasks ?? 0 }}</div>
           </div>
         </div>
       </div>

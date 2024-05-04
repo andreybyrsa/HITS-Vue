@@ -69,7 +69,12 @@ function chooseTask(task: Task) {
 }
 
 function checkChooseTask(task: Task) {
-  if (currentTask.value?.id === task.id) return ['border-primary']
+  const currentTaskId = currentTask.value?.id
+
+  if (currentTaskId) {
+    if (currentTaskId === task.id) return ['border-primary']
+    return ['opacity-50']
+  }
 }
 </script>
 
