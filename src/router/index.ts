@@ -268,6 +268,21 @@ const routes: RouteRecordRaw[] = [
               ],
             },
           },
+          {
+            path: ':id',
+            name: 'idea-project',
+            component: IdeaModal,
+            meta: {
+              roles: [
+                'INITIATOR',
+                'MEMBER',
+                'PROJECT_OFFICE',
+                'EXPERT',
+                'ADMIN',
+                'TEACHER',
+              ],
+            },
+          },
         ],
       },
     ],
@@ -343,15 +358,15 @@ const routes: RouteRecordRaw[] = [
     path: '/dev',
     component: DevView,
   },
-  {
-    path: '/error',
-    name: 'error',
-    component: ErrorView,
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: { name: 'error' },
-  },
+  // {
+  //   path: '/error',
+  //   name: 'error',
+  //   component: ErrorView,
+  // },
+  // {
+  //   path: '/:pathMatch(.*)*',
+  //   redirect: { name: 'error' },
+  // },
 ]
 
 const router = createRouter({

@@ -135,7 +135,7 @@ function getNavLinkStyle(isCurrentTab: boolean) {
 
     <ActiveSprint
       v-if="isTabActiveSprint"
-      :members="project.members"
+      :project="project"
     />
   </div>
 </template>

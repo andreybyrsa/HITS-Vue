@@ -25,7 +25,7 @@ interface ColumnTask {
 }
 
 interface ActiveSprintProps {
-  members: ProjectMember[]
+  project: Project
 }
 
 export {

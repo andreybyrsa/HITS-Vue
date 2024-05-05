@@ -50,17 +50,6 @@
         </div>
       </div>
     </div>
-
-    <TaskDescriptionModal
-      :is-opened="isOpenedTaskModal"
-      :task="(currentTask as Task)"
-      :user="(user as User)"
-      @close-modal="closeTaskModal"
-      @update-leader-comment="changeLeaderComment"
-      @update-description="changeDescription"
-      @update-name="changeName"
-      @update-executor-comment="changeExecutorComment"
-    />
   </div>
 </template>
 

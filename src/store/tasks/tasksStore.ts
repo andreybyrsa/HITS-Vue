@@ -167,6 +167,7 @@ const useTasksStore = defineStore('tasks', {
           startDate,
           endDate: '',
           status,
+          wastedTime: '',
         }
 
         const response = await TaskService.createTaskLog(log, taskId, token)
@@ -281,6 +282,25 @@ const useTasksStore = defineStore('tasks', {
             curTask.executorComment = executorComment
           }
         }
+      }
+    },
+
+    async deleteTask(taskId: string, token: string) {
+      const sprintsStore = useSprintsStore()
+
+      const response = await TaskService.deleteTask(taskId, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+      this.tasks = this.tasks.filter(({ id }) => id !== taskId)
+
+      if (sprintsStore.activeSprint?.tasks) {
+        const newArrayTasks = sprintsStore.activeSprint.tasks.filter(
+          ({ id }) => id !== taskId,
+        )
+        sprintsStore.activeSprint.tasks = newArrayTasks
       }
     },
   },

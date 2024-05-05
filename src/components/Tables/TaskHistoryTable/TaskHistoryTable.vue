@@ -68,21 +68,17 @@ const taskHistoryTableColumns: TableColumn<TaskMovementLog>[] = [
     getRowCellFormat: getFormattedDate,
   },
   {
-    key: 'endDate',
-    label: 'Дата окончания',
+    key: 'wastedTime',
+    label: 'Продолжительность',
     contentClassName: 'justify-content-center align-items-center text-center',
-    getRowCellFormat: getFormattedWastedTime,
   },
 ]
 
 function getFormattedDate(date: string) {
-  const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY HH:mm')
-  return formattedDate.value
-}
-
-function getFormattedWastedTime(date: string) {
-  const formattedDate = useDateFormat(new Date(date), 'HH:mm')
-  return formattedDate.value
+  if (date) {
+    const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY, HHч mmмин')
+    return formattedDate.value
+  }
 }
 </script>
 

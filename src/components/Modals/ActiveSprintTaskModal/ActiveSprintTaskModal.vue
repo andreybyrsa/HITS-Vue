@@ -2,7 +2,6 @@
 import { onMounted, ref, VueElement } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-import { useDebounceFn } from '@vueuse/core'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import TaskHeader from '@Components/Modals/ActiveSprintTaskModal/TaskHeader.vue'
@@ -12,14 +11,12 @@ import TaskInfo from '@Components/Modals/ActiveSprintTaskModal/TaskInfo.vue'
 import TaskComments from '@Components/Modals/ActiveSprintTaskModal/TaskComments.vue'
 
 import useUserStore from '@Store/user/userStore'
-import useTasksStore from '@Store/tasks/tasksStore'
 
 import { Task } from '@Domain/Project'
 
 import TaskService from '@Services/TaskService'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 
-const tasksStore = useTasksStore()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -54,31 +51,6 @@ function closeModal() {
   isOpened.value = false
   router.push({ name: 'project' })
 }
-
-const changeLeaderComment = useDebounceFn((input: string) => {
-  const currentUser = user.value
-  const currentTask = task.value
-
-  if (currentUser?.token && currentTask) {
-    const { token } = currentUser
-    const { id } = currentTask
-
-    tasksStore.changeLeaderComment(id, input, token)
-    currentTask.leaderComment = input
-  }
-}, 450)
-
-const changeExecutorComment = useDebounceFn((input: string) => {
-  const currentUser = user.value
-  const currentTask = task.value
-
-  if (currentUser?.token && currentTask) {
-    const { token } = currentUser
-    const { id } = currentTask
-
-    tasksStore.changeExecutorComment(id, input, token)
-  }
-}, 450)
 </script>
 
 <template>
@@ -95,18 +67,17 @@ const changeExecutorComment = useDebounceFn((input: string) => {
       <div class="task-modal__left-side w-75">
         <TaskHeader @close-modal="closeModal" />
 
-        <TaskData :task="task" />
+        <TaskData
+          :task="task"
+          @close-modal="closeModal"
+        />
 
         <TaskHistory :task-id="task.id" />
       </div>
       <div class="task-modal__right-side w-25">
         <TaskInfo :task="task" />
 
-        <TaskComments
-          :task="task"
-          @update-leader-comment="changeLeaderComment"
-          @update-executor-comment="changeExecutorComment"
-        />
+        <TaskComments :task="task" />
       </div>
     </div>
   </ModalLayout>

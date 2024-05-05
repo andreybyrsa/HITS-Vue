@@ -32,7 +32,6 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const taskStore = useTasksStore()
-const { tasks } = storeToRefs(taskStore)
 
 const sprintStore = useSprintsStore()
 const { activeSprint } = storeToRefs(sprintStore)
@@ -186,7 +185,7 @@ const columns = computed(() => [
   {
     name: 'На доработке',
     class: 'OnModification',
-    color: 'blueviolet',
+    color: '#8A2BE2',
     list: onModificationTask.tasks,
     move: checkOnModificationTask,
     handle: undefined,
@@ -340,8 +339,9 @@ function closeBurndownModal() {
   </div>
 
   <FinishProjectOrSprintModal
+    v-if="project"
     :is-opened="isOpenedFinishSprintModal"
-    :members="members"
+    :project="project"
     :sprint="activeSprint"
     :unfinishedTasks="unfinishedTasks"
     @close-modal="closeFinishSprintModal"

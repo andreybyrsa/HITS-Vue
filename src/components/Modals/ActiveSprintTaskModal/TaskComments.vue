@@ -1,32 +1,57 @@
 <script lang="ts" setup>
+import { useDebounceFn } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+
+import { TaskDataProps } from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.types'
+import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 
-import {
-  TaskDataProps,
-  TaskCommentsEmits,
-} from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.types'
-import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
-
 import HTMLTargetEvent from '@Domain/HTMLTargetEvent'
 
 const props = defineProps<TaskDataProps>()
-const emit = defineEmits<TaskCommentsEmits>()
 
-const tasksStore = useTasksStore()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-function isEdit(comment: string) {
-  if (comment === 'team-leader' && user.value?.role === 'TEAM_LEADER') {
-    return false
-  } else if (comment === 'initiator' && props.task.executor?.id === user.value?.id) {
-    return false
-  } else return true
+const tasksStore = useTasksStore()
+
+function isAccessLeaderComment() {
+  const currentRole = user.value?.role
+  return currentRole === 'TEAM_LEADER' ? false : true
 }
+function isAccessStudentComment() {
+  const currentUser = user.value
+  const currentExecutor = props.task.executor
+
+  return currentUser?.id === currentExecutor?.id ? false : true
+}
+
+const changeLeaderComment = useDebounceFn((input: string) => {
+  const currentUser = user.value
+  const currentTask = props.task
+
+  if (currentUser?.token && currentTask) {
+    const { token } = currentUser
+    const { id } = currentTask
+
+    tasksStore.changeLeaderComment(id, input, token)
+    currentTask.leaderComment = input
+  }
+}, 450)
+
+const changeExecutorComment = useDebounceFn((input: string) => {
+  const currentUser = user.value
+  const currentTask = props.task
+
+  if (currentUser?.token && currentTask) {
+    const { token } = currentUser
+    const { id } = currentTask
+
+    tasksStore.changeExecutorComment(id, input, token)
+  }
+}, 450)
 </script>
 
 <template>
@@ -46,8 +71,8 @@ function isEdit(comment: string) {
           placeholder="Комментарий тим-лидера"
           :model-value="$props.task.leaderComment"
           validate-on-update
-          @input="(event: HTMLTargetEvent)=>emit('update-leader-comment', event.target.value)"
-          :disabled="isEdit('team-leader')"
+          @input="(event: HTMLTargetEvent)=>changeLeaderComment(event.target.value)"
+          :disabled="isAccessLeaderComment()"
         />
       </div>
 
@@ -60,9 +85,9 @@ function isEdit(comment: string) {
           :model-value="$props.task.executorComment"
           validate-on-update
           @input="(event: HTMLTargetEvent) => {
-            emit('update-executor-comment', event.target.value)
+            changeExecutorComment(event.target.value)
           }"
-          :disabled="isEdit('initiator')"
+          :disabled="isAccessStudentComment()"
         />
       </div>
     </div>
