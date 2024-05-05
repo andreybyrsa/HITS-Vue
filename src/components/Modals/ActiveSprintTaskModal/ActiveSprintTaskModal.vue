@@ -48,6 +48,7 @@ onMounted(async () => {
 })
 
 function closeModal() {
+  console.log(1)
   isOpened.value = false
   router.push({ name: 'project' })
 }
@@ -67,7 +68,10 @@ function closeModal() {
       <div class="task-modal__left-side w-75">
         <TaskHeader @close-modal="closeModal" />
 
-        <TaskData :task="task" />
+        <TaskData
+          :task="task"
+          @close-modal="closeModal"
+        />
 
         <TaskHistory :task-id="task.id" />
       </div>

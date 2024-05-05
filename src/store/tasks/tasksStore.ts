@@ -243,6 +243,25 @@ const useTasksStore = defineStore('tasks', {
         return
       }
     },
+
+    async deleteTask(taskId: string, token: string) {
+      const sprintsStore = useSprintsStore()
+
+      const response = await TaskService.deleteTask(taskId, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+      this.tasks = this.tasks.filter(({ id }) => id !== taskId)
+
+      if (sprintsStore.activeSprint?.tasks) {
+        const newArrayTasks = sprintsStore.activeSprint.tasks.filter(
+          ({ id }) => id !== taskId,
+        )
+        sprintsStore.activeSprint.tasks = newArrayTasks
+      }
+    },
   },
 })
 

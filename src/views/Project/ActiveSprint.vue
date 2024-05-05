@@ -339,8 +339,9 @@ function closeBurndownModal() {
   </div>
 
   <FinishProjectOrSprintModal
+    v-if="project"
     :is-opened="isOpenedFinishSprintModal"
-    :members="members"
+    :project="project"
     :sprint="activeSprint"
     :unfinishedTasks="unfinishedTasks"
     @close-modal="closeFinishSprintModal"

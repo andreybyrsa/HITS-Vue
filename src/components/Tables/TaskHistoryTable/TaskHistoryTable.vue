@@ -36,7 +36,6 @@ onMounted(async () => {
     const { token } = currentUser
 
     const taskLogs = await TaskService.getTaskMovementLog(props.taskId, token)
-    console.log(taskLogs)
 
     if (taskLogs instanceof Error) {
       useNotificationsStore().createSystemNotification('Система', taskLogs.message)

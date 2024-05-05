@@ -3,8 +3,12 @@ import { ref } from 'vue'
 import { useForm } from 'vee-validate'
 import { storeToRefs } from 'pinia'
 
-import { TaskDataProps } from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.types'
+import {
+  TaskDataProps,
+  TaskHeaderEmits,
+} from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.types'
 
+import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import ComboBox from '@Components/Inputs/Combobox/Combobox.vue'
@@ -28,9 +32,11 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const props = defineProps<TaskDataProps>()
+const emit = defineEmits<TaskHeaderEmits>()
 
 const isEdit = ref(true)
 const isLoading = ref(false)
+const isOpenedDeleteModal = ref(false)
 
 const choosenTags = ref<Tag[]>(structuredClone(props.task.tags))
 const tagsValue = ref<Tag[]>(tags.value.filter(({ confirmed }) => confirmed))
@@ -60,6 +66,20 @@ const handleUpdateTask = handleSubmit(async (task) => {
     isEdit.value = true
   }
 })
+
+async function deleteTask() {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const taskId = props.task.id
+
+    await tasksStore.deleteTask(taskId, token)
+
+    console.log(emit('close-modal'))
+    emit('close-modal')
+  }
+}
 
 function hexToRgb(hex: string) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -91,6 +111,14 @@ function allowEdit() {
 function cancelEdit() {
   setValues(structuredClone(props.task))
   isEdit.value = true
+}
+
+function openDeleteModal() {
+  isOpenedDeleteModal.value = true
+}
+
+function closeDeleteModal() {
+  isOpenedDeleteModal.value = false
 }
 </script>
 
@@ -150,6 +178,13 @@ function cancelEdit() {
         Редактировать
       </Button>
       <Button
+        v-if="accessEdit()"
+        variant="danger"
+        @click="openDeleteModal"
+      >
+        Удалить
+      </Button>
+      <Button
         v-if="!isEdit"
         variant="success"
         @click="handleUpdateTask"
@@ -166,6 +201,14 @@ function cancelEdit() {
       </Button>
     </div>
   </div>
+
+  <ConfirmModal
+    :is-opened="isOpenedDeleteModal"
+    textQuestion="Вы действительно хотите удалить эту задачу?"
+    text-button="Удалить"
+    @close-modal="closeDeleteModal"
+    @action="deleteTask"
+  />
 </template>
 
 <style lang="scss" scoped>

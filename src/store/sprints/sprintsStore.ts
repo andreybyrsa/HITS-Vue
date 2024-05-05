@@ -8,6 +8,7 @@ import { tasksMocks } from '@Utils/getMocks'
 import { MODE } from '@Main'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
+import TaskService from '@Services/TaskService'
 
 const useSprintsStore = defineStore('sprints', {
   state: (): InitialState => ({

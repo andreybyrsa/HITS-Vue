@@ -270,7 +270,7 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: ':id',
-            name: 'idea-modal',
+            name: 'idea-project',
             component: IdeaModal,
             meta: {
               roles: [
@@ -358,15 +358,15 @@ const routes: RouteRecordRaw[] = [
     path: '/dev',
     component: DevView,
   },
-  {
-    path: '/error',
-    name: 'error',
-    component: ErrorView,
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: { name: 'error' },
-  },
+  // {
+  //   path: '/error',
+  //   name: 'error',
+  //   component: ErrorView,
+  // },
+  // {
+  //   path: '/:pathMatch(.*)*',
+  //   redirect: { name: 'error' },
+  // },
 ]
 
 const router = createRouter({

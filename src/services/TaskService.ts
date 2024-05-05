@@ -332,6 +332,20 @@ const changeName = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения названия задачи'))
 }
 
+const deleteTask = async (id: string, token: string): Promise<Success | Error> => {
+  return tasksMocksAxios
+    .delete(
+      `/scrum-service/task/delete/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления идеи'))
+}
+
 const TaskService = {
   getAllTasksProject,
   getTaskMovementLog,
@@ -348,6 +362,8 @@ const TaskService = {
   changeLeaderComment,
   changeDescription,
   changeName,
+
+  deleteTask,
 }
 
 export default TaskService
