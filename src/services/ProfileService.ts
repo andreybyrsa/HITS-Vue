@@ -128,17 +128,13 @@ const uploadProfileAvatar = async (
 const updateUserFullName = async (
   fullName: ProfileFullName,
   token: string,
-): Promise<Profile[] | Error> => {
-  return profileUserAxios
-    .put<Profile[]>(
-      `/ideas-service/profile/update`,
-      fullName,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id: fullName.id } },
-    )
+  id: string,
+): Promise<Success | Error> => {
+  return axios
+    .put(`${API_URL}/profile/update/${id}`, fullName, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения данных'))
 }

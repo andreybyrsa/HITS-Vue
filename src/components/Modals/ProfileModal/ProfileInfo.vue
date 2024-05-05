@@ -63,8 +63,7 @@ const handleEditUser = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    await profilesStore.updateUserFullName(values, token)
-
+    await profilesStore.updateUserFullName(values, token, profileId)
     isUpdatingUserTelephone.value = false
     isUpdatingUserName.value = false
     isUpdatingUserLastname.value = false
@@ -332,18 +331,19 @@ function getFormattedDate(date: string) {
       </div>
 
       <div
-        v-if="isOwnProfile || user?.role === 'ADMIN'"
+        v-if="isOwnProfile || user?.role === 'ADMIN' || user?.role === 'TEACHER'"
         class="w-100 d-flex flex-column gap-2"
       >
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Телефон:</Typography>
           <div
             v-if="
-              (!isUpdatingUserLastname &&
+              ((!isUpdatingUserLastname &&
                 !isUpdatingUserName &&
                 !isUpdatingUserStudyGroup &&
                 !isUpdatingUserTelephone) ||
-              user?.role === 'ADMIN'
+                user?.role === 'ADMIN') &&
+              user?.role !== 'TEACHER'
             "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdatingUserTelephone(true)"
@@ -355,7 +355,7 @@ function getFormattedDate(date: string) {
         <Input
           name="telephone"
           class-name="rounded-end w-100"
-          placeholder="+7 (___)-___-__-__"
+          placeholder="+7(___)-___-__-__"
           :disabled="!isUpdatingUserTelephone"
           validate-on-update
           v-mask="'+7(###)-###-##-##'"

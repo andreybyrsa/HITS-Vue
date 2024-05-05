@@ -13,35 +13,26 @@
       >
         <div class="d-flex flex-column border-bottom pb-2">
           <div class="active-sprint__task">
-            <Typography>{{ task.name }}</Typography>
+            <div class="text-ellipsis">{{ task.name }}</div>
           </div>
           <div class="d-flex gap-1 text-secondary">
-            {{ getExecutorTask(task.id) }}
+            {{ task.executor?.firstName }} {{ task.executor?.lastName }}
           </div>
           <div
             class="d-flex gap-1 text-secondary text-info"
             v-if="task.status === 'OnModification' && task.leaderComment"
           >
             <Typography>
-              {{ task.leaderComment }}
+              <div class="comment">{{ task.leaderComment }}</div>
             </Typography>
           </div>
           <div
             class="d-flex gap-1 text-secondary text-info"
             v-if="task.status === 'OnVerification' && task.executorComment"
           >
-            <Typography>{{ task.executorComment }}</Typography>
-          </div>
-          <div
-            class="d-flex gap-1 text-secondary text-info"
-            v-if="
-              task.status === 'OnVerification' &&
-              user?.id === task.executor?.id &&
-              !task.executorComment &&
-              user?.role !== 'TEAM_LEADER'
-            "
-          >
-            <Typography>Добавьте комментарий</Typography>
+            <Typography
+              ><div class="comment">{{ task.executorComment }}</div></Typography
+            >
           </div>
         </div>
         <div class="d-flex flex-wrap gap-2 w-100 mt-2">
@@ -79,11 +70,13 @@ import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 
+import { useRouter } from 'vue-router'
 import { ActiveSprintTaskProps } from '@Views/Project/Project.types'
 import { ref } from 'vue'
 import { User } from '@Domain/User'
 
 import TaskDescriptionModal from '@Components/Modals/SprintModal/TaskDescriptionModal.vue'
+import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.vue'
 import { useDebounceFn } from '@vueuse/core'
 import Typography from '@Components/Typography/Typography.vue'
 
@@ -93,19 +86,14 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const tasksStore = useTasksStore()
-const { tasks } = storeToRefs(tasksStore)
+
+const router = useRouter()
 
 const currentTask = ref<Task>()
 const isOpenedTaskModal = ref(false)
 
 function getColorBand(task: Task) {
   return task.executor?.id === user.value?.id ? '#0D6EFD' : '#9E9E9E'
-}
-
-function getExecutorTask(taskId: string) {
-  const currentTask = tasks.value.find(({ id }) => id === taskId)
-  if (currentTask?.executor)
-    return `${currentTask.executor.firstName} ${currentTask.executor.lastName}`
 }
 
 function hexToRgb(hex: string) {
@@ -119,8 +107,7 @@ function hexToRgb(hex: string) {
 }
 
 function openTaskModal(task: Task) {
-  currentTask.value = task
-  isOpenedTaskModal.value = true
+  router.push(`/projects/${task.projectId}/${task.id}`)
 }
 
 function closeTaskModal() {
@@ -175,3 +162,9 @@ const changeExecutorComment = useDebounceFn((input: string) => {
   }
 }, 450)
 </script>
+
+<style lang="scss" scoped>
+.comment {
+  @include textEllipsis(2);
+}
+</style>

@@ -25,7 +25,6 @@ import { Tag } from '@Domain/Tag'
 import { Task } from '@Domain/Project'
 
 import Validation from '@Utils/Validation'
-import useSprintsStore from '@Store/sprints/sprintsStore'
 
 const props = defineProps<CreateNewTaskProps>()
 
@@ -39,12 +38,10 @@ const { user } = storeToRefs(userStore)
 
 const tasksStore = useTasksStore()
 
-const sprintStore = useSprintsStore()
-const { activeSprint } = storeToRefs(sprintStore)
-
 const route = useRoute()
 
 const choosenTags = ref<Tag[]>([])
+
 function confirmedTags(tagsValue: Tag[]) {
   return tagsValue.filter(({ confirmed }) => confirmed)
 }
@@ -64,10 +61,12 @@ const { handleSubmit, setValues } = useForm<Task>({
 })
 
 watch(
-  () => props.task,
-  (task) => {
-    choosenTags.value = task?.tags ?? []
-    setValues({ ...task })
+  () => props.isOpened,
+  () => {
+    if (props.task) {
+      choosenTags.value = structuredClone(props.task.tags)
+      setValues(props.task)
+    }
   },
 )
 
@@ -77,8 +76,14 @@ const handleCreateTask = handleSubmit(async (task) => {
   if (currentUser?.token) {
     isLoading.value = true
     const { token } = currentUser
-    const projectId = route.params.id.toString()
+    const projectId = route.params.projectId.toString()
     task.projectId = projectId
+
+    if (props.sprint) {
+      task.position = undefined
+      task.status = 'NewTask'
+      task.sprintId = props.sprint.id
+    }
 
     await tasksStore.createTask(task, token)
 
@@ -113,10 +118,7 @@ function hexToRgb(hex: string) {
 </script>
 
 <template>
-  <ModalLayout
-    :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
-  >
+  <ModalLayout :is-opened="isOpened">
     <div class="add-task-modal border rounded-3 bg-white px-3 py-2">
       <div class="add-task-modal__header w-100">
         <Typography class-name="fs-4 text-primary">
@@ -139,17 +141,18 @@ function hexToRgb(hex: string) {
       <Textarea
         label="Описание задачи*"
         class-name="add-task-modal__description rounded"
-        placeholder="Описание"
         name="description"
+        placeholder="Описание"
         validate-on-update
       />
 
       <ComboBox
+        name="tags"
         :options="confirmedTags(tags)"
         :display-by="['name']"
         v-model="choosenTags"
+        comparing-key="id"
         placeholder="Теги"
-        name="tags"
         validate-on-update
       />
 
@@ -204,7 +207,7 @@ function hexToRgb(hex: string) {
 
 <style lang="scss">
 .add-task-modal {
-  width: 450px;
+  width: 500px;
 
   @include flexible(
     flex-start,

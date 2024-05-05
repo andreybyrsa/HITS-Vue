@@ -71,7 +71,14 @@ function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
   const marketRoutes: LeftSideBarTabType[] = activeMarkets.map(({ id, name }) => ({
     name: `market-${id}`,
     text: name,
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'PROJECT_OFFICE', 'ADMIN'],
+    roles: [
+      'INITIATOR',
+      'MEMBER',
+      'TEAM_OWNER',
+      'PROJECT_OFFICE',
+      'ADMIN',
+      'TEACHER',
+    ],
     iconName: 'bi bi-basket3',
     to: `/market/${id}`,
   }))
@@ -83,7 +90,7 @@ async function getActiveMarkets() {
   const currentUser = user.value
 
   if (currentUser?.token && currentUser.role !== 'EXPERT') {
-    const { token, role } = currentUser
+    const { token } = currentUser
     const index = tabs.value.findIndex(({ name }) => name === 'markets')
 
     const spliceMarketsTab = () => {
@@ -97,7 +104,12 @@ async function getActiveMarkets() {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    if (response.length === 0 && role !== 'ADMIN' && role !== 'PROJECT_OFFICE') {
+    if (
+      response.length === 0 &&
+      user.value?.role !== 'ADMIN' &&
+      user.value?.role !== 'PROJECT_OFFICE' &&
+      user.value?.role !== 'TEACHER'
+    ) {
       spliceMarketsTab()
     } else if (index !== -1) {
       updateActiveMarketRoute(response, index)

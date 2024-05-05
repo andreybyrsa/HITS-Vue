@@ -4,7 +4,7 @@ import { useDateFormat } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { RouteRecordRaw } from 'vue-router'
 
-import FinishProjectModal from '@Components/Modals/FinishProjectModal/FinishProjectModal.vue'
+import FinishProjectOrSprintModal from '@Components/Modals/FinishProjectOrSprintModal/FinishProjectOrSprintModal.vue'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import Icon from '@Components/Icon/Icon.vue'
@@ -42,7 +42,7 @@ function navigateToIdea(project: Project) {
       canGoBack: true,
     },
   }
-  navigateToAliasRoute('project', `/idea-project/${project.id}`, ideaRoute)
+  navigateToAliasRoute('project', `/idea-project/${project.ideaId}`, ideaRoute)
 }
 
 function closeFinishProjectModal() {
@@ -117,8 +117,9 @@ const getContentTab: {
     </div>
   </div>
 
-  <FinishProjectModal
+  <FinishProjectOrSprintModal
     :is-opened="isOpenedFinishProjectModal"
+    :members="project.members"
     @close-modal="closeFinishProjectModal"
   />
 </template>

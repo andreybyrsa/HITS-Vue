@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import SprintService from '@Services/SprintService'
 
 import InitialState from '@Store/sprints/initialState'
-import { Sprint, SprintStatus, SprintMarks } from '@Domain/Project'
+import { Sprint, SprintStatus, SprintMarks, Task } from '@Domain/Project'
 import { tasksMocks } from '@Utils/getMocks'
 import { MODE } from '@Main'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -53,6 +53,7 @@ const useSprintsStore = defineStore('sprints', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
+        this.activeSprint = response
         this.sprints.push(response)
 
         if (MODE === 'DEVELOPMENT') {
@@ -73,10 +74,19 @@ const useSprintsStore = defineStore('sprints', {
       }
     },
 
-    async changeSprintStatus(sprintId: string, status: SprintStatus, token: string) {
-      const response = await SprintService.changeSprintStatus(
+    async finishSprint(
+      sprintId: string,
+      finishDate: string,
+      status: SprintStatus,
+      report: string,
+      tasks: Task[],
+      token: string,
+    ) {
+      const response = await SprintService.finishSprint(
         sprintId,
+        finishDate,
         status,
+        report,
         token,
       )
 
@@ -84,41 +94,29 @@ const useSprintsStore = defineStore('sprints', {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
         const currentSprint = this.sprints.find(({ id }) => id === sprintId)
-        if (currentSprint) {
-          currentSprint.status = status
-        }
-      }
-    },
+        const tasksStore = useTasksStore().tasks
 
-    async reportSprint(sprintId: string, report: string, token: string) {
-      const response = await SprintService.reportSprint(sprintId, report, token)
+        tasksStore.forEach((task) => {
+          const currentTask = tasks.find(({ id }) => id === task.id)
 
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentSprint = this.sprints.find(({ id }) => id === sprintId)
+          if (currentTask) {
+            task.sprintId = undefined
+            task.position =
+              currentTask.status !== 'Done'
+                ? tasksStore.filter(({ status }) => status === 'InBackLog').length +
+                  1
+                : undefined
+            task.executor = null
+            task.status = currentTask.status !== 'Done' ? 'InBackLog' : 'Done'
+          }
+        })
 
         if (currentSprint) {
           currentSprint.report = report
-        }
-      }
-    },
-
-    async finishSprint(sprintId: string, finishDate: string, token: string) {
-      const response = await SprintService.finishSprintDate(
-        sprintId,
-        finishDate,
-        token,
-      )
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentSprint = this.sprints.find(({ id }) => id === sprintId)
-
-        if (currentSprint) {
+          currentSprint.status = status
           currentSprint.finishDate = finishDate
         }
+        this.activeSprint = undefined
       }
     },
 

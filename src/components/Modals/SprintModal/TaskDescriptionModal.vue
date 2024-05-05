@@ -47,11 +47,7 @@ const inputModeLeader = ref(false)
 function convertToInput(comment: string) {
   if (comment === 'leader' && user.value?.role === 'TEAM_LEADER') {
     inputModeLeader.value = true
-  } else if (
-    comment === 'executor' &&
-    user.value?.id === props.task.executor?.id &&
-    user.value?.role !== 'TEAM_LEADER'
-  ) {
+  } else if (comment === 'executor' && user.value?.id === props.task.executor?.id) {
     inputMode.value = true
   } else return
 }
@@ -193,7 +189,12 @@ watch(
 
             <li
               class="list-group-item p-0 overflow-hidden"
-              v-if="props.task.status === 'OnModification'"
+              v-if="
+                props.task.status === 'OnModification' ||
+                (props.task.status === 'OnVerification' &&
+                  props.task.leaderComment) ||
+                (props.task.status === 'InProgress' && props.task.leaderComment)
+              "
             >
               <Button
                 variant="light"
@@ -221,11 +222,11 @@ watch(
                   <Textarea
                     name="leaderComment"
                     placeholder="Комментарий"
-                    class-name="rounded"
+                    class-name="edit-task-model__comment rounded"
                     :model-value="props.task.leaderComment"
                     @blur="inputModeLeader = false"
-                    @keyup.enter="inputModeLeader = false"
-                    @input="(event: HTMLTargetEvent)=>emit('update-leader-comment', event.target.value)"
+                    @keyup.enter="(event: HTMLTargetEvent)=> {
+                      emit('update-leader-comment', event.target.value); inputModeLeader = false}"
                   />
                 </div>
               </Collapse>
@@ -235,7 +236,8 @@ watch(
               class="list-group-item p-0 overflow-hidden"
               v-if="
                 props.task.status === 'OnVerification' ||
-                props.task.status === 'OnModification'
+                props.task.status === 'OnModification' ||
+                (props.task.status === 'InProgress' && props.task.executorComment)
               "
             >
               <Button
@@ -267,11 +269,12 @@ watch(
                   <Textarea
                     placeholder="Комментарий"
                     name="executorComment"
-                    class-name="rounded"
+                    class-name="edit-task-model__comment rounded"
                     :model-value="$props.task?.executorComment"
-                    @input="(event: HTMLTargetEvent)=>emit('update-executor-comment', event.target.value)"
                     @blur="inputMode = false"
-                    @keyup.enter="inputMode = false"
+                    @keyup.enter="(event: HTMLTargetEvent)=>{
+                      emit('update-executor-comment', event.target.value);
+                      inputMode = false }"
                     validate-on-update
                   />
                 </div>
@@ -313,15 +316,15 @@ watch(
             <div class="task-information__middle-side p-3 d-flex flex-column gap-2">
               <div class="px-2">
                 <div class="d-flex align-items-center mb-2 pb-1 border-bottom gap-1">
-                  <Icon class-name="bi bi-person-fill opacity-75" />
                   <Typography class-name="text-secondary d-block">
-                    Постановщик:
+                    Постановщик
                   </Typography>
                 </div>
 
                 <div class="d-flex align-items-center gap-1">
+                  <Icon class-name="icon bi bi-person-circle fs-3 opacity-25" />
                   <div @click="navigateToProfileModal(props.task.initiator.id)">
-                    <Typography class-name="text-primary d-block">
+                    <Typography class-name="fs-6 text-primary d-block">
                       {{ props.task.initiator?.firstName }}
                       {{ props.task.initiator?.lastName }}
                     </Typography>
@@ -331,44 +334,50 @@ watch(
 
               <div class="px-2">
                 <div class="d-flex align-items-center mb-2 pb-1 border-bottom gap-1">
-                  <Icon class-name="bi bi-person-check-fill opacity-75" />
                   <Typography class-name="text-secondary d-block">
-                    Исполнитель:
+                    Исполнитель
                   </Typography>
                 </div>
 
                 <div class="d-flex align-items-center gap-1">
+                  <Icon class-name="icom fs-3 bi bi-person-circle opacity-25" />
                   <div
                     v-if="props.task.executor"
                     @click="navigateToProfileModal(props.task.initiator.id)"
                   >
-                    <Typography class-name="text-primary d-block"
+                    <Typography class-name="fs-6 text-primary d-block"
                       >{{ props.task.executor?.firstName }}
                       {{ props.task.executor?.lastName }}</Typography
                     >
                   </div>
-                  <div v-else>Исполнитель не назначен</div>
+                  <div
+                    v-else
+                    class="fs-6 text-primary"
+                  >
+                    <Typography class-name="fs-6 text-primary d-block"
+                      >Исполнитель не назначен</Typography
+                    >
+                  </div>
                 </div>
               </div>
 
               <div class="px-2">
                 <div class="d-flex align-items-center mb-2 pb-1 border-bottom gap-1">
-                  <Icon class-name="bi bi-alarm opacity-75" />
                   <Typography class-name="text-secondary d-block">
-                    Трудоемкость:
+                    Трудоемкость
                   </Typography>
-                  <Typography class-name="d-block mb-1 my-1"
-                    >{{ props.task.workHour }}ч</Typography
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <Icon class-name="icon fs-3 bi bi-alarm opacity-25" />
+                  <Typography class-name="fs-6 text-primary d-block mb-1 my-1"
+                    >{{ props.task.workHour }} ч</Typography
                   >
                 </div>
               </div>
 
               <div class="px-2">
                 <div class="d-flex align-items-center mb-2 pb-1 border-bottom gap-1">
-                  <Icon class-name="bi bi-tag opacity-75" />
-                  <Typography class-name="text-secondary d-block">
-                    Теги:
-                  </Typography>
+                  <Typography class-name="text-secondary d-block">Теги</Typography>
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 w-100 my-2 mb-1">
@@ -413,7 +422,7 @@ watch(
   />
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .edit-task-model {
   width: 1000px;
   display: flex;
@@ -434,7 +443,7 @@ watch(
   &__left-side {
     flex: 70%;
     margin-right: 8px;
-    max-height: 410.22px;
+    min-height: 422.4px;
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -442,6 +451,11 @@ watch(
   &__right-side {
     flex: 30%;
     margin-left: 8px;
+  }
+
+  &__comment {
+    resize: none;
+    height: 90px;
   }
 }
 
@@ -455,11 +469,10 @@ watch(
 }
 
 .collapse-controller {
-  border-radius: 0;
-  background-color: $white-color;
+  border-radius: 0 !important;
+  background-color: $white-color !important;
+  justify-content: flex-start !important;
 
-  color: $primary-color;
-
-  @include flexible(center, flex-start);
+  color: $primary-color !important;
 }
 </style>

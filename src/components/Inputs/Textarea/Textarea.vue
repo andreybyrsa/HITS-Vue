@@ -19,11 +19,15 @@ defineModel<string>({
   required: false,
 })
 
-const { value, errorMessage, meta } = useField(props.name, props.validation, {
-  validateOnValueUpdate: props.validateOnUpdate ?? false,
-  validateOnMount: false,
-  syncVModel: true,
-})
+const { value, errorMessage, meta } = useField<string>(
+  props.name,
+  props.validation?.name,
+  {
+    validateOnValueUpdate: props.validateOnUpdate ?? false,
+    validateOnMount: false,
+    syncVModel: true,
+  },
+)
 
 const TextareaClassName = computed(() => [
   'form-control',
@@ -37,7 +41,7 @@ const LabelClassName = computed(() => [
 </script>
 
 <template>
-  <div class="w-100">
+  <div class="d-flex flex-column w-100 h-100">
     <label
       :class="LabelClassName"
       v-if="label"
@@ -51,7 +55,7 @@ const LabelClassName = computed(() => [
       ></Icon>
     </label>
 
-    <div class="input-group">
+    <div class="input-group h-100">
       <span
         v-if="prepend || $slots.prepend"
         class="input-group-text fs-6"

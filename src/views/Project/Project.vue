@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watchImmediate } from '@vueuse/core'
 
@@ -37,7 +37,6 @@ const { user } = storeToRefs(userStore)
 const route = useRoute()
 
 const project = ref<Project>()
-const sprints = ref<Sprint[]>()
 const activeSprint = ref<Sprint>()
 const tasks = ref<Task[]>()
 const tags = ref<Tag[]>()
@@ -46,55 +45,49 @@ const isLoading = ref(false)
 const ProjectStore = useProjectsStore()
 
 watchImmediate(
-  () => route.params.id,
+  () => route.params.projectId,
   async () => {
-    return await getProject()
+    await getProject()
   },
 )
-
-onMounted(getProject)
 
 async function getProject() {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const projectId = route.params.id.toString()
+    if (route.params.projectId) {
+      const projectId = route.params.projectId.toString()
 
-    isLoading.value = true
+      isLoading.value = true
 
-    const ideasMarketParallelRequests: RequestConfig[] = [
-      {
-        request: () => ProjectStore.getProject(projectId, token),
-        refValue: project,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => sprintsStore.getAllSprints(projectId, token),
-        refValue: sprints,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => tasksStore.getAllTasks(projectId, token),
-        refValue: tasks,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => tagsStore.getAllTags(token),
-        refValue: tags,
-        onErrorFunc: openErrorNotification,
-      },
-      {
-        request: () => sprintsStore.getActiveSprint(projectId, token),
-        refValue: activeSprint,
-        onErrorFunc: openErrorNotification,
-        statement: Boolean(sprints.value?.find(({ status }) => status === 'ACTIVE')),
-      },
-    ]
+      const projectParallelRequests: RequestConfig[] = [
+        {
+          request: () => ProjectStore.getProject(projectId, token),
+          refValue: project,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => sprintsStore.getActiveSprint(projectId, token),
+          refValue: activeSprint,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => tasksStore.getAllTasks(projectId, token),
+          refValue: tasks,
+          onErrorFunc: openErrorNotification,
+        },
+        {
+          request: () => tagsStore.getAllTags(token),
+          refValue: tags,
+          onErrorFunc: openErrorNotification,
+        },
+      ]
 
-    await sendParallelRequests(ideasMarketParallelRequests)
+      await sendParallelRequests(projectParallelRequests)
 
-    isLoading.value = false
+      isLoading.value = false
+    }
   }
 }
 </script>

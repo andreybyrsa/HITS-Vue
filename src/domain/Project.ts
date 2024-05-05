@@ -15,6 +15,7 @@ type TaskStatus =
 
 interface Project {
   id: string
+  ideaId: string
 
   name: string
   description: string
@@ -56,7 +57,7 @@ interface Task {
   id: string
   sprintId?: string
   projectId: string
-  position: number
+  position?: number
   name: string
   description: string
   leaderComment?: string

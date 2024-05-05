@@ -1,8 +1,9 @@
-import { Task } from '@Domain/Project'
+import { Sprint, Task } from '@Domain/Project'
 
 interface CreateNewTaskProps {
   isOpened: boolean
   task?: Task
+  sprint?: Sprint
 }
 
 interface CreateTaskModalEmits {

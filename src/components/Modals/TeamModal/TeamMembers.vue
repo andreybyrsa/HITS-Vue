@@ -177,13 +177,14 @@ async function switchLeaderToOwner() {
 
 function checkManageMemberDropdownAction(teamMember: TeamMember) {
   const currentUser = user.value
-  const { owner, leader } = props.team
+  const { owner, leader, hasActiveProject } = props.team
 
   return (
     (currentUser?.id === owner.id &&
       currentUser.role === 'TEAM_OWNER' &&
       teamMember.id !== owner.id &&
-      teamMember.id !== leader?.id) ||
+      teamMember.id !== leader?.id &&
+      !hasActiveProject) ||
     currentUser?.role === 'ADMIN'
   )
 }

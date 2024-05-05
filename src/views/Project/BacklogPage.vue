@@ -5,7 +5,7 @@
       :list="sortTasks"
       :animation="200"
       :move="move"
-      @change="checkMove"
+      @end="checkMove($event.oldDraggableIndex, $event.newDraggableIndex)"
       group="tasks"
     >
       <template #item="{ element }">
@@ -15,6 +15,7 @@
 
     <div class="d-flex flex-column gap-3 w-25">
       <Button
+        v-if="user?.role !== 'TEACHER' && user?.role !== 'PROJECT_OFFICE'"
         variant="primary"
         @click="openCreateNewTask"
         class-name="p-2"
@@ -51,6 +52,7 @@ import { Tag } from '@Domain/Tag'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import useTagsStore from '@Store/tags/tagsStore'
+import BackLogTask from '@Components/Tasks/Task/BackLogTask/BackLogTask.vue'
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)
@@ -89,7 +91,7 @@ const sortTasks = computed<Task[]>(() => {
   }
 
   return arrayTask.sort((a, b) =>
-    a.status === 'InBackLog' && b.status === 'InBackLog'
+    a.status === 'InBackLog' && b.status === 'InBackLog' && a.position && b.position
       ? a.position - b.position
       : statusOrder[a.status] - statusOrder[b.status],
   )
@@ -118,8 +120,9 @@ function closeCreateNewTask() {
   isOpenedCreateNewTask.value = false
 }
 
-async function checkMove() {
+async function checkMove(oldIndex: number, newIndex: number) {
   const currentUser = user.value
+  const currentTask = sortTasks.value[newIndex]
 
   if (currentUser?.token) {
     const { token } = currentUser
@@ -127,7 +130,7 @@ async function checkMove() {
       ({ status }) => status === 'InBackLog',
     )
 
-    await tasksStore.changePosition(changeTasks, token)
+    await tasksStore.changePosition(changeTasks, currentTask, newIndex + 1, token)
   }
 }
 

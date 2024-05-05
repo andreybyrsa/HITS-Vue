@@ -60,10 +60,7 @@ const handleUpdateTask = handleSubmit(async (task) => {
 })
 </script>
 <template>
-  <ModalLayout
-    :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
-  >
+  <ModalLayout :is-opened="isOpened">
     <div class="edit-task-model border rounded-3 bg-white px-3 py-2">
       <div class="edit-task-model__header w-100 border-bottom">
         <Typography class-name="fs-3 text-primary d-flex mx-1">

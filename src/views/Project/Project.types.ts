@@ -21,7 +21,7 @@ interface ActiveSprintTaskProps {
 
 interface ColumnTask {
   name: TaskStatus
-  tasks: Task[]
+  tasks?: Task[]
 }
 
 interface ActiveSprintProps {
