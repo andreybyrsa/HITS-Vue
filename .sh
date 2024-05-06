@@ -1,5 +1,5 @@
 # Указываем локальный путь к папке с билдом и package.json
-local_build_dir="./.sh"
+local_build_dir="./dist"
 local_package_json="./package.json"
 
 # Указываем удаленный хост, путь к целевой папке и имя пользователя
