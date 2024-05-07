@@ -7,6 +7,7 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 <template>
   <PageLayout content-class-name="login-page__content p-3">
     <template #content>
+      ads
       <LoginForm />
     </template>
   </PageLayout>
