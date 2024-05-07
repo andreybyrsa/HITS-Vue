@@ -22,3 +22,9 @@ ssh $remote_user@$remote_host "npm update"
 # Устанавливаем pm2 глобально
 ssh $remote_user@$remote_host "npm install pm2 -g"
 
+# Создаем образ pm2
+ssh $remote_user@$remote_host "sudo docker build -t pm2-app"
+
+# Запускаем контейнер
+ssh $remote_user@$remote_host "sudo docker run -d -p 80:80 pm2-app"
+
