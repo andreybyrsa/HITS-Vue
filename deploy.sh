@@ -4,7 +4,7 @@ local_package_json="./package.json"
 
 # Указываем удаленный хост, путь к целевой папке и имя пользователя
 remote_host="192.168.16.228"
-remote_dir="/home/user1/bin"
+remote_dir="/home/user1"
 remote_user="user1"
 
 # Копируем папку с билдом на удаленный хост
@@ -18,3 +18,7 @@ ssh $remote_user@$remote_host "cd $remote_dir"
 
 # Устанавливаем или обновляем зависимости с помощью npm
 ssh $remote_user@$remote_host "npm update"
+
+# Устанавливаем pm2 глобально
+ssh $remote_user@$remote_host "npm install pm2 -g"
+

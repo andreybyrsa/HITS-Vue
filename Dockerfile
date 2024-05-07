@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm install
-RUN npm install -g pm2
+RUN npm install pm2 -g
 
 COPY ./ .
 
@@ -21,3 +21,5 @@ RUN mkdir /app
 COPY --from=build-stage /app/dist /app
 
 COPY nginx.conf /etc/nginx/nginx.conf
+
+CMD ["pm2-runtime", "start", "npm", "--", "start"]
