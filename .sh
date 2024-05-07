@@ -18,3 +18,5 @@ ssh $remote_user@$remote_host "cd $remote_dir"
 
 # Устанавливаем или обновляем зависимости с помощью npm
 ssh $remote_user@$remote_host "npm update"
+
+npm run build && deploy
