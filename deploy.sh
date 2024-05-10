@@ -17,4 +17,4 @@ scp $local_package_json $remote_user@$remote_host:$remote_dir
 ssh $remote_user@$remote_host "cd $remote_dir"
 
 # Устанавливаем или обновляем зависимости с помощью npm
-ssh $remote_user@$remote_host "npm update"
+ssh $remote_user@$remote_host "npm update --legacy-peer-deps"

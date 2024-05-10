@@ -1,3 +1,5 @@
 services:
   pm2-service:
     image: keymetrics/pm2:18-buster
+    ports:
+      - "80:80"
