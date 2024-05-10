@@ -1,5 +1,12 @@
 services:
   pm2-service:
     image: keymetrics/pm2:18-buster
+    services:
+  pm2-service:
+    image: keymetrics/pm2:18-buster
+    volumes:
+      - /home/user1/dist
+    ports:
+      - "80:80"
     ports:
       - "80:80"
