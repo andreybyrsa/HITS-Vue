@@ -14,6 +14,7 @@ import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Button from '@Components/Button/Button.vue'
 import Textarea from '@Components/Inputs/Textarea/Textarea.vue'
 import Input from '@Components/Inputs/Input/Input.vue'
+import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 
@@ -55,7 +56,7 @@ const projectId = route.params.projectId.toString()
 const averageMark = ref<AverageMark[]>([])
 const isLoading = ref(false)
 const isLoadingRequest = ref(false)
-const report = ref('')
+const report = ref(props.project?.report.report ?? '')
 
 onMounted(async () => {
   const currentUser = user.value
@@ -82,9 +83,10 @@ watchImmediate(
   () => props.isOpened,
   (open) => {
     if (open && props.sprint) {
-      const arrayUserId = props.members
+      const arrayUserId = props.project?.members
         ?.filter(({ projectRole }) => projectRole !== 'INITIATOR')
         .map(({ userId }) => userId)
+
       arrayUserId?.forEach((userId) => {
         validationSchemaModal.value[userId] = (value: string) =>
           Validation.validateFloatNumber(value) || 'Неправильно заполнена форма'
@@ -148,7 +150,7 @@ const FinishSprint = handleSubmit(async (values) => {
     const finishDate = new Date().toJSON().toString()
     const sprintTasks = props.sprint?.tasks
 
-    const sprintMarks = props.members?.map(
+    const sprintMarks = props.project?.members.map(
       ({ projectRole, userId, firstName, lastName }) => {
         if (projectRole !== 'INITIATOR') {
           return {
@@ -175,7 +177,7 @@ const FinishSprint = handleSubmit(async (values) => {
               sprintId,
               finishDate,
               'DONE',
-              values.report,
+              report.value,
               sprintTasks,
               token,
             ),
@@ -220,8 +222,13 @@ const FinishSprint = handleSubmit(async (values) => {
         class="d-flex flex-column gap-2 w-100"
       >
         <div class="d-flex gap-3 text-primary">
-          <div class="w-25">
-            {{ sprint ? 'Оценка за спринт' : 'Оценка за проект' }}
+          <div class="d-flex gap-1 w-25">
+            Оценка
+            <Icon
+              v-if="props.sprint"
+              class-name="bi bi-patch-question"
+              v-tooltip="'Оценка - число вещественное от 0 до 10'"
+            />
           </div>
           <div class="w-75">Учасник</div>
         </div>
@@ -232,7 +239,7 @@ const FinishSprint = handleSubmit(async (values) => {
         >
           <div
             class="d-flex gap-3"
-            v-for="(member, index) in members?.filter(
+            v-for="(member, index) in props.project?.members.filter(
               ({ projectRole }) => projectRole !== 'INITIATOR',
             )"
             :key="index"
@@ -304,6 +311,7 @@ const FinishSprint = handleSubmit(async (values) => {
           name="report"
           class-name="finish-project__report rounded w-100"
           placeholder="Отчет"
+          :disabled="props.project?.status === 'DONE'"
           v-model="report"
           validate-on-update
         >
@@ -332,7 +340,7 @@ const FinishSprint = handleSubmit(async (values) => {
       </div>
 
       <Button
-        v-else
+        v-else-if="props.project?.status !== 'DONE'"
         @click="FinishProject"
         :is-loading="isLoading"
         :disabled="isLoading"

@@ -5,8 +5,15 @@
     :columns="usersTableColumns"
     :data="sortSprintsList(sprints)"
     :search-by="['name']"
-    :dropdown-actions-menu="dropdownUsersActions"
   />
+
+  <SpintInfoModal
+    :is-opened="isOpenedSprintInfoModal"
+    :sprint-id="sprintId"
+    :project="project"
+    @close-modal="closeSprintInfoModal"
+  />
+
   <SprintModal
     :is-opened="isOpenedSprintModal"
     :sprint="sprint"
@@ -18,12 +25,9 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
-import {
-  DropdownMenuAction,
-  TableColumn,
-  TableHeader,
-} from '@Components/Table/Table.types'
+import { TableColumn, TableHeader } from '@Components/Table/Table.types'
 
+import SpintInfoModal from '@Components/Modals/SprintInfoModal/SprintInfoModal.vue'
 import SprintModal from '@Components/Modals/SprintModal/SprintModal.vue'
 import SprintsTableProps from '@Components/Tables/SprintsTable/StprintsTable.types'
 import Table from '@Components/Table/Table.vue'
@@ -45,6 +49,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isOpenedSprintModal = ref(false)
+const isOpenedSprintInfoModal = ref(false)
+const sprintId = ref<string>('')
 const sprint = ref<Sprint>()
 
 const sprintsTableHeader = computed<TableHeader>(() => ({
@@ -68,7 +74,7 @@ const usersTableColumns: TableColumn<Sprint>[] = [
     key: 'name',
     size: 'col-3',
     label: 'Название',
-    rowCellClick: OpenEditSprintModal,
+    rowCellClick: OpenSprintModal,
   },
   {
     key: 'status',
@@ -100,13 +106,6 @@ function getSprintStatusFormat(status: SprintStatus) {
   return getSprintStatus().translatedStatus[status]
 }
 
-const dropdownUsersActions: DropdownMenuAction<Sprint>[] = [
-  {
-    label: 'Перейти в спринт',
-    click: () => console.log(1),
-  },
-]
-
 function getFormattedDate(date: string) {
   if (date) {
     const formattedDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
@@ -131,15 +130,24 @@ function openSprintModal() {
   isOpenedSprintModal.value = true
 }
 
-function OpenEditSprintModal(currentSprint: Sprint) {
+function OpenSprintModal(currentSprint: Sprint) {
   if (currentSprint.status === 'ACTIVE') {
     sprint.value = activeSprint?.value
     isOpenedSprintModal.value = true
-  }
+  } else openSprintInfoModal(currentSprint)
 }
 
 function closeSprintModal() {
   sprint.value = undefined
   isOpenedSprintModal.value = false
+}
+
+function openSprintInfoModal(sprint: Sprint) {
+  isOpenedSprintInfoModal.value = true
+  sprintId.value = sprint.id
+}
+
+function closeSprintInfoModal() {
+  isOpenedSprintInfoModal.value = false
 }
 </script>

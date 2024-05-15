@@ -52,7 +52,6 @@ import { Tag } from '@Domain/Tag'
 import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import useTagsStore from '@Store/tags/tagsStore'
-import BackLogTask from '@Components/Tasks/Task/BackLogTask/BackLogTask.vue'
 
 const tagsStore = useTagsStore()
 const { tags } = storeToRefs(tagsStore)

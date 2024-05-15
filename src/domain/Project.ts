@@ -50,6 +50,7 @@ interface TaskMovementLog {
   user: User
   startDate: string
   endDate: string
+  wastedTime: string
   status: TaskStatus
 }
 
@@ -61,6 +62,7 @@ interface Task {
   name: string
   description: string
   leaderComment?: string
+  executorComment?: string
 
   initiator: User
   executor: User | null
@@ -79,7 +81,6 @@ interface Sprint {
   projectId: string
   name: string
   goal?: string
-  marks: SprintMarks[]
   report: string
   startDate: string
   finishDate: string
@@ -95,7 +96,7 @@ interface SprintMarks {
   lastName: string
   projectRole: ProjectMemberRole
   mark: number | undefined
-  tasks?: Task[]
+  countCompletedTasks?: number
 }
 
 export {

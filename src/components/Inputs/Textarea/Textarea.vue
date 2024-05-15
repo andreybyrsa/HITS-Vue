@@ -41,7 +41,7 @@ const LabelClassName = computed(() => [
 </script>
 
 <template>
-  <div class="w-100">
+  <div class="d-flex flex-column w-100 h-100">
     <label
       :class="LabelClassName"
       v-if="label"
@@ -55,7 +55,7 @@ const LabelClassName = computed(() => [
       ></Icon>
     </label>
 
-    <div class="input-group">
+    <div class="input-group h-100">
       <span
         v-if="prepend || $slots.prepend"
         class="input-group-text fs-6"
