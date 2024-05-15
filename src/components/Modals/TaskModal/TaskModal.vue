@@ -64,7 +64,7 @@ watch(
   () => props.isOpened,
   () => {
     if (props.task) {
-      choosenTags.value = props.task.tags
+      choosenTags.value = structuredClone(props.task.tags)
       setValues(props.task)
     }
   },
@@ -147,11 +147,12 @@ function hexToRgb(hex: string) {
       />
 
       <ComboBox
+        name="tags"
         :options="confirmedTags(tags)"
         :display-by="['name']"
         v-model="choosenTags"
+        comparing-key="id"
         placeholder="Теги"
-        name="tags"
         validate-on-update
       />
 

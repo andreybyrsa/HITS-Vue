@@ -318,7 +318,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
                 </div>
               </th>
 
-              <th></th>
+              <th v-if="dropdownActionsMenu"></th>
             </tr>
           </thead>
 
@@ -385,7 +385,10 @@ function checkHeaderButtonStatement(statement?: boolean) {
                 </div>
               </td>
 
-              <td class="py-3">
+              <td
+                v-if="dropdownActionsMenu"
+                class="py-3"
+              >
                 <div class="table__row-icon">
                   <Icon
                     class-name="bi bi-three-dots fs-5"

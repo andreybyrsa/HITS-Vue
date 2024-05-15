@@ -129,6 +129,8 @@ const useTasksStore = defineStore('tasks', {
     },
 
     async updateTask(task: Task, token: string) {
+      const sprintsStore = useSprintsStore()
+
       const response = await TaskService.updateTask(task, token)
 
       if (response instanceof Error) {
@@ -137,6 +139,12 @@ const useTasksStore = defineStore('tasks', {
         this.tasks = this.tasks.map((currentTask) =>
           currentTask.id === task.id ? task : currentTask,
         )
+
+        if (task.sprintId && sprintsStore.activeSprint?.tasks) {
+          sprintsStore.activeSprint.tasks = sprintsStore.activeSprint.tasks.map(
+            (currentTask) => (currentTask.id === task.id ? task : currentTask),
+          )
+        }
       }
     },
 
@@ -159,6 +167,7 @@ const useTasksStore = defineStore('tasks', {
           startDate,
           endDate: '',
           status,
+          wastedTime: '',
         }
 
         const response = await TaskService.createTaskLog(log, taskId, token)
@@ -177,22 +186,30 @@ const useTasksStore = defineStore('tasks', {
     async changeLeaderComment(taskId: string, leaderComment: string, token: string) {
       const currentTask = this.tasks.find(({ id }) => id === taskId)
 
-      if (!currentTask) {
-        return
-      }
+      if (currentTask) {
+        const response = await TaskService.changeLeaderComment(
+          taskId,
+          currentTask,
+          leaderComment,
+          token,
+        )
 
-      currentTask.leaderComment = leaderComment
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const sprintStore = useSprintsStore()
 
-      const response = await TaskService.changeLeaderComment(
-        taskId,
-        currentTask,
-        leaderComment,
-        token,
-      )
+          const curTask = sprintStore.activeSprint?.tasks.find(
+            ({ id }) => id === taskId,
+          )
 
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-        return
+          if (curTask) {
+            curTask.leaderComment = leaderComment
+          }
+        }
       }
     },
 
@@ -232,6 +249,58 @@ const useTasksStore = defineStore('tasks', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
         return
+      }
+    },
+
+    async changeExecutorComment(
+      taskId: string,
+      executorComment: string,
+      token: string,
+    ) {
+      const currentTask = this.tasks.find(({ id }) => id === taskId)
+
+      if (currentTask) {
+        const response = await TaskService.changeExecutorComment(
+          taskId,
+          executorComment,
+          token,
+        )
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+        } else {
+          const sprintStore = useSprintsStore()
+
+          const curTask = sprintStore.activeSprint?.tasks.find(
+            ({ id }) => id === taskId,
+          )
+
+          if (curTask) {
+            curTask.executorComment = executorComment
+          }
+        }
+      }
+    },
+
+    async deleteTask(taskId: string, token: string) {
+      const sprintsStore = useSprintsStore()
+
+      const response = await TaskService.deleteTask(taskId, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return
+      }
+      this.tasks = this.tasks.filter(({ id }) => id !== taskId)
+
+      if (sprintsStore.activeSprint?.tasks) {
+        const newArrayTasks = sprintsStore.activeSprint.tasks.filter(
+          ({ id }) => id !== taskId,
+        )
+        sprintsStore.activeSprint.tasks = newArrayTasks
       }
     },
   },

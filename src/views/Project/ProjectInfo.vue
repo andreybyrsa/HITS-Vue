@@ -15,6 +15,7 @@ import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 
 import useUserStore from '@Store/user/userStore'
+import useSprintsStore from '@Store/sprints/sprintsStore'
 
 import { Project } from '@Domain/Project'
 
@@ -22,6 +23,9 @@ const isOpenedFinishProjectModal = ref(false)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const sprintStore = useSprintsStore()
+const { activeSprint } = storeToRefs(sprintStore)
 
 const props = defineProps<ProjectProps>()
 
@@ -34,15 +38,20 @@ function getFormattedDate(date: string) {
 
 function navigateToIdea(project: Project) {
   const ideaRoute: RouteRecordRaw = {
-    name: 'idea-project',
-    path: 'idea-project/:id',
-    alias: '/idea-project/:id',
+    name: 'idea-projects',
+    path: 'idea-projects/:projectId/:id',
+    alias: '/idea-projects/:projectId/:id',
     component: IdeaModal,
     props: {
       canGoBack: true,
     },
   }
-  navigateToAliasRoute('project', `/idea-project/${project.ideaId}`, ideaRoute)
+
+  navigateToAliasRoute(
+    'project',
+    `/idea-projects/${project.id}/${project.ideaId}`,
+    ideaRoute,
+  )
 }
 
 function closeFinishProjectModal() {
@@ -99,7 +108,11 @@ const getContentTab: {
           Перейти в идею
         </Button>
         <Button
-          v-if="props.project.status === 'ACTIVE' && user?.role === 'TEAM_LEADER'"
+          v-if="
+            props.project.status === 'ACTIVE' &&
+            user?.role === 'TEAM_LEADER' &&
+            !activeSprint
+          "
           @click="openFinishProjectModal"
           variant="danger"
           class-name="w-100"
@@ -108,6 +121,7 @@ const getContentTab: {
         </Button>
         <Button
           v-if="props.project.status === 'DONE'"
+          @click="openFinishProjectModal"
           variant="primary"
           class-name="w-100"
         >
@@ -119,7 +133,7 @@ const getContentTab: {
 
   <FinishProjectOrSprintModal
     :is-opened="isOpenedFinishProjectModal"
-    :members="project.members"
+    :project="project"
     @close-modal="closeFinishProjectModal"
   />
 </template>

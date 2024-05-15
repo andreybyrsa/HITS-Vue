@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="d-flex my-1"
+      class="d-flex my-1 cursor-pointer"
       @click="openTaskModal(task)"
     >
       <div
@@ -13,18 +13,26 @@
       >
         <div class="d-flex flex-column border-bottom pb-2">
           <div class="active-sprint__task">
-            <Typography>{{ task.name }}</Typography>
+            <div class="text-ellipsis">{{ task.name }}</div>
           </div>
           <div class="d-flex gap-1 text-secondary">
             {{ task.executor?.firstName }} {{ task.executor?.lastName }}
           </div>
           <div
             class="d-flex gap-1 text-secondary text-info"
-            v-if="task.leaderComment"
+            v-if="task.status === 'OnModification' && task.leaderComment"
           >
             <Typography>
-              {{ task.leaderComment }}
+              <div class="comment">{{ task.leaderComment }}</div>
             </Typography>
+          </div>
+          <div
+            class="d-flex gap-1 text-secondary text-info"
+            v-if="task.status === 'OnVerification' && task.executorComment"
+          >
+            <Typography
+              ><div class="comment">{{ task.executorComment }}</div></Typography
+            >
           </div>
         </div>
         <div class="d-flex flex-wrap gap-2 w-100 mt-2">
@@ -42,41 +50,24 @@
         </div>
       </div>
     </div>
-
-    <TaskDescriptionModal
-      :is-opened="isOpenedTaskModal"
-      :task="(currentTask as Task)"
-      :user="(user as User)"
-      @close-modal="closeTaskModal"
-      @update-leader-comment="changeLeaderComment"
-      @update-description="changeDescription"
-      @update-name="changeName"
-    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Task } from '@Domain/Project'
-import useTasksStore from '@Store/tasks/tasksStore'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 
+import { useRouter } from 'vue-router'
 import { ActiveSprintTaskProps } from '@Views/Project/Project.types'
-import { ref } from 'vue'
-import { User } from '@Domain/User'
-
-import TaskDescriptionModal from '@Components/Modals/SprintModal/TaskDescriptionModal.vue'
-import { useDebounceFn } from '@vueuse/core'
+import Typography from '@Components/Typography/Typography.vue'
 
 defineProps<ActiveSprintTaskProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const tasksStore = useTasksStore()
-
-const currentTask = ref<Task>()
-const isOpenedTaskModal = ref(false)
+const router = useRouter()
 
 function getColorBand(task: Task) {
   return task.executor?.id === user.value?.id ? '#0D6EFD' : '#9E9E9E'
@@ -93,47 +84,12 @@ function hexToRgb(hex: string) {
 }
 
 function openTaskModal(task: Task) {
-  currentTask.value = task
-  isOpenedTaskModal.value = true
+  router.push(`/projects/${task.projectId}/${task.id}`)
 }
-
-function closeTaskModal() {
-  isOpenedTaskModal.value = false
-}
-
-const changeLeaderComment = useDebounceFn((input: string) => {
-  const currentUser = user.value
-  const task = currentTask.value
-
-  if (currentUser?.token && task) {
-    const { token } = currentUser
-    const { id } = task
-
-    tasksStore.changeLeaderComment(id, input, token)
-  }
-}, 450)
-
-const changeDescription = useDebounceFn((input: string) => {
-  const currentUser = user.value
-  const task = currentTask.value
-
-  if (currentUser?.token && task) {
-    const { token } = currentUser
-    const { id } = task
-
-    tasksStore.changeDescription(id, input, token)
-  }
-}, 450)
-
-const changeName = useDebounceFn((input: string) => {
-  const currentUser = user.value
-  const task = currentTask.value
-
-  if (currentUser?.token && task) {
-    const { token } = currentUser
-    const { id } = task
-
-    tasksStore.changeName(id, input, token)
-  }
-}, 450)
 </script>
+
+<style lang="scss" scoped>
+.comment {
+  @include textEllipsis(2);
+}
+</style>

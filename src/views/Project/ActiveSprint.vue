@@ -31,7 +31,6 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const taskStore = useTasksStore()
-const { tasks } = storeToRefs(taskStore)
 
 const sprintStore = useSprintsStore()
 const { activeSprint } = storeToRefs(sprintStore)
@@ -149,7 +148,9 @@ function checkUserTask(evt: any) {
 
 function accessDragTask(evt: any) {
   const draggedStatus: TaskStatus = evt.draggedContext.element.status
-  const relatedStatus: TaskStatus = evt.relatedContext.element.status
+  const relatedStatus: TaskStatus = evt.relatedContext.element
+    ? evt.relatedContext.element.status
+    : evt.related.className.split(' ').pop()
 
   const accessStatus: { [key in TaskStatus]: TaskStatus[] } = {
     NewTask: ['InProgress', 'NewTask'],
@@ -184,7 +185,8 @@ const columns = computed(() => [
     name: 'На доработке',
     tooltip:
       'Здесь находятся задачи, которые были отправлены на доработку для исправления ошибок или улучшения качества. Эти задачи нужно выполнить в первую очередь, чтобы не затягивать сроки проекта.',
-    color: 'blueviolet',
+    class: 'OnModification',
+    color: '#8A2BE2',
     list: onModificationTask.tasks,
     move: checkOnModificationTask,
     handle: undefined,
@@ -194,6 +196,7 @@ const columns = computed(() => [
     name: 'Новые',
     tooltip:
       'Здесь находятся задачи, которые еще не были назначены команде или отдельному разработчику. Эти задачи можно выбирать по своему усмотрению, учитывая приоритеты и сложность.',
+    class: 'NewTask',
     color: '#0d6efd',
     list: newTask.tasks,
     move: accessDragTask,
@@ -204,6 +207,7 @@ const columns = computed(() => [
     name: 'На выполнении',
     tooltip:
       'Здесь находятся задачи, которые в данный момент выполняются командой или отдельным разработчиком. Данные задачи нужно довести до конца и не переключаться на другие.',
+    class: 'InProgress',
     color: '#f5ec0a',
     list: inProgressTask.tasks,
     move: checkUserTask,
@@ -214,6 +218,7 @@ const columns = computed(() => [
     name: 'На проверке',
     tooltip:
       'Здесь находятся задачи, которые были выполнены и отправлены тимлиду на проверку качества, функциональности и соответствия требованиям.',
+    class: 'OnVerification',
     color: '#ffa800',
     list: onVerificationTask.tasks,
     move: accessDragTask,
@@ -224,6 +229,7 @@ const columns = computed(() => [
     name: 'Выполненные',
     tooltip:
       'Здесь находятся задачи, которые были успешно проверены и одобрены. Эти задачи можно считать завершенными и не требующими дальнейшего внимания.',
+    class: 'Done',
     color: '#13c63a',
     list: doneTask.tasks,
     move: accessDragTask,
@@ -322,6 +328,7 @@ function closeBurndownModal() {
 
         <draggable
           class="list-group active-sprint__column"
+          :class="column.class"
           :list="column.list"
           group="active-sprint"
           :move="column.move"
@@ -339,8 +346,9 @@ function closeBurndownModal() {
   </div>
 
   <FinishProjectOrSprintModal
+    v-if="project"
     :is-opened="isOpenedFinishSprintModal"
-    :members="members"
+    :project="project"
     :sprint="activeSprint"
     :unfinishedTasks="unfinishedTasks"
     @close-modal="closeFinishSprintModal"

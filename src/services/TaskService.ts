@@ -44,6 +44,22 @@ const getAllTasksProject = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения задач'))
 }
 
+const getTask = async (taskId: string, token: string): Promise<Task | Error> => {
+  return tasksMocksAxios
+    .get<Task>(
+      `/scrum-service/task/${taskId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {
+        params: { id: taskId },
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения задач'))
+}
+
 const getTaskMovementLog = async (
   taskId: string,
   token: string,
@@ -250,19 +266,16 @@ const changeLeaderComment = async (
   task: Task,
   leaderComment: string,
   token: string,
-): Promise<Task[] | Error> => {
+): Promise<Success | Error> => {
   return tasksMocksAxios
-    .put<Task[]>(
-      `/scrum-service/task/comment/${taskId}`,
-      task,
+    .put<Success>(
+      `/scrum-service/task/leader/comment/${taskId}`,
+      { leaderComment },
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      {
-        params: { id: taskId },
-        requestData: { leaderComment },
-      },
+      { params: { id: taskId } },
     )
     .then((response) => response.data)
     .catch((error) =>
@@ -316,9 +329,43 @@ const changeName = async (
     .catch((error) => handleAxiosError(error, 'Ошибка изменения названия задачи'))
 }
 
+const changeExecutorComment = async (
+  taskId: string,
+  executorComment: string,
+  token: string,
+): Promise<Success | Error> => {
+  return tasksMocksAxios
+    .put<Success>(
+      `/scrum-service/task/executor/comment/${taskId}`,
+      { executorComment },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id: taskId } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса задачи'))
+}
+
+const deleteTask = async (id: string, token: string): Promise<Success | Error> => {
+  return tasksMocksAxios
+    .delete(
+      `/scrum-service/task/delete/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления идеи'))
+}
+
 const TaskService = {
   getAllTasksProject,
   getTaskMovementLog,
+  getTask,
 
   createTaskLog,
   createTask,
@@ -331,6 +378,9 @@ const TaskService = {
   changeLeaderComment,
   changeDescription,
   changeName,
+  changeExecutorComment,
+
+  deleteTask,
 }
 
 export default TaskService

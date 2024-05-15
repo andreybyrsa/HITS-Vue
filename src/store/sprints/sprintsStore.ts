@@ -8,6 +8,7 @@ import { tasksMocks } from '@Utils/getMocks'
 import { MODE } from '@Main'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import useTasksStore from '@Store/tasks/tasksStore'
+import TaskService from '@Services/TaskService'
 
 const useSprintsStore = defineStore('sprints', {
   state: (): InitialState => ({
@@ -154,12 +155,6 @@ const useSprintsStore = defineStore('sprints', {
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        const currentSprint = this.sprints.find(({ id }) => id === sprintId)
-
-        if (currentSprint && currentSprint.marks) {
-          currentSprint.marks = marks
-        }
       }
     },
   },
