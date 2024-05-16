@@ -13,7 +13,6 @@ import {
   TeamCollapseData,
   MembersCollapseData,
 } from '@Domain/Quest'
-// import { Team } from '@Domain/Team'
 
 import Button from '@Components/Button/Button.vue'
 import Select from '@Components/Inputs/Select/Select.vue'
@@ -36,10 +35,10 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const questsTemplatesStore = useQuestTemplatesStore()
-const { questTemplate: quest } = storeToRefs(questsTemplatesStore)
+const { questTemplate } = storeToRefs(questsTemplatesStore)
 
 const questsStore = useQuestsStore()
-const { quests: quests } = storeToRefs(questsStore)
+const { quests } = storeToRefs(questsStore)
 
 const teamsStore = useTeamStore()
 const { teams } = storeToRefs(teamsStore)
@@ -51,11 +50,13 @@ const computedQuest = computed(() => {
     questData.value.idQuestTemplate,
     user.value.token,
   )
-  return quest
+  return questTemplate
 })
+
 const computedRole = computed(() => {
   return user.value?.role
 })
+
 const computedQuestAvailability = computed(() => {
   return questData.value.available ? 'Открыт' : 'Завершен'
 })
@@ -70,24 +71,27 @@ const availableOptions: OptionType[] = [
     label: 'Не доступен',
   },
 ]
+
 const { handleSubmit, setValues, setFieldError } = useForm<{ available: boolean }>(
   {},
 )
+
 const changeAvailability = handleSubmit(async (model) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
     const { token } = currentUser
     const available = model.available
-    if (available == quest.value?.available) {
+    if (available == questTemplate.value?.available) {
       setFieldError('available', 'Значение должно отличаться от предыдущего')
     }
   }
 })
-// getQuestPercent
+
 const teamCollapseData = ref<TeamCollapseData[]>(
   questCollapseData.value?.teams ?? [],
 )
+
 const TableColumns = computed((): TableColumn<TeamCollapseData>[] => {
   const columns: TableColumn<TeamCollapseData>[] = [
     {
@@ -100,14 +104,6 @@ const TableColumns = computed((): TableColumn<TeamCollapseData>[] => {
   return columns
 })
 
-// const dropdownActionsMenu: DropdownMenuAction<Team>[] = [
-//   {
-//     label: 'string',
-//     click: (value) => {
-//       1
-//     },
-//   },
-// ]
 onMounted(async () => {
   const currentUser = user.value
   if (!currentUser?.token) return
@@ -175,7 +171,7 @@ onMounted(async () => {
       </div>
 
       <div>
-        <p>{{ quest?.name }}</p>
+        <p>{{ questTemplate?.name }}</p>
       </div>
     </div>
 
