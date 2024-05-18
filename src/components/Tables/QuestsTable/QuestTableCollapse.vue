@@ -115,7 +115,6 @@ onMounted(async () => {
   )
   if (response instanceof Error) return
   questCollapseData.value = response
-  console.log(questCollapseData.value)
 })
 </script>
 

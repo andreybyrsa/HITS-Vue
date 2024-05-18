@@ -11,14 +11,19 @@ export type IndicatorType = 'TEAM' | 'INITIATOR' | 'TEAM-MEMBER' | 'TEAMLEAD'
 export interface Indicator {
   idIndicator: string
   name: string
-  description?: string
+  answers: string[]
   type: IndicatorType
   role: RolesTypes
   visible: boolean
-  categoryName?: string
-  idCategory?: string
+  categoryName: string
+  idCategory: string
   // idToUser нужен только на этапе прохождения опроса, при создании indicator его не надо передавать
   idToUser?: string
+}
+
+export interface IndicatorCategory {
+  id: string
+  name: string
 }
 
 export interface QuestTemplateShort {

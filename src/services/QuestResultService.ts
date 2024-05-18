@@ -1,4 +1,5 @@
 import { QuestResult } from '@Domain/Quest'
+import { QUEST_SERVICE_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -10,11 +11,15 @@ import handleAxiosError from '@Utils/handleAxiosError'
 const questResultsAxios = defineAxios(resultsMocks)
 
 // --- GET --- //
-const getQuestResults = async (token: string): Promise<QuestResult[] | Error> => {
+const getQuestResults = async (
+  idQuest: string,
+  token: string,
+): Promise<QuestResult[] | Error> => {
   return questResultsAxios
-    .get('/quest-results', {
+    .get(`${QUEST_SERVICE_URL}/quest/results/all`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      params: { idQuest },
     })
     .then((response) => response.data)
     .catch((error) =>
@@ -27,7 +32,7 @@ const postQuestResults = async (
   token: string,
 ): Promise<QuestResult[] | Error> => {
   return questResultsAxios
-    .post(`/quest-result`, questResults, {
+    .post(`${QUEST_SERVICE_URL}/quest/results`, questResults, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
