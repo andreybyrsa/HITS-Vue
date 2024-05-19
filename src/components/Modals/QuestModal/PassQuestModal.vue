@@ -45,7 +45,7 @@ const currentIndicator = computed(() => {
 
 const results = ref<QuestResult[]>([])
 
-const { setValues, values } = useForm<{ answer: number }>({})
+const { setValues, values } = useForm<{ answer: string }>({})
 
 onMounted(async () => {
   const token = user.value?.token
@@ -66,6 +66,19 @@ const teamOfUser = computed(() => {
     team.members.find((someUser) => someUser.id == user.value?.id),
   )
 })
+
+watch(
+  () => props.launchQuest,
+  async () => {
+    const token = user.value?.token
+    if (token) {
+      const id = props.launchQuest?.idQuestTemplate
+      if (!id) return
+      await questTemplatesStore.getQuestTemplate(id, token)
+    }
+  },
+  { deep: true },
+)
 
 const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
   const questIndicators = questTemplate.value?.indicators
@@ -105,19 +118,6 @@ const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
 
   return personalIndicators
 })
-
-watch(
-  () => props.launchQuest,
-  async () => {
-    const token = user.value?.token
-    if (token) {
-      const id = props.launchQuest?.idQuestTemplate
-      if (!id) return
-      await questTemplatesStore.getQuestTemplate(id, token)
-    }
-  },
-  { deep: true },
-)
 
 const startQuest = () => {
   currentIndicatorIndex.value = 0
@@ -204,16 +204,9 @@ const sendResults = async () => {
             <p class="fs-5 text-start">
               {{ currentIndicator?.name }}
             </p>
-            <div class="d-flex">
-              <Radio
-                name="answer"
-                :value="0"
-              />
-              <p>Не могу дать ответ</p>
-            </div>
             <div
               class="d-flex"
-              v-for="i in 5"
+              v-for="i in currentIndicator?.answers"
               :key="i"
             >
               <Radio
@@ -238,7 +231,7 @@ const sendResults = async () => {
           "
           class-name="w-fit h-auto align-self-end"
           variant="primary"
-          :disabled="isNaN(values.answer)"
+          :disabled="!values.answer"
           @click="sendResults()"
           >Отправить ответы</Button
         >
@@ -246,7 +239,7 @@ const sendResults = async () => {
           v-else
           class-name="w-fit h-auto align-self-end"
           variant="primary"
-          :disabled="isNaN(values.answer)"
+          :disabled="!values.answer"
           @click="nextQuestion()"
           >Следующий вопрос</Button
         >

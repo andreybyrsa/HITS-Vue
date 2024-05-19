@@ -27,10 +27,10 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const questsTemplatesStore = useQuestTemplatesStore()
-const { questTemplate: quest } = storeToRefs(questsTemplatesStore)
+const { questTemplate } = storeToRefs(questsTemplatesStore)
 
 const questsStore = useQuestsStore()
-const { quests: quests } = storeToRefs(questsStore)
+const { quests } = storeToRefs(questsStore)
 
 const teamsStore = useTeamStore()
 const { teams } = storeToRefs(teamsStore)

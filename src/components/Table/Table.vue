@@ -294,10 +294,7 @@ const collapseIds = computed(() => {
       </div>
     </div>
 
-    <div
-      class="py-2 d-flex justify-content-between"
-      v-if="!columns[0]"
-    >
+    <div class="py-2 d-flex justify-content-between">
       <div
         v-if="searchBy"
         class="w-50"
