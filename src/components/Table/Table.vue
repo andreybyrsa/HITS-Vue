@@ -1,5 +1,13 @@
 <script lang="ts" setup generic="DataType">
-import { ref, Ref, onMounted, computed, StyleValue, onBeforeMount } from 'vue'
+import {
+  ref,
+  Ref,
+  onMounted,
+  computed,
+  StyleValue,
+  onBeforeMount,
+  resolveComponent,
+} from 'vue'
 import { watchImmediate } from '@vueuse/core'
 
 import {
@@ -53,6 +61,7 @@ onMounted(() => {
   if (props.filters) {
     filtersRefs.value = props.filters.map((filter) => filter.refValue)
   }
+  console.log(typeof props.collapseChildComponent)
 })
 
 watchImmediate(
@@ -237,10 +246,23 @@ function checkDropdownActionStatement(
 function checkHeaderButtonStatement(statement?: boolean) {
   return statement !== undefined ? statement : true
 }
-
-// function eventOfCollapse(index: number) {
-//   isCollapsed.value[index] = !isCollapsed.value[index]
-// }
+function makeRandomId(length: number) {
+  let result = ''
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const charactersLength = characters.length
+  let counter = 0
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+    counter += 1
+  }
+  return result
+}
+//ВНИМАНИЕ
+//эти id устарняют колизии вложенных коллапсов НЕТРОГАТЬ
+//ВНИМАНИЕ
+const collapseIds = computed(() => {
+  return searchedData.value.map(() => makeRandomId(10))
+})
 </script>
 
 <template>
@@ -351,13 +373,15 @@ function checkHeaderButtonStatement(statement?: boolean) {
           >
             <tr>
               <td
-                class="py-3"
+                class="py-3 justify-content-center align-items-center text-center"
                 v-if="collapseChildComponent"
               >
                 <Icon
-                  class="table__row-icon ms-1 bi bi-chevron-down"
+                  class="table__row-icon bi bi-chevron-down"
                   type="button"
-                  v-collapse="`tableCollapse.${index}`"
+                  v-collapse="
+                    `${props.collapseChildComponent?.__name}.${collapseIds[index]}`
+                  "
                   @click="chevronAction"
                 />
                 <!-- @click="eventOfCollapse(index)" -->
@@ -419,7 +443,10 @@ function checkHeaderButtonStatement(statement?: boolean) {
                 </div>
               </td>
 
-              <td class="py-3">
+              <td
+                class="py-3"
+                v-if="dropdownActionsMenu?.length"
+              >
                 <div class="table__row-icon float-end">
                   <Icon
                     class-name=" bi bi-three-dots fs-5"
@@ -460,7 +487,7 @@ function checkHeaderButtonStatement(statement?: boolean) {
               >
                 <Collapse
                   :className="`border-bottom`"
-                  :id="`tableCollapse.${index}`"
+                  :id="`${props.collapseChildComponent?.__name}.${collapseIds[index]}`"
                 >
                   <div class="py-2">
                     <component

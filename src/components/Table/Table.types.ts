@@ -1,6 +1,6 @@
 import { ButtonProps } from '@Components/Button/Button.types'
 import { Filter } from '@Components/FilterBar/FilterBar.types'
-import { StyleValue } from 'vue'
+import { StyleValue, defineComponent } from 'vue'
 
 type KeyValueFunction<T, K extends keyof T> = (
   value: T[K],
@@ -72,7 +72,7 @@ interface TableProps<DataType> {
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]
   chevronAction?: ($event?: undefined) => any
   isCheckbox?: boolean
-  collapseChildComponent?: object // в этом компоненте должен быть СТРОГО ОДИН пропс "data"
+  collapseChildComponent?: ReturnType<typeof defineComponent> // в этом компоненте должен быть СТРОГО ОДИН пропс "data"
 }
 
 export {

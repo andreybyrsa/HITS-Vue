@@ -9,7 +9,7 @@ import PassLaunchQuestModal from '@Components/Modals/QuestModal/PassQuestModal.v
 import useUserStore from '@Store/user/userStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import { storeToRefs } from 'pinia'
-import { Quest } from '@Domain/Quest'
+import { Quest, QuestStat } from '@Domain/Quest'
 import { computed, onMounted, ref } from 'vue'
 import { RouteRecordRaw, useRoute } from 'vue-router'
 import LaunchQuestModal from '@Components/Modals/QuestModal/QuestModal.vue'
@@ -19,23 +19,28 @@ import QuestTableCollapse from '@Components/Tables/QuestsTable/QuestTableCollaps
 const route = useRoute()
 const userStore = useUserStore()
 const QuestStore = useQuestsStore()
+const questCollapseData = ref<QuestStat[]>()
 
 const { user } = storeToRefs(userStore)
-const { quests: Quests } = storeToRefs(QuestStore)
+// const { quests: Quests } = storeToRefs(QuestStore)
 
 const isPassLaunchQuestModalOpen = ref(false)
 const passLaunchQuest = ref<Quest | null>(null)
 
 onMounted(async () => {
-  if (user.value?.token) {
-    await QuestStore.getQuests(user.value.token)
-  }
+  const token = user.value?.token
+  if (!token) return
+  await QuestStore.getQuests(token)
+
+  const response = await QuestStore.getQuestCollapseData(token)
+  if (response instanceof Error) return
+  questCollapseData.value = response
 })
 
-const openPassLaunchQuestModal = (launchQuest: Quest) => {
-  passLaunchQuest.value = launchQuest
-  isPassLaunchQuestModalOpen.value = true
-}
+// const openPassLaunchQuestModal = (launchQuest: Quest) => {
+//   passLaunchQuest.value = launchQuest
+//   isPassLaunchQuestModalOpen.value = true
+// }
 
 const closePassLaunchQuestModal = () => {
   passLaunchQuest.value = null
@@ -51,7 +56,7 @@ const getTranslatedIsPassedStatus = (passed: boolean) => {
   return passed ? 'Пройден' : 'Не пройден'
 }
 
-const launchQuestsTableColumns = computed((): TableColumn<Quest>[] => {
+/*const launchQuestsTableColumns = computed((): TableColumn<Quest>[] => {
   const columns: TableColumn<Quest>[] = [
     {
       key: 'name',
@@ -93,28 +98,56 @@ const launchQuestsTableColumns = computed((): TableColumn<Quest>[] => {
     getRowCellFormat: getTranslatedIsPassedStatus,
   })
   return columns
+})*/
+
+const launchQuestsTableColumns = computed((): TableColumn<QuestStat>[] => {
+  const columns: TableColumn<QuestStat>[] = [
+    {
+      key: 'name',
+      label: 'Название',
+      contentClassName: 'col align-self-start',
+    },
+    {
+      key: 'progress',
+      contentClassName: 'col justify-content-center align-items-center text-center ',
+      label: 'Результат прохождения',
+      getRowCellFormat: getFormatProgress,
+    },
+  ]
+
+  if (user.value?.role == 'PROJECT_OFFICE') {
+    return columns
+  }
+  // columns.push({
+  //   key: 'passed',
+  //   contentClassName: 'justify-content-center align-items-center text-center ',
+  //   label: 'Статус',
+  //   getRowCellFormat: getTranslatedIsPassedStatus,
+  // })
+  return columns
 })
 
-const launchQuestPassability = (launchQuest: Quest) => {
+const launchQuestPassability = (launchQuest: QuestStat) => {
   return (
-    user.value?.role != 'PROJECT_OFFICE' &&
-    !launchQuest.passed &&
-    launchQuest.available
+    user.value?.role != 'PROJECT_OFFICE'
+    // &&
+    // !launchQuest.passed &&
+    // launchQuest.available
   )
 }
 
-const launchQuestsTableDropdownMenuAction: DropdownMenuAction<Quest>[] = [
+const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [
   {
     label: 'Просмотреть',
     statement: () => true,
     // click: (value: LaunchQuest) => navigateToLaunchQuestModal(value),
     click: () => handleEditCollapseTable,
   },
-  {
-    label: 'Пройти опрос',
-    statement: (launchQuest: Quest) => launchQuestPassability(launchQuest),
-    click: (launchQuest: Quest) => openPassLaunchQuestModal(launchQuest),
-  },
+  // {
+  //   label: 'Пройти опрос',
+  //   statement: (launchQuest: Quest) => launchQuestPassability(launchQuest),
+  //   click: (launchQuest: Quest) => openPassLaunchQuestModal(launchQuest),
+  // },
 ]
 
 const navigateToLaunchQuestModal = (quest: Quest) => {
@@ -138,15 +171,8 @@ const navigateToLaunchQuestModal = (quest: Quest) => {
   )
 }
 
-const isOpenCollapseTable = ref(true)
-
-function handleEditCollapseTable() {
-  if (isOpenCollapseTable.value) isOpenCollapseTable.value = false
-  isOpenCollapseTable.value = true
-}
-
-const getPercentWithSign = (precent: string) => {
-  return precent + ' %'
+const getFormatProgress = (progress: string) => {
+  return Math.floor(parseFloat(progress)).toString() + ' %'
 }
 </script>
 
@@ -156,10 +182,9 @@ const getPercentWithSign = (precent: string) => {
     :header="launchQuestsTableHeader"
     :columns="launchQuestsTableColumns"
     :dropdown-actions-menu="launchQuestsTableDropdownMenuAction"
-    :data="Quests"
+    :data="questCollapseData ?? []"
     :search-by="['name']"
     :collapseChildComponent="QuestTableCollapse"
-    :isOpenCollapse="isOpenCollapseTable"
   />
   <PassLaunchQuestModal
     :launch-quest="passLaunchQuest"
@@ -168,8 +193,4 @@ const getPercentWithSign = (precent: string) => {
   ></PassLaunchQuestModal>
 </template>
 
-<style>
-.percent::after {
-  content: '%';
-}
-</style>
+<style></style>

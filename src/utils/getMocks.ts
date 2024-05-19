@@ -28,8 +28,9 @@ import {
   QuestTemplate,
   QuestTemplateShort,
   QuestResult,
-  QuestCollapseData,
-  MembersCollapseData,
+  QuestStat,
+  TeamQuestStat,
+  UsersQuestStat,
 } from '@Domain/Quest'
 import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
 
@@ -1689,7 +1690,7 @@ export const indicatorsMocks: Indicator[] = [
   },
 ]
 
-export const questsMocks: QuestTemplate[] = [
+export const QuestsTemplateMocks: QuestTemplate[] = [
   {
     idQuestTemplate: questsShortMocks[0].idQuestTemplate,
     available: questsShortMocks[0].available,
@@ -1699,10 +1700,10 @@ export const questsMocks: QuestTemplate[] = [
   },
 ]
 
-export const launchQuestsMocks: Quest[] = [
+export const QuestsMocks: Quest[] = [
   {
     idQuest: '4',
-    idQuestTemplate: questsMocks[0].idQuestTemplate!,
+    idQuestTemplate: QuestsTemplateMocks[0].idQuestTemplate!,
     idTeams: [
       { id: teamsMocks[0].id },
       { id: teamsMocks[1].id },
@@ -1718,7 +1719,7 @@ export const launchQuestsMocks: Quest[] = [
   },
   {
     idQuest: '3',
-    idQuestTemplate: questsMocks[0].idQuestTemplate!,
+    idQuestTemplate: QuestsTemplateMocks[0].idQuestTemplate!,
     idTeams: [{ id: teamsMocks[0].id }],
     name: 'Осенний опрос 2023',
     startAt: '28.11.2023',
@@ -1732,7 +1733,7 @@ export const launchQuestsMocks: Quest[] = [
   },
   {
     idQuest: '2',
-    idQuestTemplate: questsMocks[0].idQuestTemplate!,
+    idQuestTemplate: QuestsTemplateMocks[0].idQuestTemplate!,
     idTeams: [{ id: teamsMocks[0].id }],
     name: 'Весенний опрос 2023',
     startAt: '28.04.2023',
@@ -1746,7 +1747,7 @@ export const launchQuestsMocks: Quest[] = [
   },
   {
     idQuest: '1',
-    idQuestTemplate: questsMocks[0].idQuestTemplate!,
+    idQuestTemplate: QuestsTemplateMocks[0].idQuestTemplate!,
     idTeams: [{ id: teamsMocks[0].id }],
     name: 'Осенний опрос 2022',
     startAt: '28.11.2022',
@@ -1764,14 +1765,14 @@ export const resultsMocks: QuestResult[] = [
   {
     idResult: '8',
     idIndicator: indicatorsMocks[0].idIndicator,
-    idQuest: launchQuestsMocks[0].idQuest,
+    idQuest: QuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     value: '4',
   },
   {
     idResult: '7',
     idIndicator: indicatorsMocks[1].idIndicator,
-    idQuest: launchQuestsMocks[0].idQuest,
+    idQuest: QuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     idToUser: '',
     value: '',
@@ -1780,7 +1781,7 @@ export const resultsMocks: QuestResult[] = [
     return {
       idResult: '33' + member.userId,
       idIndicator: indicatorsMocks[2].idIndicator,
-      idQuest: launchQuestsMocks[0].idQuest,
+      idQuest: QuestsMocks[0].idQuest,
       idFromUser: usersMocks[0].id,
       idToUser: member.userId,
       value: '',
@@ -1789,7 +1790,7 @@ export const resultsMocks: QuestResult[] = [
   {
     idResult: '4',
     idIndicator: indicatorsMocks[0].idIndicator,
-    idQuest: launchQuestsMocks[0].idQuest,
+    idQuest: QuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     idToUser: '',
     value: '',
@@ -1797,7 +1798,7 @@ export const resultsMocks: QuestResult[] = [
   {
     idResult: '3',
     idIndicator: indicatorsMocks[1].idIndicator,
-    idQuest: launchQuestsMocks[0].idQuest,
+    idQuest: QuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     idToUser: '',
     value: '',
@@ -1806,7 +1807,7 @@ export const resultsMocks: QuestResult[] = [
     return {
       idResult: '22' + member.userId,
       idIndicator: indicatorsMocks[2].idIndicator,
-      idQuest: launchQuestsMocks[0].idQuest,
+      idQuest: QuestsMocks[0].idQuest,
       idFromUser: usersMocks[0].id,
       idToUser: member.userId,
       value: '',
@@ -1814,106 +1815,81 @@ export const resultsMocks: QuestResult[] = [
   }),
 ]
 
-export const questMembersCollapse: MembersCollapseData[] = [
+export const usersQuestStatMocks: UsersQuestStat[] = [
   {
-    teamMembers: teamsMocks[0].members.map(
-      (members) => members.firstName + members.lastName,
-    ),
-    teamMemberProgress: [true, true, false, true],
+    id: usersMocks[0].id,
+    name: usersMocks[0].firstName + usersMocks[0].lastName,
+    progress: false,
   },
   {
-    teamMembers: teamsMocks[1].members.map(
-      (members) => members.firstName + members.lastName,
-    ),
-    teamMemberProgress: [true, true, false, true],
+    id: usersMocks[1].id,
+    name: usersMocks[1].firstName + usersMocks[1].lastName,
+    progress: false,
   },
   {
-    teamMembers: teamsMocks[2].members.map(
-      (members) => members.firstName + members.lastName,
-    ),
-    teamMemberProgress: [true, false, false, false],
+    id: usersMocks[2].id,
+    name: usersMocks[2].firstName + usersMocks[2].lastName,
+    progress: false,
+  },
+  {
+    id: usersMocks[3].id,
+    name: usersMocks[3].firstName + usersMocks[3].lastName,
+    progress: true,
   },
 ]
-
-export const questCollapseData: QuestCollapseData[] = [
+export const teamsQuestStatMocks: TeamQuestStat[] = [
   {
-    idQuest: launchQuestsMocks[0].idQuest,
-    teams: [
-      {
-        teamName: teamsMocks[0].name,
-        teamProgress:
-          (questMembersCollapse[0].teamMemberProgress.filter(
-            (value) => value === true,
-          ).length /
-            questMembersCollapse[0].teamMemberProgress.length) *
-          100,
-        teamMembers: questMembersCollapse[0],
-      },
-      {
-        teamName: teamsMocks[1].name,
-        teamProgress:
-          (questMembersCollapse[1].teamMemberProgress.filter(
-            (value) => value === true,
-          ).length /
-            questMembersCollapse[1].teamMemberProgress.length) *
-          100,
-        teamMembers: questMembersCollapse[1],
-      },
-      {
-        teamName: teamsMocks[2].name,
-        teamProgress:
-          (questMembersCollapse[2].teamMemberProgress.filter(
-            (value) => value === true,
-          ).length /
-            questMembersCollapse[2].teamMemberProgress.length) *
-          100,
-        teamMembers: questMembersCollapse[2],
-      },
+    id: teamsMocks[0].id,
+    name: teamsMocks[0].name,
+    progress: ((2 / 4) * 100).toString(),
+    users: [
+      usersQuestStatMocks[0],
+      usersQuestStatMocks[1],
+      usersQuestStatMocks[2],
+      usersQuestStatMocks[3],
     ],
   },
   {
-    idQuest: launchQuestsMocks[1].idQuest,
-    teams: [
-      {
-        teamName: teamsMocks[0].name,
-        teamProgress:
-          (questMembersCollapse[0].teamMemberProgress.filter(
-            (value) => value === true,
-          ).length /
-            questMembersCollapse[0].teamMemberProgress.length) *
-          100,
-        teamMembers: questMembersCollapse[0],
-      },
-    ],
+    id: teamsMocks[1].id,
+    name: teamsMocks[1].name,
+    progress: ((2 / 3) * 100).toString(),
+    users: [usersQuestStatMocks[0], usersQuestStatMocks[2], usersQuestStatMocks[3]],
   },
   {
-    idQuest: launchQuestsMocks[2].idQuest,
-    teams: [
-      {
-        teamName: teamsMocks[0].name,
-        teamProgress:
-          (questMembersCollapse[0].teamMemberProgress.filter(
-            (value) => value === true,
-          ).length /
-            questMembersCollapse[0].teamMemberProgress.length) *
-          100,
-        teamMembers: questMembersCollapse[0],
-      },
-    ],
+    id: teamsMocks[2].id,
+    name: teamsMocks[2].name,
+    progress: ((2 / 3) * 100).toString(),
+    users: [usersQuestStatMocks[0], usersQuestStatMocks[2], usersQuestStatMocks[3]],
+  },
+]
+export const QuestStatMocks: QuestStat[] = [
+  {
+    id: QuestsMocks[0].idQuest,
+    name: QuestsMocks[0].name,
+    progress: (
+      (parseFloat(teamsQuestStatMocks[0].progress) +
+        parseFloat(teamsQuestStatMocks[1].progress) +
+        parseFloat(teamsQuestStatMocks[2].progress)) /
+      3
+    ).toString(),
+    teams: [teamsQuestStatMocks[0], teamsQuestStatMocks[1], teamsQuestStatMocks[2]],
   },
   {
-    idQuest: launchQuestsMocks[3].idQuest,
-    teams: [
-      {
-        teamName: teamsMocks[0].name,
-        teamProgress:
-          (questMembersCollapse[0].teamMemberProgress.filter(
-            (value) => value === true,
-          ).length /
-            questMembersCollapse[0].teamMemberProgress.length) *
-          100,
-        teamMembers: questMembersCollapse[0],
-      },
-    ],
+    id: QuestsMocks[1].idQuest,
+    name: QuestsMocks[1].name,
+    progress: teamsQuestStatMocks[0].progress,
+    teams: [teamsQuestStatMocks[0]],
+  },
+  {
+    id: QuestsMocks[2].idQuest,
+    name: QuestsMocks[2].name,
+    progress: teamsQuestStatMocks[0].progress,
+    teams: [teamsQuestStatMocks[0]],
+  },
+  {
+    id: QuestsMocks[3].idQuest,
+    name: QuestsMocks[3].name,
+    progress: teamsQuestStatMocks[0].progress,
+    teams: [teamsQuestStatMocks[0]],
   },
 ]

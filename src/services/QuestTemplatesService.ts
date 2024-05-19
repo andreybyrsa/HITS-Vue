@@ -5,11 +5,11 @@ import useUserStore from '@Store/user/userStore'
 
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
-import { questsMocks, questsShortMocks } from '@Utils/getMocks'
+import { QuestsTemplateMocks, questsShortMocks } from '@Utils/getMocks'
 import handleAxiosError from '@Utils/handleAxiosError'
 
 const questsShortAxios = defineAxios(questsShortMocks)
-const questAxios = defineAxios(questsMocks)
+const questAxios = defineAxios(QuestsTemplateMocks)
 
 // --- GET --- //
 const getQuestTemplates = async (

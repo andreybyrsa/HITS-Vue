@@ -7,17 +7,9 @@ import useUserStore from '@Store/user/userStore'
 import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import useTeamStore from '@Store/teams/teamsStore'
-import {
-  Quest,
-  QuestCollapseData,
-  TeamCollapseData,
-  MembersCollapseData,
-} from '@Domain/Quest'
-// import { Team } from '@Domain/Team'
+import { Quest, QuestStat, TeamQuestStat, UsersQuestStat } from '@Domain/Quest'
+import QuestTableCollapseTeamLevel from './QuestTableCollapseTeamLevel.vue'
 
-import Button from '@Components/Button/Button.vue'
-import Select from '@Components/Inputs/Select/Select.vue'
-import IndicatorItem from '@Components/IndicatorItem/IndicatorItem.vue'
 import Table from '@Components/Table/Table.vue'
 import {
   DropdownMenuAction,
@@ -29,8 +21,7 @@ import { TableCollapse } from '@Components/Tables/QuestsTable/QuestTableCollapse
 import { OptionType } from '@Components/Inputs/Select/Select.types'
 
 const props = defineProps<TableCollapse>()
-const questData = ref<Quest>(props.data)
-const questCollapseData = ref<QuestCollapseData>()
+const teamQuestStat = ref<TeamQuestStat[]>(props.data.teams)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -44,20 +35,8 @@ const { quests: quests } = storeToRefs(questsStore)
 const teamsStore = useTeamStore()
 const { teams } = storeToRefs(teamsStore)
 
-const computedQuest = computed(() => {
-  if (!user.value?.token) return
-  if (!questData.value.idQuestTemplate) return
-  questsTemplatesStore.getQuestTemplate(
-    questData.value.idQuestTemplate,
-    user.value.token,
-  )
-  return quest
-})
 const computedRole = computed(() => {
   return user.value?.role
-})
-const computedQuestAvailability = computed(() => {
-  return questData.value.available ? 'Открыт' : 'Завершен'
 })
 
 const availableOptions: OptionType[] = [
@@ -70,169 +49,67 @@ const availableOptions: OptionType[] = [
     label: 'Не доступен',
   },
 ]
-const { handleSubmit, setValues, setFieldError } = useForm<{ available: boolean }>(
-  {},
-)
-const changeAvailability = handleSubmit(async (model) => {
-  const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const available = model.available
-    if (available == quest.value?.available) {
-      setFieldError('available', 'Значение должно отличаться от предыдущего')
-    }
-  }
-})
-// getQuestPercent
-const teamCollapseData = ref<TeamCollapseData[]>(
-  questCollapseData.value?.teams ?? [],
-)
-const TableColumns = computed((): TableColumn<TeamCollapseData>[] => {
-  const columns: TableColumn<TeamCollapseData>[] = [
+const getFormatProgress = (progress: string) => {
+  return Math.floor(parseFloat(progress)).toString() + ' %'
+}
+
+const TableColumns = computed((): TableColumn<TeamQuestStat>[] => {
+  const columns: TableColumn<TeamQuestStat>[] = [
     {
-      key: 'teamName',
+      contentClassName: 'col align-self-start',
+      key: 'name',
     },
     {
-      key: 'teamProgress',
+      contentClassName: 'col justify-content-center align-items-center text-center ',
+      key: 'progress',
+      getRowCellStyle: getStatusStyle,
+      getRowCellFormat: getFormatProgress,
     },
   ]
   return columns
 })
+const launchQuestsTableCollapseDropdownMenuAction: DropdownMenuAction<TeamQuestStat>[] =
+  [
+    {
+      label: 'Отправить всем участникам команды сообщение о прохождении',
+      statement: () => true,
+      // click: (value: LaunchQuest) => navigateToLaunchQuestModal(value),
+      click: () => handleEditCollapseTable,
+    },
+    // {
+    //   label: 'Пройти опрос',
+    //   statement: (launchQuest: Quest) => launchQuestPassability(launchQuest),
+    //   click: (launchQuest: Quest) => openPassLaunchQuestModal(launchQuest),
+    // },
+  ]
 
-// const dropdownActionsMenu: DropdownMenuAction<Team>[] = [
-//   {
-//     label: 'string',
-//     click: (value) => {
-//       1
-//     },
-//   },
-// ]
-onMounted(async () => {
-  const currentUser = user.value
-  if (!currentUser?.token) return
-
-  const { token } = currentUser
-  const response = await questsStore.getQuestCollapseData(
-    token,
-    questData.value.idQuest,
-  )
-  if (response instanceof Error) return
-  questCollapseData.value = response
-  console.log(questCollapseData.value)
-})
+function getStatusStyle(percent: string) {
+  const initialClass = ['px-2', 'py-1', 'rounded-4']
+  if (Number(percent) < 50) {
+    initialClass.push('bg-danger-subtle', 'text-danger')
+    return initialClass
+  }
+  if (Number(percent) == 100) {
+    initialClass.push('bg-success-subtle', 'text-success')
+    return initialClass
+  }
+  initialClass.push('bg-warning-subtle', 'text-warning')
+  return initialClass
+}
 </script>
 
 <template>
-  {{ questCollapseData }}
-  <div class="ms-5 border">
+  <div class="ms-5 border-top border-bottom">
     <Table
-      v-if="teamCollapseData"
-      :data="teamCollapseData"
+      :data="teamQuestStat"
       :columns="TableColumns"
+      :dropdown-actions-menu="launchQuestsTableCollapseDropdownMenuAction"
+      :collapse-child-component="QuestTableCollapseTeamLevel"
     >
       <!-- :dropdownActionsMenu="dropdownActionsMenu" -->
     </Table>
   </div>
-
-  <!-- <template>
-    <Table
-      class-name="ms-5"
-      data
-    >
-    </Table>
-  </template> -->
-  <!-- <div class="w-100 m-0 p-0">
-    <div>
-      <Typography
-        >{{ computedQuest?.value?.name ? computedQuest?.value.name : 'Опрос' }}
-      </Typography>
-    </div>
-
-    <div>
-      <div>
-        <Typography>Дата начала и окончания:</Typography>
-      </div>
-
-      <div>
-        <p>{{ data?.startAt + ' - ' + data?.endAt }}</p>
-      </div>
-    </div>
-
-    <div>
-      <div>
-        <Typography>Описание:</Typography>
-      </div>
-
-      <div>
-        <p>{{ computedQuest?.value?.description }}</p>
-      </div>
-    </div>
-
-    <div>
-      <div>
-        <Typography>Название шаблона опроса:</Typography>
-      </div>
-
-      <div>
-        <p>{{ quest?.name }}</p>
-      </div>
-    </div>
-
-    <div>
-      <div>
-        <Typography>Доступность:</Typography>
-      </div>
-
-      <div>
-        <p v-if="computedRole != 'PROJECT_OFFICE'">
-          {{ computedQuestAvailability }}
-        </p>
-        <div v-else>
-          <Select
-            name="available"
-            :options="availableOptions"
-          ></Select>
-
-          <Button
-            @click="changeAvailability"
-            variant="primary"
-            >Изменить</Button
-          >
-        </div>
-      </div>
-    </div>
-
-    <div v-if="computedRole == 'PROJECT_OFFICE'">
-      <div>
-        <Typography>Общий список команд:</Typography>
-      </div>
-
-      <div>
-        <div
-          v-for="team in teams"
-          :key="team.id"
-        >
-          <p>{{ team.name }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="computedRole == 'PROJECT_OFFICE'">
-      <div>
-        <Typography>Список вопросов:</Typography>
-      </div>
-
-      <div v-if="computedQuest?.value">
-        <div
-          v-for="indicator in computedQuest?.value.indicators"
-          :key="indicator.idIndicator"
-        >
-          <IndicatorItem :indicator="indicator" />
-        </div>
-      </div>
-    </div>
-  </div> -->
 </template>
 
 <style></style>

@@ -1,8 +1,8 @@
-import { Quest, QuestCollapseData } from '@Domain/Quest'
+import { Quest, QuestStat } from '@Domain/Quest'
 
 interface InitialState {
   quests: Quest[]
-  questsColapseData: QuestCollapseData
+  questsColapseData: QuestStat[]
 }
 
 export default InitialState
