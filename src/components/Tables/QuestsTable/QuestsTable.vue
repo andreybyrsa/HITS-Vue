@@ -37,11 +37,6 @@ onMounted(async () => {
   questCollapseData.value = response
 })
 
-// const openPassLaunchQuestModal = (launchQuest: Quest) => {
-//   passLaunchQuest.value = launchQuest
-//   isPassLaunchQuestModalOpen.value = true
-// }
-
 const closePassLaunchQuestModal = () => {
   passLaunchQuest.value = null
   isPassLaunchQuestModalOpen.value = false
@@ -55,50 +50,6 @@ const launchQuestsTableHeader: TableHeader = {
 const getTranslatedIsPassedStatus = (passed: boolean) => {
   return passed ? 'Пройден' : 'Не пройден'
 }
-
-/*const launchQuestsTableColumns = computed((): TableColumn<Quest>[] => {
-  const columns: TableColumn<Quest>[] = [
-    {
-      key: 'name',
-      label: 'Название',
-      contentClassName: 'align-self-start',
-      rowCellClick: (value: Quest) => navigateToLaunchQuestModal(value),
-    },
-    // {
-    //   key: 'startAt',
-    //   contentClassName: 'justify-content-center align-items-center text-center',
-    //   label: 'Дата начала',
-    // },
-    // {
-    //   key: 'endAt',
-    //   contentClassName: 'justify-content-center align-items-center text-center',
-    //   label: 'Дата окончания',
-    // },
-    {
-      key: 'percent',
-      contentClassName: 'justify-content-center align-items-center text-center',
-      label: 'Результат прохождения',
-      getRowCellFormat: getPercentWithSign,
-    },
-    // {
-    //   key: 'available',
-    //   contentClassName: 'justify-content-center align-items-center text-center',
-    //   label: 'Доступ',
-    //   getRowCellFormat: getTranslatedIsAvailableStatus,
-    // },
-  ]
-
-  if (user.value?.role == 'PROJECT_OFFICE') {
-    return columns
-  }
-  columns.push({
-    key: 'passed',
-    contentClassName: 'justify-content-center align-items-center text-center ',
-    label: 'Статус',
-    getRowCellFormat: getTranslatedIsPassedStatus,
-  })
-  return columns
-})*/
 
 const launchQuestsTableColumns = computed((): TableColumn<QuestStat>[] => {
   const columns: TableColumn<QuestStat>[] = [

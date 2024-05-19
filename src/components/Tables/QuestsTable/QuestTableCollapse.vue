@@ -61,7 +61,8 @@ const TableColumns = computed((): TableColumn<TeamQuestStat>[] => {
       key: 'name',
     },
     {
-      contentClassName: 'col justify-content-center align-items-center text-center ',
+      contentClassName:
+        'col justify-content-center align-items-center text-center ps-20',
       key: 'progress',
       getRowCellStyle: getStatusStyle,
       getRowCellFormat: getFormatProgress,
@@ -112,4 +113,8 @@ function getStatusStyle(percent: string) {
   </div>
 </template>
 
-<style></style>
+<style>
+.ps-20 {
+  padding-left: 20%;
+}
+</style>

@@ -338,7 +338,10 @@ const collapseIds = computed(() => {
         <table class="table table-hover mb-0">
           <thead v-if="columns[0].label">
             <tr class="table__lables">
-              <th v-if="collapseChildComponent"></th>
+              <th
+                v-if="collapseChildComponent"
+                class="py-3 col-1"
+              ></th>
               <th
                 v-if="isCheckbox"
                 class="py-3 col"
@@ -370,7 +373,7 @@ const collapseIds = computed(() => {
           >
             <tr>
               <td
-                class="py-3 justify-content-center align-items-center text-center"
+                class="py-3 col-1"
                 v-if="collapseChildComponent"
               >
                 <Icon

@@ -32,12 +32,12 @@ const getFormatProgress = (progress: string) => {
 const TableColumns = computed((): TableColumn<UsersQuestStat>[] => {
   const columns: TableColumn<UsersQuestStat>[] = [
     {
-      contentClassName: 'align-self-start',
+      contentClassName: 'ms-10 align-self-start',
       key: 'name',
     },
     {
       key: 'progress',
-      contentClassName: 'ml-15  align-self-start',
+      contentClassName: 'ml-16  align-self-start',
       getRowCellStyle: getStatusStyle,
       getRowCellFormat: getTranslatedStatus,
     },
@@ -71,7 +71,10 @@ function getTranslatedStatus(closed: boolean) {
 </template>
 
 <style>
-.ml-15 {
-  margin-left: 16%;
+.ml-16 {
+  margin-left: 13%;
+}
+.ms-10 {
+  margin-left: 10%;
 }
 </style>
