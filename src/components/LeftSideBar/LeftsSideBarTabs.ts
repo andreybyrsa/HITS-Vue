@@ -173,7 +173,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     text: 'Управление опросами',
     to: '/questionnaire',
     iconName: 'bi bi-patch-question',
-    roles: ['PROJECT_OFFICE', 'INITIATOR', 'MEMBER'],
+    roles: ['PROJECT_OFFICE', 'INITIATOR', 'TEAM_LEADER', 'MEMBER', 'TEACHER'],
   },
 ]
 

@@ -6,7 +6,6 @@ export interface Category {
 }
 
 export type IndicatorType = 'TEAM' | 'INITIATOR' | 'TEAM-MEMBER' | 'TEAMLEAD'
-// export type IndicatorType = 'SCORE' | 'TEAM-MEMBERS'
 
 export interface Indicator {
   idIndicator: string

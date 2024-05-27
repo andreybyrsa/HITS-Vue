@@ -21,9 +21,9 @@ import Validation from '@Utils/Validation'
 import useUserStore from '@Store/user/userStore'
 
 import useIndicatorStore from '@Store/indicators/indicatorsStore'
-import { Indicator, QuestTemplate } from '@Domain/questTemplate'
 import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import { findStatusesByTranslatedStatus } from '@Utils/indicatorStatus'
+import { Indicator, QuestTemplate } from '@Domain/Quest'
 
 const props = defineProps<CreateQuestModalProps>()
 const emit = defineEmits<CreateQuestModalEmits>()
@@ -150,11 +150,11 @@ const createQuest = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    const newQuest: QuestTemplate = {
+    const newQuest = {
       name: values.name,
       description: values.description,
       indicators: newQuestIndicators.value,
-    }
+    } as QuestTemplate
 
     await questTemplatesStore.postQuestTemplate(newQuest, token)
     emit('close-modal')
@@ -176,9 +176,9 @@ const closeCreateNewIndicator = () => {
     @on-outside-close="emit('close-modal')"
   >
     <div class="modal-360-questTemplate bg-white rounded px-4 py-3">
-      <div class="sprint-form w-100 mb-1 h-100">
+      <div class="quest-form w-100 mb-1 h-100">
         <!-- header -->
-        <div class="sprint-form__header w-100">
+        <div class="quest-form__header w-100">
           <Typography class-name="fs-3 text-primary">
             Создание шаблона опроса
           </Typography>
@@ -193,15 +193,15 @@ const closeCreateNewIndicator = () => {
         <!-- content -->
         <div class="d-flex gap-3 mt-1 w-100 h-75">
           <!-- tasks -->
-          <div class="sprint-form__content-tasks d-flex gap-4">
+          <div class="quest-form__content-tasks d-flex gap-4">
             <!-- backlog -->
             <div class="d-flex flex-column w-100">
-              <div class="sprint-form__backlog-name border-bottom">
+              <div class="quest-form__backlog-name border-bottom">
                 <Typography class-name="fs-5 text-secondary"
                   >Список вопросов</Typography
                 >
                 <Icon
-                  class-name="bi bi-plus sprint-form__backlog-add p-1 rounded"
+                  class-name="bi bi-plus quest-form__backlog-add p-1 rounded"
                   @click="openCreateNewIndicator"
                 />
                 <CreateIndicatorModal
@@ -214,7 +214,7 @@ const closeCreateNewIndicator = () => {
                 class-name="rounded m-1 mt-3 mb-2"
                 name="backlogSearchValue"
               />
-              <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
+              <div class="d-flex flex-column mt-3 overflow-y h-100 gap-3 p-1">
                 <IndicatorItem
                   class-name="cursor-pointer"
                   v-for="indicator in filteredBacklogIndicators"
@@ -237,7 +237,7 @@ const closeCreateNewIndicator = () => {
                 class-name="rounded m-1 mt-3 mb-2"
                 name="newQuestSearchValue"
               />
-              <div class="d-flex flex-column mt-3 overflow-scroll h-100 gap-3 p-1">
+              <div class="d-flex flex-column mt-3 overflow-y h-100 gap-3 p-1">
                 <IndicatorItem
                   class-name="cursor-pointer"
                   v-for="indicator in filteredNewQuestIndicators"
@@ -250,7 +250,7 @@ const closeCreateNewIndicator = () => {
           </div>
 
           <!-- form -->
-          <div class="sprint-form__form d-flex flex-column gap-3 h-100">
+          <div class="quest-form__form d-flex flex-column gap-3 h-100">
             <!-- inputs -->
             <div class="d-flex flex-column gap-3 h-100">
               <Input
@@ -306,9 +306,12 @@ const closeCreateNewIndicator = () => {
   height: 100px;
 }
 
-.sprint-form {
-  @include flexible(flex-start, flex-start, column);
+.overflow-y {
   overflow-y: scroll;
+}
+
+.quest-form {
+  @include flexible(flex-start, flex-start, column);
 
   &__header {
     @include flexible(center, space-between);
@@ -317,7 +320,6 @@ const closeCreateNewIndicator = () => {
   &__content {
     &-tasks {
       width: 70%;
-      overflow-y: scroll;
     }
   }
 

@@ -72,8 +72,15 @@ const isProjectOffice = () => {
   return user.value?.role == 'PROJECT_OFFICE'
 }
 
-const isNotProjectOffice = () => {
-  return user.value?.role != 'PROJECT_OFFICE'
+const canPassQuest = (questStat: QuestStat) => {
+  if (!user.value?.role) return false
+  const isAcceptedRole = ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'TEACHER'].includes(
+    user.value?.role,
+  )
+  const isQuestPassed = questStat.teams.find((teamStat) =>
+    teamStat.users.find((userStat) => userStat.id == user.value?.id),
+  )
+  return isAcceptedRole && !isQuestPassed
 }
 
 const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [
@@ -89,7 +96,7 @@ const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [
   },
   {
     label: 'Пройти опрос',
-    statement: isNotProjectOffice,
+    statement: (questStat: QuestStat) => canPassQuest(questStat),
     click: (quest: QuestStat) => openPassLaunchQuestModal(quest),
   },
 ]

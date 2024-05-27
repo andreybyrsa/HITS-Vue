@@ -42,7 +42,6 @@ import {
   UsersQuestStat,
   IndicatorCategory,
 } from '@Domain/Quest'
-import TeamMembers from '@Components/Modals/TeamModal/TeamMembers.vue'
 
 export const usersMocks: User[] = [
   {
@@ -58,6 +57,7 @@ export const usersMocks: User[] = [
       'ADMIN',
       'MEMBER',
       'TEAM_LEADER',
+      'TEACHER',
     ],
     createdAt: '2023-10-20T11:02:17Z',
     telephone: '1111111111',
@@ -2220,7 +2220,7 @@ export const indicatorsMocks: Indicator[] = [
   },
   {
     idIndicator: '6',
-    name: 'Как оценить атмосферу в коллективе?',
+    name: 'Как оцените атмосферу в коллективе?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
     role: 'MEMBER',

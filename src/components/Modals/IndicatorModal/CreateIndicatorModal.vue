@@ -65,13 +65,15 @@ const indicatorTypeSelectOptions: OptionType[] = [
   { value: 'TEAM', label: 'Оценка команды' },
   { value: 'INITIATOR', label: 'Оценка инициатора' },
   { value: 'MEMBER', label: 'Оценка членов команды' },
-  { value: 'TEAMLEAD', label: 'Оценка тимлида' },
+  { value: 'TEAM_LEADER', label: 'Оценка тимлида' },
+  { value: 'TEACHER', label: 'Оценка преподавателя' },
 ]
 
 const indicatorRoleSelectOptions: OptionType[] = [
   { value: 'TEAM', label: 'Команда' },
   { value: 'INITIATOR', label: 'Инициатор' },
-  { value: 'TEAMLEAD', label: 'Тимлид' },
+  { value: 'TEAM_LEADER', label: 'Тимлид' },
+  { value: 'TEACHER', label: 'Преподаватель' },
 ]
 
 const createIndicator = () => {
@@ -81,14 +83,13 @@ const createIndicator = () => {
   }
 
   handleSubmit(async (indicator) => {
-    // ошибка должна быть :/
-    const newIndicator: Indicator = {
+    const newIndicator = {
       name: indicator.name,
       answers: answers.value,
       type: indicator.type,
       role: indicator.role,
       idCategory: values.idCategory,
-    }
+    } as Indicator
 
     const categoryName = indicatorCategories.value.find(
       (category) => category.id == values.idCategory,
@@ -201,7 +202,7 @@ onMounted(async () => {
                 :options="indicatorRoleSelectOptions"
               ></Select>
               <Select
-                label="Что нужно оценить"
+                label="Кого нужно оценить"
                 label-class-name="mt-3"
                 name="type"
                 :options="indicatorTypeSelectOptions"
@@ -223,7 +224,7 @@ onMounted(async () => {
                 variant="primary"
                 >Добавить вариант</Button
               >
-              <div class="overflow-scroll w-100 h-75 mt-3">
+              <div class="overflow-y w-100 h-75 mt-3">
                 <div
                   v-for="answer in answers"
                   :key="answer"
@@ -285,5 +286,9 @@ onMounted(async () => {
 
 .magicNoWrap {
   white-space: nowrap;
+}
+
+.overflow-y {
+  overflow-y: scroll;
 }
 </style>

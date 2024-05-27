@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ComputedRef, computed, onMounted, ref, watch } from 'vue'
+import { ComputedRef, computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
@@ -80,7 +80,7 @@ const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
 
   questIndicators?.forEach(async (indicator) => {
     const userRole = user.value?.role
-    if (indicator.role != userRole) return // потом разкомментировать
+    if (indicator.role != userRole) return
 
     if (indicator.type != 'TEAM-MEMBER') {
       personalIndicators.push(indicator)
