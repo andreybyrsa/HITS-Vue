@@ -27,9 +27,9 @@ const { user } = storeToRefs(userStore)
 const questTemplatesStore = useQuestTemplatesStore()
 const { questTemplate } = storeToRefs(questTemplatesStore)
 
-const launchQuestsStore = useQuestsStore()
-const { quests: launchQuests } = storeToRefs(launchQuestsStore)
-const launchQuest = ref<Quest>()
+const questsStore = useQuestsStore()
+const { quests } = storeToRefs(questsStore)
+const quest = ref<Quest>()
 
 const teamsStore = useTeamStore()
 const { teams } = storeToRefs(teamsStore)
@@ -47,7 +47,6 @@ const changeAvailability = handleSubmit(async (model) => {
   const currentUser = user.value
 
   if (currentUser?.token) {
-    const { token } = currentUser
     const available = model.available
     if (available == questTemplate.value?.available) {
       setFieldError('available', 'Значение должно отличаться от предыдущего')
@@ -61,17 +60,12 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
-    await launchQuestsStore.getQuests(token)
-    launchQuest.value = launchQuests.value.find(
-      (item) => item.idQuest == idLaunchQuest,
-    )
-    if (!launchQuest.value) return
-    await questTemplatesStore.getQuestTemplate(
-      launchQuest.value.idQuestTemplate,
-      token,
-    )
-    setValues({ available: launchQuest.value?.available })
-    const teamsId = launchQuest.value.idTeams
+    await questsStore.getQuests(token)
+    quest.value = quests.value.find((item) => item.idQuest == idLaunchQuest)
+    if (!quest.value) return
+    await questTemplatesStore.getQuestTemplate(quest.value.idQuestTemplate, token)
+    setValues({ available: quest.value?.available })
+    const teamsId = quest.value.idTeams
     await teamsStore.getTeamsByIds(teamsId, token)
   }
 })
@@ -96,7 +90,7 @@ const computedRole = computed(() => {
 })
 
 const computedQuestAvailability = computed(() => {
-  return launchQuest.value?.available ? 'Открыт' : 'Скрыт'
+  return quest.value?.available ? 'Открыт' : 'Скрыт'
 })
 </script>
 
@@ -133,7 +127,7 @@ const computedQuestAvailability = computed(() => {
               </div>
 
               <div class="d-flex flex-column gap-3 mt-3">
-                <p>{{ launchQuest?.startAt + ' - ' + launchQuest?.endAt }}</p>
+                <p>{{ quest?.startAt + ' - ' + quest?.endAt }}</p>
               </div>
             </div>
 

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/quests/initialState'
-import LaunchQuestService from '@Services/QuestService'
+import QuestService from '@Services/QuestService'
 import { Quest } from '@Domain/Quest'
 
 const useQuestsStore = defineStore('questsStore', {
@@ -13,7 +13,7 @@ const useQuestsStore = defineStore('questsStore', {
   getters: {
     getQuests() {
       return async (token: string) => {
-        const response = await LaunchQuestService.getQuests(token)
+        const response = await QuestService.getQuests(token)
 
         if (response instanceof Error) {
           useNotificationsStore().createSystemNotification(
@@ -29,7 +29,7 @@ const useQuestsStore = defineStore('questsStore', {
     },
     getQuestCollapseData() {
       return async (token: string) => {
-        const response = await LaunchQuestService.getQuestsCollapseData(token)
+        const response = await QuestService.getQuestsCollapseData(token)
         if (response instanceof Error) {
           useNotificationsStore().createSystemNotification(
             'Система',
@@ -46,7 +46,7 @@ const useQuestsStore = defineStore('questsStore', {
   },
   actions: {
     async postQuest(launchQuest: Quest, token: string) {
-      const response = await LaunchQuestService.postQuest(launchQuest, token)
+      const response = await QuestService.postQuest(launchQuest, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
@@ -54,6 +54,14 @@ const useQuestsStore = defineStore('questsStore', {
       }
 
       return this.quests
+    },
+    async sendNotifications(idQuest: string, token: string) {
+      const response = await QuestService.sendNotifications(idQuest, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return response
+      }
     },
   },
 })

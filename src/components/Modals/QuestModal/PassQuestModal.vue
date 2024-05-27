@@ -11,13 +11,14 @@ import {
 } from '@Components/Modals/QuestModal/PassQuestModal.type'
 import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import useUserStore from '@Store/user/userStore'
-import { Indicator, QuestResult } from '@Domain/Quest'
+import { Indicator, Quest, QuestResult } from '@Domain/Quest'
 import useTeamStore from '@Store/teams/teamsStore'
 import useProfilesStore from '@Store/profiles/profilesStore'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 import { useForm } from 'vee-validate'
 import useQuestResultsStore from '@Store/questResults/questResultsStore'
 import useQuestsStore from '@Store/quests/questsStore'
+import { timestamp } from '@vueuse/core'
 
 const props = defineProps<PassQuestProps>()
 const emit = defineEmits<PassQuestEmits>()
@@ -32,7 +33,9 @@ const teamStore = useTeamStore()
 const { teams } = storeToRefs(teamStore)
 
 const questResultsStore = useQuestResultsStore()
-const launchQuestsStore = useQuestsStore()
+
+const questsStore = useQuestsStore()
+const { quests } = storeToRefs(questsStore)
 
 const profilesStore = useProfilesStore()
 
@@ -43,42 +46,30 @@ const currentIndicator = computed(() => {
   return indicators.value[currentIndicatorIndex.value]
 })
 
+const currentQuest = ref<Quest | null>(null)
+
 const results = ref<QuestResult[]>([])
 
 const { setValues, values } = useForm<{ answer: string }>({})
 
 onMounted(async () => {
+  currentIndicatorIndex.value = null
+  results.value = []
+
   const token = user.value?.token
   if (!token) return
+  currentQuest.value = quests.value.find((q) => q.idQuest == props.idQuest) ?? null
+  const idQuestTemplate = currentQuest.value?.idQuestTemplate
+  if (!idQuestTemplate) return
+  await questTemplatesStore.getQuestTemplate(idQuestTemplate, token)
   await teamStore.getTeams(token)
 })
-
-watch(
-  () => props.isOpened,
-  () => {
-    currentIndicatorIndex.value = null
-    results.value = []
-  },
-)
 
 const teamOfUser = computed(() => {
   return teams.value.find((team) =>
     team.members.find((someUser) => someUser.id == user.value?.id),
   )
 })
-
-watch(
-  () => props.launchQuest,
-  async () => {
-    const token = user.value?.token
-    if (token) {
-      const id = props.launchQuest?.idQuestTemplate
-      if (!id) return
-      await questTemplatesStore.getQuestTemplate(id, token)
-    }
-  },
-  { deep: true },
-)
 
 const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
   const questIndicators = questTemplate.value?.indicators
@@ -133,17 +124,13 @@ const nextQuestion = () => {
   // if снизу нужен из-за того что ts не видит проверку в переменной isQuestNotStart
   if (currentIndicatorIndex.value == null) return
 
-  if (
-    !currentIndicator.value?.idIndicator ||
-    !props.launchQuest?.idQuest ||
-    !user.value?.id
-  ) {
+  if (!currentIndicator.value?.idIndicator || !props.idQuest || !user.value?.id) {
     return
   }
 
   const newResult: QuestResult = {
     idIndicator: currentIndicator.value.idIndicator,
-    idQuest: props.launchQuest.idQuest,
+    idQuest: props.idQuest,
     idFromUser: user.value.id,
     value: values.answer.toString(),
   }
@@ -159,11 +146,9 @@ const sendResults = async () => {
   const token = user.value?.token
   if (!token) return
   await questResultsStore.postQuestResults(results.value, token)
-  const launchQuest = launchQuestsStore.quests.find(
-    (lq) => lq.idQuest == props.launchQuest?.idQuest,
-  )
-  if (!launchQuest) return
-  launchQuest.passed = true
+  const quest = questsStore.quests.find((q) => q.idQuest == props.idQuest)
+  if (!quest) return
+  quest.passed = true
   emit('close-modal')
 }
 </script>
@@ -178,7 +163,7 @@ const sendResults = async () => {
     >
       <div class="row d-flex align-items-center justify-content-between w-100">
         <Typography class-name="fs-3 text-primary w-auto">{{
-          launchQuest?.name
+          questTemplate?.name
         }}</Typography>
         <Button
           variant="close"

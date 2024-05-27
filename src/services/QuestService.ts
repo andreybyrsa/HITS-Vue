@@ -44,10 +44,27 @@ const postQuest = async (
     .catch((error) => handleAxiosError(error, 'Ошибка отправки запущенного опроса.'))
 }
 
+const sendNotifications = async (idQuest: string, token: string) => {
+  return launchQuestAxios
+    .postNoRequestBody(
+      `${QUEST_SERVICE_URL}/quest/notifications/${idQuest}/send`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {},
+    )
+    .then((response) => response.data)
+    .catch((error) =>
+      handleAxiosError(error, 'Ошибка отправки напоминаний об опросе.'),
+    )
+}
+
 const LaunchQuestService = {
   getQuests,
   getQuestsCollapseData,
   postQuest,
+  sendNotifications,
 }
 
 export default LaunchQuestService

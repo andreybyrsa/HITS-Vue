@@ -9,23 +9,23 @@ import PassLaunchQuestModal from '@Components/Modals/QuestModal/PassQuestModal.v
 import useUserStore from '@Store/user/userStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import { storeToRefs } from 'pinia'
-import { Quest, QuestStat } from '@Domain/Quest'
+import { QuestStat } from '@Domain/Quest'
 import { computed, onMounted, ref } from 'vue'
-import { RouteRecordRaw, useRoute } from 'vue-router'
-import LaunchQuestModal from '@Components/Modals/QuestModal/QuestModal.vue'
-import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
 import QuestTableCollapse from '@Components/Tables/QuestsTable/QuestTableCollapse.vue'
+import useQuestResultsStore from '@Store/questResults/questResultsStore'
 
-const route = useRoute()
 const userStore = useUserStore()
-const QuestStore = useQuestsStore()
-const questCollapseData = ref<QuestStat[]>()
-
 const { user } = storeToRefs(userStore)
-// const { quests: Quests } = storeToRefs(QuestStore)
 
+const QuestStore = useQuestsStore()
+
+const questsStore = useQuestsStore()
+
+const questResultsStore = useQuestResultsStore()
+
+const questCollapseData = ref<QuestStat[]>()
 const isPassLaunchQuestModalOpen = ref(false)
-const passLaunchQuest = ref<Quest | null>(null)
+const passLaunchQuest = ref<QuestStat | null>(null)
 
 onMounted(async () => {
   const token = user.value?.token
@@ -47,10 +47,6 @@ const launchQuestsTableHeader: TableHeader = {
   countData: true,
 }
 
-const getTranslatedIsPassedStatus = (passed: boolean) => {
-  return passed ? 'Пройден' : 'Не пройден'
-}
-
 const launchQuestsTableColumns = computed((): TableColumn<QuestStat>[] => {
   const columns: TableColumn<QuestStat>[] = [
     {
@@ -69,61 +65,54 @@ const launchQuestsTableColumns = computed((): TableColumn<QuestStat>[] => {
   if (user.value?.role == 'PROJECT_OFFICE') {
     return columns
   }
-  // columns.push({
-  //   key: 'passed',
-  //   contentClassName: 'justify-content-center align-items-center text-center ',
-  //   label: 'Статус',
-  //   getRowCellFormat: getTranslatedIsPassedStatus,
-  // })
   return columns
 })
 
-const launchQuestPassability = (launchQuest: QuestStat) => {
-  return (
-    user.value?.role != 'PROJECT_OFFICE'
-    // &&
-    // !launchQuest.passed &&
-    // launchQuest.available
-  )
+const isProjectOffice = () => {
+  return user.value?.role == 'PROJECT_OFFICE'
+}
+
+const isNotProjectOffice = () => {
+  return user.value?.role != 'PROJECT_OFFICE'
 }
 
 const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [
   {
-    label: 'Просмотреть',
-    statement: () => true,
-    // click: (value: LaunchQuest) => navigateToLaunchQuestModal(value),
-    click: () => handleEditCollapseTable,
+    label: 'Отправить напоминание о прохождении опроса',
+    statement: isProjectOffice,
+    click: (questStat: QuestStat) => sendNotifications(questStat),
   },
-  // {
-  //   label: 'Пройти опрос',
-  //   statement: (launchQuest: Quest) => launchQuestPassability(launchQuest),
-  //   click: (launchQuest: Quest) => openPassLaunchQuestModal(launchQuest),
-  // },
+  {
+    label: 'Скачать результаты опроса',
+    statement: isProjectOffice,
+    click: (questStat: QuestStat) => downloadQuestResults(questStat.id),
+  },
+  {
+    label: 'Пройти опрос',
+    statement: isNotProjectOffice,
+    click: (quest: QuestStat) => openPassLaunchQuestModal(quest),
+  },
 ]
 
-const navigateToLaunchQuestModal = (quest: Quest) => {
-  const routeName = route.name
-  if (!routeName) return
-  const { idQuest: idLaunchQuest } = quest
-  const questRoute: RouteRecordRaw = {
-    name: 'launch-quest',
-    path: '/launch-quests/:idLaunchQuest',
-    alias: '/launch-quests/:idLaunchQuest',
-    component: LaunchQuestModal,
-    props: {
-      canGoBack: true,
-    },
-  }
-
-  navigateToAliasRoute(
-    routeName?.toString(),
-    `/launch-quests/${idLaunchQuest}`,
-    questRoute,
-  )
+const openPassLaunchQuestModal = (quest: QuestStat) => {
+  passLaunchQuest.value = quest
+  isPassLaunchQuestModalOpen.value = true
 }
 
 const getFormatProgress = (progress: string) => {
   return Math.floor(parseFloat(progress)).toString() + ' %'
+}
+
+const sendNotifications = async (quest: QuestStat) => {
+  const token = user.value?.token
+  if (!token) return
+  await questsStore.sendNotifications(quest.id, token)
+}
+
+const downloadQuestResults = async (idQuest: string) => {
+  const token = user.value?.token
+  if (!token) return
+  await questResultsStore.downloadResults(idQuest, token)
 }
 </script>
 
@@ -138,7 +127,8 @@ const getFormatProgress = (progress: string) => {
     :collapseChildComponent="QuestTableCollapse"
   />
   <PassLaunchQuestModal
-    :launch-quest="passLaunchQuest"
+    v-if="passLaunchQuest?.id"
+    :id-quest="passLaunchQuest?.id"
     @close-modal="closePassLaunchQuestModal"
     :is-opened="isPassLaunchQuestModalOpen"
   ></PassLaunchQuestModal>

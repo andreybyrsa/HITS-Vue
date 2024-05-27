@@ -55,13 +55,10 @@ const filtersRefs = ref<Ref<FilterValue | FilterValue[] | undefined>[]>([])
 
 const isCheckedAll = ref(false)
 
-// const isCollapsed = ref<boolean[]>(Array(data.value.length).fill(false))
-
 onMounted(() => {
   if (props.filters) {
     filtersRefs.value = props.filters.map((filter) => filter.refValue)
   }
-  console.log(typeof props.collapseChildComponent)
 })
 
 watchImmediate(

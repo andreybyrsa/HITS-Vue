@@ -1,8 +1,6 @@
-import { Quest } from '@Domain/Quest'
-
 interface PassQuestProps {
   isOpened: boolean
-  launchQuest: Quest | null
+  idQuest: string
 }
 
 interface PassQuestEmits {

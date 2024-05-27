@@ -39,6 +39,15 @@ const useQuestResultsStore = defineStore('questResultsStore', {
 
       return response
     },
+
+    async downloadResults(idQuest: string, token: string): Promise<void | Error> {
+      const response = await QuestResultService.downloadResults(idQuest, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return response
+      }
+    },
   },
 })
 

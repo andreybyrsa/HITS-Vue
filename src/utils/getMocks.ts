@@ -1534,6 +1534,11 @@ export const questsShortMocks: QuestTemplateShort[] = [
     available: true,
     name: 'Опрос компетенций',
   },
+  {
+    idQuestTemplate: '2',
+    available: true,
+    name: 'Опрос компетенций',
+  },
 ]
 
 export const indicatorCategories: IndicatorCategory[] = [
@@ -1742,6 +1747,13 @@ export const QuestsTemplateMocks: QuestTemplate[] = [
     description: 'Весенний опрос 2024 посвящен весне и птичкам',
     indicators: indicatorsMocks.slice(0, 7),
   },
+  {
+    idQuestTemplate: questsShortMocks[1].idQuestTemplate,
+    available: questsShortMocks[1].available,
+    name: questsShortMocks[1].name,
+    description: 'Осенний опрос 2024 посвящен весне и птичкам',
+    indicators: indicatorsMocks.slice(0, 7),
+  },
 ]
 
 export const QuestsMocks: Quest[] = [
@@ -1758,21 +1770,17 @@ export const QuestsMocks: Quest[] = [
     endAt: '28.05.2024',
     available: true,
     percent: '22',
-    // '1 / ' + teamsMocks[0].membersCount.toString(),
     passed: false,
   },
   {
     idQuest: '3',
-    idQuestTemplate: QuestsTemplateMocks[0].idQuestTemplate!,
+    idQuestTemplate: QuestsTemplateMocks[1].idQuestTemplate!,
     idTeams: [{ id: teamsMocks[0].id }],
     name: 'Осенний опрос 2023',
     startAt: '28.11.2023',
     endAt: '28.12.2023',
     available: true,
     percent: '77',
-    // Math.floor(teamsMocks[0].membersCount / 2).toString() +
-    // ' / ' +
-    // teamsMocks[0].membersCount.toString(),
     passed: true,
   },
   {
@@ -1784,23 +1792,17 @@ export const QuestsMocks: Quest[] = [
     endAt: '28.05.2023',
     available: true,
     percent: '65',
-    // Math.floor(teamsMocks[0].membersCount / 2).toString() +
-    // ' / ' +
-    // teamsMocks[0].membersCount.toString(),
     passed: true,
   },
   {
     idQuest: '1',
-    idQuestTemplate: QuestsTemplateMocks[0].idQuestTemplate!,
+    idQuestTemplate: QuestsTemplateMocks[1].idQuestTemplate!,
     idTeams: [{ id: teamsMocks[0].id }],
     name: 'Осенний опрос 2022',
     startAt: '28.11.2022',
     endAt: '28.12.2022',
     available: false,
     percent: '50',
-    // Math.floor(teamsMocks[0].membersCount / 2).toString() +
-    // ' / ' +
-    // teamsMocks[0].membersCount.toString(),
     passed: false,
   },
 ]
@@ -1862,22 +1864,22 @@ export const resultsMocks: QuestResult[] = [
 export const usersQuestStatMocks: UsersQuestStat[] = [
   {
     id: usersMocks[0].id,
-    name: usersMocks[0].firstName + usersMocks[0].lastName,
+    name: `${usersMocks[0].firstName} ${usersMocks[0].lastName}`,
     progress: false,
   },
   {
     id: usersMocks[1].id,
-    name: usersMocks[1].firstName + usersMocks[1].lastName,
+    name: `${usersMocks[1].firstName} ${usersMocks[0].lastName}`,
     progress: false,
   },
   {
     id: usersMocks[2].id,
-    name: usersMocks[2].firstName + usersMocks[2].lastName,
+    name: `${usersMocks[2].firstName} ${usersMocks[0].lastName}`,
     progress: false,
   },
   {
     id: usersMocks[3].id,
-    name: usersMocks[3].firstName + usersMocks[3].lastName,
+    name: `${usersMocks[3].firstName} ${usersMocks[0].lastName}`,
     progress: true,
   },
 ]
