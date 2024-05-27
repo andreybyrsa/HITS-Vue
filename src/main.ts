@@ -19,6 +19,8 @@ const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'PRODUCTION'
 const API_URL: 'http://localhost:80/api/v1' | 'https://hits1.tyuiu.ru/api/v1' =
   'https://hits1.tyuiu.ru/api/v1'
 
+const QUEST_SERVICE_URL = 'http://localhost:5000/quest-service'
+
 const pinia = createPinia()
 pinia.use(({ store }) => {
   store.router = markRaw(router)
@@ -37,4 +39,4 @@ app.directive('collapse', collapseDirective)
 
 app.mount('#app')
 
-export { MODE, API_URL }
+export { MODE, API_URL, QUEST_SERVICE_URL }

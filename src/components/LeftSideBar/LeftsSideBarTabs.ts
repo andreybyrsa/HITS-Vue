@@ -168,6 +168,13 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       'TEACHER',
     ],
   },
+  {
+    name: 'questionnaire',
+    text: 'Управление опросами',
+    to: '/questionnaire',
+    iconName: 'bi bi-patch-question',
+    roles: ['PROJECT_OFFICE', 'INITIATOR', 'MEMBER'],
+  },
 ]
 
 export default leftSideBarTabs

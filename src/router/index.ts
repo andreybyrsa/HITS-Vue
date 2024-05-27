@@ -36,6 +36,8 @@ import ErrorView from '@Views/ErrorView.vue'
 
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
+import QuestionnaireView from '@Views/Questionnaire/QuestionnaireView.vue'
+
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
@@ -43,6 +45,8 @@ import { getRouteByUserRole } from '@Utils/userRolesInfo'
 import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 import useProfilesStore from '@Store/profiles/profilesStore'
 import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.vue'
+import QuestTemplateModal from '@Components/Modals/QuestTemplateModal/QuestTemplateModal.vue'
+import QuestModal from '@Components/Modals/QuestModal/QuestModal.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -356,6 +360,31 @@ const routes: RouteRecordRaw[] = [
     path: '/error',
     name: 'error',
     component: ErrorView,
+  },
+  {
+    path: '/questionnaire',
+    name: 'questionnaire',
+    component: QuestionnaireView,
+    children: [
+      {
+        name: 'profile',
+        path: 'profile/:id',
+        alias: '/profile/:id',
+        component: ProfileModal,
+      },
+      {
+        name: 'quests',
+        path: 'quests/:id',
+        alias: '/quests/:id',
+        component: QuestTemplateModal,
+      },
+      {
+        name: 'launch-quests',
+        path: 'launch-quests/:idLaunchQuest',
+        alias: '/launch-quests/:idLaunchQuest',
+        component: QuestModal,
+      },
+    ],
   },
   {
     path: '/:pathMatch(.*)*',

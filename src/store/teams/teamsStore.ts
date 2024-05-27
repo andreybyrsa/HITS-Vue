@@ -31,6 +31,25 @@ const useTeamStore = defineStore('teams', {
       }
     },
 
+    getTeamsByIds() {
+      return async (ids: { id: string }[], token: string) => {
+        const response = await TeamService.getTeams(token)
+
+        if (response instanceof Error) {
+          useNotificationsStore().createSystemNotification(
+            'Система',
+            response.message,
+          )
+          return response
+        }
+        this.teams = response?.filter((team) => {
+          return ids?.find((objectId) => objectId?.id == team?.id) !== undefined
+        })
+
+        return this.teams
+      }
+    },
+
     getTeam() {
       return async (id: string, token: string) => {
         const team = await TeamService.getTeam(id, token)
@@ -62,7 +81,7 @@ const useTeamStore = defineStore('teams', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const currentTeam = this.teams.find(({ id }) => id === teamMember.teamId)
+        const currentTeam = this.teams?.find(({ id }) => id === teamMember.teamId)
 
         if (currentTeam) {
           currentTeam.members.push({ ...teamMember, id: teamMember.userId })
@@ -82,8 +101,8 @@ const useTeamStore = defineStore('teams', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const currentTeam = this.teams.find(({ id }) => id === teamId)
-        const newLeader = currentTeam?.members.find(({ id }) => id === userId)
+        const currentTeam = this.teams?.find(({ id }) => id === teamId)
+        const newLeader = currentTeam?.members?.find(({ id }) => id === userId)
 
         if (currentTeam && newLeader) {
           currentTeam.leader = newLeader
@@ -101,7 +120,7 @@ const useTeamStore = defineStore('teams', {
         const currentTeam = this.teams.find(({ id }) => id === teamId)
 
         if (currentTeam) {
-          const currentTeamMemberIndex = currentTeam.members.findIndex(
+          const currentTeamMemberIndex = currentTeam.members?.findIndex(
             ({ id }) => id === teamMemberId,
           )
 
@@ -125,7 +144,7 @@ const useTeamStore = defineStore('teams', {
         const currentTeam = this.teams.find(({ id }) => id === teamId)
 
         if (currentTeam) {
-          const currentTeamMemberIndex = currentTeam.members.findIndex(
+          const currentTeamMemberIndex = currentTeam.members?.findIndex(
             ({ id }) => id === teamMemberId,
           )
 
@@ -145,7 +164,7 @@ const useTeamStore = defineStore('teams', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const deletingIdeaIndex = this.teams.findIndex((team) => team.id === id)
+        const deletingIdeaIndex = this.teams?.findIndex((team) => team.id === id)
 
         if (deletingIdeaIndex !== -1) {
           this.teams.splice(deletingIdeaIndex, 1)

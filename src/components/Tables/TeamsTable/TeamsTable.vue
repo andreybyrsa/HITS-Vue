@@ -3,10 +3,12 @@
     class-name="p-3"
     :header="teamsTableHeader"
     :columns="teamTableColumns"
+    :checked-data-actions="checkedTeamsActions"
     :data="teams"
-    :search-by="['name', 'description']"
+    :search-by="['name', 'description', 'tags']"
     :filters="teamsFilters"
     :dropdown-actions-menu="dropdownTeamsActions"
+    :is-checkbox="user?.role === 'PROJECT_OFFICE'"
   />
 
   <DeleteModal
@@ -33,6 +35,11 @@
     @close-modal="closeConfirmModalCanceled"
     @action="currentInvitation && handleRevokeTeam(currentInvitation)"
   />
+  <CreateLaunchQuestModal
+    :isOpened="isOpenSendFormModal"
+    :teams="sendingTeams"
+    @close-modal="closeSendFormModal"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -46,10 +53,11 @@ import {
   TableColumn,
   DropdownMenuAction,
   TableHeader,
+  CheckedDataAction,
 } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import DeleteModal from '@Components/Modals/DeleteModal/DeleteModal.vue'
-import ConfirmModal from '@Components/Modals/ConfirmModal/ConfirmModal.vue'
+import CreateLaunchQuestModal from '@Components/Modals/QuestModal/CreateQuestModal.vue'
 
 import { Team } from '@Domain/Team'
 import { Skill } from '@Domain/Skill'
@@ -100,11 +108,15 @@ const filterByIsFree = ref<boolean>()
 const filterByOwnerTeams = ref<string>()
 const filterByVacancies = ref<boolean>(false)
 const filterBySkills = ref<string[]>([])
+const filterByStatusQuest = ref<boolean>()
 
 const searchBySkills = ref('')
 
 const isSortedByMembersCount = ref(false)
 const isSortedByCreatedAt = ref(false)
+const isSortByPrivacy = ref(false)
+const isSortByStatus = ref(false)
+const isSortByName = ref(false)
 const isOpenedTeamDeleteModal = ref(false)
 
 const isOpenedConfirmModalAccepted = ref(false)
@@ -115,6 +127,18 @@ const currentIdea = ref<IdeaMarket>()
 const currentInvitation = ref<InvitationTeamToIdea>()
 
 const computedIsInitiator = computed<boolean>(() => user.value?.role == 'INITIATOR')
+
+const checkedTeamsActions = computed<CheckedDataAction<Team>[]>(() => [
+  {
+    label: 'Создать опрос для выбранных команд',
+    className: 'btn-primary',
+    statement: user.value?.role == 'PROJECT_OFFICE',
+    click: (teams) => openSendFormModal(teams),
+  },
+])
+
+const sendingTeams = ref<Team[]>([])
+const isOpenSendFormModal = ref<boolean>(false)
 
 onMounted(async () => {
   const currentUser = user.value
@@ -287,12 +311,14 @@ const teamTableColumns: TableColumn<Team>[] = [
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusStyle,
     getRowCellFormat: getTranslatedStatus,
+    headerCellClick: sortByPrivacy,
   },
   {
     key: 'name',
     label: 'Название',
     size: 'col-3',
     rowCellClick: navigateToTeamModal,
+    headerCellClick: sortByName,
   },
   {
     key: 'hasActiveProject',
@@ -300,6 +326,7 @@ const teamTableColumns: TableColumn<Team>[] = [
     contentClassName: 'justify-content-center align-items-center text-center',
     getRowCellStyle: getStatusWorkStyle,
     getRowCellFormat: getTranslatedWorkStatus,
+    headerCellClick: sortByStatus,
   },
   {
     key: 'membersCount',
@@ -342,9 +369,19 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
       { label: 'Открытая команда', value: false },
       { label: 'Закрытая команда', value: true },
     ],
-    refValue: filterByIsClosed,
+    refValue: filterByStatusQuest,
     isUniqueChoice: true,
     checkFilter: checkTeamStatus,
+  },
+  {
+    category: 'Опросы',
+    choices: [
+      { label: 'Опрос не пройден', value: false },
+      { label: 'Опрос пройден', value: true },
+    ],
+    refValue: filterByIsClosed,
+    isUniqueChoice: true,
+    checkFilter: checkStatusQuest,
   },
   {
     category: 'Статус',
@@ -381,6 +418,18 @@ const teamsFilters = computed<Filter<Team>[]>(() => [
     searchValue: searchBySkills,
     checkFilter: () => true,
   },
+  // {
+  //   category: 'Номер курса',
+  //   choices: teams.value.map(({ studyCourses }, index) => ({
+  //     label: studyCourses[index],
+  //     value: studyCourses[index],
+  //   })),
+
+  //   refValue: filterBySkills,
+  //   isUniqueChoice: false,
+  //   searchValue: searchBySkills,
+  //   checkFilter: () => true,
+  // },
 ])
 
 function getAccessInvitationsInIdeaMarket(team: Team, idea: IdeaMarket) {
@@ -480,6 +529,48 @@ function sortByMembersCount() {
     }
   })
   isSortedByMembersCount.value = !isSortedByMembersCount.value
+}
+
+function sortByPrivacy() {
+  teams.value.sort((team1, team2) => {
+    const booleanValue1 = team1.membersCount
+    const booleanValue2 = team2.membersCount
+
+    if (isSortByPrivacy.value) {
+      return booleanValue1 - booleanValue2
+    } else {
+      return booleanValue2 - booleanValue1
+    }
+  })
+  isSortByPrivacy.value = !isSortByPrivacy.value
+}
+
+function sortByStatus() {
+  teams.value.sort((team1, team2) => {
+    const booleanValue1 = team1.membersCount
+    const booleanValue2 = team2.membersCount
+
+    if (isSortByStatus.value) {
+      return booleanValue1 - booleanValue2
+    } else {
+      return booleanValue2 - booleanValue1
+    }
+  })
+  isSortByStatus.value = !isSortByStatus.value
+}
+
+function sortByName() {
+  teams.value.sort((team1, team2) => {
+    const string1 = team1.name.toLowerCase()
+    const string2 = team2.name.toLowerCase()
+
+    if (isSortByName.value) {
+      return string1.localeCompare(string2)
+    } else {
+      return string2.localeCompare(string1)
+    }
+  })
+  isSortByName.value = !isSortByName.value
 }
 
 function getStatusStyle(closed: boolean) {
@@ -598,6 +689,9 @@ function checkDeleteTeamAction(team: Team) {
 function checkTeamStatus(team: Team, status: FilterValue) {
   return team.closed === status
 }
+function checkStatusQuest(team: Team, status: FilterValue) {
+  return team.StatusQuest === status
+}
 
 function checkTeamHasActiveProject(team: Team, status: FilterValue) {
   return team.hasActiveProject === status
@@ -615,6 +709,13 @@ function checkOwnerTeams(team: Team, userId: FilterValue) {
   return team.owner.id === userId
 }
 
+function openSendFormModal(teams: Team[]) {
+  sendingTeams.value = [...teams]
+  isOpenSendFormModal.value = true
+}
+function closeSendFormModal() {
+  isOpenSendFormModal.value = false
+}
 // Ошибка фильтрации команд
 
 // function checkTeamVacancies(team: Team, isFilteringByVacancies: FilterValue) {

@@ -1,6 +1,6 @@
 import { ButtonProps } from '@Components/Button/Button.types'
 import { Filter } from '@Components/FilterBar/FilterBar.types'
-import { StyleValue } from 'vue'
+import { StyleValue, defineComponent } from 'vue'
 
 type KeyValueFunction<T, K extends keyof T> = (
   value: T[K],
@@ -51,7 +51,7 @@ interface TableHeader {
 
 interface TableColumn<DataType> {
   key: keyof DataType
-  label: string
+  label?: string
   size?: ColumnSize
   contentClassName?: string
   getRowCellStyleCSS?: (value: DataType[keyof DataType]) => StyleValue
@@ -70,7 +70,9 @@ interface TableProps<DataType> {
   filters?: Filter<DataType>[]
   checkedDataActions?: CheckedDataAction<DataType>[]
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]
+  chevronAction?: ($event?: undefined) => any
   isCheckbox?: boolean
+  collapseChildComponent?: ReturnType<typeof defineComponent> // в этом компоненте должен быть СТРОГО ОДИН пропс "data"
 }
 
 export {
