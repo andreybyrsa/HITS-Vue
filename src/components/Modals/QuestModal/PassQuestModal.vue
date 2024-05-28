@@ -18,7 +18,6 @@ import Radio from '@Components/Inputs/Radio/Radio.vue'
 import { useForm } from 'vee-validate'
 import useQuestResultsStore from '@Store/questResults/questResultsStore'
 import useQuestsStore from '@Store/quests/questsStore'
-import { timestamp } from '@vueuse/core'
 
 const props = defineProps<PassQuestProps>()
 const emit = defineEmits<PassQuestEmits>()
@@ -124,12 +123,12 @@ const nextQuestion = () => {
   // if снизу нужен из-за того что ts не видит проверку в переменной isQuestNotStart
   if (currentIndicatorIndex.value == null) return
 
-  if (!currentIndicator.value?.idIndicator || !props.idQuest || !user.value?.id) {
+  if (!currentIndicator.value?.id || !props.idQuest || !user.value?.id) {
     return
   }
 
   const newResult: QuestResult = {
-    idIndicator: currentIndicator.value.idIndicator,
+    idIndicator: currentIndicator.value.id,
     idQuest: props.idQuest,
     idFromUser: user.value.id,
     value: values.answer.toString(),

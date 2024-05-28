@@ -214,7 +214,7 @@ const computedQuestAvailability = computed(() => {
             <div
               class="w-49"
               v-for="indicator in questTemplate?.indicators"
-              :key="indicator.idIndicator"
+              :key="indicator.id"
             >
               <IndicatorItem :indicator="indicator" />
             </div>

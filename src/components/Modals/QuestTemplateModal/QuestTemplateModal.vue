@@ -139,7 +139,7 @@ const availableOptions: OptionType[] = [
             <div
               class="w-49"
               v-for="indicator in quest?.indicators"
-              :key="indicator.idIndicator"
+              :key="indicator.id"
             >
               <IndicatorItem :indicator="indicator" />
             </div>
