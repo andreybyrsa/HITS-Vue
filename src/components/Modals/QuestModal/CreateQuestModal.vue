@@ -54,9 +54,10 @@ const { setValues, handleSubmit, values, errors } = useForm<{
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Название не заполнено',
     startAt: (value: number) =>
-      Validation.checkDate(value) || 'Начальная дата не выбрана',
+      Validation.checkDate(value.toString()) || 'Начальная дата не выбрана',
     endAt: (value: number) =>
-      Validation.validateDates(values.startAt, value) || 'Конечная дата не выбрана',
+      Validation.validateDates(values.startAt.toString(), value.toString()) ||
+      'Конечная дата не выбрана',
   },
 })
 
@@ -70,8 +71,14 @@ const handleCreateQuest = () => {
   })
   if (!values.endAt || !values.startAt) return
 
-  const splitStartAt = values.startAt.split('-').map((item) => Number(item))
-  const splitEndAt = values.endAt.split('-').map((item) => Number(item))
+  const splitStartAt = values
+    .toString()
+    .split('-')
+    .map((item) => Number(item))
+  const splitEndAt = values
+    .toString()
+    .split('-')
+    .map((item) => Number(item))
 
   var newStartAt = new Date(
     splitStartAt[0],
@@ -85,8 +92,8 @@ const handleCreateQuest = () => {
     if (!token) return
 
     const newLaunchQuest = structuredClone(values)
-    newLaunchQuest.startAt = newStartAt
-    newLaunchQuest.endAt = newEndAt
+    newLaunchQuest.startAt = Math.floor(newStartAt / 1000)
+    newLaunchQuest.endAt = Math.floor(newEndAt / 1000)
 
     await launchQuestStore.postQuest(newLaunchQuest, token)
     emit('close-modal')
