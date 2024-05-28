@@ -41,8 +41,8 @@ const { setValues, handleSubmit, values, errors } = useForm<{
   idQuestTemplate: string
   idTeams: { id: string }[]
   name: string
-  startAt: number
-  endAt: number
+  startAt: string
+  endAt: string
 }>({
   validationSchema: {
     example: (value: QuestTemplateShort) =>
@@ -54,10 +54,9 @@ const { setValues, handleSubmit, values, errors } = useForm<{
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Название не заполнено',
     startAt: (value: number) =>
-      Validation.checkDate(value.toString()) || 'Начальная дата не выбрана',
+      Validation.checkDate(value) || 'Начальная дата не выбрана',
     endAt: (value: number) =>
-      Validation.validateDates(values.startAt.toString(), value.toString()) ||
-      'Конечная дата не выбрана',
+      Validation.validateDates(values.startAt, value) || 'Конечная дата не выбрана',
   },
 })
 
