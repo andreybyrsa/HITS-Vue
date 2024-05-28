@@ -73,10 +73,10 @@ const handleCreateQuest = () => {
   const splitStartAt = values.startAt.split('-').map((item) => Number(item))
   const splitEndAt = values.endAt.split('-').map((item) => Number(item))
 
-  var newStartAt = new Date(splitStartAt[2], splitStartAt[1] - 1, splitStartAt[0])
+  var newStartAt = new Date(splitStartAt[0], splitStartAt[1] - 1, splitStartAt[2])
     .getTime()
     .toString()
-  var newEndAt = new Date(splitEndAt[2], splitEndAt[1] - 1, splitEndAt[0])
+  var newEndAt = new Date(splitEndAt[0], splitEndAt[1] - 1, splitEndAt[2])
     .getTime()
     .toString()
 
