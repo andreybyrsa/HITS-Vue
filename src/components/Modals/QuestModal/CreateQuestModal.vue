@@ -39,24 +39,25 @@ const selectedQuestTemplate = ref<null | QuestTemplate>(null)
 const { setValues, handleSubmit, values, errors } = useForm<{
   example: QuestTemplateShort
   idQuestTemplate: string
-  idTeams: { id: string }[]
+  teams: { id: string }[]
   name: string
-  startAt: string
-  endAt: string
+  startAt: number
+  endAt: number
 }>({
   validationSchema: {
     example: (value: QuestTemplateShort) =>
       Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
     idQuestTemplate: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
-    idTeams: (value: { id: string }[]) =>
+    teams: (value: { id: string }[]) =>
       Validation.checkIsEmptyValue(value) || 'Команды не выбраны',
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Название не заполнено',
     startAt: (value: number) =>
-      Validation.checkDate(value) || 'Начальная дата не выбрана',
+      Validation.checkDate(String(value)) || 'Начальная дата не выбрана',
     endAt: (value: number) =>
-      Validation.validateDates(values.startAt, value) || 'Конечная дата не выбрана',
+      Validation.validateDates(String(values.startAt), String(value)) ||
+      'Конечная дата не выбрана',
   },
 })
 
@@ -64,17 +65,17 @@ const handleCreateQuest = () => {
   if (!values.example?.idQuestTemplate) return
   setValues({
     idQuestTemplate: values.example.idQuestTemplate,
-    idTeams: props.teams.map((team) => {
+    teams: props.teams.map((team) => {
       return { id: team.id }
     }),
   })
   if (!values.endAt || !values.startAt) return
 
-  const splitStartAt = values
+  const splitStartAt = values.startAt
     .toString()
     .split('-')
     .map((item) => Number(item))
-  const splitEndAt = values
+  const splitEndAt = values.endAt
     .toString()
     .split('-')
     .map((item) => Number(item))
@@ -94,7 +95,7 @@ const handleCreateQuest = () => {
     newLaunchQuest.startAt = Math.floor(newStartAt / 1000)
     newLaunchQuest.endAt = Math.floor(newEndAt / 1000)
 
-    await launchQuestStore.postQuest(newLaunchQuest, token)
+    await launchQuestStore.postQuest(newLaunchQuest as any, token)
     emit('close-modal')
   })()
 }
@@ -129,7 +130,7 @@ const setQuestTemplate = async (shortQuest: QuestTemplateShort) => {
   const teamsId = selectedTeams.value.map((team) => {
     return { id: team.id }
   })
-  setValues({ idQuestTemplate: selectedQuest.idQuestTemplate, idTeams: teamsId })
+  setValues({ idQuestTemplate: selectedQuest.idQuestTemplate, teams: teamsId })
 }
 
 onMounted(async () => {
