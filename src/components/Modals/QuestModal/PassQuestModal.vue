@@ -123,12 +123,12 @@ const nextQuestion = () => {
   // if снизу нужен из-за того что ts не видит проверку в переменной isQuestNotStart
   if (currentIndicatorIndex.value == null) return
 
-  if (!currentIndicator.value?.id || !props.idQuest || !user.value?.id) {
+  if (!currentIndicator.value?.idIndicator || !props.idQuest || !user.value?.id) {
     return
   }
 
   const newResult: QuestResult = {
-    idIndicator: currentIndicator.value.id,
+    idIndicator: currentIndicator.value.idIndicator,
     idQuest: props.idQuest,
     idFromUser: user.value.id,
     value: values.answer.toString(),

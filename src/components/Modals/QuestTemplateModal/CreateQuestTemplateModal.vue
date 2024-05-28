@@ -120,7 +120,9 @@ const orderIndicatorsToLists = async () => {
     newQuestIndicators.value = copiedIndicators
 
     backlogIndicators.value = indicators.value.filter((indicator) =>
-      copiedIndicators.find((copy) => indicator.id == copy.id) ? false : true,
+      copiedIndicators.find((copy) => indicator.idIndicator == copy.idIndicator)
+        ? false
+        : true,
     )
   } else {
     backlogIndicators.value = indicators.value
@@ -216,7 +218,7 @@ const closeCreateNewIndicator = () => {
                 <IndicatorItem
                   class-name="cursor-pointer"
                   v-for="indicator in filteredBacklogIndicators"
-                  :key="indicator.id"
+                  :key="indicator.idIndicator"
                   @click="moveIndicatorToNew(indicator)"
                   :indicator="indicator"
                 />
@@ -239,7 +241,7 @@ const closeCreateNewIndicator = () => {
                 <IndicatorItem
                   class-name="cursor-pointer"
                   v-for="indicator in filteredNewQuestIndicators"
-                  :key="indicator.id"
+                  :key="indicator.idIndicator"
                   @click="moveIndicatorToBacklog(indicator)"
                   :indicator="indicator"
                 />

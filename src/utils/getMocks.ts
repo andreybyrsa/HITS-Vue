@@ -2169,7 +2169,7 @@ export const indicatorCategories: IndicatorCategory[] = [
 
 export const indicatorsMocks: Indicator[] = [
   {
-    id: '1',
+    idIndicator: '1',
     name: 'Как вам отношения в команде?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2179,7 +2179,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '2',
+    idIndicator: '2',
     name: 'Как вам профессионализм команды?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2189,7 +2189,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '3',
+    idIndicator: '3',
     name: 'Каков ваш взгляд на коммуникацию с этим членом команды?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM-MEMBER',
@@ -2199,7 +2199,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '4',
+    idIndicator: '4',
     name: 'Как оцениваете общение в команде?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2209,7 +2209,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '5',
+    idIndicator: '5',
     name: 'Какие ваши мысли о навыках команды?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2219,7 +2219,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '6',
+    idIndicator: '6',
     name: 'Как оцените атмосферу в коллективе?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2229,7 +2229,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '7',
+    idIndicator: '7',
     name: 'Что вы думаете о взаимодействии с этим коллегой?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM-MEMBER',
@@ -2239,7 +2239,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '8',
+    idIndicator: '8',
     name: 'Ваше мнение о компетентности команды?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2249,7 +2249,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '9',
+    idIndicator: '9',
     name: 'Что вы думаете о взаимодействии внутри группы?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM-MEMBER',
@@ -2259,7 +2259,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '10',
+    idIndicator: '10',
     name: 'Как воспринимаете атмосферу в команде?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2269,7 +2269,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '11',
+    idIndicator: '11',
     name: 'Как вы оцениваете профессионализм коллег?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2279,7 +2279,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '12',
+    idIndicator: '12',
     name: 'Ваш взгляд на взаимодействие с коллегами?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM-MEMBER',
@@ -2289,7 +2289,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '13',
+    idIndicator: '13',
     name: 'Что вы думаете о внутренних отношениях в команде?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2299,7 +2299,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '14',
+    idIndicator: '14',
     name: 'Как вы оцениваете профессиональные навыки команды?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2309,7 +2309,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '15',
+    idIndicator: '15',
     name: 'Ваше мнение о взаимодействии с коллегами?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM-MEMBER',
@@ -2319,7 +2319,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '16',
+    idIndicator: '16',
     name: 'Что вы думаете о взаимодействии в команде?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM-MEMBER',
@@ -2329,7 +2329,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '17',
+    idIndicator: '17',
     name: 'Как вы оцениваете атмосферу в команде?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2339,7 +2339,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '18',
+    idIndicator: '18',
     name: 'Что вы думаете о профессионализме команды?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM',
@@ -2349,7 +2349,7 @@ export const indicatorsMocks: Indicator[] = [
     visible: true,
   },
   {
-    id: '19',
+    idIndicator: '19',
     name: 'Ваш взгляд на взаимодействие с коллегой?',
     answers: ['Хорошо', 'Не очень'],
     type: 'TEAM-MEMBER',
@@ -2431,14 +2431,14 @@ export const QuestsMocks: Quest[] = [
 export const resultsMocks: QuestResult[] = [
   {
     idResult: '8',
-    idIndicator: indicatorsMocks[0].id,
+    idIndicator: indicatorsMocks[0].idIndicator,
     idQuest: QuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     value: '4',
   },
   {
     idResult: '7',
-    idIndicator: indicatorsMocks[1].id,
+    idIndicator: indicatorsMocks[1].idIndicator,
     idQuest: QuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     idToUser: '',
@@ -2447,7 +2447,7 @@ export const resultsMocks: QuestResult[] = [
   ...teamsMocks[0].members.map((member): QuestResult => {
     return {
       idResult: '33' + member.userId,
-      idIndicator: indicatorsMocks[2].id,
+      idIndicator: indicatorsMocks[2].idIndicator,
       idQuest: QuestsMocks[0].idQuest,
       idFromUser: usersMocks[0].id,
       idToUser: member.userId,
@@ -2456,7 +2456,7 @@ export const resultsMocks: QuestResult[] = [
   }),
   {
     idResult: '4',
-    idIndicator: indicatorsMocks[0].id,
+    idIndicator: indicatorsMocks[0].idIndicator,
     idQuest: QuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     idToUser: '',
@@ -2464,7 +2464,7 @@ export const resultsMocks: QuestResult[] = [
   },
   {
     idResult: '3',
-    idIndicator: indicatorsMocks[1].id,
+    idIndicator: indicatorsMocks[1].idIndicator,
     idQuest: QuestsMocks[0].idQuest,
     idFromUser: usersMocks[0].id,
     idToUser: '',
@@ -2473,7 +2473,7 @@ export const resultsMocks: QuestResult[] = [
   ...teamsMocks[0].members.map((member): QuestResult => {
     return {
       idResult: '22' + member.userId,
-      idIndicator: indicatorsMocks[2].id,
+      idIndicator: indicatorsMocks[2].idIndicator,
       idQuest: QuestsMocks[0].idQuest,
       idFromUser: usersMocks[0].id,
       idToUser: member.userId,

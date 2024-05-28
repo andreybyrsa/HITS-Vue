@@ -61,12 +61,31 @@ const { setValues, handleSubmit, values, errors } = useForm<{
 })
 
 const handleCreateQuest = () => {
+  if (!values.example?.idQuestTemplate) return
   setValues({
     idQuestTemplate: values.example.idQuestTemplate,
     idTeams: props.teams.map((team) => {
       return { id: team.id }
     }),
   })
+  console.log(values.endAt)
+  if (!values.endAt || !values.startAt) return
+
+  const splitStartAt = values.startAt.split('-').map((item) => Number(item))
+  const splitEndAt = values.endAt.split('-').map((item) => Number(item))
+
+  var newStartAt = new Date(splitStartAt[2], splitStartAt[1] - 1, splitStartAt[0])
+    .getTime()
+    .toString()
+  var newEndAt = new Date(splitEndAt[2], splitEndAt[1] - 1, splitEndAt[0])
+    .getTime()
+    .toString()
+
+  setValues({
+    startAt: newStartAt,
+    endAt: newEndAt,
+  })
+  console.log(values)
 
   handleSubmit(async (values) => {
     const token = user.value?.token
