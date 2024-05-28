@@ -41,8 +41,8 @@ const { setValues, handleSubmit, values, errors } = useForm<{
   idQuestTemplate: string
   idTeams: { id: string }[]
   name: string
-  startAt: string
-  endAt: string
+  startAt: number
+  endAt: number
 }>({
   validationSchema: {
     example: (value: QuestTemplateShort) =>
@@ -53,9 +53,9 @@ const { setValues, handleSubmit, values, errors } = useForm<{
       Validation.checkIsEmptyValue(value) || 'Команды не выбраны',
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Название не заполнено',
-    startAt: (value: string) =>
+    startAt: (value: number) =>
       Validation.checkDate(value) || 'Начальная дата не выбрана',
-    endAt: (value: string) =>
+    endAt: (value: number) =>
       Validation.validateDates(values.startAt, value) || 'Конечная дата не выбрана',
   },
 })
@@ -73,12 +73,12 @@ const handleCreateQuest = () => {
   const splitStartAt = values.startAt.split('-').map((item) => Number(item))
   const splitEndAt = values.endAt.split('-').map((item) => Number(item))
 
-  var newStartAt = new Date(splitStartAt[0], splitStartAt[1] - 1, splitStartAt[2])
-    .getTime()
-    .toString()
-  var newEndAt = new Date(splitEndAt[0], splitEndAt[1] - 1, splitEndAt[2])
-    .getTime()
-    .toString()
+  var newStartAt = new Date(
+    splitStartAt[0],
+    splitStartAt[1] - 1,
+    splitStartAt[2],
+  ).getTime()
+  var newEndAt = new Date(splitEndAt[0], splitEndAt[1] - 1, splitEndAt[2]).getTime()
 
   handleSubmit(async (values) => {
     const token = user.value?.token
@@ -87,7 +87,6 @@ const handleCreateQuest = () => {
     const newLaunchQuest = structuredClone(values)
     newLaunchQuest.startAt = newStartAt
     newLaunchQuest.endAt = newEndAt
-    console.log(newLaunchQuest)
 
     await launchQuestStore.postQuest(newLaunchQuest, token)
     emit('close-modal')
