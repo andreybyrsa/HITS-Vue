@@ -83,11 +83,13 @@ const handleCreateQuest = () => {
   handleSubmit(async (values) => {
     const token = user.value?.token
     if (!token) return
-    setValues({
-      startAt: newStartAt,
-      endAt: newEndAt,
-    })
-    await launchQuestStore.postQuest(values, token)
+
+    const newLaunchQuest = structuredClone(values)
+    newLaunchQuest.startAt = newStartAt
+    newLaunchQuest.endAt = newEndAt
+    console.log(newLaunchQuest)
+
+    await launchQuestStore.postQuest(newLaunchQuest, token)
     emit('close-modal')
   })()
 }
