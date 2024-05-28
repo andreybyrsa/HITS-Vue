@@ -36,31 +36,45 @@ const questTemplatesRef = ref<QuestTemplateShort[]>([])
 const selectedTeams = ref<Team[]>([])
 const selectedQuestTemplate = ref<null | QuestTemplate>(null)
 
-const { setValues, handleSubmit, values } = useForm<Quest>({
+const { setValues, handleSubmit, values, errors } = useForm<{
+  example: QuestTemplateShort
+  idQuestTemplate: string
+  idTeams: { id: string }[]
+  name: string
+  startAt: string
+  endAt: string
+}>({
   validationSchema: {
-    example: (value: string) =>
+    example: (value: QuestTemplateShort) =>
       Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
-    id: (value: string) =>
+    idQuestTemplate: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Выберите шаблон опроса',
-    idTeams: (value: string[]) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
+    idTeams: (value: { id: string }[]) =>
+      Validation.checkIsEmptyValue(value) || 'Команды не выбраны',
     name: (value: string) =>
-      Validation.checkIsEmptyValue(value) || 'Поле не заполнено',
-    startAt: (value: string) => Validation.checkDate(value) || 'Поле не заполнено',
+      Validation.checkIsEmptyValue(value) || 'Название не заполнено',
+    startAt: (value: string) =>
+      Validation.checkDate(value) || 'Начальная дата не выбрана',
     endAt: (value: string) =>
-      Validation.validateDates(values.startAt, value) || 'Поле не заполнено',
+      Validation.validateDates(values.startAt, value) || 'Конечная дата не выбрана',
   },
 })
 
-const handleCreateCompany = handleSubmit(async (values) => {
-  const token = user.value?.token
+const handleCreateQuest = () => {
+  setValues({
+    idQuestTemplate: values.example.idQuestTemplate,
+    idTeams: props.teams.map((team) => {
+      return { id: team.id }
+    }),
+  })
 
-  if (!token) return
-  delete values.example
-
-  await launchQuestStore.postQuest(values, token)
-  emit('close-modal')
-})
+  handleSubmit(async (values) => {
+    const token = user.value?.token
+    if (!token) return
+    await launchQuestStore.postQuest(values, token)
+    emit('close-modal')
+  })()
+}
 
 const questions = computed(() => {
   if (selectedQuestTemplate.value) {
@@ -194,7 +208,7 @@ watchImmediate(
                 v-if="questions?.length"
               >
                 <div
-                  class="overflow-scroll fixed-size-scroll-div"
+                  class="overflow-y fixed-size-scroll-div"
                   style="flex-grow: 1"
                 >
                   <div
@@ -255,7 +269,7 @@ watchImmediate(
           <div class="col-sm-12 d-flex justify-content-end">
             <Button
               variant="primary"
-              @click="handleCreateCompany"
+              @click="handleCreateQuest"
               >Создать опрос</Button
             >
           </div>
@@ -293,5 +307,9 @@ watchImmediate(
 }
 .text-question {
   word-break: break-word !important;
+}
+
+.overflow-y {
+  overflow-y: scroll;
 }
 </style>
