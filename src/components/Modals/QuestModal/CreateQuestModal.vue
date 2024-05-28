@@ -68,7 +68,6 @@ const handleCreateQuest = () => {
       return { id: team.id }
     }),
   })
-  console.log(values.endAt)
   if (!values.endAt || !values.startAt) return
 
   const splitStartAt = values.startAt.split('-').map((item) => Number(item))
@@ -81,15 +80,13 @@ const handleCreateQuest = () => {
     .getTime()
     .toString()
 
-  setValues({
-    startAt: newStartAt,
-    endAt: newEndAt,
-  })
-  console.log(values)
-
   handleSubmit(async (values) => {
     const token = user.value?.token
     if (!token) return
+    setValues({
+      startAt: newStartAt,
+      endAt: newEndAt,
+    })
     await launchQuestStore.postQuest(values, token)
     emit('close-modal')
   })()
