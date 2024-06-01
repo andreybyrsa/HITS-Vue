@@ -1,5 +1,4 @@
 interface PassQuestProps {
-  isOpened: boolean
   idQuest: string
 }
 

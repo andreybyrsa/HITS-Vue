@@ -96,16 +96,16 @@ const navigateToQuestModal = (quest: QuestTemplateShort) => {
   if (!routeName) return
   const { idQuestTemplate: id } = quest
   const questRoute: RouteRecordRaw = {
-    name: 'quest',
-    path: '/quests/:id',
-    alias: '/quests/:id',
+    name: 'quest-template',
+    path: '/quest-template/:id',
+    alias: '/quest-template/:id',
     component: QuestTemplateModal,
     props: {
       canGoBack: true,
     },
   }
 
-  navigateToAliasRoute(routeName?.toString(), `/quests/${id}`, questRoute)
+  navigateToAliasRoute(routeName?.toString(), `/quest-template/${id}`, questRoute)
 }
 </script>
 

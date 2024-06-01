@@ -57,7 +57,7 @@ onMounted(async () => {
 })
 
 const handleCloseProfileModal = () => {
-  return router.go(-1)
+  return router.push('/questionnaire')
 }
 
 const availableOptions: OptionType[] = [

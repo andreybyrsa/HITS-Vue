@@ -46,7 +46,7 @@ import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 import useProfilesStore from '@Store/profiles/profilesStore'
 import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.vue'
 import QuestTemplateModal from '@Components/Modals/QuestTemplateModal/QuestTemplateModal.vue'
-import QuestModal from '@Components/Modals/QuestModal/QuestModal.vue'
+import PassQuestModal from '@Components/Modals/QuestModal/PassQuestModal.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -373,16 +373,16 @@ const routes: RouteRecordRaw[] = [
         component: ProfileModal,
       },
       {
-        name: 'quests',
-        path: 'quests/:id',
-        alias: '/quests/:id',
+        name: 'quest-template',
+        path: 'quest-template/:id',
+        alias: '/quest-template/:id',
         component: QuestTemplateModal,
       },
       {
-        name: 'launch-quests',
-        path: 'launch-quests/:idLaunchQuest',
-        alias: '/launch-quests/:idLaunchQuest',
-        component: QuestModal,
+        name: 'quest',
+        path: 'quest/:id',
+        alias: '/quest/:id',
+        component: PassQuestModal,
       },
     ],
   },

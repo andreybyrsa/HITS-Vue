@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ComputedRef, computed, onMounted, ref } from 'vue'
+import { ComputedRef, computed, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
@@ -18,9 +18,15 @@ import Radio from '@Components/Inputs/Radio/Radio.vue'
 import { useForm } from 'vee-validate'
 import useQuestResultsStore from '@Store/questResults/questResultsStore'
 import useQuestsStore from '@Store/quests/questsStore'
+import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps<PassQuestProps>()
 const emit = defineEmits<PassQuestEmits>()
+
+const isOpened = ref(true)
+
+const router = useRouter()
+const route = useRoute()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -52,17 +58,38 @@ const results = ref<QuestResult[]>([])
 const { setValues, values } = useForm<{ answer: string }>({})
 
 onMounted(async () => {
+  const id = route.params.id.toString()
+  console.log(`onMounted ${id}`)
+
   currentIndicatorIndex.value = null
   results.value = []
 
   const token = user.value?.token
   if (!token) return
-  currentQuest.value = quests.value.find((q) => q.idQuest == props.idQuest) ?? null
+  await questsStore.getQuests(token)
+  currentQuest.value = quests.value.find((q) => q.idQuest == id) ?? null
   const idQuestTemplate = currentQuest.value?.idQuestTemplate
   if (!idQuestTemplate) return
   await questTemplatesStore.getQuestTemplate(idQuestTemplate, token)
   await teamStore.getTeams(token)
 })
+
+watch(
+  () => route.params.id,
+  async () => {
+    console.log(`watch ${props.idQuest}`)
+    currentIndicatorIndex.value = null
+    results.value = []
+
+    const token = user.value?.token
+    if (!token) return
+    currentQuest.value = quests.value.find((q) => q.idQuest == props.idQuest) ?? null
+    const idQuestTemplate = currentQuest.value?.idQuestTemplate
+    if (!idQuestTemplate) return
+    await questTemplatesStore.getQuestTemplate(idQuestTemplate, token)
+    await teamStore.getTeams(token)
+  },
+)
 
 const teamOfUser = computed(() => {
   return teams.value.find((team) =>
@@ -150,12 +177,16 @@ const sendResults = async () => {
   quest.passed = true
   emit('close-modal')
 }
+
+const handleCloseProfileModal = () => {
+  return router.push('/questionnaire')
+}
 </script>
 
 <template>
   <ModalLayout
     :is-opened="isOpened"
-    @on-outside-close="emit('close-modal')"
+    @on-outside-close="handleCloseProfileModal"
   >
     <div
       class="modal-360-quest bg-white rounded p-3 container-fluid d-flex flex-column h-fit"
@@ -167,7 +198,7 @@ const sendResults = async () => {
         <Button
           variant="close"
           class="close"
-          @click="emit('close-modal')"
+          @click="handleCloseProfileModal"
         ></Button>
         <div class="border-bottom m--4 w-100"></div>
       </div>

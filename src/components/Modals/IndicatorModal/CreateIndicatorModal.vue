@@ -70,7 +70,7 @@ const indicatorTypeSelectOptions: OptionType[] = [
 ]
 
 const indicatorRoleSelectOptions: OptionType[] = [
-  { value: 'TEAM', label: 'Команда' },
+  { value: 'MEMBER', label: 'Студент' },
   { value: 'INITIATOR', label: 'Инициатор' },
   { value: 'TEAM_LEADER', label: 'Тимлид' },
   { value: 'TEACHER', label: 'Преподаватель' },
