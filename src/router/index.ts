@@ -1,9 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
-import LoginView from '@Views/LoginView.vue'
-import RegisterView from '@Views/RegisterView.vue'
-import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
@@ -336,21 +333,6 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/last-activity-note',
     component: LastActivityNote,
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: LoginView,
-  },
-  {
-    path: '/register/:slug',
-    name: 'register',
-    component: RegisterView,
-  },
-  {
-    path: '/forgot-password',
-    name: 'forgot-password',
-    component: ForgotPasswordView,
   },
   {
     path: '/error',
