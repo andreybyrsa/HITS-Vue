@@ -13,6 +13,7 @@ import {
   QuestResult,
   QuestResultWrapper,
   TeamQuestStat,
+  UsersQuestStat,
 } from '@Domain/Quest'
 import useProfilesStore from '@Store/profiles/profilesStore'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
@@ -20,6 +21,7 @@ import { useForm } from 'vee-validate'
 import useQuestResultsStore from '@Store/questResults/questResultsStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import { useRoute, useRouter } from 'vue-router'
+import { Profile } from '@Domain/Profile'
 
 const emit = defineEmits<PassQuestEmits>()
 
@@ -42,6 +44,9 @@ const { quests } = storeToRefs(questStore)
 const profilesStore = useProfilesStore()
 
 const currentIndicatorIndex = ref<number | null>(null)
+
+const teamProfilesRef = ref<UsersQuestStat[]>([])
+
 const indicators = computed(() => {
   const questIndicators = questTemplate.value?.indicators
   const token = user.value?.token
@@ -58,17 +63,7 @@ const indicators = computed(() => {
       return
     }
 
-    const teamProfiles = teamOfUser.value?.users.filter(
-      (member) => member.id != user.value?.id,
-    )
-
-    if (!teamProfiles) return
-
-    teamProfiles.map(async (member) => {
-      return await profilesStore.fetchUserProfile(member.id, token)
-    })
-
-    teamProfiles?.forEach((profile) => {
+    teamProfilesRef.value.forEach((profile) => {
       const newIndicator = {
         ...structuredClone(indicator),
         idToUser: profile.id,
@@ -98,6 +93,13 @@ onMounted(async () => {
 
   const token = user.value?.token
   if (!token) return
+
+  const teamProfiles = teamOfUser.value?.users.filter(
+    (member) => member.id != user.value?.id,
+  )
+  if (!teamProfiles) return
+  teamProfilesRef.value = teamProfiles
+
   if (quests.value.length == 0) {
     const { id, role, token } = { ...user.value }
     if (!id || !role || !token) return
