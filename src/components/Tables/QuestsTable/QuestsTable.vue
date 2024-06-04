@@ -80,7 +80,7 @@ const canPassQuest = (questStat: QuestStat) => {
   const isQuestPassed = questStat.teams.find((teamStat) =>
     teamStat.users.find((userStat) => userStat.id == user.value?.id),
   )
-  return isAcceptedRole && !isQuestPassed
+  return isAcceptedRole && !!isQuestPassed
 }
 
 const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [
@@ -100,11 +100,6 @@ const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [
     click: (quest: QuestStat) => navigateToQuestModal(quest),
   },
 ]
-
-// const openPassLaunchQuestModal = (quest: QuestStat) => {
-//   passLaunchQuest.value = quest
-//   isPassLaunchQuestModalOpen.value = true
-// }
 
 const getFormatProgress = (progress: string) => {
   return Math.floor(parseFloat(progress)).toString() + ' %'
