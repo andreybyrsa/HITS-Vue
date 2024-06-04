@@ -10,7 +10,7 @@ import useUserStore from '@Store/user/userStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import { storeToRefs } from 'pinia'
 import { QuestStat } from '@Domain/Quest'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import QuestTableCollapse from '@Components/Tables/QuestsTable/QuestTableCollapse.vue'
 import useQuestResultsStore from '@Store/questResults/questResultsStore'
 import { RouteRecordRaw, useRoute } from 'vue-router'
@@ -24,10 +24,9 @@ const { user } = storeToRefs(userStore)
 const questStore = useQuestsStore()
 
 const questsStore = useQuestsStore()
+const { quests } = storeToRefs(questsStore)
 
 const questResultsStore = useQuestResultsStore()
-
-const questCollapseData = ref<QuestStat[]>()
 
 onMounted(async () => {
   const { id, role, token } = { ...user.value }
@@ -37,9 +36,6 @@ onMounted(async () => {
   } else {
     await questStore.getQuests(id, token)
   }
-  const response = await questStore.getQuestCollapseData(token)
-  if (response instanceof Error) return
-  questCollapseData.value = response
 })
 
 const launchQuestsTableHeader: TableHeader = {
@@ -142,7 +138,7 @@ const navigateToQuestModal = (quest: QuestStat) => {
     :header="launchQuestsTableHeader"
     :columns="launchQuestsTableColumns"
     :dropdown-actions-menu="launchQuestsTableDropdownMenuAction"
-    :data="questCollapseData ?? []"
+    :data="quests ?? []"
     :search-by="['name']"
     :collapseChildComponent="QuestTableCollapse"
   />
