@@ -150,7 +150,9 @@ const nextQuestion = () => {
     idQuest: idQuest,
     idFromUser: user.value.id,
     value: values.answer.toString(),
+    idToUser: `TEAM-${teamOfUser.value?.id}`,
   }
+
   if (currentIndicator.value.idToUser) {
     newResult.idToUser = currentIndicator.value.idToUser
   }
