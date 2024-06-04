@@ -53,8 +53,6 @@ const { setValues, handleSubmit, values } = useForm<{
       Validation.checkIsEmptyValue(value) || 'Команды не выбраны',
     name: (value: string) =>
       Validation.checkIsEmptyValue(value) || 'Название не заполнено',
-    startAt: (value: number) =>
-      Validation.checkDate(String(value)) || 'Начальная дата не выбрана',
     endAt: (value: number) =>
       Validation.validateDates(String(values.startAt), String(value)) ||
       'Конечная дата не выбрана',
