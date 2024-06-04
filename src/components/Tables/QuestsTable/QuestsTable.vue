@@ -73,6 +73,7 @@ const canPassQuest = (questStat: QuestStat) => {
   const isAcceptedRole = ['INITIATOR', 'TEAM_LEADER', 'MEMBER', 'TEACHER'].includes(
     user.value?.role,
   )
+
   const isQuestPassed = questStat.teams.find((teamStat) =>
     teamStat.users.find((userStat) => userStat.id === user.value?.id),
   )

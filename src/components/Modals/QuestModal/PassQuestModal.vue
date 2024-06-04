@@ -51,8 +51,6 @@ const currentIndicator = computed(() => {
   return indicators.value[currentIndicatorIndex.value]
 })
 
-const currentQuest = ref<Quest | null>(null)
-
 const results = ref<QuestResult[]>([])
 
 const { setValues, values } = useForm<{ answer: string }>({})
@@ -68,34 +66,19 @@ onMounted(async () => {
   if (quests.value.length == 0) {
     const { id, role, token } = { ...user.value }
     if (!id || !role || !token) return
-    if (role == 'PROJECT_OFFICE') {
+    if (role == 'PROJECT_OFFICE' && quests.value.length == 0) {
       await questStore.getQuestsForProjectOffice(token)
-    } else {
+    } else if (quests.value.length == 0) {
       await questStore.getQuests(id, token)
     }
   }
-  currentQuest.value = quests.value.find((q) => q.idQuest == id) ?? null
-  const idQuestTemplate = currentQuest.value?.idQuestTemplate
+  const idQuestTemplate = quests.value.find(
+    (quest) => quest.id == id,
+  )?.idQuestTemplate
   if (!idQuestTemplate) return
   await questTemplatesStore.getQuestTemplate(idQuestTemplate, token)
   await teamStore.getTeams(token)
 })
-
-watch(
-  () => route.params.id,
-  async () => {
-    currentIndicatorIndex.value = null
-    results.value = []
-
-    const token = user.value?.token
-    if (!token) return
-    currentQuest.value = quests.value.find((q) => q.idQuest == props.idQuest) ?? null
-    const idQuestTemplate = currentQuest.value?.idQuestTemplate
-    if (!idQuestTemplate) return
-    await questTemplatesStore.getQuestTemplate(idQuestTemplate, token)
-    await teamStore.getTeams(token)
-  },
-)
 
 const teamOfUser = computed(() => {
   return teams.value.find((team) =>
@@ -175,12 +158,17 @@ const nextQuestion = () => {
 }
 
 const sendResults = async () => {
-  const token = user.value?.token
-  if (!token) return
+  const { id, role, token } = { ...user.value }
+  if (!id || !role || !token) return
+
   await questResultsStore.postQuestResults(results.value, token)
-  const quest = questStore.quests.find((q) => q.idQuest == props.idQuest)
-  if (!quest) return
-  quest.passed = true
+
+  if (role == 'PROJECT_OFFICE' && quests.value.length == 0) {
+    await questStore.getQuestsForProjectOffice(token)
+  } else if (quests.value.length == 0) {
+    await questStore.getQuests(id, token)
+  }
+
   emit('close-modal')
 }
 
