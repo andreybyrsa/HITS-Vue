@@ -26,9 +26,9 @@ const TableColumns = computed((): TableColumn<UsersQuestStat>[] => {
   return columns
 })
 
-const getStatusStyle = (closed: boolean) => {
+const getStatusStyle = (isPass: boolean) => {
   const initialClass = ['px-2', 'py-1', 'rounded-4']
-  if (closed) {
+  if (!isPass) {
     initialClass.push('bg-danger-subtle', 'text-danger')
     return initialClass
   }
@@ -36,8 +36,8 @@ const getStatusStyle = (closed: boolean) => {
   initialClass.push('bg-success-subtle', 'text-success')
   return initialClass
 }
-const getTranslatedStatus = (closed: boolean) => {
-  return closed ? 'Не пройден' : 'Пройден'
+const getTranslatedStatus = (isPass: boolean) => {
+  return isPass ? 'Пройден' : 'Не пройден'
 }
 </script>
 
