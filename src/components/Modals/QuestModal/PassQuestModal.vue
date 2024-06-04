@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ComputedRef, computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
@@ -15,13 +15,11 @@ import {
   TeamQuestStat,
   UsersQuestStat,
 } from '@Domain/Quest'
-import useProfilesStore from '@Store/profiles/profilesStore'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 import { useForm } from 'vee-validate'
 import useQuestResultsStore from '@Store/questResults/questResultsStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import { useRoute, useRouter } from 'vue-router'
-import { Profile } from '@Domain/Profile'
 
 const emit = defineEmits<PassQuestEmits>()
 
@@ -40,8 +38,6 @@ const questResultsStore = useQuestResultsStore()
 
 const questStore = useQuestsStore()
 const { quests } = storeToRefs(questStore)
-
-const profilesStore = useProfilesStore()
 
 const currentIndicatorIndex = ref<number | null>(null)
 
@@ -215,7 +211,7 @@ const handleCloseProfileModal = () => {
             v-if="currentIndicatorIndex === null"
           >
             {{ questTemplate?.description }}. <br />
-            В нем {{ questTemplate?.indicators.length }} вопросов. <br />
+            В нем {{ indicators?.length }} вопросов. <br />
             Чтобы приступить к нему нажмите на кнопку ниже.
           </p>
           <div
@@ -246,10 +242,7 @@ const handleCloseProfileModal = () => {
           >Начать опрос</Button
         >
         <Button
-          v-else-if="
-            currentIndicatorIndex ==
-            (questTemplate?.indicators && questTemplate?.indicators.length - 1)
-          "
+          v-else-if="currentIndicatorIndex == (indicators && indicators.length - 1)"
           class-name="w-fit h-auto align-self-end"
           variant="primary"
           :disabled="!values.answer"
