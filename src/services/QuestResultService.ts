@@ -65,7 +65,6 @@ const downloadResults = async (
 }
 
 const QuestResultService = {
-  // getQuestResults,
   postQuestResults,
   downloadResults,
 }
