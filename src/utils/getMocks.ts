@@ -2532,6 +2532,7 @@ export const teamsQuestStatMocks: MembersCollapseData[] = [
 export const QuestStatMocks: QuestCollapseData[] = [
   {
     idQuest: QuestsMocks[0].idQuest,
+    isPassed: true,
     idQuestTemplate: QuestsMocks[0].idQuestTemplate,
     name: QuestsMocks[0].name,
     progress: (
@@ -2544,6 +2545,7 @@ export const QuestStatMocks: QuestCollapseData[] = [
   },
   {
     idQuest: QuestsMocks[1].idQuest,
+    isPassed: true,
     idQuestTemplate: QuestsMocks[1].idQuestTemplate,
     name: QuestsMocks[1].name,
     progress: teamsQuestStatMocks[0].progress,
@@ -2551,6 +2553,7 @@ export const QuestStatMocks: QuestCollapseData[] = [
   },
   {
     idQuest: QuestsMocks[2].idQuest,
+    isPassed: true,
     idQuestTemplate: QuestsMocks[2].idQuestTemplate,
     name: QuestsMocks[2].name,
     progress: teamsQuestStatMocks[0].progress,
@@ -2558,6 +2561,7 @@ export const QuestStatMocks: QuestCollapseData[] = [
   },
   {
     idQuest: QuestsMocks[3].idQuest,
+    isPassed: true,
     idQuestTemplate: QuestsMocks[3].idQuestTemplate,
     name: QuestsMocks[3].name,
     progress: teamsQuestStatMocks[0].progress,
