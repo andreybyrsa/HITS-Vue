@@ -57,6 +57,10 @@ export interface QuestResult {
   value: string
 }
 
+export interface QuestResultWrapper {
+  results: QuestResult[]
+}
+
 export interface QuestTeamsProgress {
   teamName: string
   teamProgress: number

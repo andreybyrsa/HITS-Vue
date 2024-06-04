@@ -11,7 +11,7 @@ import {
 } from '@Components/Modals/QuestModal/PassQuestModal.type'
 import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import useUserStore from '@Store/user/userStore'
-import { Indicator, Quest, QuestResult } from '@Domain/Quest'
+import { Indicator, Quest, QuestResult, QuestResultWrapper } from '@Domain/Quest'
 import useTeamStore from '@Store/teams/teamsStore'
 import useProfilesStore from '@Store/profiles/profilesStore'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
@@ -165,7 +165,9 @@ const sendResults = async () => {
   const { id, role, token } = { ...user.value }
   if (!id || !role || !token) return
 
-  await questResultsStore.postQuestResults(results.value, token)
+  const newResults: QuestResultWrapper = { results: results.value }
+
+  await questResultsStore.postQuestResults(newResults, token)
 
   if (role == 'PROJECT_OFFICE' && quests.value.length == 0) {
     await questStore.getQuestsForProjectOffice(token)

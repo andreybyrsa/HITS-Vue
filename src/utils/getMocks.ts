@@ -41,6 +41,7 @@ import {
   TeamQuestStat as MembersCollapseData,
   UsersQuestStat,
   IndicatorCategory,
+  QuestResultWrapper,
 } from '@Domain/Quest'
 
 export const usersMocks: User[] = [
@@ -2428,60 +2429,61 @@ export const QuestsMocks: Quest[] = [
   },
 ]
 
-export const resultsMocks: QuestResult[] = [
-  {
-    idResult: '8',
-    idIndicator: indicatorsMocks[0].id,
-    idQuest: QuestsMocks[0].idQuest,
-    idFromUser: usersMocks[0].id,
-    value: '4',
-  },
-  {
-    idResult: '7',
-    idIndicator: indicatorsMocks[1].id,
-    idQuest: QuestsMocks[0].idQuest,
-    idFromUser: usersMocks[0].id,
-    idToUser: '',
-    value: '',
-  },
-  ...teamsMocks[0].members.map((member): QuestResult => {
-    return {
-      idResult: '33' + member.userId,
-      idIndicator: indicatorsMocks[2].id,
+export const resultsMocks: QuestResultWrapper = {
+  results: [
+    {
+      idResult: '8',
+      idIndicator: indicatorsMocks[0].id,
       idQuest: QuestsMocks[0].idQuest,
       idFromUser: usersMocks[0].id,
-      idToUser: member.userId,
-      value: '',
-    }
-  }),
-  {
-    idResult: '4',
-    idIndicator: indicatorsMocks[0].id,
-    idQuest: QuestsMocks[0].idQuest,
-    idFromUser: usersMocks[0].id,
-    idToUser: '',
-    value: '',
-  },
-  {
-    idResult: '3',
-    idIndicator: indicatorsMocks[1].id,
-    idQuest: QuestsMocks[0].idQuest,
-    idFromUser: usersMocks[0].id,
-    idToUser: '',
-    value: '',
-  },
-  ...teamsMocks[0].members.map((member): QuestResult => {
-    return {
-      idResult: '22' + member.userId,
-      idIndicator: indicatorsMocks[2].id,
+      value: '4',
+    },
+    {
+      idResult: '7',
+      idIndicator: indicatorsMocks[1].id,
       idQuest: QuestsMocks[0].idQuest,
       idFromUser: usersMocks[0].id,
-      idToUser: member.userId,
+      idToUser: '',
       value: '',
-    }
-  }),
-]
-
+    },
+    ...teamsMocks[0].members.map((member): QuestResult => {
+      return {
+        idResult: '33' + member.userId,
+        idIndicator: indicatorsMocks[2].id,
+        idQuest: QuestsMocks[0].idQuest,
+        idFromUser: usersMocks[0].id,
+        idToUser: member.userId,
+        value: '',
+      }
+    }),
+    {
+      idResult: '4',
+      idIndicator: indicatorsMocks[0].id,
+      idQuest: QuestsMocks[0].idQuest,
+      idFromUser: usersMocks[0].id,
+      idToUser: '',
+      value: '',
+    },
+    {
+      idResult: '3',
+      idIndicator: indicatorsMocks[1].id,
+      idQuest: QuestsMocks[0].idQuest,
+      idFromUser: usersMocks[0].id,
+      idToUser: '',
+      value: '',
+    },
+    ...teamsMocks[0].members.map((member): QuestResult => {
+      return {
+        idResult: '22' + member.userId,
+        idIndicator: indicatorsMocks[2].id,
+        idQuest: QuestsMocks[0].idQuest,
+        idFromUser: usersMocks[0].id,
+        idToUser: member.userId,
+        value: '',
+      }
+    }),
+  ],
+}
 export const usersQuestStatMocks: UsersQuestStat[] = [
   {
     id: usersMocks[0].id,
