@@ -82,9 +82,10 @@ const canPassQuest = (questStat: QuestStat) => {
     user.value?.role,
   )
   const isQuestPassed = questStat.teams.find((teamStat) =>
-    teamStat.users.find((userStat) => userStat.id == user.value?.id),
+    teamStat.users.find((userStat) => userStat.id === user.value?.id),
   )
-  return isAcceptedRole && !isQuestPassed
+
+  return isAcceptedRole && Boolean(isQuestPassed)
 }
 
 const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [
