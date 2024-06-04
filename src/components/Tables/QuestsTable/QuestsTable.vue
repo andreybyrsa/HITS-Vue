@@ -21,30 +21,26 @@ const route = useRoute()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const QuestStore = useQuestsStore()
+const questStore = useQuestsStore()
 
 const questsStore = useQuestsStore()
 
 const questResultsStore = useQuestResultsStore()
 
 const questCollapseData = ref<QuestStat[]>()
-// const isPassLaunchQuestModalOpen = ref(false)
-// const passLaunchQuest = ref<QuestStat | null>(null)
 
 onMounted(async () => {
-  const token = user.value?.token
-  if (!token) return
-  await QuestStore.getQuests(token)
-
-  const response = await QuestStore.getQuestCollapseData(token)
+  const { id, role, token } = { ...user.value }
+  if (!id || !role || !token) return
+  if (role == 'PROJECT_OFFICE') {
+    await questStore.getQuestsForProjectOffice(token)
+  } else {
+    await questStore.getQuests(id, token)
+  }
+  const response = await questStore.getQuestCollapseData(token)
   if (response instanceof Error) return
   questCollapseData.value = response
 })
-
-// const closePassLaunchQuestModal = () => {
-//   passLaunchQuest.value = null
-//   isPassLaunchQuestModalOpen.value = false
-// }
 
 const launchQuestsTableHeader: TableHeader = {
   label: 'Запущенные опросы',
@@ -154,12 +150,6 @@ const navigateToQuestModal = (quest: QuestStat) => {
     :search-by="['name']"
     :collapseChildComponent="QuestTableCollapse"
   />
-  <!-- <PassQuestModal
-    v-if="passLaunchQuest?.id"
-    :id-quest="passLaunchQuest?.id"
-    @close-modal="closePassLaunchQuestModal"
-    :is-opened="isPassLaunchQuestModalOpen"
-  ></PassQuestModal> -->
 </template>
 
 <style></style>

@@ -36,7 +36,7 @@ const questTemplatesRef = ref<QuestTemplateShort[]>([])
 const selectedTeams = ref<Team[]>([])
 const selectedQuestTemplate = ref<null | QuestTemplate>(null)
 
-const { setValues, handleSubmit, values, errors } = useForm<{
+const { setValues, handleSubmit, values } = useForm<{
   example: QuestTemplateShort
   idQuestTemplate: string
   teams: { id: string }[]

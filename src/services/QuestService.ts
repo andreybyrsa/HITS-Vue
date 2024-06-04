@@ -12,15 +12,31 @@ const launchQuestAxios = defineAxios(QuestsMocks)
 const launchQuestCollapseAxios = defineAxios(QuestStatMocks)
 
 // --- GET --- //
-const getQuests = async (token: string): Promise<Quest[] | Error> => {
+const getQuestsForProjectOffice = async (
+  token: string,
+): Promise<Quest[] | Error> => {
   return launchQuestAxios
-    .get(`${QUEST_SERVICE_URL}/quest/all`, {
+    .get(`${QUEST_SERVICE_URL}/quest/all/with-statuses`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки запущенных опросов.'))
 }
+
+const getQuests = async (
+  idUser: string,
+  token: string,
+): Promise<Quest[] | Error> => {
+  return launchQuestAxios
+    .get(`${QUEST_SERVICE_URL}/quest/by-user/with-statuses/${idUser}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки запущенных опросов.'))
+}
+
 const getQuestsCollapseData = async (token: string) => {
   return launchQuestCollapseAxios
     .get(`${QUEST_SERVICE_URL}/quest/stats/all`, {
@@ -62,6 +78,7 @@ const sendNotifications = async (idQuest: string, token: string) => {
 
 const LaunchQuestService = {
   getQuests,
+  getQuestsForProjectOffice,
   getQuestsCollapseData,
   postQuest,
   sendNotifications,

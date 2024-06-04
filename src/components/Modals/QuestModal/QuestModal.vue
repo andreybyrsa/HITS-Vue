@@ -27,8 +27,8 @@ const { user } = storeToRefs(userStore)
 const questTemplatesStore = useQuestTemplatesStore()
 const { questTemplate } = storeToRefs(questTemplatesStore)
 
-const questsStore = useQuestsStore()
-const { quests } = storeToRefs(questsStore)
+const questStore = useQuestsStore()
+const { quests } = storeToRefs(questStore)
 const quest = ref<Quest>()
 
 const teamsStore = useTeamStore()
@@ -59,8 +59,13 @@ onMounted(async () => {
   const idLaunchQuest = route.params.idLaunchQuest.toString()
 
   if (currentUser?.token) {
-    const { token } = currentUser
-    await questsStore.getQuests(token)
+    const { id, role, token } = { ...user.value }
+    if (!id || !role || !token) return
+    if (role == 'PROJECT_OFFICE') {
+      await questStore.getQuestsForProjectOffice(token)
+    } else {
+      await questStore.getQuests(id, token)
+    }
     quest.value = quests.value.find((item) => item.idQuest == idLaunchQuest)
     if (!quest.value) return
     await questTemplatesStore.getQuestTemplate(quest.value.idQuestTemplate, token)

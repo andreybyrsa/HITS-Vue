@@ -39,8 +39,8 @@ const { teams } = storeToRefs(teamStore)
 
 const questResultsStore = useQuestResultsStore()
 
-const questsStore = useQuestsStore()
-const { quests } = storeToRefs(questsStore)
+const questStore = useQuestsStore()
+const { quests } = storeToRefs(questStore)
 
 const profilesStore = useProfilesStore()
 
@@ -59,14 +59,21 @@ const { setValues, values } = useForm<{ answer: string }>({})
 
 onMounted(async () => {
   const id = route.params.id.toString()
-  console.log(`onMounted ${id}`)
 
   currentIndicatorIndex.value = null
   results.value = []
 
   const token = user.value?.token
   if (!token) return
-  await questsStore.getQuests(token)
+  if (quests.value.length == 0) {
+    const { id, role, token } = { ...user.value }
+    if (!id || !role || !token) return
+    if (role == 'PROJECT_OFFICE') {
+      await questStore.getQuestsForProjectOffice(token)
+    } else {
+      await questStore.getQuests(id, token)
+    }
+  }
   currentQuest.value = quests.value.find((q) => q.idQuest == id) ?? null
   const idQuestTemplate = currentQuest.value?.idQuestTemplate
   if (!idQuestTemplate) return
@@ -77,7 +84,6 @@ onMounted(async () => {
 watch(
   () => route.params.id,
   async () => {
-    console.log(`watch ${props.idQuest}`)
     currentIndicatorIndex.value = null
     results.value = []
 
@@ -172,7 +178,7 @@ const sendResults = async () => {
   const token = user.value?.token
   if (!token) return
   await questResultsStore.postQuestResults(results.value, token)
-  const quest = questsStore.quests.find((q) => q.idQuest == props.idQuest)
+  const quest = questStore.quests.find((q) => q.idQuest == props.idQuest)
   if (!quest) return
   quest.passed = true
   emit('close-modal')
