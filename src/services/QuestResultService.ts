@@ -13,7 +13,7 @@ const postQuestResults = async (
   token: string,
 ): Promise<QuestResult[] | Error> => {
   return axios
-    .post(`${QUEST_SERVICE_URL}/quest/results`, questResults, {
+    .post(`${QUEST_SERVICE_URL}/result/create`, questResults, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -27,7 +27,7 @@ const downloadResults = async (
 ): Promise<void | Error> => {
   try {
     const response = await axios.get(
-      `${QUEST_SERVICE_URL}/quest/${idQuest}/results/download`,
+      `${QUEST_SERVICE_URL}/statistic/quest/${idQuest}`,
       {
         responseType: 'blob',
         headers: { Authorization: `Bearer ${token}` },
@@ -65,7 +65,6 @@ const downloadResults = async (
 }
 
 const QuestResultService = {
-  // getQuestResults,
   postQuestResults,
   downloadResults,
 }
