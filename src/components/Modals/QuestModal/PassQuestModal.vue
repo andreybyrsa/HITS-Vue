@@ -84,9 +84,6 @@ const teamOfUser = computed<TeamQuestStat>(() => {
     someTeam.users.find((someUser) => someUser.id == user.value?.id),
   )
   return currentTeam as any
-  // return teams.value?.find((team) =>
-  //   team.members?.find((someUser) => someUser.id == user.value?.id),
-  // )
 })
 
 const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
@@ -132,6 +129,27 @@ const startQuest = () => {
   currentIndicatorIndex.value = 0
 }
 
+const makeResult = () => {
+  const idQuest = route.params.id.toString()
+  if (!currentIndicator.value?.id || !idQuest || !user.value?.id) {
+    return
+  }
+  const newResult = {
+    idIndicator: currentIndicator.value.id,
+    idQuest: Number(idQuest),
+    idFromUser: user.value.id,
+    value: values.answer.toString(),
+    idToUser: `TEAM-${teamOfUser.value?.id}`,
+  } as any
+
+  if (currentIndicator.value.idToUser) {
+    newResult.idToUser = currentIndicator.value.idToUser
+  }
+  results.value.push(newResult)
+
+  setValues({ answer: undefined })
+}
+
 const nextQuestion = () => {
   const isQuestNotStart = currentIndicatorIndex.value == null
   const isLastIndicator =
@@ -146,23 +164,13 @@ const nextQuestion = () => {
     return
   }
 
-  const newResult: QuestResult = {
-    idIndicator: currentIndicator.value.id,
-    idQuest: Number(idQuest),
-    idFromUser: user.value.id,
-    value: values.answer.toString(),
-    idToUser: `TEAM-${teamOfUser.value?.id}`,
-  } as any
+  makeResult()
 
-  if (currentIndicator.value.idToUser) {
-    newResult.idToUser = currentIndicator.value.idToUser
-  }
-  results.value.push(newResult)
   currentIndicatorIndex.value += 1
-  setValues({ answer: undefined })
 }
 
 const sendResults = async () => {
+  makeResult()
   const { id, role, token } = { ...user.value }
   if (!id || !role || !token) return
 
