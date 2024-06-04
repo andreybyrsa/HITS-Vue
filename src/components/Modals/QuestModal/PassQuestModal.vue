@@ -186,10 +186,7 @@ const handleCloseProfileModal = () => {
 </script>
 
 <template>
-  <ModalLayout
-    :is-opened="isOpened"
-    @on-outside-close="handleCloseProfileModal"
-  >
+  <ModalLayout :is-opened="isOpened">
     <div
       class="modal-360-quest bg-white rounded p-3 container-fluid d-flex flex-column h-fit"
     >
@@ -229,8 +226,8 @@ const handleCloseProfileModal = () => {
               <Radio
                 name="answer"
                 :value="i"
+                :label="i"
               />
-              <p>{{ i }}</p>
             </div>
           </div>
         </div>
