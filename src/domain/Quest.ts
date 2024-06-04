@@ -8,7 +8,7 @@ export interface Category {
 export type IndicatorType = 'TEAM' | 'INITIATOR' | 'TEAM-MEMBER' | 'TEAMLEAD'
 
 export interface Indicator {
-  idIndicator: string
+  id: string
   name: string
   answers: string[]
   toRole: IndicatorType

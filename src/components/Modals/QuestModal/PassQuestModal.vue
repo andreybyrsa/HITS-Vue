@@ -133,19 +133,21 @@ const nextQuestion = () => {
   const isQuestNotStart = currentIndicatorIndex.value == null
   const isLastIndicator =
     indicators.value && currentIndicatorIndex.value == indicators.value.length - 1
+  const idQuest = route.params.id.toString()
 
   if (isQuestNotStart || isLastIndicator) return
 
   // if снизу нужен из-за того что ts не видит проверку в переменной isQuestNotStart
   if (currentIndicatorIndex.value == null) return
 
-  if (!currentIndicator.value?.idIndicator || !props.idQuest || !user.value?.id) {
+  // if снизу нужен!
+  if (!currentIndicator.value?.id || !idQuest || !user.value?.id) {
     return
   }
 
   const newResult: QuestResult = {
-    idIndicator: currentIndicator.value.idIndicator,
-    idQuest: props.idQuest,
+    idIndicator: currentIndicator.value.id,
+    idQuest: idQuest,
     idFromUser: user.value.id,
     value: values.answer.toString(),
   }
