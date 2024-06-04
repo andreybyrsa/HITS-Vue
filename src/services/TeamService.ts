@@ -374,7 +374,7 @@ const addTeamExperince = async (
   token: string,
 ): Promise<TeamExperience | Error> => {
   return teamExperienceAxios
-    .post(`${API_URL}/ideas-service/team/vacancy-filter`, teamExperience, {
+    .post(`/ideas-service/team/vacancy-filter`, teamExperience, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

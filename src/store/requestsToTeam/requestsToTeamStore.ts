@@ -44,7 +44,6 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
       status: JoinStatus,
       token: string,
     ) {
-      const profileStore = useProfilesStore()
       const { id, userId, teamId } = requestToTeam
 
       const response = await TeamService.updateRequestToTeamStatus(
@@ -71,11 +70,11 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
           const profileStore = useProfilesStore()
 
           const currentTeam = teamsStore.teams.find(({ id }) => id === teamId)
-          const currentProfile = profileStore.profiles.find(
-            (profile) => profile.id === userId,
-          )
+          // const currentProfile = profileStore.profiles.find(
+          //   (profile) => profile.id === userId,
+          // )
 
-          if (currentTeam && currentProfile) {
+          if (currentTeam) {
             const { name, id } = currentTeam
 
             const newTeamExperience: TeamExperience = {
@@ -90,7 +89,7 @@ const useRequestsToTeamStore = defineStore('requestsToTeam', {
             }
 
             await teamsStore.addTeamMember({ ...requestToTeam, skills: [] }, token)
-            await profileStore.addTeamExperince(newTeamExperience, token)
+            // await profileStore.addTeamExperince(newTeamExperience, token)
           }
         }
       }
