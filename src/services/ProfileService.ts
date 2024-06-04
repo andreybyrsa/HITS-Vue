@@ -131,7 +131,7 @@ const updateUserFullName = async (
   id: string,
 ): Promise<Success | Error> => {
   return axios
-    .put(`${API_URL}/profile/update/${id}`, fullName, {
+    .put(`${API_URL}/ideas-service/profile/update/${id}`, fullName, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

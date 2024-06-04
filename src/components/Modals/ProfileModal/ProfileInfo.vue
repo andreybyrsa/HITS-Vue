@@ -32,9 +32,7 @@ const profilesStore = useProfilesStore()
 const profile = ref(profilesStore.getProfileByUserId(profileId))
 const computedProfile = computed(() => profile.value)
 
-const isOwnProfile = computed(
-  () => computedProfile.value?.email === profile.value?.email,
-)
+const isOwnProfile = computed(() => computedProfile.value?.id === user.value?.id)
 const isUpdatingUserName = ref(false)
 const isUpdatingUserLastname = ref(false)
 const isUpdatingUserStudyGroup = ref(false)
