@@ -1,18 +1,19 @@
 <script lang="ts" setup>
-import { ComputedRef, computed, onMounted, ref, watch } from 'vue'
+import { ComputedRef, computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import Button from '@Components/Button/Button.vue'
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import Typography from '@Components/Typography/Typography.vue'
-import {
-  PassQuestProps,
-  PassQuestEmits,
-} from '@Components/Modals/QuestModal/PassQuestModal.type'
+import { PassQuestEmits } from '@Components/Modals/QuestModal/PassQuestModal.type'
 import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
 import useUserStore from '@Store/user/userStore'
-import { Indicator, Quest, QuestResult, QuestResultWrapper } from '@Domain/Quest'
-import useTeamStore from '@Store/teams/teamsStore'
+import {
+  Indicator,
+  QuestResult,
+  QuestResultWrapper,
+  TeamQuestStat,
+} from '@Domain/Quest'
 import useProfilesStore from '@Store/profiles/profilesStore'
 import Radio from '@Components/Inputs/Radio/Radio.vue'
 import { useForm } from 'vee-validate'
@@ -20,7 +21,6 @@ import useQuestResultsStore from '@Store/questResults/questResultsStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import { useRoute, useRouter } from 'vue-router'
 
-const props = defineProps<PassQuestProps>()
 const emit = defineEmits<PassQuestEmits>()
 
 const isOpened = ref(true)
@@ -33,9 +33,6 @@ const { user } = storeToRefs(userStore)
 
 const questTemplatesStore = useQuestTemplatesStore()
 const { questTemplate } = storeToRefs(questTemplatesStore)
-
-const teamStore = useTeamStore()
-const { teams } = storeToRefs(teamStore)
 
 const questResultsStore = useQuestResultsStore()
 
@@ -77,13 +74,19 @@ onMounted(async () => {
   )?.idQuestTemplate
   if (!idQuestTemplate) return
   await questTemplatesStore.getQuestTemplate(idQuestTemplate, token)
-  await teamStore.getTeams(token)
 })
 
-const teamOfUser = computed(() => {
-  return teams.value?.find((team) =>
-    team.members?.find((someUser) => someUser.id == user.value?.id),
+const teamOfUser = computed<TeamQuestStat>(() => {
+  const id = route.params.id.toString()
+
+  const currentQuestStat = quests.value.find((someQuest) => someQuest.idQuest == id)
+  const currentTeam = currentQuestStat?.teams.find((someTeam) =>
+    someTeam.users.find((someUser) => someUser.id == user.value?.id),
   )
+  return currentTeam as any
+  // return teams.value?.find((team) =>
+  //   team.members?.find((someUser) => someUser.id == user.value?.id),
+  // )
 })
 
 const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
@@ -102,7 +105,7 @@ const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
       return
     }
 
-    const teamProfiles = teamOfUser.value?.members.filter(
+    const teamProfiles = teamOfUser.value?.users.filter(
       (member) => member.id != user.value?.id,
     )
 
@@ -117,7 +120,7 @@ const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
         ...structuredClone(indicator),
         idToUser: profile.id,
       }
-      newIndicator.name += ` ${profile.firstName} ${profile.lastName}`
+      newIndicator.name += ` ${profile.name}`
       personalIndicators.push(newIndicator)
     })
   })
@@ -137,21 +140,19 @@ const nextQuestion = () => {
 
   if (isQuestNotStart || isLastIndicator) return
 
-  // if снизу нужен из-за того что ts не видит проверку в переменной isQuestNotStart
   if (currentIndicatorIndex.value == null) return
 
-  // if снизу нужен!
   if (!currentIndicator.value?.id || !idQuest || !user.value?.id) {
     return
   }
 
   const newResult: QuestResult = {
     idIndicator: currentIndicator.value.id,
-    idQuest: idQuest,
+    idQuest: Number(idQuest),
     idFromUser: user.value.id,
     value: values.answer.toString(),
     idToUser: `TEAM-${teamOfUser.value?.id}`,
-  }
+  } as any
 
   if (currentIndicator.value.idToUser) {
     newResult.idToUser = currentIndicator.value.idToUser
