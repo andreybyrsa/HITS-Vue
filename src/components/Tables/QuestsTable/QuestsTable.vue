@@ -74,7 +74,7 @@ const canPassQuest = (questStat: QuestStat) => {
     user.value?.role,
   )
 
-  return isAcceptedRole && !questStat.isPassed
+  return isAcceptedRole && !questStat.isPass
 }
 
 const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [

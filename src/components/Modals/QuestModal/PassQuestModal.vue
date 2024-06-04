@@ -72,7 +72,7 @@ onMounted(async () => {
       await questStore.getQuests(id, token)
     }
   }
-  const idQuestTemplate = quests.value.find(
+  const idQuestTemplate = quests.value?.find(
     (quest) => quest.idQuest == id,
   )?.idQuestTemplate
   if (!idQuestTemplate) return
@@ -81,8 +81,8 @@ onMounted(async () => {
 })
 
 const teamOfUser = computed(() => {
-  return teams.value.find((team) =>
-    team.members.find((someUser) => someUser.id == user.value?.id),
+  return teams.value?.find((team) =>
+    team.members?.find((someUser) => someUser.id == user.value?.id),
   )
 })
 
