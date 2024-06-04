@@ -11,7 +11,7 @@ import axios, { AxiosError } from 'axios'
 const postQuestResults = async (
   questResults: QuestResultWrapper,
   token: string,
-): Promise<QuestResult[] | Error> => {
+): Promise<{ createdResults: number } | Error> => {
   return axios
     .post(`${QUEST_SERVICE_URL}/result/create`, questResults, {
       headers: { Authorization: `Bearer ${token}` },

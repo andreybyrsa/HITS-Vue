@@ -178,13 +178,9 @@ const sendResults = async () => {
 
   await questResultsStore.postQuestResults(newResults, token)
 
-  if (role == 'PROJECT_OFFICE' && quests.value.length == 0) {
-    await questStore.getQuestsForProjectOffice(token)
-  } else if (quests.value.length == 0) {
-    await questStore.getQuests(id, token)
-  }
+  await handleCloseProfileModal()
 
-  emit('close-modal')
+  window.location.reload()
 }
 
 const handleCloseProfileModal = () => {
