@@ -218,8 +218,8 @@ const handleCloseProfileModal = () => {
             <p class="fs-5 text-start">
               {{ currentIndicator?.name }}
             </p>
-            <div
-              class="d-flex"
+            <label
+              class="d-flex p-2"
               v-for="i in currentIndicator?.answers"
               :key="i"
             >
@@ -228,7 +228,7 @@ const handleCloseProfileModal = () => {
                 :value="i"
                 :label="i"
               />
-            </div>
+            </label>
           </div>
         </div>
         <Button
