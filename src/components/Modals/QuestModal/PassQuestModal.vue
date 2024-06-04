@@ -73,7 +73,7 @@ onMounted(async () => {
     }
   }
   const idQuestTemplate = quests.value.find(
-    (quest) => quest.id == id,
+    (quest) => quest.idQuest == id,
   )?.idQuestTemplate
   if (!idQuestTemplate) return
   await questTemplatesStore.getQuestTemplate(idQuestTemplate, token)

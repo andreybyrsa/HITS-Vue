@@ -2531,7 +2531,7 @@ export const teamsQuestStatMocks: MembersCollapseData[] = [
 ]
 export const QuestStatMocks: QuestCollapseData[] = [
   {
-    id: QuestsMocks[0].idQuest,
+    idQuest: QuestsMocks[0].idQuest,
     idQuestTemplate: QuestsMocks[0].idQuestTemplate,
     name: QuestsMocks[0].name,
     progress: (
@@ -2543,21 +2543,21 @@ export const QuestStatMocks: QuestCollapseData[] = [
     teams: [teamsQuestStatMocks[0], teamsQuestStatMocks[1], teamsQuestStatMocks[2]],
   },
   {
-    id: QuestsMocks[1].idQuest,
+    idQuest: QuestsMocks[1].idQuest,
     idQuestTemplate: QuestsMocks[1].idQuestTemplate,
     name: QuestsMocks[1].name,
     progress: teamsQuestStatMocks[0].progress,
     teams: [teamsQuestStatMocks[0]],
   },
   {
-    id: QuestsMocks[2].idQuest,
+    idQuest: QuestsMocks[2].idQuest,
     idQuestTemplate: QuestsMocks[2].idQuestTemplate,
     name: QuestsMocks[2].name,
     progress: teamsQuestStatMocks[0].progress,
     teams: [teamsQuestStatMocks[0]],
   },
   {
-    id: QuestsMocks[3].idQuest,
+    idQuest: QuestsMocks[3].idQuest,
     idQuestTemplate: QuestsMocks[3].idQuestTemplate,
     name: QuestsMocks[3].name,
     progress: teamsQuestStatMocks[0].progress,

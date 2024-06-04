@@ -90,7 +90,7 @@ const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [
   {
     label: 'Скачать результаты опроса',
     statement: isProjectOffice,
-    click: (questStat: QuestStat) => downloadQuestResults(questStat.id),
+    click: (questStat: QuestStat) => downloadQuestResults(questStat.idQuest),
   },
   {
     label: 'Пройти опрос',
@@ -106,7 +106,7 @@ const getFormatProgress = (progress: string) => {
 const sendNotifications = async (quest: QuestStat) => {
   const token = user.value?.token
   if (!token) return
-  await questsStore.sendNotifications(quest.id, token)
+  await questsStore.sendNotifications(quest.idQuest, token)
 }
 
 const downloadQuestResults = async (idQuest: string) => {
@@ -118,7 +118,7 @@ const downloadQuestResults = async (idQuest: string) => {
 const navigateToQuestModal = (quest: QuestStat) => {
   const routeName = route.name
   if (!routeName) return
-  const { id } = quest
+  const { idQuest } = quest
   const questRoute: RouteRecordRaw = {
     name: 'quest',
     path: '/quest/:id',
@@ -129,7 +129,7 @@ const navigateToQuestModal = (quest: QuestStat) => {
     },
   }
 
-  navigateToAliasRoute(routeName?.toString(), `/quest/${id}`, questRoute)
+  navigateToAliasRoute(routeName?.toString(), `/quest/${idQuest}`, questRoute)
 }
 </script>
 

@@ -63,7 +63,7 @@ export interface QuestTeamsProgress {
 }
 
 export interface QuestStat {
-  id: string
+  idQuest: string
   idQuestTemplate: string
   name: string
   progress: string
