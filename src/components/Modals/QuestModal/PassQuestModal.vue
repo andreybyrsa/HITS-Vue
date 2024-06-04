@@ -42,6 +42,44 @@ const { quests } = storeToRefs(questStore)
 const profilesStore = useProfilesStore()
 
 const currentIndicatorIndex = ref<number | null>(null)
+const indicators = computed(() => {
+  const questIndicators = questTemplate.value?.indicators
+  const token = user.value?.token
+  if (!token) return
+
+  const personalIndicators: Indicator[] = []
+
+  questIndicators?.forEach(async (indicator) => {
+    const userRole = user.value?.role
+    if (indicator.fromRole != userRole) return
+
+    if (indicator.toRole != 'TEAM-MEMBER') {
+      personalIndicators.push(indicator)
+      return
+    }
+
+    const teamProfiles = teamOfUser.value?.users.filter(
+      (member) => member.id != user.value?.id,
+    )
+
+    if (!teamProfiles) return
+
+    teamProfiles.map(async (member) => {
+      return await profilesStore.fetchUserProfile(member.id, token)
+    })
+
+    teamProfiles?.forEach((profile) => {
+      const newIndicator = {
+        ...structuredClone(indicator),
+        idToUser: profile.id,
+      }
+      newIndicator.name += ` ${profile.name}`
+      personalIndicators.push(newIndicator)
+    })
+  })
+
+  return personalIndicators
+})
 
 const currentIndicator = computed(() => {
   if (currentIndicatorIndex.value == null || !indicators.value) return undefined
@@ -84,45 +122,6 @@ const teamOfUser = computed<TeamQuestStat>(() => {
     someTeam.users.find((someUser) => someUser.id == user.value?.id),
   )
   return currentTeam as any
-})
-
-const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
-  const questIndicators = questTemplate.value?.indicators
-  const token = user.value?.token
-  if (!token) return
-
-  const personalIndicators: Indicator[] = []
-
-  questIndicators?.forEach(async (indicator) => {
-    const userRole = user.value?.role
-    if (indicator.fromRole != userRole) return
-
-    if (indicator.toRole != 'TEAM-MEMBER') {
-      personalIndicators.push(indicator)
-      return
-    }
-
-    const teamProfiles = teamOfUser.value?.users.filter(
-      (member) => member.id != user.value?.id,
-    )
-
-    if (!teamProfiles) return
-
-    await teamProfiles.map(async (member) => {
-      return await profilesStore.fetchUserProfile(member.id, token)
-    })
-
-    await teamProfiles?.forEach((profile) => {
-      const newIndicator = {
-        ...structuredClone(indicator),
-        idToUser: profile.id,
-      }
-      newIndicator.name += ` ${profile.name}`
-      personalIndicators.push(newIndicator)
-    })
-  })
-
-  return personalIndicators
 })
 
 const startQuest = () => {
@@ -211,7 +210,7 @@ const handleCloseProfileModal = () => {
         <div class="d-flex col h-auto text-center">
           <p
             class="h-fit text-start"
-            v-if="currentIndicatorIndex == null"
+            v-if="currentIndicatorIndex === null"
           >
             {{ questTemplate?.description }}. <br />
             В нем {{ questTemplate?.indicators.length }} вопросов. <br />
