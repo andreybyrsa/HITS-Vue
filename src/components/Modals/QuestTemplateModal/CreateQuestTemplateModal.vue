@@ -65,7 +65,7 @@ const filteredBacklogIndicators = computed(() => {
   return backlogIndicators.value.filter(
     (indicator) =>
       indicator.name.toLowerCase().includes(searchValue) ||
-      findStatusesByTranslatedStatus(searchValue).includes(indicator.type),
+      findStatusesByTranslatedStatus(searchValue).includes(indicator.toRole),
   )
 })
 
@@ -77,7 +77,7 @@ const filteredNewQuestIndicators = computed(() => {
   return newQuestIndicators.value.filter(
     (indicator) =>
       indicator.name.toLowerCase().includes(searchValue) ||
-      findStatusesByTranslatedStatus(searchValue).includes(indicator.type),
+      findStatusesByTranslatedStatus(searchValue).includes(indicator.toRole),
   )
 })
 

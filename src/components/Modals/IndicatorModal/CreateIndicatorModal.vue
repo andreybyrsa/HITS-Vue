@@ -39,8 +39,8 @@ const {
   name: string
   answers: string[]
   answer: string // этого поля нет в модели Indicator и оно нужно для добавления новых вариантов ответа
-  type: IndicatorType
-  role: RolesTypes
+  toRole: IndicatorType
+  fromRole: RolesTypes
   newCategoryName: string // этого поля нет в модели Indicator и оно нужно для добавления новых категорий
   categoryName: string
   idCategory: string
@@ -86,8 +86,8 @@ const createIndicator = () => {
     const newIndicator = {
       name: indicator.name,
       answers: answers.value,
-      type: indicator.type,
-      role: indicator.role,
+      toRole: indicator.toRole,
+      fromRole: indicator.fromRole,
       idCategory: values.idCategory,
     } as Indicator
 
@@ -198,13 +198,13 @@ onMounted(async () => {
               <Select
                 label="Для кого предназначен вопрос"
                 label-class-name="mt-3"
-                name="role"
+                name="fromRole"
                 :options="indicatorRoleSelectOptions"
               ></Select>
               <Select
                 label="Кого нужно оценить"
                 label-class-name="mt-3"
-                name="type"
+                name="toRole"
                 :options="indicatorTypeSelectOptions"
               ></Select>
             </div>

@@ -95,9 +95,9 @@ const indicators: ComputedRef<Indicator[] | undefined> = computed(() => {
 
   questIndicators?.forEach(async (indicator) => {
     const userRole = user.value?.role
-    if (indicator.role != userRole) return
+    if (indicator.fromRole != userRole) return
 
-    if (indicator.type != 'TEAM-MEMBER') {
+    if (indicator.toRole != 'TEAM-MEMBER') {
       personalIndicators.push(indicator)
       return
     }

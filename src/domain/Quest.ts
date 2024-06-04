@@ -11,8 +11,8 @@ export interface Indicator {
   idIndicator: string
   name: string
   answers: string[]
-  type: IndicatorType
-  role: RolesTypes
+  toRole: IndicatorType
+  fromRole: RolesTypes
   visible: boolean
   categoryName: string
   idCategory: string
