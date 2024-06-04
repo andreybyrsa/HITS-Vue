@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/questResults/initialState'
-import { QuestResult, QuestResultWrapper } from '@Domain/Quest'
+import { QuestResultWrapper } from '@Domain/Quest'
 import QuestResultService from '@Services/QuestResultService'
 
 const useQuestResultsStore = defineStore('questResultsStore', {
@@ -13,7 +13,7 @@ const useQuestResultsStore = defineStore('questResultsStore', {
     async postQuestResults(
       questResults: QuestResultWrapper,
       token: string,
-    ): Promise<QuestResult[] | Error> {
+    ): Promise<{ createdResults: number } | Error> {
       const response = await QuestResultService.postQuestResults(questResults, token)
 
       if (response instanceof Error) {
@@ -21,7 +21,6 @@ const useQuestResultsStore = defineStore('questResultsStore', {
         return response
       }
 
-      this.questResults.push(...response)
       return response
     },
 
