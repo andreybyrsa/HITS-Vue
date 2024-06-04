@@ -64,7 +64,7 @@ export interface QuestTeamsProgress {
 
 export interface QuestStat {
   idQuest: string
-  isPassed: boolean
+  isPass: boolean
   idQuestTemplate: string
   name: string
   progress: string
