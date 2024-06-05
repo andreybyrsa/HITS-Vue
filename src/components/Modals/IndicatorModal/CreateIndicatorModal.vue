@@ -47,7 +47,7 @@ const {
 }>({
   validationSchema: {
     name: (value: string) => Validation.checkIsEmptyValue(value),
-    idCategory: (value: string) => Validation.checkIsEmptyValue(value),
+    idCategory: (value: any) => value !== undefined,
     role: (value: string) => Validation.checkIsEmptyValue(value),
     type: (value: string) => Validation.checkIsEmptyValue(value),
   },
