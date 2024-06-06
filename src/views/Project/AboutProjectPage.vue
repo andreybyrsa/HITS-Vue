@@ -19,7 +19,7 @@ defineProps<ProjectProps>()
             class-name="collapse-controller w-100"
             v-collapse:openOnMount="project.id"
           >
-            Описание
+            Описание необходимых ресурсов для реализации
           </Button>
           <Collapse :id="project.id">
             <div class="p-2">{{ project.description }}</div>
