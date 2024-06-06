@@ -170,6 +170,7 @@ const closeCreateNewIndicator = () => {
 
 <template>
   <ModalLayout
+    class-name="flex-modal-layout"
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
   >
@@ -198,8 +199,9 @@ const closeCreateNewIndicator = () => {
                 <Typography class-name="fs-5 text-secondary"
                   >Список вопросов</Typography
                 >
-                <Icon
-                  class-name="bi bi-plus quest-form__backlog-add p-1 rounded"
+                <Button
+                  class-name="bi bi-plus p-0-5 rounded"
+                  variant="primary"
                   @click="openCreateNewIndicator"
                 />
                 <CreateIndicatorModal
@@ -286,8 +288,8 @@ const closeCreateNewIndicator = () => {
 
 <style lang="scss">
 .modal-360-questTemplate {
-  width: 85%;
-  height: 900px;
+  width: 80%;
+  height: 80%;
   @include flexible(
     stretch,
     center,

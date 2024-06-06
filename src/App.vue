@@ -138,4 +138,14 @@ input[type='checkbox'] {
   -o-transform: scale(1.2);
   transform: scale(1.2);
 }
+
+.flex-modal-layout {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.p-0-5 {
+  padding: 2px !important;
+}
 </style>

@@ -27,37 +27,30 @@ const { user } = storeToRefs(userStore)
 const indicatorStore = useIndicatorStore()
 const { indicatorCategories } = storeToRefs(indicatorStore)
 
-const {
-  handleSubmit,
-  values,
-  setValues,
-  setFieldError,
-  validateField,
-  resetField,
-  errors,
-} = useForm<{
-  name: string
-  answers: string[]
-  answer: string // этого поля нет в модели Indicator и оно нужно для добавления новых вариантов ответа
-  toRole: IndicatorType
-  fromRole: RolesTypes
-  newCategoryName: string // этого поля нет в модели Indicator и оно нужно для добавления новых категорий
-  categoryName: string
-  idCategory: string
-}>({
-  validationSchema: {
-    name: (value: string) => Validation.checkIsEmptyValue(value),
-    idCategory: (value: any) => value !== undefined,
-    role: (value: string) => Validation.checkIsEmptyValue(value),
-    type: (value: string) => Validation.checkIsEmptyValue(value),
-  },
-})
+const { handleSubmit, values, setValues, setFieldError, validateField, resetField } =
+  useForm<{
+    name: string
+    answers: string[]
+    answer: string // этого поля нет в модели Indicator и оно нужно для добавления новых вариантов ответа
+    toRole: IndicatorType
+    fromRole: RolesTypes
+    newCategoryName: string // этого поля нет в модели Indicator и оно нужно для добавления новых категорий
+    categoryName: string
+    idCategory: string
+  }>({
+    validationSchema: {
+      name: (value: string) => Validation.checkIsEmptyValue(value),
+      idCategory: (value: any) => Boolean(value),
+      toRole: (value: string) => Validation.checkIsEmptyValue(value),
+      fromRole: (value: string) => Validation.checkIsEmptyValue(value),
+    },
+  })
 
 const answers = ref<string[]>([])
 
 const computedIndicatorCategories = computed(() => {
   return indicatorCategories.value.map((category) => {
-    return { value: category.id, label: category.name } as OptionType
+    return { value: category.idCategory, label: category.name } as OptionType
   })
 })
 
@@ -76,13 +69,13 @@ const indicatorRoleSelectOptions: OptionType[] = [
   { value: 'TEACHER', label: 'Преподаватель' },
 ]
 
-const createIndicator = () => {
+const createIndicator = async () => {
   if (answers.value.length == 0) {
     setFieldError('answer', 'Добавьте варианты ответов')
     return
   }
 
-  handleSubmit(async (indicator) => {
+  await handleSubmit(async (indicator) => {
     const newIndicator = {
       name: indicator.name,
       answers: answers.value,
@@ -92,7 +85,7 @@ const createIndicator = () => {
     } as Indicator
 
     const categoryName = indicatorCategories.value.find(
-      (category) => category.id == values.idCategory,
+      (category) => category.idCategory == values.idCategory,
     )?.name
 
     if (categoryName) {
@@ -152,7 +145,6 @@ onMounted(async () => {
   <ModalLayout
     :is-opened="isOpened"
     @on-outside-close="emit('close-modal')"
-    class="modal-360-indicator"
   >
     <div class="modal-360-indicator bg-white rounded p-3 d-flex col">
       <div class="container-fluid d-flex">
@@ -163,7 +155,7 @@ onMounted(async () => {
               variant="close"
               class="close"
               @click="emit('close-modal')"
-            ></Button>
+            />
           </div>
           <div class="row mt-3 d-flex">
             <div class="col-sm">
@@ -171,59 +163,65 @@ onMounted(async () => {
                 name="name"
                 class-name="rounded"
                 label="Название вопроса"
-                placeholder="Введите название опроса"
+                placeholder="Название вопроса"
               />
 
               <Select
                 name="idCategory"
+                class-name="mt-0"
+                label-class-name="mt-2"
                 label="Категория вопроса"
-                label-class-name="mt-3"
                 :options="computedIndicatorCategories"
-              ></Select>
-              <div class="mt-3"></div>
+              />
+              <div class="mt-2"></div>
               <Typography class-name="text-primary"
                 >Не нашли нужную категорию?</Typography
               >
-              <Input
-                name="newCategoryName"
-                class-name="rounded mt-3"
-                placeholder="Введите название новой категории"
-              />
-              <Button
-                variant="primary"
-                class-name="mt-3"
-                @click="postCategory"
-                >Добавить категорию</Button
+              <div
+                class="d-flex align-items-center justify-content-center gap-2 mt-2"
               >
+                <Input
+                  name="newCategoryName"
+                  class-name="rounded mt-0"
+                  placeholder="Новой категория"
+                />
+                <Button
+                  class-name="bi bi-plus-lg p-2 rounded"
+                  variant="primary"
+                  @click="postCategory"
+                />
+              </div>
               <Select
-                label="Для кого предназначен вопрос"
-                label-class-name="mt-3"
                 name="fromRole"
+                class-name="mt-0"
+                label-class-name="mt-2"
+                label="Для кого предназначен вопрос"
                 :options="indicatorRoleSelectOptions"
-              ></Select>
+              />
               <Select
-                label="Кого нужно оценить"
-                label-class-name="mt-3"
                 name="toRole"
+                class-name="mt-0"
+                label-class-name="mt-2"
+                label="Кого нужно оценить"
                 :options="indicatorTypeSelectOptions"
-              ></Select>
+              />
             </div>
             <div class="col-sm">
               <Typography class-name="text-primary">Варианты ответа</Typography>
-
-              <Input
-                name="answer"
-                class-name="rounded"
-                label-class-name="mt-3"
-                placeholder="Введите вариант ответа"
-              />
-
-              <Button
-                @click="addAnswer"
-                className="mt-3"
-                variant="primary"
-                >Добавить вариант</Button
+              <div
+                class="d-flex align-items-center justify-content-center gap-2 mt-2"
               >
+                <Input
+                  name="answer"
+                  class-name="rounded"
+                  placeholder="Вариант ответа"
+                />
+                <Button
+                  class-name="bi bi-plus-lg p-2 rounded"
+                  variant="primary"
+                  @click="addAnswer"
+                />
+              </div>
               <div class="overflow-y w-100 h-75 mt-3">
                 <div
                   v-for="answer in answers"
@@ -234,7 +232,7 @@ onMounted(async () => {
                   <Button
                     @click="popAnswer(answer)"
                     variant="close"
-                  ></Button>
+                  />
                 </div>
               </div>
             </div>
@@ -255,8 +253,8 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .modal-360-indicator {
-  width: 800px;
-  height: 800px;
+  width: 50%;
+  height: 70%;
   flex-direction: column !important;
   @include flexible(
     stretch,

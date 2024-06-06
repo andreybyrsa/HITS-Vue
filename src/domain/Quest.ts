@@ -21,7 +21,7 @@ export interface Indicator {
 }
 
 export interface IndicatorCategory {
-  id: string
+  idCategory: string
   name: string
 }
 
