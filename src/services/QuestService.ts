@@ -1,5 +1,4 @@
 import { Quest, QuestStat } from '@Domain/Quest'
-import { QUEST_SERVICE_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -21,7 +20,7 @@ const getQuestsForProjectOffice = async (
 ): Promise<QuestStat[] | Error> => {
   return launchQuestCollapseAxios
     .get<QuestStat[]>(
-      `${QUEST_SERVICE_URL}/quest/all/with-statuses`,
+      `/quest-service/quest/all/with-statuses`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -37,7 +36,7 @@ const getQuests = async (
   token: string,
 ): Promise<QuestStat[] | Error> => {
   return launchQuestCollapseAxios
-    .get(`${QUEST_SERVICE_URL}/quest/by-user/with-statuses/${idUser}`, {
+    .get(`/quest-service/quest/by-user/with-statuses/${idUser}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -50,7 +49,7 @@ const postQuest = async (
   token: string,
 ): Promise<Quest | Error> => {
   return launchQuestAxios
-    .post(`${QUEST_SERVICE_URL}/quest/create`, launchQuest, {
+    .post(`/quest-service/quest/create`, launchQuest, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -58,10 +57,11 @@ const postQuest = async (
     .catch((error) => handleAxiosError(error, 'Ошибка отправки запущенного опроса.'))
 }
 
+// FIXME
 const sendNotifications = async (idQuest: string, token: string) => {
   return launchQuestAxios
     .postNoRequestBody(
-      `${QUEST_SERVICE_URL}/quest/notifications/${idQuest}/send`,
+      `/quest-service/quest/notifications/${idQuest}/send`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

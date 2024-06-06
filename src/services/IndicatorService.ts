@@ -1,5 +1,4 @@
 import { Indicator, IndicatorCategory } from '@Domain/Quest'
-import { QUEST_SERVICE_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -25,7 +24,7 @@ function formatIndicatorCategories(
 const getIndicators = async (token: string): Promise<Indicator[] | Error> => {
   return indicatorAxios
     .get<Indicator[] | Error>(
-      `${QUEST_SERVICE_URL}/indicator/all`,
+      `/quest-service/indicator/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -41,7 +40,7 @@ const getIndicatorCategories = async (
 ): Promise<IndicatorCategory[] | Error> => {
   return indicatorCategoriesAxios
     .get<IndicatorCategory[] | Error>(
-      `${QUEST_SERVICE_URL}/category/all`,
+      `/quest-service/category/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -58,7 +57,7 @@ const postIndicator = async (
   token: string,
 ): Promise<Indicator | Error> => {
   return indicatorAxios
-    .post(`${QUEST_SERVICE_URL}/indicator/create`, indicator, {
+    .post(`/quest-service/indicator/create`, indicator, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -71,7 +70,7 @@ const postIndicatorCategory = async (
   token: string,
 ): Promise<IndicatorCategory | Error> => {
   return indicatorCategoriesAxios
-    .post(`${QUEST_SERVICE_URL}/category/create`, indicatorCategory, {
+    .post(`/quest-service/category/create`, indicatorCategory, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

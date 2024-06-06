@@ -1,5 +1,4 @@
 import { QuestTemplate, QuestTemplateShort } from '@Domain/Quest'
-import { QUEST_SERVICE_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -16,7 +15,7 @@ const getQuestTemplates = async (
   token: string,
 ): Promise<QuestTemplateShort[] | Error> => {
   return questsShortAxios
-    .get(`${QUEST_SERVICE_URL}/template/all`, {
+    .get(`/quest-service/template/all`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -30,7 +29,7 @@ const getQuestTemplate = async (
 ): Promise<QuestTemplate | Error> => {
   return questAxios
     .get(
-      `${QUEST_SERVICE_URL}/template/with-indicators/${idQuestTemplate}`,
+      `/quest-service/template/with-indicators/${idQuestTemplate}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -46,7 +45,7 @@ const postQuestTemplate = async (
   token: string,
 ): Promise<QuestTemplate | Error> => {
   return questAxios
-    .post(`${QUEST_SERVICE_URL}/template/create`, quest, {
+    .post(`/quest-service/template/create`, quest, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

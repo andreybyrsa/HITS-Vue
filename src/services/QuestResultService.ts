@@ -1,5 +1,5 @@
-import { QuestResult, QuestResultWrapper } from '@Domain/Quest'
-import { QUEST_SERVICE_URL } from '@Main'
+import { QuestResultWrapper } from '@Domain/Quest'
+import { API_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -13,7 +13,7 @@ const postQuestResults = async (
   token: string,
 ): Promise<{ createdResults: number } | Error> => {
   return axios
-    .post(`${QUEST_SERVICE_URL}/result/create`, questResults, {
+    .post(`${API_URL}/quest-service/result/create`, questResults, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -27,7 +27,7 @@ const downloadResults = async (
 ): Promise<void | Error> => {
   try {
     const response = await axios.get(
-      `${QUEST_SERVICE_URL}/statistic/quest/${idQuest}`,
+      `${API_URL}/quest-service/statistic/quest/${idQuest}`,
       {
         responseType: 'blob',
         headers: { Authorization: `Bearer ${token}` },
