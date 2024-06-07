@@ -115,6 +115,11 @@ function hexToRgb(hex: string) {
         ${parseInt(result[3], 16)}`
   )
 }
+
+function closeModal() {
+  choosenTags.value.length = 0
+  emit('close-modal')
+}
 </script>
 
 <template>
@@ -125,7 +130,7 @@ function hexToRgb(hex: string) {
           {{ task ? 'Редактирование задачи' : 'Создание задачи' }}
         </Typography>
         <Button
-          @click="emit('close-modal')"
+          @click="closeModal"
           variant="close"
         />
       </div>

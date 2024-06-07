@@ -186,6 +186,12 @@ function checkNewOptionButton() {
 function checkOpenComboboxButton() {
   return searchedOptions.value.length && !isOpenedChoices.value && !props.disabled
 }
+
+const ComboboxClassName = computed(() => [
+  'form-select error-message',
+  { 'is-invalid': meta.touched && (props.error || errorMessage.value) },
+  props.className,
+])
 </script>
 
 <template>
@@ -206,10 +212,14 @@ function checkOpenComboboxButton() {
       />
     </label>
 
-    <div class="combobox">
+    <div
+      class="combobox"
+      @click="focusCombobox"
+    >
       <Input
+        :class="ComboboxClassName"
         :name="`search-${props.name}`"
-        class-name="combobox__search rounded-end"
+        class-name="combobox__search border-input rounded-end"
         v-model="searchedValue"
         :error="getFiledError()"
         no-form-controlled
@@ -218,11 +228,14 @@ function checkOpenComboboxButton() {
         :disabled="disabled"
       />
 
-      <Icon
+      <div class="invalid-feedback">
+        {{ meta.touched && (error || errorMessage) }}
+      </div>
+      <!-- <Icon
         v-if="checkOpenComboboxButton()"
         class-name="combobox__icon bi bi-chevron-down"
         @click="focusCombobox"
-      />
+      /> -->
       <Icon
         v-if="checkNewOptionButton()"
         class-name="combobox__icon bi bi-plus-lg"
@@ -294,6 +307,16 @@ function checkOpenComboboxButton() {
   }
 }
 
+.border-input {
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  border-left: 0 !important;
+}
+.error-message {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+}
 // .hint {
 //   cursor: pointer;
 //   display: inline-block;
