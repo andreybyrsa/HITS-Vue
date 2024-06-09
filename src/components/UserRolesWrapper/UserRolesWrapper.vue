@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
@@ -27,6 +27,10 @@ watchImmediate(user, (currentUser) => {
 function handleCloseModal() {
   isOpenedModal.value = false
 }
+
+onBeforeMount(() => {
+  userStore.checkProfile()
+})
 </script>
 
 <template>

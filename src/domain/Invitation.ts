@@ -2,6 +2,7 @@ import RolesTypes from './Roles'
 
 interface InviteUserForm {
   email: string
+  roles: RolesTypes[]
 }
 
 interface InviteUsersForm {
