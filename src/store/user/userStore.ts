@@ -10,21 +10,32 @@ import InitialState from '@Store/user/initialState'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
 import { getRouteByUserRole } from '@Utils/userRolesInfo'
+
+import LoginService from '@Services/LoginService'
 import ProfileService from '@Services/ProfileService'
+import { Profile } from '@Domain/Profile'
+import Success from '@Domain/ResponseMessage'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
     user: null,
   }),
   actions: {
-    async checkProfile() {
-      const response = await ProfileService.checkProfile()
+    async loginUser() {
+      const response: User = await LoginService.getTokenInfo()
+
+      const token: string = sessionStorage.getItem('access_token') || ''
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        LocalStorageUser.setLocalStorageUser(response)
-        this.user = LocalStorageUser.getLocalStorageUser()
+        this.user = response
+
+        this.user.token = token
+
+        LocalStorageUser.setLocalStorageUser(this.user)
+
+        await ProfileService.checkProfile(token)
 
         this.router.push(getRouteByUserRole(response.roles))
       }

@@ -97,9 +97,10 @@ const getUserTelegram = async (
 
 // --- POST --- //
 
-const checkProfile = async (): Promise<User | Error> => {
+const checkProfile = async (token: string): Promise<Success | Error> => {
   return axios
     .post(`${API_URL}/ideas-service/profile`, {
+      headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
