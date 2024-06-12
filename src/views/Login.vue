@@ -1,5 +1,5 @@
 <template>
-  <div center>Загрузка...</div>
+  <div>login</div>
 </template>
 
 <script setup lang="ts"></script>

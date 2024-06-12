@@ -49,9 +49,7 @@ import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/Acti
 
 import LoginService from '@Services/LoginService'
 import Code from '@Views/Code.vue'
-
-// const userStore = useUserStore()
-// const { user } = storeToRefs(userStore)
+import Login from '@Views/Login.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -85,6 +83,11 @@ const routes: RouteRecordRaw[] = [
         next()
       }
     },
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login,
   },
   {
     path: '/ideas',

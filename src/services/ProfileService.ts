@@ -99,10 +99,14 @@ const getUserTelegram = async (
 
 const checkProfile = async (token: string): Promise<Success | Error> => {
   return axios
-    .post(`${API_URL}/ideas-service/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .post(
+      `${API_URL}/ideas-service/profile`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка проверки профиля'))
 }

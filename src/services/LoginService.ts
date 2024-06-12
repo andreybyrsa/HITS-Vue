@@ -34,7 +34,10 @@ const getTokens = async (code: string) => {
       },
     })
     console.log('Result getting tokens: ' + JSON.stringify(response.data))
-    window.sessionStorage.setItem(ACCESS_TOKEN_KEY, response.data[ACCESS_TOKEN_KEY])
+    await window.sessionStorage.setItem(
+      ACCESS_TOKEN_KEY,
+      response.data[ACCESS_TOKEN_KEY],
+    )
   } catch (error) {
     console.error('Error getting tokens: ' + error)
   }
