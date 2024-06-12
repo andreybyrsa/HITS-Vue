@@ -1,5 +1,13 @@
 <script lang="ts" setup generic="DataType">
-import { ref, Ref, onMounted, computed, StyleValue } from 'vue'
+import {
+  ref,
+  Ref,
+  onMounted,
+  computed,
+  StyleValue,
+  onBeforeMount,
+  resolveComponent,
+} from 'vue'
 import { watchImmediate } from '@vueuse/core'
 
 import {
@@ -15,6 +23,9 @@ import Checkbox from '@Components/Inputs/Checkbox/Checkbox.vue'
 import Button from '@Components/Button/Button.vue'
 import DropDown from '@Components/DropDown/DropDown.vue'
 import Typography from '@Components/Typography/Typography.vue'
+import TableCollapse from '@Components/Tables/LaunchQuestsTable/LaunchQuestTableCollapse.vue'
+import Collapse from '@Components/Collapse/Collapse.vue'
+import { compileStyle } from 'vue/compiler-sfc'
 
 const props = defineProps<TableProps<DataType>>()
 
@@ -63,9 +74,7 @@ watchImmediate(
 )
 
 watchImmediate(filtersRefs, (filters) => filterData(filters), { deep: true })
-
 watchImmediate(searchedValue, () => searchDataByKeys())
-
 watchImmediate(checkedData, () => {
   if (
     searchedData.value.length &&
@@ -98,6 +107,21 @@ function searchDataByKeys() {
   return data.value
 }
 
+function intersection<T>(array1: T[], array2: T[]): T[] {
+  const set1 = new Set(array1)
+  const set2 = new Set(array2)
+
+  const intersectingArray: T[] = []
+
+  for (const item of set1) {
+    if (set2.has(item)) {
+      intersectingArray.push(item)
+    }
+  }
+
+  return intersectingArray
+}
+
 function filterData(filters: Ref<FilterValue | FilterValue[] | undefined>[]) {
   if (filters.length) {
     const isSelectedFilters = filters.some((filter) => {
@@ -123,9 +147,14 @@ function filterData(filters: Ref<FilterValue | FilterValue[] | undefined>[]) {
             : true
         })
       })
-    } else {
-      data.value = props.data
+
+      const filtredCheckData = intersection(checkedData.value, data.value)
+      if (filtredCheckData) {
+        checkedData.value = filtredCheckData
+      }
     }
+  } else {
+    data.value = props.data
   }
 }
 
@@ -214,6 +243,23 @@ function checkDropdownActionStatement(
 function checkHeaderButtonStatement(statement?: boolean) {
   return statement !== undefined ? statement : true
 }
+function makeRandomId(length: number) {
+  let result = ''
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const charactersLength = characters.length
+  let counter = 0
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+    counter += 1
+  }
+  return result
+}
+//ВНИМАНИЕ
+//эти id устарняют колизии вложенных коллапсов НЕТРОГАТЬ
+//ВНИМАНИЕ
+const collapseIds = computed(() => {
+  return searchedData.value.map(() => makeRandomId(10))
+})
 </script>
 
 <template>
@@ -287,8 +333,12 @@ function checkHeaderButtonStatement(statement?: boolean) {
     <div class="w-100 d-flex">
       <div class="w-100">
         <table class="table table-hover mb-0">
-          <thead>
+          <thead v-if="columns[0].label">
             <tr class="table__lables">
+              <th
+                v-if="collapseChildComponent"
+                class="py-3 col-1"
+              ></th>
               <th
                 v-if="isCheckbox"
                 class="py-3 col"
@@ -302,7 +352,6 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   />
                 </div>
               </th>
-
               <th
                 v-for="column in columns"
                 :key="column.key"
@@ -310,23 +359,32 @@ function checkHeaderButtonStatement(statement?: boolean) {
               >
                 <div :class="`${column.contentClassName ?? ''} d-flex`">
                   {{ column.label }}
-                  <Icon
-                    v-if="column.headerCellClick"
-                    class-name="table__row-icon ms-1 bi bi-chevron-down text-secondary"
-                    @click="column.headerCellClick"
-                  />
                 </div>
               </th>
 
               <th v-if="dropdownActionsMenu"></th>
+              <th></th>
             </tr>
           </thead>
-
-          <tbody>
-            <tr
-              v-for="(row, index) in searchedData"
-              :key="index"
-            >
+          <tbody
+            v-for="(row, index) in searchedData"
+            :key="index"
+          >
+            <tr>
+              <td
+                class="py-3 col-1"
+                v-if="collapseChildComponent"
+              >
+                <Icon
+                  class="table__row-icon bi bi-chevron-down"
+                  type="button"
+                  v-collapse="
+                    `${props.collapseChildComponent?.__name}.${collapseIds[index]}`
+                  "
+                  @click="chevronAction"
+                />
+                <!-- @click="eventOfCollapse(index)" -->
+              </td>
               <td
                 v-if="isCheckbox"
                 class="py-3 col"
@@ -339,7 +397,6 @@ function checkHeaderButtonStatement(statement?: boolean) {
                   :value="row"
                 />
               </td>
-
               <td
                 v-for="column in columns"
                 :key="column.key"
@@ -386,12 +443,12 @@ function checkHeaderButtonStatement(statement?: boolean) {
               </td>
 
               <td
-                v-if="dropdownActionsMenu"
                 class="py-3"
+                v-if="dropdownActionsMenu?.length"
               >
-                <div class="table__row-icon">
+                <div class="table__row-icon float-end">
                   <Icon
-                    class-name="bi bi-three-dots fs-5"
+                    class-name=" bi bi-three-dots fs-5"
                     v-dropdown="`dropdown-menu-${index}`"
                   />
 
@@ -419,6 +476,25 @@ function checkHeaderButtonStatement(statement?: boolean) {
                     </ul>
                   </DropDown>
                 </div>
+              </td>
+            </tr>
+
+            <tr v-if="collapseChildComponent">
+              <td
+                class="col-12 p-0 border-0"
+                colspan="100"
+              >
+                <Collapse
+                  :className="`border-bottom`"
+                  :id="`${props.collapseChildComponent?.__name}.${collapseIds[index]}`"
+                >
+                  <div class="py-2">
+                    <component
+                      :is="collapseChildComponent"
+                      :data="row"
+                    />
+                  </div>
+                </Collapse>
               </td>
             </tr>
           </tbody>
@@ -490,5 +566,9 @@ function checkHeaderButtonStatement(statement?: boolean) {
   &-leave-to {
     opacity: 0;
   }
+}
+
+.no-hover {
+  pointer-events: none;
 }
 </style>

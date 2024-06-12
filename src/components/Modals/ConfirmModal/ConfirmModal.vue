@@ -40,19 +40,19 @@ function clickAction() {
         >
           {{ textQuestion + '*' }}
         </Typography>
-        <Button
+        <!-- <Button
           variant="close"
           @click="emit('close-modal')"
-        />
+        /> -->
       </div>
 
-      <Button
+      <!-- <Button
         variant="light"
         :isLoading="isLoading"
         @click="clickAction"
       >
         {{ textButton }}
-      </Button>
+      </Button> -->
     </div>
   </ModalLayout>
 </template>
