@@ -12,29 +12,18 @@ import useUserStore from '@Store/user/userStore'
 import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
-import { usersEmailsMocks, usersMocks } from '@Utils/getMocks'
+import { usersMocks } from '@Utils/getMocks'
 
 const usersAxios = defineAxios(usersMocks)
-const usersEmailsAxios = defineAxios(usersEmailsMocks)
 
 const getUsers = async (token: string): Promise<User[] | Error> => {
   return usersAxios
-    .get('/ideas-service/profile/get/users', {
+    .get('/authorization-service/profile/users/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки пользователей'))
-}
-
-const getUsersEmails = async (token: string): Promise<string[] | Error> => {
-  return usersEmailsAxios
-    .get(`/ideas-service/profile/get/emails`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка загрузки почт'))
 }
 
 const updateUserInfo = async (
@@ -43,7 +32,7 @@ const updateUserInfo = async (
 ): Promise<User | Error> => {
   return usersAxios
     .put(
-      '/ideas-service/profile/change/info',
+      `/authorization-service/profile/user/${newUserData.id}`,
       newUserData,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -55,23 +44,17 @@ const updateUserInfo = async (
     .catch((error) => handleAxiosError(error, 'Ошибка обновления пользователя'))
 }
 
-const updateUserPassword = async (
-  newPasswordData: UpdateUserPassword,
-): Promise<Success | Error> => {
-  return axios
-    .put(`${API_URL}/ideas-service/profile/change/password`, newPasswordData)
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка обновления пароля'))
-}
-
 const updateUserEmail = async (
   newEmailData: NewEmailForm,
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .put(`${API_URL}/ideas-service/profile/change/email`, newEmailData, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .put(
+      `${API_URL}/authorization-service/account/change/email/${newEmailData.code}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка обновления почты'))
 }
@@ -82,7 +65,7 @@ const deleteUser = async (
 ): Promise<Success | Error> => {
   return usersAxios
     .delete(
-      `/ideas-service/profile/delete/user/${userId}`,
+      `/authorization-service/profile/user/{userId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -94,10 +77,8 @@ const deleteUser = async (
 
 const ManageUsersService = {
   getUsers,
-  getUsersEmails,
 
   updateUserInfo,
-  updateUserPassword,
   updateUserEmail,
 
   deleteUser,

@@ -3,7 +3,7 @@ import axios from 'axios'
 import { API_URL } from '@Main'
 
 import { Profile, ProfileFullName } from '@Domain/Profile'
-import { UserTelegram } from '@Domain/User'
+import { User, UserTelegram } from '@Domain/User'
 import { Skill } from '@Domain/Skill'
 import Success from '@Domain/ResponseMessage'
 
@@ -50,7 +50,7 @@ const getProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return axios
-    .get(`${API_URL}/ideas-service/profile/avatar/get/${id}`, {
+    .get(`${API_URL}/authorization-service/profile/avatar/get/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -96,6 +96,21 @@ const getUserTelegram = async (
 }
 
 // --- POST --- //
+
+const checkProfile = async (token: string): Promise<Success | Error> => {
+  return axios
+    .post(
+      `${API_URL}/ideas-service/profile`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка проверки профиля'))
+}
+
 const saveProfileSkills = async (
   skills: Skill[],
   token: string,
@@ -114,7 +129,7 @@ const uploadProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return axios
-    .post(`${API_URL}/ideas-service/profile/avatar/upload`, formData, {
+    .post(`${API_URL}/authorization-service/profile/avatar/upload`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
@@ -131,7 +146,7 @@ const updateUserFullName = async (
   id: string,
 ): Promise<Success | Error> => {
   return axios
-    .put(`${API_URL}/ideas-service/profile/update/${id}`, fullName, {
+    .put(`${API_URL}/authorization-service/profile/${id}`, fullName, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -231,6 +246,7 @@ const ProfileService = {
   getTeamExperience,
   getUserTelegram,
 
+  checkProfile,
   saveProfileSkills,
   uploadProfileAvatar,
   updateUserFullName,

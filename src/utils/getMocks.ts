@@ -8,11 +8,13 @@ import { Idea, IdeaSkills, Rating } from '@Domain/Idea'
 import Comment from '@Domain/Comment'
 import {
   RequestToTeam,
+  courseEnum,
   Team,
   TeamExperience,
   TeamInvitation,
   TeamMember,
   TeamSkills,
+  TeamTags,
 } from '@Domain/Team'
 import Notification from '@Domain/Notification'
 import { IdeaMarket, IdeaMarketAdvertisement } from '@Domain/IdeaMarket'
@@ -29,6 +31,18 @@ import {
 import { Tag } from '@Domain/Tag'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import { AverageMark } from '@Domain/ReportProjectMembers'
+import {
+  Indicator,
+  Quest,
+  QuestTemplate,
+  QuestTemplateShort,
+  QuestResult,
+  QuestStat as QuestCollapseData,
+  TeamQuestStat as MembersCollapseData,
+  UsersQuestStat,
+  IndicatorCategory,
+  QuestResultWrapper,
+} from '@Domain/Quest'
 
 export const usersMocks: User[] = [
   {
@@ -44,6 +58,7 @@ export const usersMocks: User[] = [
       'ADMIN',
       'MEMBER',
       'TEAM_LEADER',
+      'TEACHER',
     ],
     createdAt: '2023-10-20T11:02:17Z',
     telephone: '1111111111',
@@ -364,15 +379,30 @@ export const teamMembersMocks: TeamMember[] = [
   },
 ]
 
+export const teamTagsMocks: TeamTags[] = [
+  {
+    studyGroups: ['ИИП-22-1', 'ИСТНб-21'],
+    studyCourses: [courseEnum.first, courseEnum.second],
+  },
+  {
+    studyGroups: ['ИИПб-23-1', 'АСОИУ-22-1'],
+    studyCourses: [courseEnum.second],
+  },
+  {
+    studyGroups: ['ИСТНб-21-2', 'АСОИУ-20-1'],
+    studyCourses: [courseEnum.third, courseEnum.fourth],
+  },
+]
+
 export const teamsMocks: Team[] = [
   {
-    id: '01',
+    id: '1',
     name: 'Визитка',
     closed: true,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    membersCount: 4,
+    membersCount: 2,
     owner: teamMembersMocks[1],
     leader: teamMembersMocks[1],
     members: [
@@ -382,41 +412,51 @@ export const teamsMocks: Team[] = [
       teamMembersMocks[3],
     ],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
+    tags: teamTagsMocks[0],
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
     hasActiveProject: true,
+    StatusQuest: false,
   },
   {
-    id: '1',
+    id: '2',
     name: 'Кактус',
     closed: false,
     hasActiveProject: false,
     createdAt: '2023-10-20T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    membersCount: 4,
+    membersCount: 5,
     owner: teamMembersMocks[0],
     leader: teamMembersMocks[0],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
+
+    tags: teamTagsMocks[1],
+    StatusQuest: false,
+
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
   },
   {
-    id: '2',
+    id: '3',
     name: 'Карасики',
     closed: false,
-    hasActiveProject: false,
-    createdAt: '2023-10-20T11:02:17Z',
+    createdAt: '2023-10-10T11:02:17Z',
     description:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aperiam delectus possimus, voluptates quo accusamus? Consequatur, quasi rem temporibus blanditiis delectus aliquid officia aut, totam incidunt reiciendis eaque laborum fugiat!',
-    membersCount: 4,
+    membersCount: 6,
     owner: teamMembersMocks[0],
     leader: teamMembersMocks[0],
     members: [teamMembersMocks[0], teamMembersMocks[2], teamMembersMocks[3]],
     skills: [skillsMocks[0], skillsMocks[4], skillsMocks[6], skillsMocks[9]],
+
+    tags: teamTagsMocks[2],
+
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
+    hasActiveProject: false,
+    StatusQuest: false,
   },
 ]
 
@@ -2107,5 +2147,426 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     endDate: '',
     wastedTime: '',
     status: 'Done',
+  },
+]
+
+export const questsShortMocks: QuestTemplateShort[] = [
+  {
+    idQuestTemplate: '1',
+    available: true,
+    name: 'Опрос компетенций',
+  },
+  {
+    idQuestTemplate: '2',
+    available: true,
+    name: 'Опрос компетенций',
+  },
+]
+
+export const indicatorCategories: IndicatorCategory[] = [
+  { idCategory: '1', name: 'soft' },
+  { idCategory: '2', name: 'hard' },
+]
+
+export const indicatorsMocks: Indicator[] = [
+  {
+    id: '1',
+    name: 'Как вам отношения в команде?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '2',
+    name: 'Как вам профессионализм команды?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'TEAM_LEADER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '3',
+    name: 'Каков ваш взгляд на коммуникацию с этим членом команды?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM-MEMBER',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '4',
+    name: 'Как оцениваете общение в команде?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'TEAM_LEADER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '5',
+    name: 'Какие ваши мысли о навыках команды?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '6',
+    name: 'Как оцените атмосферу в коллективе?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'INITIATOR',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '7',
+    name: 'Что вы думаете о взаимодействии с этим коллегой?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM-MEMBER',
+    fromRole: 'TEACHER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '8',
+    name: 'Ваше мнение о компетентности команды?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '9',
+    name: 'Что вы думаете о взаимодействии внутри группы?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM-MEMBER',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '10',
+    name: 'Как воспринимаете атмосферу в команде?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '11',
+    name: 'Как вы оцениваете профессионализм коллег?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '12',
+    name: 'Ваш взгляд на взаимодействие с коллегами?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM-MEMBER',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '13',
+    name: 'Что вы думаете о внутренних отношениях в команде?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '14',
+    name: 'Как вы оцениваете профессиональные навыки команды?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '15',
+    name: 'Ваше мнение о взаимодействии с коллегами?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM-MEMBER',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '16',
+    name: 'Что вы думаете о взаимодействии в команде?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM-MEMBER',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '17',
+    name: 'Как вы оцениваете атмосферу в команде?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '18',
+    name: 'Что вы думаете о профессионализме команды?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+  {
+    id: '19',
+    name: 'Ваш взгляд на взаимодействие с коллегой?',
+    answers: ['Хорошо', 'Не очень'],
+    toRole: 'TEAM-MEMBER',
+    fromRole: 'MEMBER',
+    idCategory: indicatorCategories[0].idCategory,
+    categoryName: indicatorCategories[0].name,
+    visible: true,
+  },
+]
+
+export const QuestsTemplateMocks: QuestTemplate[] = [
+  {
+    idQuestTemplate: questsShortMocks[0].idQuestTemplate,
+    available: questsShortMocks[0].available,
+    name: questsShortMocks[0].name,
+    description: 'Весенний опрос 2024 посвящен весне и птичкам',
+    indicators: indicatorsMocks.slice(0, 7),
+  },
+  {
+    idQuestTemplate: questsShortMocks[1].idQuestTemplate,
+    available: questsShortMocks[1].available,
+    name: questsShortMocks[1].name,
+    description: 'Осенний опрос 2024 посвящен весне и птичкам',
+    indicators: indicatorsMocks.slice(0, 7),
+  },
+]
+
+export const QuestsMocks: Quest[] = [
+  {
+    idQuest: '4',
+    idQuestTemplate: QuestsTemplateMocks[0].idQuestTemplate!,
+    idTeams: [
+      { id: teamsMocks[0].id },
+      { id: teamsMocks[1].id },
+      { id: teamsMocks[2].id },
+    ],
+    name: 'Весенний опрос 2024',
+    startAt: '28.04.2024',
+    endAt: '28.05.2024',
+    available: true,
+    percent: '22',
+    passed: false,
+  },
+  {
+    idQuest: '3',
+    idQuestTemplate: QuestsTemplateMocks[1].idQuestTemplate!,
+    idTeams: [{ id: teamsMocks[0].id }],
+    name: 'Осенний опрос 2023',
+    startAt: '28.11.2023',
+    endAt: '28.12.2023',
+    available: true,
+    percent: '77',
+    passed: true,
+  },
+  {
+    idQuest: '2',
+    idQuestTemplate: QuestsTemplateMocks[0].idQuestTemplate!,
+    idTeams: [{ id: teamsMocks[0].id }],
+    name: 'Весенний опрос 2023',
+    startAt: '28.04.2023',
+    endAt: '28.05.2023',
+    available: true,
+    percent: '65',
+    passed: true,
+  },
+  {
+    idQuest: '1',
+    idQuestTemplate: QuestsTemplateMocks[1].idQuestTemplate!,
+    idTeams: [{ id: teamsMocks[0].id }],
+    name: 'Осенний опрос 2022',
+    startAt: '28.11.2022',
+    endAt: '28.12.2022',
+    available: false,
+    percent: '50',
+    passed: false,
+  },
+]
+
+export const resultsMocks: QuestResultWrapper = {
+  results: [
+    {
+      idResult: '8',
+      idIndicator: indicatorsMocks[0].id,
+      idQuest: QuestsMocks[0].idQuest,
+      idFromUser: usersMocks[0].id,
+      value: '4',
+    },
+    {
+      idResult: '7',
+      idIndicator: indicatorsMocks[1].id,
+      idQuest: QuestsMocks[0].idQuest,
+      idFromUser: usersMocks[0].id,
+      idToUser: '',
+      value: '',
+    },
+    ...teamsMocks[0].members.map((member): QuestResult => {
+      return {
+        idResult: '33' + member.userId,
+        idIndicator: indicatorsMocks[2].id,
+        idQuest: QuestsMocks[0].idQuest,
+        idFromUser: usersMocks[0].id,
+        idToUser: member.userId,
+        value: '',
+      }
+    }),
+    {
+      idResult: '4',
+      idIndicator: indicatorsMocks[0].id,
+      idQuest: QuestsMocks[0].idQuest,
+      idFromUser: usersMocks[0].id,
+      idToUser: '',
+      value: '',
+    },
+    {
+      idResult: '3',
+      idIndicator: indicatorsMocks[1].id,
+      idQuest: QuestsMocks[0].idQuest,
+      idFromUser: usersMocks[0].id,
+      idToUser: '',
+      value: '',
+    },
+    ...teamsMocks[0].members.map((member): QuestResult => {
+      return {
+        idResult: '22' + member.userId,
+        idIndicator: indicatorsMocks[2].id,
+        idQuest: QuestsMocks[0].idQuest,
+        idFromUser: usersMocks[0].id,
+        idToUser: member.userId,
+        value: '',
+      }
+    }),
+  ],
+}
+export const usersQuestStatMocks: UsersQuestStat[] = [
+  {
+    id: usersMocks[0].id,
+    name: `${usersMocks[0].firstName} ${usersMocks[0].lastName}`,
+    progress: false,
+  },
+  {
+    id: usersMocks[1].id,
+    name: `${usersMocks[1].firstName} ${usersMocks[0].lastName}`,
+    progress: false,
+  },
+  {
+    id: usersMocks[2].id,
+    name: `${usersMocks[2].firstName} ${usersMocks[0].lastName}`,
+    progress: false,
+  },
+  {
+    id: usersMocks[3].id,
+    name: `${usersMocks[3].firstName} ${usersMocks[0].lastName}`,
+    progress: true,
+  },
+]
+export const teamsQuestStatMocks: MembersCollapseData[] = [
+  {
+    id: teamsMocks[0].id,
+    name: teamsMocks[0].name,
+    progress: ((2 / 4) * 100).toString(),
+    users: [
+      usersQuestStatMocks[0],
+      usersQuestStatMocks[1],
+      usersQuestStatMocks[2],
+      usersQuestStatMocks[3],
+    ],
+  },
+  {
+    id: teamsMocks[1].id,
+    name: teamsMocks[1].name,
+    progress: ((2 / 3) * 100).toString(),
+    users: [usersQuestStatMocks[0], usersQuestStatMocks[2], usersQuestStatMocks[3]],
+  },
+  {
+    id: teamsMocks[2].id,
+    name: teamsMocks[2].name,
+    progress: ((2 / 3) * 100).toString(),
+    users: [usersQuestStatMocks[0], usersQuestStatMocks[2], usersQuestStatMocks[3]],
+  },
+]
+export const QuestStatMocks: QuestCollapseData[] = [
+  {
+    idQuest: QuestsMocks[0].idQuest,
+    isPass: true,
+    idQuestTemplate: QuestsMocks[0].idQuestTemplate,
+    name: QuestsMocks[0].name,
+    progress: (
+      (parseFloat(teamsQuestStatMocks[0].progress) +
+        parseFloat(teamsQuestStatMocks[1].progress) +
+        parseFloat(teamsQuestStatMocks[2].progress)) /
+      3
+    ).toString(),
+    teams: [teamsQuestStatMocks[0], teamsQuestStatMocks[1], teamsQuestStatMocks[2]],
+  },
+  {
+    idQuest: QuestsMocks[1].idQuest,
+    isPass: true,
+    idQuestTemplate: QuestsMocks[1].idQuestTemplate,
+    name: QuestsMocks[1].name,
+    progress: teamsQuestStatMocks[0].progress,
+    teams: [teamsQuestStatMocks[0]],
+  },
+  {
+    idQuest: QuestsMocks[2].idQuest,
+    isPass: true,
+    idQuestTemplate: QuestsMocks[2].idQuestTemplate,
+    name: QuestsMocks[2].name,
+    progress: teamsQuestStatMocks[0].progress,
+    teams: [teamsQuestStatMocks[0]],
+  },
+  {
+    idQuest: QuestsMocks[3].idQuest,
+    isPass: true,
+    idQuestTemplate: QuestsMocks[3].idQuestTemplate,
+    name: QuestsMocks[3].name,
+    progress: teamsQuestStatMocks[0].progress,
+    teams: [teamsQuestStatMocks[0]],
   },
 ]

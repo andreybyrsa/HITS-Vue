@@ -38,7 +38,6 @@ onMounted(async () => {
       return notificationsStore.createSystemNotification('Система', response.message)
     }
 
-    console.log(response)
     team.value = response
   }
 })

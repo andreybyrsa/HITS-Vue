@@ -37,20 +37,20 @@ const { focused } = useFocusWithin(inputsWrapperRef)
 
 const fileIsLoaded = ref(false)
 
-onMounted(async () => {
-  const currentUser = user.value
+// onMounted(async () => {
+//   const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await ManageUsersService.getUsersEmails(token)
+//   if (currentUser?.token) {
+//     const { token } = currentUser
+//     const response = await ManageUsersService.getUsersEmails(token)
 
-    if (response instanceof Error) {
-      return notificationsStore.createSystemNotification('Система', 'Ошибка')
-    }
+//     if (response instanceof Error) {
+//       return notificationsStore.createSystemNotification('Система', 'Ошибка')
+//     }
 
-    DBUsersEmails.value = response
-  }
-})
+//     DBUsersEmails.value = response
+//   }
+// })
 
 const handleFileLoad = async (event: HTMLTargetEvent) => {
   const rawFile = event.target.files?.length && event.target.files[0]

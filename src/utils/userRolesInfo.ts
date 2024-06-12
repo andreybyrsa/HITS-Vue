@@ -81,7 +81,7 @@ function getUserRoleInfoStyle(roles: RolesTypes[], index: number) {
   }
 }
 
-// !котятки, не забываем следить за этой функцией, при добовлении новых ролей, чтобы нормально редиректило, иначе будет критический баг, спасибо))
+// !котятки, не забываем следить за этой функцией, при добавлении новых ролей, чтобы нормально редиректило, иначе будет критический баг, спасибо))
 function getRouteByUserRole(
   currentRole: RolesTypes | RolesTypes[],
 ): RouteLocationRaw {

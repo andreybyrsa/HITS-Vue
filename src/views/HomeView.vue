@@ -3,5 +3,5 @@ import PageLayout from '@Layouts/PageLayout/PageLayout.vue'
 </script>
 
 <template>
-  <PageLayout></PageLayout>
+  <PageLayout>home</PageLayout>
 </template>

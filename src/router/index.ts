@@ -1,9 +1,12 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  RouteRecordRaw,
+  NavigationGuardNext,
+  RouteLocationNormalized,
+} from 'vue-router'
 import { storeToRefs } from 'pinia'
 
-import LoginView from '@Views/LoginView.vue'
-import RegisterView from '@Views/RegisterView.vue'
-import ForgotPasswordView from '@Views/ForgotPasswordView.vue'
 import ChangeEmailView from '@Views/ChangeEmailView.vue'
 import ProfileModal from '@Components/Modals/ProfileModal/ProfileModal.vue'
 
@@ -36,6 +39,8 @@ import ErrorView from '@Views/ErrorView.vue'
 
 import LastActivityNote from '@Views/LastActivityNote/LastActivityNote.vue'
 
+import QuestionnaireView from '@Views/Questionnaire/QuestionnaireView.vue'
+
 import useUserStore from '@Store/user/userStore'
 
 import LocalStorageUser from '@Utils/LocalStorageUser'
@@ -43,12 +48,50 @@ import { getRouteByUserRole } from '@Utils/userRolesInfo'
 import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 import useProfilesStore from '@Store/profiles/profilesStore'
 import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.vue'
+import QuestTemplateModal from '@Components/Modals/QuestTemplateModal/QuestTemplateModal.vue'
+import PassQuestModal from '@Components/Modals/QuestModal/PassQuestModal.vue'
+
+import LoginService from '@Services/LoginService'
+import Code from '@Views/Code.vue'
+import Login from '@Views/Login.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
     component: HomeView,
+    beforeEnter: () => {
+      LoginService.login()
+    },
+  },
+  {
+    path: '/code',
+    name: 'code',
+    component: Code,
+    beforeEnter: (
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      next: any,
+    ) => {
+      if (to.path === '/code' && to.query.code != null) {
+        const code = to.query.code as string
+        LoginService.getTokens(code)
+          .then(() => {
+            next('/ideas/list')
+          })
+          .catch((error) => {
+            console.error('Ошибка при получении токенов:', error)
+            next('/error')
+          })
+      } else {
+        next()
+      }
+    },
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login,
   },
   {
     path: '/ideas',
@@ -338,24 +381,34 @@ const routes: RouteRecordRaw[] = [
     component: LastActivityNote,
   },
   {
-    path: '/login',
-    name: 'login',
-    component: LoginView,
-  },
-  {
-    path: '/register/:slug',
-    name: 'register',
-    component: RegisterView,
-  },
-  {
-    path: '/forgot-password',
-    name: 'forgot-password',
-    component: ForgotPasswordView,
-  },
-  {
     path: '/error',
     name: 'error',
     component: ErrorView,
+  },
+  {
+    path: '/questionnaire',
+    name: 'questionnaire',
+    component: QuestionnaireView,
+    children: [
+      {
+        name: 'profile',
+        path: 'profile/:id',
+        alias: '/profile/:id',
+        component: ProfileModal,
+      },
+      {
+        name: 'quest-template',
+        path: 'quest-template/:id',
+        alias: '/quest-template/:id',
+        component: QuestTemplateModal,
+      },
+      {
+        name: 'quest',
+        path: 'quest/:id',
+        alias: '/quest/:id',
+        component: PassQuestModal,
+      },
+    ],
   },
   {
     path: '/:pathMatch(.*)*',
@@ -368,41 +421,41 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to) => {
-  const userStore = useUserStore()
+// router.beforeEach((to) => {
+//   const userStore = useUserStore()
 
-  const { user } = storeToRefs(userStore)
-  const localStorageUser = LocalStorageUser.getLocalStorageUser()
-  const telegramTag = LocalStorageTelegramTag.get()
-  if (telegramTag && localStorageUser?.id) {
-    useProfilesStore().setProfileTag(telegramTag, localStorageUser.id)
-  }
-  if (localStorageUser?.token && !user.value?.token) {
-    useUserStore().setUser(localStorageUser)
-  }
+//   const { user } = storeToRefs(userStore)
+//   const localStorageUser = LocalStorageUser.getLocalStorageUser()
+//   const telegramTag = LocalStorageTelegramTag.get()
+//   if (telegramTag && localStorageUser?.id) {
+//     useProfilesStore().setProfileTag(telegramTag, localStorageUser.id)
+//   }
+//   if (localStorageUser?.token && !user.value?.token) {
+//     useUserStore().setUser(localStorageUser)
+//   }
 
-  const currentRouteName = to.name?.toString() ?? ''
-  const requiredRouteRoles = to.meta?.roles ?? []
-  const authRouteNames = ['login', 'register', 'forgot-password']
+//   const currentRouteName = to.name?.toString() ?? ''
+//   const requiredRouteRoles = to.meta?.roles ?? []
+//   const authRouteNames = ['login', 'register', 'forgot-password']
 
-  if (!user.value && !authRouteNames.includes(currentRouteName)) {
-    return { name: 'login' }
-  }
+//   if (!user.value && !authRouteNames.includes(currentRouteName)) {
+//     return { name: 'login' }
+//   }
 
-  if (
-    user.value?.role &&
-    (authRouteNames.includes(currentRouteName) || currentRouteName === 'home')
-  ) {
-    const { role } = user.value
+//   if (
+//     user.value?.role &&
+//     (authRouteNames.includes(currentRouteName) || currentRouteName === 'home')
+//   ) {
+//     const { role } = user.value
 
-    return getRouteByUserRole(role)
-  }
+//     return getRouteByUserRole(role)
+//   }
 
-  if (requiredRouteRoles.length && user.value?.role) {
-    const { role } = user.value
+//   if (requiredRouteRoles.length && user.value?.role) {
+//     const { role } = user.value
 
-    return requiredRouteRoles.includes(role) ? true : { name: 'error' }
-  }
-})
+//     return requiredRouteRoles.includes(role) ? true : { name: 'error' }
+//   }
+// })
 
 export default router

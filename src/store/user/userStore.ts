@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 import { User, LoginUser, RegisterUser } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
 
-import AuthService from '@Services/AuthService'
 import InvitationService from '@Services/InvitationService'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
@@ -12,36 +11,33 @@ import InitialState from '@Store/user/initialState'
 import LocalStorageUser from '@Utils/LocalStorageUser'
 import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
+import LoginService from '@Services/LoginService'
+import ProfileService from '@Services/ProfileService'
+import { Profile } from '@Domain/Profile'
+import Success from '@Domain/ResponseMessage'
+
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
     user: null,
   }),
   actions: {
-    async loginUser(user: LoginUser) {
-      const response = await AuthService.loginUser(user)
+    async loginUser() {
+      const response: User = await LoginService.getTokenInfo()
+
+      const token: string = sessionStorage.getItem('access_token') || ''
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        LocalStorageUser.setLocalStorageUser(response)
-        this.user = LocalStorageUser.getLocalStorageUser()
+        this.user = response
+
+        this.user.token = token
+
+        LocalStorageUser.setLocalStorageUser(this.user)
+
+        await ProfileService.checkProfile(token)
 
         this.router.push(getRouteByUserRole(response.roles))
-      }
-    },
-
-    async registerUser(user: RegisterUser, slug: string) {
-      const response = await AuthService.registerUser(user)
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-      } else {
-        LocalStorageUser.setLocalStorageUser(response)
-        this.user = LocalStorageUser.getLocalStorageUser()
-
-        this.router.push(getRouteByUserRole(response.roles))
-
-        await InvitationService.deleteInvitationInfo(slug)
       }
     },
 

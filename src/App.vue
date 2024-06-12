@@ -1,6 +1,20 @@
 <script lang="ts" setup>
+import { ref, computed, onMounted } from 'vue'
+
 import NotificationsWrapper from '@Components/NotificationsWrapper/NotificationsWrapper.vue'
 import UserRolesWrapper from '@Components/UserRolesWrapper/UserRolesWrapper.vue'
+
+import { storeToRefs } from 'pinia'
+import useUserStore from '@Store/user/userStore'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+onMounted(() => {
+  if (user.value == null && window.sessionStorage['access_token']) {
+    userStore.loginUser()
+  }
+})
 </script>
 
 <template>
@@ -137,5 +151,15 @@ input[type='checkbox'] {
   -webkit-transform: scale(1.2);
   -o-transform: scale(1.2);
   transform: scale(1.2);
+}
+
+.flex-modal-layout {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.p-0-5 {
+  padding: 2px !important;
 }
 </style>
