@@ -7,7 +7,10 @@ const clientId: string = process.env.VUE_APP_OAUTH_CLIENT_ID || ''
 const authHeaderValue: string = process.env.VUE_APP_OAUTH_AUTH_HEADER || ''
 const redirectUri: string = process.env.VUE_APP_OAUTH_REDIRECT_URI || ''
 
-console.log('1', clientId)
+console.log(serverUrl)
+console.log(clientId)
+console.log(authHeaderValue)
+console.log(redirectUri)
 
 const ACCESS_TOKEN_KEY = 'access_token'
 
