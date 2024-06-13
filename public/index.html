@@ -27,6 +27,15 @@
         without JavaScript enabled. Please enable it to continue.</strong
       >
     </noscript>
+    <script>
+      window.env = {
+        API_URL: '${API_URL}',
+        VUE_APP_OAUTH_REDIRECT_URI: '${VUE_APP_OAUTH_REDIRECT_URI}',
+        VUE_APP_OAUTH_CLIENT_ID: '${VUE_APP_OAUTH_CLIENT_ID}',
+        VUE_APP_OAUTH_AUTH_HEADER: '${VUE_APP_OAUTH_AUTH_HEADER}',
+        VUE_APP_OAUTH_URL: '${VUE_APP_OAUTH_URL}',
+      }
+    </script>
     <div id="app"></div>
     <div id="modals"></div>
     <div id="notifications"></div>
