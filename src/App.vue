@@ -1,20 +1,6 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
-
 import NotificationsWrapper from '@Components/NotificationsWrapper/NotificationsWrapper.vue'
 import UserRolesWrapper from '@Components/UserRolesWrapper/UserRolesWrapper.vue'
-
-import { storeToRefs } from 'pinia'
-import useUserStore from '@Store/user/userStore'
-
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
-
-onMounted(() => {
-  if (user.value == null && window.sessionStorage['access_token']) {
-    userStore.loginUser()
-  }
-})
 </script>
 
 <template>

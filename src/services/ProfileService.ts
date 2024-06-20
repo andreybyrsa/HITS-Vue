@@ -100,7 +100,7 @@ const getUserTelegram = async (
 const checkProfile = async (token: string): Promise<Success | Error> => {
   return axios
     .post(
-      `${API_URL}/ideas-service/profile`,
+      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/profile`,
       {},
       {
         headers: { Authorization: `Bearer ${token}` },
