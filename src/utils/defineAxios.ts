@@ -1,7 +1,7 @@
 import { Ref, ref } from 'vue'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 
-import { MODE, API_URL } from '@Main'
+import { MODE } from '@Main'
 
 import Success from '@Domain/ResponseMessage'
 
@@ -62,7 +62,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig?: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<MocksType | ResponseType | MocksType[]>> {
     if (MODE === 'PRODUCTION') {
-      return axios.get(`${API_URL}${endPoint}`, config)
+      return axios.get(`${process.env.VUE_APP_BACKEND_URL}${endPoint}`, config)
     }
 
     return new Promise((resolve, reject) =>
@@ -120,7 +120,11 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig?: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<MocksType | MocksType[] | ResponseType>> {
     if (MODE === 'PRODUCTION') {
-      return axios.post(`${API_URL}${endPoint}`, mockData, config)
+      return axios.post(
+        `${process.env.VUE_APP_BACKEND_URL}${endPoint}`,
+        mockData,
+        config,
+      )
     }
 
     return new Promise((resolve, reject) =>
@@ -177,7 +181,11 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<ResponseType | MocksType>> {
     if (MODE === 'PRODUCTION') {
-      return axios.post(`${API_URL}${endPoint}`, null, config)
+      return axios.post(
+        `${process.env.VUE_APP_BACKEND_URL}${endPoint}`,
+        null,
+        config,
+      )
     }
 
     return new Promise((resolve) => {
@@ -229,7 +237,11 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<MocksType | MocksType[] | ResponseType>> {
     if (MODE === 'PRODUCTION') {
-      return axios.put(`${API_URL}${endPoint}`, newMockData, config)
+      return axios.put(
+        `${process.env.VUE_APP_BACKEND_URL}${endPoint}`,
+        newMockData,
+        config,
+      )
     }
 
     return new Promise((resolve, reject) => {
@@ -317,7 +329,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig: AxiosMockConfig<MocksType, ResponseType>,
   ): Promise<AxiosResponse<ResponseType | void>> {
     if (MODE === 'PRODUCTION') {
-      return axios.put(`${API_URL}${endPoint}`, null, config)
+      return axios.put(`${process.env.VUE_APP_BACKEND_URL}${endPoint}`, null, config)
     }
 
     return new Promise((resolve, reject) => {
@@ -360,7 +372,7 @@ function defineAxios<MocksType>(mocks: MocksType[]) {
     mockConfig: AxiosMockConfig<MocksType>,
   ): Promise<AxiosResponse<Success>> {
     if (MODE === 'PRODUCTION') {
-      return axios.delete(`${API_URL}${endPoint}`, config)
+      return axios.delete(`${process.env.VUE_APP_BACKEND_URL}${endPoint}`, config)
     }
 
     return new Promise((resolve, reject) => {

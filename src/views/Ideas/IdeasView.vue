@@ -35,11 +35,11 @@ watchImmediate(
   },
 )
 
-onMounted(() => {
-  if (user.value === null) {
-    userStore.loginUser()
-  }
-})
+// onMounted(() => {
+//   if (user.value === null) {
+//     userStore.loginUser()
+//   }
+// })
 </script>
 
 <template>

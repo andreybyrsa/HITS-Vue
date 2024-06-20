@@ -1,6 +1,24 @@
 <script lang="ts" setup>
 import NotificationsWrapper from '@Components/NotificationsWrapper/NotificationsWrapper.vue'
 import UserRolesWrapper from '@Components/UserRolesWrapper/UserRolesWrapper.vue'
+import useUserStore from '@Store/user/userStore'
+import { watchImmediate } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const route = useRoute()
+
+watchImmediate(
+  () => route.path,
+  () => {
+    if (user.value === null) {
+      userStore.loginUser()
+    }
+  },
+)
 </script>
 
 <template>

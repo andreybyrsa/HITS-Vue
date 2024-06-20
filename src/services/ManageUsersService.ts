@@ -1,9 +1,6 @@
 import axios from 'axios'
 
-import { API_URL } from '@Main'
-
 import { User } from '@Domain/User'
-import { UpdateUserPassword } from '@Domain/ManageUsers'
 import { NewEmailForm } from '@Domain/Invitation'
 import Success from '@Domain/ResponseMessage'
 
@@ -50,7 +47,7 @@ const updateUserEmail = async (
 ): Promise<Success | Error> => {
   return axios
     .put(
-      `${API_URL}/authorization-service/account/change/email/${newEmailData.code}`,
+      `${process.env.VUE_APP_BACKEND_URL}/authorization-service/account/change/email/${newEmailData.code}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },

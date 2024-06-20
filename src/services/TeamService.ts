@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { API_URL, MODE } from '@Main'
+import { MODE } from '@Main'
 
 import {
   RequestToTeam,
@@ -247,7 +247,7 @@ const filterBySkillsAndRole = async (
 ): Promise<Team[] | Error> => {
   return teamsAxios
     .get<Team[] | Error>(
-      `${API_URL}/ideas-service/team/skill-filter/${role}`,
+      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/team/skill-filter/${role}`,
       // skills,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -341,7 +341,7 @@ const addTeamMember = async (
 // ): Promise<Team[] | Error> => {
 //   return teamsAxios
 //     .get<Team[] | Error>(
-//       `${API_URL}/team/skill-filter/${role}`,
+//       `${process.env.VUE_APP_BACKEND_URL}/team/skill-filter/${role}`,
 //       // skills,
 //       {
 //         headers: { Authorization: `Bearer ${token}` },
@@ -361,10 +361,14 @@ const filterByVacancies = async (
   token: string,
 ): Promise<Team[] | Error> => {
   return axios
-    .post(`${API_URL}/ideas-service/team/vacancy-filter`, skills, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .post(
+      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/team/vacancy-filter`,
+      skills,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка фильтрации команд'))
 }
