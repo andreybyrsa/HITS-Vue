@@ -1,18 +1,23 @@
-import RolesTypes from '@Domain/Roles'
-
 export interface Category {
   idCategory: string
   category: string
 }
 
-export type IndicatorType = 'TEAM' | 'INITIATOR' | 'TEAM-MEMBER' | 'TEAMLEAD'
+export type IndicatorType =
+  | 'TEAM'
+  | 'INITIATOR'
+  | 'MEMBER'
+  | 'TEAM_LEADER'
+  | 'TEACHER'
+
+export type IndicatorRoleType = 'MEMBER' | 'INITIATOR' | 'TEAM_LEADER' | 'TEACHER'
 
 export interface Indicator {
   id: string
   name: string
   answers: string[]
-  toRole: IndicatorType
-  fromRole: RolesTypes
+  type: IndicatorType // кого
+  role: IndicatorRoleType // кто оценивает
   visible: boolean
   categoryName: string
   idCategory: string

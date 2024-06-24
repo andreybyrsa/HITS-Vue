@@ -17,6 +17,10 @@ import { OptionType } from '@Components/Inputs/Select/Select.types'
 import useIndicatorStore from '@Store/indicators/indicatorsStore'
 import { computed, onMounted, ref } from 'vue'
 import RolesTypes from '@Domain/Roles'
+import {
+  indicatorRoleSelectOptions,
+  indicatorTypeSelectOptions,
+} from '@Utils/indicatorTranslatedFields'
 
 const props = defineProps<IndicatorModalProps>()
 const emit = defineEmits<IndicatorModalEmits>()
@@ -32,8 +36,8 @@ const { handleSubmit, values, setValues, setFieldError, validateField, resetFiel
     name: string
     answers: string[]
     answer: string // этого поля нет в модели Indicator и оно нужно для добавления новых вариантов ответа
-    toRole: IndicatorType
-    fromRole: RolesTypes
+    type: IndicatorType
+    role: RolesTypes
     newCategoryName: string // этого поля нет в модели Indicator и оно нужно для добавления новых категорий
     categoryName: string
     idCategory: string
@@ -41,8 +45,8 @@ const { handleSubmit, values, setValues, setFieldError, validateField, resetFiel
     validationSchema: {
       name: (value: string) => Validation.checkIsEmptyValue(value),
       idCategory: (value: any) => Boolean(value),
-      toRole: (value: string) => Validation.checkIsEmptyValue(value),
-      fromRole: (value: string) => Validation.checkIsEmptyValue(value),
+      type: (value: string) => Validation.checkIsEmptyValue(value),
+      role: (value: string) => Validation.checkIsEmptyValue(value),
     },
   })
 
@@ -54,21 +58,6 @@ const computedIndicatorCategories = computed(() => {
   })
 })
 
-const indicatorTypeSelectOptions: OptionType[] = [
-  { value: 'TEAM', label: 'Оценка команды' },
-  { value: 'INITIATOR', label: 'Оценка инициатора' },
-  { value: 'MEMBER', label: 'Оценка членов команды' },
-  { value: 'TEAM_LEADER', label: 'Оценка тимлида' },
-  { value: 'TEACHER', label: 'Оценка преподавателя' },
-]
-
-const indicatorRoleSelectOptions: OptionType[] = [
-  { value: 'MEMBER', label: 'Студент' },
-  { value: 'INITIATOR', label: 'Инициатор' },
-  { value: 'TEAM_LEADER', label: 'Тимлид' },
-  { value: 'TEACHER', label: 'Преподаватель' },
-]
-
 const createIndicator = async () => {
   if (answers.value.length == 0) {
     setFieldError('answer', 'Добавьте варианты ответов')
@@ -79,8 +68,8 @@ const createIndicator = async () => {
     const newIndicator = {
       name: indicator.name,
       answers: answers.value,
-      toRole: indicator.toRole,
-      fromRole: indicator.fromRole,
+      type: indicator.type,
+      role: indicator.role,
       idCategory: values.idCategory,
     } as Indicator
 
@@ -192,14 +181,14 @@ onMounted(async () => {
                 />
               </div>
               <Select
-                name="fromRole"
+                name="type"
                 class-name="mt-0"
                 label-class-name="mt-2"
                 label="Для кого предназначен вопрос"
                 :options="indicatorRoleSelectOptions"
               />
               <Select
-                name="toRole"
+                name="role"
                 class-name="mt-0"
                 label-class-name="mt-2"
                 label="Кого нужно оценить"

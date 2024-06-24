@@ -22,7 +22,7 @@ import useUserStore from '@Store/user/userStore'
 
 import useIndicatorStore from '@Store/indicators/indicatorsStore'
 import useQuestTemplatesStore from '@Store/questTemplates/questTemplatesStore'
-import { findStatusesByTranslatedStatus } from '@Utils/indicatorStatus'
+import { indicatorTypeFromTranslatedType } from '@Utils/indicatorTranslatedFields'
 import { Indicator, QuestTemplate } from '@Domain/Quest'
 
 const props = defineProps<CreateQuestModalProps>()
@@ -65,7 +65,7 @@ const filteredBacklogIndicators = computed(() => {
   return backlogIndicators.value.filter(
     (indicator) =>
       indicator.name.toLowerCase().includes(searchValue) ||
-      findStatusesByTranslatedStatus(searchValue).includes(indicator.toRole),
+      indicatorTypeFromTranslatedType(searchValue).includes(indicator.type),
   )
 })
 
@@ -77,7 +77,7 @@ const filteredNewQuestIndicators = computed(() => {
   return newQuestIndicators.value.filter(
     (indicator) =>
       indicator.name.toLowerCase().includes(searchValue) ||
-      findStatusesByTranslatedStatus(searchValue).includes(indicator.toRole),
+      indicatorTypeFromTranslatedType(searchValue).includes(indicator.type),
   )
 })
 

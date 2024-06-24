@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { IndicatorItemProps } from '@Components/IndicatorItem/IndicatorItem.types'
-import { getIndicatorTranslatedStatus } from '@Utils/indicatorStatus'
+import { getIndicatorFieldsInfo } from '@Utils/indicatorTranslatedFields'
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 
 const props = defineProps<IndicatorItemProps>()
@@ -15,11 +15,13 @@ const translatedRoles = getUserRolesInfo().translatedRoles
     <p class="text-primary border-b p-1 m-0">{{ indicator.name }}</p>
     <div class="d-flex gap-2 m-1">
       <p class="w-fit m-0">Кто оценивает:</p>
-      <p class="w-fit m-0">{{ translatedRoles[indicator.fromRole] }}</p>
+      <p class="w-fit m-0">{{ translatedRoles[indicator.role] }}</p>
     </div>
     <div class="d-flex gap-2 m-1">
       <p class="w-fit m-0">Кого (что) оценивают:</p>
-      <p class="w-fit m-0">{{ getIndicatorTranslatedStatus(indicator.toRole) }}</p>
+      <p class="w-fit m-0">
+        {{ getIndicatorFieldsInfo().indicatorTranslatedTypes[indicator.type] }}
+      </p>
     </div>
 
     <div class="d-flex gap-2 m-1">
