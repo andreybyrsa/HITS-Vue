@@ -22,6 +22,7 @@ import useProjectStore from '@Store/projects/projectsStore'
 
 import { getUserRolesInfo } from '@Utils/userRolesInfo'
 import { Project } from '@Domain/Project'
+import { ACCESS_TOKEN_KEY } from '@Services/LoginService'
 
 const notificationsStore = useNotificationsStore()
 
@@ -217,7 +218,6 @@ function checkUserRole(tab: LeftSideBarTabType) {
 
 function handleLogout() {
   userStore.logoutUser()
-  router.push('/login')
 }
 
 function getTranslatedRole(currentRole: RolesTypes) {

@@ -16,8 +16,8 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 const app = createApp(App)
 
 const MODE: 'DEVELOPMENT' | 'PRODUCTION' = 'PRODUCTION'
-const API_URL: 'http://localhost:80/api/v1' | 'https://hits1.tyuiu.ru/api/v1' =
-  'https://hits1.tyuiu.ru/api/v1'
+// const API_URL: 'http://localhost:80/api/v1' | 'https://hits.tyuiu.ru/api/v1' =
+//   'https://hits.tyuiu.ru/api/v1'
 
 const pinia = createPinia()
 pinia.use(({ store }) => {
@@ -37,4 +37,4 @@ app.directive('collapse', collapseDirective)
 
 app.mount('#app')
 
-export { MODE, API_URL }
+export { MODE }

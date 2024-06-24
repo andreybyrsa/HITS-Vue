@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { API_URL, MODE } from '@Main'
+import { MODE } from '@Main'
 
 import Success from '@Domain/ResponseMessage'
 import {
@@ -204,10 +204,14 @@ const sendIdeaOnMarket = async (
   }
 
   return axios
-    .post(`${API_URL}/ideas-service/market/idea/send/${marketId}`, ideas, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .post(
+      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/market/idea/send/${marketId}`,
+      ideas,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка отправки идей на биржу'))
 }
@@ -222,7 +226,7 @@ const postIdeaMarketTeam = async (
 
   return ideasMarketAxios
     .put<IdeaMarket>(
-      `${API_URL}/ideas-service/market/accept/request/${ideaMarketId}/${teamId}`,
+      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/market/accept/request/${ideaMarketId}/${teamId}`,
       { team: team },
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -243,7 +247,7 @@ const addIdeaMarketTeam = async (
 ): Promise<IdeaMarket | Error> => {
   return ideasMarketAxios
     .put<IdeaMarket>(
-      `${API_URL}/ideas-service/market/accept`,
+      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/market/accept`,
       { team: team },
       {
         headers: { Authorization: `Bearer ${token}` },

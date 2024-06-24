@@ -6,7 +6,7 @@ import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { Sprint, SprintStatus, SprintMarks } from '@Domain/Project'
 import Success from '@Domain/ResponseMessage'
-import { API_URL, MODE } from '@Main'
+import { MODE } from '@Main'
 import axios from 'axios'
 
 const sprintMocksAxios = defineAxios(sprintMocks)
@@ -144,13 +144,17 @@ const finishSprint = async (
   }
 
   return axios
-    .put<Success>(`${API_URL}/scrum-service/sprint/finish/${sprintId}`, report, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'text/plain;charset=UTF-8',
+    .put<Success>(
+      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/sprint/finish/${sprintId}`,
+      report,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'text/plain;charset=UTF-8',
+        },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
 }

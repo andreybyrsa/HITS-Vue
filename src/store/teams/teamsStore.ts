@@ -116,7 +116,7 @@ const useTeamStore = defineStore('teams', {
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
       } else {
-        const profileStore = useProfilesStore()
+        // const profileStore = useProfilesStore()
         const currentTeam = this.teams.find(({ id }) => id === teamId)
 
         if (currentTeam) {
@@ -130,7 +130,7 @@ const useTeamStore = defineStore('teams', {
           }
         }
 
-        await profileStore.finishTeamExperience(teamMemberId, teamId, token)
+        // await profileStore.finishTeamExperience(teamMemberId, teamId, token)
       }
     },
 

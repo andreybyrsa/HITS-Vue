@@ -1,7 +1,5 @@
 import axios from 'axios'
 
-import { API_URL } from '@Main'
-
 import { Skill, SkillType } from '@Domain/Skill'
 import { TeamMember } from '@Domain/Team'
 import Success from '@Domain/ResponseMessage'
@@ -29,7 +27,7 @@ function mockSkillsByTypeMather(skills: Skill[], type: SkillType) {
 
 const getAllUsersSkills = async (token: string): Promise<TeamMember[] | Error> => {
   return axios
-    .get(`${API_URL}/ideas-service/team/users`, {
+    .get(`${process.env.VUE_APP_BACKEND_URL}/ideas-service/team/users`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

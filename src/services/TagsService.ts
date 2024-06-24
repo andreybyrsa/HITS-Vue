@@ -1,7 +1,3 @@
-import axios from 'axios'
-
-import { API_URL } from '@Main'
-
 import { Tag } from '@Domain/Tag'
 import Success from '@Domain/ResponseMessage'
 
@@ -11,7 +7,6 @@ import defineAxios from '@Utils/defineAxios'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { tagsMocks } from '@Utils/getMocks'
-import { Project } from '@Domain/Project'
 
 const tagsAxios = defineAxios(tagsMocks)
 

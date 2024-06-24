@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { MODE, API_URL } from '@Main'
+import { MODE } from '@Main'
 
 import Notification from '@Domain/Notification'
 
@@ -115,10 +115,14 @@ const readAllNotifications = async (token: string): Promise<void | Error> => {
   }
 
   return axios
-    .put(`${API_URL}/ideas-service/notification/read/all`, null, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .put(
+      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/notification/read/all`,
+      null,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка чтения всех уведомлений'))
 }
