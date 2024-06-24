@@ -6,7 +6,7 @@ interface InviteUserForm {
 }
 
 interface InviteUsersForm {
-  emails: string[]
+  email: string[]
   roles: RolesTypes[]
 }
 
