@@ -18,13 +18,13 @@ function closeSystemNotification(notification: Notification) {
   notificationsStore.closeSystemNotification(notification.id)
 }
 
-async function closeNotification(notification: Notification) {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    await notificationsStore.closeNotification(notification.id, token)
-  }
-}
+// async function closeNotification(notification: Notification) {
+//   const currentUser = user.value
+//   if (currentUser?.token) {
+//     const { token } = currentUser
+//     await notificationsStore.closeNotification(notification.id, token)
+//   }
+// }
 </script>
 
 <template>
@@ -41,6 +41,5 @@ async function closeNotification(notification: Notification) {
     :key="notification.id"
     :notification="notification"
     :time-expired="10000"
-    @close-notification="closeNotification"
   />
 </template>

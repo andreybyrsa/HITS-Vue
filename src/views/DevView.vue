@@ -73,10 +73,6 @@ const fieldSubmit = handleSubmit((values) => {
   const a = values
 })
 
-function handleLogin() {
-  userStore.loginUser({ email: 'new2@mail.com', password: '12345' })
-}
-
 const a = ref([{ id: '1', lang: 'React', name: 'Реакт' }])
 
 const b = ref()

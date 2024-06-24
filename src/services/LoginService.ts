@@ -7,8 +7,9 @@ axios.defaults.baseURL = serverUrl
 const clientId: string = process.env.VUE_APP_OAUTH_CLIENT_ID || ''
 const authHeaderValue: string = process.env.VUE_APP_OAUTH_AUTH_HEADER || ''
 const redirectUri: string = process.env.VUE_APP_OAUTH_REDIRECT_URI || ''
+const urlParam: string = process.env.VUE_APP_LOGOUT_URL || ''
 
-const ACCESS_TOKEN_KEY = 'access_token'
+export const ACCESS_TOKEN_KEY = 'access_token'
 
 const DEV_USER = {
   active: true,
@@ -73,6 +74,13 @@ const login = () => {
   window.location.href = serverUrl + '/oauth2/authorize?' + requestParams.toString()
 }
 
+const logout = async () => {
+  const requestParams = new URLSearchParams({
+    url: urlParam,
+  })
+  window.location.href = serverUrl + '/auth/logout?' + requestParams.toString()
+}
+
 const getTokens = async (code: string) => {
   if (MODE === 'DEVELOPMENT') {
     window.sessionStorage.setItem(ACCESS_TOKEN_KEY, DEV_USER.jti)
@@ -92,11 +100,7 @@ const getTokens = async (code: string) => {
         Authorization: authHeaderValue,
       },
     })
-    console.log('Result getting tokens: ' + JSON.stringify(response.data))
-    await window.sessionStorage.setItem(
-      ACCESS_TOKEN_KEY,
-      response.data[ACCESS_TOKEN_KEY],
-    )
+    window.sessionStorage.setItem(ACCESS_TOKEN_KEY, response.data[ACCESS_TOKEN_KEY])
   } catch (error) {
     console.error('Error getting tokens: ' + error)
   }
@@ -109,23 +113,22 @@ const getTokenInfo = async () => {
 
   const payload = new FormData()
   payload.append('token', window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || '')
-
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
         Authorization: authHeaderValue,
       },
     })
-    console.log('Result getting token info: ' + JSON.stringify(response.data))
     return response.data.user
   } catch (error) {
     console.error('Error getting token info: ' + error)
-    throw error
+    return new Error('Сессия истекла')
   }
 }
 
 const LoginService = {
   login,
+  logout,
   getTokens,
   getTokenInfo,
 }

@@ -8,7 +8,7 @@ import { Project, ProjectStatus } from '@Domain/Project'
 import { AverageMark } from '@Domain/ReportProjectMembers'
 import Success from '@Domain/ResponseMessage'
 import axios from 'axios'
-import { API_URL, MODE } from '@Main'
+import { MODE } from '@Main'
 import { IdeaMarket } from '@Domain/IdeaMarket'
 import { Team } from '@Domain/Team'
 
@@ -154,10 +154,14 @@ const convertIdeaToProject = async (
       }
 
       return projectMocksAxios
-        .post(`${API_URL}/scrum-service/project/send`, project, {
-          headers: { Authorization: `Bearer ${token}` },
-          signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-        })
+        .post(
+          `${process.env.VUE_APP_BACKEND_URL}/scrum-service/project/send`,
+          project,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+          },
+        )
         .then((response) => response.data)
         .catch((error) =>
           handleAxiosError(error, 'Ошибка конвертации идеи в проект'),
@@ -166,10 +170,14 @@ const convertIdeaToProject = async (
   }
 
   return axios
-    .post(`${API_URL}/scrum-service/project/send`, ideaMarket, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .post(
+      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/project/send`,
+      ideaMarket,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка конвертации идеи в проект'))
 }
@@ -251,7 +259,7 @@ const finishProject = async (
   }
   return axios
     .put<Success>(
-      `${API_URL}/scrum-service/project/finish/${projectId}`,
+      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/project/finish/${projectId}`,
       { report },
       {
         headers: { Authorization: `Bearer ${token}` },

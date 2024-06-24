@@ -1,7 +1,5 @@
 import axios from 'axios'
 
-import { API_URL } from '@Main'
-
 import { InviteUserForm, InviteUsersForm, NewEmailForm } from '@Domain/Invitation'
 import Success from '@Domain/ResponseMessage'
 
@@ -15,10 +13,14 @@ const inviteUserByEmail = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .post(`${API_URL}/authorization-service/invitation/send/email`, userData, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .post(
+      `${process.env.VUE_APP_BACKEND_URL}/authorization-service/invitation/send/email`,
+      userData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка приглашения пользователя'))
 }
@@ -28,10 +30,14 @@ const inviteUsers = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .post(`${API_URL}/authorization-service/invitation/send/many`, usersData, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .post(
+      `${process.env.VUE_APP_BACKEND_URL}/authorization-service/invitation/send/many`,
+      usersData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка приглашения пользователей'))
 }
@@ -41,9 +47,13 @@ const sendUrlToChangeEmail = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .post(`${API_URL}/ideas-service/profile/send/change/email`, userData, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .post(
+      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/profile/send/change/email`,
+      userData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
     .then((response) => response.data)
     .catch((error) =>
       handleAxiosError(error, 'Ошибка отправки ссылки для смены почты'),

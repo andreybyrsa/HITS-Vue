@@ -1,5 +1,4 @@
 import { QuestResultWrapper } from '@Domain/Quest'
-import { API_URL } from '@Main'
 
 import useUserStore from '@Store/user/userStore'
 
@@ -13,10 +12,14 @@ const postQuestResults = async (
   token: string,
 ): Promise<{ createdResults: number } | Error> => {
   return axios
-    .post(`${API_URL}/quest-service/result/create`, questResults, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .post(
+      `${process.env.VUE_APP_BACKEND_URL}/quest-service/result/create`,
+      questResults,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка отправки результата опроса.'))
 }
@@ -27,7 +30,7 @@ const downloadResults = async (
 ): Promise<void | Error> => {
   try {
     const response = await axios.get(
-      `${API_URL}/quest-service/statistic/quest/${idQuest}`,
+      `${process.env.VUE_APP_BACKEND_URL}/quest-service/statistic/quest/${idQuest}`,
       {
         responseType: 'blob',
         headers: { Authorization: `Bearer ${token}` },

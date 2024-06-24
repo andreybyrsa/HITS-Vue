@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
@@ -35,11 +35,11 @@ watchImmediate(
   },
 )
 
-onMounted(() => {
-  if (user.value == null) {
-    userStore.loginUser()
-  }
-})
+// onMounted(() => {
+//   if (user.value === null) {
+//     userStore.loginUser()
+//   }
+// })
 </script>
 
 <template>

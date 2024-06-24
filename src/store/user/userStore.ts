@@ -1,9 +1,7 @@
 import { defineStore } from 'pinia'
 
-import { User, LoginUser, RegisterUser } from '@Domain/User'
+import { User } from '@Domain/User'
 import RolesTypes from '@Domain/Roles'
-
-import InvitationService from '@Services/InvitationService'
 
 import useNotificationsStore from '@Store/notifications/notificationsStore'
 import InitialState from '@Store/user/initialState'
@@ -13,8 +11,6 @@ import { getRouteByUserRole } from '@Utils/userRolesInfo'
 
 import LoginService from '@Services/LoginService'
 import ProfileService from '@Services/ProfileService'
-import { Profile } from '@Domain/Profile'
-import Success from '@Domain/ResponseMessage'
 
 const useUserStore = defineStore('user', {
   state: (): InitialState => ({
@@ -41,11 +37,12 @@ const useUserStore = defineStore('user', {
       }
     },
 
-    logoutUser() {
+    async logoutUser() {
       this.user = null
       LocalStorageUser.removeLocalStorageUser()
+      sessionStorage.clear()
 
-      this.router.push({ name: 'login' })
+      await LoginService.logout()
     },
 
     setUser(user: User) {

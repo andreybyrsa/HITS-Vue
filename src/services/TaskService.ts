@@ -5,7 +5,7 @@ import { tasksMocks, taskMovementLogMocks, sprintMocks } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import axios from 'axios'
-import { MODE, API_URL } from '@Main'
+import { MODE } from '@Main'
 import { Task, TaskMovementLog, TaskStatus } from '@Domain/Project'
 import { User } from '@Domain/User'
 import useTasksStore from '@Store/tasks/tasksStore'
@@ -138,7 +138,7 @@ const createTask = async (task: Task, token: string): Promise<Task | Error> => {
   }
 
   return axios
-    .post(`${API_URL}/scrum-service/task/add`, task, {
+    .post(`${process.env.VUE_APP_BACKEND_URL}/scrum-service/task/add`, task, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -161,7 +161,7 @@ const moveTask = async (
 
   return axios
     .put(
-      `${API_URL}/scrum-service/task/move/${taskId}/${position}`,
+      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/task/move/${taskId}/${position}`,
       {},
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -201,7 +201,7 @@ const changeExecutorTask = async (
 
   return axios
     .put(
-      `${API_URL}/scrum-service/task/executor/${taskId}/${user?.id}`,
+      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/task/executor/${taskId}/${user?.id}`,
       {},
       {
         headers: { Authorization: `Bearer ${token}` },
