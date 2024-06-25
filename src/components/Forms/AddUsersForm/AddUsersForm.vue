@@ -34,17 +34,16 @@ const isLoading = ref(false)
 
 const { errors, resetForm, submitCount, handleSubmit } = useForm<InviteUsersForm>({
   validationSchema: {
-    emails: (value: string[]) =>
-      value?.every((email) => Validation.checkEmail(email)),
+    email: (value: string[]) => value?.every((e) => Validation.checkEmail(e)),
     roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
   },
   initialValues: {
-    emails: [''],
+    email: [''],
     roles: [],
   },
 })
 
-const { fields, push, move, remove } = useFieldArray<string>('emails')
+const { fields, push, move, remove } = useFieldArray<string>('email')
 
 const handleInvite = handleSubmit(async (values) => {
   const currentUser = user.value

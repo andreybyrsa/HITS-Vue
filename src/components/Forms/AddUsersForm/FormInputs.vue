@@ -132,7 +132,7 @@ function getError(email: string, index: number) {
     >
       <Input
         type="email"
-        :name="`emails[${index}]`"
+        :name="`email[${index}]`"
         class-name="rounded-end"
         :error="getError(field.value, index)"
         placeholder="Введите email"
