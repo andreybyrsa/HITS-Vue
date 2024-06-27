@@ -34,6 +34,13 @@ jobs:
       - name: Build image
         run: |
           docker build .
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_LOGIN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and push
+        uses: docker/build-push-action@v4
         with:
           VUE_APP_AUTH_API_URL: ${{ secrets.VUE_APP_AUTH_API_URL }}
           VUE_APP_INVITATION_API_URL: ${{ secrets.VUE_APP_INVITATION_API_URL }}
@@ -47,14 +54,6 @@ jobs:
           VUE_APP_OAUTH_URL: ${{ secrets.VUE_APP_OAUTH_URL }}
           VUE_APP_BACKEND_URL: ${{ secrets.VUE_APP_BACKEND_URL }}
           VUE_APP_LOGOUT_URL: ${{ secrets.VUE_APP_LOGOUT_URL }}
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_LOGIN }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_LOGIN }}/hits:latest
