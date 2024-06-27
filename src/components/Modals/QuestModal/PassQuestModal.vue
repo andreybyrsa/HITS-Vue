@@ -52,9 +52,9 @@ const indicators = computed(() => {
 
   questIndicators?.forEach(async (indicator) => {
     const userRole = user.value?.role
-    if (indicator.fromRole != userRole) return
+    if (indicator.role != userRole) return
 
-    if (indicator.toRole != 'TEAM-MEMBER') {
+    if (indicator.type != 'TEAM-MEMBER') {
       personalIndicators.push(indicator)
       return
     }

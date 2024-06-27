@@ -153,13 +153,20 @@ const useProfilesStore = defineStore('profiles', {
           currentProfile.firstName = firstName
           currentProfile.lastName = lastName
 
-          userStore.setUser({
-            ...currentUser,
-            firstName,
-            lastName,
-            studyGroup,
-            telephone,
-          })
+          if (currentUser.id === userId) {
+            userStore.setUser({
+              ...currentUser,
+              lastName,
+              firstName,
+              studyGroup,
+              telephone,
+            })
+          }
+
+          currentUser.firstName = firstName
+          currentUser.lastName = lastName
+          currentUser.studyGroup = studyGroup
+          currentUser.telephone = telephone
         }
       }
     },
