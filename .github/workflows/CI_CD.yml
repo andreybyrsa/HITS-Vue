@@ -32,6 +32,19 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
       - name: Build image
+        with:
+          VUE_APP_AUTH_API_URL: ${{ secrets.VUE_APP_AUTH_API_URL }}
+          VUE_APP_INVITATION_API_URL: ${{ secrets.VUE_APP_INVITATION_API_URL }}
+          VUE_APP_MANAGE_USERS_API_URL: ${{ secrets.VUE_APP_MANAGE_USERS_API_URL }}
+          VUE_APP_IDEAS_API_URL: ${{ secrets.VUE_APP_IDEAS_API_URL }}
+          VUE_APP_COMMENT_API_URL: ${{ secrets.VUE_APP_COMMENT_API_URL }}
+          VUE_APP_MANAGE_GROUPS_API_URL: ${{ secrets.VUE_APP_MANAGE_GROUPS_API_URL }}
+          VUE_APP_OAUTH_REDIRECT_URI: ${{ secrets.VUE_APP_OAUTH_REDIRECT_URI }}
+          VUE_APP_OAUTH_CLIENT_ID: ${{ secrets.VUE_APP_OAUTH_CLIENT_ID }}
+          VUE_APP_OAUTH_AUTH_HEADER: ${{ secrets.VUE_APP_OAUTH_AUTH_HEADER }}
+          VUE_APP_OAUTH_URL: ${{ secrets.VUE_APP_OAUTH_URL }}
+          VUE_APP_BACKEND_URL: ${{ secrets.VUE_APP_BACKEND_URL }}
+          VUE_APP_LOGOUT_URL: ${{ secrets.VUE_APP_LOGOUT_URL }}
         run: |
           docker build .
       - name: Login to DockerHub
