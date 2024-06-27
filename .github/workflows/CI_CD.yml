@@ -29,7 +29,7 @@ jobs:
 
       - name: Build and push image
         run: |
-          docker build \
+          docker buildx build \
             --build-arg VUE_APP_AUTH_API_URL=${{ secrets.VUE_APP_AUTH_API_URL }} \
             --build-arg VUE_APP_INVITATION_API_URL=${{ secrets.VUE_APP_INVITATION_API_URL }} \
             --build-arg VUE_APP_MANAGE_USERS_API_URL=${{ secrets.VUE_APP_MANAGE_USERS_API_URL }} \
@@ -43,6 +43,5 @@ jobs:
             --build-arg VUE_APP_BACKEND_URL=${{ secrets.VUE_APP_BACKEND_URL }} \
             --build-arg VUE_APP_LOGOUT_URL=${{ secrets.VUE_APP_LOGOUT_URL }} \
             -t ${{ secrets.DOCKER_LOGIN }}/hits:latest \
+            --push \
             .
-
-          docker push ${{ secrets.DOCKER_LOGIN }}/hits:latest
