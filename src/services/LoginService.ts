@@ -9,6 +9,8 @@ const authHeaderValue: string = process.env.VUE_APP_OAUTH_AUTH_HEADER || ''
 const redirectUri: string = process.env.VUE_APP_OAUTH_REDIRECT_URI || ''
 const urlParam: string = process.env.VUE_APP_LOGOUT_URL || ''
 
+console.log(urlParam, '1')
+
 export const ACCESS_TOKEN_KEY = 'access_token'
 
 const DEV_USER = {
