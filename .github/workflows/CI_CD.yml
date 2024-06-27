@@ -27,7 +27,7 @@ jobs:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build image
+      - name: Build and push image
         run: |
           docker build \
             --build-arg VUE_APP_AUTH_API_URL=${{ secrets.VUE_APP_AUTH_API_URL }} \
@@ -45,9 +45,4 @@ jobs:
             -t ${{ secrets.DOCKER_LOGIN }}/hits:latest \
             .
 
-      - name: Push image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKER_LOGIN }}/hits:latest
+          docker push ${{ secrets.DOCKER_LOGIN }}/hits:latest
