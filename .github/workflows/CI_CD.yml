@@ -42,6 +42,6 @@ jobs:
             --build-arg VUE_APP_OAUTH_URL=${{ secrets.VUE_APP_OAUTH_URL }} \
             --build-arg VUE_APP_BACKEND_URL=${{ secrets.VUE_APP_BACKEND_URL }} \
             --build-arg VUE_APP_LOGOUT_URL=${{ secrets.VUE_APP_LOGOUT_URL }} \
-            -t ${{ secrets.DOCKER_LOGIN }}/hits:latest \
+            --tag ${{ secrets.DOCKER_LOGIN }}/hits:latest \
             --push \
             .
