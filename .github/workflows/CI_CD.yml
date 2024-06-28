@@ -27,7 +27,7 @@ jobs:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push image
+      - name: Build and push
         run: |
           docker buildx build \
             --build-arg VUE_APP_AUTH_API_URL=${{ secrets.VUE_APP_AUTH_API_URL }} \
