@@ -42,20 +42,21 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push
-        run: |
-          docker buildx build \
-            --build-arg VUE_APP_AUTH_API_URL=${{ secrets.VUE_APP_AUTH_API_URL }} \
-            --build-arg VUE_APP_INVITATION_API_URL=${{ secrets.VUE_APP_INVITATION_API_URL }} \
-            --build-arg VUE_APP_MANAGE_USERS_API_URL=${{ secrets.VUE_APP_MANAGE_USERS_API_URL }} \
-            --build-arg VUE_APP_IDEAS_API_URL=${{ secrets.VUE_APP_IDEAS_API_URL }} \
-            --build-arg VUE_APP_COMMENT_API_URL=${{ secrets.VUE_APP_COMMENT_API_URL }} \
-            --build-arg VUE_APP_MANAGE_GROUPS_API_URL=${{ secrets.VUE_APP_MANAGE_GROUPS_API_URL }} \
-            --build-arg VUE_APP_OAUTH_REDIRECT_URI=${{ secrets.VUE_APP_OAUTH_REDIRECT_URI }} \
-            --build-arg VUE_APP_OAUTH_CLIENT_ID=${{ secrets.VUE_APP_OAUTH_CLIENT_ID }} \
-            --build-arg VUE_APP_OAUTH_AUTH_HEADER=${{ secrets.VUE_APP_OAUTH_AUTH_HEADER }} \
-            --build-arg VUE_APP_OAUTH_URL=${{ secrets.VUE_APP_OAUTH_URL }} \
-            --build-arg VUE_APP_BACKEND_URL=${{ secrets.VUE_APP_BACKEND_URL }} \
-            --build-arg VUE_APP_LOGOUT_URL=${{ secrets.VUE_APP_LOGOUT_URL }} \
-            --tag ${{ secrets.DOCKER_LOGIN }}/hits:latest \
-            --push \
-            .
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_LOGIN }}/hits:latest
+          build-args: |
+            VUE_APP_AUTH_API_URL=${{ secrets.VUE_APP_AUTH_API_URL }}
+            VUE_APP_INVITATION_API_URL=${{ secrets.VUE_APP_INVITATION_API_URL }}
+            VUE_APP_MANAGE_USERS_API_URL=${{ secrets.VUE_APP_MANAGE_USERS_API_URL }}
+            VUE_APP_IDEAS_API_URL=${{ secrets.VUE_APP_IDEAS_API_URL }}
+            VUE_APP_COMMENT_API_URL=${{ secrets.VUE_APP_COMMENT_API_URL }}
+            VUE_APP_MANAGE_GROUPS_API_URL=${{ secrets.VUE_APP_MANAGE_GROUPS_API_URL }}
+            VUE_APP_OAUTH_REDIRECT_URI=${{ secrets.VUE_APP_OAUTH_REDIRECT_URI }}
+            VUE_APP_OAUTH_CLIENT_ID=${{ secrets.VUE_APP_OAUTH_CLIENT_ID }}
+            VUE_APP_OAUTH_AUTH_HEADER=${{ secrets.VUE_APP_OAUTH_AUTH_HEADER }}
+            VUE_APP_OAUTH_URL=${{ secrets.VUE_APP_OAUTH_URL }}
+            VUE_APP_BACKEND_URL=${{ secrets.VUE_APP_BACKEND_URL }}
+            VUE_APP_LOGOUT_URL=${{ secrets.VUE_APP_LOGOUT_URL }}
