@@ -20,7 +20,7 @@ const getQuestsForProjectOffice = async (
 ): Promise<QuestStat[] | Error> => {
   return launchQuestCollapseAxios
     .get<QuestStat[]>(
-      `/quest-service/quest/all/with-statuses`,
+      `/api/v1/quest-service/quest/all/with-statuses`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -36,7 +36,7 @@ const getQuests = async (
   token: string,
 ): Promise<QuestStat[] | Error> => {
   return launchQuestCollapseAxios
-    .get(`/quest-service/quest/by-user/with-statuses/${idUser}`, {
+    .get(`/api/v1/quest-service/quest/by-user/with-statuses/${idUser}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -49,7 +49,7 @@ const postQuest = async (
   token: string,
 ): Promise<Quest | Error> => {
   return launchQuestAxios
-    .post(`/quest-service/quest/create`, launchQuest, {
+    .post(`/api/v1/quest-service/quest/create`, launchQuest, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -61,7 +61,7 @@ const postQuest = async (
 const sendNotifications = async (idQuest: string, token: string) => {
   return launchQuestAxios
     .postNoRequestBody(
-      `/quest-service/quest/notifications/${idQuest}/send`,
+      `/api/v1/quest-service/quest/notifications/${idQuest}/send`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

@@ -15,7 +15,7 @@ const usersAxios = defineAxios(usersMocks)
 
 const getUsers = async (token: string): Promise<User[] | Error> => {
   return usersAxios
-    .get('/authorization-service/profile/users/all', {
+    .get('/api/v1/authorization-service/profile/users/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -29,7 +29,7 @@ const updateUserInfo = async (
 ): Promise<User | Error> => {
   return usersAxios
     .put(
-      `/authorization-service/profile/user/${newUserData.id}`,
+      `/api/v1/authorization-service/profile/user/${newUserData.id}`,
       newUserData,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -62,7 +62,7 @@ const deleteUser = async (
 ): Promise<Success | Error> => {
   return usersAxios
     .delete(
-      `/authorization-service/profile/user/{userId}`,
+      `/api/v1/authorization-service/profile/user/{userId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },

@@ -12,7 +12,7 @@ const tagsAxios = defineAxios(tagsMocks)
 
 const getAllTags = async (token: string): Promise<Tag[] | Error> => {
   return tagsAxios
-    .get('/scrum-service/tag/all', {
+    .get('/api/v1/scrum-service/tag/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -32,7 +32,7 @@ const getAllTags = async (token: string): Promise<Tag[] | Error> => {
 
 const createTag = async (tag: Tag, token: string): Promise<Tag | Error> => {
   return tagsAxios
-    .post('/scrum-service/tag/add', tag, {
+    .post('/api/v1/scrum-service/tag/add', tag, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -45,7 +45,7 @@ const createNoConfirmedTag = async (
   token: string,
 ): Promise<Tag | Error> => {
   return tagsAxios
-    .post('/scrum-service/tag/add/no-confirmed', tag, {
+    .post('/api/v1/scrum-service/tag/add/no-confirmed', tag, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -60,7 +60,7 @@ const confirmTag = async (
 ): Promise<Tag | Error> => {
   return tagsAxios
     .put(
-      `/scrum-service/tag/confirm/${id}`,
+      `/api/v1/scrum-service/tag/confirm/${id}`,
       tag,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -79,7 +79,7 @@ const updateTag = async (
 ): Promise<Tag | Error> => {
   return tagsAxios
     .put(
-      `/scrum-service/tag/update/${id}`,
+      `/api/v1/scrum-service/tag/update/${id}`,
       tag,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -94,7 +94,7 @@ const updateTag = async (
 const deleteTag = async (id: string, token: string): Promise<Success | Error> => {
   return tagsAxios
     .delete(
-      `/scrum-service/tag/delete/${id}`,
+      `/api/v1/scrum-service/tag/delete/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

@@ -15,7 +15,7 @@ const getQuestTemplates = async (
   token: string,
 ): Promise<QuestTemplateShort[] | Error> => {
   return questsShortAxios
-    .get(`/quest-service/template/all`, {
+    .get(`/api/v1/quest-service/template/all`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -29,7 +29,7 @@ const getQuestTemplate = async (
 ): Promise<QuestTemplate | Error> => {
   return questAxios
     .get(
-      `/quest-service/template/with-indicators/${idQuestTemplate}`,
+      `/api/v1/quest-service/template/with-indicators/${idQuestTemplate}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -45,7 +45,7 @@ const postQuestTemplate = async (
   token: string,
 ): Promise<QuestTemplate | Error> => {
   return questAxios
-    .post(`/quest-service/template/create`, quest, {
+    .post(`/api/v1/quest-service/template/create`, quest, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

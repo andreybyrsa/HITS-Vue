@@ -45,7 +45,7 @@ function formatGetAverageMarkProject(
 // --- GET --- //
 const getAllProjects = async (token: string): Promise<Project[] | Error> => {
   return projectMocksAxios
-    .get('/scrum-service/project/all', {
+    .get('/api/v1/scrum-service/project/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -56,7 +56,7 @@ const getAllProjects = async (token: string): Promise<Project[] | Error> => {
 const getProject = async (id: string, token: string): Promise<Project | Error> => {
   return projectMocksAxios
     .get(
-      `/scrum-service/project/${id}`,
+      `/api/v1/scrum-service/project/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -73,7 +73,7 @@ const getMyProjects = async (
 ): Promise<Project[] | Error> => {
   return projectMocksAxios
     .get<Project[]>(
-      `/scrum-service/project/active/all`,
+      `/api/v1/scrum-service/project/active/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -92,7 +92,7 @@ const getAverageMarkProject = async (
 ): Promise<AverageMark[] | Error> => {
   return averageMarkMocksAxios
     .get<AverageMark[]>(
-      `/scrum-service/project/marks/${projectId}/all`,
+      `/api/v1/scrum-service/project/marks/${projectId}/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -244,7 +244,7 @@ const finishProject = async (
   if (MODE === 'DEVELOPMENT') {
     return projectMocksAxios
       .putNoRequestBody<Success>(
-        `/scrum-service/project/finish/${projectId}`,
+        `/api/v1/scrum-service/project/finish/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

@@ -31,7 +31,7 @@ const getAllTasksProject = async (
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
     .get<Task[]>(
-      `/scrum-service/task/project/all/${projectId}`,
+      `/api/v1/scrum-service/task/project/all/${projectId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -47,7 +47,7 @@ const getAllTasksProject = async (
 const getTask = async (taskId: string, token: string): Promise<Task | Error> => {
   return tasksMocksAxios
     .get<Task>(
-      `/scrum-service/task/${taskId}`,
+      `/api/v1/scrum-service/task/${taskId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -66,7 +66,7 @@ const getTaskMovementLog = async (
 ): Promise<TaskMovementLog[] | Error> => {
   return taskMovementLogMocksAxios
     .get<TaskMovementLog[]>(
-      `/scrum-service/log/all/${taskId}`,
+      `/api/v1/scrum-service/log/all/${taskId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -91,7 +91,7 @@ const createTaskLog = async (
   }
 
   return taskMovementLogMocksAxios
-    .post('/scrum-service/log/add', log, {
+    .post('/api/v1/scrum-service/log/add', log, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -128,7 +128,7 @@ const createTask = async (task: Task, token: string): Promise<Task | Error> => {
       if (sprintId) activeSprint?.tasks.push(currentTask)
 
       return tasksMocksAxios
-        .post('/scrum-service/task/add', currentTask, {
+        .post('/api/v1/scrum-service/task/add', currentTask, {
           headers: { Authorization: `Bearer ${token}` },
           signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
         })
@@ -174,7 +174,7 @@ const moveTask = async (
 const updateTask = async (task: Task, token: string): Promise<Success | Error> => {
   return tasksMocksAxios
     .put<Success>(
-      `/scrum-service/task/update/${task.id}`,
+      `/api/v1/scrum-service/task/update/${task.id}`,
       task,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -269,7 +269,7 @@ const changeLeaderComment = async (
 ): Promise<Success | Error> => {
   return tasksMocksAxios
     .put<Success>(
-      `/scrum-service/task/leader/comment/${taskId}`,
+      `/api/v1/scrum-service/task/leader/comment/${taskId}`,
       { leaderComment },
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -291,7 +291,7 @@ const changeDescription = async (
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
     .put<Task[]>(
-      `/scrum-service/task/description/${taskId}`,
+      `/api/v1/scrum-service/task/description/${taskId}`,
       task,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -314,7 +314,7 @@ const changeName = async (
 ): Promise<Task[] | Error> => {
   return tasksMocksAxios
     .put<Task[]>(
-      `/scrum-service/task/name/${taskId}`,
+      `/api/v1/scrum-service/task/name/${taskId}`,
       task,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -336,7 +336,7 @@ const changeExecutorComment = async (
 ): Promise<Success | Error> => {
   return tasksMocksAxios
     .put<Success>(
-      `/scrum-service/task/executor/comment/${taskId}`,
+      `/api/v1/scrum-service/task/executor/comment/${taskId}`,
       { executorComment },
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -351,7 +351,7 @@ const changeExecutorComment = async (
 const deleteTask = async (id: string, token: string): Promise<Success | Error> => {
   return tasksMocksAxios
     .delete(
-      `/scrum-service/task/delete/${id}`,
+      `/api/v1/scrum-service/task/delete/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
