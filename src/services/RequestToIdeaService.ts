@@ -22,7 +22,7 @@ const getIdeaRequests = async (
 ): Promise<RequestTeamToIdea[] | Error> => {
   return requestTeamsAxios
     .get<RequestTeamToIdea[]>(
-      `/ideas-service/market/idea/requests/${ideaId}`,
+      `/api/v1/ideas-service/market/idea/requests/${ideaId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -41,7 +41,7 @@ const postRequest = async (
   token: string,
 ): Promise<RequestTeamToIdea | Error> => {
   return requestTeamsAxios
-    .post(`/ideas-service/market/idea/declare`, team, {
+    .post(`/api/v1/ideas-service/market/idea/declare`, team, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
@@ -56,7 +56,7 @@ const updateRequestToIdeaStatus = async (
 ): Promise<Success | Error> => {
   return requestTeamsAxios
     .put<Success>(
-      `/ideas-service/market/idea/change-status/request/${id}/${status}`,
+      `/api/v1/ideas-service/market/idea/change-status/request/${id}/${status}`,
       { status: status },
       { headers: { Authorization: `Bearer ${token}` } },
       {
@@ -75,7 +75,7 @@ const acceptRequestToIdeaStatus = async (
 ): Promise<Team | Error> => {
   return requestTeamsAxios
     .putNoRequestBody<Team>(
-      `/ideas-service/market/idea/accept/request/${id}/${teamId}`,
+      `/api/v1/ideas-service/market/idea/accept/request/${id}/${teamId}`,
       { headers: { Authorization: `Bearer ${token}` } },
       {
         params: { id },
@@ -92,7 +92,7 @@ const deleteRequestTeams = async (
 ): Promise<Success | Error> => {
   return requestTeamsAxios
     .delete(
-      `/ideas-service/market/delete/request/${id}`,
+      `/api/v1/ideas-service/market/delete/request/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

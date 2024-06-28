@@ -37,7 +37,7 @@ const getInvitationsByIdea = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/ideas-service/idea/invitation/all/${ideaMarketId}`,
+      `/api/v1/ideas-service/idea/invitation/all/${ideaMarketId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -59,7 +59,7 @@ const getAllInvitationsByInitiator = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/ideas-service/idea/invitation/all/initiator`,
+      `/api/v1/ideas-service/idea/invitation/all/initiator`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -81,7 +81,7 @@ const getTeamInvitations = async (
 ): Promise<InvitationTeamToIdea[] | Error> => {
   return invitationTeamToIdeaAxios
     .get<InvitationTeamToIdea[]>(
-      `/ideas-service/idea/invitation/team/all/${teamId}`, // FIX ROUTE
+      `/api/v1/ideas-service/idea/invitation/team/all/${teamId}`, // FIX ROUTE
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -104,7 +104,7 @@ const inviteTeamToIdea = async (
 ): Promise<InvitationTeamToIdea | Error> => {
   return invitationTeamToIdeaAxios
     .post(
-      `/ideas-service/idea/invitation/${invitation.teamId}/${invitation.ideaId}`,
+      `/api/v1/ideas-service/idea/invitation/${invitation.teamId}/${invitation.ideaId}`,
       invitation,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -137,7 +137,7 @@ const changeInvitationStatus = async (
 
   return invitationTeamToIdeaAxios
     .put<Success | Error>(
-      `/ideas-service/idea/invitation/status`,
+      `/api/v1/ideas-service/idea/invitation/status`,
       { id: invitationId, teamId: teamId, ideaId: ideaId, status: status },
       {
         headers: { Authorization: `Bearer ${token}` },

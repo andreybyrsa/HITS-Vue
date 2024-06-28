@@ -60,7 +60,7 @@ const fetchIdeasMarket = async (
 ): Promise<IdeaMarket[] | Error> => {
   return ideasMarketAxios
     .get<IdeaMarket[] | Error>(
-      `/ideas-service/market/idea/market/${marketId}/all`,
+      `/api/v1/ideas-service/market/idea/market/${marketId}/all`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -79,7 +79,7 @@ const fetchFavoritesIdeas = async (
 ): Promise<IdeaMarket[] | Error> => {
   return ideasMarketAxios
     .get<IdeaMarket[]>(
-      `/ideas-service/market/idea/favourite/${marketId}`,
+      `/api/v1/ideas-service/market/idea/favourite/${marketId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -95,7 +95,7 @@ const getIdeaMarket = async (
 ): Promise<IdeaMarket | Error> => {
   return ideasMarketAxios
     .get<IdeaMarket>(
-      `/ideas-service/market/idea/${id}`,
+      `/api/v1/ideas-service/market/idea/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -111,7 +111,7 @@ const getAllInitiatorMarketIdeas = async (
 ): Promise<IdeaMarket[] | Error> => {
   return ideasMarketAxios
     .get<IdeaMarket[]>(
-      `/ideas-service/market/idea/market/${marketId}/initiator`,
+      `/api/v1/ideas-service/market/idea/market/${marketId}/initiator`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -129,7 +129,7 @@ const getIdeaMarketAdvertisements = async (
 ): Promise<IdeaMarketAdvertisement[] | Error> => {
   return ideasMarketAdvertisementAxios
     .get<IdeaMarketAdvertisement[]>(
-      `/ideas-service/market/idea/get/advertisements/${ideaMarketId}`,
+      `/api/v1/ideas-service/market/idea/get/advertisements/${ideaMarketId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -149,7 +149,7 @@ const getAllInitiatorMarketIdeasByUserId = async (
 ): Promise<IdeaMarket[] | Error> => {
   return ideasMarketAxios
     .get<IdeaMarket[]>(
-      `/ideas-service/idea/invitation/idea-market`,
+      `/api/v1/ideas-service/idea/invitation/idea-market`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -195,7 +195,7 @@ const sendIdeaOnMarket = async (
     }) as IdeaMarket[]
 
     return ideasMarketAxios
-      .post(`/ideas-service/market/idea/send/${marketId}`, ideasMarket, {
+      .post(`/api/v1/ideas-service/market/idea/send/${marketId}`, ideasMarket, {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       })
@@ -266,10 +266,14 @@ const postIdeaMarketAdvertisement = async (
   token: string,
 ): Promise<IdeaMarketAdvertisement | Error> => {
   return ideasMarketAdvertisementAxios
-    .post('/ideas-service/market/idea/add/advertisement', ideaMarketAdvertisement, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-    })
+    .post(
+      '/api/v1/ideas-service/market/idea/add/advertisement',
+      ideaMarketAdvertisement,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка добавления объявления'))
 }
@@ -281,7 +285,7 @@ const addIdeaToFavorites = async (
 ): Promise<Success | Error> => {
   return ideasMarketAxios
     .putNoRequestBody<Success>(
-      `/ideas-service/market/idea/favorite/${id}`,
+      `/api/v1/ideas-service/market/idea/favorite/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { isFavorite: true } },
     )
@@ -296,7 +300,7 @@ const updateIdeaMarketStatus = async (
 ): Promise<Success | Error> => {
   return ideasMarketAxios
     .putNoRequestBody<Success>(
-      `/ideas-service/market/idea/idea-status/${id}/${status}`,
+      `/api/v1/ideas-service/market/idea/idea-status/${id}/${status}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { status: status } },
     )
@@ -309,7 +313,7 @@ const updateIdeaMarketStatus = async (
 const kickTeamFromIdeaMarket = async (ideaMarketId: string, token: string) => {
   return ideasMarketAxios
     .putNoRequestBody(
-      `/ideas-service/market/reset/team/${ideaMarketId}`,
+      `/api/v1/ideas-service/market/reset/team/${ideaMarketId}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { team: null } },
     )
@@ -325,7 +329,7 @@ const checkIdeaMarketAdvertisement = async (
 
   return ideasMarketAdvertisementAxios
     .putNoRequestBody<void>(
-      `/ideas-service/market/idea/check/advertisement/${id}`,
+      `/api/v1/ideas-service/market/idea/check/advertisement/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -343,7 +347,7 @@ const removeIdeaFromFavorites = async (
 ): Promise<Success | Error> => {
   return ideasMarketAxios
     .delete(
-      `/ideas-service/market/idea/unfavorite/${id}`,
+      `/api/v1/ideas-service/market/idea/unfavorite/${id}`,
       { headers: { Authorization: `Bearer ${token}` } },
       { params: { id }, requestData: { isFavorite: false } },
     )
@@ -357,7 +361,7 @@ const deleteIdeaMarketAdvertisement = async (
 ): Promise<Success | Error> => {
   return ideasMarketAdvertisementAxios
     .delete(
-      `/ideas-service/market/idea/delete/advertisement/${id}`,
+      `/api/v1/ideas-service/market/idea/delete/advertisement/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

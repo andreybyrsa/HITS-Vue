@@ -18,7 +18,7 @@ function formatOwnerCompanies(owenId: string, companies: Company[]) {
 
 const getCompanies = async (token: string): Promise<Company[] | Error> => {
   return companiesAxios
-    .get('/ideas-service/company/all', {
+    .get('/api/v1/ideas-service/company/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -32,7 +32,7 @@ const getOwnerCompanies = async (
 ): Promise<Company[] | Error> => {
   return companiesAxios
     .get<Company[]>(
-      '/ideas-service/company/owner',
+      '/api/v1/ideas-service/company/owner',
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -46,7 +46,7 @@ const getOwnerCompanies = async (
 const getCompany = async (id: string, token: string): Promise<Company | Error> => {
   return companiesAxios
     .get(
-      `/ideas-service/company/${id}`,
+      `/api/v1/ideas-service/company/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -62,7 +62,7 @@ const getCompanyStaff = async (
   token: string,
 ): Promise<User[] | Error> => {
   return usersAxios
-    .get(`/ideas-service/company/staff/${id}`, {
+    .get(`/api/v1/ideas-service/company/staff/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -75,7 +75,7 @@ const createCompany = async (
   token: string,
 ): Promise<Company | Error> => {
   return companiesAxios
-    .post('/ideas-service/company/create', company, {
+    .post('/api/v1/ideas-service/company/create', company, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -90,7 +90,7 @@ const updateCompany = async (
 ): Promise<Success | Error> => {
   return companiesAxios
     .put<Success>(
-      `/ideas-service/company/update/${id}`,
+      `/api/v1/ideas-service/company/update/${id}`,
       company,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -108,7 +108,7 @@ const deleteCompany = async (
 ): Promise<Success | Error> => {
   return companiesAxios
     .delete(
-      `/ideas-service/company/delete/${id}`,
+      `/api/v1/ideas-service/company/delete/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

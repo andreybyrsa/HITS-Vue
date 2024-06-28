@@ -32,7 +32,7 @@ const getUserProfile = async (
 ): Promise<Profile | Error> => {
   return profileUserAxios
     .get(
-      `/ideas-service/profile/${id}`,
+      `/api/v1/ideas-service/profile/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -85,7 +85,7 @@ const getUserTelegram = async (
 ): Promise<UserTelegram | Error> => {
   return usersTelegramAxios
     .get(
-      `/ideas-service/profile/telegram/${userId}`, // fix
+      `/api/v1/ideas-service/profile/telegram/${userId}`, // fix
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

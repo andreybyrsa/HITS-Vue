@@ -39,7 +39,7 @@ const getAllUsersSkills = async (token: string): Promise<TeamMember[] | Error> =
 
 const getAllSkills = async (token: string): Promise<Skill[] | Error> => {
   return skillsAxios
-    .get('/ideas-service/skill/all', {
+    .get('/api/v1/ideas-service/skill/all', {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -52,7 +52,7 @@ const getAllConfirmedOrCreatorSkills = async (
 ): Promise<Record<SkillType, Skill[]> | Error> => {
   return skillsAxios
     .get<Record<SkillType, Skill[]>>(
-      '/ideas-service/skill/all-confirmed-or-creator',
+      '/api/v1/ideas-service/skill/all-confirmed-or-creator',
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -69,7 +69,7 @@ const getSkillsByType = async (
 ): Promise<Skill[] | Error> => {
   return skillsAxios
     .get<Skill[]>(
-      `/ideas-service/skill/${skillType}`,
+      `/api/v1/ideas-service/skill/${skillType}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -82,7 +82,7 @@ const getSkillsByType = async (
 
 const createSkill = async (skill: Skill, token: string): Promise<Skill | Error> => {
   return skillsAxios
-    .post('/ideas-service/skill/add', skill, {
+    .post('/api/v1/ideas-service/skill/add', skill, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -95,7 +95,7 @@ const createNoConfirmedSkill = async (
   token: string,
 ): Promise<Skill | Error> => {
   return skillsAxios
-    .post('/ideas-service/skill/add/no-confirmed', skill, {
+    .post('/api/v1/ideas-service/skill/add/no-confirmed', skill, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -110,7 +110,7 @@ const confirmSkill = async (
 ): Promise<Skill | Error> => {
   return skillsAxios
     .put(
-      `/ideas-service/skill/confirm/${id}`,
+      `/api/v1/ideas-service/skill/confirm/${id}`,
       skill,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -129,7 +129,7 @@ const updateSkill = async (
 ): Promise<Skill | Error> => {
   return skillsAxios
     .put(
-      `/ideas-service/skill/update/${id}`,
+      `/api/v1/ideas-service/skill/update/${id}`,
       skill,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -144,7 +144,7 @@ const updateSkill = async (
 const deleteSkill = async (id: string, token: string): Promise<Success | Error> => {
   return skillsAxios
     .delete(
-      `/ideas-service/skill/delete/${id}`,
+      `/api/v1/ideas-service/skill/delete/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
