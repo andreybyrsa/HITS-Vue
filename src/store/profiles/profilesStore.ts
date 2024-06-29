@@ -24,22 +24,7 @@ const useProfilesStore = defineStore('profiles', {
   }),
 
   getters: {
-    getProfileByUserId(state) {
-      return (userId: string) => state.profiles.find(({ id }) => id === userId)
-    },
-
-    getProfileAvatarByUserId(state) {
-      return (userId: string) =>
-        state.avatars.find(({ id }) => id === userId)?.avatar
-    },
-    getUserTagByUserId(state) {
-      return (userId: string) =>
-        state.profiles.find(({ id }) => id === userId)?.userTag
-    },
-  },
-
-  actions: {
-    async fetchUserProfile() {
+    fetchUserProfile() {
       return async (userId: string, token: string) => {
         const response = await ProfileService.getUserProfile(userId, token)
 
@@ -54,7 +39,7 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
-    async fetchProfileAvatar() {
+    fetchProfileAvatar() {
       return async (userId: string, token: string) => {
         const response = await ProfileService.getProfileAvatar(userId, token)
 
@@ -71,7 +56,7 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
-    async fetchUserTelegram() {
+    fetchUserTelegram() {
       return async (userId: string, token: string) => {
         const response = await ProfileService.getUserTelegram(userId, token)
 
@@ -86,6 +71,21 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
+    getProfileByUserId(state) {
+      return (userId: string) => state.profiles.find(({ id }) => id === userId)
+    },
+
+    getProfileAvatarByUserId(state) {
+      return (userId: string) =>
+        state.avatars.find(({ id }) => id === userId)?.avatar
+    },
+    getUserTagByUserId(state) {
+      return (userId: string) =>
+        state.profiles.find(({ id }) => id === userId)?.userTag
+    },
+  },
+
+  actions: {
     async uploadAvatar(
       userId: string,
       image: File,
