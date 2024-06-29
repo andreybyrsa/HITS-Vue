@@ -1,13 +1,13 @@
 import { MODE } from '@Main'
 import axios from 'axios'
 
-const serverUrl = process.env.VUE_APP_OAUTH_URL ?? ''
+const serverUrl: string = process.env.VUE_APP_OAUTH_URL || ''
 axios.defaults.baseURL = serverUrl
 
-const clientId = process.env.VUE_APP_OAUTH_CLIENT_ID ?? ''
-const authHeaderValue = process.env.VUE_APP_OAUTH_AUTH_HEADER ?? ''
-const redirectUri = process.env.VUE_APP_OAUTH_REDIRECT_URI ?? ''
-const urlParam = process.env.VUE_APP_LOGOUT_URL ?? ''
+const clientId: string = process.env.VUE_APP_OAUTH_CLIENT_ID || ''
+const authHeaderValue: string = process.env.VUE_APP_OAUTH_AUTH_HEADER || ''
+const redirectUri: string = process.env.VUE_APP_OAUTH_REDIRECT_URI || ''
+const urlParam: string = process.env.VUE_APP_LOGOUT_URL || ''
 
 export const ACCESS_TOKEN_KEY = 'access_token'
 
