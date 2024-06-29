@@ -48,13 +48,10 @@ const getProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return axios
-    .get(
-      `${process.env.VUE_APP_BACKEND_URL}/authorization-service/profile/avatar/get/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-    )
+    .get(`/api/v1/authorization-service/profile/avatar/get/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки аватара'))
 }
@@ -101,7 +98,7 @@ const getUserTelegram = async (
 const checkProfile = async (token: string): Promise<Success | Error> => {
   return axios
     .post(
-      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/profile`,
+      `/api/v1/ideas-service/profile`,
       {},
       {
         headers: { Authorization: `Bearer ${token}` },
