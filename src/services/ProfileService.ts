@@ -155,14 +155,10 @@ const updateUserFullName = async (
   id: string,
 ): Promise<Success | Error> => {
   return axios
-    .put(
-      `${process.env.VUE_APP_BACKEND_URL}/authorization-service/profile/${id}`,
-      fullName,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-    )
+    .put(`/api/v1/authorization-service/profile/${id}`, fullName, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения данных'))
 }
