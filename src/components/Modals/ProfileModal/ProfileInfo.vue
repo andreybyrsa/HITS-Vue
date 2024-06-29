@@ -11,24 +11,21 @@ import Input from '@Components/Inputs/Input/Input.vue'
 import NewEmailRequestModal from '@Components/Modals/NewEmailRequestModal/NewEmailRequestModal.vue'
 
 import useProfilesStore from '@Store/profiles/profilesStore'
+import useUserStore from '@Store/user/userStore'
 
 import Validation from '@Utils/Validation'
 import { Profile } from '@Domain/Profile'
 import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
-import useUserStore from '@Store/user/userStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-onBeforeMount(() => {
-  const tag = LocalStorageTelegramTag.get()
-  setValues({ ...profile.value, userTag: tag ?? '' })
-})
+const profilesStore = useProfilesStore()
+await profilesStore.initializeStore() // Ensure the store is initialized
 
 const route = useRoute()
 const profileId = route.params.id.toString()
 
-const profilesStore = useProfilesStore()
 const profile = ref(profilesStore.getProfileByUserId(profileId))
 const computedProfile = computed(() => profile.value)
 
@@ -54,6 +51,11 @@ const { setValues, handleSubmit } = useForm<Profile>({
 // потому что стоит валидация на пустое поле
 
 watch(computedProfile, () => setUserValues(), { deep: true, immediate: true })
+
+onBeforeMount(() => {
+  const tag = LocalStorageTelegramTag.get()
+  setValues({ ...profile.value, userTag: tag ?? '' })
+})
 
 const handleEditUser = handleSubmit(async (values) => {
   const currentUser = user.value
