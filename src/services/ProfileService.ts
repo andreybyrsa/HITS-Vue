@@ -131,17 +131,13 @@ const uploadProfileAvatar = async (
   token: string,
 ): Promise<string | Error> => {
   return axios
-    .post(
-      `${process.env.VUE_APP_BACKEND_URL}/authorization-service/profile/avatar/upload`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    .post(`/api/v1/authorization-service/profile/avatar/upload`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
       },
-    )
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка обновления аватара'))
 }

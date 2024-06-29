@@ -153,6 +153,8 @@ const useProfilesStore = defineStore('profiles', {
           currentProfile.firstName = firstName
           currentProfile.lastName = lastName
 
+          console.log('Profile updated in store:', currentProfile)
+
           if (currentUser.id === userId) {
             userStore.setUser({
               ...currentUser,
@@ -170,7 +172,6 @@ const useProfilesStore = defineStore('profiles', {
         }
       }
     },
-
     async updateUserTelegramTag(
       profile: Profile,
       userTelegram: UserTelegram,
