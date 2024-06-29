@@ -53,14 +53,7 @@ const { setValues, handleSubmit } = useForm<Profile>({
 // а пользователь захочет изменить другое поле, то система этого сделать не даст,
 // потому что стоит валидация на пустое поле
 
-watch(
-  profile,
-  (newProfile) => {
-    console.log('Profile updated:', newProfile)
-    setUserValues()
-  },
-  { deep: true, immediate: true },
-)
+watch(computedProfile, () => setUserValues(), { deep: true, immediate: true })
 
 const handleEditUser = handleSubmit(async (values) => {
   const currentUser = user.value

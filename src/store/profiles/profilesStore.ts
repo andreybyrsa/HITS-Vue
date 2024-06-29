@@ -24,7 +24,22 @@ const useProfilesStore = defineStore('profiles', {
   }),
 
   getters: {
-    fetchUserProfile() {
+    getProfileByUserId(state) {
+      return (userId: string) => state.profiles.find(({ id }) => id === userId)
+    },
+
+    getProfileAvatarByUserId(state) {
+      return (userId: string) =>
+        state.avatars.find(({ id }) => id === userId)?.avatar
+    },
+    getUserTagByUserId(state) {
+      return (userId: string) =>
+        state.profiles.find(({ id }) => id === userId)?.userTag
+    },
+  },
+
+  actions: {
+    async fetchUserProfile() {
       return async (userId: string, token: string) => {
         const response = await ProfileService.getUserProfile(userId, token)
 
@@ -39,7 +54,7 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
-    fetchProfileAvatar() {
+    async fetchProfileAvatar() {
       return async (userId: string, token: string) => {
         const response = await ProfileService.getProfileAvatar(userId, token)
 
@@ -56,7 +71,7 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
-    fetchUserTelegram() {
+    async fetchUserTelegram() {
       return async (userId: string, token: string) => {
         const response = await ProfileService.getUserTelegram(userId, token)
 
@@ -71,21 +86,6 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
-    getProfileByUserId(state) {
-      return (userId: string) => state.profiles.find(({ id }) => id === userId)
-    },
-
-    getProfileAvatarByUserId(state) {
-      return (userId: string) =>
-        state.avatars.find(({ id }) => id === userId)?.avatar
-    },
-    getUserTagByUserId(state) {
-      return (userId: string) =>
-        state.profiles.find(({ id }) => id === userId)?.userTag
-    },
-  },
-
-  actions: {
     async uploadAvatar(
       userId: string,
       image: File,
@@ -153,8 +153,6 @@ const useProfilesStore = defineStore('profiles', {
           currentProfile.firstName = firstName
           currentProfile.lastName = lastName
 
-          console.log('Profile updated in store:', currentProfile)
-
           if (currentUser.id === userId) {
             userStore.setUser({
               ...currentUser,
@@ -172,6 +170,7 @@ const useProfilesStore = defineStore('profiles', {
         }
       }
     },
+
     async updateUserTelegramTag(
       profile: Profile,
       userTelegram: UserTelegram,
