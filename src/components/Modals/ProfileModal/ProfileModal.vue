@@ -36,8 +36,6 @@ const route = useRoute()
 const profileId = route.params.id.toString()
 
 const profilesStore = useProfilesStore()
-const profile = computed(() => profilesStore.getProfileByUserId(profileId))
-
 const DBProfile = ref<Profile>()
 const DBProfileAvatar = ref<string>()
 
@@ -100,21 +98,19 @@ function handleCloseProfileModal() {
           <Typography
             class-name="p-2 w-100 bg-white rounded-3 fs-4 text-primary text-nowrap overflow-scroll-hidden"
           >
-            {{ profile?.firstName }} {{ profile?.lastName }}
+            {{ DBProfile.firstName }} {{ DBProfile.lastName }}
           </Typography>
         </div>
 
         <div class="profile-modal__content">
           <div class="d-flex flex-column gap-3 w-75">
-            <ProfileAvatar />
-
-            <ProfileInfo />
+            <ProfileAvatar :src="DBProfileAvatar" />
+            <ProfileInfo :profile="DBProfile" />
           </div>
 
           <div class="profile-modal__info mb-3">
-            <ProfileSkills />
-
-            <ProfileIdeas />
+            <ProfileSkills :skills="DBProfile.skills" />
+            <ProfileIdeas :ideas="DBProfile.ideas" />
 
             <!-- <ProfilePortfolio /> -->
           </div>
