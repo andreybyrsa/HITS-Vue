@@ -15,7 +15,6 @@ import useUserStore from '@Store/user/userStore'
 import { TeamExperience } from '@Domain/Team'
 import TeamService from '@Services/TeamService'
 import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
-import LocalStorageUser from '@Utils/LocalStorageUser'
 
 const useProfilesStore = defineStore('profiles', {
   state: (): InitialState => ({
@@ -25,6 +24,53 @@ const useProfilesStore = defineStore('profiles', {
   }),
 
   getters: {
+    fetchUserProfile() {
+      return async (userId: string, token: string) => {
+        const response = await ProfileService.getUserProfile(userId, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        return findOneAndUpdate(this.profiles, response, {
+          key: 'id',
+          value: userId,
+        })
+      }
+    },
+
+    fetchProfileAvatar() {
+      return async (userId: string, token: string) => {
+        const response = await ProfileService.getProfileAvatar(userId, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        const avatar = response.length ? `data:image/jpeg;base64,${response}` : ''
+        const storedAvatar: StoredAvatar = { id: userId, avatar }
+
+        findOneAndUpdate(this.avatars, storedAvatar, { key: 'id', value: userId })
+
+        return avatar
+      }
+    },
+
+    fetchUserTelegram() {
+      return async (userId: string, token: string) => {
+        const response = await ProfileService.getUserTelegram(userId, token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        return findOneAndUpdate(this.usersTelegram, response, {
+          key: 'userId',
+          value: userId,
+        })
+      }
+    },
+
     getProfileByUserId(state) {
       return (userId: string) => state.profiles.find(({ id }) => id === userId)
     },
@@ -40,47 +86,6 @@ const useProfilesStore = defineStore('profiles', {
   },
 
   actions: {
-    async fetchUserProfile(userId: string, token: string) {
-      const response = await ProfileService.getUserProfile(userId, token)
-
-      if (response instanceof Error) {
-        return response
-      }
-
-      return findOneAndUpdate(this.profiles, response, {
-        key: 'id',
-        value: userId,
-      })
-    },
-
-    async fetchProfileAvatar(userId: string, token: string) {
-      const response = await ProfileService.getProfileAvatar(userId, token)
-
-      if (response instanceof Error) {
-        return response
-      }
-
-      const avatar = response.length ? `data:image/jpeg;base64,${response}` : ''
-      const storedAvatar: StoredAvatar = { id: userId, avatar }
-
-      findOneAndUpdate(this.avatars, storedAvatar, { key: 'id', value: userId })
-
-      return avatar
-    },
-
-    async fetchUserTelegram(userId: string, token: string) {
-      const response = await ProfileService.getUserTelegram(userId, token)
-
-      if (response instanceof Error) {
-        return response
-      }
-
-      return findOneAndUpdate(this.usersTelegram, response, {
-        key: 'userId',
-        value: userId,
-      })
-    },
-
     async uploadAvatar(
       userId: string,
       image: File,
@@ -162,11 +167,7 @@ const useProfilesStore = defineStore('profiles', {
           currentUser.lastName = lastName
           currentUser.studyGroup = studyGroup
           currentUser.telephone = telephone
-
-          LocalStorageUser.setLocalStorageUser(currentUser)
         }
-
-        localStorage.setItem('profiles', JSON.stringify(this.profiles))
       }
     },
 
@@ -249,7 +250,7 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
-    async addTeamExperience(teamExperience: TeamExperience, token: string) {
+    async addTeamExperince(teamExperience: TeamExperience, token: string) {
       const { userId } = teamExperience
       const response = await TeamService.addTeamExperince(teamExperience, token)
 
@@ -284,28 +285,6 @@ const useProfilesStore = defineStore('profiles', {
             currentTeamExperience.hasActiveProject = false
           }
         }
-      }
-    },
-
-    async initializeStore() {
-      const storedProfiles = localStorage.getItem('profiles')
-      if (storedProfiles) {
-        this.profiles = JSON.parse(storedProfiles)
-      }
-
-      const storedAvatars = localStorage.getItem('avatars')
-      if (storedAvatars) {
-        this.avatars = JSON.parse(storedAvatars)
-      }
-
-      const storedUsersTelegram = localStorage.getItem('usersTelegram')
-      if (storedUsersTelegram) {
-        this.usersTelegram = JSON.parse(storedUsersTelegram)
-      }
-
-      const storedUser = LocalStorageUser.getLocalStorageUser()
-      if (storedUser) {
-        useUserStore().setUser(storedUser)
       }
     },
   },
