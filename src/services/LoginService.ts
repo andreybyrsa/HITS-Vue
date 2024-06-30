@@ -1,5 +1,6 @@
 import { MODE } from '@Main'
 import axios from 'axios'
+import LocalStorageUser from '@Utils/LocalStorageUser'
 
 const serverUrl: string = process.env.VUE_APP_OAUTH_URL || ''
 axios.defaults.baseURL = serverUrl
@@ -59,9 +60,13 @@ const DEV_USER = {
   token_type: 'Bearer',
 }
 
+const setDevToken = () => {
+  window.sessionStorage.setItem(ACCESS_TOKEN_KEY, DEV_USER.jti)
+}
+
 const login = () => {
   if (MODE === 'DEVELOPMENT') {
-    window.sessionStorage.setItem(ACCESS_TOKEN_KEY, DEV_USER.jti)
+    setDevToken()
     return
   }
 
@@ -74,7 +79,7 @@ const login = () => {
   window.location.href = serverUrl + '/oauth2/authorize?' + requestParams.toString()
 }
 
-const logout = async () => {
+const logout = () => {
   const requestParams = new URLSearchParams({
     url: urlParam,
   })
@@ -83,7 +88,7 @@ const logout = async () => {
 
 const getTokens = async (code: string) => {
   if (MODE === 'DEVELOPMENT') {
-    window.sessionStorage.setItem(ACCESS_TOKEN_KEY, DEV_USER.jti)
+    setDevToken()
     return
   }
 
@@ -102,7 +107,7 @@ const getTokens = async (code: string) => {
     })
     window.sessionStorage.setItem(ACCESS_TOKEN_KEY, response.data[ACCESS_TOKEN_KEY])
   } catch (error) {
-    console.error('Error getting tokens: ' + error)
+    console.error('Ошибка при получении токенов: ' + error)
   }
 }
 
@@ -121,8 +126,19 @@ const getTokenInfo = async () => {
     })
     return response.data.user
   } catch (error) {
-    console.error('Error getting token info: ' + error)
+    console.error('Ошибка при получении токена: ' + error)
     return new Error('Сессия истекла')
+  }
+}
+
+const fetchAndStoreUserData = async () => {
+  try {
+    const user = await getTokenInfo()
+    if (user) {
+      LocalStorageUser.setLocalStorageUser(user)
+    }
+  } catch (error) {
+    console.error('Ошибка при обновлении и подгрузке данных пользователя:', error)
   }
 }
 
@@ -131,6 +147,7 @@ const LoginService = {
   logout,
   getTokens,
   getTokenInfo,
+  fetchAndStoreUserData,
 }
 
 export default LoginService
