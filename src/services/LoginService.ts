@@ -115,22 +115,17 @@ const getTokenInfo = async () => {
     return DEV_USER.user
   }
 
-  const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
   const payload = new FormData()
-  payload.append('token', token)
-
-  console.log('Отправка запроса introspect с токеном:', token)
-
+  payload.append('token', window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || '')
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
         Authorization: authHeaderValue,
       },
     })
-    console.log('Ответ от introspect:', response.data)
     return response.data.user
   } catch (error) {
-    console.error('Ошибка при получении токена: ' + error)
+    console.error('Ошибка при получении информации о токене: ' + error)
     return new Error('Сессия истекла')
   }
 }
