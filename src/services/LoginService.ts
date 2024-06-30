@@ -114,20 +114,16 @@ const getTokenInfo = async () => {
   if (MODE === 'DEVELOPMENT') {
     return DEV_USER.user
   }
-
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
-
+  const payload = new FormData()
+  payload.append('token', window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || '')
   try {
-    const response = await axios.post(
-      '/oauth2/introspect',
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+    const response = await axios.post('/oauth2/introspect', payload, {
+      headers: {
+        Authorization: authHeaderValue,
+        token,
       },
-    )
+    })
     return response.data.user
   } catch (error) {
     console.error('Ошибка при получении информации о токене: ' + error)
