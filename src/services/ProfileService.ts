@@ -32,7 +32,7 @@ const getUserProfile = async (
 ): Promise<Profile | Error> => {
   return profileUserAxios
     .get(
-      `/api/v1/authorization-service/profile/${id}`,
+      `/api/v1/ideas-service/profile/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -62,7 +62,7 @@ const getTeamExperience = async (
 ): Promise<TeamExperience[] | Error> => {
   return teamExperienceAxios
     .get<TeamExperience[]>(
-      `/api/v1/authorization-service/profile/avatar/get`,
+      `/api/v1/ideas-service/profile/avatar/get`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
