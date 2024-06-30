@@ -46,12 +46,9 @@ const updateUserEmail = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .put(
-      `${process.env.VUE_APP_BACKEND_URL}/authorization-service/account/change/email/${newEmailData.code}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    )
+    .put(`/api/v1/authorization-service/account/change/email/${newEmailData.code}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка обновления почты'))
 }
