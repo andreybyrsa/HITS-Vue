@@ -75,19 +75,6 @@ const useUserStore = defineStore('user', {
       }
       return true
     },
-
-    async fetchUserData() {
-      try {
-        const user = await LoginService.getTokenInfo()
-        if (user instanceof Error) {
-          useNotificationsStore().createSystemNotification('Система', user.message)
-        } else {
-          this.setUser(user)
-        }
-      } catch (error) {
-        console.error('Ошибка при обновлении данных пользователя:', error)
-      }
-    },
   },
 })
 

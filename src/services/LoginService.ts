@@ -1,6 +1,5 @@
 import { MODE } from '@Main'
 import axios from 'axios'
-import LocalStorageUser from '@Utils/LocalStorageUser'
 
 const serverUrl: string = process.env.VUE_APP_OAUTH_URL || ''
 axios.defaults.baseURL = serverUrl
@@ -116,29 +115,23 @@ const getTokenInfo = async () => {
     return DEV_USER.user
   }
 
+  const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
   const payload = new FormData()
-  payload.append('token', window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || '')
+  payload.append('token', token)
+
+  console.log('Отправка запроса introspect с токеном:', token)
+
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
         Authorization: authHeaderValue,
       },
     })
+    console.log('Ответ от introspect:', response.data)
     return response.data.user
   } catch (error) {
     console.error('Ошибка при получении токена: ' + error)
     return new Error('Сессия истекла')
-  }
-}
-
-const fetchAndStoreUserData = async () => {
-  try {
-    const user = await getTokenInfo()
-    if (user) {
-      LocalStorageUser.setLocalStorageUser(user)
-    }
-  } catch (error) {
-    console.error('Ошибка при обновлении и подгрузке данных пользователя:', error)
   }
 }
 
@@ -147,7 +140,6 @@ const LoginService = {
   logout,
   getTokens,
   getTokenInfo,
-  fetchAndStoreUserData,
 }
 
 export default LoginService

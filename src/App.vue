@@ -13,11 +13,9 @@ const route = useRoute()
 
 watchImmediate(
   () => route.path,
-  async () => {
+  () => {
     if (user.value === null) {
-      await userStore.loginUser()
-    } else {
-      await userStore.fetchUserData()
+      userStore.loginUser()
     }
   },
 )
