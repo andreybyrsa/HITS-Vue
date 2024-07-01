@@ -49,7 +49,7 @@ const getUserForProfile = async (
 ): Promise<Profile | Error> => {
   return profileUserAxios
     .get(
-      `/api/v1/authorization-service/profile/${id}`,
+      `/api/v1/ideas-service/profile/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
