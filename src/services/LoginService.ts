@@ -117,19 +117,10 @@ const getTokenInfo = async () => {
 
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
 
-  // Проверка на наличие токена
-  if (!token) {
-    console.error('Токен отсутствует')
-    return new Error('Сессия истекла')
-  }
-
   // Создание URLSearchParams вместо FormData
   const payload = new URLSearchParams()
+
   payload.append('token', token)
-  if (!token) {
-    console.error('Токен отсутствует')
-    return new Error('Сессия истекла')
-  }
   try {
     const response = await axios.post('/oauth2/introspect', payload.toString(), {
       headers: {
