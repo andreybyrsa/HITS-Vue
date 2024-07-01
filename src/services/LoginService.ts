@@ -127,8 +127,8 @@ const getTokenInfo = async () => {
   const payload = new URLSearchParams()
   payload.append('token', token)
   if (!token) {
-    console.error('Токен снова отсутствует')
-    return new Error('Сессия снова истекла')
+    console.error('Токен отсутствует')
+    return new Error('Сессия истекла')
   }
   try {
     const response = await axios.post('/oauth2/introspect', payload.toString(), {
