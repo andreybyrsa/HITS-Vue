@@ -56,6 +56,11 @@ onMounted(async () => {
         onErrorFunc: openErrorNotification,
       },
       {
+        request: () => profilesStore.fetchUserProfile(profileId, token),
+        refValue: DBProfile,
+        onErrorFunc: openErrorNotification,
+      },
+      {
         request: () => profilesStore.fetchProfileAvatar(profileId, token),
         refValue: DBProfileAvatar,
         onErrorFunc: openErrorNotification,
