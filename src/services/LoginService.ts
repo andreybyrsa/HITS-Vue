@@ -114,11 +114,26 @@ const getTokenInfo = async () => {
   if (MODE === 'DEVELOPMENT') {
     return DEV_USER.user
   }
-  const payload = new FormData()
-  payload.append('token', window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || '')
+
+  const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
+
+  // Проверка на наличие токена
+  if (!token) {
+    console.error('Токен отсутствует')
+    return new Error('Сессия истекла')
+  }
+
+  // Создание URLSearchParams вместо FormData
+  const payload = new URLSearchParams()
+  payload.append('token', token)
+  if (!token) {
+    console.error('Токен снова отсутствует')
+    return new Error('Сессия снова истекла')
+  }
   try {
-    const response = await axios.post('/oauth2/introspect', payload, {
+    const response = await axios.post('/oauth2/introspect', payload.toString(), {
       headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: authHeaderValue,
       },
     })
