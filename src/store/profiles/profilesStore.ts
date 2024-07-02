@@ -39,21 +39,6 @@ const useProfilesStore = defineStore('profiles', {
       }
     },
 
-    fetchUserForProfile() {
-      return async (userId: string, token: string) => {
-        const response = await ProfileService.getUserForProfile(userId, token)
-
-        if (response instanceof Error) {
-          return response
-        }
-
-        return findOneAndUpdate(this.profiles, response, {
-          key: 'id',
-          value: userId,
-        })
-      }
-    },
-
     fetchProfileAvatar() {
       return async (userId: string, token: string) => {
         const response = await ProfileService.getProfileAvatar(userId, token)

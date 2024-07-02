@@ -32,23 +32,6 @@ const getUserProfile = async (
 ): Promise<Profile | Error> => {
   return profileUserAxios
     .get(
-      `/api/v1/authorization-service/profile/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-      { params: { id } },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка загрузки профиля'))
-}
-
-const getUserForProfile = async (
-  id: string,
-  token: string,
-): Promise<Profile | Error> => {
-  return profileUserAxios
-    .get(
       `/api/v1/ideas-service/profile/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -59,6 +42,23 @@ const getUserForProfile = async (
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки профиля'))
 }
+
+// const getUserForProfile = async (
+//   id: string,
+//   token: string,
+// ): Promise<Profile | Error> => {
+//   return profileUserAxios
+//     .get(
+//       `/api/v1/authorization-service/profile/${id}`,
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//       },
+//       { params: { id } },
+//     )
+//     .then((response) => response.data)
+//     .catch((error) => handleAxiosError(error, 'Ошибка загрузки профиля'))
+// }
 
 const getProfileAvatar = async (
   id: string,
@@ -257,7 +257,6 @@ const deleteUserTelegram = async (
 
 const ProfileService = {
   getUserProfile,
-  getUserForProfile,
   getProfileAvatar,
   getTeamExperience,
   getUserTelegram,

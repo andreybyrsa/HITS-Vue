@@ -51,11 +51,6 @@ onMounted(async () => {
 
     const profileParallelRequests: RequestConfig[] = [
       {
-        request: () => profilesStore.fetchUserForProfile(profileId, token),
-        refValue: DBProfile,
-        onErrorFunc: openErrorNotification,
-      },
-      {
         request: () => profilesStore.fetchUserProfile(profileId, token),
         refValue: DBProfile,
         onErrorFunc: openErrorNotification,
