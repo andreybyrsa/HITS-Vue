@@ -117,21 +117,18 @@ const getTokenInfo = async () => {
 
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
 
-  // Создание URLSearchParams вместо FormData
-  const payload = new URLSearchParams()
-
-  payload.append('token', token)
   try {
-    const response = await axios.post('/oauth2/introspect', payload.toString(), {
+    const response = await axios.post('/oauth2/introspect', token, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
         Authorization: authHeaderValue,
       },
     })
+
     return response.data.user
   } catch (error) {
-    console.error('Ошибка при получении информации о токене: ' + error)
-    return new Error('Сессия истекла')
+    console.error('Ошибка при получении информации о токене:', error)
+    return Promise.reject(new Error('Сессия истекла'))
   }
 }
 
