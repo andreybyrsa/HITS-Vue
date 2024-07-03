@@ -121,6 +121,13 @@ const getTokenInfo = async () => {
   const payload = new FormData()
 
   payload.append('token', token)
+
+  // Логирование данных, которые отправляются в теле запроса
+  console.log('Токен:', token)
+  for (const pair of payload.entries()) {
+    console.log(pair[0] + ': ' + pair[1])
+  }
+
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
