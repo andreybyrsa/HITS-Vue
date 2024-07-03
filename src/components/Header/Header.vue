@@ -50,7 +50,7 @@ function navigateToProfile() {
   const { name } = route
   const profileRoute: RouteRecordRaw = {
     name: 'profile',
-    path: 'profil/:id',
+    path: 'profile/:id',
     alias: '/profile/:id',
     component: ProfileModal,
     props: {

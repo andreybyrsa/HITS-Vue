@@ -43,6 +43,23 @@ const getUserProfile = async (
     .catch((error) => handleAxiosError(error, 'Ошибка загрузки профиля'))
 }
 
+const getUserForProfile = async (
+  id: string,
+  token: string,
+): Promise<Profile | Error> => {
+  return profileUserAxios
+    .get(
+      `/api/v1/authorization-service/profile/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка загрузки профиля'))
+}
+
 const getProfileAvatar = async (
   id: string,
   token: string,
@@ -62,7 +79,7 @@ const getTeamExperience = async (
 ): Promise<TeamExperience[] | Error> => {
   return teamExperienceAxios
     .get<TeamExperience[]>(
-      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/profile/avatar/get`,
+      `/api/v1/ideas-service/profile/avatar/get`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -82,7 +99,7 @@ const getUserTelegram = async (
 ): Promise<UserTelegram | Error> => {
   return usersTelegramAxios
     .get(
-      `/api/v1/ideas-service/profile/telegram/${userId}`, // fix
+      `/api/v1/authorization-service/profile/telegram/${userId}`, // fix
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -114,14 +131,10 @@ const saveProfileSkills = async (
   token: string,
 ): Promise<Skill[] | Error> => {
   return axios
-    .post(
-      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/profile/skills/save`,
-      skills,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-    )
+    .post(`/api/v1/ideas-service/profile/skills/save`, skills, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка сохранения компетенций'))
 }
@@ -162,7 +175,7 @@ const createUserTelegram = async (
 ): Promise<UserTelegram | Error> => {
   return usersTelegramAxios
     .postNoRequestBody<UserTelegram>(
-      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/profile/telegram/add-tag`,
+      `/api/v1/authorization-service/profile/telegram/add-tag`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -185,7 +198,7 @@ const updateTelegramTag = async (
 ): Promise<Success | Error> => {
   return usersTelegramAxios
     .put<Success>(
-      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/profile/telegram/update/`,
+      `/api/v1/authorization-service/profile/telegram/update/`,
       userTelegram,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -206,7 +219,7 @@ const updateVisibilityOfTag = async (
 ): Promise<Success | Error> => {
   return usersTelegramAxios
     .putNoRequestBody<Success>(
-      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/profile/telegram/visibility/${userTag}`,
+      `/api/v1/authorization-service/profile/telegram/visibility/${userTag}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -229,7 +242,7 @@ const deleteUserTelegram = async (
 ): Promise<Success | Error> => {
   return usersTelegramAxios
     .delete(
-      `${process.env.VUE_APP_BACKEND_URL}/ideas-service/profile/telegram/delete/${userTag}`,
+      `/api/v1/authorization-service/profile/telegram/delete/${userTag}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -244,6 +257,7 @@ const deleteUserTelegram = async (
 
 const ProfileService = {
   getUserProfile,
+  getUserForProfile,
   getProfileAvatar,
   getTeamExperience,
   getUserTelegram,
