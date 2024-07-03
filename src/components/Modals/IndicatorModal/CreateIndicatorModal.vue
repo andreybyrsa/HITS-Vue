@@ -181,17 +181,17 @@ onMounted(async () => {
                 />
               </div>
               <Select
-                name="type"
-                class-name="mt-0"
-                label-class-name="mt-2"
-                label="Для кого предназначен вопрос"
-                :options="indicatorRoleSelectOptions"
-              />
-              <Select
                 name="role"
                 class-name="mt-0"
                 label-class-name="mt-2"
-                label="Кого нужно оценить"
+                label="Кто оценивает "
+                :options="indicatorRoleSelectOptions"
+              />
+              <Select
+                name="type"
+                class-name="mt-0"
+                label-class-name="mt-2"
+                label="Кого (что) нужно оценить"
                 :options="indicatorTypeSelectOptions"
               />
             </div>
