@@ -155,7 +155,7 @@ const convertIdeaToProject = async (
 
       return projectMocksAxios
         .post(
-          `${process.env.VUE_APP_BACKEND_URL}/scrum-service/project/send`,
+          `${process.env.VUE_APP_BACKEND_URL}/api/v1/scrum-service/project/send`,
           project,
           {
             headers: { Authorization: `Bearer ${token}` },
