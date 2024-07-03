@@ -185,14 +185,14 @@ onMounted(async () => {
                 class-name="mt-0"
                 label-class-name="mt-2"
                 label="Для кого предназначен вопрос"
-                :options="indicatorRoleSelectOptions"
+                :options="indicatorTypeSelectOptions"
               />
               <Select
                 name="role"
                 class-name="mt-0"
                 label-class-name="mt-2"
                 label="Кого нужно оценить"
-                :options="indicatorTypeSelectOptions"
+                :options="indicatorRoleSelectOptions"
               />
             </div>
             <div class="col-sm">
