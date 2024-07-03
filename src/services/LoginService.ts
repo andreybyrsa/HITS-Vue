@@ -121,8 +121,9 @@ const getTokenInfo = async () => {
   const payload = new URLSearchParams()
 
   payload.append('token', token)
+  console.log(token)
   try {
-    const response = await axios.post('/oauth2/introspect', payload.toString(), {
+    const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: authHeaderValue,
