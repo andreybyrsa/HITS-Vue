@@ -117,23 +117,14 @@ const getTokenInfo = async () => {
 
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
 
-  if (!token) {
-    console.error('Токен отсутствует')
-    return new Error('Сессия истекла')
-  }
+  const payload = new FormData()
 
-  const payload = { token }
-
-  // Логирование для проверки
-  console.log('Токен:', token)
-  console.log('Полезная нагрузка:', payload)
-  console.log('Authorization Header:', authHeaderValue)
+  payload.append('token', token)
 
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
         Authorization: authHeaderValue,
-        'Content-Type': 'application/json', // Указываем тип контента как JSON
       },
     })
     return response.data.user
