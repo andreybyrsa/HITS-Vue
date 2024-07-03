@@ -154,28 +154,20 @@ const convertIdeaToProject = async (
       }
 
       return projectMocksAxios
-        .post(
-          `${process.env.VUE_APP_BACKEND_URL}/api/v1/scrum-service/project/send`,
-          project,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-          },
-        )
+        .post(`/api/v1/scrum-service/project/send`, project, {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+        })
         .then((response) => response.data)
         .catch((error) => handleAxiosError(error, 'Ошибка перевода идеи в проект'))
     }
   }
 
   return axios
-    .post(
-      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/project/send`,
-      ideaMarket,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-    )
+    .post(`/api/v1/scrum-service/project/send`, ideaMarket, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка конвертации идеи в проект'))
 }
@@ -257,7 +249,7 @@ const finishProject = async (
   }
   return axios
     .put<Success>(
-      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/project/finish/${projectId}`,
+      `/api/v1/scrum-service/project/finish/${projectId}`,
       { report },
       {
         headers: { Authorization: `Bearer ${token}` },
