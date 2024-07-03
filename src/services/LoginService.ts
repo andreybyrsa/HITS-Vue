@@ -125,7 +125,6 @@ const getTokenInfo = async () => {
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
-        'Content-Type': 'multipart/form-data',
         Authorization: authHeaderValue,
       },
     })
