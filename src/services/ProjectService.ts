@@ -163,9 +163,7 @@ const convertIdeaToProject = async (
           },
         )
         .then((response) => response.data)
-        .catch((error) =>
-          handleAxiosError(error, 'Ошибка конвертации идеи в проект'),
-        )
+        .catch((error) => handleAxiosError(error, 'Ошибка перевода идеи в проект'))
     }
   }
 
