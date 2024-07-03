@@ -118,15 +118,12 @@ const getTokenInfo = async () => {
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
 
   // Создание URLSearchParams вместо FormData
-  const payload = new FormData()
+  const payload = new URLSearchParams()
 
   payload.append('token', token)
 
   // Логирование данных, которые отправляются в теле запроса
-  console.log('Токен:', token)
-  for (const pair of payload.entries()) {
-    console.log(pair[0] + ': ' + pair[1])
-  }
+  console.log('Отправляемое тело запроса:', payload.toString())
 
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
