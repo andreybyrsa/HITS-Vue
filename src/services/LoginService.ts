@@ -122,9 +122,6 @@ const getTokenInfo = async () => {
 
   payload.append('token', token)
 
-  // Логирование данных, которые отправляются в теле запроса
-  console.log('Отправляемое тело запроса:', payload.toString())
-
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {

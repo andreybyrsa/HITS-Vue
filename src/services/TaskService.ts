@@ -138,7 +138,7 @@ const createTask = async (task: Task, token: string): Promise<Task | Error> => {
   }
 
   return axios
-    .post(`${process.env.VUE_APP_BACKEND_URL}/scrum-service/task/add`, task, {
+    .post(`/api/v1/scrum-service/task/add`, task, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
@@ -161,7 +161,7 @@ const moveTask = async (
 
   return axios
     .put(
-      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/task/move/${taskId}/${position}`,
+      `/api/v1/scrum-service/task/move/${taskId}/${position}`,
       {},
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -201,7 +201,7 @@ const changeExecutorTask = async (
 
   return axios
     .put(
-      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/task/executor/${taskId}/${user?.id}`,
+      `/api/v1/scrum-service/task/executor/${taskId}/${user?.id}`,
       {},
       {
         headers: { Authorization: `Bearer ${token}` },
