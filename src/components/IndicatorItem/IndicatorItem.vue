@@ -1,15 +1,10 @@
 <script lang="ts" setup>
 import { IndicatorItemProps } from '@Components/IndicatorItem/IndicatorItem.types'
 import { getIndicatorFieldsInfo } from '@Utils/indicatorTranslatedFields'
-import { onMounted } from 'vue'
 
 const props = defineProps<IndicatorItemProps>()
 
 const indicatorItemStyle = ['border rounded d-flex flex-column', props.className]
-
-onMounted(() => {
-  console.log('indicatorItem', props.indicator)
-})
 </script>
 
 <template>

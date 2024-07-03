@@ -73,9 +73,6 @@ const createIndicator = async () => {
       idCategory: values.idCategory,
     } as Indicator
 
-    console.log('it is indicator', indicator)
-    console.log('it is new indicator', newIndicator)
-
     const categoryName = indicatorCategories.value.find(
       (category) => category.idCategory == values.idCategory,
     )?.name
