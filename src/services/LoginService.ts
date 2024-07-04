@@ -116,6 +116,11 @@ const getTokenInfo = async () => {
   }
 
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
+  if (!token) {
+    console.error('Токен не найден')
+    return new Error('Сессия истекла')
+  }
+
   const payload = new FormData()
   payload.append('token', token)
 
