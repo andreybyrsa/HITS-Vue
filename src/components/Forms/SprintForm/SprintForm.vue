@@ -87,7 +87,7 @@ function updateDate(newStartDate?: string) {
   }
 
   const currentDate = newStartDate ? new Date(newStartDate) : new Date()
-  const secondDate = new Date()
+  const secondDate = new Date(currentDate)
   secondDate.setDate(currentDate.getDate() + 14)
 
   const startDate = currentDate.toISOString().substring(0, 10)
