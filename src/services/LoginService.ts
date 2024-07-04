@@ -116,13 +116,14 @@ const getTokenInfo = async () => {
   }
 
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
+
+  const payload = new FormData()
+  payload.append('token', token)
+
   if (!token) {
     console.error('Токен не найден')
     return new Error('Сессия истекла')
   }
-
-  const payload = new FormData()
-  payload.append('token', token)
 
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
