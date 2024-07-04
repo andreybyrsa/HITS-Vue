@@ -116,12 +116,13 @@ const getTokenInfo = async () => {
   }
 
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
-  const payload = new URLSearchParams({ token })
+  const payload = new FormData()
+  payload.append('token', token)
 
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-type': 'multipart/form-data',
         Authorization: authHeaderValue,
       },
     })
