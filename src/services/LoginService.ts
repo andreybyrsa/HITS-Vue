@@ -122,6 +122,7 @@ const getTokenInfo = async () => {
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
+        'Content-type': 'application/x-www-form-urlencoded',
         Authorization: authHeaderValue,
       },
     })
