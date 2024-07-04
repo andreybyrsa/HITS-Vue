@@ -120,11 +120,6 @@ const getTokenInfo = async () => {
   const payload = new FormData()
   payload.append('token', token)
 
-  if (!token) {
-    console.error('Токен не найден')
-    return new Error('Сессия истекла')
-  }
-
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
