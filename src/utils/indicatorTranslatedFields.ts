@@ -3,7 +3,10 @@ import { IndicatorType, IndicatorRoleType } from '@Domain/Quest'
 
 interface GetIndicatorFieldsType {
   indicatorTypes: IndicatorType[]
-  indicatorTranslatedTypes: {
+  indicatorTranslatedTypesForIndicatorModal: {
+    [key in IndicatorType]: string
+  }
+  indicatorTranslatedTypesForPassQuestModal: {
     [key in IndicatorType]: string
   }
 
@@ -16,12 +19,19 @@ interface GetIndicatorFieldsType {
 export const getIndicatorFieldsInfo = (): GetIndicatorFieldsType => {
   return {
     indicatorTypes: ['TEAM', 'INITIATOR', 'MEMBER', 'TEAM_LEADER', 'TEACHER'],
-    indicatorTranslatedTypes: {
+    indicatorTranslatedTypesForIndicatorModal: {
       TEAM: 'Оценка команды',
       INITIATOR: 'Оценка инициатора',
       MEMBER: 'Оценка участников команды',
       TEAM_LEADER: 'Оценка тимлида',
       TEACHER: 'Оценка преподавателя',
+    },
+    indicatorTranslatedTypesForPassQuestModal: {
+      TEAM: 'команды',
+      INITIATOR: 'инициатора',
+      MEMBER: 'участников команды',
+      TEAM_LEADER: 'тимлида',
+      TEACHER: 'преподавателя',
     },
     indicatorRoles: ['INITIATOR', 'MEMBER', 'TEACHER', 'TEAM_LEADER'],
     indicatorTranslatedRoles: {
@@ -36,7 +46,8 @@ export const getIndicatorFieldsInfo = (): GetIndicatorFieldsType => {
 export const indicatorTypeSelectOptions: OptionType[] =
   getIndicatorFieldsInfo().indicatorTypes.map((type) => {
     return {
-      label: getIndicatorFieldsInfo().indicatorTranslatedTypes[type],
+      label:
+        getIndicatorFieldsInfo().indicatorTranslatedTypesForIndicatorModal[type],
       value: type,
     }
   })
@@ -52,7 +63,7 @@ export const indicatorRoleSelectOptions: OptionType[] =
 export const indicatorTypeFromTranslatedType = (
   translatedType: string,
 ): IndicatorType => {
-  const { indicatorTranslatedTypes: translatedIndicatorTypes } =
+  const { indicatorTranslatedTypesForIndicatorModal: translatedIndicatorTypes } =
     getIndicatorFieldsInfo()
   const entry = Object.entries(translatedIndicatorTypes).find(
     ([key, value]) => value === translatedType,
@@ -66,7 +77,8 @@ export const findStatusesByTranslatedStatus = (
   if (!translatedStatus) return []
   return getIndicatorFieldsInfo()
     .indicatorTypes.map(
-      (type) => getIndicatorFieldsInfo().indicatorTranslatedTypes[type],
+      (type) =>
+        getIndicatorFieldsInfo().indicatorTranslatedTypesForIndicatorModal[type],
     )
     .filter((indicatorTranslatedType) =>
       indicatorTranslatedType.toLowerCase().includes(translatedStatus.toLowerCase()),

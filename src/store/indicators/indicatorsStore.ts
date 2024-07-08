@@ -36,6 +36,18 @@ const useIndicatorStore = defineStore('indicatorsStore', {
       return response
     },
 
+    async deleteIndicator(id: string, token: string) {
+      const response = await IndicatorService.deleteIndicator(id, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return response
+      }
+
+      this.indicators = this.indicators.filter((item) => item.id != id)
+      return this.indicators
+    },
+
     async getIndicatorCategories(
       token: string,
     ): Promise<IndicatorCategory[] | Error> {
@@ -67,6 +79,23 @@ const useIndicatorStore = defineStore('indicatorsStore', {
       this.indicatorCategories.push(response)
 
       return response
+    },
+
+    async deleteIndicatorCategory(idCategory: string, token: string) {
+      const response = await IndicatorService.deleteIndicatorCategory(
+        idCategory,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return response
+      }
+
+      this.indicatorCategories = this.indicatorCategories.filter(
+        (item) => item.idCategory != idCategory,
+      )
+      return this.indicatorCategories
     },
   },
 })

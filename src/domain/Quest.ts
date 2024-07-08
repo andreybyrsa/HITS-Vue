@@ -3,14 +3,14 @@ export interface Category {
   category: string
 }
 
+export type IndicatorRoleType = 'MEMBER' | 'INITIATOR' | 'TEAM_LEADER' | 'TEACHER'
+
 export type IndicatorType =
   | 'TEAM'
   | 'INITIATOR'
   | 'MEMBER'
   | 'TEAM_LEADER'
   | 'TEACHER'
-
-export type IndicatorRoleType = 'MEMBER' | 'INITIATOR' | 'TEAM_LEADER' | 'TEACHER'
 
 export interface Indicator {
   id: string

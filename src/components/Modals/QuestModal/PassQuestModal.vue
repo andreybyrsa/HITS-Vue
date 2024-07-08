@@ -20,6 +20,7 @@ import { useForm } from 'vee-validate'
 import useQuestResultsStore from '@Store/questResults/questResultsStore'
 import useQuestsStore from '@Store/quests/questsStore'
 import { useRoute, useRouter } from 'vue-router'
+import { getIndicatorFieldsInfo } from '@Utils/indicatorTranslatedFields'
 
 const emit = defineEmits<PassQuestEmits>()
 
@@ -54,13 +55,18 @@ const indicators = computed(() => {
     const userRole = user.value?.role
     if (indicator.role != userRole) return
 
-    if (indicator.type != 'TEAM-MEMBER') {
+    if (indicator.type != 'MEMBER') {
+      indicator.name += ` ${
+        getIndicatorFieldsInfo().indicatorTranslatedTypesForPassQuestModal[
+          indicator.type
+        ]
+      }`
       personalIndicators.push(indicator)
       return
     }
 
     teamProfilesRef.value.forEach((profile) => {
-      const newIndicator = {
+      const newIndicator: Indicator = {
         ...structuredClone(indicator),
         idToUser: profile.id,
       }
@@ -175,12 +181,10 @@ const sendResults = async () => {
 
   await questResultsStore.postQuestResults(newResults, token)
 
-  await handleCloseProfileModal()
-
-  window.location.reload()
+  await handleClosePassQuestModal()
 }
 
-const handleCloseProfileModal = () => {
+const handleClosePassQuestModal = () => {
   return router.push('/questionnaire')
 }
 </script>
@@ -197,7 +201,7 @@ const handleCloseProfileModal = () => {
         <Button
           variant="close"
           class="close"
-          @click="handleCloseProfileModal"
+          @click="handleClosePassQuestModal"
         ></Button>
         <div class="border-bottom m--4 w-100"></div>
       </div>

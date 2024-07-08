@@ -57,6 +57,23 @@ const postQuest = async (
     .catch((error) => handleAxiosError(error, 'Ошибка отправки запущенного опроса.'))
 }
 
+const deleteQuest = async (
+  idQuest: string,
+  token: string,
+): Promise<Quest | Error> => {
+  return launchQuestAxios
+    .putNoRequestBody<Error | Quest>(
+      `/quest-service/quest/hide/${idQuest}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {},
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления запущенного опроса.'))
+}
+
 // FIXME
 const sendNotifications = async (idQuest: string, token: string) => {
   return launchQuestAxios
@@ -78,6 +95,7 @@ const LaunchQuestService = {
   getQuests,
   getQuestsForProjectOffice,
   postQuest,
+  deleteQuest,
   sendNotifications,
 }
 

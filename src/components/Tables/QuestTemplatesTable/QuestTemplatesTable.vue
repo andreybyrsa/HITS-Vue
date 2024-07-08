@@ -75,6 +75,12 @@ const questsTableDropdownMenuAction: DropdownMenuAction<QuestTemplateShort>[] = 
     statement: () => true,
     click: (quest: QuestTemplateShort) => createCopyQuest(quest),
   },
+
+  {
+    label: 'Удалить шаблон',
+    statement: () => true,
+    click: (quest: QuestTemplateShort) => deleteQuestTemplate(quest),
+  },
 ]
 
 const createCopyQuest = (quest: QuestTemplateShort) => {
@@ -89,6 +95,12 @@ const createQuest = () => {
 
 const closeQuestModal = () => {
   isQuestModalOpen.value = false
+}
+
+const deleteQuestTemplate = async (quest: QuestTemplateShort) => {
+  const token = user.value?.token
+  if (!token) return
+  await questTemplatesStore.deleteQuestTemplate(quest.idQuestTemplate, token)
 }
 
 const navigateToQuestModal = (quest: QuestTemplateShort) => {
