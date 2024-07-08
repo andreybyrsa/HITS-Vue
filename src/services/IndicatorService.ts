@@ -84,7 +84,7 @@ const deleteIndicator = async (
 ): Promise<Indicator | Error> => {
   return indicatorAxios
     .putNoRequestBody<Error | Indicator>(
-      `/quest-service/indicator/hide/${id}`,
+      `/api/v1/quest-service/indicator/hide/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
@@ -101,7 +101,7 @@ const deleteIndicatorCategory = async (
 ): Promise<IndicatorCategory | Error> => {
   return indicatorCategoriesAxios
     .putNoRequestBody<Error | IndicatorCategory>(
-      `/quest-service/category/hide/${idCategory}`,
+      `/api/v1/quest-service/category/hide/${idCategory}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),

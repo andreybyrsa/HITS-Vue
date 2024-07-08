@@ -63,7 +63,7 @@ const deleteQuest = async (
 ): Promise<Quest | Error> => {
   return launchQuestAxios
     .putNoRequestBody<Error | Quest>(
-      `/quest-service/quest/hide/${idQuest}`,
+      `/api/v1/quest-service/quest/hide/${idQuest}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
