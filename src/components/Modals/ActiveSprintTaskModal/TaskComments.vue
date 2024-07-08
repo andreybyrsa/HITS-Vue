@@ -52,16 +52,6 @@ const changeExecutorComment = useDebounceFn((input: string) => {
     tasksStore.changeExecutorComment(id, input, token)
   }
 }, 450)
-
-const leaderCommentString =
-  typeof props.task.leaderComment === 'object'
-    ? JSON.stringify(props.task.leaderComment)
-    : props.task.leaderComment
-
-const executorCommentString =
-  typeof props.task.executorComment === 'object'
-    ? JSON.stringify(props.task.executorComment)
-    : props.task.executorComment
 </script>
 
 <template>
@@ -79,9 +69,9 @@ const executorCommentString =
           class-name="task-comments__textarea rounded-end"
           label="Тим-лидер"
           placeholder="Комментарий тим-лидера"
-          :model-value="leaderCommentString"
+          :model-value="$props.task.leaderComment"
           validate-on-update
-          @input="(event: HTMLTargetEvent) => changeLeaderComment(event.target.value)"
+          @input="(event: HTMLTargetEvent)=>changeLeaderComment(event.target.value)"
           :disabled="isAccessLeaderComment()"
         />
       </div>
@@ -92,9 +82,11 @@ const executorCommentString =
           class-name="task-comments__textarea rounded-end"
           label="Исполнитель"
           placeholder="Комментарий исполнителя"
-          :model-value="executorCommentString"
+          :model-value="$props.task.executorComment"
           validate-on-update
-          @input="(event: HTMLTargetEvent) => changeExecutorComment(event.target.value)"
+          @input="(event: HTMLTargetEvent) => {
+            changeExecutorComment(event.target.value)
+          }"
           :disabled="isAccessStudentComment()"
         />
       </div>
