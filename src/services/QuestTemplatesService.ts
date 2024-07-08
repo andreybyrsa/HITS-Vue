@@ -53,10 +53,28 @@ const postQuestTemplate = async (
     .catch((error) => handleAxiosError(error, 'Ошибка отправки опроса.'))
 }
 
+const deleteQuestTemplate = async (
+  idQuestTemplate: string,
+  token: string,
+): Promise<QuestTemplate | Error> => {
+  return questAxios
+    .putNoRequestBody<Error | QuestTemplate>(
+      `quest-service/quest/hide/${idQuestTemplate}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {},
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления шаблона опроса.'))
+}
+
 const QuestTemplatesService = {
   getQuestTemplates,
   getQuestTemplate,
   postQuestTemplate,
+  deleteQuestTemplate,
 }
 
 export default QuestTemplatesService

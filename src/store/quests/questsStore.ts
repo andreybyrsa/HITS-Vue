@@ -54,6 +54,7 @@ const useQuestsStore = defineStore('questsStore', {
 
       return this.quests
     },
+
     async sendNotifications(idQuest: string, token: string) {
       const response = await QuestService.sendNotifications(idQuest, token)
 
@@ -61,6 +62,17 @@ const useQuestsStore = defineStore('questsStore', {
         useNotificationsStore().createSystemNotification('Система', response.message)
         return response
       }
+    },
+
+    async deleteQuest(idQuest: string, token: string) {
+      const response = await QuestService.deleteQuest(idQuest, token)
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return response
+      }
+      this.quests = this.quests.filter((item) => item.idQuest != idQuest)
+      return this.quests
     },
   },
 })

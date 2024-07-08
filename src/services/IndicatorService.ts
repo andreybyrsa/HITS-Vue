@@ -78,11 +78,47 @@ const postIndicatorCategory = async (
     .catch((error) => handleAxiosError(error, 'Ошибка создания вопроса.'))
 }
 
+const deleteIndicator = async (
+  id: string,
+  token: string,
+): Promise<Indicator | Error> => {
+  return indicatorAxios
+    .putNoRequestBody<Error | Indicator>(
+      `/quest-service/indicator/hide/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {},
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления вопроса.'))
+}
+
+const deleteIndicatorCategory = async (
+  idCategory: string,
+  token: string,
+): Promise<IndicatorCategory | Error> => {
+  return indicatorCategoriesAxios
+    .putNoRequestBody<Error | IndicatorCategory>(
+      `/quest-service/category/hide/${idCategory}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      {},
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления категории.'))
+}
+
 const IndicatorService = {
   getIndicators,
   getIndicatorCategories,
   postIndicator,
   postIndicatorCategory,
+  deleteIndicator,
+  deleteIndicatorCategory,
 }
 
 export default IndicatorService

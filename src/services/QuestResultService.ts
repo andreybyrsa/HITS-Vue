@@ -13,7 +13,7 @@ const postQuestResults = async (
 ): Promise<{ createdResults: number } | Error> => {
   return axios
     .post(
-      `${process.env.VUE_APP_BACKEND_URL}/quest-service/result/create`,
+      `${process.env.VUE_APP_BACKEND_URL}/api/v1/quest-service/result/create`,
       questResults,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -30,7 +30,7 @@ const downloadResults = async (
 ): Promise<void | Error> => {
   try {
     const response = await axios.get(
-      `${process.env.VUE_APP_BACKEND_URL}/quest-service/statistic/quest/${idQuest}`,
+      `${process.env.VUE_APP_BACKEND_URL}/api/v1/quest-service/statistic/quest/${idQuest}`,
       {
         responseType: 'blob',
         headers: { Authorization: `Bearer ${token}` },

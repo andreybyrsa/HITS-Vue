@@ -52,6 +52,26 @@ const useQuestTemplatesStore = defineStore('questTemplatesStore', {
       this.questTemplates.push(response)
       return response
     },
+
+    async deleteQuestTemplate(
+      idQuestTemplate: string,
+      token: string,
+    ): Promise<QuestTemplate | Error> {
+      const response = await QuestTemplatesService.deleteQuestTemplate(
+        idQuestTemplate,
+        token,
+      )
+
+      if (response instanceof Error) {
+        useNotificationsStore().createSystemNotification('Система', response.message)
+        return response
+      }
+
+      this.questTemplates = this.questTemplates.filter(
+        (item) => item.idQuestTemplate != idQuestTemplate,
+      )
+      return response
+    },
   },
 })
 
