@@ -82,7 +82,7 @@ const changeExecutorComment = useDebounceFn((input: string) => {
           class-name="task-comments__textarea rounded-end"
           label="Исполнитель"
           placeholder="Комментарий исполнителя"
-          :model-value="$props.task.executorComment"
+          v-model="$props.task.executorComment"
           validate-on-update
           @input="(event: HTMLTargetEvent) => {
             changeExecutorComment(event.target.value)
