@@ -134,9 +134,26 @@ const getTokenInfo = async () => {
   }
 }
 
+const revokeToken = async (token: string) => {
+  const payload = new URLSearchParams({ token })
+
+  try {
+    await axios.post('/oauth2/revoke', payload, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: authHeaderValue,
+      },
+    })
+    console.log('Токен успешно отозван')
+  } catch (error) {
+    console.error('Ошибка при отзыве токена: ' + error)
+  }
+}
+
 const LoginService = {
   login,
   logout,
+  revokeToken,
   getTokens,
   getTokenInfo,
 }
