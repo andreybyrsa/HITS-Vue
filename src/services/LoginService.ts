@@ -146,7 +146,6 @@ const revokeToken = async () => {
         Authorization: authHeaderValue,
       },
     })
-    console.log('Токен успешно отозван')
   } catch (error) {
     console.error('Ошибка при отзыве токена: ' + error)
   }
