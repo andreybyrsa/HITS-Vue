@@ -39,7 +39,7 @@ const sendUrlToChangeEmail = async (
   token: string,
 ): Promise<Success | Error> => {
   return axios
-    .post(`/api/v1/ideas-service/profile/send/change/email`, userData, {
+    .post(`/api/v1/authorization/profile/send/change/email`, userData, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => response.data)
