@@ -137,8 +137,7 @@ const getTokenInfo = async () => {
 const revokeToken = async () => {
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
   const payload = new FormData()
-  payload.append('token_type_hint', 'access_token')
-  payload.append('client_id', clientId)
+  payload.append('token_type_hint', 'refresh_token')
   payload.append('token', token)
 
   try {
