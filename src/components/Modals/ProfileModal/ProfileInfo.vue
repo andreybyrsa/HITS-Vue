@@ -61,7 +61,7 @@ const handleEditUser = handleSubmit(async (values) => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    await profilesStore.updateUserFullName(values, token, profileId)
+    await profilesStore.updateUserFullName(values, token)
     isUpdatingUserTelephone.value = false
     isUpdatingUserName.value = false
     isUpdatingUserLastname.value = false
