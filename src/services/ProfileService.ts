@@ -158,10 +158,9 @@ const uploadProfileAvatar = async (
 const updateUserFullName = async (
   fullName: ProfileFullName,
   token: string,
-  id: string,
 ): Promise<Success | Error> => {
   return axios
-    .put(`/api/v1/authorization-service/profile/${id}`, fullName, {
+    .put(`/api/v1/authorization-service/profile/update`, fullName, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })
