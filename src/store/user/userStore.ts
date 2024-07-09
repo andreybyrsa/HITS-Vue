@@ -38,26 +38,14 @@ const useUserStore = defineStore('user', {
     },
 
     async logoutUser() {
+      if (this.user?.token) {
+        await LoginService.revokeToken(this.user.token)
+      }
       this.user = null
       LocalStorageUser.removeLocalStorageUser()
       sessionStorage.clear()
 
-      LoginService.logout()
-    },
-
-    async revokeToken(token: string) {
-      try {
-        await LoginService.revokeToken(token)
-        useNotificationsStore().createSystemNotification(
-          'Система',
-          'Токен успешно отозван',
-        )
-      } catch (error) {
-        useNotificationsStore().createSystemNotification(
-          'Система',
-          'Ошибка при отзыве токена',
-        )
-      }
+      await LoginService.logout()
     },
 
     setUser(user: User) {
