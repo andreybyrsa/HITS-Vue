@@ -134,8 +134,10 @@ const getTokenInfo = async () => {
   }
 }
 
-const revokeToken = async (token: string) => {
-  const payload = new URLSearchParams({ token })
+const revokeToken = async () => {
+  const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
+  const payload = new FormData()
+  payload.append('token', token)
 
   try {
     await axios.post('/oauth2/revoke', payload, {

@@ -39,7 +39,7 @@ const useUserStore = defineStore('user', {
 
     async logoutUser() {
       if (this.user?.token) {
-        await LoginService.revokeToken(this.user.token)
+        await LoginService.revokeToken()
       }
       this.user = null
       LocalStorageUser.removeLocalStorageUser()
