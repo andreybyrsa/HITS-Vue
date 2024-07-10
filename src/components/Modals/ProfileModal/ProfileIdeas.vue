@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, RouteRecordRaw } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 import Icon from '@Components/Icon/Icon.vue'
 import Typography from '@Components/Typography/Typography.vue'
@@ -8,10 +9,19 @@ import Collapse from '@Components/Collapse/Collapse.vue'
 import LoadingPlaceholder from '@Components/LoadingPlaceholder/LoadingPlaceholder.vue'
 import IdeaModal from '@Components/Modals/IdeaModal/IdeaModal.vue'
 
+import useUserStore from '@Store/user/userStore'
 import useProfilesStore from '@Store/profiles/profilesStore'
 
 import { getIdeaStatus, getIdeaStatusStyle } from '@Utils/ideaStatus'
 import navigateToAliasRoute from '@Utils/navigateToAliasRoute'
+
+import {
+  sendParallelRequests,
+  RequestConfig,
+  openErrorNotification,
+} from '@Utils/sendParallelRequests'
+
+import { Profile } from '@Domain/Profile'
 
 const route = useRoute()
 const profileId = route.params.id.toString()
@@ -20,6 +30,11 @@ const profilesStore = useProfilesStore()
 const profile = computed(() => profilesStore.getProfileByUserId(profileId))
 
 const status = getIdeaStatus()
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const DBProfile = ref<Profile>()
 
 function navigateToIdeaModal(ideaId: string) {
   const nestedRouteName = route.matched[route.matched.length - 2].name?.toString()
@@ -37,6 +52,23 @@ function navigateToIdeaModal(ideaId: string) {
     navigateToAliasRoute(nestedRouteName, `/ideas/list/${ideaId}`, ideaModalRoute)
   }
 }
+onMounted(async () => {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+
+    const profileParallelRequests: RequestConfig[] = [
+      {
+        request: () => profilesStore.fetchUserProfile(profileId, token),
+        refValue: DBProfile,
+        onErrorFunc: openErrorNotification,
+      },
+    ]
+
+    await sendParallelRequests(profileParallelRequests)
+  }
+})
 </script>
 
 <template>
