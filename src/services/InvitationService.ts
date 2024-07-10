@@ -35,13 +35,17 @@ const inviteUsers = async (
 }
 
 const sendUrlToChangeEmail = async (
-  userData: NewEmailForm,
   token: string,
+  newEmail: NewEmailForm,
 ): Promise<Success | Error> => {
   return axios
-    .post(`/api/v1/authorization/profile/send/change/email`, userData, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    .post(
+      `/api/v1/authorization-service/account/change/email/${newEmail}`,
+      newEmail,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
     .then((response) => response.data)
     .catch((error) =>
       handleAxiosError(error, 'Ошибка отправки ссылки для смены почты'),
