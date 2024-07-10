@@ -16,6 +16,7 @@ import {
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
 import { TeamExperience } from '@Domain/Team'
+import { Idea } from '@Domain/Idea'
 
 const profileUserAxios = defineAxios(profilesMocks)
 const teamExperienceAxios = defineAxios(teamsExperienceMocks)
@@ -29,7 +30,7 @@ const usersTelegramAxios = defineAxios(usersTelegramMocks)
 const getUserProfile = async (
   id: string,
   token: string,
-): Promise<Profile | Error> => {
+): Promise<{ ideas: Idea[]; skills: Skill[] } | Error> => {
   return profileUserAxios
     .get(
       `/api/v1/ideas-service/profile/${id}`,

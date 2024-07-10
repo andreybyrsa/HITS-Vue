@@ -32,10 +32,29 @@ const useProfilesStore = defineStore('profiles', {
           return response
         }
 
-        return findOneAndUpdate(this.profiles, response, {
-          key: 'id',
-          value: userId,
-        })
+        // Обработка ответа, содержащего идеи и компетенции
+        const { ideas, skills } = response
+
+        const profile = this.profiles.find((profile) => profile.id === userId)
+        if (profile) {
+          profile.ideas = ideas
+          profile.skills = skills
+        } else {
+          this.profiles.push({
+            id: userId,
+            ideas,
+            skills,
+            teamsExperience: [],
+            email: '',
+            firstName: '',
+            lastName: '',
+            roles: [],
+            telephone: '',
+            studyGroup: '',
+          })
+        }
+
+        return response
       }
     },
 
