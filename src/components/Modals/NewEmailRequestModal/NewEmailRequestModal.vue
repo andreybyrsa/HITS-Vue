@@ -48,9 +48,10 @@ const sendChangingUrl = handleSubmit(async (values) => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+    const { newEmail } = values
 
     isLoading.value = true
-    const response = await InvitationService.sendUrlToChangeEmail(token, values)
+    const response = await InvitationService.sendUrlToChangeEmail(token, newEmail)
     isLoading.value = false
 
     if (response instanceof Error) {
