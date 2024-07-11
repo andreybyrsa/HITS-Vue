@@ -39,6 +39,7 @@ const useProfilesStore = defineStore('profiles', {
         if (profile) {
           profile.ideas = ideas
           profile.skills = skills
+          profile.teams = teams
         } else {
           this.profiles.push({
             id: userId,
