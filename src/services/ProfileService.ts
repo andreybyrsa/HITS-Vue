@@ -30,9 +30,7 @@ const usersTelegramAxios = defineAxios(usersTelegramMocks)
 const getUserProfile = async (
   id: string,
   token: string,
-): Promise<
-  { ideas: Idea[]; skills: Skill[]; teamsExperience: TeamExperience[] } | Error
-> => {
+): Promise<{ ideas: Idea[]; skills: Skill[]; teams: TeamExperience[] } | Error> => {
   return profileUserAxios
     .get(
       `/api/v1/ideas-service/profile/${id}`,

@@ -2076,7 +2076,7 @@ export const profilesMocks: Profile[] = [
     ...usersMocks[0],
     skills: [...skillsMocks],
     ideas: [ideasMocks[0], ideasMocks[1]],
-    teamsExperience: teamsExperienceMocks,
+    teams: teamsExperienceMocks,
     userTag: usersTelegramMocks[0].userTag,
     isUserTagVisible: true,
   },

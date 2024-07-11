@@ -7,7 +7,7 @@ interface Profile extends User {
   skills: Skill[]
   ideas: Idea[]
 
-  teamsExperience: TeamExperience[]
+  teams: TeamExperience[]
 
   userTag?: string
   isUserTagVisible?: boolean

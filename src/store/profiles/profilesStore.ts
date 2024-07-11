@@ -33,7 +33,7 @@ const useProfilesStore = defineStore('profiles', {
         }
 
         // Обработка ответа, содержащего идеи и компетенции
-        const { ideas, skills, teamsExperience } = response
+        const { ideas, skills, teams } = response
 
         const profile = this.profiles.find((profile) => profile.id === userId)
         if (profile) {
@@ -44,7 +44,7 @@ const useProfilesStore = defineStore('profiles', {
             id: userId,
             ideas,
             skills,
-            teamsExperience,
+            teams,
             email: '',
             firstName: '',
             lastName: '',
@@ -294,7 +294,7 @@ const useProfilesStore = defineStore('profiles', {
         const currentProfile = this.profiles.find(({ id }) => id === userId)
 
         if (currentProfile) {
-          currentProfile.teamsExperience.push(teamExperience)
+          currentProfile.teams.push(teamExperience)
         }
       }
     },
@@ -308,7 +308,7 @@ const useProfilesStore = defineStore('profiles', {
         const currentProfile = this.profiles.find((profile) => profile.id === userId)
 
         if (currentProfile) {
-          const currentTeamExperience = currentProfile.teamsExperience.find(
+          const currentTeamExperience = currentProfile.teams.find(
             (team) =>
               team.teamId === teamId && team.userId === userId && !team.finishDate,
           )
