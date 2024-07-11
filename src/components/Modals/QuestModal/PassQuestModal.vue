@@ -44,15 +44,17 @@ const currentIndicatorIndex = ref<number | null>(null)
 
 const teamProfilesRef = ref<UsersQuestStat[]>([])
 
-const indicators = computed(() => {
+const indicators = ref<Indicator[]>([])
+
+const makeIndicators = () => {
   const questIndicators = questTemplate.value?.indicators
   const token = user.value?.token
   if (!token) return
 
   const personalIndicators: Indicator[] = []
+  const userRole = user.value?.role
 
   questIndicators?.forEach(async (indicator) => {
-    const userRole = user.value?.role
     if (indicator.role != userRole) return
 
     if (indicator.type != 'MEMBER') {
@@ -75,8 +77,8 @@ const indicators = computed(() => {
     })
   })
 
-  return personalIndicators
-})
+  indicators.value = personalIndicators
+}
 
 const currentIndicator = computed(() => {
   if (currentIndicatorIndex.value == null || !indicators.value) return undefined
@@ -116,6 +118,7 @@ onMounted(async () => {
   )?.idQuestTemplate
   if (!idQuestTemplate) return
   await questTemplatesStore.getQuestTemplate(idQuestTemplate, token)
+  makeIndicators()
 })
 
 const teamOfUser = computed<TeamQuestStat>(() => {
