@@ -1,6 +1,6 @@
 <template>
   <Table
-    :data="profile?.teams ?? []"
+    :data="profile?.teamsExperience ?? []"
     :columns="teamExperienceColumns"
     :search-by="['teamName']"
     :dropdown-actions-menu="dropdownTeamsActions"
