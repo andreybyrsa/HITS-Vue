@@ -33,7 +33,7 @@ const useProfilesStore = defineStore('profiles', {
         }
 
         // Обработка ответа, содержащего идеи и компетенции
-        const { ideas, skills } = response
+        const { ideas, skills, teamsExperience } = response
 
         const profile = this.profiles.find((profile) => profile.id === userId)
         if (profile) {
@@ -44,7 +44,7 @@ const useProfilesStore = defineStore('profiles', {
             id: userId,
             ideas,
             skills,
-            teamsExperience: [],
+            teamsExperience,
             email: '',
             firstName: '',
             lastName: '',

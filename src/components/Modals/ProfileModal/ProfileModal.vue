@@ -116,7 +116,7 @@ function handleCloseProfileModal() {
 
             <ProfileIdeas />
 
-            <!-- <ProfilePortfolio /> -->
+            <ProfilePortfolio />
           </div>
         </div>
       </div>
