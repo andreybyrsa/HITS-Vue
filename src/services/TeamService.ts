@@ -64,7 +64,7 @@ function leaveFromTeamTeamMember(teamId: string, teamMemberId: string) {
 
 // function finishTeamExperience(teamId: string, teamMemberId: string) {
 //   const currentProfile = profilesMocks.find(({ id }) => id === teamMemberId)
-//   const currentTeamExperience = currentProfile?.teamsExperience.find(
+//   const currentTeamExperience = currentProfile?.teams.find(
 //     (experience) => experience.teamId === teamId && experience.finishDate === null,
 //   )
 //   const currentTeamProject = currentProfile?.teamsProjects.find(
@@ -94,7 +94,7 @@ function createTeamExperince(userId: string, teamId: string) {
       hasActiveProject: false,
     }
 
-    currentProfile.teamsExperience.push(newTeamExperience)
+    currentProfile.teams.push(newTeamExperience)
   }
 }
 
