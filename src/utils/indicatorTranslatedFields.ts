@@ -27,11 +27,11 @@ export const getIndicatorFieldsInfo = (): GetIndicatorFieldsType => {
       TEACHER: 'Оценка преподавателя',
     },
     indicatorTranslatedTypesForPassQuestModal: {
-      TEAM: 'команды',
-      INITIATOR: 'инициатора',
-      MEMBER: 'участников команды',
-      TEAM_LEADER: 'тимлида',
-      TEACHER: 'преподавателя',
+      TEAM: 'с командой',
+      INITIATOR: 'с инициатором',
+      MEMBER: 'с участниками команды',
+      TEAM_LEADER: 'с тимлидом',
+      TEACHER: 'с преподавателем',
     },
     indicatorRoles: ['INITIATOR', 'MEMBER', 'TEACHER', 'TEAM_LEADER'],
     indicatorTranslatedRoles: {
