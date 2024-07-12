@@ -93,6 +93,11 @@ const launchQuestsTableDropdownMenuAction: DropdownMenuAction<QuestStat>[] = [
     statement: (questStat: QuestStat) => canPassQuest(questStat),
     click: (quest: QuestStat) => navigateToQuestModal(quest),
   },
+  {
+    label: 'Удалить опрос',
+    statement: isProjectOffice,
+    click: (quest: QuestStat) => deleteQuest(quest),
+  },
 ]
 
 const getFormatProgress = (progress: string) => {
@@ -109,6 +114,13 @@ const downloadQuestResults = async (idQuest: string) => {
   const token = user.value?.token
   if (!token) return
   await questResultsStore.downloadResults(idQuest, token)
+}
+
+const deleteQuest = async (quest: QuestStat) => {
+  const token = user.value?.token
+  if (!token) return
+
+  await questStore.deleteQuest(quest.idQuest, token)
 }
 
 const navigateToQuestModal = (quest: QuestStat) => {
