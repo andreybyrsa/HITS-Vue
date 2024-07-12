@@ -72,7 +72,7 @@ const makeIndicators = () => {
         ...structuredClone(indicator),
         idToUser: profile.id,
       }
-      newIndicator.name += ` ${profile.name}`
+      newIndicator.name += ` с ${profile.name}`
       personalIndicators.push(newIndicator)
     })
   })
