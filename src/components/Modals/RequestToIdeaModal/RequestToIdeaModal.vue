@@ -58,7 +58,10 @@ watch(
           request: () => requestsToIdeaStore.getRequestsToIdea(id, token),
           refValue: requestTeams,
           statement:
-            role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',
+            role === 'INITIATOR' ||
+            role === 'TEAM_OWNER' ||
+            role === 'TEAM_LEADER' ||
+            role === 'ADMIN',
           onErrorFunc: openErrorNotification,
         },
       ]

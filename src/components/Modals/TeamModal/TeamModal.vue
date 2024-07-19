@@ -69,13 +69,21 @@ onMounted(async () => {
       {
         request: () => requestsToTeamStore.getRequestsToTeam(id, token),
         refValue: requestsToTeam,
-        statement: role === 'TEAM_OWNER' || role === 'MEMBER' || role === 'ADMIN',
+        statement:
+          role === 'TEAM_OWNER' ||
+          role === 'TEAM_LEADER' ||
+          role === 'MEMBER' ||
+          role === 'ADMIN',
         onErrorFunc: openErrorNotification,
       },
       {
         request: () => invitatinUsers.getInvitationUsers(id, token),
         refValue: teamInvitations,
-        statement: role === 'TEAM_OWNER' || role === 'MEMBER' || role === 'ADMIN',
+        statement:
+          role === 'TEAM_OWNER' ||
+          role === 'TEAM_LEADER' ||
+          role === 'MEMBER' ||
+          role === 'ADMIN',
         onErrorFunc: openErrorNotification,
       },
       {
@@ -83,6 +91,7 @@ onMounted(async () => {
         refValue: requestsTeamsToIdea,
         statement:
           role === 'TEAM_OWNER' ||
+          role === 'TEAM_LEADER' ||
           role === 'MEMBER' ||
           role === 'PROJECT_OFFICE' ||
           role === 'INITIATOR' ||

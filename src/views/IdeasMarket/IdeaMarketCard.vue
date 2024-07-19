@@ -98,7 +98,7 @@ const handleConvertIdeaToProject = async () => {
 
 function checkIdeaOwned() {
   return (
-    user.value?.role === 'TEAM_OWNER' &&
+    (user.value?.role === 'TEAM_OWNER' || user.value?.role === 'TEAM_LEADER') &&
     props.ideaMarket.status === 'RECRUITMENT_IS_OPEN'
   )
 }

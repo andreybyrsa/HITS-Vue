@@ -56,9 +56,13 @@ const currentInvitation = ref<InvitationTeamToIdea>()
 function getAccessToEdit() {
   if (user.value) {
     const { id, role } = user.value
-    const { owner } = props.team
+    const { owner, leader } = props.team
 
-    return role === 'ADMIN' || (id === owner.id && role === 'TEAM_OWNER')
+    return (
+      role === 'ADMIN' ||
+      (id === owner.id && role === 'TEAM_OWNER') ||
+      (id === leader?.id && role === 'TEAM_LEADER')
+    )
   }
 }
 
@@ -80,9 +84,13 @@ function getAccessToDelete() {
 function getAccessToInvite() {
   if (user.value) {
     const { id, role } = user.value
-    const { owner } = props.team
+    const { owner, leader } = props.team
 
-    return role === 'ADMIN' || (id === owner.id && role === 'TEAM_OWNER')
+    return (
+      role === 'ADMIN' ||
+      (id === owner.id && role === 'TEAM_OWNER') ||
+      (id === leader?.id && role === 'TEAM_LEADER')
+    )
   }
 }
 

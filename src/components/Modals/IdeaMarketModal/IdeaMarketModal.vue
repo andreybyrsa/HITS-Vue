@@ -78,7 +78,11 @@ onMounted(async () => {
       {
         request: () => requestsToIdeaStore.getRequestsToIdea(ideaMarketId, token),
         refValue: requestTeams,
-        statement: role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',
+        statement:
+          role === 'INITIATOR' ||
+          role === 'TEAM_OWNER' ||
+          role === 'TEAM_LEADER' ||
+          role === 'ADMIN',
         onErrorFunc: openErrorNotification,
       },
       {
@@ -145,7 +149,10 @@ function getAccessRequestToIdea() {
     const { role } = currentUser
     const { status } = ideaMarket.value
 
-    return role === 'TEAM_OWNER' && status === 'RECRUITMENT_IS_OPEN'
+    return (
+      (role === 'TEAM_OWNER' || role === 'TEAM_LEADER') &&
+      status === 'RECRUITMENT_IS_OPEN'
+    )
   }
 }
 
