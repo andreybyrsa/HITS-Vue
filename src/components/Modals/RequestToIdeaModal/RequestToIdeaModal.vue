@@ -51,7 +51,8 @@ watch(
         {
           request: () => TeamService.getOwnerTeams(id, token),
           refValue: ownerTeams,
-          statement: role === 'TEAM_OWNER' || role === 'ADMIN',
+          statement:
+            role === 'TEAM_OWNER' || role === 'ADMIN' || role === 'TEAM_LEADER',
           onErrorFunc: openErrorNotification,
         },
         {

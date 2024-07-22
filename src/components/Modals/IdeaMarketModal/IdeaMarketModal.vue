@@ -95,7 +95,8 @@ onMounted(async () => {
       {
         request: () => TeamService.getOwnerTeams(userId, token),
         refValue: ownerTeams,
-        statement: role === 'TEAM_OWNER' || role === 'ADMIN',
+        statement:
+          role === 'TEAM_OWNER' || role === 'ADMIN' || role === 'TEAM_LEADER',
         onErrorFunc: openErrorNotification,
       },
       {
