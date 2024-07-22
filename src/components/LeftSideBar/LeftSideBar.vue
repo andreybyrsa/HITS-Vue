@@ -76,6 +76,7 @@ function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
       'INITIATOR',
       'MEMBER',
       'TEAM_OWNER',
+      'TEAM_LEADER',
       'PROJECT_OFFICE',
       'ADMIN',
       'TEACHER',

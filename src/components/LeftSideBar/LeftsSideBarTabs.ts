@@ -88,6 +88,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       'INITIATOR',
       'MEMBER',
       'TEAM_OWNER',
+      'TEAM_LEADER',
       'PROJECT_OFFICE',
       'ADMIN',
       'TEACHER',
