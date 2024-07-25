@@ -453,7 +453,7 @@ const changeRoleForTeamLead = async (
 ): Promise<Success | Error> => {
   return teamsAxios
     .putNoRequestBody<Success>(
-      `/api/v1/authorization-service/profile/leader/${teamLeaderID}/${userId.userId}`,
+      `/api/v1/authorization-service/profile/leader/${teamLeaderID}/${userId.id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
