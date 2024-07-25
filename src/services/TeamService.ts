@@ -447,10 +447,16 @@ const appointLeaderTeam = async (
 }
 
 const changeRoleForTeamLead = async (
-  teamLeaderID: string,
   userId: TeamMember,
   token: string,
 ): Promise<Success | Error> => {
+  const currentUserStore = useUserStore()
+  const teamLeaderID = currentUserStore.user?.id
+
+  if (!teamLeaderID) {
+    throw new Error('Ошибка вывода информации о пользователе')
+  }
+
   return teamsAxios
     .putNoRequestBody<Success>(
       `/api/v1/authorization-service/profile/leader/${teamLeaderID}/${userId.id}`,

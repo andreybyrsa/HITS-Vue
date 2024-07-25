@@ -112,11 +112,7 @@ const useTeamStore = defineStore('teams', {
 
     async changeTeamLead(teamLeaderID: string, userId: TeamMember, token: string) {
       const { id: userID } = userId
-      const response = await TeamService.changeRoleForTeamLead(
-        teamLeaderID,
-        userId,
-        token,
-      )
+      const response = await TeamService.changeRoleForTeamLead(userId, token)
 
       if (response instanceof Error) {
         useNotificationsStore().createSystemNotification('Система', response.message)
