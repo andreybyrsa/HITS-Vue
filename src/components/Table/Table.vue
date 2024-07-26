@@ -359,6 +359,11 @@ const collapseIds = computed(() => {
               >
                 <div :class="`${column.contentClassName ?? ''} d-flex`">
                   {{ column.label }}
+                  <Icon
+                    v-if="column.headerCellClick"
+                    class-name="table__row-icon ms-1 bi bi-chevron-down text-secondary"
+                    @click="column.headerCellClick"
+                  />
                 </div>
               </th>
 
