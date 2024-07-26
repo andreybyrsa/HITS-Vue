@@ -57,14 +57,14 @@ const { handleSubmit, setValues, values } = useForm<{
 })
 
 const filteredBacklogIndicators = computed(() => {
-  const searchValue = values.backlogSearchValue
+  let searchValue = values.backlogSearchValue
   if (!searchValue) return backlogIndicators.value
-  searchValue.toLowerCase()
+  searchValue = searchValue.toLowerCase()
 
   return backlogIndicators.value.filter(
     (indicator) =>
       indicator.name.toLowerCase().includes(searchValue) ||
-      indicatorTypeFromTranslatedType(searchValue).includes(indicator.type),
+      indicatorTypeFromTranslatedType(searchValue),
   )
 })
 
@@ -76,7 +76,7 @@ const filteredNewQuestIndicators = computed(() => {
   return newQuestIndicators.value.filter(
     (indicator) =>
       indicator.name.toLowerCase().includes(searchValue) ||
-      indicatorTypeFromTranslatedType(searchValue).includes(indicator.type),
+      indicatorTypeFromTranslatedType(searchValue),
   )
 })
 

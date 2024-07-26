@@ -62,26 +62,27 @@ export const indicatorRoleSelectOptions: OptionType[] =
 
 export const indicatorTypeFromTranslatedType = (
   translatedType: string,
-): IndicatorType => {
-  const { indicatorTranslatedTypesForIndicatorModal: translatedIndicatorTypes } =
-    getIndicatorFieldsInfo()
-  const entry = Object.entries(translatedIndicatorTypes).find(
-    ([key, value]) => value === translatedType,
-  ) as any
-  return entry[0] as IndicatorType
+): IndicatorType | void => {
+  if ('Оценка команды'.toLowerCase().includes(translatedType)) return 'TEAM'
+  if ('Оценка инициатора'.toLowerCase().includes(translatedType)) return 'INITIATOR'
+  if ('Оценка участников команд'.toLowerCase().includes(translatedType))
+    return 'MEMBER'
+  if ('Оценка тимлида'.toLowerCase().includes(translatedType)) return 'TEAM_LEADER'
+  if ('Оценка преподавателя'.toLowerCase().includes(translatedType)) return 'TEACHER'
+  return
 }
 
-export const findStatusesByTranslatedStatus = (
-  translatedStatus: string,
-): string[] => {
-  if (!translatedStatus) return []
-  return getIndicatorFieldsInfo()
-    .indicatorTypes.map(
-      (type) =>
-        getIndicatorFieldsInfo().indicatorTranslatedTypesForIndicatorModal[type],
-    )
-    .filter((indicatorTranslatedType) =>
-      indicatorTranslatedType.toLowerCase().includes(translatedStatus.toLowerCase()),
-    )
-    .map((value) => indicatorTypeFromTranslatedType(value))
-}
+// export const findStatusesByTranslatedStatus = (
+//   translatedStatus: string,
+// ): string[] => {
+//   if (!translatedStatus) return []
+//   return getIndicatorFieldsInfo()
+//     .indicatorTypes.map(
+//       (type) =>
+//         getIndicatorFieldsInfo().indicatorTranslatedTypesForIndicatorModal[type],
+//     )
+//     .filter((indicatorTranslatedType) =>
+//       indicatorTranslatedType.toLowerCase().includes(translatedStatus.toLowerCase()),
+//     )
+//     .map((value) => indicatorTypeFromTranslatedType(value))
+// }
