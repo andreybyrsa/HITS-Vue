@@ -446,6 +446,30 @@ const appointLeaderTeam = async (
     .catch((error) => handleAxiosError(error, 'Ошибка назначения лидера'))
 }
 
+const changeRoleForTeamLead = async (
+  userId: TeamMember,
+  token: string,
+): Promise<Success | Error> => {
+  const currentUserStore = useUserStore()
+  const teamLeaderID = currentUserStore.user?.id
+
+  if (!teamLeaderID) {
+    throw new Error('Ошибка вывода информации о пользователе')
+  }
+
+  return teamsAxios
+    .putNoRequestBody<Success>(
+      `/api/v1/authorization-service/profile/leader/${teamLeaderID}/${userId.id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+      { params: { id: teamLeaderID }, requestData: { leader: userId } },
+    )
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка назначения лидера'))
+}
+
 const updateRequestToTeamStatus = async (
   requestId: string,
   teamId: string,
@@ -629,6 +653,7 @@ const TeamService = {
   updateRequestToTeamStatus,
   updateInvitationToTeamStatus,
   appointLeaderTeam,
+  changeRoleForTeamLead,
   finishTeamExperience,
   finishTeamProject,
 

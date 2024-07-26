@@ -51,14 +51,18 @@ watch(
         {
           request: () => TeamService.getOwnerTeams(id, token),
           refValue: ownerTeams,
-          statement: role === 'TEAM_OWNER' || role === 'ADMIN',
+          statement:
+            role === 'TEAM_OWNER' || role === 'ADMIN' || role === 'TEAM_LEADER',
           onErrorFunc: openErrorNotification,
         },
         {
           request: () => requestsToIdeaStore.getRequestsToIdea(id, token),
           refValue: requestTeams,
           statement:
-            role === 'INITIATOR' || role === 'TEAM_OWNER' || role === 'ADMIN',
+            role === 'INITIATOR' ||
+            role === 'TEAM_OWNER' ||
+            role === 'TEAM_LEADER' ||
+            role === 'ADMIN',
           onErrorFunc: openErrorNotification,
         },
       ]

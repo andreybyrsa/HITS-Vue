@@ -60,7 +60,6 @@ const filteredBacklogIndicators = computed(() => {
   let searchValue = values.backlogSearchValue
   if (!searchValue) return backlogIndicators.value
   searchValue = searchValue.toLowerCase()
-
   return backlogIndicators.value.filter(
     (indicator) =>
       indicator.name.toLowerCase().includes(searchValue) ||

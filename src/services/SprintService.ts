@@ -144,17 +144,13 @@ const finishSprint = async (
   }
 
   return axios
-    .put<Success>(
-      `${process.env.VUE_APP_BACKEND_URL}/scrum-service/sprint/finish/${sprintId}`,
-      report,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'text/plain;charset=UTF-8',
-        },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    .put<Success>(`/api/v1/scrum-service/sprint/finish/${sprintId}`, report, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'text/plain;charset=UTF-8',
       },
-    )
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка изменения статуса проекта'))
 }

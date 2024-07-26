@@ -83,7 +83,7 @@ const dropdownTeamMemberActions: DropdownMenuAction<TeamMember>[] = [
     label: 'Назначить лидером',
     className: 'text-primary',
     statement: checkManageMemberDropdownAction,
-    click: appointLeaderTeam,
+    click: appointAndChangeTeamLead,
   },
   {
     label: 'Снять роль лидера',
@@ -162,6 +162,22 @@ async function appointLeaderTeam(teamMember: TeamMember) {
 
     await teamsStore.changeLeaderTeamMember(id, teamMember, token)
   }
+}
+
+async function changeTeamLeadRole(teamMember: TeamMember) {
+  const currentUser = user.value
+
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const { id } = props.team
+
+    await teamsStore.changeTeamLead(id, teamMember, token)
+  }
+}
+
+async function appointAndChangeTeamLead(teamMember: TeamMember) {
+  await appointLeaderTeam(teamMember)
+  await changeTeamLeadRole(teamMember)
 }
 
 async function switchLeaderToOwner() {

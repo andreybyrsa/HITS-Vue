@@ -79,10 +79,11 @@ function getNavLinkStyle(isCurrentTable: boolean) {
 
 function getAccessToViewTable() {
   const currentUser = user.value
-  const { owner } = props.team
+  const { owner, leader } = props.team
 
   return (
     (currentUser?.id === owner.id && currentUser.role === 'TEAM_OWNER') ||
+    (currentUser?.id === leader?.id && currentUser?.role === 'TEAM_LEADER') ||
     currentUser?.role === 'ADMIN'
   )
 }
