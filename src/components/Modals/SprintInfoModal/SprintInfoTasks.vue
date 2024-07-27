@@ -1,13 +1,12 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { debounce } from 'lodash-es'
 
 import { SprintInfoTasksProps } from '@Components/Modals/SprintInfoModal/SprintInfoModal.types'
-
 import Input from '@Components/Inputs/Input/Input.vue'
 import ComboBox from '@Components/Inputs/Combobox/Combobox.vue'
 import Icon from '@Components/Icon/Icon.vue'
-
 import useTagsStore from '@Store/tags/tagsStore'
 import { Tag } from '@Domain/Tag'
 import { ProjectMember, Task } from '@Domain/Project'
@@ -20,34 +19,37 @@ const currentTask = defineModel<Task>()
 
 const choosenTags = ref<Tag[]>([])
 const choosenInitiator = ref<ProjectMember>()
-const searchedTasks = ref<string>()
+const searchedTasks = ref<string>('')
 
-const tasksSprint = computed<Task[]>(() => {
-  const arraytask = ref<Task[]>(props.tasks)
+const filteredTasks = ref<Task[]>(props.tasks)
+
+const updateFilteredTasks = debounce(() => {
+  let arraytask = [...props.tasks]
 
   if (choosenTags.value.length) {
-    arraytask.value = arraytask.value.filter((task) =>
-      task.tags.find((tag) => choosenTags.value.find(({ id }) => id === tag.id)),
+    arraytask = arraytask.filter((task) =>
+      task.tags.some((tag) => choosenTags.value.some(({ id }) => id === tag.id)),
     )
   }
 
   if (searchedTasks.value) {
     const lowercaseSearch = searchedTasks.value.toLowerCase().trim()
-
-    arraytask.value = arraytask.value.filter((task) => {
-      const ideaName = task.name.toLowerCase().trim()
-
-      return ideaName.includes(lowercaseSearch)
-    })
+    arraytask = arraytask.filter((task) =>
+      task.name.toLowerCase().includes(lowercaseSearch),
+    )
   }
 
   if (choosenInitiator.value) {
-    arraytask.value = arraytask.value.filter(
+    arraytask = arraytask.filter(
       ({ initiator }) => initiator.id === choosenInitiator.value?.userId,
     )
   }
 
-  return arraytask.value
+  filteredTasks.value = arraytask
+}, 300)
+
+watch([choosenTags, searchedTasks, choosenInitiator], updateFilteredTasks, {
+  immediate: true,
 })
 
 function confirmedTags(tagsValue: Tag[]) {
@@ -55,13 +57,13 @@ function confirmedTags(tagsValue: Tag[]) {
 }
 
 function hexToRgb(hex: string) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  return (
-    result &&
-    `${parseInt(result[1], 16)},
-        ${parseInt(result[2], 16)},
-        ${parseInt(result[3], 16)}`
-  )
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
+        result[3],
+        16,
+      )}`
+    : null
 }
 
 function chooseTask(task: Task) {
@@ -69,19 +71,14 @@ function chooseTask(task: Task) {
 }
 
 function checkChooseTask(task: Task) {
-  const currentTaskId = currentTask.value?.id
-
-  if (currentTaskId) {
-    if (currentTaskId === task.id) return ['border-primary']
-    return ['opacity-50']
-  }
+  return currentTask.value?.id === task.id ? ['border-primary'] : ['opacity-50']
 }
 </script>
 
 <template>
   <div class="d-flex flex-column gap-3 w-100 h-100">
     <div class="border-bottom w-100 fs-5 text-primary">
-      Задачи: {{ tasksSprint.length }}
+      Задачи: {{ filteredTasks.length }}
     </div>
     <div class="d-flex flex-column gap-2 border-bottom pb-3 w-100">
       <Input
@@ -124,7 +121,7 @@ function checkChooseTask(task: Task) {
     </div>
     <div class="d-flex flex-column gap-2 w-100 overflow-y-scroll">
       <div
-        v-for="(task, index) in tasksSprint"
+        v-for="(task, index) in filteredTasks"
         :key="index"
         class="cursor-pointer"
         @click="chooseTask(task)"
