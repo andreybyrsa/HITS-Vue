@@ -168,7 +168,7 @@ watch(
           class="edit-task-model__left-side"
           :style="{
             maxHeight:
-              user.role === 'TEAM_LEADER' || user.id === props.task.executor?.id
+              user?.role === 'TEAM_LEADER' || user?.id === props.task.executor?.id
                 ? '410.21px'
                 : '372.44px',
           }"
@@ -398,7 +398,8 @@ watch(
               <div
                 class="px-2 mt-2"
                 v-if="
-                  user.id === props.task.executor?.id || user.role === 'TEAM_LEADER'
+                  user?.id === props.task.executor?.id ||
+                  user?.role === 'TEAM_LEADER'
                 "
               >
                 <Button

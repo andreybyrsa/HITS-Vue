@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { debounce } from 'lodash-es'
 
@@ -41,7 +41,7 @@ const updateFilteredTasks = debounce(() => {
 
   if (choosenInitiator.value) {
     arraytask = arraytask.filter(
-      ({ initiator }) => initiator.id === choosenInitiator.value?.userId,
+      ({ executor }) => executor?.id === choosenInitiator.value?.userId,
     )
   }
 
