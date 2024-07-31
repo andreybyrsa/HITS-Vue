@@ -139,6 +139,7 @@ const revokeToken = async () => {
 
   const payload = new FormData()
   payload.append('token', token)
+  console.log(token)
 
   try {
     await axios.post('/oauth2/revoke', payload, {
