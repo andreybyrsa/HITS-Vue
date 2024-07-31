@@ -117,12 +117,10 @@ const getTokenInfo = async () => {
 
   const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY) || ''
 
-  const payload = new FormData()
-  payload.append('token', token)
-  console.log(payload)
-
-  for (const [key, value] of payload.entries()) {
-    console.log(`${key}: ${value}`)
+  // const payload = new FormData()
+  // payload.append('token', token)
+  const payload = {
+    token: token,
   }
 
   try {
