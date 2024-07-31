@@ -119,11 +119,11 @@ const getTokenInfo = async () => {
 
   const payload = new FormData()
   payload.append('token', token)
+  console.log(token)
 
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
-        'Content-type': 'multipart/form-data',
         Authorization: authHeaderValue,
       },
     })
@@ -139,7 +139,6 @@ const revokeToken = async () => {
 
   const payload = new FormData()
   payload.append('token', token)
-  console.log(token)
 
   try {
     await axios.post('/oauth2/revoke', payload, {
