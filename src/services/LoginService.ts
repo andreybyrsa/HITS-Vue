@@ -119,7 +119,7 @@ const getTokenInfo = async () => {
 
   const payload = new FormData()
   payload.append('token', token)
-  console.log(token)
+  console.log(payload)
 
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
