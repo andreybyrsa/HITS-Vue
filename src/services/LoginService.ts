@@ -129,6 +129,7 @@ const getTokenInfo = async () => {
     return response.data.user
   } catch (error) {
     console.error('Ошибка при получении информации о токене: ' + error)
+    return new Error('Сессия истекла')
   }
 }
 
