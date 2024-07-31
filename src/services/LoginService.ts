@@ -120,9 +120,6 @@ const getTokenInfo = async () => {
   const payload = new FormData()
   payload.append('token', token)
 
-  console.log(payload.get('token'))
-  console.log(payload)
-
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
@@ -132,7 +129,6 @@ const getTokenInfo = async () => {
     return response.data.user
   } catch (error) {
     console.error('Ошибка при получении информации о токене: ' + error)
-    return new Error('Сессия истекла')
   }
 }
 
