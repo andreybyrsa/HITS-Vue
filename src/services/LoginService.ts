@@ -121,6 +121,10 @@ const getTokenInfo = async () => {
   payload.append('token', token)
   console.log(payload)
 
+  for (const [key, value] of payload.entries()) {
+    console.log(`${key}: ${value}`)
+  }
+
   try {
     const response = await axios.post('/oauth2/introspect', payload, {
       headers: {
