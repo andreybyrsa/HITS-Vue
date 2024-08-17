@@ -168,6 +168,13 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
       'TEACHER',
     ],
   },
+  {
+    name: 'tests',
+    text: 'Тесты',
+    to: '/tests',
+    iconName: 'bi bi-clipboard',
+    roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'],
+  },
 ]
 
 export default leftSideBarTabs

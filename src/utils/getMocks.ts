@@ -29,6 +29,7 @@ import {
 import { Tag } from '@Domain/Tag'
 import { InvitationTeamToIdea } from '@Domain/InvitationTeamToIdea'
 import { AverageMark } from '@Domain/ReportProjectMembers'
+import { Test, TestQuestion, TestAnswer, TestResult } from '@Domain/Test'
 
 export const usersMocks: User[] = [
   {
@@ -2107,5 +2108,394 @@ export const taskMovementLogMocks: TaskMovementLog[] = [
     endDate: '',
     wastedTime: '',
     status: 'Done',
+  },
+]
+export const testMocks: Test[] = [
+  {
+    id: '1',
+    testName: 'BelbinTest',
+    name: 'ТЕСТ БЕЛБИНА',
+    description:
+      'Состоит из 7 отдельных блоков по 8 вопросов или утверждений, с которыми вы можете согласиться или не согласиться. 	На каждый блок у Вас есть 10 очков. Присваивать очки можно не больше, чем 3м, утверждениям в блоке. При этом одному предложению можно присвоить минимум 2 очка. Если Вы согласны с каким-либо утверждением на все 100%, Вы можете отдать ему все 10 очков. Строго 10 нужно распоеделить.',
+  },
+  {
+    id: '2',
+    testName: 'TemperTest',
+    name: 'Тест на тип темперамента',
+    description:
+      'Вам предлагается ответить на 57 вопросов. Вопросы направлены на выявление вашего обычного способа поведения. Постарайтесь представить типичные ситуации и дайте первый «естественный» ответ, который придет вам в голову. Отвечайте быстро и точно. Помните, что нет «хороших» или «плохих» ответов. Если вы согласны с утверждением, поставьте рядом с его номером знак + (да), если нет — знак — (нет).',
+  },
+  {
+    id: '3',
+    testName: 'MindTest',
+    name: 'Тест на стиль мышления',
+    description:
+      'Данный опросник предназначен для того, чтобы помочь Вам определить предпочитаемый Вами способ мышления, а также манеру задавать вопросы и принимать решения. Среди предлагаемых Вам на выбор ответов нет правильных или неправильных. Максимум полезной информации Вы получите в том случае, если будете, как можно точнее сообщать об особенность Вашего реального мышления, а не о том, как, по-вашему, следовало бы мыслить. Каждый пункт данного опросника состоит из утверждения, за которым следует пять его возможных окончаний. Ваша задача – указать ту степень, в которой каждое окончание применимо к Вам. На бланке ответов напротив каждого окончания проставьте номера: 5, 4, 3, 2, или 1, указывающие на ту степень, в какой данное окончание применимо к Вам: от 5 (более всего подходит) до 1 (менее всего подходит). Каждый номер (балл) должен быть использован только один раз (!!!) в группе из пяти окончаний. ( Всего таких групп в опроснике 18). Даже если 2 окончания (или больше) в одной группе покажутся одинаково применимы к Вам, все-таки постарайтесь их упорядочить. Имейте ввиду, что для каждой группы каждый балл (5, 4, 3, 2 или 1) нельзя использовать более одного раза.',
+  },
+]
+export const testQuestionsMocks: TestQuestion[] = [
+  {
+    id: '111',
+    testName: 'BelbinTest',
+    questionNumber: 1,
+    questionName: 'КАКОЙ ВКЛАД Я МОГУ ВНЕСТИ В РАБОТУ КОМАНДЫ?',
+    questionModuleNumber: 1,
+    questionModule: 'Блок 1',
+    question:
+      'Я думаю, что я в состоянии быстро воспринимать и использовать новые возможности',
+  },
+  {
+    id: '112',
+    testName: 'BelbinTest',
+    questionNumber: 2,
+    questionName: 'КАКОЙ ВКЛАД Я МОГУ ВНЕСТИ В РАБОТУ КОМАНДЫ?',
+    questionModuleNumber: 1,
+    questionModule: 'Блок 1',
+    question: 'Я легко кооперируюсь с людьми разных типов',
+  },
+  {
+    id: '1165782',
+    testName: 'BelbinTest',
+    questionNumber: 3,
+    questionName: 'КАКОЙ ВКЛАД Я МОГУ ВНЕСТИ В РАБОТУ КОМАНДЫ?',
+    questionModuleNumber: 1,
+    questionModule: 'Блок 1',
+    question: 'Один из моих главных активов – продуцировать новые идеи',
+  },
+  {
+    id: '1182',
+    testName: 'BelbinTest',
+    questionNumber: 4,
+    questionName: 'КАКОЙ ВКЛАД Я МОГУ ВНЕСТИ В РАБОТУ КОМАНДЫ?',
+    questionModuleNumber: 1,
+    questionModule: 'Блок 1',
+    question:
+      'Я способен вовлекать людей, которые, по моему мнению, могут сделать большой вклад в достижение групповых целей',
+  },
+  {
+    id: '65782',
+    testName: 'BelbinTest',
+    questionNumber: 5,
+    questionName: 'КАКОЙ ВКЛАД Я МОГУ ВНЕСТИ В РАБОТУ КОМАНДЫ?',
+    questionModuleNumber: 1,
+    questionModule: 'Блок 1',
+    question:
+      'Мои личные способности позволяют эффективно доводить дело до самого конца',
+  },
+  {
+    id: '182',
+    testName: 'BelbinTest',
+    questionNumber: 6,
+    questionName: 'КАКОЙ ВКЛАД Я МОГУ ВНЕСТИ В РАБОТУ КОМАНДЫ?',
+    questionModuleNumber: 1,
+    questionModule: 'Блок 1',
+    question:
+      'Я не представляю себе даже временного снижения своей популярности, даже если это приведет к увеличению прибыли',
+  },
+  {
+    id: '12',
+    testName: 'BelbinTest',
+    questionNumber: 7,
+    questionName: 'КАКОЙ ВКЛАД Я МОГУ ВНЕСТИ В РАБОТУ КОМАНДЫ?',
+    questionModuleNumber: 1,
+    questionModule: 'Блок 1',
+    question: 'Обычно я чувствую, что реалистично и что дееспособно',
+  },
+  {
+    id: '17482',
+    testName: 'BelbinTest',
+    questionNumber: 8,
+    questionName: 'КАКОЙ ВКЛАД Я МОГУ ВНЕСТИ В РАБОТУ КОМАНДЫ?',
+    questionModuleNumber: 1,
+    questionModule: 'Блок 1',
+    question:
+      'Я способен предложить весомые аргументы в пользу другой линии действий, не провоцируя при этом предубеждений и предвзятости',
+  },
+  {
+    id: '113',
+    testName: 'BelbinTest',
+    questionNumber: 1,
+    questionName: 'ЧТО ХАРАКТЕРИЗУЕТ МЕНЯ КАК ЧЛЕНА КОМАНДЫ',
+    questionModuleNumber: 2,
+    questionModule: 'Блок 2',
+    question:
+      'Я чувствую себя неуютно на собраниях, даже если они четко структурированы и продуманно организованы',
+  },
+  {
+    id: '17613',
+    testName: 'BelbinTest',
+    questionNumber: 2,
+    questionName: 'ЧТО ХАРАКТЕРИЗУЕТ МЕНЯ КАК ЧЛЕНА КОМАНДЫ',
+    questionModuleNumber: 2,
+    questionModule: 'Блок 2',
+    question:
+      'Я склонен полагаться на людей, которые хорошо аргументируют свою точку зрения еще до того, как она была всесторонне обсуждена',
+  },
+  {
+    id: '114843',
+    testName: 'BelbinTest',
+    questionNumber: 3,
+    questionName: 'ЧТО ХАРАКТЕРИЗУЕТ МЕНЯ КАК ЧЛЕНА КОМАНДЫ',
+    questionModuleNumber: 2,
+    questionModule: 'Блок 2',
+    question: 'Когда группа обсуждает новые идеи, я склонен слишком много говорить',
+  },
+  {
+    id: '1143',
+    testName: 'BelbinTest',
+    questionNumber: 4,
+    questionName: 'ЧТО ХАРАКТЕРИЗУЕТ МЕНЯ КАК ЧЛЕНА КОМАНДЫ',
+    questionModuleNumber: 2,
+    questionModule: 'Блок 2',
+    question: 'Мои личные отношения мешают мне поддерживать коллег с энтузиазмом',
+  },
+  {
+    id: '3',
+    testName: 'BelbinTest',
+    questionNumber: 5,
+    questionName: 'ЧТО ХАРАКТЕРИЗУЕТ МЕНЯ КАК ЧЛЕНА КОМАНДЫ',
+    questionModuleNumber: 2,
+    questionModule: 'Блок 2',
+    question:
+      'Когда надо сделать какое-либо дело, некоторые люди считают, что я действую агрессивно и авторитарно',
+  },
+  {
+    id: '34781551',
+    testName: 'BelbinTest',
+    questionNumber: 6,
+    questionName: 'ЧТО ХАРАКТЕРИЗУЕТ МЕНЯ КАК ЧЛЕНА КОМАНДЫ',
+    questionModuleNumber: 2,
+    questionModule: 'Блок 2',
+    question:
+      'Я затрудняюсь брать на себя лидерскую роль, может потому, что слишком чувствителен к чувствам и настроениям группы',
+  },
+  {
+    id: '347',
+    testName: 'BelbinTest',
+    questionNumber: 7,
+    questionName: 'ЧТО ХАРАКТЕРИЗУЕТ МЕНЯ КАК ЧЛЕНА КОМАНДЫ',
+    questionModuleNumber: 2,
+    questionModule: 'Блок 2',
+    question:
+      'У меня есть склонность настолько увлекаться собственными идеями, что я забываю о том, что происходит вокруг',
+  },
+  {
+    id: '34565457',
+    testName: 'BelbinTest',
+    questionNumber: 8,
+    questionName: 'ЧТО ХАРАКТЕРИЗУЕТ МЕНЯ КАК ЧЛЕНА КОМАНДЫ',
+    questionModuleNumber: 2,
+    questionModule: 'Блок 2',
+    question:
+      'Мои коллеги считают, что я слишком забочусь о незначительных деталях и боюсь риска, что дело может быть испорчено',
+  },
+  {
+    id: '15114',
+    testName: 'BelbinTest',
+    questionNumber: 1,
+    questionName: 'КОГДА Я РАБОТАЮ С ДРУГИМИ НАД ПРОЕКТОМ',
+    questionModuleNumber: 3,
+    questionModule: 'Блок 3',
+    question:
+      'Я могу хорошо влиять на других людей, при этом, не оказывая на них сильного давления',
+  },
+  {
+    id: '155155',
+    testName: 'BelbinTest',
+    questionNumber: 2,
+    questionName: 'КОГДА Я РАБОТАЮ С ДРУГИМИ НАД ПРОЕКТОМ',
+    questionModuleNumber: 3,
+    questionModule: 'Блок 3',
+    question:
+      'Мое «шестое чувство» подсказывает  и  предохраняет меня от ошибок и инцидентов, которые иногда случаются из-за небрежности',
+  },
+  {
+    id: '166',
+    testName: 'BelbinTest',
+    questionNumber: 3,
+    questionName: 'КОГДА Я РАБОТАЮ С ДРУГИМИ НАД ПРОЕКТОМ',
+    questionModuleNumber: 3,
+    questionModule: 'Блок 3',
+    question:
+      'Во имя достижения главных целей, я готов ускорять события, не тратя время на обсуждения',
+  },
+
+  {
+    id: '111',
+    testName: 'BelbinTest',
+    questionNumber: 4,
+    questionName: 'КОГДА Я РАБОТАЮ С ДРУГИМИ НАД ПРОЕКТОМ',
+    questionModuleNumber: 3,
+    questionModule: 'Блок 3',
+    question: 'От меня всегда можно ожидать чего-либо оригинального',
+  },
+  {
+    id: '2',
+    testName: 'BelbinTest',
+    questionNumber: 5,
+    questionName: 'КОГДА Я РАБОТАЮ С ДРУГИМИ НАД ПРОЕКТОМ',
+    questionModuleNumber: 3,
+    questionModule: 'Блок 3',
+    question:
+      'Я всегда готов поддержать хорошее предложение, которое принесет выгоду всем',
+  },
+  {
+    id: '113',
+    testName: 'BelbinTest',
+    questionNumber: 6,
+    questionName: 'КОГДА Я РАБОТАЮ С ДРУГИМИ НАД ПРОЕКТОМ',
+    questionModuleNumber: 3,
+    questionModule: 'Блок 3',
+    question: 'Я постоянно отслеживаю  последние идеи и новейшие достижения',
+  },
+  {
+    id: '114',
+    testName: 'BelbinTest',
+    questionNumber: 7,
+    questionName: 'КОГДА Я РАБОТАЮ С ДРУГИМИ НАД ПРОЕКТОМ',
+    questionModuleNumber: 3,
+    questionModule: 'Блок 3',
+    question:
+      'Я думаю, что мои способности к  суждениям и оценкам могут внести большой вклад в принятие правильных решений',
+  },
+  {
+    id: '155',
+    testName: 'BelbinTest',
+    questionNumber: 8,
+    questionName: 'КОГДА Я РАБОТАЮ С ДРУГИМИ НАД ПРОЕКТОМ',
+    questionModuleNumber: 3,
+    questionModule: 'Блок 3',
+    question: 'На меня всегда можно положиться на завершающем этапе работы',
+  },
+  {
+    id: '166',
+    testName: 'BelbinTest',
+    questionNumber: 1,
+    questionName: 'МОЕ ОТНОШЕНИЕ И ИНТЕРЕС К ГРУППОВОЙ РАБОТЕ',
+    questionModuleNumber: 4,
+    questionModule: 'Блок 4',
+    question: 'Я искренне желаю узнать моих коллег получше',
+  },
+  {
+    id: '515165',
+    testName: 'BelbinTest',
+    questionNumber: 2,
+    questionName: 'МОЕ ОТНОШЕНИЕ И ИНТЕРЕС К ГРУППОВОЙ РАБОТЕ',
+    questionModuleNumber: 4,
+    questionModule: 'Блок 4',
+    question:
+      'Я не боюсь ни оспаривать точку зрения другого человека, ни остаться в меньшинстве',
+  },
+  {
+    id: '5115',
+    testName: 'BelbinTest',
+    questionNumber: 3,
+    questionName: 'МОЕ ОТНОШЕНИЕ И ИНТЕРЕС К ГРУППОВОЙ РАБОТЕ',
+    questionModuleNumber: 4,
+    questionModule: 'Блок 4',
+    question: 'Обычно я могу доказать несостоятельность неудачного предложения',
+  },
+  {
+    id: '64589745621',
+    testName: 'BelbinTest',
+    questionNumber: 4,
+    questionName: 'МОЕ ОТНОШЕНИЕ И ИНТЕРЕС К ГРУППОВОЙ РАБОТЕ',
+    questionModuleNumber: 4,
+    questionModule: 'Блок 4',
+    question:
+      'Я думаю, что я способен хорошо выполнить любую функцию ради выполнения общего плана',
+  },
+  {
+    id: '65151',
+    testName: 'BelbinTest',
+    questionNumber: 5,
+    questionName: 'МОЕ ОТНОШЕНИЕ И ИНТЕРЕС К ГРУППОВОЙ РАБОТЕ',
+    questionModuleNumber: 4,
+    questionModule: 'Блок 4',
+    question:
+      'Часто я избегаю очевидных решений и прихожу вместо этого к неожиданным решениям проблемы',
+  },
+  {
+    id: '4556',
+    testName: 'BelbinTest',
+    questionNumber: 6,
+    questionName: 'МОЕ ОТНОШЕНИЕ И ИНТЕРЕС К ГРУППОВОЙ РАБОТЕ',
+    questionModuleNumber: 4,
+    questionModule: 'Блок 4',
+    question: 'Я стремлюсь все что я делаю доводить до совершенства',
+  },
+  {
+    id: '89546123',
+    testName: 'BelbinTest',
+    questionNumber: 7,
+    questionName: 'МОЕ ОТНОШЕНИЕ И ИНТЕРЕС К ГРУППОВОЙ РАБОТЕ',
+    questionModuleNumber: 4,
+    questionModule: 'Блок 4',
+    question: 'Я готов использовать контакты вне группы',
+  },
+  {
+    id: '4521',
+    testName: 'BelbinTest',
+    questionNumber: 8,
+    questionName: 'МОЕ ОТНОШЕНИЕ И ИНТЕРЕС К ГРУППОВОЙ РАБОТЕ',
+    questionModuleNumber: 4,
+    questionModule: 'Блок 4',
+    question:
+      'Хотя я всегда открыт различным точкам зрения, я не испытываю трудностей при принятии решений',
+  },
+  {
+    id: '48715',
+    testName: 'BelbinTest',
+    questionNumber: 1,
+    questionName: 'Я ЧУВСТВУЮ УДОВЛЕТВОРЕНИЕ ОТ РАБОТЫ, ПОТОМУ ЧТО',
+    questionModuleNumber: 5,
+    questionModule: 'Блок 5',
+    question:
+      'Мне нравится анализировать ситуации и оценивать возможные направления деятельности',
+  },
+  {
+    id: '48551448',
+    testName: 'BelbinTest',
+    questionNumber: 1,
+    questionName: 'Я ЧУВСТВУЮ УДОВЛЕТВОРЕНИЕ ОТ РАБОТЫ, ПОТОМУ ЧТО',
+    questionModuleNumber: 6,
+    questionModule: 'Блок 6',
+    question: 'Я откладываю дело на время и размышляю над проблемой',
+  },
+  {
+    id: '4714',
+    testName: 'BelbinTest',
+    questionNumber: 1,
+    questionName: 'ПРОБЛЕМЫ, ВОЗНИКАЮЩИЕ ПРИ РАБОТЕ В ГРУППАХ',
+    questionModuleNumber: 7,
+    questionModule: 'Блок 7',
+    question:
+      'Я склонен выражать свое нетерпение по отношению к людям, которые стоят на пути развития прогресса (мешают)',
+  },
+]
+export const testAnswerMocks: TestAnswer[] = [
+  {
+    id: '456',
+    testName: 'BelbinTest',
+    user: usersMocks[2],
+    questionName: 'string',
+    questionModuleNumber: 1,
+    questionNumber: 4,
+    answer: '4',
+  },
+]
+
+export const testResultMocks: TestResult[] = [
+  {
+    id: '202',
+    user: usersMocks[0],
+    testName: 'BelbinTest',
+    result: 'Стратег',
+  },
+  {
+    id: '535',
+    user: usersMocks[1],
+    testName: 'BelbinTest',
+    result: 'Стратег',
   },
 ]

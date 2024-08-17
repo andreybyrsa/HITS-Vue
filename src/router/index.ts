@@ -46,6 +46,10 @@ import LocalStorageTelegramTag from '@Utils/LocalStorageTelegramTag'
 import useProfilesStore from '@Store/profiles/profilesStore'
 import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/ActiveSprintTaskModal.vue'
 
+import TestsView from '@Views/Tests/TestsView.vue'
+import TestModal from '@Components/Modals/TestModal/TestModal.vue'
+import PassTestView from '@Views/Tests/PassTestView.vue'
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -353,6 +357,34 @@ const routes: RouteRecordRaw[] = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: ForgotPasswordView,
+  },
+  {
+    path: '/tests',
+    name: 'tests',
+    redirect: { path: '/tests/list' },
+    meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+    children: [
+      {
+        path: 'list',
+        name: 'test-list',
+        meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+        component: TestsView,
+        children: [
+          {
+            path: ':testName',
+            name: 'test-modal',
+            meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+            component: TestModal,
+          },
+        ],
+      },
+      {
+        path: 'start-test/:testName',
+        name: 'start-test',
+        meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+        component: PassTestView,
+      },
+    ],
   },
   {
     path: '/dev',
