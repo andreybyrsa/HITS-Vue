@@ -176,6 +176,13 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
     iconName: 'bi bi-patch-question',
     roles: ['PROJECT_OFFICE', 'INITIATOR', 'TEAM_LEADER', 'MEMBER', 'TEACHER'],
   },
+  {
+    name: 'tests',
+    text: 'Тесты',
+    to: '/tests',
+    iconName: 'bi bi-clipboard',
+    roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'],
+  },
 ]
 
 export default leftSideBarTabs

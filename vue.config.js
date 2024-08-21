@@ -39,4 +39,7 @@ module.exports = defineConfig({
         }
       })
   },
+  devServer: {
+    port: 3000,
+  },
 })

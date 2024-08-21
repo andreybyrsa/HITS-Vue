@@ -1,0 +1,138 @@
+services:
+  gateway:
+    container_name: gateway
+    image: lexunok/gateway:latest
+    environment:
+      TZ: Europe/Yekaterinburg
+      GATEWAY: http://localhost #Поменять на прод hits1
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - 80:80
+    networks:
+      - global
+  quest-service:
+    container_name: quest-service
+    image: elishaflacon/quest-service:1.1.8
+    environment:
+      TZ: Europe/Yekaterinburg
+      APP_URL: 0.0.0.0:5000
+      APP_MODE: PRODUCTION
+      AMQP_URL_SERVER: amqp://guest:guest@message-broker:5672
+      AMQP_QUEUE_NAME: notification-create
+      AMQP_EXCHANGE: notification-service
+      POSTGRES_DB: quest
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: root
+      POSTGRES_HOST: db-quest
+      POSTGRES_PORT: 5432
+      TEAM_SERVICE_URL: https://hits1.tyuiu.ru/api/v1/ideas-service/team
+    ports:
+      - 5000:5000
+    networks:
+      - global
+  authorization-service:
+    container_name: authorization-service
+    image: lexunok/authorization-service:latest
+    environment:
+      TZ: Europe/Yekaterinburg
+      SERVICE_USERNAME: lexunok
+      SERVICE_PASSWORD: 0uLu91hYOE28yMe0S5nB
+      REDIRECT_URL: http://localhost:3000
+      AUTH_URL: http://localhost
+      JWK_URI: http://authorization-service:7777
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - 7777:7777
+    volumes:
+      - auth:/data
+    networks:
+      - global
+  email-service:
+    container_name: email-service
+    image: lexunok/email-service:latest
+    environment:
+      TZ: Europe/Yekaterinburg
+      MAIL_USERNAME: vshtst.hits0@gmail.com
+      MAIL_PASSWORD: jsxkdesianrlkzfb
+      SPRING_PROFILES_ACTIVE: test #prod
+    ports:
+      - 8084:8084
+    networks:
+      - global
+  ideas-service:
+    container_name: ideas-service
+    image: lexunok/ideas-service:latest
+    environment:
+      TZ: Europe/Yekaterinburg
+      SERVICE_USERNAME: lexunok
+      SERVICE_PASSWORD: 0uLu91hYOE28yMe0S5nB
+      AUTH_URL: http://authorization-service:7777
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - 8082:8082
+    networks:
+      - global
+  db-authorization:
+    container_name: db-authorization
+    image: postgres
+    environment:
+      TZ: Europe/Yekaterinburg
+      POSTGRES_PASSWORD: 0uLu91hYOE28yMe0S5nB
+      POSTGRES_USER: lexunok
+      POSTGRES_DB: hits
+    ports:
+      - 5433:5432
+    volumes:
+      - db-authorization:/data
+    networks:
+      - global
+  db-quest:
+    container_name: db-quest
+    image: postgres
+    environment:
+      TZ: Europe/Yekaterinburg
+      POSTGRES_DB: quest
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: root
+    ports:
+      - 5434:5432
+    volumes:
+      - db-quest:/data
+    networks:
+      - global
+  db-ideas:
+    container_name: db-ideas
+    image: postgres
+    environment:
+      TZ: Europe/Yekaterinburg
+      POSTGRES_PASSWORD: 0uLu91hYOE28yMe0S5nB
+      POSTGRES_USER: lexunok
+      POSTGRES_DB: hits
+    ports:
+      - 5432:5432
+    volumes:
+      - db-ideas:/data
+    networks:
+      - global
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.12.12-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - global
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - global
+volumes:
+  db-authorization:
+  db-ideas:
+  auth:
+  db-quest:
+networks:
+  global:

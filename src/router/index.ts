@@ -51,6 +51,12 @@ import ActiveSprintTaskModal from '@Components/Modals/ActiveSprintTaskModal/Acti
 import QuestTemplateModal from '@Components/Modals/QuestTemplateModal/QuestTemplateModal.vue'
 import PassQuestModal from '@Components/Modals/QuestModal/PassQuestModal.vue'
 
+import TestsView from '@Views/Tests/TestsView.vue'
+import TestModal from '@Components/Modals/TestModal/TestModal.vue'
+import PassTestView from '@Views/Tests/PassTestView.vue'
+import TestResultView from '@Views/Tests/TestResultView.vue'
+import AllTestResultView from '@Views/Tests/AllTestResultView.vue'
+
 import LoginService from '@Services/LoginService'
 import Code from '@Views/Code.vue'
 import Login from '@Views/Login.vue'
@@ -410,6 +416,46 @@ const routes: RouteRecordRaw[] = [
         path: 'quest/:id',
         alias: '/quest/:id',
         component: PassQuestModal,
+      },
+    ],
+  },
+  {
+    path: '/tests',
+    name: 'tests',
+    redirect: { path: '/tests/list' },
+    meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+    children: [
+      {
+        path: 'list',
+        name: 'test-list',
+        meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+        component: TestsView,
+        children: [
+          {
+            path: ':testName',
+            name: 'test-modal',
+            meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+            component: TestModal,
+          },
+        ],
+      },
+      {
+        path: 'start-test/:testName',
+        name: 'start-test',
+        meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+        component: PassTestView,
+      },
+      {
+        path: ':testName/result/:userId',
+        name: 'test-result',
+        meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+        component: TestResultView,
+      },
+      {
+        path: ':testName/result/all',
+        name: 'all-results-test',
+        meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+        component: AllTestResultView,
       },
     ],
   },
