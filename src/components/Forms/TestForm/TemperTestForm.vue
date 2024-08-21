@@ -32,19 +32,16 @@
           <Typography>{{ question.question }}</Typography>
         </div>
 
-        <!-- Radio inputs for Yes/No answers -->
-        <div class="d-flex flex-row gap-4">
+        <div class="d-flex flex-row gap-4 m-3">
           <Radio
             :label="'Да'"
             :name="'question' + index"
-            :value="1"
             :checked="isAnswerSelected(question.id, '+')"
             @change="handleClick(question.id, '+')"
           />
           <Radio
             :label="'Нет'"
             :name="'question' + index"
-            :value="0"
             :checked="isAnswerSelected(question.id, '-')"
             @change="handleClick(question.id, '-')"
           />

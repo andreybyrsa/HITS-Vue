@@ -1,16 +1,20 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { TestResultProps } from '@Components/Modals/TestModal/TestModal.type'
 import Typography from '@Components/Typography/Typography.vue'
 
 const props = defineProps<TestResultProps>()
+
+const formattedResult = computed(() => {
+  return props.testResult.result.replace(/\n/g, '<br>')
+})
 </script>
 <template>
   <div class="test-data p-3 w-100 bg-white rounded">
     <Typography class-name="rounded fs-5 text-primary"> Ваш результат: </Typography>
-    <Typography> {{ testResult.result }} </Typography>
+    <p v-html="formattedResult"></p>
   </div>
 </template>
 <style lang="scss" scoped>

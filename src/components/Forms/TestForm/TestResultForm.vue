@@ -6,7 +6,7 @@
       id="my-target-section"
     >
       <Typography class-name="fs-2 text-primary"> Результаты теста </Typography>
-      <Typography> {{ testResult.result }} </Typography>
+      <p v-html="formattedResult"></p>
 
       <Button
         variant="primary"
@@ -40,6 +40,9 @@ import { TestResult } from '@Domain/Test'
 import TestService from '@Services/TestService'
 import { User } from '@Domain/User'
 
+const formattedResult = computed(() => {
+  return testResult.value?.result.replace(/\n/g, '<br>')
+})
 const testsStore = useTestStore()
 
 const userStore = useUserStore()

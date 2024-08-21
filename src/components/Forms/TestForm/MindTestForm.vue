@@ -38,7 +38,7 @@
         :key="index"
         class="w-100 mb-3"
       >
-        <div class="belbin-test-form__content">
+        <div class="belbin-test-form__content d-flex justify-content-center">
           <Typography>{{ question.questionNumber }}.</Typography>
           <Typography>{{ question.question }}</Typography>
         </div>
@@ -59,14 +59,20 @@
         </div>
       </div>
       <Typography
-        v-if="maxSumModule !== totalSum"
+        v-if="!areAnswersUnique"
         class-name="text-danger"
       >
-        Сумма баллов не {{ maxSumModule }}. Ваша Сумма: {{ totalSum }}
+        Каждый балл используется лишь раз. Проверьте свои ответы, пожалуйста.
+      </Typography>
+      <Typography
+        v-if="incompleteAnswers"
+        class-name="text-danger"
+      >
+        Вы ответили не на все вопросы.
       </Typography>
       <Button
         v-if="currentModule !== 18"
-        :disabled="totalSum !== maxSumModule"
+        :disabled="!areAnswersUnique || incompleteAnswers"
         variant="primary"
         @click="nextModule"
       >
@@ -74,8 +80,8 @@
       </Button>
       <Button
         v-if="currentModule === 18"
+        :disabled="!areAnswersUnique || incompleteAnswers"
         variant="primary"
-        :disabled="totalSum !== maxSumModule"
         @click="showResults(test, user!.id)"
       >
         Результат
@@ -120,8 +126,6 @@ const availableScores = [1, 2, 3, 4, 5]
 type moduleAnswers = Record<string, number>
 const answers = ref<moduleAnswers>({})
 
-const maxSumModule = 10
-
 const currentModule = ref(1)
 const currentQuestionName = ref()
 
@@ -129,17 +133,22 @@ const handleButtonClick = (questionId: string, value: number) => {
   answers.value[questionId] = value
 }
 
-const totalSum = computed(() => {
-  let sum = 0
-  for (const value of Object.values(answers.value)) {
-    sum += value
-  }
-  return sum
-})
-
 const isAnswerSelected = (questionId: string, value: number) => {
   return answers.value[questionId] === value
 }
+
+const areAnswersUnique = computed(() => {
+  const values = Object.values(answers.value)
+  return values.length === new Set(values).size
+})
+
+const getAnswersLength = (): number => {
+  return Object.keys(answers.value).length
+}
+
+const incompleteAnswers = computed(() => {
+  return getAnswersLength() !== testQuestions.value?.length
+})
 
 const submitAnswers = () => {
   const currentUser = user.value
@@ -161,10 +170,8 @@ const submitAnswers = () => {
   }
 }
 
-const resetTotalSum = () => {
-  for (const key in answers.value) {
-    answers.value[key] = 0
-  }
+const resetAnswers = () => {
+  answers.value = {}
 }
 
 watch(
@@ -210,12 +217,11 @@ async function getTestForm() {
       isLoading.value = false
     }
 
-    resetTotalSum()
+    resetAnswers()
 
     if (testQuestions.value) {
       testQuestions.value.forEach((question) => {
-        answers.value[question.id] = 0
-        currentQuestionName.value = question.questionName
+        currentQuestionName.value = question.questionModule
       })
     }
   }
@@ -241,7 +247,7 @@ async function showResults(test: Test, userId: string) {
   const currentUser = user.value
   if (testAnswers.value && currentUser?.token) {
     const { token } = currentUser
-    await TestService.postBelbinResult(testAnswers.value, token)
+    await TestService.postMindResult(testAnswers.value, token)
   }
   navToResult(test.testName, userId)
 }
@@ -255,7 +261,7 @@ async function showResults(test: Test, userId: string) {
   }
 
   &__content {
-    @include flexible(flex-start, flex-start, row, $gap: 16px);
+    @include flexible(center, flex-start, row, $gap: 16px);
   }
 }
 .team-invite-form {

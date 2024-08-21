@@ -39,7 +39,7 @@
         class="w-100 mb-3"
       >
         <div class="belbin-test-form__content">
-          <Typography>{{ question.questionNumber }}.</Typography>
+          <Typography>{{ index + 1 }}.</Typography>
           <Typography>{{ question.question }}</Typography>
         </div>
         <div class="d-flex justify-content-center mt-2">
@@ -215,7 +215,7 @@ async function getTestForm() {
     if (testQuestions.value) {
       testQuestions.value.forEach((question) => {
         answers.value[question.id] = 0
-        currentQuestionName.value = question.questionName
+        currentQuestionName.value = question.questionModule
       })
     }
   }

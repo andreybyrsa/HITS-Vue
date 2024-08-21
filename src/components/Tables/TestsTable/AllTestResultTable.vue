@@ -14,9 +14,6 @@ import { TableColumn, TableHeader } from '@Components/Table/Table.types'
 import Table from '@Components/Table/Table.vue'
 import { TestResult } from '@Domain/Test'
 import { User } from '@Domain/User'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
 
 defineProps<AllTestResultProps>()
 
@@ -28,21 +25,40 @@ const testsTableHeader: TableHeader = {
 const testsTableColumns: TableColumn<TestResult>[] = [
   {
     key: 'user',
-    label: 'Пользователь',
-    // rowCellClick: navigateToTestModal,
-    getRowCellStyle: getTestNameStyle,
+    label: 'Почта',
+    getRowCellFormat: getFormatUserEmail,
+  },
+  {
+    key: 'user',
+    label: 'Имя',
+    getRowCellFormat: getFormatUserName,
+  },
+  {
+    key: 'user',
+    label: 'Фамилия',
+    getRowCellFormat: getFormatUserLastName,
   },
   {
     key: 'result',
     label: 'Результат',
+    // getRowCellFormat: getFormatResult,
   },
 ]
 
-// function navigateToTestModal(test: Test) {
-//   router.push(`/tests/list/${test.testName}`)
-// }
-
-function getTestNameStyle() {
-  return 'text-primary'
+function getFormatUserLastName(user: User) {
+  return user.lastName
 }
+
+function getFormatUserEmail(user: User) {
+  return user.email
+}
+
+function getFormatUserName(user: User) {
+  return user.firstName
+}
+
+// function getFormatResult(result: string) {
+//   return result.replace(/\n/g, '<br>')
+// }
 </script>
+<style lang="scss" scoped></style>
