@@ -1,4 +1,10 @@
-import { Test, TestQuestion, TestAnswer, TestResult } from '@Domain/Test'
+import {
+  Test,
+  TestQuestion,
+  TestAnswer,
+  TestResult,
+  TestAllResponse,
+} from '@Domain/Test'
 import Success from '@Domain/ResponseMessage'
 import useUserStore from '@Store/user/userStore'
 
@@ -11,7 +17,7 @@ import {
 } from '@Utils/getMocks'
 import getAbortedSignal from '@Utils/getAbortedSignal'
 import handleAxiosError from '@Utils/handleAxiosError'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { User } from '@Domain/User'
 
 const testMocksAxios = defineAxios(testMocks)
@@ -136,6 +142,48 @@ const getTestResult = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения результата'))
 }
 
+const getTestGeneral = async (token: string): Promise<TestAllResponse[] | Error> => {
+  return axios
+    .get(`/api/v1/ideas-service/test/general`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+    })
+    .then((response) => response.data)
+    .catch((error) => handleAxiosError(error, 'Ошибка получения результатов'))
+}
+
+const downloadResults = async (
+  testName: string,
+  token: string,
+): Promise<void | Error> => {
+  try {
+    const response = await axios.get(
+      `/api/v1/ideas-service/test/${testName}/result/download`,
+      {
+        responseType: 'blob',
+        headers: { Authorization: `Bearer ${token}` },
+        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+      },
+    )
+    const filename = `${testName}-results.xls`
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'],
+    })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', filename)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    link.remove()
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return handleAxiosError(error, 'Ошибка скачивания файла с результатами')
+    }
+  }
+}
 // --- Post --- //
 
 const postBelbinResult = async (
@@ -184,6 +232,8 @@ const TestService = {
   getAllTestResult,
   getTestAnswers,
   getTestResult,
+  getTestGeneral,
+  downloadResults,
 
   postBelbinResult,
   postTemperResult,

@@ -56,6 +56,7 @@ import TestModal from '@Components/Modals/TestModal/TestModal.vue'
 import PassTestView from '@Views/Tests/PassTestView.vue'
 import TestResultView from '@Views/Tests/TestResultView.vue'
 import AllTestResultView from '@Views/Tests/AllTestResultView.vue'
+import TestsAllResultsView from '@Views/Tests/TestsAllResultsView.vue'
 
 import LoginService from '@Services/LoginService'
 import Code from '@Views/Code.vue'
@@ -454,8 +455,14 @@ const routes: RouteRecordRaw[] = [
       {
         path: ':testName/result/all',
         name: 'all-results-test',
-        meta: { roles: ['ADMIN', 'MEMBER', 'TEAM_LEADER', 'PROJECT_OFFICE'] },
+        meta: { roles: ['ADMIN', 'PROJECT_OFFICE'] },
         component: AllTestResultView,
+      },
+      {
+        path: 'general',
+        name: 'test-general',
+        meta: { roles: ['ADMIN', 'PROJECT_OFFICE'] },
+        component: TestsAllResultsView,
       },
     ],
   },

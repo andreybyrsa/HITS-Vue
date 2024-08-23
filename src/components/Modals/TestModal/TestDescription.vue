@@ -66,7 +66,7 @@ function accessClick() {
       variant="primary"
       @click="viewToResults(test.testName)"
     >
-      Посмотреть результаты
+      Результаты по тесту
     </Button>
   </div>
 </template>

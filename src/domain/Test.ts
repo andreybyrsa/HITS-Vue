@@ -33,4 +33,11 @@ interface TestResult {
   testName: string
   result: string
 }
-export { Test, TestQuestion, TestAnswer, TestResult }
+
+interface TestAllResponse {
+  user: User
+  belbinTest: TestResult
+  temperTest: TestResult
+  mindTest: TestResult
+}
+export { Test, TestQuestion, TestAnswer, TestResult, TestAllResponse }

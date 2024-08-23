@@ -422,13 +422,22 @@ const collapseIds = computed(() => {
                         )
                       "
                     >
-                      {{
+                      <div
+                        v-html="
+                          getRowCellFormat(
+                            row[column.key],
+                            column.getRowCellFormat,
+                            +index.toString(),
+                          )
+                        "
+                      ></div>
+                      <!-- {{
                         getRowCellFormat(
                           row[column.key],
                           column.getRowCellFormat,
                           +index.toString(),
                         )
-                      }}
+                      }} -->
                     </div>
                   </template>
                   <div
@@ -442,7 +451,12 @@ const collapseIds = computed(() => {
                     ]"
                     @click="rowCellClick(row, column.rowCellClick)"
                   >
-                    {{ getRowCellFormat(row[column.key], column.getRowCellFormat) }}
+                    <div
+                      v-html="
+                        getRowCellFormat(row[column.key], column.getRowCellFormat)
+                      "
+                    ></div>
+                    <!-- {{ getRowCellFormat(row[column.key], column.getRowCellFormat) }} -->
                   </div>
                 </div>
               </td>
