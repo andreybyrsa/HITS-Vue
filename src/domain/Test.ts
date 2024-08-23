@@ -31,13 +31,13 @@ interface TestResult {
   id: string
   user: User
   testName: string
-  result: string
+  testResult: string
 }
 
 interface TestAllResponse {
   user: User
-  belbinTest: TestResult
-  temperTest: TestResult
-  mindTest: TestResult
+  belbinResult: string
+  temperResult: string
+  mindResult: string
 }
 export { Test, TestQuestion, TestAnswer, TestResult, TestAllResponse }

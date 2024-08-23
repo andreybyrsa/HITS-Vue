@@ -165,7 +165,7 @@ const downloadResults = async (
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
     )
-    const filename = `${testName}-results.xls`
+    const filename = `${testName}-results`
     const blob = new Blob([response.data], {
       type: response.headers['content-type'],
     })

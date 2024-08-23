@@ -4,7 +4,7 @@
     :header="testsTableHeader"
     :columns="testsTableColumns"
     :data="results"
-    :search-by="['user', 'result']"
+    :search-by="['user', 'testResult']"
   />
 </template>
 
@@ -53,25 +53,11 @@ const testsTableHeader = computed<TableHeader>(() => ({
     {
       label: 'Скачать результаты',
       variant: 'primary',
-      prependIconName: 'bi bi-filetype-xls',
+      prependIconName: 'bi bi-filetype-txt',
       click: () => downloadTestResults(testResult.value!.testName),
     },
   ],
 }))
-
-const testResponse = ref<TestAllResponse[]>()
-
-async function clickBut() {
-  const currentUser = user.value
-  if (currentUser?.token) {
-    const { token } = currentUser
-    const response = await TestService.getTestGeneral(token)
-    if (response instanceof Error) {
-      return
-    }
-    testResponse.value = response
-  }
-}
 
 const testsTableColumns: TableColumn<TestResult>[] = [
   {
@@ -90,7 +76,7 @@ const testsTableColumns: TableColumn<TestResult>[] = [
     getRowCellFormat: getFormatUserGroup,
   },
   {
-    key: 'result',
+    key: 'testResult',
     label: 'Результат',
     getRowCellFormat: getFormatResult,
   },
@@ -106,12 +92,12 @@ function getFormatUserLastName(user: User) {
   return user.lastName
 }
 
-function getFormatUserGroup(user: User) {
-  return user.studyGroup
-}
-
 function getFormatUserName(user: User) {
   return user.firstName
+}
+
+function getFormatUserGroup(user: User) {
+  return user.studyGroup
 }
 
 function getFormatResult(result: string) {

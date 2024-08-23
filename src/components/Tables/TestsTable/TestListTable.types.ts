@@ -9,6 +9,7 @@ export interface AllTestResultProps {
   results: TestResult[]
 }
 
+// результаты всех юзеров по всем тестам
 export interface TestsAllResultsProps {
   results: TestAllResponse[]
 }

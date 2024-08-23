@@ -8,7 +8,7 @@ import Typography from '@Components/Typography/Typography.vue'
 const props = defineProps<TestResultProps>()
 
 const formattedResult = computed(() => {
-  return props.testResult.result.replace(/\n/g, '<br>')
+  return props.testResult.testResult.replace(/\n/g, '<br>')
 })
 </script>
 <template>

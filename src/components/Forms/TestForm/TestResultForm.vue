@@ -41,7 +41,7 @@ import TestService from '@Services/TestService'
 import { User } from '@Domain/User'
 
 const formattedResult = computed(() => {
-  return testResult.value?.result.replace(/\n/g, '<br>')
+  return testResult.value?.testResult.replace(/\n/g, '<br>')
 })
 const testsStore = useTestStore()
 

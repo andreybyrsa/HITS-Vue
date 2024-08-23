@@ -54,18 +54,18 @@ const testsTableColumns: TableColumn<TestAllResponse>[] = [
     getRowCellFormat: getFormatUserGroup,
   },
   {
-    key: 'belbinTest',
+    key: 'belbinResult',
     label: 'Тест Белбина',
     getRowCellFormat: getFormatResult,
   },
   {
-    key: 'mindTest',
+    key: 'mindResult',
     label: 'Стиль мышления',
     getRowCellFormat: getFormatResult,
     size: 'col-2',
   },
   {
-    key: 'temperTest',
+    key: 'temperResult',
     label: 'Личностный опросник Айзенка',
     getRowCellFormat: getFormatResult,
   },
@@ -83,8 +83,8 @@ function getFormatUserName(user: User) {
   return user.firstName
 }
 
-function getFormatResult(belbinTest: TestResult) {
-  return belbinTest.result.replace(/\n/g, '<br>')
+function getFormatResult(test: string) {
+  return test.replace(/\n/g, '<br>')
 }
 // replace(/\n/g, '<br>')
 </script>
