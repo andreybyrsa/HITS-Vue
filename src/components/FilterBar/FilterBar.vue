@@ -141,7 +141,10 @@ function chechFilterCategoryStatement(statement?: boolean) {
       </div>
     </template>
 
-    <div class="w-100 d-flex justify-content-center">
+    <div
+      class="w-100 d-flex justify-content-center"
+      @click="props.callback"
+    >
       <Button
         variant="danger"
         prepend-icon-name="bi bi-x-lg"

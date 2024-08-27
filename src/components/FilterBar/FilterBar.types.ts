@@ -17,6 +17,7 @@ interface FilterBarProps<DataType> {
   className?: string
   title?: string
   filters: Filter<DataType>[]
+  callback?: () => Promise<void>
 }
 
 export { FilterBarProps, Filter, FilterValue, FilterChoice }

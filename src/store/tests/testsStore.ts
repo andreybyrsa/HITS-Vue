@@ -14,6 +14,7 @@ const useTestStore = defineStore('tests', {
     tests: [],
     testresult: [],
     testQuestions: [],
+    results: [],
   }),
 
   getters: {
@@ -102,6 +103,18 @@ const useTestStore = defineStore('tests', {
 
         this.testresult = response
         return this.testresult
+      }
+    },
+    getTestGeneral() {
+      return async (token: string) => {
+        const response = await TestService.getTestGeneral(token)
+
+        if (response instanceof Error) {
+          return response
+        }
+
+        this.results = response
+        return this.results
       }
     },
   },

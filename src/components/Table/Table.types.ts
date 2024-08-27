@@ -68,6 +68,7 @@ interface TableProps<DataType> {
   data: DataType[]
   searchBy?: (keyof DataType)[]
   filters?: Filter<DataType>[]
+  callback?: Promise<void> | undefined
   checkedDataActions?: CheckedDataAction<DataType>[]
   dropdownActionsMenu?: DropdownMenuAction<DataType>[]
   chevronAction?: ($event?: undefined) => any

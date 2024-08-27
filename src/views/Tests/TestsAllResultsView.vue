@@ -13,9 +13,11 @@ import { TestAllResponse } from '@Domain/Test'
 
 import useUserStore from '@Store/user/userStore'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
+import useTestStore from '@Store/tests/testsStore'
 import TestService from '@Services/TestService'
 import AllTestResultTable from '@Components/Tables/TestsTable/AllTestResultTable.vue'
 
+const testStore = useTestStore()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -32,6 +34,7 @@ onMounted(async () => {
       useNotificationsStore().createSystemNotification('Система', response.message)
       return
     }
+    testStore.results = response
     testAllResults.value = response
   }
 })

@@ -524,6 +524,7 @@ const collapseIds = computed(() => {
         v-if="filters"
         class-name="ms-2 border-start"
         :filters="filters"
+        :callback="callback"
       />
     </div>
   </div>

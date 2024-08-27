@@ -6,6 +6,7 @@
     :data="results"
     :search-by="['user']"
     :filters="testFilters"
+    :callback="getAllResponse"
   />
 </template>
 
@@ -20,14 +21,16 @@ import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 import { TestAllResponse } from '@Domain/Test'
 import { User } from '@Domain/User'
 import TestService from '@Services/TestService'
+import useTestStore from '@Store/tests/testsStore'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 
 const props = defineProps<TestsAllResultsProps>()
 
+const testStore = useTestStore()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-
+const { results } = storeToRefs(testStore)
 const testResult = ref<TestAllResponse[]>()
 
 const filterByStudyGroup = ref<string[]>([])
@@ -68,6 +71,7 @@ const testsTableColumns: TableColumn<TestAllResponse>[] = [
     key: 'belbinResult',
     label: 'Тест Белбина',
     getRowCellFormat: getFormatResult,
+    size: 'col-2',
   },
   {
     key: 'mindResult',
@@ -79,6 +83,7 @@ const testsTableColumns: TableColumn<TestAllResponse>[] = [
     key: 'temperResult',
     label: 'Личностный опросник Айзенка',
     getRowCellFormat: getFormatResult,
+    size: 'col-3',
   },
 ]
 
@@ -118,7 +123,20 @@ function getFormatResult(test: string) {
 }
 
 function checkStudyGroup(test: TestAllResponse, group: FilterValue) {
+  console.log(group)
   return test.user.studyGroup === group
+}
+
+async function getAllResponse() {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await testStore.getTestGeneral(token)
+    if (response instanceof Error) {
+      return
+    }
+    testResult.value = response
+  }
 }
 
 onMounted(async () => {
