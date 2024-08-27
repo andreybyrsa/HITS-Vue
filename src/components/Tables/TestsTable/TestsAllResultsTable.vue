@@ -5,32 +5,43 @@
     :columns="testsTableColumns"
     :data="results"
     :search-by="['user']"
+    :filters="testFilters"
   />
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, ref, onMounted } from 'vue'
 import { TestsAllResultsProps } from './TestListTable.types'
 
 import Table from '@Components/Table/Table.vue'
 import { TableColumn, TableHeader } from '@Components/Table/Table.types'
-import { Filter } from '@Components/FilterBar/FilterBar.types'
+import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 
-import { TestAllResponse, TestResult } from '@Domain/Test'
+import { TestAllResponse } from '@Domain/Test'
 import { User } from '@Domain/User'
 import TestService from '@Services/TestService'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
-
-const route = useRoute()
 
 const props = defineProps<TestsAllResultsProps>()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-const testResult = ref<TestAllResponse>()
+const testResult = ref<TestAllResponse[]>()
+
+const filterByStudyGroup = ref<string[]>([])
+
+const uniqueGroups = computed(() => {
+  const groupsSet = new Set<string>()
+
+  if (testResult.value) {
+    testResult.value.forEach((test) => {
+      groupsSet.add(test.user.studyGroup)
+    })
+  }
+  return Array.from(groupsSet)
+})
 
 const testsTableHeader: TableHeader = {
   label: `Все результаты`,
@@ -71,6 +82,25 @@ const testsTableColumns: TableColumn<TestAllResponse>[] = [
   },
 ]
 
+const testFilters = computed<Filter<TestAllResponse>[]>(() => [
+  {
+    category: 'Учебная группа',
+    choices: getGroups(),
+    refValue: filterByStudyGroup,
+    isUniqueChoice: false,
+    checkFilter: checkStudyGroup,
+  },
+])
+
+function getGroups() {
+  return uniqueGroups.value
+    ? uniqueGroups.value.map((group) => ({
+        label: group,
+        value: group,
+      }))
+    : []
+}
+
 function getFormatUserLastName(user: User) {
   return user.lastName
 }
@@ -86,6 +116,21 @@ function getFormatUserName(user: User) {
 function getFormatResult(test: string) {
   return test.replace(/\n/g, '<br>')
 }
-// replace(/\n/g, '<br>')
+
+function checkStudyGroup(test: TestAllResponse, group: FilterValue) {
+  return test.user.studyGroup === group
+}
+
+onMounted(async () => {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await TestService.getTestGeneral(token)
+    if (response instanceof Error) {
+      return
+    }
+    testResult.value = response
+  }
+})
 </script>
 <style lang="scss" scoped></style>

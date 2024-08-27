@@ -10,21 +10,17 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue'
-import { AllTestResultProps, TestsAllResultsProps } from './TestListTable.types'
+import { AllTestResultProps } from './TestListTable.types'
 import { TableColumn, TableHeader } from '@Components/Table/Table.types'
-import { Filter } from '@Components/FilterBar/FilterBar.types'
 import Table from '@Components/Table/Table.vue'
-import Button from '@Components/Button/Button.vue'
-import { TestResult, TestAllResponse } from '@Domain/Test'
+import { TestResult } from '@Domain/Test'
 import { User } from '@Domain/User'
 import TestService from '@Services/TestService'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 
-import { useRoute, useRouter } from 'vue-router'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
+import { useRoute } from 'vue-router'
 const route = useRoute()
-const router = useRouter()
 
 const props = defineProps<AllTestResultProps>()
 
@@ -33,7 +29,7 @@ const { user } = storeToRefs(userStore)
 
 const testResult = ref<TestResult>()
 const testTitle = computed(() => {
-  if (!testResult.value) return '' // Если testResult пока нет, возвращаем пустую строку
+  if (!testResult.value) return ''
   switch (testResult.value.testName) {
     case 'BelbinTest':
       return 'теста Белбина'
@@ -42,7 +38,7 @@ const testTitle = computed(() => {
     case 'MindTest':
       return 'опросника на стиль мышления'
     default:
-      return 'неизвестного теста' // Значение по умолчанию
+      return 'неизвестного теста'
   }
 })
 

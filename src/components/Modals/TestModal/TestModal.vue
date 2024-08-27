@@ -1,14 +1,10 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { watchImmediate } from '@vueuse/core'
 
-import {
-  RequestConfig,
-  openErrorNotification,
-  sendParallelRequests,
-} from '@Utils/sendParallelRequests'
+import { RequestConfig, sendParallelRequests } from '@Utils/sendParallelRequests'
 
 import ModalLayout from '@Layouts/ModalLayout/ModalLayout.vue'
 import TestHeader from '@Components/Modals/TestModal/TestHeader.vue'
@@ -20,12 +16,9 @@ import useTestStore from '@Store/tests/testsStore'
 import { Test, TestResult } from '@Domain/Test'
 
 import TestService from '@Services/TestService'
-import useNotificationsStore from '@Store/notifications/notificationsStore'
-import { tokenToString } from 'typescript'
 import TestPlaceholderModal from './TestPlaceholderModal.vue'
 
 const userStore = useUserStore()
-const testsStore = useTestStore()
 const { user } = storeToRefs(userStore)
 
 const route = useRoute()
@@ -35,44 +28,6 @@ const isLoading = ref(false)
 const isOpened = ref<boolean>(true)
 const test = ref<Test>()
 const testResult = ref<TestResult>()
-
-// onMounted(async () => {
-//   const testName = route.params.testName
-//   if (testName) {
-//     try {
-//       const currentUser = user.value
-//       if (currentUser?.token) {
-//         const testName = route.params.testName.toString()
-//         const { token } = currentUser
-//         const response = await TestService.getTest(testName, token)
-//         if (response instanceof Error) {
-//           useNotificationsStore().createSystemNotification(
-//             'Система',
-//             response.message,
-//           )
-//           return
-//         }
-//         test.value = response
-//       }
-//     } catch (error) {
-//       console.error('Ошибка при получении теста', error)
-//       return
-//     }
-//   } else {
-//     router.push('/tests/list')
-//   }
-// })
-// watch(
-//   test,
-//   async () => {
-//     if (user.value?.token && test.value?.testName) {
-//       const { token } = user.value
-//       const { id: testName } = test.value
-//       await TestService.getTest(testName, token)
-//     }
-//   },
-//   { deep: true },
-// )
 
 watchImmediate(
   () => route.params.testName,

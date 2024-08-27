@@ -39,8 +39,8 @@ function formatTestQuestions(
 }
 
 function formatTestAllResults(testName: string, testResult: TestResult[]) {
-  return testResult.filter((result) => {
-    return result.testName === testName
+  return testResult.filter((testResult) => {
+    return testResult.testName === testName
   })
 }
 
@@ -136,7 +136,7 @@ const getTestResult = async (
         headers: { Authorization: `Bearer ${token}` },
         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
       },
-      { params: { testName } },
+      { params: { id: userId } },
     )
     .then((response) => response.data)
     .catch((error) => handleAxiosError(error, 'Ошибка получения результата'))

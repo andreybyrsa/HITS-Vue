@@ -22,28 +22,19 @@
 import { ref, watch, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-import { watchImmediate } from '@vueuse/core'
 import useNotificationsStore from '@Store/notifications/notificationsStore'
-import {
-  RequestConfig,
-  openErrorNotification,
-  sendParallelRequests,
-} from '@Utils/sendParallelRequests'
 
 import Typography from '@Components/Typography/Typography.vue'
 import Button from '@Components/Button/Button.vue'
 
-import useTestStore from '@Store/tests/testsStore'
 import useUserStore from '@Store/user/userStore'
 import { TestResult } from '@Domain/Test'
 
 import TestService from '@Services/TestService'
-import { User } from '@Domain/User'
 
 const formattedResult = computed(() => {
   return testResult.value?.testResult.replace(/\n/g, '<br>')
 })
-const testsStore = useTestStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)

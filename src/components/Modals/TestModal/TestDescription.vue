@@ -1,24 +1,25 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { TestProps } from '@Components/Modals/TestModal/TestModal.type'
 import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
-import { Test } from '@Domain/Test'
-
-import useTestStore from '@Store/tests/testsStore'
+import { TestResult } from '@Domain/Test'
+import TestService from '@Services/TestService'
 import useUserStore from '@Store/user/userStore'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const isAvailable = ref(true)
 const router = useRouter()
-
+const route = useRoute()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const props = defineProps<TestProps>()
+
+const testResult = ref<TestResult>()
 
 function goTest(testName: string) {
   router.push(`/tests/start-test/${testName}`)
@@ -32,14 +33,37 @@ function accessClick() {
   const currentUser = user.value
 
   if (currentUser) {
-    const { id: userId } = currentUser
-
     return (
       (currentUser.role === 'PROJECT_OFFICE' || currentUser.role === 'ADMIN') &&
       isAvailable.value
     )
   }
 }
+
+onMounted(async () => {
+  const testName = route.params.testName
+  if (testName) {
+    try {
+      const currentUser = user.value
+      if (currentUser?.token) {
+        const testName = route.params.testName.toString()
+        const { token } = currentUser
+        const response = await TestService.getTestResult(
+          testName,
+          currentUser.id,
+          token,
+        )
+        if (response instanceof Error) {
+          return
+        }
+        testResult.value = response
+      }
+    } catch (error) {
+      console.error('Ошибка при получении результатов', error)
+      return
+    }
+  }
+})
 </script>
 <template>
   <div class="test-data p-3 w-100 bg-white rounded">
@@ -54,8 +78,12 @@ function accessClick() {
     </Typography>
     <Typography> {{ test.description }} </Typography>
   </div>
-  <div class="test-data__buttons p-3 w-100 bg-white rounded">
+  <div
+    class="test-data__buttons p-3 w-100 bg-white rounded"
+    v-if="accessClick() || !testResult"
+  >
     <Button
+      v-if="!testResult"
       variant="primary"
       @click="goTest(test.testName)"
     >

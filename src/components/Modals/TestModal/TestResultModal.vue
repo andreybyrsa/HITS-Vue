@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
-import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 
 import { TestResultProps } from '@Components/Modals/TestModal/TestModal.type'
 import Typography from '@Components/Typography/Typography.vue'

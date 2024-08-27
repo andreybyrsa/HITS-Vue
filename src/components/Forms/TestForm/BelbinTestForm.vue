@@ -103,7 +103,6 @@ import useUserStore from '@Store/user/userStore'
 import { Test, TestQuestion, TestAnswer } from '@Domain/Test'
 
 import TestService from '@Services/TestService'
-import { User } from '@Domain/User'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
