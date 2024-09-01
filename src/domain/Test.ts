@@ -1,5 +1,13 @@
 import { User } from '@Domain/User'
 
+type TestFilter =
+  | 'ALL'
+  | 'SYNTHETIC'
+  | 'IDEALISTIC'
+  | 'PRAGMATIC'
+  | 'ANALYTICAL'
+  | 'REALISTIC'
+
 interface Test {
   id: string
   testName: string
@@ -40,4 +48,4 @@ interface TestAllResponse {
   temperResult: string
   mindResult: string
 }
-export { Test, TestQuestion, TestAnswer, TestResult, TestAllResponse }
+export { Test, TestQuestion, TestAnswer, TestResult, TestAllResponse, TestFilter }

@@ -7,7 +7,14 @@ import useNotificationsStore from '@Store/notifications/notificationsStore'
 import findOneAndUpdate from '@Utils/findOneAndUpdate'
 
 import { User } from '@Domain/User'
-import { Test, TestQuestion, TestAnswer, TestResult } from '@Domain/Test'
+import {
+  Test,
+  TestQuestion,
+  TestAnswer,
+  TestResult,
+  TestAllResponse,
+  TestFilter,
+} from '@Domain/Test'
 
 const useTestStore = defineStore('tests', {
   state: (): InitialState => ({

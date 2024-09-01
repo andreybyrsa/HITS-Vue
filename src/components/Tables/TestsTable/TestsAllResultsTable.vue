@@ -18,12 +18,15 @@ import Table from '@Components/Table/Table.vue'
 import { TableColumn, TableHeader } from '@Components/Table/Table.types'
 import { Filter, FilterValue } from '@Components/FilterBar/FilterBar.types'
 
-import { TestAllResponse } from '@Domain/Test'
+import { TestAllResponse, TestFilter } from '@Domain/Test'
 import { User } from '@Domain/User'
+import { getTestFilter } from '@Utils/testFilter'
+
 import TestService from '@Services/TestService'
 import useTestStore from '@Store/tests/testsStore'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
+import { result } from 'lodash-es'
 
 const props = defineProps<TestsAllResultsProps>()
 
@@ -34,6 +37,12 @@ const { results } = storeToRefs(testStore)
 const testResult = ref<TestAllResponse[]>()
 
 const filterByStudyGroup = ref<string[]>([])
+const filterByBelbinTest = ref<string[]>([])
+const filterByExtraversion = ref<string[]>([])
+const filterByNeuroticism = ref<string[]>([])
+const filterByLie = ref<string[]>([])
+// const testFilterInfo = getTestFilter()
+// const filterByMindTest = ref<TestFilter[]>([])
 
 const uniqueGroups = computed(() => {
   const groupsSet = new Set<string>()
@@ -45,6 +54,33 @@ const uniqueGroups = computed(() => {
   }
   return Array.from(groupsSet)
 })
+
+const resultBelbinTest = computed(() => {
+  const resultSet = new Set<string>()
+
+  if (testResult.value) {
+    testResult.value.forEach((test) => {
+      resultSet.add(test.belbinResult)
+    })
+  }
+  return Array.from(resultSet)
+})
+
+const ExtraversionResults = [
+  'яркий экстраверт',
+  'экстраверт',
+  'интроверт',
+  'глубокий интроверт',
+]
+
+const NeuroticismResults = [
+  'очень высокий уровень нейротизма',
+  'высокий уровень нейротизма',
+  'среднее значение',
+  'низкий уровень нейротизма',
+]
+
+const LieResults = ['неискренность в ответах', 'норма']
 
 const testsTableHeader: TableHeader = {
   label: `Все результаты`,
@@ -95,6 +131,44 @@ const testFilters = computed<Filter<TestAllResponse>[]>(() => [
     isUniqueChoice: false,
     checkFilter: checkStudyGroup,
   },
+  {
+    category: 'Тест Белбина',
+    choices: getBelbinResults(),
+    refValue: filterByBelbinTest,
+    isUniqueChoice: false,
+    checkFilter: checkBelbinResult,
+  },
+  // {
+  //   category: 'Стиль мышления',
+  //   choices: testFilterInfo.status.map((testFilter) => ({
+  //     label: testFilterInfo.translatedStatus[testFilter],
+  //     value: testFilter,
+  //   })),
+  //   refValue: filterByMindTest,
+  //   isUniqueChoice: true,
+  //   checkFilter: (test, filter) => checkTestFilter(test, filter as TestFilter),
+  // },
+  {
+    category: 'Экстраверсия',
+    choices: getExtraversion(),
+    refValue: filterByExtraversion,
+    isUniqueChoice: false,
+    checkFilter: checkTemperResult,
+  },
+  {
+    category: 'Нейротизм',
+    choices: getNeuroticism(),
+    refValue: filterByNeuroticism,
+    isUniqueChoice: false,
+    checkFilter: checkTemperResult,
+  },
+  {
+    category: 'Ложь',
+    choices: getLie(),
+    refValue: filterByLie,
+    isUniqueChoice: false,
+    checkFilter: checkTemperResult,
+  },
 ])
 
 function getGroups() {
@@ -102,6 +176,42 @@ function getGroups() {
     ? uniqueGroups.value.map((group) => ({
         label: group,
         value: group,
+      }))
+    : []
+}
+
+function getBelbinResults() {
+  return resultBelbinTest.value
+    ? resultBelbinTest.value.map((result) => ({
+        label: result,
+        value: result,
+      }))
+    : []
+}
+
+function getExtraversion() {
+  return ExtraversionResults
+    ? ExtraversionResults.map((result) => ({
+        label: result,
+        value: result,
+      }))
+    : []
+}
+
+function getNeuroticism() {
+  return NeuroticismResults
+    ? NeuroticismResults.map((result) => ({
+        label: result,
+        value: result,
+      }))
+    : []
+}
+
+function getLie() {
+  return LieResults
+    ? LieResults.map((result) => ({
+        label: result,
+        value: result,
       }))
     : []
 }
@@ -123,9 +233,24 @@ function getFormatResult(test: string) {
 }
 
 function checkStudyGroup(test: TestAllResponse, group: FilterValue) {
-  console.log(group)
   return test.user.studyGroup === group
 }
+
+function checkBelbinResult(test: TestAllResponse, result: FilterValue) {
+  return test.belbinResult === result
+}
+
+function checkTemperResult(test: TestAllResponse, result: FilterValue) {
+  return test.temperResult.includes(result.toString())
+}
+
+// async function checkTestFilter(test: TestAllResponse, filter: TestFilter) {
+//   const currentUser = user.value
+//   if (currentUser?.token) {
+//     const { token } = currentUser
+//     await testStore.getTestGeneral(filter, token)
+//   }
+// }
 
 async function getAllResponse() {
   const currentUser = user.value
