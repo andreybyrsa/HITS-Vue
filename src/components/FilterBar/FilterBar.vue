@@ -121,6 +121,7 @@ function chechFilterCategoryStatement(statement?: boolean) {
               no-form-cotrolled
               :label="choice.label"
               :value="choice.value"
+              @click="choice.click"
               v-model="filter.refValue.value"
             />
             <Checkbox

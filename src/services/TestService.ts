@@ -143,9 +143,12 @@ const getTestResult = async (
     .catch((error) => handleAxiosError(error, 'Ошибка получения результата'))
 }
 
-const getTestGeneral = async (token: string): Promise<TestAllResponse[] | Error> => {
+const getTestGeneral = async (
+  target: TestFilter,
+  token: string,
+): Promise<TestAllResponse[] | Error> => {
   return axios
-    .get(`/api/v1/ideas-service/test/general`, {
+    .get(`/api/v1/ideas-service/test/general/${target}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
     })

@@ -41,8 +41,8 @@ const filterByBelbinTest = ref<string[]>([])
 const filterByExtraversion = ref<string[]>([])
 const filterByNeuroticism = ref<string[]>([])
 const filterByLie = ref<string[]>([])
-// const testFilterInfo = getTestFilter()
-// const filterByMindTest = ref<TestFilter[]>([])
+const testFilterInfo = getTestFilter()
+const filterByMindTest = ref<TestFilter[]>([])
 
 const uniqueGroups = computed(() => {
   const groupsSet = new Set<string>()
@@ -55,20 +55,22 @@ const uniqueGroups = computed(() => {
   return Array.from(groupsSet)
 })
 
-const resultBelbinTest = computed(() => {
-  const resultSet = new Set<string>()
-
-  if (testResult.value) {
-    testResult.value.forEach((test) => {
-      resultSet.add(test.belbinResult)
-    })
-  }
-  return Array.from(resultSet)
-})
+const BelbinTestResults = [
+  'РЕАЛИЗАТОР',
+  'КООРДИНАТОР',
+  'МОТИВАТОР',
+  'ГЕНЕРАТОР ИДЕЙ',
+  'ИССЛЕДОВАТЕЛЬ',
+  'АНАЛИТИК-ЭКСПЕРТ',
+  'ВДОХНОВИТЕЛЬ',
+  'КОНТРОЛЕР',
+  'СПЕЦИАЛИСТ',
+]
 
 const ExtraversionResults = [
   'яркий экстраверт',
   'экстраверт',
+  'среднее значение',
   'интроверт',
   'глубокий интроверт',
 ]
@@ -138,29 +140,30 @@ const testFilters = computed<Filter<TestAllResponse>[]>(() => [
     isUniqueChoice: false,
     checkFilter: checkBelbinResult,
   },
-  // {
-  //   category: 'Стиль мышления',
-  //   choices: testFilterInfo.status.map((testFilter) => ({
-  //     label: testFilterInfo.translatedStatus[testFilter],
-  //     value: testFilter,
-  //   })),
-  //   refValue: filterByMindTest,
-  //   isUniqueChoice: true,
-  //   checkFilter: (test, filter) => checkTestFilter(test, filter as TestFilter),
-  // },
+  {
+    category: 'Стиль мышления',
+    choices: testFilterInfo.status.map((testFilter) => ({
+      label: testFilterInfo.translatedStatus[testFilter],
+      value: testFilter,
+      click: () => getTestResultFilter(testFilter),
+    })),
+    refValue: filterByMindTest,
+    isUniqueChoice: true,
+    checkFilter: (test, filter) => checkTestFilter(test, filter as TestFilter),
+  },
   {
     category: 'Экстраверсия',
     choices: getExtraversion(),
     refValue: filterByExtraversion,
     isUniqueChoice: false,
-    checkFilter: checkTemperResult,
+    checkFilter: checkExtraversionResult,
   },
   {
     category: 'Нейротизм',
     choices: getNeuroticism(),
     refValue: filterByNeuroticism,
     isUniqueChoice: false,
-    checkFilter: checkTemperResult,
+    checkFilter: checkNeuroticismResult,
   },
   {
     category: 'Ложь',
@@ -181,8 +184,8 @@ function getGroups() {
 }
 
 function getBelbinResults() {
-  return resultBelbinTest.value
-    ? resultBelbinTest.value.map((result) => ({
+  return BelbinTestResults
+    ? BelbinTestResults.map((result) => ({
         label: result,
         value: result,
       }))
@@ -244,19 +247,39 @@ function checkTemperResult(test: TestAllResponse, result: FilterValue) {
   return test.temperResult.includes(result.toString())
 }
 
-// async function checkTestFilter(test: TestAllResponse, filter: TestFilter) {
-//   const currentUser = user.value
-//   if (currentUser?.token) {
-//     const { token } = currentUser
-//     await testStore.getTestGeneral(filter, token)
-//   }
-// }
+function checkExtraversionResult(test: TestAllResponse, result: FilterValue) {
+  return test.temperResult.includes(result.toString() + '\nУровень Нейротизма')
+}
+
+function checkNeuroticismResult(test: TestAllResponse, result: FilterValue) {
+  return test.temperResult.includes(result.toString() + '\nУровень Лжи')
+}
+
+async function getTestResultFilter(filter: TestFilter) {
+  const currentUser = user.value
+  if (currentUser?.token) {
+    const { token } = currentUser
+    const response = await testStore.getTestGeneral(filter, token)
+    if (response instanceof Error) {
+      return
+    }
+    testResult.value = response
+  }
+}
+
+async function checkTestFilter(test: TestAllResponse, filter: TestFilter) {
+  if (filter === 'ALL') return
+  else
+    return test.mindResult.includes(
+      testFilterInfo.translatedStatus[filter].toString(),
+    )
+}
 
 async function getAllResponse() {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await testStore.getTestGeneral(token)
+    const response = await testStore.getTestGeneral('ALL', token)
     if (response instanceof Error) {
       return
     }
@@ -268,7 +291,7 @@ onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TestService.getTestGeneral(token)
+    const response = await TestService.getTestGeneral('ALL', token)
     if (response instanceof Error) {
       return
     }

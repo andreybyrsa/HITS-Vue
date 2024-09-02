@@ -113,8 +113,8 @@ const useTestStore = defineStore('tests', {
       }
     },
     getTestGeneral() {
-      return async (token: string) => {
-        const response = await TestService.getTestGeneral(token)
+      return async (target: TestFilter, token: string) => {
+        const response = await TestService.getTestGeneral(target, token)
 
         if (response instanceof Error) {
           return response

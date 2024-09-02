@@ -1,7 +1,12 @@
 import { ComputedRef, Ref } from 'vue'
 
 type FilterValue = string | number | boolean | object
-type FilterChoice = { label: string; value: FilterValue; isMarked?: boolean }
+type FilterChoice = {
+  label: string
+  value: FilterValue
+  isMarked?: boolean
+  click?: () => Promise<void>
+}
 
 interface Filter<DataType> {
   category: string

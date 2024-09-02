@@ -29,7 +29,7 @@ onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TestService.getTestGeneral(token)
+    const response = await TestService.getTestGeneral('ALL', token)
     if (response instanceof Error) {
       useNotificationsStore().createSystemNotification('Система', response.message)
       return
@@ -44,7 +44,7 @@ watch(
   async () => {
     if (user.value?.token) {
       const { token } = user.value
-      await TestService.getTestGeneral(token)
+      await TestService.getTestGeneral('ALL', token)
     }
   },
   { deep: true },
