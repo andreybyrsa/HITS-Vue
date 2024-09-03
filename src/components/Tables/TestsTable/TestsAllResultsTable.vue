@@ -31,9 +31,11 @@ import { result } from 'lodash-es'
 const props = defineProps<TestsAllResultsProps>()
 
 const testStore = useTestStore()
+const { results } = storeToRefs(testStore)
+
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const { results } = storeToRefs(testStore)
+
 const testResult = ref<TestAllResponse[]>()
 
 const filterByStudyGroup = ref<string[]>([])
@@ -259,16 +261,12 @@ async function getTestResultFilter(filter: TestFilter) {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await testStore.getTestGeneral(filter, token)
-    if (response instanceof Error) {
-      return
-    }
-    testResult.value = response
+    await testStore.getTestGeneral(filter, token)
   }
 }
 
-async function checkTestFilter(test: TestAllResponse, filter: TestFilter) {
-  if (filter === 'ALL') return
+function checkTestFilter(test: TestAllResponse, filter: TestFilter) {
+  if (filter === 'ALL') return test
   else
     return test.mindResult.includes(
       testFilterInfo.translatedStatus[filter].toString(),
