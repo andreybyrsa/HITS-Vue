@@ -15,9 +15,9 @@ import useUserStore from '@Store/user/userStore'
 import useTestStore from '@Store/tests/testsStore'
 import { Test, TestResult } from '@Domain/Test'
 
-import TestService from '@Services/TestService'
 import TestPlaceholderModal from './TestPlaceholderModal.vue'
 
+const testStore = useTestStore()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -47,11 +47,11 @@ async function getTestModal() {
 
       const testParallelRequests: RequestConfig[] = [
         {
-          request: () => TestService.getTest(testName, token),
+          request: () => testStore.getTest(testName, token),
           refValue: test,
         },
         {
-          request: () => TestService.getTestResult(testName, currentUser.id, token),
+          request: () => testStore.getTestResult(testName, currentUser.id, token),
           refValue: testResult,
         },
       ]

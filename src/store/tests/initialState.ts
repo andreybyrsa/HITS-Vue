@@ -8,7 +8,7 @@ import {
 
 interface InitialState {
   tests: Test[]
-  testresult: TestResult[]
+  testResult: TestResult[]
   testQuestions: TestQuestion[]
   results: TestAllResponse[]
 }

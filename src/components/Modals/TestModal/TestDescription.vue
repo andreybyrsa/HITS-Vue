@@ -7,13 +7,15 @@ import Button from '@Components/Button/Button.vue'
 import Typography from '@Components/Typography/Typography.vue'
 
 import { TestResult } from '@Domain/Test'
-import TestService from '@Services/TestService'
+import useTestStore from '@Store/tests/testsStore'
 import useUserStore from '@Store/user/userStore'
 import { useRouter, useRoute } from 'vue-router'
 
 const isAvailable = ref(true)
 const router = useRouter()
 const route = useRoute()
+
+const testStore = useTestStore()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
@@ -48,7 +50,7 @@ onMounted(async () => {
       if (currentUser?.token) {
         const testName = route.params.testName.toString()
         const { token } = currentUser
-        const response = await TestService.getTestResult(
+        const response = await testStore.getTestResult(
           testName,
           currentUser.id,
           token,

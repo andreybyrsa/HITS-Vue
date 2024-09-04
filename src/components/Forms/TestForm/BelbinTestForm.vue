@@ -103,14 +103,15 @@ import useUserStore from '@Store/user/userStore'
 import { Test, TestQuestion, TestAnswer } from '@Domain/Test'
 
 import TestService from '@Services/TestService'
+import useTestStore from '@Store/tests/testsStore'
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
+const testStore = useTestStore()
+
 const route = useRoute()
 const router = useRouter()
-
-const isLoading = ref(false)
 
 const test = ref<Test>()
 const testQuestions = ref<TestQuestion[]>()
@@ -188,25 +189,21 @@ async function getTestForm() {
     if (route.params.testName) {
       const testName = route.params.testName.toString()
 
-      isLoading.value = true
-
       const testParallelRequests: RequestConfig[] = [
         {
-          request: () => TestService.getTest(testName, token),
+          request: () => testStore.getTest(testName, token),
           refValue: test,
           onErrorFunc: openErrorNotification,
         },
         {
           request: () =>
-            TestService.getTestQuestions(testName, currentModule.value, token),
+            testStore.getTestQuestions(testName, currentModule.value, token),
           refValue: testQuestions,
           onErrorFunc: openErrorNotification,
         },
       ]
 
       await sendParallelRequests(testParallelRequests)
-
-      isLoading.value = false
     }
 
     resetTotalSum()

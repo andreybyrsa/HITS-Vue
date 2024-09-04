@@ -16,6 +16,8 @@ import Table from '@Components/Table/Table.vue'
 import { TestResult } from '@Domain/Test'
 import { User } from '@Domain/User'
 import TestService from '@Services/TestService'
+
+import useTestStore from '@Store/tests/testsStore'
 import useUserStore from '@Store/user/userStore'
 import { storeToRefs } from 'pinia'
 
@@ -23,6 +25,8 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const props = defineProps<AllTestResultProps>()
+
+const testStore = useTestStore()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -108,7 +112,7 @@ onMounted(async () => {
       if (currentUser?.token) {
         const testName = route.params.testName.toString()
         const { token } = currentUser
-        const response = await TestService.getTestResult(
+        const response = await testStore.getTestResult(
           testName,
           currentUser.id,
           token,
@@ -125,4 +129,3 @@ onMounted(async () => {
   }
 })
 </script>
-<style lang="scss" scoped></style>

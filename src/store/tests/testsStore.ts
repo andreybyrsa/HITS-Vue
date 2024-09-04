@@ -19,9 +19,9 @@ import {
 const useTestStore = defineStore('tests', {
   state: (): InitialState => ({
     tests: [],
-    testresult: [],
+    testResult: [], // все результаты по одному тесту
     testQuestions: [],
-    results: [],
+    results: [], // все результаты по всем тестам
   }),
 
   getters: {
@@ -47,6 +47,11 @@ const useTestStore = defineStore('tests', {
             response.message,
           )
           return response
+        }
+
+        const test = this.tests.find((test) => test?.testName === testName)
+        if (test) {
+          return test
         }
       }
     },
@@ -94,6 +99,8 @@ const useTestStore = defineStore('tests', {
           )
           return response
         }
+
+        return response
       }
     },
     getAllTestResult() {
@@ -108,8 +115,8 @@ const useTestStore = defineStore('tests', {
           return response
         }
 
-        this.testresult = response
-        return this.testresult
+        this.testResult = response
+        return this.testResult
       }
     },
     getTestGeneral() {
@@ -123,18 +130,6 @@ const useTestStore = defineStore('tests', {
         this.results = response
         return this.results
       }
-    },
-  },
-  actions: {
-    async postBelbinResult(answers: TestAnswer[], token: string) {
-      const response = await TestService.postBelbinResult(answers, token)
-
-      if (response instanceof Error) {
-        useNotificationsStore().createSystemNotification('Система', response.message)
-        return response
-      }
-
-      return response
     },
   },
 })

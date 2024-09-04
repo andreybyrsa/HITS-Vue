@@ -289,7 +289,7 @@ onMounted(async () => {
   const currentUser = user.value
   if (currentUser?.token) {
     const { token } = currentUser
-    const response = await TestService.getTestGeneral('ALL', token)
+    const response = await testStore.getTestGeneral('ALL', token)
     if (response instanceof Error) {
       return
     }
@@ -297,4 +297,3 @@ onMounted(async () => {
   }
 })
 </script>
-<style lang="scss" scoped></style>
