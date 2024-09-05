@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
 
 import { TestResult } from '@Domain/Test'
 
@@ -13,6 +14,8 @@ import {
   openErrorNotification,
 } from '@Utils/sendParallelRequests'
 import Typography from '@Components/Typography/Typography.vue'
+
+const route = useRoute()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -39,20 +42,21 @@ onMounted(async () => {
 
   if (currentUser?.token) {
     const { token } = currentUser
+    const userId = route.params.id.toString()
 
     const profileParallelRequests: RequestConfig[] = [
       {
-        request: () => testStore.getTestResult('BelbinTest', currentUser.id, token),
+        request: () => testStore.getTestResult('BelbinTest', userId, token),
         refValue: belbinTestResults,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => testStore.getTestResult('TemperTest', currentUser.id, token),
+        request: () => testStore.getTestResult('TemperTest', userId, token),
         refValue: temperTestResult,
         onErrorFunc: openErrorNotification,
       },
       {
-        request: () => testStore.getTestResult('MindTest', currentUser.id, token),
+        request: () => testStore.getTestResult('MindTest', userId, token),
         refValue: mindTestResult,
         onErrorFunc: openErrorNotification,
       },
