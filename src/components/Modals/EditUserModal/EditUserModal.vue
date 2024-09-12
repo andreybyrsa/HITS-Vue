@@ -61,7 +61,11 @@ watch(
   () => props.user,
   () => {
     if (props.user) {
-      setValues({ ...props.user })
+      setValues({
+        ...props.user,
+        telephone: props.user.telephone || '',
+        studyGroup: props.user.studyGroup || '',
+      })
     }
   },
 )
