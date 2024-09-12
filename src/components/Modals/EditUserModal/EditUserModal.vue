@@ -135,7 +135,6 @@ const handleEditUser = handleSubmit(async (values) => {
             placeholder="Введите номер телефона"
             validate-on-update
             class-name="rounded-end"
-            :prepend="'Телефон'"
           >
             <template #prepend>
               <i class="bi bi-telephone-fill"></i>
@@ -148,7 +147,6 @@ const handleEditUser = handleSubmit(async (values) => {
             placeholder="Введите учебную группу"
             validate-on-update
             class-name="rounded-end"
-            :prepend="'Учебная группа'"
           >
             <template #prepend>
               <i class="bi bi-person-lines-fill"></i>
