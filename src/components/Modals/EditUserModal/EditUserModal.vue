@@ -138,7 +138,7 @@ const handleEditUser = handleSubmit(async (values) => {
             :prepend="'Телефон'"
           >
             <template #prepend>
-              <Icon name="phone" />
+              <i class="bi bi-telephone-fill"></i>
             </template>
           </Input>
 
@@ -151,7 +151,7 @@ const handleEditUser = handleSubmit(async (values) => {
             :prepend="'Учебная группа'"
           >
             <template #prepend>
-              <Icon name="group" />
+              <i class="bi bi-person-lines-fill"></i>
             </template>
           </Input>
 
