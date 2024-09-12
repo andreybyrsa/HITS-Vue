@@ -248,4 +248,6 @@ function openConfirmModal(currentUser: User) {
   currentUserId.value = currentUser.id
   isOpenedConfirmModal.value = true
 }
+
+console.log(users.value)
 </script>
