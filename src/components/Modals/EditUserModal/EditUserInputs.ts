@@ -20,6 +20,18 @@ const editUserInputs: EditUserInputType[] = [
     placeholder: 'Введите фамилию',
     prependIconName: 'bi bi-fonts',
   },
+  {
+    id: 3,
+    name: 'telephone',
+    placeholder: 'Введите номер телефона',
+    prependIconName: 'bi bi-telephone-fill',
+  },
+  {
+    id: 4,
+    name: 'studyGroup',
+    placeholder: 'Введите учебную группу',
+    prependIconName: 'bi bi-person-lines-fill',
+  },
 ]
 
 export default editUserInputs

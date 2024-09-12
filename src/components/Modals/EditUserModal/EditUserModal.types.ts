@@ -12,7 +12,7 @@ interface EditUserModalEmits {
 interface EditUserInputType {
   id: number
   type?: string
-  name: 'email' | 'firstName' | 'lastName'
+  name: 'email' | 'firstName' | 'lastName' | 'telephone' | 'studyGroup'
   placeholder: string
   prepend?: string
   prependIconName?: string

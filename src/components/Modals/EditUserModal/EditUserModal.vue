@@ -129,30 +129,6 @@ const handleEditUser = handleSubmit(async (values) => {
             </template>
           </Input>
 
-          <Input
-            type="text"
-            name="telephone"
-            placeholder="Введите номер телефона"
-            validate-on-update
-            class-name="rounded-end"
-          >
-            <template #prepend>
-              <i class="bi bi-telephone-fill"></i>
-            </template>
-          </Input>
-
-          <Input
-            type="text"
-            name="studyGroup"
-            placeholder="Введите учебную группу"
-            validate-on-update
-            class-name="rounded-end"
-          >
-            <template #prepend>
-              <i class="bi bi-person-lines-fill"></i>
-            </template>
-          </Input>
-
           <Button
             class-name="px-2 py-0"
             :variant="errors.roles ? 'outline-danger' : 'mute'"
