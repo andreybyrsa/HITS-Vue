@@ -49,6 +49,10 @@ const { errors, setValues, handleSubmit } = useForm<User>({
       Validation.checkName(value) || 'Неверно введено имя',
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
+    telephone: (value: string) =>
+      Validation.checkPhoneNumber(value) || 'Неверный формат номера телефона',
+    studyGroup: (value: string) =>
+      Validation.checkStudyGroup(value) || 'Неверный формат учебной группы',
     roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
   },
 })
@@ -122,6 +126,32 @@ const handleEditUser = handleSubmit(async (values) => {
           >
             <template #prepend>
               <Icon :class-name="input.prependIconName" />
+            </template>
+          </Input>
+
+          <Input
+            type="text"
+            name="telephone"
+            placeholder="Введите номер телефона"
+            validate-on-update
+            class-name="rounded-end"
+            :prepend="'Телефон'"
+          >
+            <template #prepend>
+              <Icon name="phone" />
+            </template>
+          </Input>
+
+          <Input
+            type="text"
+            name="studyGroup"
+            placeholder="Введите учебную группу"
+            validate-on-update
+            class-name="rounded-end"
+            :prepend="'Учебная группа'"
+          >
+            <template #prepend>
+              <Icon name="group" />
             </template>
           </Input>
 

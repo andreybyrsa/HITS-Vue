@@ -60,6 +60,18 @@ class Validation {
     const numbersRegExp = /^[0-9 ,]{1,}$/g
     return numbersRegExp.test(hours)
   }
+
+  checkPhoneNumber(phoneNumber: string) {
+    const phoneRegExp =
+      /^\+?[0-9]{1,4}?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/
+    return phoneRegExp.test(phoneNumber) || 'Неверный формат номера телефона'
+  }
+
+  checkStudyGroup(group: string) {
+    const groupRegExp = /^[А-Яа-яA-Za-z0-9-]+$/
+    return groupRegExp.test(group) || 'Неверный формат учебной группы'
+  }
+
   validateFloatNumber(hours: string) {
     const numberRegExp = /^(10(\.0+)?|[0-9](\.\d+)?|10)$/
     return numberRegExp.test(hours)
