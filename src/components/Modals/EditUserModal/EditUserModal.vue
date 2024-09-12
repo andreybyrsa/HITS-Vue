@@ -50,9 +50,13 @@ const { errors, setValues, handleSubmit } = useForm<User>({
     lastName: (value: string) =>
       Validation.checkName(value) || 'Неверно введена фамилия',
     telephone: (value: string) =>
-      Validation.checkPhoneNumber(value) || 'Неверный формат номера телефона',
+      !value ||
+      Validation.checkPhoneNumber(value) ||
+      'Неверный формат номера телефона',
     studyGroup: (value: string) =>
-      Validation.checkStudyGroup(value) || 'Неверный формат учебной группы',
+      !value ||
+      Validation.checkStudyGroup(value) ||
+      'Неверный формат учебной группы',
     roles: (value: RolesTypes[]) => Validation.checkIsEmptyValue(value),
   },
 })

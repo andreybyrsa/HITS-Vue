@@ -326,19 +326,17 @@ function getFormattedDate(date: string) {
       </div>
 
       <div
-        v-if="isOwnProfile"
+        v-if="isOwnProfile || user?.role === 'ADMIN' || user?.role === 'TEACHER'"
         class="w-100 d-flex flex-column gap-2"
       >
         <div class="d-flex gap-1">
           <Typography class-name="text-primary">Телефон:</Typography>
           <div
             v-if="
-              ((!isUpdatingUserLastname &&
-                !isUpdatingUserName &&
-                !isUpdatingUserStudyGroup &&
-                !isUpdatingUserTelephone) ||
-                user?.role === 'ADMIN') &&
-              user?.role !== 'TEACHER'
+              !isUpdatingUserLastname &&
+              !isUpdatingUserName &&
+              !isUpdatingUserStudyGroup &&
+              !isUpdatingUserTelephone
             "
             class="link text-secondary cursor-pointer"
             @click="toogleUpdatingUserTelephone(true)"
