@@ -4,7 +4,7 @@
     :header="usersTableHeader"
     :columns="usersTableColumns"
     :data="users"
-    :search-by="['email', 'firstName', 'lastName']"
+    :search-by="['email', 'firstName', 'lastName', 'telephone', 'studyGroup']"
     :filters="usersFilters"
     :dropdown-actions-menu="dropdownUsersActions"
   />
@@ -91,6 +91,14 @@ const usersTableColumns: TableColumn<User>[] = [
   {
     key: 'lastName',
     label: 'Фамилия',
+  },
+  {
+    key: 'telephone',
+    label: 'Номер телефона',
+  },
+  {
+    key: 'studyGroup',
+    label: 'Учебная группа',
   },
   {
     key: 'createdAt',
