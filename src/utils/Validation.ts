@@ -68,7 +68,7 @@ class Validation {
   }
 
   checkStudyGroup(group: string) {
-    const groupRegExp = /^[\w\s-]+$/
+    const groupRegExp = /^[А-Яа-яA-Za-z0-9-]+$/
     return groupRegExp.test(group) || 'Неверный формат учебной группы'
   }
 
