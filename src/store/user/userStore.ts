@@ -31,8 +31,6 @@ const useUserStore = defineStore('user', {
 
         LocalStorageUser.setLocalStorageUser(this.user)
 
-        await ProfileService.checkProfile(token)
-
         this.router.push(getRouteByUserRole(response.roles))
       }
     },
