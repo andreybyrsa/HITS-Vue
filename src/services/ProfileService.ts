@@ -113,19 +113,19 @@ const getUserTelegram = async (
 
 // --- POST --- //
 
-const checkProfile = async (token: string): Promise<Success | Error> => {
-  return axios
-    .post(
-      `/api/v1/ideas-service/profile`,
-      {},
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
-      },
-    )
-    .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка проверки профиля'))
-}
+// const checkProfile = async (token: string): Promise<Success | Error> => {
+//   return axios
+//     .post(
+//       `/api/v1/ideas-service/profile`,
+//       {},
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         signal: getAbortedSignal(useUserStore().checkIsExpiredToken),
+//       },
+//     )
+//     .then((response) => response.data)
+//     .catch((error) => handleAxiosError(error, 'Ошибка проверки профиля'))
+// }
 
 const saveProfileSkills = async (
   skills: Skill[],
@@ -261,8 +261,6 @@ const ProfileService = {
   getProfileAvatar,
   getTeamExperience,
   getUserTelegram,
-
-  checkProfile,
   saveProfileSkills,
   uploadProfileAvatar,
   updateUserFullName,
