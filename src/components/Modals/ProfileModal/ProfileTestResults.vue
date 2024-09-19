@@ -31,11 +31,11 @@ const formattedBelbinResult = computed(() => {
 })
 
 const formattedTemperResult = computed(() => {
-  return belbinTestResults.value?.testResult.replace(/\n/g, '<br>')
+  return temperTestResult.value?.testResult.replace(/\n/g, '<br>')
 })
 
 const formattedMindResult = computed(() => {
-  return belbinTestResults.value?.testResult.replace(/\n/g, '<br>')
+  return mindTestResult.value?.testResult.replace(/\n/g, '<br>')
 })
 onMounted(async () => {
   const currentUser = user.value
