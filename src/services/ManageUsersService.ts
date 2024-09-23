@@ -66,7 +66,7 @@ const deleteUser = async (
       { params: { id: userId } },
     )
     .then((response) => response.data)
-    .catch((error) => handleAxiosError(error, 'Ошибка обновления почты'))
+    .catch((error) => handleAxiosError(error, 'Ошибка удаления пользователя'))
 }
 
 const ManageUsersService = {

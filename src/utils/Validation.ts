@@ -62,6 +62,9 @@ class Validation {
   }
 
   checkPhoneNumber(phoneNumber: string) {
+    if (!phoneNumber) {
+      phoneNumber = '+7'
+    }
     const phoneRegExp =
       /^\+?[0-9]{1,4}?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/
     return phoneRegExp.test(phoneNumber) || 'Неверный формат номера телефона'
