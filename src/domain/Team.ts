@@ -42,6 +42,7 @@ interface Team {
   StatusQuest?: boolean
 
   hasActiveProject: boolean
+  isAcceptedToIdea: boolean
 }
 
 interface TeamSkills {

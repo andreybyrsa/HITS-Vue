@@ -211,7 +211,14 @@ watchImmediate(
         </Button>
 
         <Button
-          v-if="accessCollapseOpen(team)"
+          v-if="team.hasActiveProject || team.isAcceptedToIdea"
+          variant="secondary"
+          disabled
+        >
+          Ваша команда уже участвует в идее или проекте
+        </Button>
+        <Button
+          v-else-if="accessCollapseOpen(team)"
           :variant="getStyleRequest(team)"
           :disabled="getDisabledRequest(team)"
           v-collapse="team.id"
@@ -229,7 +236,10 @@ watchImmediate(
         </Button>
       </div>
 
-      <Collapse :id="team.id">
+      <Collapse
+        v-if="!(team.hasActiveProject || team.isAcceptedToIdea)"
+        :id="team.id"
+      >
         <div class="team-request-collapse__info py-1">
           <div class="w-100 d-flex p-2">
             <div class="w-50">

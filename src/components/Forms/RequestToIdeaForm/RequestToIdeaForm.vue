@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
+
 import { useRouter } from 'vue-router'
 
 import { RequestToIdeaFormProps } from '@Components/Forms/RequestToIdeaForm/RequestToIdeaForm.types.'
@@ -15,12 +17,18 @@ const skillsAcceptedTeam = defineModel<Team>('skillsAcceptedTeam')
 
 const router = useRouter()
 
-defineProps<RequestToIdeaFormProps>()
+const props = defineProps<RequestToIdeaFormProps>()
 
 function navigateToTeamForm() {
   userStore.setRole('TEAM_OWNER')
   router.push('/teams/create')
 }
+
+const filteredTeams = computed(() => {
+  return props.ownerTeams.filter(
+    (team) => !team.hasActiveProject && !team.isAcceptedToIdea,
+  )
+})
 </script>
 
 <template>
@@ -44,10 +52,10 @@ function navigateToTeamForm() {
     <Typography class-name="fs-6 py-2 px-3 border-bottom"> Ваши команды </Typography>
     <div class="d-flex flex-column gap-2 p-3">
       <RequestTeamCollapse
-        v-for="(team, index) in ownerTeams"
+        v-for="(team, index) in filteredTeams"
         :key="index"
         :team="team"
-        :idea="ideaMarket"
+        :idea="props.ideaMarket"
         v-model:skillsAcceptedTeam="skillsAcceptedTeam"
         :isDisabledButtonSkills="$route.name === 'market-idea-modal'"
       />

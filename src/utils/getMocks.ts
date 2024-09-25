@@ -417,6 +417,7 @@ export const teamsMocks: Team[] = [
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
     hasActiveProject: true,
+    isAcceptedToIdea: true,
     StatusQuest: false,
   },
   {
@@ -435,6 +436,7 @@ export const teamsMocks: Team[] = [
 
     tags: teamTagsMocks[1],
     StatusQuest: false,
+    isAcceptedToIdea: true,
 
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
@@ -457,6 +459,8 @@ export const teamsMocks: Team[] = [
     wantedSkills: [skillsMocks[0], skillsMocks[11], skillsMocks[16]],
     isRefused: false,
     hasActiveProject: false,
+    isAcceptedToIdea: true,
+
     StatusQuest: false,
   },
 ]
