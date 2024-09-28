@@ -110,7 +110,9 @@ const getContentTab: {
         <Button
           v-if="
             props.project.status === 'ACTIVE' &&
-            user?.role === 'TEAM_LEADER' &&
+            (user?.role === 'TEAM_LEADER' ||
+              user?.role === 'ADMIN' ||
+              user?.role === 'PROJECT_OFFICE') &&
             !activeSprint
           "
           @click="openFinishProjectModal"
@@ -119,6 +121,7 @@ const getContentTab: {
         >
           Завершить проект
         </Button>
+
         <Button
           v-if="props.project.status === 'DONE'"
           @click="openFinishProjectModal"
