@@ -124,34 +124,24 @@ onMounted(async () => {
   await getActiveProjects()
 })
 
-watch(
-  () => user.value?.role,
-  async () => {
-    if (user.value?.role === 'INITIATOR') {
-      await getActiveProjects()
-    }
-  },
-  { immediate: true },
-)
-
 function updateRolesByTabProject() {
   const currentRole = user.value?.role
 
-  if (currentRole !== 'ADMIN' && currentRole !== 'PROJECT_OFFICE') {
-    tabs.value.forEach(
-      (tab) =>
-        tab.name === 'projects' &&
-        (tab.roles = tab.roles.filter(
+  tabs.value.forEach((tab) => {
+    if (tab.name === 'projects') {
+      if (currentRole !== 'ADMIN' && currentRole !== 'PROJECT_OFFICE') {
+        tab.roles = tab.roles.filter(
           (role) => role === 'ADMIN' || role === 'PROJECT_OFFICE',
-        )),
-    )
-  } else if (myActiveProjects.value.length === 0) {
-    tabs.value.forEach(
-      (tab) =>
-        tab.name === 'projects' &&
-        tab.roles.push('INITIATOR', 'MEMBER', 'TEAM_LEADER', 'TEAM_OWNER'),
-    )
-  }
+        )
+      }
+
+      if (currentRole === 'INITIATOR' || myActiveProjects.value.length === 0) {
+        if (!tab.roles.includes('INITIATOR')) {
+          tab.roles.push('INITIATOR', 'MEMBER', 'TEAM_LEADER', 'TEAM_OWNER')
+        }
+      }
+    }
+  })
 }
 
 watch(
