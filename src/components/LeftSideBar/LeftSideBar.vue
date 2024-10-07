@@ -120,7 +120,19 @@ async function getActiveMarkets() {
 }
 
 // Роутер проектов
-onMounted(getActiveProjects)
+onMounted(async () => {
+  await getActiveProjects()
+})
+
+watch(
+  () => user.value?.role,
+  async () => {
+    if (user.value?.role === 'INITIATOR') {
+      await getActiveProjects()
+    }
+  },
+  { immediate: true },
+)
 
 function updateRolesByTabProject() {
   const currentRole = user.value?.role
