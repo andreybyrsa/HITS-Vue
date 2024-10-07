@@ -227,7 +227,7 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'markets-list',
         component: MarketsView,
-        meta: { roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER', 'INITIATOR'] },
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER'] },
       },
       {
         path: ':marketId',
@@ -285,7 +285,7 @@ const routes: RouteRecordRaw[] = [
         path: 'list',
         name: 'projects-list',
         component: ProjectList,
-        meta: { roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER', 'INITIATOR'] },
+        meta: { roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER'] },
       },
       {
         path: ':projectId',
