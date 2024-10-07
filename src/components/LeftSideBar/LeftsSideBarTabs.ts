@@ -155,7 +155,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Список проектов',
         to: '/projects/list',
         iconName: 'bi bi-list',
-        roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER', 'INITIATOR'],
+        roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER'],
       },
     ],
     iconName: 'bi bi-briefcase',
