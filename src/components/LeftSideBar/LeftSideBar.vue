@@ -57,13 +57,14 @@ const isHovered = useElementHover(leftSideBarRef, {
 onMounted(getActiveMarkets)
 
 watch(
-  markets,
-  () => {
-    const currentMarkets = markets.value.filter(({ status }) => status === 'ACTIVE')
-    const marketIndex = tabs.value.findIndex(({ name }) => name === 'markets')
-    if (marketIndex !== -1) updateActiveMarketRoute(currentMarkets, marketIndex)
+  () => markets.value,
+  (newMarkets) => {
+    if (newMarkets.length > 0) {
+      const marketIndex = tabs.value.findIndex(({ name }) => name === 'markets')
+      if (marketIndex !== -1) updateActiveMarketRoute(newMarkets, marketIndex)
+    }
   },
-  { deep: true },
+  { immediate: true, deep: true },
 )
 
 function updateActiveMarketRoute(activeMarkets: Market[], index: number) {
