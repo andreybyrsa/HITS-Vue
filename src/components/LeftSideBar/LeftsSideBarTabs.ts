@@ -80,7 +80,7 @@ const leftSideBarTabs: LeftSideBarTabType[] = [
         text: 'Список бирж',
         to: '/market/list',
         iconName: 'bi bi-list',
-        roles: ['PROJECT_OFFICE', 'ADMIN'],
+        roles: ['PROJECT_OFFICE', 'ADMIN', 'INITIATOR'],
       },
     ],
     iconName: 'bi bi-shop-window',
