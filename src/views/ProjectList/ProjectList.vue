@@ -18,11 +18,12 @@ const { projects } = storeToRefs(projectsStore)
 
 onMounted(async () => {
   const currentUser = user.value
+  const currentRole = user.value?.role
 
   if (currentUser?.token) {
     const { token } = currentUser
 
-    if (currentUser.roles.includes('INITIATOR')) {
+    if (currentRole === 'INITIATOR') {
       await projectsStore.getMyProjects(currentUser.id, token)
     } else {
       await projectsStore.getAllProjects(token)
