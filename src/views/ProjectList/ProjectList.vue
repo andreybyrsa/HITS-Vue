@@ -22,7 +22,11 @@ onMounted(async () => {
   if (currentUser?.token) {
     const { token } = currentUser
 
-    await useProjectsStore().getAllProjects(token)
+    if (currentUser.roles.includes('INITIATOR')) {
+      await projectsStore.getMyProjects(currentUser.id, token)
+    } else {
+      await projectsStore.getAllProjects(token)
+    }
   }
 })
 </script>

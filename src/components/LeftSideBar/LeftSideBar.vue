@@ -130,9 +130,14 @@ function updateRolesByTabProject() {
 
   tabs.value.forEach((tab) => {
     if (tab.name === 'projects') {
-      if (currentRole !== 'ADMIN' && currentRole !== 'PROJECT_OFFICE') {
+      if (
+        currentRole !== 'ADMIN' &&
+        currentRole !== 'PROJECT_OFFICE' &&
+        currentRole !== 'TEACHER'
+      ) {
         tab.roles = tab.roles.filter(
-          (role) => role === 'ADMIN' || role === 'PROJECT_OFFICE',
+          (role) =>
+            role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'TEACHER',
         )
       }
 
@@ -168,7 +173,7 @@ function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
     name: `project-${id}`,
     text: name,
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER'],
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER', 'TEACHER'],
     iconName: 'bi bi-kanban',
     to: `/projects/${id}`,
   }))
