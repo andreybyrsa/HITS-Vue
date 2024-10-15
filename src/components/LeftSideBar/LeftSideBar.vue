@@ -170,33 +170,34 @@ watch(
 function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const initialProjectRoutes: LeftSideBarTabType[] =
     LeftSideBarTabs[index].routes ?? []
-  tabs.value[index].routes = initialProjectRoutes
+  const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
+    name: `project-${id}`,
+    text: name,
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER', 'TEACHER'],
+    iconName: 'bi bi-kanban',
+    to: `/projects/${id}`,
+  }))
+  tabs.value[index].routes = [...initialProjectRoutes, ...projectRoutes]
 }
 
 async function getActiveProjects() {
   const currentUser = user.value
-
   if (currentUser?.token && currentUser.role !== 'EXPERT') {
     const { token, id } = currentUser
     const projectsIndex = tabs.value.findIndex(({ name }) => name === 'projects')
-
     const spliceMarketsTab = () => {
       if (projectsIndex !== -1) tabs.value.splice(projectsIndex, 1)
     }
-
     const response = await projectStore.getMyProjects(id, token)
-
     if (response instanceof Error) {
       spliceMarketsTab()
       return notificationsStore.createSystemNotification('Система', response.message)
     }
-
     activeProjects.value = response
-
     if (activeProjects.value.length === 0) {
       updateRolesByTabProject()
     } else if (projectsIndex !== -1) {
-      updateActiveProjectRoute([], projectsIndex)
+      updateActiveProjectRoute(activeProjects.value, projectsIndex)
     }
   }
 }
