@@ -170,15 +170,7 @@ watch(
 function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const initialProjectRoutes: LeftSideBarTabType[] =
     LeftSideBarTabs[index].routes ?? []
-  const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
-    name: `project-${id}`,
-    text: name,
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER', 'TEACHER'],
-    iconName: 'bi bi-kanban',
-    to: `/projects/${id}`,
-  }))
-
-  tabs.value[index].routes = [...initialProjectRoutes, ...projectRoutes]
+  tabs.value[index].routes = initialProjectRoutes
 }
 
 async function getActiveProjects() {
@@ -204,7 +196,7 @@ async function getActiveProjects() {
     if (activeProjects.value.length === 0) {
       updateRolesByTabProject()
     } else if (projectsIndex !== -1) {
-      updateActiveProjectRoute(activeProjects.value, projectsIndex)
+      updateActiveProjectRoute([], projectsIndex)
     }
   }
 }

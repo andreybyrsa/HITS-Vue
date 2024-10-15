@@ -30,7 +30,12 @@ watchImmediate(
 
       isLoading.value = true
 
-      if (currentRole === 'INITIATOR') {
+      if (
+        currentRole === 'INITIATOR' ||
+        currentRole === 'MEMBER' ||
+        currentRole === 'TEAM_OWNER' ||
+        currentRole === 'TEAM_LEADER'
+      ) {
         await projectsStore.getMyProjects(currentUser.id, token)
       } else {
         await projectsStore.getAllProjects(token)
