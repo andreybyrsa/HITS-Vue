@@ -286,7 +286,7 @@ const routes: RouteRecordRaw[] = [
         name: 'projects-list',
         component: ProjectList,
         meta: {
-          meta: { roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER', 'INITIATOR'] },
+          meta: { roles: ['PROJECT_OFFICE', 'ADMIN', 'TEACHER'] },
         },
       },
       {

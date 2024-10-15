@@ -29,12 +29,7 @@ watchImmediate(
       const { token } = currentUser
 
       isLoading.value = true
-
-      if (currentRole === 'INITIATOR') {
-        await projectsStore.getMyProjects(currentUser.id, token)
-      } else {
-        await projectsStore.getAllProjects(token)
-      }
+      await projectsStore.getAllProjects(token)
 
       isLoading.value = false
     }
