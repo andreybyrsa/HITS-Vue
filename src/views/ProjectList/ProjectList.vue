@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { watchImmediate } from '@vueuse/core'
 
 import LeftSideBar from '@Components/LeftSideBar/LeftSideBar.vue'
 import Header from '@Components/Header/Header.vue'
@@ -19,22 +20,26 @@ const { projects } = storeToRefs(projectsStore)
 
 const isLoading = ref(false)
 
-onMounted(async () => {
-  const currentUser = user.value
-  const currentRole = user.value?.role
+watchImmediate(
+  () => user.value?.role,
+  async (currentRole) => {
+    const currentUser = user.value
 
-  if (currentUser?.token) {
-    const { token } = currentUser
+    if (currentUser?.token && currentRole) {
+      const { token } = currentUser
 
-    isLoading.value = true
-    if (currentRole === 'INITIATOR') {
-      await projectsStore.getMyProjects(currentUser.id, token)
-    } else {
-      await projectsStore.getAllProjects(token)
+      isLoading.value = true
+
+      if (currentRole === 'INITIATOR') {
+        await projectsStore.getMyProjects(currentUser.id, token)
+      } else {
+        await projectsStore.getAllProjects(token)
+      }
+
+      isLoading.value = false
     }
-    isLoading.value = false
-  }
-})
+  },
+)
 </script>
 
 <template>
