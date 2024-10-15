@@ -326,14 +326,7 @@ const routes: RouteRecordRaw[] = [
             name: 'idea-project',
             component: IdeaModal,
             meta: {
-              roles: [
-                'INITIATOR',
-                'MEMBER',
-                'PROJECT_OFFICE',
-                'EXPERT',
-                'ADMIN',
-                'TEACHER',
-              ],
+              roles: ['MEMBER', 'PROJECT_OFFICE', 'EXPERT', 'ADMIN', 'TEACHER'],
             },
           },
         ],

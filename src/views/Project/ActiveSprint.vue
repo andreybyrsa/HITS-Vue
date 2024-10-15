@@ -282,7 +282,7 @@ function closeBurndownModal() {
       </div>
 
       <Button
-        v-if="user?.role === 'TEAM_LEADER'"
+        v-if="user?.role === 'TEAM_LEADER' || user?.role === 'INITIATOR'"
         @click="openFinishSprintModal"
         class-name="active-sprint__header-button"
         variant="danger"

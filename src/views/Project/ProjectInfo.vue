@@ -112,7 +112,8 @@ const getContentTab: {
             props.project.status === 'ACTIVE' &&
             (user?.role === 'TEAM_LEADER' ||
               user?.role === 'ADMIN' ||
-              user?.role === 'PROJECT_OFFICE') &&
+              user?.role === 'PROJECT_OFFICE' ||
+              user?.role === 'INITIATOR') &&
             !activeSprint
           "
           @click="openFinishProjectModal"

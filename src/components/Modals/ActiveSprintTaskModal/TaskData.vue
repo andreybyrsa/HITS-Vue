@@ -99,7 +99,10 @@ function accessEdit() {
     const { id: userId } = currentUser
 
     return (
-      (executor?.id === userId || currentUser.role === 'TEAM_LEADER') && isEdit.value
+      (executor?.id === userId ||
+        currentUser.role === 'TEAM_LEADER' ||
+        currentUser.role === 'INITIATOR') &&
+      isEdit.value
     )
   }
 }
