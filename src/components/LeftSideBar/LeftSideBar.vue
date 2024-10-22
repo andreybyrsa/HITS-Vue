@@ -127,12 +127,17 @@ onMounted(async () => {
 
 function updateRolesByTabProject() {
   const currentRole = user.value?.role
-  if (currentRole !== 'ADMIN' && currentRole !== 'PROJECT_OFFICE') {
+  if (
+    currentRole !== 'ADMIN' &&
+    currentRole !== 'PROJECT_OFFICE' &&
+    currentRole !== 'TEACHER'
+  ) {
     tabs.value.forEach(
       (tab) =>
         tab.name === 'projects' &&
         (tab.roles = tab.roles.filter(
-          (role) => role === 'ADMIN' || role === 'PROJECT_OFFICE',
+          (role) =>
+            role === 'ADMIN' || role === 'PROJECT_OFFICE' || role === 'TEACHER',
         )),
     )
   } else if (myActiveProjects.value.length === 0) {
@@ -167,7 +172,7 @@ function updateActiveProjectRoute(activeProjects: Project[], index: number) {
   const projectRoutes: LeftSideBarTabType[] = activeProjects.map(({ id, name }) => ({
     name: `project-${id}`,
     text: name,
-    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER', 'TEACHER'],
+    roles: ['INITIATOR', 'MEMBER', 'TEAM_OWNER', 'TEAM_LEADER'],
     iconName: 'bi bi-kanban',
     to: `/projects/${id}`,
   }))
